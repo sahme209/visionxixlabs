@@ -1,0 +1,20 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS actual target and final procedure",
+  "currentBindingsVerified": 48,
+  "unsignedPreimageFiles": 13,
+  "fixedTargetReviewSha256": "f7d1709fb16b2a24a39aa1523929d440dea81a1d3837da4e16bc7a172a7b4d09",
+  "reviewBaselineIsNotExecutionBaseline": true,
+  "newImmediatePrekeyBaselineRequired": true,
+  "stageBHelpersUnchanged": 19,
+  "freshExecutionRootsAbsent": true,
+  "exactSigningCommands": 3,
+  "maximumSeconds": 600,
+  "perCommandSeconds": [
+    60,
+    30,
+    30
+  ],
+  "perCommandCombinedOutputBytes": 65536,
+  "noRuntimeInstallationActivationQualification": true
+}

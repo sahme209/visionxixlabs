@@ -1,0 +1,11 @@
+# Separate Stage C template - source only
+
+Fresh continuation call_NLzmH1QkVaLHjCz8tQEGGCOz is root-owned. StageB controller3/session34739 remains live; this preparation neither monitors nor duplicates it. No actualtarget/preseal/main/inventory hash was read or captured. No mount/sign/native/provider call occurred.
+
+Separate BASE/2026-11-06-stage-b-seal-procedure-2 has21 explicit source helpers. The19 StageB dependencies were copied byte-for-byte from immutable image-procedure-2; existing fixture_final_seal and isolated fixture_seal_sequence2 are added. All19 StageB hashes were checked unchanged; no StageB file was modified. This is a PARTIAL SOURCE TEMPLATE, not a wholeproject snapshot or finaloperationclosure.
+
+fixture_seal_sequence2.execute_fixture_sequence(baseline) retains the fixedinterface/target/reviewfile. FINAL_TARGET_REVIEW_SHA256 is still PENDING_ACTUAL_UNSIGNED_REVIEW and refuses before keys. prepared-final-seal2-driver.py has a PENDING inputSHA and no actual seal-operation-inputs.json; template cannot start. Controller function AST matches accepted controller;600seconds/shared1MiB/+5 cleanup, entryumask077. Existing sign60/verify30/display30/shared64KiB bounds and exactcompanykey/Runtime/emptyXML/no--deep remain.
+
+seal-operation-inputs.TEMPLATE.json contains fixedcommands, genuineknownsource/package digest and helper source bindings, but actualpreseal/mainBefore/13fileinventory/reviewSHA are NULL. Do not relabel it as realtarget evidence. SOURCE-TEMPLATE-BINDINGS are historical source-stage hashes; finalactualconstant/helper/packet/driver/controller bindings must be freshly frozen after realunsignedreview.
+
+Only after root reports StageBterminalsuccess and actualindependentunsigned13filereview: prepare the fixed targetreviewfile using existingpureassembly checks; independently review its actualbindings; freeze ONE expectedtargetreviewSHA constant in this SEPARATE StageCcopy; bind realpreseal/main/inventory/emptyinput/source/helper packet; refreeze driverinputSHA/controllerdriverSHA and obtain finalindependentreview before root invokes StageC. Preserve all13component/currentness/pre-key and postseal mutation checks. No callerselectedtarget/reviewhash, validatorweakening, nativeleafresign, backupreset or automatickeytransition. Wholeunit stops on any unknown/failure; no retry.

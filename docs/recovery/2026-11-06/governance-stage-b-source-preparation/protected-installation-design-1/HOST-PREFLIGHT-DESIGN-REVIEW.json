@@ -1,0 +1,11 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS after requested privacy wording fixes",
+  "proposalSha256": "44e7105a1f1ce7c50988389bbe955302294c4e7086e49b4e643bfa0c795715d2",
+  "maximumCommands": 16,
+  "maximumAggregateSeconds": 120,
+  "principals": "Finite exact local candidate classifications only; no unrelated names or memberships",
+  "postgres": "Three fixed candidate binaries/direct load commands only; complete trust closure unqualified",
+  "noHostCallsOrImplementationYet": true,
+  "requiredBeforeOneActualRun": "Local code and synthetic tests, frozen source/command packet, independent implementation/input review"
+}

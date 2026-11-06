@@ -1,0 +1,92 @@
+{
+  "controller": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-final-seal2-controller.py",
+    "sha256": "5a913ad6243477da16403069430eb3d29475ad8a30f9fa7edd71f406ce210460",
+    "size": 5368
+  },
+  "driver": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-final-seal2-driver.py",
+    "sha256": "3fb856823e946fffbd2f2991bb7cc1e95ea88a953c04cdc9d68ed7abb6e04289",
+    "size": 3515
+  },
+  "executionOutputAbsent": true,
+  "format": "axiom.stage-c-final-bindings/1",
+  "inputs": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/seal-operation-inputs.json",
+    "sha256": "c9bfa5d6d30ea9aabc49bbaea6684ff54d8593620111b13bc7577dcee0138a80",
+    "size": 19844
+  },
+  "keyCommandsExecuted": false,
+  "procedure": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/STAGE-C-FINAL-PROCEDURE.json",
+    "sha256": "618456e3d639dc73bbfa2b471718b20c13d6a45e3fce1369fb88f4692fce8437",
+    "size": 8940
+  },
+  "reviewOnlyBaseline": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-package-review-2/baseline-review/fixture-seal-baseline.json",
+    "sha256": "f4d77e77f35e57d1d5824619eac7cd185351d960c7a216c47e13e333754a2c77",
+    "size": 8644
+  },
+  "sealModule": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/fixture_seal_sequence2.py",
+    "sha256": "5d8ec8e67a846f400f97c477460a6c8a302f89add1b469f575146c245a279fd4",
+    "size": 9277
+  },
+  "snapshots": [
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/REVIEW-ONLY.json",
+      "sha256": "42859c83a8fe9beb60be2c3be97f865eb48be442fcc7063a85663cae24857ae3",
+      "size": 508
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/final-target.json",
+      "sha256": "f7d1709fb16b2a24a39aa1523929d440dea81a1d3837da4e16bc7a172a7b4d09",
+      "size": 6460
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/fixture-seal-baseline.json",
+      "sha256": "f4d77e77f35e57d1d5824619eac7cd185351d960c7a216c47e13e333754a2c77",
+      "size": 8644
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/fixture_seal_sequence2.py",
+      "sha256": "5d8ec8e67a846f400f97c477460a6c8a302f89add1b469f575146c245a279fd4",
+      "size": 9277
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/prepared-final-seal2-controller.py",
+      "sha256": "5a913ad6243477da16403069430eb3d29475ad8a30f9fa7edd71f406ce210460",
+      "size": 5368
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/prepared-final-seal2-driver.py",
+      "sha256": "3fb856823e946fffbd2f2991bb7cc1e95ea88a953c04cdc9d68ed7abb6e04289",
+      "size": 3515
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/stage-c-final-source/seal-operation-inputs.json",
+      "sha256": "c9bfa5d6d30ea9aabc49bbaea6684ff54d8593620111b13bc7577dcee0138a80",
+      "size": 19844
+    }
+  ],
+  "stageB19Unchanged": true,
+  "targetReview": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-package-review-2/final-target.json",
+    "sha256": "f7d1709fb16b2a24a39aa1523929d440dea81a1d3837da4e16bc7a172a7b4d09",
+    "size": 6460
+  }
+}

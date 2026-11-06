@@ -1,0 +1,15 @@
+# Current package: completed static work and open operational gates
+
+Source `b8b0314c39324ba3a918fd0f6672faf0297c2041`; package digest `555bc590871e405885ac84de755c27983face39f9a0ed9dcaf19b1122de42b53`. These milestones accept files and static signing, not Governance operation.
+
+1. ~~RUN5 full compiler/types/303 pages and exact producer `ab6de136…` accepted~~; six corrected native roles and the genuine original inert main are reused without recompilation or restamping.
+2. ~~Materialization2 completed once (60388)~~:95,321 files,12,002 directories,52 internal links independently checked;342.8428 seconds. See [actual review](STAGE-A-ACTUAL-OUTPUT-REVIEW.json).
+3. **Preserved failure:** original image controller2 stopped before image/mount/key effects because it called the precompile inventory verifier on the genuinely compiled main. No receipt or output was deleted/reset. See [raw failure](../image2-stopped-attempt-1/REPORT.md).
+4. ~~Fresh authorized driver3/image2 completed once (34739)~~: both4,025,264,420-byte images match, read-only content inspected, owned detach and restored empty mount verified; actual unsigned13-file inventory reviewed. See [actual review](STAGE-B3-ACTUAL-UNSIGNED-REVIEW.json).
+5. ~~The separately frozen outer seal completed once (60658)~~: three exact signing/static-verification/display commands exited0. Twelve non-main subject files retain full metadata; the main changed only permitted signature fields/tail, with a new CodeResources. See [actual final review](STAGE-C-ACTUAL-OUTPUT-REVIEW.json) and [44 retained records](../final-seal-2-observed/REPORT.md).
+
+The local carrier is `2026-11-06-stage-b-image-2/assembled/Axiom Synthetic Custodian.app` inside the Qualification Lab. It is not a customer desktop release. Metadata/source/log copies are retained; large binary/image payloads and the existing signing private key are not Git source-backup payloads. Execution baselines remain distinct from review-only baseline preparation. All one-run authorizations are consumed; nothing here authorizes retry or replay.
+
+**In Progress:** nonsecret host readiness under its separate pending decision, then exact protected installation, dedicated principals/socket groups, trusted PostgreSQL closure and peer/HBA behavior, actual secret custody, same compiled consumer/current-authority loss matrix, fleet/drain/coverage and genuine workflow/live acceptance. No runtime/helper was launched, no service/account/group configured, no application-secret Keychain item read/provisioned, no database/provider action or Governance activation performed. Existing company-key use was only the expressly approved outer seal.
+
+All21 master parents remain open. The current website preview and representative browser evidence are separate from this static carrier. The private source backup is authorized only at the user's below5percent threshold. Whole-backend Vercel deployment still needs actual database compatibility/cutover evidence; no website-only replacement or installer publication is inferred.

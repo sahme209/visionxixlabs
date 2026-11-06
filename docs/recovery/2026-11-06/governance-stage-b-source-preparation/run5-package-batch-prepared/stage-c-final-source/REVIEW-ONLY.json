@@ -1,0 +1,12 @@
+{
+  "purpose": "PURE_REVIEW_BASELINE_NOT_EXECUTION_BASELINE",
+  "baseline": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-package-review-2/baseline-review/fixture-seal-baseline.json",
+    "sha256": "f4d77e77f35e57d1d5824619eac7cd185351d960c7a216c47e13e333754a2c77",
+    "size": 8644,
+    "mode": 384
+  },
+  "executionBaselineMustBeFreshAtFixedSeal2Output": true,
+  "executionOutputStillAbsent": true,
+  "keyCommandsExecuted": false
+}

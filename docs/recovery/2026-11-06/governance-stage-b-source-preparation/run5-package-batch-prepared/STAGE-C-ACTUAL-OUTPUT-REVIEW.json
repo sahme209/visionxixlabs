@@ -1,0 +1,36 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS static seal only",
+  "controllerSession": 60658,
+  "controllerExit": 0,
+  "controllerSeconds": 182.5534,
+  "originalDriverReaped": true,
+  "currentInventoryFiles": 15,
+  "nonMainSubjectFilesUnchangedFullMetadata": 12,
+  "extraFilesOrSymlinks": 0,
+  "actualExecutionBaselineSha256": "c71310c2b9e0908f06aa8e623b7c26ff2d46a8904acb4b1b1bd16d70cb444ebd",
+  "reviewBaselineDistinct": true,
+  "postsealReceiptSha256": "c8f9ddcd8c96d9ce76901f6f5b3e249cf599f8eb0a75d8f5507281d2110af16c",
+  "mainAfterSha256": "181ea91dfde3b38b088b216f7b8a3e4ae81d9df7428cac33789bfcb76e689c2d",
+  "mainAfterBytes": 35472,
+  "mainCDHash": "fbadfeb7ec8ecc22cf347feb7140a9fedcdbc60d",
+  "mainMutationScope": "Only three allowed load-command fields and signature tail; other presignature bytes equal",
+  "signatureSlots": [
+    0,
+    2,
+    5,
+    7,
+    65536
+  ],
+  "encodedEntitlements": "empty dictionary",
+  "commandsCompletedExit0": 3,
+  "combinedCommandStreamBytes": [
+    183,
+    1987,
+    1545
+  ],
+  "codeResourcesBytes": 5565,
+  "staticVerifySavedResult": "valid on disk; satisfies Designated Requirement",
+  "runtimeCustodyInstallationActivationQualified": false,
+  "noActualVerifierRerunByReviewer": true
+}

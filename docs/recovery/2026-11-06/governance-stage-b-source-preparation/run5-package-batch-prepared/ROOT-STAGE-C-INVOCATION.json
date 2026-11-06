@@ -1,0 +1,9 @@
+{
+  "authorization": "call_NLzmH1QkVaLHjCz8tQEGGCOz",
+  "stage": "C exact outer seal/static verify/display",
+  "invocationClaimed": true,
+  "retryAuthorized": false,
+  "targetReviewSha256": "f7d1709fb16b2a24a39aa1523929d440dea81a1d3837da4e16bc7a172a7b4d09",
+  "existingCompanyKeyUseOnly": true,
+  "runtimeLaunchInstallationDatabaseProviderDeploymentAuthorized": false
+}

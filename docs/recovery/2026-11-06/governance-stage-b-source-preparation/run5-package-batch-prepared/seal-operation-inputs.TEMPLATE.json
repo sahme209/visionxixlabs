@@ -1,0 +1,190 @@
+{
+  "format": "axiom.final-seal2-source-template/1",
+  "procedureRepo": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2",
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "packageDigest": "555bc590871e405885ac84de755c27983face39f9a0ed9dcaf19b1122de42b53",
+  "targetApp": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/assembled/Axiom Synthetic Custodian.app",
+  "output": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-final-seal-2",
+  "destination": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/assembled",
+  "commands": {
+    "sign": [
+      "/usr/bin/codesign",
+      "--force",
+      "--sign",
+      "4C2E59F247CA275001586AE020A9269464529452",
+      "--identifier",
+      "com.visionxixlabs.axiom.synthetic.custodian",
+      "--options",
+      "runtime",
+      "--entitlements",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-final-seal-2/empty-entitlements.plist",
+      "--timestamp=none",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/assembled/Axiom Synthetic Custodian.app"
+    ],
+    "verify": [
+      "/usr/bin/codesign",
+      "--verify",
+      "--strict",
+      "--verbose=2",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/assembled/Axiom Synthetic Custodian.app"
+    ],
+    "display": [
+      "/usr/bin/codesign",
+      "--display",
+      "--verbose=4",
+      "--entitlements",
+      ":-",
+      "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/assembled/Axiom Synthetic Custodian.app"
+    ]
+  },
+  "timeouts": {
+    "sign": 60,
+    "verify": 30,
+    "display": 30
+  },
+  "presealReceipt": null,
+  "mainBeforeBinding": null,
+  "authoritativeThirteenFiles": null,
+  "expectedEmptyInput": {
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c"
+  },
+  "helpers": {
+    "scripts/build-local-issuer-package-source.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/build-local-issuer-package-source.py",
+      "sha256": "9f9a936bb5e6f8381483e796a24bba83b28cb3b53ee927d778f71df329dd17c0",
+      "size": 46531,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/__init__.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/__init__.py",
+      "sha256": "89b16b5e62a7f03009da2b7b09d865d8cbc6d6cf60629b203420c91b100b2878",
+      "size": 76,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/bounded_signing_tool.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/bounded_signing_tool.py",
+      "sha256": "2e32667028dfdab59b02ba1c37cb90695321d6e70f521d2b900438bf4f121a84",
+      "size": 2738,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/container_assembly.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/container_assembly.py",
+      "sha256": "578dd0605735375b608be5fdb7312aa83fa49df90eaa8ef44af7a85d06510cb9",
+      "size": 18302,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/container_preparation.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/container_preparation.py",
+      "sha256": "6fd39f068931c785f6ed8f5ff0ea7666ed048f44a63995ab0aaa325073e8eec3",
+      "size": 9173,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/fixture_container_assembly.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/fixture_container_assembly.py",
+      "sha256": "4c6aef445ddcc055753664fb900d3967d977388e6bb0a322465dadb1cd40acad",
+      "size": 8304,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/fixture_container_preparation.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/fixture_container_preparation.py",
+      "sha256": "2c112dd1371b03afce6caead4bd977a158b72415a9682c7bcb52927e34808874",
+      "size": 3424,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/fixture_delivery_inputs.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/fixture_delivery_inputs.py",
+      "sha256": "7bf1f6cfb45dba6d6155a372f42381d24a42912fdd2b99da0d77f8c1449e2e02",
+      "size": 16675,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/image_inspection.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/image_inspection.py",
+      "sha256": "15f34dc1d2f1641f568a5ea08e51b50d8f1d87aaa4a55c98d6728bcc23b12c16",
+      "size": 12232,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/manifest.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/manifest.py",
+      "sha256": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0",
+      "size": 18081,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/materialize.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/materialize.py",
+      "sha256": "be2adb392869efca16f66a5ba5792d7d598f36cf32d6d9380dec4c6abd7cf58a",
+      "size": 34808,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/native_initial_batch.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/native_initial_batch.py",
+      "sha256": "eed0c8d2dba8aafface265fd3d9fc2fa6f9e3398755f84ebfbe371039696b316",
+      "size": 20692,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/native_linkage.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/native_linkage.py",
+      "sha256": "027a0f78c0341112fee376a828aeec5e62cbbdd2c9445873b7ed997af9be7490",
+      "size": 11644,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/native_overlay.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/native_overlay.py",
+      "sha256": "4201318ae62dc89c3eba6a4048896dede274b365fa0754ec8055cf51095373a6",
+      "size": 11435,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/saved_profile_observation.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/saved_profile_observation.py",
+      "sha256": "8e9a80b344b5a5bfee9e6f748346d828fc074d41f569bc5bdc858b558da3193e",
+      "size": 11610,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/system_build_inputs.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/system_build_inputs.py",
+      "sha256": "0961b52f2d4b525ac47ec8b34e66ca7f840a0b02da18fa70d3db422c4cb75c0e",
+      "size": 21477,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/system_preparation.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "f22c68e1dc19319a406bb27ed22de349f290ae8ec8c7c7d51a1b85f0f233564e",
+      "size": 17924,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/system_role_profiles.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/system_role_profiles.py",
+      "sha256": "5acae3be191e3534e356d03523ec9b642afb79abc308033cd1128f8237b65c24",
+      "size": 5777,
+      "mode": 384
+    },
+    "scripts/local_prisma_engine_inputs.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/local_prisma_engine_inputs.py",
+      "sha256": "5a692e45364745610cab6496cc2e2a9c7951069f147954b6e4eb2d571d8d55d1",
+      "size": 28469,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/fixture_final_seal.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/fixture_final_seal.py",
+      "sha256": "aedf14044271b381cc0a8e8864033766184664a16dc4afb05172ff6078ea36b8",
+      "size": 14844,
+      "mode": 384
+    },
+    "scripts/governance_local_issuer/fixture_seal_sequence2.py": {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-seal-procedure-2/scripts/governance_local_issuer/fixture_seal_sequence2.py",
+      "sha256": "7a963129fef3393b3ff4bbd4c13d8d33d25c4a745af7d351a3a25735b22330a0",
+      "size": 9243,
+      "mode": 384
+    }
+  },
+  "outerSeconds": 600,
+  "outerOutputBytes": 1048576,
+  "cleanupSeconds": 5,
+  "perCommandSharedOutputCap": 65536,
+  "targetReviewPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-package-review-2/final-target.json",
+  "actualTargetReviewSha256": null,
+  "baselineNotYetCaptured": true,
+  "executionAuthorized": false,
+  "installationReady": false,
+  "activationAllowed": false,
+  "retryAuthorized": false
+}
