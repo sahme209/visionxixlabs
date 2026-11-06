@@ -1,0 +1,32 @@
+{
+  "packet.json": {
+    "sha256": "a8ecf453dd4a03f406ea8f167d65fa98e949418f3d0b747bc34a40d5f743d963",
+    "size": 4295,
+    "savedAs": "packet.json"
+  },
+  "execution-authorization.json": {
+    "sha256": "6e5dcf4ea29a5167178b3cd2d426067b0aab12a024394a284ac133c31f232f02",
+    "size": 269,
+    "savedAs": "execution-authorization.json"
+  },
+  "attempt.json": {
+    "sha256": "57cfc3140d3d717f8be3632cf79132c8d5e7182f137f1ea054f4130e3e6d4216",
+    "size": 143,
+    "savedAs": "attempt.json"
+  },
+  "result.json": {
+    "sha256": "7053a497dffff949fb284a60f86ec72290c73945b78d868bdca8e0d2ce6f2b57",
+    "size": 604,
+    "savedAs": "result.json"
+  },
+  "work/output.log": {
+    "sha256": "fb05ec122c4e3ef0eb12a7f966a8da97f6623278dbd44eaff29b9d035054a9c0",
+    "size": 52,
+    "savedAs": "work-output.log"
+  },
+  "fixture.cjs": {
+    "sha256": "cfbd0efa068521bf22a3e068d96d97f60eeef7d5bbb4524ea9487cabd9c205eb",
+    "size": 1034,
+    "savedAs": "fixture.cjs"
+  }
+}

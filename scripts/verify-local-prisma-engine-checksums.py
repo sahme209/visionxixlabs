@@ -89,23 +89,44 @@ def fetch_one(kind):
         item['reason'] = str(exc) if type(exc) is RuntimeError and str(exc) in safe_reasons else 'request_or_local_read_failed'
     return item
 
+def _cleanup_owned_worker(process):
+    # Signal only while this exact original child remains unreaped. Never retry
+    # an unknown numeric group after losing that ownership observation.
+    try:
+        if process.poll() is not None:
+            return True
+        try:
+            os.killpg(process.pid, signal.SIGKILL)
+        except ProcessLookupError:
+            pass
+        process.wait(timeout=5)
+        return True
+    except BaseException:
+        return False
+
 def collect_child(command, timeout):
-    # Dedicated process group is terminated and reaped on the parent wall deadline.
     with tempfile.TemporaryFile() as captured:
         process = subprocess.Popen(command, stdin=subprocess.DEVNULL, stdout=captured,
                                    stderr=subprocess.DEVNULL, start_new_session=True,
                                    env={'PATH': '/usr/bin:/bin', 'LANG': 'C', 'TZ': 'UTC'})
         try:
-            process.wait(timeout=timeout)
-        except subprocess.TimeoutExpired:
-            os.killpg(process.pid, signal.SIGKILL)
-            process.wait()
-            return None, 'parent_wall_timeout'
-        captured.seek(0)
-        output = captured.read(4097)
-        if process.returncode != 0 or len(output) > 4096:
-            return None, 'invalid_worker_result'
-        return output, None
+            try:
+                process.wait(timeout=timeout)
+            except subprocess.TimeoutExpired:
+                clean = _cleanup_owned_worker(process)
+                return None, 'parent_wall_timeout' if clean else 'parent_worker_cleanup_unknown'
+            captured.seek(0)
+            output = captured.read(4097)
+            if process.returncode != 0 or len(output) > 4096:
+                return None, 'invalid_worker_result'
+            return output, None
+        except BaseException as error:
+            clean = _cleanup_owned_worker(process)
+            if not clean:
+                raise RuntimeError('parent_worker_cleanup_unknown') from None
+            if isinstance(error, (KeyboardInterrupt, SystemExit)):
+                raise
+            return None, 'parent_worker_unavailable'
 
 def run_request(kind):
     output, error = collect_child([sys.executable, str(Path(__file__).resolve()), '--worker', kind], 22)

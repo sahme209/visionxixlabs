@@ -1,0 +1,10 @@
+{
+  "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/verify-local-prisma-engine-checksums.py",
+  "sha256": "94087421a9e8754a7fba2b8e185db3c9cbd39657b52454481abe9232acaa1b8c",
+  "selection": "query",
+  "sourceUrl": "https://binaries.prisma.sh/all_commits/605197351a3c8bdd595af2d2a9bc3025bca48ea2/darwin-arm64/libquery_engine.dylib.node.sha256",
+  "receipt": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-query-origin-read/receipt.json",
+  "executionPerformed": false,
+  "requiredCurrentLibrarySha256": "e0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d",
+  "cleanupReview": "PASS;4newmocked+2existingmockedchecks"
+}
