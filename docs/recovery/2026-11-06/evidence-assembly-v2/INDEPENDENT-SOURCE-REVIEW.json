@@ -1,0 +1,7 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS no important source defects",
+  "selectedMaxZAndLastPaintPreserved": true,
+  "noscriptKeyboardImeTouchReducedMotionCaveatsPreserved": true,
+  "browserAcceptance": false
+}

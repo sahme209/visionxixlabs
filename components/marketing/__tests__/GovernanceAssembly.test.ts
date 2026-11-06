@@ -19,6 +19,7 @@ it('uses the same selected record in the scene and semantic explanation',()=>{
  fireEvent.click(stages[3]);
  expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-selected-stage')).toBe('3');
  expect(screen.getByRole('region',{name:'Separate requester execution'})).toBeTruthy();
+ expect(screen.getByRole('img',{name:/Evidence assembly/}).querySelectorAll('[data-plate]')[4].getAttribute('data-plate')).toBe('3');
  fireEvent.click(screen.getByRole('button',{name:'Inspect layers'}));
  expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-view')).toBe('inspect');
  fireEvent.click(screen.getByRole('button',{name:'Camera right'}));
@@ -49,6 +50,8 @@ it('mounts the actual shared assembly in Home first screen without losing its pr
  expect(within(first).getByRole('link',{name:'Explore Axiom'}).getAttribute('href')).toBe('/product');
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();
  expect(within(first).getByText('Existing media fixture')).toBeTruthy();
+ const purpose=within(first).getByText(/^A governed workspace for deployments and connected operational changes/);
+ expect(purpose.compareDocumentPosition(within(first).getByRole('img',{name:/Evidence assembly/}))&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
 it('server renders a complete ordered no-JavaScript reading of every record and boundary',()=>{
@@ -62,4 +65,16 @@ it('server renders a complete ordered no-JavaScript reading of every record and 
   expect(records[index].textContent).toContain(stage.detail);
   expect(records[index].textContent).toContain(stage.boundary);
  });
+});
+it('keeps the compact hero object and essential limits visible while details open deliberately',()=>{
+ render(createElement(GovernanceAssembly,{compact:true}));
+ const disclosure=screen.getByText('Read the selected record').closest('details')!;
+ expect(disclosure.open).toBe(false);
+ expect(screen.getByRole('img',{name:/Evidence assembly/})).toBeTruthy();
+ expect(screen.getByText(/Governance Intelligence remains incomplete/).closest('details')).toBeNull();
+ expect(screen.getByText(/no actions are performed/).closest('details')).toBeNull();
+ const stages=within(screen.getByRole('list',{name:'Conceptual workflow'})).getAllByRole('button');
+ fireEvent.click(stages[2]);expect(disclosure.open).toBe(true);
+ expect(screen.getByRole('region',{name:'Independent review'})).toBeTruthy();
+ expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-view')).toBe('inspect');
 });

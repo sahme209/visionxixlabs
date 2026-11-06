@@ -23,3 +23,15 @@ it('inspection separates records without conflating review and requester or inve
  expect(ASSEMBLY_STAGES[4].boundary).toContain('Unknown remains unresolved');
  expect(deriveAssembly({selected:2,camera:999,view:'inspect'}).camera).toBe(16);
 });
+it('paints an extracted selected record above every other layer, including the lowest repository plate',()=>{
+ for(let selected=0;selected<5;selected++){
+  const state=deriveAssembly({selected,camera:0,view:'inspect'});
+  const active=state.plates.find(p=>p.active)!;
+  expect(active.z).toBeGreaterThan(Math.max(...state.plates.filter(p=>!p.active).map(p=>p.z))+20);
+  expect(state.paintOrder.at(-1)).toBe(selected);
+  for(const camera of [-16,16])for(const dx of [-75,75])for(const dy of [-45,45]){
+   const [x,y]=projectPoint([active.x+dx,active.y+dy,active.z],camera);
+   expect(x).toBeGreaterThan(0);expect(x).toBeLessThan(640);expect(y).toBeGreaterThan(0);expect(y).toBeLessThan(470);
+  }
+ }
+});

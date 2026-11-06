@@ -1,0 +1,218 @@
+
+ RUN  v4.1.11 /private/tmp/axiom-assembly-check-92z2210h/source
+
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts (6 tests | 1 failed | 5 skipped) 23ms
+   ↓ uses the same selected record in the scene and semantic explanation
+   ↓ keeps modified/composing keyboard input untouched and separates instances
+   ↓ shows all three possible outcomes and has no network, timer or storage operation
+   ↓ mounts the actual shared assembly in Home first screen without losing its primary route or availability limits
+   ↓ server renders a complete ordered no-JavaScript reading of every record and boundary
+   × keeps the compact hero object and essential limits visible while details open deliberately 23ms
+ ❯ components/marketing/__tests__/governanceAssemblyModel.test.ts (4 tests | 1 failed | 3 skipped) 2ms
+   ↓ bounds invalid stage and camera input without corrupting any geometry
+   ↓ one selection determines the highlighted plate and the explanatory record
+   ↓ inspection separates records without conflating review and requester or inventing outcomes
+   × paints an extracted selected record above every other layer, including the lowest repository plate 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/GovernanceAssembly.test.ts > keeps the compact hero object and essential limits visible while details open deliberately
+TestingLibraryElementError: Unable to find an element with the text: Read the selected record. This could be because the text is broken up by multiple elements. In this case, you can provide a function for your text matcher to make your matcher more flexible.
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<section[39m
+      [33maria-label[39m=[32m"Explore the evidence assembly"[39m
+      [33mclass[39m=[32m"_assembly_64ce47 _compact_64ce47"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_intro_64ce47"[39m
+      [36m>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_eyebrow_64ce47"[39m
+        [36m>[39m
+          [0mInside a governed decision[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"_instruction_64ce47"[39m
+        [36m>[39m
+          [0mFive records. Distinct responsibilities.[0m
+        [36m</p>[39m
+      [36m</div>[39m
+      [36m<p[39m
+        [33mclass[39m=[32m"_caption_64ce47"[39m
+        [33mid[39m=[32m"_r_0_-help"[39m
+      [36m>[39m
+        [0mConceptual illustration · local explanation only. Choose a stage to inspect its record; no actions are performed.[0m
+      [36m</p>[39m
+      [36m<noscript />[39m
+      [36m<ol[39m
+        [33maria-describedby[39m=[32m"_r_0_-help"[39m
+        [33maria-label[39m=[32m"Conceptual workflow"[39m
+        [33mclass[39m=[32m"_stages_64ce47"[39m
+      [36m>[39m
+        [36m<li>[39m
+          [36m<h3>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"_r_0_-record"[39m
+              [33maria-pressed[39m=[32m"true"[39m
+              [33mid[39m=[32m"_r_0_-stage-1"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"_number_64ce47"[39m
+              [36m>[39m
+                [0m01[0m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mRepository context[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</h3>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<h3>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"_r_0_-record"[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mid[39m=[32m"_r_0_-stage-2"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"_number_64ce47"[39m
+              [36m>[39m
+                [0m02[0m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mExact proposal[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</h3>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<h3>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"_r_0_-record"[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mid[39m=[32m"_r_0_-stage-3"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"_number_64ce47"[39m
+              [36m>[39m
+                [0m03[0m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mIndependent review[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</h3>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<h3>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"_r_0_-record"[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mid[39m=[32m"_r_0_-stage-4"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"_number_64ce47"[39m
+              [36m>[39m
+                [0m04[0m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mSeparate requester execution[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</h3>[39m
+        [36m</li>[39m
+        [36m<li>[39m
+          [36m<h3>[39m
+            [36m<button[39m
+              [33maria-controls[39m=[32m"_r_0_-record"[39m
+              [33maria-pressed[39m=[32m"false"[39m
+              [33mid[39m=[32m"_r_0_-stage-5"[39m
+              [33mtype[39m=[32m"button"[39m
+            [36m>[39m
+              [36m<span[39m
+                [33maria-hidden[39m=[32m"true"[39m
+                [33mclass[39m=[32m"_number_64ce47"[39m
+              [36m>[39m
+                [0m05[0m
+              [36m</span>[39m
+              [36m<span>[39m
+                [0mRecorded outcome and recovery[0m
+              [36m</span>[39m
+            [36m</button>[39m
+          [36m</h3>[39m
+        [36m</li>[39m
+      [36m</ol>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"_workspace_64ce47"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"_visual_64ce47"[39m
+        [36m>[39m
+          [36m<svg[39m
+            [33maria-label[39m=[32m"Evidence assembly — Repository context. Conceptual records, not execution status."[39m
+            [33mclass[39m=[32m"_scene_64ce47"[39m
+            [33mdata-selected-stage[39m=[32m"0"[39m
+            [33mdata-view[39m=[32m"assembled"[39m
+            [33mid[39m=[32m"_r_0_-scene"[39m
+            [33mrole[39m=[32m"img"[39m
+            [33mviewBox[39m=[32m"0 0 640 470"[39m
+          [36m>[39m
+            [36m<title>[39m
+              [0mOne folio, five separate records[0m
+            [36m</title>[39m
+            [36m<desc>[39m
+              [0mLayered repository, proposal, review, requester intent and outcome records. Inspect separates the layers. Stage buttons provide the same explanation without interpreting the drawing.[0m
+            [36m</desc>[39m
+            [36m<g[39m
+              [33maria-hidden[39m=[32m"true"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33mclass[39m=[32m"_baseSide_64ce47"[39m
+                [33md[39m=[32m"M543.56,372.32 L547.77,374.85 L549.98,377.83 L549.98,380.96 L547.77,383.94 L543.56,386.48 L381.77,457.26 L375.98,459.10 L369.17,460.07 L362.02,460.07 L355.21,459.10 L349.42,457.26 L96.44,346.58 L92.23,344.05 L90.02,341.07 L90.02,337.94 L92.23,334.96 L96.44,332.42 L258.23,261.64 L264.02,259.80 L270.83,258.83 L277.98,258.83 L284.79,259.80 L290.58,261.64 Z"[39m
+              [36m/>[39m
+              [36m<path[39m
+                [33mclass[39m=[32m"_base_64ce47"[39m
+                [33md[39m=[32m"M543.56,362.87 L547.77,365.40 L549.98,368.38 L549.98,371.51 L547.77,374.49 L543.56,377.03 L381.77,447.81 L375.98,449.65 L369.17,450.62 L362.02,450.62 L355.21,449.65 L349.42,447.81 L96.44,337.13 L92.23,334.60 L90.02,331.62 L90.02,328.49 L92.23,325.51 L96.44,322.97 L258.23,252.19 L264.02,250.35 L...
+ ❯ Object.getElementError ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/@testing-library/dom/dist/config.js:37:19
+ ❯ ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/@testing-library/dom/dist/query-helpers.js:76:38
+ ❯ ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/@testing-library/dom/dist/query-helpers.js:52:17
+ ❯ ../../axiom-docs-isolated-w2u8g7_y/source/node_modules/@testing-library/dom/dist/query-helpers.js:95:19
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts:68:26
+     66| it('keeps the compact hero object and essential limits visible while d…
+     67|  render(createElement(GovernanceAssembly,{compact:true}));
+     68|  const disclosure=screen.getByText('Read the selected record').closest…
+       |                          ^
+     69|  expect(disclosure.open).toBe(false);
+     70|  expect(screen.getByRole('img',{name:/Evidence assembly/})).toBeTruthy…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  components/marketing/__tests__/governanceAssemblyModel.test.ts > paints an extracted selected record above every other layer, including the lowest repository plate
+AssertionError: expected 28 to be greater than 156
+ ❯ components/marketing/__tests__/governanceAssemblyModel.test.ts:30:20
+     28|   const state=deriveAssembly({selected,camera:0,view:'inspect'});
+     29|   const active=state.plates.find(p=>p.active)!;
+     30|   expect(active.z).toBeGreaterThan(Math.max(...state.plates.filter(p=>…
+       |                    ^
+     31|   expect(state.paintOrder.at(-1)).toBe(selected);
+     32|   for(const camera of [-16,16])for(const dx of [-75,75])for(const dy o…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  2 failed | 8 skipped (10)
+   Start at  18:30:15
+   Duration  886ms (transform 109ms, setup 0ms, import 290ms, tests 25ms, environment 448ms)
+

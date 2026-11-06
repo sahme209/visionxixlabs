@@ -12,7 +12,9 @@ export type WorldPoint=readonly[number,number,number];
 const bound=(n:number,lo:number,hi:number)=>Number.isFinite(n)?Math.max(lo,Math.min(hi,n)):0;
 export function deriveAssembly(input:AssemblyInput){
  const selected=Math.round(bound(input.selected,0,4)),camera=bound(input.camera,-16,16),view=input.view==='inspect'?'inspect':'assembled';
- return {selected,camera,view,record:ASSEMBLY_STAGES[selected],plates:ASSEMBLY_STAGES.map((_,index)=>({index,active:index===selected,x:index===selected?16:0,y:index===selected?12:0,z:20+index*(view==='inspect'?29:14)+(index===selected?8:0)}))};
+ const plates=ASSEMBLY_STAGES.map((_,index)=>({index,active:index===selected,x:0,y:0,z:view==='inspect'&&index===selected?178:20+index*(view==='inspect'?29:14)}));
+ const paintOrder=[...plates].sort((a,b)=>a.z-b.z).map(plate=>plate.index);
+ return {selected,camera,view,record:ASSEMBLY_STAGES[selected],plates,paintOrder};
 }
 export function projectPoint([x,y,z]:WorldPoint,camera:number):[number,number]{
  const angle=(45+bound(camera,-16,16))*Math.PI/180;

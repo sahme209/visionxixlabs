@@ -1,0 +1,29 @@
+{
+  "exit": 0,
+  "timeout": false,
+  "elapsedSeconds": 1.8724769170000002,
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "components/marketing/__tests__/GovernanceAssembly.test.ts",
+    "components/marketing/__tests__/governanceAssemblyModel.test.ts",
+    "components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts",
+    "components/marketing/__tests__/ProductHierarchy.test.ts",
+    "components/marketing/__tests__/HomepageMediaShowcase.test.ts",
+    "--config",
+    "/private/tmp/axiom-assembly-check-92z2210h/vitest.config.mjs"
+  ],
+  "sourceHashes": {
+    "components/marketing/governanceAssemblyModel.ts": "13bd2f092db0712801cd8bf23c90d373d8d9e9bb12f44d607eb5b6875647fe96",
+    "components/marketing/GovernanceAssembly.tsx": "7223bc4c9fdfc84adc619f3041f70da91a31d3ced1d03f506e673373a46d2397",
+    "components/marketing/GovernanceAssembly.module.css": "e8d857a8efb767597b966bde5ba097e30fadbe487819f1266b45b0c7a7161c66",
+    "components/marketing/WorkflowEvidenceMap.tsx": "a28f0dfcf81ffb7980c33d0dc33924d5ad0313d51b53b28736dda2eed0e9d504",
+    "app/page.tsx": "a6dbbbdc1f1621b34385a0b899c179a2f8adf13f116ee1280419a9767efc905a",
+    "app/product/page.tsx": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+    "components/marketing/__tests__/GovernanceAssembly.test.ts": "efd53682b37a4a901937fcb483b05a708b26ccea28e073d8da500357448d03cc",
+    "components/marketing/__tests__/governanceAssemblyModel.test.ts": "2668eb8abfa9ef0588159dd05ff62005ada1199f7df1e1d8403ce82ca75e82fe",
+    "components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts": "c7463d88d691e881f740e243bd2718a4a90d3436e8efd5baca96feb5768b0170",
+    "components/marketing/__tests__/ProductHierarchy.test.ts": "c81d664bac631ac3065dbead46bb25ad436a6d29d405c97b0848cc5367136036",
+    "components/marketing/__tests__/HomepageMediaShowcase.test.ts": "0203b4fc6bd83ed1a243d2e9cb1235f018639c3ab1772bde2d3c3db56168037e"
+  }
+}
