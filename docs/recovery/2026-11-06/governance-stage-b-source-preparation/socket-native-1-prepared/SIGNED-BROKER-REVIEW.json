@@ -1,0 +1,10 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual signed broker",
+  "bindingsMatched": 22,
+  "staticCommandsExitZero": 3,
+  "brokerCdHash": "047e110e9684d9ae37362c9757ab6163b0e8f657",
+  "unsignedPreimageUnchanged": true,
+  "conditionalApprovalCall": "call_yb217iwKZ2SsOkigAcnLIJH3",
+  "targetExecuted": false
+}

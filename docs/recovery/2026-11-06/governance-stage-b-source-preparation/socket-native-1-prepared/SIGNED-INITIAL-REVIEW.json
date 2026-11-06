@@ -1,0 +1,10 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual four signed outputs",
+  "bindingsMatched": 48,
+  "staticCommandsExitZero": 12,
+  "controllerCdHash": "459c28699bb7ebc8383bba905b15882d54dda005",
+  "unsignedPreimagesPreserved": true,
+  "conditionalApprovalCall": "call_yb217iwKZ2SsOkigAcnLIJH3",
+  "runtimeExecuted": false
+}

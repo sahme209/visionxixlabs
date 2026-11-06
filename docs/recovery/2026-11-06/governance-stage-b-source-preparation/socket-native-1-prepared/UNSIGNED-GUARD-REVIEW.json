@@ -1,0 +1,12 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual unsigned guard",
+  "signingPacketSha256Prefix": "738f4130",
+  "bindingsMatched": 5919,
+  "bytes": 94224,
+  "kind": "arm64 MH_BUNDLE",
+  "ownedSingleLinkDistinctCopyMode0600": true,
+  "compileExit": 0,
+  "conditionalApprovalCall": "call_yb217iwKZ2SsOkigAcnLIJH3",
+  "targetExecuted": false
+}

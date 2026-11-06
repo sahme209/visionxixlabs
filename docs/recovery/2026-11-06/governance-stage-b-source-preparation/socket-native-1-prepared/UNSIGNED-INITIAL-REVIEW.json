@@ -1,0 +1,11 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual four unsigned outputs",
+  "signingPacketSha256": "41f83abd516e5c114f77508aea0b29e5c5212833a3be8eb86f6546dc03dc36b6",
+  "bindingsMatched": 8784,
+  "outputs": 4,
+  "allCompiledRecipesExitZero": true,
+  "ownedSingleLinkDetachedCopies0600": true,
+  "conditionalApprovalCall": "call_yb217iwKZ2SsOkigAcnLIJH3",
+  "targetExecution": false
+}

@@ -1,0 +1,31 @@
+{
+  "controllerPrincipal": {
+    "gid": 20,
+    "uid": 501
+  },
+  "fixturePrincipal": {
+    "gid": 65002,
+    "uid": 65002
+  },
+  "fixtureTools": {
+    "nodeSha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134",
+    "producerSha256": "ab6de13646a3c295bd74ee9476d0934d41f5daa6112e5b338be3fa0ebb027a52"
+  },
+  "format": "axiom.system-preparation-config/1",
+  "generation": "c3b7bf334ce56a64575183b7a66e5109",
+  "lifetimeNs": 300000000000,
+  "nativeProfile": "hardened-runtime-no-exceptions/1",
+  "node": {
+    "headers": "/Users/samirahmed/.nvm/versions/node/v24.21.0/include/node",
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-private-node-profile/node-review-copy",
+    "sha256": "1aa6f6936040d80d6f9c1bb75ba4af97ce596af514ab7f0157a77f461abce134"
+  },
+  "principal": {
+    "account": "_axiomissuer_synthetic",
+    "gid": 65001,
+    "uid": 65001
+  },
+  "requirements": {},
+  "systemProfile": "trusted-owner-root-journal/1",
+  "team": "FG5N98FE6W"
+}

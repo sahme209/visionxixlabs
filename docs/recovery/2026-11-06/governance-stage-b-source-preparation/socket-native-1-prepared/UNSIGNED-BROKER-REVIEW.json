@@ -1,0 +1,12 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS actual unsigned broker",
+  "bindingsMatched": 5919,
+  "signingPacketSha256": "00781dc8cd87f349bfa10641844f291c9c86ab0263a510e48bdd7c5fd7583a50",
+  "unsignedBrokerSha256": "45e542f01c13aa464f35d3ffd4da560684a7c28e5940296ad16d0b95e089de43",
+  "bytes": 193936,
+  "ownedSingleLinkDistinctCopyMode0600": true,
+  "compileExit": 0,
+  "conditionalApprovalCall": "call_yb217iwKZ2SsOkigAcnLIJH3",
+  "targetExecution": false
+}

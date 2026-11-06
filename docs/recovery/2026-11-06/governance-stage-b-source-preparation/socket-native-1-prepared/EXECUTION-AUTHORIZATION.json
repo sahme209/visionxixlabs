@@ -1,0 +1,9 @@
+{
+  "approvalCall": "call_yb217iwKZ2SsOkigAcnLIJH3",
+  "answer": "Approve one conditional six-role batch",
+  "recordedAt": "2026-11-06T18:15:47.752742+00:00",
+  "stagesAuthorizedOnceEach": 6,
+  "genuineUnsignedReviewRequiredBeforeEverySigningStage": true,
+  "retryAuthorized": false,
+  "helperExecutionAuthorized": false
+}
