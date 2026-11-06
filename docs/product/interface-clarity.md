@@ -81,12 +81,23 @@ network operation. Saving a new draft requires a currently connected mailbox.
 Existing review, cancellation, recovery and exact approval controls remain
 outside that disclosure and retain server-derived authority.
 
-Apps & skills separates primary browsing (All, Apps, Skills, Developer tools)
-from saved-status filters. App connections are grouped by their existing purpose
+Apps & skills uses one exclusive catalogue-view selector: Browse (All, Apps,
+Skills, Developer tools) and Saved views (Installed, Enabled, Disabled) are
+alternative views, not independent filters. Enabled and Disabled show saved
+skills. App connections are grouped by their existing purpose
 categories; available providers are not labelled as already connected. Skills
 are presented as reusable guidance, not app permissions. Search has an explicit
 accessible label. Filtering does not invoke connection/setup/install actions or
 unmount the independently displayed action/recovery workspaces.
+
+Source-caption follow-up at `6ff0a996`: the Agent's existing mode/model controls
+now appear before its prompt; the secondary Agent configuration disclosure stays
+below. Values, help IDs, handlers, disabled/keyboard behavior and draft/queue
+ownership are preserved. The catalogue change likewise preserves its seven
+labels, single filter state, search and consent/access checks. These are local
+source/presentation changes, not native or customer acceptance. The exact-version
+Apps & skills and Agent knowledge drafts and their r1 evidence remain historical;
+this note does not rebind their hashes, refresh eligibility or create help IDs.
 
 ## Shared visual refinement — October31 local preview
 

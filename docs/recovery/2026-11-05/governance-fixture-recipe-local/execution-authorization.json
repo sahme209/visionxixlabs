@@ -1,0 +1,11 @@
+{
+  "questionItemId": "call_m8a6757ibub8azWSWxIN0VmA/0",
+  "answer": "Approve one exact offline export",
+  "packetSha256": "93f5d5e7338b78dbda9efd471692987ee0478a2cb98a2f413c724a716f10bfdd",
+  "toolSession": 78579,
+  "procedureInvocations": 1,
+  "automaticRetryAuthorized": false,
+  "scope": "one existing sandboxed cached-engine SQL-text export; no database/provider/deploy/spending",
+  "result": "exported",
+  "toolExit": 0
+}

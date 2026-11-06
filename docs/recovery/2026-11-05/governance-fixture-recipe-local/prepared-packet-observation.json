@@ -1,0 +1,19 @@
+{
+  "format": "axiom.recipe-packet-preparation-observation/1",
+  "packet": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-recipe-ca28c739/packet.json",
+  "packetSha256": "93f5d5e7338b78dbda9efd471692987ee0478a2cb98a2f413c724a716f10bfdd",
+  "sourceRevision": "ca28c7396208539d55c9ead2fa50fa3ccafa78b2",
+  "acceptedPackageDigest": "2e5f4ee2a874e9bcc9fa19fdc57e5c6956108a6dd529b87a6c122fc36221aace",
+  "nodeSha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+  "engineSha256": "57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a",
+  "diffInputSha256": "45fe71bc101b294a8e6d7aaa694ec8a3de424498f8637acd3da572a7114d64c5",
+  "preparationExit": 0,
+  "executionStarted": false,
+  "attemptExists": false,
+  "resultExists": false,
+  "schemaExportExists": false,
+  "qualification": false,
+  "preparationToolSession": 70160,
+  "preparationAttempt": 1,
+  "executionApproval": "pending"
+}

@@ -1,0 +1,16 @@
+{
+  "toolSession": 78579,
+  "toolExit": 0,
+  "procedureInvocations": 1,
+  "status": "exported",
+  "sqlBytes": 177091,
+  "models": 173,
+  "missingModelCreateStatements": [],
+  "sqlSha256": "cba845cd656a2d6ef15b16381490dcba5f277484ae582723d5ee9427e84ce472",
+  "engineExit": 0,
+  "supervisorError": null,
+  "databaseConnectionOrApplyPerformed": false,
+  "runtimeQualification": "unavailable",
+  "descendantQuiescence": "unavailable",
+  "retryAuthorized": false
+}
