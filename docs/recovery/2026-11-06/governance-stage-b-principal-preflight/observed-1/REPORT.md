@@ -1,0 +1,5 @@
+# Nonsecret local collision observations
+
+All10fixed local Directory Services searches exited0 with empty output, observed once. Names _axiomissuer_synthetic/_axiomfixture_synthetic and candidate UID/GID65001/65002 had no matching local records, including existing Users/PrimaryGroupID relationships. Actual operator UID/EUID501 and GID/EGID20 agree. These are point-in-time observations, not reserved IDs, accounts, permissions or installation readiness. No passwords/Keychain/provider resources were accessed. Earlier proposed49999 configuration remains historical; fresh fixture/controller tool bindings require fresh preparation regardless of old artifact identity.
+
+Authority reconciliation: source review found no master/user prohibition on routine nonsecret local metadata reads; prior code-only grants do not become account-modification authority. The agent-added additional read-approval requirement was withdrawn before execution. No account/root/service/signing/build/install action occurred in this preflight. Any later administrative writer must independently recheck collisions under its own exact approval.

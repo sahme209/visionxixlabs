@@ -1,0 +1,46 @@
+{
+  "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/README.md",
+  "sha256": "b0047e7228d0e1a738dfbac55ffc23ee25206177a4453c554ed40a2b752e6a51",
+  "states": {
+    "before": {
+      "st_dev": 16777232,
+      "st_ino": 11706744,
+      "st_uid": 501,
+      "st_mode": 33188,
+      "st_nlink": 1,
+      "st_size": 4241,
+      "st_mtime_ns": 1793920913568571090,
+      "st_ctime_ns": 1793974298101847297
+    },
+    "opened": {
+      "st_dev": 16777232,
+      "st_ino": 11706744,
+      "st_uid": 501,
+      "st_mode": 33188,
+      "st_nlink": 1,
+      "st_size": 4241,
+      "st_mtime_ns": 1793920913568571090,
+      "st_ctime_ns": 1793974298101847297
+    },
+    "after": {
+      "st_dev": 16777232,
+      "st_ino": 11706744,
+      "st_uid": 501,
+      "st_mode": 33188,
+      "st_nlink": 1,
+      "st_size": 4241,
+      "st_mtime_ns": 1793920913568571090,
+      "st_ctime_ns": 1793974298101847297
+    },
+    "current": {
+      "st_dev": 16777232,
+      "st_ino": 11706744,
+      "st_uid": 501,
+      "st_mode": 33188,
+      "st_nlink": 1,
+      "st_size": 4241,
+      "st_mtime_ns": 1793920913568571090,
+      "st_ctime_ns": 1793974298101847297
+    }
+  }
+}

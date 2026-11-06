@@ -1,0 +1,9 @@
+# StageB fresh source/config preparation — no compilation
+
+Proposed issuer65001:65001, fixture65002:65002, controller501:20; names are not created/reserved. Existing five-minute synthetic lifetime and signedNode1aa6/headerdir retained; fixture producerpin681a is the actual unexecuted StageA output. Both independent/controller-first phases correctly use requirements={} until actual signed peer identities exist.
+
+Live-worktree preparation1 and2 stopped input_changed before stage creation; first path unrecorded, second known packages/verified-issuer-runtime/README.md. An ordinary later direct read observed stable metadata, but this does not identify the earlier cause. No check was weakened and no iCloud/TCC/corruption cause is claimed.
+
+A new private Lab source view was extracted from git archive of committed3fd8fcb3 covering only packages/verified-issuer-runtime and origin_control.m. This is a finite native-source snapshot, not the whole application; user master edit is preserved outside it. Exact tar/file manifest retained. Preparation3 then passed both existing prepare_system phases. Controller-first receipt5e6a4e1832a16a067b4e52c43c295c6bcfb98afbf167891534d455e61cc235ea; independent-leaves6378655d599c01027498a98ce296577307ed75b50a5a96d4bb508d6d37f178e9. Strict owned snapshot/closure checks stayed unchanged. No compiler/helper/target launch, signing, account/service/root change, Security/Keychain call, database/provider/install/deploy/spending.
+
+Next proposed conditional unit: compile only four fixed recipes (controller, owner, maintenance, bootstrap), freeze/review exact outputs, then separately authorized signing/static checks of detached copies outside any app bundle. Old artifacts are not restamped. Full custody/SAME-consumer/fleet/mutation and every parent stay open.

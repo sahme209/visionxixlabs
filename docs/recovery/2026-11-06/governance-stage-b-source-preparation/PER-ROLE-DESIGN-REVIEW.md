@@ -1,0 +1,3 @@
+# Independent per-role design review — PASS
+
+Source/receipt review first established both prepared phases’ complete file hashes/modes/configs and exact recipes. It then found the v1 single failed-batch coupling before actual compilation/signing. The revised explicit v2 design preserves every per-role packet/command/result/preimage/artifact/currentness/config/peer check, leaves v1 unchanged and prevents fabricated failure or merged historical evidence. Full actual _observe/record_system_inputs synthetic journeys and negative swaps/shape/source checks are required. Producer and reader must independently enforce exact roles/closed flags. No important design gaps; no execution or edits by reviewer. User approved local implementation only.

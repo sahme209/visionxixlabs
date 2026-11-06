@@ -1,0 +1,12 @@
+{
+  "questionId": "call_nI4xkZ2synxZMPp2jYKyBuwL",
+  "answer": "Approve local per-helper provenance fix",
+  "localCodeAndSyntheticOwnedFileTests": true,
+  "compiler": false,
+  "signing": false,
+  "nativeExecution": false,
+  "accounts": false,
+  "database": false,
+  "deployment": false,
+  "spending": false
+}
