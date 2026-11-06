@@ -1,0 +1,49 @@
+▲ Next.js 16.4.2 (webpack)
+✓ Running next.config.ts took 526ms
+- Experiments (use with caution):
+  · cpus: 1
+  ⨯ serverSourceMaps
+  ✓ webpackBuildWorker
+  ✓ webpackMemoryOptimizations
+
+  Creating an optimized production build ...
+  Using tsconfig file: tsconfig.next.json
+⚠ Compiled with warnings in 30.3s
+
+./packages/verified-issuer-runtime/index.cjs
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./packages/verified-issuer-runtime/index.cjs
+./lib/governance/intelligence/privateMergeExecutionCoverage.ts
+./lib/governance/intelligence/requestServiceCore.ts
+./lib/governance/intelligence/requestService.ts
+./app/api/desktop/governance-intelligence/documents/route.ts
+
+./packages/verified-issuer-runtime/index.cjs
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./packages/verified-issuer-runtime/index.cjs
+./lib/governance/intelligence/privateMergeExecutionCoverage.ts
+./lib/governance/intelligence/requestServiceCore.ts
+./lib/governance/intelligence/requestService.ts
+./app/api/desktop/governance-intelligence/documents/route.ts
+
+./packages/verified-issuer-runtime/index.cjs
+Critical dependency: the request of a dependency is an expression
+
+Import trace for requested module:
+./packages/verified-issuer-runtime/index.cjs
+./lib/governance/intelligence/privateMergeExecutionCoverage.ts
+./lib/governance/intelligence/requestServiceCore.ts
+./lib/governance/intelligence/requestService.ts
+./app/api/desktop/governance-intelligence/documents/route.ts
+
+  Using tsconfig file: tsconfig.next.json
+  Using tsconfig file: tsconfig.next.json
+✓ Compiled successfully in 37.0s
+  Running TypeScript ...
+docs/recovery/2026-11-05/desktop-cockpit-integration-parity/source-preview/vitest.config.ts(1,18): error TS2307: Cannot find module '../../vitest.config' or its corresponding type declarations.
+Failed to type check.
+

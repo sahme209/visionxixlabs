@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/next-system-inputs-3/prepared-stage-b-build-driver.py", line 77, in <module>
+    if __name__=='__main__':main()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/next-system-inputs-3/prepared-stage-b-build-driver.py", line 61, in main
+    result=b.execute_build(stage,REPO,REVISION,cache,bound,generation,node,build,timeout=600)
+  File "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-2/repo/scripts/build-local-issuer-package-source.py", line 601, in execute_build
+    if not result['buildOutputsVerified']:fail(result['reason'])
+  File "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-2/repo/scripts/build-local-issuer-package-source.py", line 12, in fail
+    def fail(reason):raise Unavailable(reason)
+axiom_selected_stage_b_builder.Unavailable: fixed_build_command_failed

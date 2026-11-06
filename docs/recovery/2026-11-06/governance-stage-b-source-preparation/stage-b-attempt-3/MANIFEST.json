@@ -1,0 +1,134 @@
+{
+  "files": [
+    {
+      "file": "run/attempt.json",
+      "sha256": "1c03c6725ffdce3fcbc4d430526ecac754204c1196add26b9eea694408b02ca8",
+      "size": 2812
+    },
+    {
+      "file": "run/engine-binding.json",
+      "sha256": "336fe41024a1817df2f35c9e63c6938684b09a9047c70f5caec282141bf114d3",
+      "size": 1137
+    },
+    {
+      "file": "run/fixture-input-packet.json",
+      "sha256": "7352ad8507bf5042399c15430dd972a2b65a85cfe86fef3254421ed18e7f3a90",
+      "size": 2307
+    },
+    {
+      "file": "run/npm-global-config",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "run/npm-user-config",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "run/offline-ci.log",
+      "sha256": "e0d350cef8bcf411b80346cf371983d4867c9955fcd21602b435fa796bf0d6f6",
+      "size": 518
+    },
+    {
+      "file": "run/preparation.json",
+      "sha256": "22e657df01a82f93a02d4288aa2ce3f2488aba9395d03a19c0934e604d4989c3",
+      "size": 1693
+    },
+    {
+      "file": "run/terminal-summary.json",
+      "sha256": "005209ba8cec58250e3b647f3a4bb0e0c8eeeab52131dfb260f9ffcb6192ddee",
+      "size": 322
+    },
+    {
+      "file": "controller/claimed.json",
+      "sha256": "2d4b6743d47dfabf724835f67e1560d00180995e1acad263aa1cea61f1bc0551",
+      "size": 156
+    },
+    {
+      "file": "controller/process.json",
+      "sha256": "9573c11ec37172bfdf8d77a4b7670479e75d1c3d5317f7b631120c6fa6e5210e",
+      "size": 130
+    },
+    {
+      "file": "controller/result.json",
+      "sha256": "6dff4dd8c76e17b3a2ad2970bd8e9474e283f2ceb26659e49bbf90e7211b9857",
+      "size": 344
+    },
+    {
+      "file": "controller/stderr.log",
+      "sha256": "e3c24c92b577c4dbf94d404bf5fea58c7f907edec66f1ff1235ca5459bc8446b",
+      "size": 1193
+    },
+    {
+      "file": "controller/stdout.log",
+      "sha256": "f21e534f7e2054f027cfeab14f2a40cf16009f2ff1042c3649e2e8efb8e64a1b",
+      "size": 173
+    },
+    {
+      "file": "generation/attempt.json",
+      "sha256": "0e117a739974951c46f5f4d5d7662da3d938c5785f6fce950d150e9f1a97eac3",
+      "size": 5159
+    },
+    {
+      "file": "generation/format-archive.log",
+      "sha256": "487c86081fd118645cf370f5aa4cc2807b5bbd4801a773ae20612588b155f383",
+      "size": 137
+    },
+    {
+      "file": "generation/format-emitted.log",
+      "sha256": "20e86b0c98bf85b137177c4ad3f1815345e07a3a479b65914cb61a29d82d45b3",
+      "size": 137
+    },
+    {
+      "file": "generation/generation.log",
+      "sha256": "f45f02bc0970cfd08831bb401eaf6144a40655601056a3bd0e0f9bdd45e8dca5",
+      "size": 328
+    },
+    {
+      "file": "generation/node-version.log",
+      "sha256": "f2ec568164f99546161909b0189b57bb5be3e80f8e2ccd8a51a4aed8c4055a04",
+      "size": 9
+    },
+    {
+      "file": "generation/result.json",
+      "sha256": "4addf05de0a2611bce7607e6e610036285ce241e225b7c0e56f131350ead4e1c",
+      "size": 1768
+    },
+    {
+      "file": "build/attempt.json",
+      "sha256": "ca5f5c3039113ecf9ddf10b182ffa1b171fa18cf33c99f2f9f6f7c86d598bff2",
+      "size": 71760
+    },
+    {
+      "file": "build/contract.log",
+      "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+      "size": 185
+    },
+    {
+      "file": "build/fixture-producer-emission.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "build/next-build.log",
+      "sha256": "8a1e55e6619cd98ac9dfee319992d9de7dd60923479b79e11006332d67562eac",
+      "size": 1932
+    },
+    {
+      "file": "build/node-version.log",
+      "sha256": "f2ec568164f99546161909b0189b57bb5be3e80f8e2ccd8a51a4aed8c4055a04",
+      "size": 9
+    },
+    {
+      "file": "build/private-bootstrap-emission.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "build/result.json",
+      "sha256": "3548f0a2ad2a0fd2456acbfbcb02cec4ab151961d9582b0df9364b76113ca4a1",
+      "size": 567
+    }
+  ]
+}

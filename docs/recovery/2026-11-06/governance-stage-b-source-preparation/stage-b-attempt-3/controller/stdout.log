@@ -1,0 +1,6 @@
+PHASE offline-preparation
+PHASE system-input-record
+PHASE signed-engine-source-and-binding
+PHASE matching-generation
+PHASE fixture-input-record
+PHASE ordinary-full-compiler
