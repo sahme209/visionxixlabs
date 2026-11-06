@@ -90,6 +90,11 @@ are presented as reusable guidance, not app permissions. Search has an explicit
 accessible label. Filtering does not invoke connection/setup/install actions or
 unmount the independently displayed action/recovery workspaces.
 
+The [catalogue loading source supplement](knowledge/apps-skills-loading-source-supplement.md)
+documents the local pending/failure/settled-empty distinction and Apps-only
+scope at `cb4ec4f8`. It preserves historical r1 evidence and does not establish
+native acceptance, provider health or customer documentation eligibility.
+
 Source-caption follow-up at `6ff0a996`: the Agent's existing mode/model controls
 now appear before its prompt; the secondary Agent configuration disclosure stays
 below. Values, help IDs, handlers, disabled/keyboard behavior and draft/queue
