@@ -11,7 +11,7 @@ from governance_local_issuer import stage_a_tools
 engine_tools=files.engine_tools
 builder=engine_tools.builder()
 NODE_PATH=files.NODE_PATH;NODE_SHA=files.NODE_SHA;SCHEMA_SHA=files.SCHEMA_SHA;ENGINE_SHA=files.ENGINE_SHA
-FORMAT='axiom.principal-free-stage-a/1';PACKAGE_ROOT='/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109'
+FORMAT='axiom.principal-free-stage-a/2';PACKAGE_ROOT='/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109'
 PROCEDURE_NAMES=('scripts/build-local-issuer-package-source.py','scripts/local_prisma_engine_inputs.py','scripts/governance_local_issuer/stage_a_packet.py','scripts/governance_local_issuer/stage_a_tools.py','scripts/governance_local_issuer/__init__.py','scripts/governance_local_issuer/fixture_recipe_packet.py','scripts/governance_local_issuer/manifest.py','scripts/emit-synthetic-fixture-producer.cjs','scripts/private-bootstrap-typescript-loader.cjs','scripts/fixture-producer-compiler-policy.cjs','scripts/fixture-producer-runtime-closure.json')
 ANCHORS=('node_modules/@prisma/client/package.json','node_modules/@prisma/client/default.js','node_modules/@prisma/client/runtime/library.js','node_modules/.prisma/client/package.json','node_modules/.prisma/client/default.js','node_modules/.prisma/client/index.js','node_modules/.prisma/client/schema.prisma','node_modules/.prisma/client/libquery_engine-darwin-arm64.dylib.node')
 _json=files._json
@@ -76,8 +76,15 @@ def _environment(packet):
  work=Path(packet['work']);return {'PATH':str(Path(packet['node']['path']).parent)+':/usr/bin:/bin:/usr/sbin:/sbin','HOME':str(work/'home'),'XDG_CACHE_HOME':str(work/'home'),'TMPDIR':str(work/'tmp'),'AXIOM_PRIVATE_GIT_SCRATCH':str(work/'tmp'),'LANG':'C','TZ':'UTC','NODE_ENV':'production','CHECKPOINT_DISABLE':'1','PRISMA_HIDE_UPDATE_MESSAGE':'1','PRISMA_GENERATE_SKIP_AUTOINSTALL':'true','NEXT_TELEMETRY_DISABLED':'1','PYTHONDONTWRITEBYTECODE':'1'}
 _driver_environment=_environment
 def _log(path):return os.fdopen(os.open(path,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW,0o600),'wb')
+def _null_sink():
+ s=os.lstat('/dev/null')
+ if not stat.S_ISCHR(s.st_mode)or s.st_uid!=0 or (os.major(s.st_rdev),os.minor(s.st_rdev))!=(3,2):refuse('fixed_null_sink_required')
+ return {'path':'/dev/null','device':s.st_dev,'inode':s.st_ino,'owner':s.st_uid,'group':s.st_gid,'mode':s.st_mode,'rdev':s.st_rdev}
+def _assert_null_sink(observed):
+ if type(observed)is not dict or set(observed)!={'path','device','inode','owner','group','mode','rdev'}or observed['path']!='/dev/null'or any(type(observed[k])is not int for k in ('device','inode','owner','group','mode','rdev'))or observed!=_null_sink():refuse('null_sink_changed')
 def _profile(p,log):
- return engine_tools._generation_profile(Path(p['work']),Path(p['work'])/'tmp',[Path(log)],[Path(p['repo']),Path(p['cache']),Path(p['boundInputs']['path']),Path(p['node']['path']),Path(p['npmCli']['path']),Path(p['recipeDirectory'])],read_protected=())
+ _assert_null_sink(p.get('nullSink'))
+ return engine_tools._generation_profile(Path(p['work']),Path(p['work'])/'tmp',[Path(log)],[Path(p['repo']),Path(p['cache']),Path(p['boundInputs']['path']),Path(p['node']['path']),Path(p['npmCli']['path']),Path(p['recipeDirectory'])],read_protected=())+'(allow file-write-data (literal \"/dev/null\"))'
 def prepare_stage_a_packet(repo,revision,cache,node,npm_cli,bound_inputs,recipe_dir,destination):
  repo=_canonical(repo);cache=_canonical(cache);node=_canonical(node);npm_cli=_canonical(npm_cli);bound_inputs=_private(bound_inputs);recipe_dir=_canonical(recipe_dir);destination=_canonical(destination)
  if not re.fullmatch('[a-f0-9]{40}',str(revision))or str(node)!=NODE_PATH:refuse('fixed_source_tool_required')
@@ -94,12 +101,13 @@ def prepare_stage_a_packet(repo,revision,cache,node,npm_cli,bound_inputs,recipe_
  for name in ('offline','generation','emission','tmp','home'):(work/name).mkdir(mode=0o700)
  for name in ('tmp','home'):(work/'emission'/name).mkdir(mode=0o700)
  copied=builder.snapshot_cache(available,cache,work/'offline/npm-cache')
- p={'format':FORMAT,'sourceRevision':revision,'repo':str(repo),'cache':str(cache),'work':str(work),'node':node_binding,'npmCli':npm_binding,'python':python,'program':sources['scripts/governance_local_issuer/stage_a_packet.py'],'sourceBindings':sources,'cacheSelection':selection,'cacheCopy':str(copied),'boundInputs':{'path':str(bound_inputs),'receipt':_binding(bound_inputs/'receipt.json'),'observation':engines},'recipeDirectory':str(recipe_dir),'recipeBindings':recipes,'executionAuthorized':False,'runtimeQualification':'unavailable','installationReady':False,'activeBudgetSeconds':360,'outerCeilingSeconds':390}
+ p={'format':FORMAT,'sourceRevision':revision,'repo':str(repo),'cache':str(cache),'work':str(work),'node':node_binding,'npmCli':npm_binding,'python':python,'program':sources['scripts/governance_local_issuer/stage_a_packet.py'],'sourceBindings':sources,'cacheSelection':selection,'cacheCopy':str(copied),'boundInputs':{'path':str(bound_inputs),'receipt':_binding(bound_inputs/'receipt.json'),'observation':engines},'recipeDirectory':str(recipe_dir),'recipeBindings':recipes,'executionAuthorized':False,'runtimeQualification':'unavailable','installationReady':False,'activeBudgetSeconds':360,'outerCeilingSeconds':390,'nullSink':_null_sink()}
  path=destination/'packet.json';_write(path,_json(p));verify_stage_a_packet(path);return path
 def verify_stage_a_packet(path):
  path=_canonical(path);_private(path.parent);p=_load(path)
- keys={'format','sourceRevision','repo','cache','work','node','npmCli','python','program','sourceBindings','cacheSelection','cacheCopy','boundInputs','recipeDirectory','recipeBindings','executionAuthorized','runtimeQualification','installationReady','activeBudgetSeconds','outerCeilingSeconds'}
+ keys={'format','sourceRevision','repo','cache','work','node','npmCli','python','program','sourceBindings','cacheSelection','cacheCopy','boundInputs','recipeDirectory','recipeBindings','executionAuthorized','runtimeQualification','installationReady','activeBudgetSeconds','outerCeilingSeconds','nullSink'}
  if not isinstance(p,dict)or set(p)!=keys or p['format']!=FORMAT or p['executionAuthorized']is not False or p['installationReady']is not False or p['runtimeQualification']!='unavailable'or p['activeBudgetSeconds']!=360 or p['outerCeilingSeconds']!=390 or not re.fullmatch('[a-f0-9]{40}',str(p['sourceRevision'])):refuse('exact_packet_required')
+ _assert_null_sink(p['nullSink'])
  work=_private(p['work']);repo=_canonical(p['repo']);cache=_canonical(p['cache'])
  if work!=path.parent/'work'or str(Path(p['cacheCopy']))!=str(work/'offline/npm-cache')or p['node']['path']!=NODE_PATH:refuse('fixed_coordinates_required')
  for name in ('offline','generation','emission','tmp','home','emission/tmp','emission/home'):_private(work/name)
@@ -120,7 +128,7 @@ def _stage_sources(p):
   if (got['sha256'],got['size'])!=(want['sha256'],want['size']):refuse('archived_source_changed')
  return stage
 
-_OFFLINE_REFUSALS=('fixed_child_context_required','archive_package_changed','offline_install_refused','exact_git_read_failed','artifact_git_scratch_unavailable','git_output_limit','exact_commit_required','commit_mismatch','invalid_json','duplicate_json_key','git_launch_unavailable')
+_OFFLINE_REFUSALS=('fixed_child_context_required','archive_package_changed','offline_install_refused','exact_git_read_failed','artifact_git_scratch_unavailable','git_output_limit','exact_commit_required','commit_mismatch','invalid_json','duplicate_json_key','git_launch_unavailable','fixed_null_sink_required','null_sink_changed','final_inputs_changed')
 _OFFLINE_PYTHON_REASONS=('attribute_error','type_error','unicode_decode_error','timeout_expired')
 _OFFLINE_ERRNOS=('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC')
 _OFFLINE_PHASES=('packet','context','source','archive','extraction','archived_sources','install','receipt')
@@ -235,6 +243,11 @@ def execute_stage_a_packet(path):
     if child.get('format')=='axiom.stage-a-driver-result/1'and child.get('sourceRevision')==p['sourceRevision']and child.get('status')=='unknown'and child.get('executionAuthorized')is False:result.update(status='unknown',reason='driver_cleanup_or_deadline_unknown',driverResult=_binding(work/'driver-result.json'))
  except Exception:result['reason']='artifact_observation_unavailable'
  finally:
+  try:
+   if verify_stage_a_packet(path)!=p or _binding(path)!=packet_binding:refuse('final_inputs_changed')
+   result['finalInputCurrentness']='verified'
+  except Exception:
+   original=dict(result);result.update(status='unknown',reason='final_currentness_unavailable',finalInputCurrentness='unavailable',originalOutcome=original)
   with os.fdopen(fd,'wb')as output:output.write(_json(result));output.flush();os.fsync(output.fileno())
  return result
 def _child_failure_message(error):

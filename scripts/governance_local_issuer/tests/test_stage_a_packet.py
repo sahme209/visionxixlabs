@@ -1,6 +1,6 @@
 """Finite artifact orchestration; vendor/Git/process boundaries fully mocked."""
 from pathlib import Path
-import hashlib,io,json,os,struct,sys,tarfile,tempfile,unittest
+import hashlib,io,json,os,struct,sys,tarfile,tempfile,unittest,stat,types
 from unittest.mock import patch
 sys.path.insert(0,str(Path(__file__).parents[2]))
 from governance_local_issuer import stage_a_packet as p
@@ -109,3 +109,30 @@ class StageAPacketTests(unittest.TestCase):
 
  def test_generation_stdin_cleanup_uncertainty_stays_unknown_through_parent(self):
   path=self.prepare();result,events=self.joined(path,generation_unknown='generation_parent_stdin_cleanup_unknown');self.assertEqual(result['status'],'unknown');self.assertEqual(events,['offline','generate']);self.assertRaises(Exception,p.execute_stage_a_packet,path)
+
+ def test_null_sink_binding_is_required_and_legacy_format_is_not_upgraded(self):
+  path=self.prepare();packet=p._load(path)
+  self.assertEqual(packet['format'],'axiom.principal-free-stage-a/2')
+  self.assertEqual(packet.get('nullSink'),p._null_sink())
+  packet.pop('nullSink',None);path.write_bytes(p._json(packet));self.assertRaises(Exception,p.verify_stage_a_packet,path)
+ def test_changed_null_sink_refuses_before_any_child(self):
+  path=self.prepare()
+  with patch.object(p,'_null_sink',return_value={'changed':True}),patch.object(p.engine_tools,'_run_generation_child',side_effect=AssertionError('NO CHILD')):
+   self.assertRaises(Exception,p.execute_stage_a_packet,path)
+ def test_profile_delta_allows_only_literal_null_data_write(self):
+  path=self.prepare();packet=p._load(path)
+  with patch.object(p.engine_tools,'_generation_profile',return_value='BASE'):
+   self.assertEqual(p._profile(packet,self.dest/'outer.log'),'BASE(allow file-write-data (literal "/dev/null"))')
+ def test_failed_attempt_rechecks_null_sink_and_preserves_original_refusal(self):
+  path=self.prepare();actual=p._null_sink()
+  with patch.object(p,'_null_sink',side_effect=[actual,actual,{'changed':True}]),patch.object(p.engine_tools,'_run_generation_child',return_value=(1,None)):
+   result=p.execute_stage_a_packet(path)
+  self.assertEqual(result['status'],'unknown');self.assertEqual(result['finalInputCurrentness'],'unavailable');self.assertEqual(result['originalOutcome']['status'],'refused');self.assertEqual(result['originalOutcome']['reason'],'driver_refused')
+ def test_foreign_device_or_owner_is_never_accepted(self):
+  actual=os.lstat('/dev/null')
+  for mode,uid,rdev in ((stat.S_IFREG|0o666,0,actual.st_rdev),(actual.st_mode,123,actual.st_rdev),(actual.st_mode,0,os.makedev(1,1))):
+   fake=types.SimpleNamespace(st_mode=mode,st_uid=uid,st_rdev=rdev)
+   with self.subTest(mode=mode,uid=uid,rdev=rdev),patch.object(p.os,'lstat',return_value=fake):self.assertRaises(Exception,p._null_sink)
+
+ def test_boolean_owner_cannot_impersonate_integer_zero_in_packet(self):
+  path=self.prepare();packet=p._load(path);packet['nullSink']['owner']=False;path.write_bytes(p._json(packet));self.assertRaises(Exception,p.verify_stage_a_packet,path)
