@@ -1,0 +1,11 @@
+file:///Users/samirahmed/Library/Application%20Support/Vision%20XIX%20Labs/Axiom%20Qualification%20Lab/2026-11-06-stage-b-system-build-2/stage/scripts/check-vercel-build.mjs:61
+  throw new Error("Public guide heading index is missing or stale. Run node scripts/generate-docs-heading-index.cjs and review the resulting source-bound index before building.");
+        ^
+
+Error: Public guide heading index is missing or stale. Run node scripts/generate-docs-heading-index.cjs and review the resulting source-bound index before building.
+    at file:///Users/samirahmed/Library/Application%20Support/Vision%20XIX%20Labs/Axiom%20Qualification%20Lab/2026-11-06-stage-b-system-build-2/stage/scripts/check-vercel-build.mjs:61:9
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)
+
+Node.js v24.21.0
