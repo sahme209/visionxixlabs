@@ -1,0 +1,78 @@
+{
+  "owned": "/private/tmp/axiom-docs-isolated-w2u8g7_y",
+  "source": "/private/tmp/axiom-docs-isolated-w2u8g7_y/source",
+  "baseRevision": "795195f3820127417b7ce1eba160a97e071dd197",
+  "dependencyStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-signin-current-build-999658d6-kyr6nbqq/stage",
+  "criticalBindings": [
+    {
+      "path": "package.json",
+      "sha256": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1",
+      "sourceInode": 16441926,
+      "cloneInode": 18690580
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+      "sourceInode": 16441925,
+      "cloneInode": 18690579
+    },
+    {
+      "path": "node_modules/.package-lock.json",
+      "sha256": "42a4502ffb2cd63b21b0e8bf846f85e1279df2a86ba432d280e3c2e4924aff82",
+      "sourceInode": 16541245,
+      "cloneInode": 18766508
+    },
+    {
+      "path": "node_modules/vitest/package.json",
+      "sha256": "a28126d97bcaf567da5bed69443b7f3bcd9a7a8c38c8b66e554686b6bb2c10e0",
+      "sourceInode": 16470599,
+      "cloneInode": 18730599
+    },
+    {
+      "path": "node_modules/vite/package.json",
+      "sha256": "fd3af4eaf4eecb2069f3e2715d6aaa2137d084a8a95097389523f52213c08094",
+      "sourceInode": 16464257,
+      "cloneInode": 18767627
+    },
+    {
+      "path": "node_modules/jsdom/package.json",
+      "sha256": "d05b7f08c60feb43d726447adf6f8eaec18913a8f0fe8cbd7e3af06f7c8510ba",
+      "sourceInode": 16510651,
+      "cloneInode": 18763280
+    },
+    {
+      "path": "node_modules/react/package.json",
+      "sha256": "c383aced6a67c8d06f02996015c0a163e78532a330a96dff1ccfd107b00ab326",
+      "sourceInode": 16458916,
+      "cloneInode": 18783702
+    },
+    {
+      "path": "node_modules/react-dom/package.json",
+      "sha256": "d926f158e1be15885aaeac259c39567a46f6525fbdd14c380528486c31459996",
+      "sourceInode": 16474038,
+      "cloneInode": 18764074
+    },
+    {
+      "path": "node_modules/@heroicons/react/24/outline/esm/ArrowRightIcon.js",
+      "sha256": "942ac62d4b3e8c4e64dde94c279cc3cba4651320fb457fdabd227baef7bee270",
+      "sourceInode": 16485840,
+      "cloneInode": 18758799
+    },
+    {
+      "path": "node_modules/@heroicons/react/24/outline/esm/InformationCircleIcon.js",
+      "sha256": "fa9d76ab97f9a6672ab31437b6301a24d078a7559492517c59773713405b15b5",
+      "sourceInode": 16518111,
+      "cloneInode": 18758574
+    }
+  ],
+  "selectedSourceHashes": {
+    "app/docs/page.tsx": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de",
+    "app/docs/__tests__/landing.test.ts": "71b77b57cc046b6e34018da9e76db0b532026c68869935ee2de4beffd84a4567",
+    "components/docs/DocPrimitives.tsx": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+    "vitest.config.ts": "48d5d1bb920398b20264209a5b01693763df73b27c472267a3dc30915443cb23",
+    "scripts/run-vitest.mjs": "38a5f81f919e5bb6f1a76c769adc1713ee1c89f8d097a813e8d61c3121c08692",
+    "tsconfig.json": "49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1"
+  },
+  "internalLinks": 53,
+  "testsRun": false
+}

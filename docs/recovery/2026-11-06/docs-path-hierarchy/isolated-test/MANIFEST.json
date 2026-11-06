@@ -1,0 +1,21 @@
+{
+  "files": [
+    {
+      "file": "preparation.json",
+      "sha256": "4e2428357cc1eb568393febe9bba0d5a7a6a8f19202d1583e619919d048fe110",
+      "size": 3143
+    },
+    {
+      "file": "tests.log",
+      "sha256": "caf1cd9630294c9f70736f84687ec7224a88b20a39bc55e6e587ace8b656da5e",
+      "size": 664
+    },
+    {
+      "file": "test-result.json",
+      "sha256": "e9b72aa4c36b401cf8d7db7803c01d826d0f8c20c458f934b2e74e639e84e7b0",
+      "size": 521
+    }
+  ],
+  "browserAcceptance": false,
+  "productionAcceptance": false
+}

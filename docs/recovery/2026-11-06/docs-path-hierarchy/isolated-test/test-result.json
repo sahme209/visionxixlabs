@@ -1,0 +1,15 @@
+{
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "app/docs/__tests__/landing.test.ts",
+    "--maxWorkers=1"
+  ],
+  "cwd": "/private/tmp/axiom-docs-isolated-w2u8g7_y/source",
+  "pid": 22549,
+  "exit": 0,
+  "timeout": false,
+  "elapsedSeconds": 1.166,
+  "outputSha256": "caf1cd9630294c9f70736f84687ec7224a88b20a39bc55e6e587ace8b656da5e",
+  "networkIsolation": "no kernel isolation claim; existing selected synchronous rendered tests; no provider/DB imports"
+}
