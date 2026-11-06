@@ -68,17 +68,19 @@ class StageAPacketTests(unittest.TestCase):
    self.put(run/'result.json',p._json({'format':'axiom.local-generation-result/1','status':'generated_outputs_observed_unqualified','generatedOutputsVerified':True,'generationCompatibilityVerified':False,'executionAuthorized':False,'executingIssuerIdentity':'unavailable','descendantQuiescence':'unavailable','outputs':outputs,'schemaComparison':{'kind':'canonical_formatted_scratch_bytes','semanticAttestation':'unavailable','rawArchiveSha256':p.SCHEMA_SHA,'rawGeneratedSha256':outputs['schema.prisma']['sha256'],'canonicalArchiveSha256':hashlib.sha256(generated).hexdigest(),'canonicalGeneratedSha256':hashlib.sha256(generated).hexdigest()}}));return{'status':'generated_outputs_observed_unqualified'}
   def child(command,cwd,env,log,timeout,**kwargs):
    if '--driver-child'in command:
+    self.assertEqual(command[:1],['/usr/bin/sandbox-exec'])
     self.assertEqual(kwargs['file_size_limit'],512*1024*1024)
     with patch.dict(os.environ,env,clear=True):r=p.run_stage_a_driver(path)
     return (0 if r['status']=='artifact_observed'else 73),None
    if '--offline-child'in command:
+    self.assertNotIn('/usr/bin/sandbox-exec',command)
     self.assertEqual(kwargs['file_size_limit'],512*1024*1024)
     with patch.dict(os.environ,env,clear=True):p.run_offline_child(path)
     return 0,None
-   self.assertEqual(command[-1],str(stage/'scripts/emit-synthetic-fixture-producer.cjs'));self.assertEqual(kwargs['file_size_limit'],128*1024*1024);events.append('emit')
+   self.assertNotIn('/usr/bin/sandbox-exec',command);self.assertEqual(command[-1],str(stage/'scripts/emit-synthetic-fixture-producer.cjs'));self.assertEqual(kwargs['file_size_limit'],128*1024*1024);events.append('emit')
    if emit_fail:return 1,None
    prefix=("'use strict';\n{const observation=require("+json.dumps(p.PACKAGE_ROOT+'/node_modules/@axiom/verified-issuer-runtime/internal/verify-package.cjs')+").verifyPackageFiles("+json.dumps(p.PACKAGE_ROOT)+");if(!observation||observation.qualification!==\"package_file_set_verified\")throw Error(\"fixture_package_unavailable\");}\n").encode();self.put(stage/'.next/server/__axiom_private_fixture__/fixture-producer.cjs',prefix+json.dumps(p.PACKAGE_ROOT+'/node_modules/@prisma/client').encode());return 0,None
-  with patch.object(p.builder,'git_bytes',side_effect=git),patch.object(p.builder,'install_offline',side_effect=install),patch.object(p.engine_tools,'execute_generation',side_effect=generate),patch.object(p.engine_tools,'prepare_generation',return_value=plan)as preparation,patch.object(p.engine_tools,'verify_generation_sources',return_value=generation_source),patch.object(p.builder,'observe_build_sources',return_value=compiler),patch.object(p.engine_tools,'_run_generation_child',side_effect=child):
+  with patch.object(p.stage_a_tools.builder,'_git_bytes_core',side_effect=lambda repo,args,commands:git(repo,args)),patch.object(p.stage_a_tools.builder,'_install_offline_core',side_effect=lambda *args:install(*args[:-1])),patch.object(p.engine_tools,'_execute_generation',side_effect=lambda *args:generate(*args[:-2],timeout=args[-2])),patch.object(p.engine_tools,'_prepare_generation',return_value=plan)as preparation,patch.object(p.engine_tools,'verify_generation_sources',return_value=generation_source),patch.object(p.engine_tools,'_verify_generation_sources',return_value=generation_source),patch.object(p.builder,'observe_build_sources',return_value=compiler),patch.object(p.engine_tools,'_run_generation_child',side_effect=child):
    result=p.execute_stage_a_packet(path)
    if result['status']=='artifact_observed':self.assertEqual(preparation.call_count,2)
   return result,events
@@ -101,7 +103,7 @@ class StageAPacketTests(unittest.TestCase):
   import ast,contextlib,io,runpy,sys
   path=self.prepare();failure=p.builder.Unavailable('git_launch_unavailable');failure.launchDiagnostic={'phase':'git_spawn','class':'OSError','errno':'EPERM'};capture=io.StringIO()
   namespace=runpy.run_path(str(Path(p.__file__)),run_name='source_only');namespace.update(__name__='__main__');namespace['run_offline_child'].__globals__.update(builder=p.builder,verify_stage_a_packet=lambda unused:p._load(path));main=ast.parse(Path(p.__file__).read_text()).body[-1]
-  with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':str(self.dest/'work/tmp')},clear=True),patch.object(p.builder,'source_inputs',side_effect=failure),patch.object(sys,'argv',[str(Path(p.__file__)),'--offline-child',str(path)]),contextlib.redirect_stderr(capture):
+  with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':str(self.dest/'work/tmp')},clear=True),patch.object(p.stage_a_tools.builder,'_source_inputs_core',side_effect=failure),patch.object(sys,'argv',[str(Path(p.__file__)),'--offline-child',str(path)]),contextlib.redirect_stderr(capture):
    with self.assertRaises(SystemExit)as exited:exec(compile(ast.Module(body=[main],type_ignores=[]),p.__file__,'exec'),namespace)
   self.assertEqual(exited.exception.code,74);self.assertEqual(json.loads(capture.getvalue()),{'error':'stage_a_artifact_unavailable','launchDiagnostic':failure.launchDiagnostic});self.assertNotIn(str(self.dest),capture.getvalue())
 

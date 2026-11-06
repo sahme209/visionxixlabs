@@ -7,11 +7,12 @@ from pathlib import Path
 import hashlib,json,os,re,stat,sys,time
 if __package__ in (None,''):sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from governance_local_issuer import fixture_recipe_packet as files
+from governance_local_issuer import stage_a_tools
 engine_tools=files.engine_tools
 builder=engine_tools.builder()
 NODE_PATH=files.NODE_PATH;NODE_SHA=files.NODE_SHA;SCHEMA_SHA=files.SCHEMA_SHA;ENGINE_SHA=files.ENGINE_SHA
 FORMAT='axiom.principal-free-stage-a/1';PACKAGE_ROOT='/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109'
-PROCEDURE_NAMES=('scripts/build-local-issuer-package-source.py','scripts/local_prisma_engine_inputs.py','scripts/governance_local_issuer/stage_a_packet.py','scripts/governance_local_issuer/__init__.py','scripts/governance_local_issuer/fixture_recipe_packet.py','scripts/governance_local_issuer/manifest.py','scripts/emit-synthetic-fixture-producer.cjs','scripts/private-bootstrap-typescript-loader.cjs','scripts/fixture-producer-compiler-policy.cjs','scripts/fixture-producer-runtime-closure.json')
+PROCEDURE_NAMES=('scripts/build-local-issuer-package-source.py','scripts/local_prisma_engine_inputs.py','scripts/governance_local_issuer/stage_a_packet.py','scripts/governance_local_issuer/stage_a_tools.py','scripts/governance_local_issuer/__init__.py','scripts/governance_local_issuer/fixture_recipe_packet.py','scripts/governance_local_issuer/manifest.py','scripts/emit-synthetic-fixture-producer.cjs','scripts/private-bootstrap-typescript-loader.cjs','scripts/fixture-producer-compiler-policy.cjs','scripts/fixture-producer-runtime-closure.json')
 ANCHORS=('node_modules/@prisma/client/package.json','node_modules/@prisma/client/default.js','node_modules/@prisma/client/runtime/library.js','node_modules/.prisma/client/package.json','node_modules/.prisma/client/default.js','node_modules/.prisma/client/index.js','node_modules/.prisma/client/schema.prisma','node_modules/.prisma/client/libquery_engine-darwin-arm64.dylib.node')
 _json=files._json
 class StageAUnavailable(ValueError):pass
@@ -120,24 +121,24 @@ def _stage_sources(p):
  return stage
 
 def run_offline_child(path):
- p=verify_stage_a_packet(path);work=Path(p['work']);stage=work/'offline/stage'
+ p=verify_stage_a_packet(path);work=Path(p['work']);stage=work/'offline/stage';contained=stage_a_tools._create_stage_a_tools(p);tools=contained.builder
  if os.environ.get('AXIOM_PRIVATE_GIT_SCRATCH')!=str(work/'tmp')or stage.exists():refuse('fixed_child_context_required')
- package,lock,source=builder.source_inputs(Path(p['repo']),p['sourceRevision'])
+ package,lock,source=tools.source_inputs(Path(p['repo']),p['sourceRevision'])
  if source['packageSha256']!=p['sourceBindings']['package.json']['sha256']or source['lockSha256']!=p['sourceBindings']['package-lock.json']['sha256']:refuse('archive_package_changed')
- archive=builder.git_bytes(Path(p['repo']),['archive','--format=tar',p['sourceRevision']]);provenance=builder.extract_archive(archive,stage);_stage_sources(p)
- plan=builder.lock_plan(package,lock);dependencies=builder.install_offline(stage,plan,Path(p['cacheCopy']),Path(p['node']['path']),Path(p['npmCli']['path']),Path(p['cache']),Path(p['repo']))
+ archive=tools.git_bytes(Path(p['repo']),['archive','--format=tar',p['sourceRevision']]);provenance=builder.extract_archive(archive,stage);_stage_sources(p)
+ plan=builder.lock_plan(package,lock);dependencies=tools.install_offline(stage,plan,Path(p['cacheCopy']),Path(p['node']['path']),Path(p['npmCli']['path']),Path(p['cache']),Path(p['repo']))
  if dependencies.get('status')!='offline_dependencies_installed'or dependencies.get('exit')!=0 or dependencies.get('lifecycleScriptsExecuted')is not False or dependencies.get('network')!='kernel_denied':refuse('offline_install_refused')
  r={'format':'axiom.stage-a-offline/1','status':'installed','sourceRevision':p['sourceRevision'],'source':source,'archive':provenance,'dependencies':dependencies,'cacheSelection':p['cacheSelection'],'executionAuthorized':False};_write(work/'offline/result.json',_json(r));return r
 
-def _generation_files(p,preparation):
+def _generation_files(p,preparation,contained=None):
  stage=_stage_sources(p);tool=Path(p['node']['path']);lock=_load(stage/'package-lock.json')
  expected={'sourceRevision':p['sourceRevision'],'packageSha256':p['sourceBindings']['package.json']['sha256'],'lockSha256':p['sourceBindings']['package-lock.json']['sha256'],'schemaSha256':SCHEMA_SHA}
- if any(preparation.get(k)!=v for k,v in expected.items())or preparation.get('node')!=str(tool)or preparation.get('engines')!=p['boundInputs']['observation']or preparation.get('sources')!=engine_tools.verify_generation_sources(stage,Path(p['cache']))or preparation.get('nativeDependencies')!=engine_tools.verify_native_dependencies(Path(p['boundInputs']['path'])):refuse('generation_provenance_changed')
+ if any(preparation.get(k)!=v for k,v in expected.items())or preparation.get('node')!=str(tool)or preparation.get('engines')!=p['boundInputs']['observation']or preparation.get('sources')!=(contained.engine.verify_generation_sources(stage,Path(p['cache']))if contained else engine_tools.verify_generation_sources(stage,Path(p['cache'])))or preparation.get('nativeDependencies')!=engine_tools.verify_native_dependencies(Path(p['boundInputs']['path'])):refuse('generation_provenance_changed')
  evidence=engine_tools.verify_generation_observation(stage,Path(p['work'])/'generation',preparation,tool,p['sourceRevision']);compiler=builder.observe_build_sources(stage,lock,Path(p['cache']));anchors={n:_binding(stage/n,128*1024*1024)for n in ANCHORS}
  return {'preparation':preparation,'generationEvidence':evidence,'compilerSources':compiler,'clientBindings':anchors}
-def _generation(p):
- stage=_stage_sources(p);preparation=engine_tools.prepare_generation(stage,Path(p['boundInputs']['path']),Path(p['repo']),p['sourceRevision'],Path(p['cache']),Path(p['node']['path']))
- return _generation_files(p,preparation)
+def _generation(p,contained):
+ stage=_stage_sources(p);preparation=contained.engine.prepare_generation(stage,Path(p['boundInputs']['path']),Path(p['repo']),p['sourceRevision'],Path(p['cache']),Path(p['node']['path']))
+ return _generation_files(p,preparation,contained)
 def _recorded_generation(p):
  attempt=_load(Path(p['work'])/'generation/attempt.json');return _generation_files(p,attempt.get('preparation',{}))
 def _phase_receipts(p,child):
@@ -152,29 +153,29 @@ def _producer(p):
  if _binding(path,32*1024*1024)!=binding:refuse('producer_output_refused')
  return binding
 def run_stage_a_driver(path):
- p=verify_stage_a_packet(path);work=Path(p['work']);phase='offline';started=time.monotonic();result={'format':'axiom.stage-a-driver-result/1','sourceRevision':p['sourceRevision'],'status':'refused','executionAuthorized':False,'runtimeQualification':'unavailable','descendantQuiescence':'unavailable'}
+ p=verify_stage_a_packet(path);contained=stage_a_tools._create_stage_a_tools(p);work=Path(p['work']);phase='offline';started=time.monotonic();result={'format':'axiom.stage-a-driver-result/1','sourceRevision':p['sourceRevision'],'status':'refused','executionAuthorized':False,'runtimeQualification':'unavailable','descendantQuiescence':'unavailable'}
  if os.environ.get('AXIOM_PRIVATE_GIT_SCRATCH')!=str(work/'tmp')or(work/'driver-result.json').exists()or(work/'offline/stage').exists():refuse('unused_driver_context_required')
  def remaining(cap):
   left=p['activeBudgetSeconds']-(time.monotonic()-started)-20
   if left<=0:refuse('active_budget_expired')
   return min(cap,left)
  try:
-  cmd=['/usr/bin/sandbox-exec','-p',_profile(p,work/'offline/outer.log'),p['python']['path'],p['program']['path'],'--offline-child',str(path)]
+  cmd=[p['python']['path'],p['program']['path'],'--offline-child',str(path)]
   with _log(work/'offline/outer.log')as log:code,error=engine_tools._run_generation_child(cmd,work,_environment(p),log,remaining(120),file_size_limit=512*1024*1024,creation_mask=0o077)
   if error:result['status']='unknown';refuse('offline_cleanup_unknown')
   if code!=0:refuse('offline_child_failed')
   offline=_load(work/'offline/result.json')
   if offline.get('format')!='axiom.stage-a-offline/1'or offline.get('status')!='installed'or offline.get('sourceRevision')!=p['sourceRevision']or offline.get('executionAuthorized')is not False:refuse('offline_receipt_refused')
   if verify_stage_a_packet(path)!=p:refuse('packet_inputs_changed')
-  stage=_stage_sources(p);phase='generation';engine_tools.execute_generation(stage,Path(p['boundInputs']['path']),Path(p['repo']),p['sourceRevision'],Path(p['cache']),Path(p['node']['path']),work/'generation',timeout=remaining(120));before=_generation(p)
+  stage=_stage_sources(p);phase='generation';contained.engine.execute_generation(stage,Path(p['boundInputs']['path']),Path(p['repo']),p['sourceRevision'],Path(p['cache']),Path(p['node']['path']),work/'generation',timeout=remaining(120));before=_generation(p,contained)
   if (stage/'.next').exists():refuse('fresh_emission_required')
   phase='emission';_write(work/'emission/attempt.json',_json({'format':'axiom.stage-a-emission-attempt/1','sourceRevision':p['sourceRevision'],'generation':before,'executionAuthorized':False}))
   environment=_environment(p);environment.update(HOME=str(work/'emission/home'),XDG_CACHE_HOME=str(work/'emission/home'),TMPDIR=str(work/'emission/tmp'))
-  cmd=['/usr/bin/sandbox-exec','-p',_profile(p,work/'emission/producer.log'),p['node']['path'],str(stage/'scripts/emit-synthetic-fixture-producer.cjs')]
+  cmd=[p['node']['path'],str(stage/'scripts/emit-synthetic-fixture-producer.cjs')]
   with _log(work/'emission/producer.log')as log:code,error=engine_tools._run_generation_child(cmd,stage,environment,log,remaining(60),file_size_limit=128*1024*1024,creation_mask=0o077)
   if error:result['status']='unknown';refuse('emission_cleanup_unknown')
   if code!=0:refuse('emission_child_failed')
-  phase='reconciliation';after=_generation(p)
+  phase='reconciliation';after=_generation(p,contained)
   if before!=after or verify_stage_a_packet(path)!=p:refuse('artifact_inputs_changed')
   producer=_producer(p);emission={'format':'axiom.stage-a-emission-result/1','status':'compiled','sourceRevision':p['sourceRevision'],'producer':producer,'generation':after,'executionAuthorized':False};_write(work/'emission/result.json',_json(emission));result.update(status='artifact_observed',sourceRevision=p['sourceRevision'],offline=_binding(work/'offline/result.json'),generation=after,emission=_binding(work/'emission/result.json'),producer=producer)
  except Exception as error:

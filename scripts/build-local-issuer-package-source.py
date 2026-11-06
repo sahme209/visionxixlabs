@@ -177,7 +177,13 @@ def extract_archive(data,stage):
     except(OSError,ValueError,RuntimeError):fail("archive_link_escape_or_missing")
   return {"archiveSha256":sha(data),"verifiedRegularFiles":count,"archiveBytes":len(data)}
  except BaseException:shutil.rmtree(stage);raise
-def git_bytes(repo,args):
+class _StandaloneArtifactCommands:
+ def git(self,repo,args):return ["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args]
+ def install_node(self,node,source_cache,protected_repo):
+  profile='(version 1)(allow default)(deny network*)(deny file-write* (subpath '+json.dumps(str(Path(source_cache).resolve()))+') (subpath '+json.dumps(str(Path(protected_repo).resolve()))+'))'
+  return ["/usr/bin/sandbox-exec","-p",profile,str(node)]
+def git_bytes(repo,args):return _git_bytes_core(repo,args,_StandaloneArtifactCommands())
+def _git_bytes_core(repo,args,commands):
  # Artifact-controller-only output spool selection. Generic TMPDIR deliberately
  # does not alter historical callers; a present invalid key never falls back.
  scratch='/private/tmp'
@@ -194,7 +200,7 @@ def git_bytes(repo,args):
  def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(MAX_ARCHIVE,MAX_ARCHIVE))
  with tempfile.TemporaryFile(dir=scratch)as output:
   def run(stderr):
-   try:return subprocess.run(["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args],env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=stderr,timeout=60,preexec_fn=limits)
+   try:return subprocess.run(commands.git(repo,args),env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=stderr,timeout=60,preexec_fn=limits)
    except subprocess.TimeoutExpired:raise
    except (OSError,subprocess.SubprocessError)as error:
     import errno
@@ -207,10 +213,11 @@ def git_bytes(repo,args):
   output.seek(0);data=output.read(MAX_ARCHIVE+1)
   if len(data)>MAX_ARCHIVE:fail("git_output_limit")
   return data
-def source_inputs(repo,revision):
+def source_inputs(repo,revision):return _source_inputs_core(repo,revision,git_bytes)
+def _source_inputs_core(repo,revision,read_git):
  if not re.fullmatch("[a-f0-9]{40}",revision):fail("exact_commit_required")
- if git_bytes(repo,["rev-parse",revision+"^{commit}"]).decode().strip()!=revision:fail("commit_mismatch")
- p=git_bytes(repo,["show",revision+":package.json"]);l=git_bytes(repo,["show",revision+":package-lock.json"])
+ if read_git(repo,["rev-parse",revision+"^{commit}"]).decode().strip()!=revision:fail("commit_mismatch")
+ p=read_git(repo,["show",revision+":package.json"]);l=read_git(repo,["show",revision+":package-lock.json"])
  return json_data(p),json_data(l),{"sourceRevision":revision,"packageSha256":sha(p),"lockSha256":sha(l)}
 GENERATION_PACKAGES=('node_modules/prisma','node_modules/@prisma/client','node_modules/@prisma/engines','node_modules/@prisma/engines-version','node_modules/@prisma/fetch-engine','node_modules/@prisma/get-platform')
 def observe_installed_sources(stage,lock,cache,locations):
@@ -288,7 +295,8 @@ def engine_plan(lock,cache):
 def clean_environment(node,owned):
  owned=private_dir(owned);tmp=owned/"tmp";tmp.mkdir(mode=0o700,exist_ok=True)
  return {"PATH":str(Path(node).parent)+":/usr/bin:/bin:/usr/sbin:/sbin","LANG":"C","TZ":"UTC","TMPDIR":str(tmp),"PRISMA_GENERATE_SKIP_AUTOINSTALL":"true","NEXT_TELEMETRY_DISABLED":"1"}
-def install_offline(stage,plan,owned_cache,node,npm_cli,source_cache,protected_repo):
+def install_offline(stage,plan,owned_cache,node,npm_cli,source_cache,protected_repo):return _install_offline_core(stage,plan,owned_cache,node,npm_cli,source_cache,protected_repo,_StandaloneArtifactCommands())
+def _install_offline_core(stage,plan,owned_cache,node,npm_cli,source_cache,protected_repo,commands):
  stage=private_dir(stage);cache=private_dir(owned_cache);validate_local_links(stage,plan)
  if(stage/"node_modules").exists()or(stage/"node_modules").is_symlink():fail("fresh_dependency_tree_required")
  config=stage/".npmrc"
@@ -297,8 +305,7 @@ def install_offline(stage,plan,owned_cache,node,npm_cli,source_cache,protected_r
  user_config=stage.parent/"npm-user-config";global_config=stage.parent/"npm-global-config"
  write_new(user_config,b"");write_new(global_config,b"")
  args=["ci","--offline","--ignore-scripts","--audit=false","--fund=false","--update-notifier=false","--fetch-retries=0","--include=dev","--legacy-peer-deps=false","--userconfig="+str(user_config),"--globalconfig="+str(global_config),"--cache="+str(cache)]
- profile='(version 1)(allow default)(deny network*)(deny file-write* (subpath '+json.dumps(str(Path(source_cache).resolve()))+') (subpath '+json.dumps(str(Path(protected_repo).resolve()))+'))'
- prefix=["/usr/bin/sandbox-exec","-p",profile,str(node)]
+ prefix=commands.install_node(node,source_cache,protected_repo)
  if subprocess.check_output([*prefix,"--version"],env=env,text=True).strip()!="v24.21.0":fail("pinned_node_required")
  if subprocess.check_output([*prefix,str(npm_cli),"--version",*args[1:]],env=env,text=True).strip()!="11.19.0":fail("pinned_npm_required")
  log=stage.parent/"offline-ci.log"

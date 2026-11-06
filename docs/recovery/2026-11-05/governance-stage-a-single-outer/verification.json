@@ -1,0 +1,28 @@
+{
+  "format": "axiom.single-outer-source-verification/1",
+  "sourceSha256": {
+    "scripts/build-local-issuer-package-source.py": "51175e070b59b7efb13a4d796490b236d76ebe2822262b74a07a33d786b35273",
+    "scripts/local_prisma_engine_inputs.py": "5a692e45364745610cab6496cc2e2a9c7951069f147954b6e4eb2d571d8d55d1",
+    "scripts/governance_local_issuer/stage_a_packet.py": "cd1e2db126828577cae9b3f82aaf37d959c47547fc87bde069f536f5051512f4",
+    "scripts/governance_local_issuer/stage_a_tools.py": "b20a0e834be7d5f63e443b0fc526dcf7411932bf3c9eb4cb3a4c17d1f3eefc1d",
+    "scripts/governance_local_issuer/tests/test_stage_a_packet.py": "726645cd76d45284326acb3f7191802f6cacd1db4026489da62784078a04bb5e",
+    "scripts/governance_local_issuer/tests/test_stage_a_contained_tools.py": "0e6d46e241523da0dab3692eed8e362adb5264af771482d7b2b0dc1bda88cb09"
+  },
+  "logs": {
+    "/private/tmp/axiom-contained-red.log": "6141df7177a5ba8ac56a3a5e5851c94005d06df3a7ae56bf0bfcf6fb0e6a42a8",
+    "/private/tmp/axiom-contained-bound.log": "84ff24306afcf5e19892adf32493aa9bc9dbc8db16870c6155e8e03c23864a33",
+    "/private/tmp/axiom-contained-coordinates.log": "d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad",
+    "/private/tmp/axiom-contained-stage-final.log": "34ebfdd5fe5a6abbe62a691d989034eb6320d380990be7a259219d6e62a783ac",
+    "/private/tmp/axiom-contained-legacy-git.log": "e73c3805f810fdcf3d0167ced7085c48306c9482a952ffb710551d230cdb3e51",
+    "/private/tmp/axiom-contained-io-regression.log": "40e6a3053d86436d6aa245501343227a2e81436f4f14da71a21257468605aff6"
+  },
+  "checks": {
+    "contained_before_last_narrow_negative": 4,
+    "new_selected_coordinates_negative": 1,
+    "stage_a_joined_current": 11,
+    "legacy_git": 4,
+    "io_regression": 10
+  },
+  "actualExecution": false,
+  "packetPrepared": false
+}

@@ -130,8 +130,9 @@ def builder():
  spec=importlib.util.spec_from_file_location('local_source_builder',Path(__file__).with_name('build-local-issuer-package-source.py'))
  module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module);return module
 
-def verify_archived_inputs(stage,repo,revision):
- b=builder();_,_,source=b.source_inputs(repo,revision)
+def verify_archived_inputs(stage,repo,revision):return _verify_archived_inputs(stage,repo,revision,builder())
+def _verify_archived_inputs(stage,repo,revision,b):
+ _,_,source=b.source_inputs(repo,revision)
  for name,key in [('package.json','packageSha256'),('package-lock.json','lockSha256')]:
   path=stage/name
   if path.is_symlink()or hashlib.sha256(path.read_bytes()).hexdigest()!=source[key]:fail('archived_package_inputs_changed')
@@ -140,8 +141,8 @@ def verify_archived_inputs(stage,repo,revision):
  expected=b.git_bytes(repo,['show',revision+':prisma/schema.prisma'])
  if len(expected)>16*1024*1024 or schema.read_bytes()!=expected:fail('archived_schema_changed')
  return {**source,'schemaSha256':hashlib.sha256(expected).hexdigest()}
-def verify_generation_sources(stage,cache):
- b=builder();return b.observe_generation_sources(stage,b.json_data((stage/'package-lock.json').read_bytes()),cache)
+def verify_generation_sources(stage,cache):return _verify_generation_sources(stage,cache,builder())
+def _verify_generation_sources(stage,cache,b):return b.observe_generation_sources(stage,b.json_data((stage/'package-lock.json').read_bytes()),cache)
 def verify_native_dependencies(directory):
  names=set()
  for kind,(_,name,_,_)in KINDS.items():
@@ -152,9 +153,10 @@ def verify_native_dependencies(directory):
    names.add(dependency)
  return {'kind':'trusted_macos_static_system_libraries_not_attestation','installNames':sorted(names),
          'dynamicRuntimeClosure':'not_qualified_by_static_load_commands'}
-def prepare_generation(stage,directory,repo,revision,cache,node):
+def prepare_generation(stage,directory,repo,revision,cache,node):return _prepare_generation(stage,directory,repo,revision,cache,node,None)
+def _prepare_generation(stage,directory,repo,revision,cache,node,instance):
  stage=private(stage);directory=private(directory)
- source=verify_archived_inputs(stage,repo,revision);sources=verify_generation_sources(stage,cache)
+ source=(instance.verify_archived_inputs(stage,repo,revision)if instance else verify_archived_inputs(stage,repo,revision));sources=(instance.verify_generation_sources(stage,cache)if instance else verify_generation_sources(stage,cache))
  engines=verify_bound_engines(directory);dependencies=verify_native_dependencies(directory)
  # Final byte recheck follows all source/native inspection awaits; no execution.
  verify_bound_engines(directory)
@@ -305,7 +307,8 @@ def verify_generation_observation(stage,run,preparation,node,revision):
  if archive!=emitted or hashlib.sha256(archive).hexdigest()!=comparison.get('canonicalArchiveSha256')or hashlib.sha256(emitted).hexdigest()!=comparison.get('canonicalGeneratedSha256'):fail('generation_canonical_observation_changed')
  return {'attemptSha256':hashlib.sha256(attempt_raw).hexdigest(),'resultSha256':hashlib.sha256(result_raw).hexdigest(),'currentRequiredOutputs':current,'schemaComparison':comparison}
 
-def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeout=120):
+def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeout=120):return _execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeout,None)
+def _execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeout,instance):
  import math,platform,time
  if type(timeout)not in (int,float)or not math.isfinite(timeout)or not 0<timeout<=120:fail('generation_deadline_invalid')
  deadline=time.monotonic()+timeout
@@ -319,7 +322,10 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
   if target==stage or stage in target.parents or target in stage.parents:fail('generation_stage_boundary_overlap')
  if any(owned_run==p.resolve()or p.resolve()in owned_run.parents for p in protected):fail('generation_output_boundary_overlap')
  node_identity=stable_file_hash(node)
- plan=prepare_generation(stage,directory,repo,revision,cache,node)
+ prepare=instance.prepare_generation if instance else prepare_generation
+ sources_current=instance.verify_generation_sources if instance else verify_generation_sources
+ archive_current=instance.verify_archived_inputs if instance else verify_archived_inputs
+ plan=prepare(stage,directory,repo,revision,cache,node)
  # Fail before launch on any existing output; never truncate prior evidence.
  names=['attempt.json','result.json','generation.log','node-version.log','format-archive.log','format-emitted.log','tmp']
  if any((owned_run/name).exists()or(owned_run/name).is_symlink()for name in names):fail('fresh_generation_outputs_required')
@@ -336,7 +342,7 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
                'CHECKPOINT_DISABLE':'1','PRISMA_HIDE_UPDATE_MESSAGE':'1','PRISMA_GENERATE_SKIP_AUTOINSTALL':'true','NEXT_TELEMETRY_DISABLED':'1',
                'PRISMA_QUERY_ENGINE_LIBRARY':str(directory/KINDS['query'][1]),'PRISMA_SCHEMA_ENGINE_BINARY':str(directory/KINDS['schema'][1])}
   profile=_generation_profile(stage,tmp,[owned_run/name for name in ['generation.log','node-version.log','format-archive.log','format-emitted.log']],protected)
-  prefix=['/usr/bin/sandbox-exec','-p',profile,str(node)]
+  prefix=instance.generation_node(node,stage,directory,owned_run)if instance else['/usr/bin/sandbox-exec','-p',profile,str(node)]
   result={'format':'axiom.local-generation-result/1','status':'unavailable','archiveFormatStarted':False,'emittedFormatStarted':False,'generationStarted':False,'generatedOutputsVerified':False,'generationCompatibilityVerified':False,
           'processBounds':'original_process_group_only','postReapGroupStatus':'unqualified_not_signalled','descendantQuiescence':'unavailable','runtimeQualification':'unavailable',
           'upstreamAuthenticity':'unavailable','engineCommitAuthenticity':'unavailable','runtimeClosure':'unavailable',
@@ -350,7 +356,7 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
    handles['node-version.log'].flush()
    if error or code!=0 or (owned_run/'node-version.log').read_bytes()!=b'v24.21.0\n':fail(error or 'pinned_node_version_unavailable')
    # Recompute source/schema/SRI/native binding after the last child await.
-   recomputed=prepare_generation(stage,directory,repo,revision,cache,node)
+   recomputed=prepare(stage,directory,repo,revision,cache,node)
    if recomputed!=plan:fail('preparation_changed_before_generation')
    if stable_file_hash(node)!=node_identity:fail('node_changed_before_generation')
    archive_scratch=tmp/'archive-schema.prisma';emitted_scratch=tmp/'emitted-schema.prisma'
@@ -360,7 +366,7 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
    code,error=_run_generation_child([*prefix,'node_modules/prisma/build/index.js','format','--schema',str(archive_scratch)],stage,environment,handles['format-archive.log'],remaining())
    if error or code!=0:fail(error or 'offline_archive_format_failed')
    archive_canonical=_schema_bytes(archive_scratch)
-   if prepare_generation(stage,directory,repo,revision,cache,node)!=plan:fail('preparation_changed_after_archive_format')
+   if prepare(stage,directory,repo,revision,cache,node)!=plan:fail('preparation_changed_after_archive_format')
    if stable_file_hash(node)!=node_identity:fail('node_changed_before_generation')
    result['generationStarted']=True
    code,error=_run_generation_child([*prefix,'node_modules/prisma/build/index.js','generate','--schema',str(stage/'prisma/schema.prisma')],stage,environment,handles['generation.log'],remaining())
@@ -380,8 +386,8 @@ def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeou
    result['schemaComparison']={'kind':'canonical_formatted_scratch_bytes','rawArchiveSha256':archive_raw,'rawGeneratedSha256':generated_raw,
                                'canonicalArchiveSha256':hashlib.sha256(archive_canonical).hexdigest(),'canonicalGeneratedSha256':hashlib.sha256(generated_canonical).hexdigest(),
                                'semanticAttestation':'unavailable'}
-   verify_generation_sources(stage,cache);verify_bound_engines(directory)
-   after=verify_archived_inputs(stage,repo,revision)
+   sources_current(stage,cache);verify_bound_engines(directory)
+   after=archive_current(stage,repo,revision)
    if any(plan.get(key)!=value for key,value in after.items()):fail('archive_changed_after_generation')
    if stable_file_hash(node)!=node_identity:fail('node_changed_after_generation')
    result.update(status='generated_outputs_observed_unqualified',generatedOutputsVerified=True,outputs=outputs)
