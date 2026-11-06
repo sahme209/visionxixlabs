@@ -1,0 +1,1 @@
+qualification_review verified saved heading-query/empty/recovered23 states, unchanged article URL/h1, exact search identity and Clear removal. Five current hashes equal receipt and served0c9 Git bytes. Metadata-only/locator-supplied initial focus/IME/AT/full-text/current DocsContents/full B4/B6 limits explicit. No important overclaim; no rerun/edit.

@@ -1,0 +1,178 @@
+{
+  "docsFilterStates": [
+    {
+      "label": "heading query",
+      "articleHeading": "A write starts as a proposal.",
+      "focus": {
+        "label": null,
+        "placeholder": "Task, heading or guide title",
+        "tag": "INPUT"
+      },
+      "links": [
+        {
+          "current": "page",
+          "href": "/docs/approval-workflow",
+          "text": "Approval workflow"
+        }
+      ],
+      "query": "Execution and recovery",
+      "status": "1 guide shown",
+      "url": "http://127.0.0.1:5262/docs/approval-workflow"
+    },
+    {
+      "label": "empty query",
+      "articleHeading": "A write starts as a proposal.",
+      "focus": {
+        "label": null,
+        "placeholder": "Task, heading or guide title",
+        "tag": "INPUT"
+      },
+      "links": [],
+      "query": "zz-no-guide-match-20261105",
+      "status": "No guides match.",
+      "url": "http://127.0.0.1:5262/docs/approval-workflow"
+    },
+    {
+      "label": "clear via Enter",
+      "articleHeading": "A write starts as a proposal.",
+      "focus": {
+        "label": null,
+        "placeholder": "Task, heading or guide title",
+        "tag": "INPUT"
+      },
+      "links": [
+        {
+          "current": null,
+          "href": "/docs",
+          "text": "Overview"
+        },
+        {
+          "current": null,
+          "href": "/docs/quickstart-checklist",
+          "text": "Quickstart checklist"
+        },
+        {
+          "current": null,
+          "href": "/docs/getting-started",
+          "text": "Getting started"
+        },
+        {
+          "current": null,
+          "href": "/docs/source-modes",
+          "text": "Source modes"
+        },
+        {
+          "current": null,
+          "href": "/docs/surfaces",
+          "text": "Product surfaces"
+        },
+        {
+          "current": null,
+          "href": "/docs/aws-setup",
+          "text": "AWS setup"
+        },
+        {
+          "current": null,
+          "href": "/docs/azure-setup",
+          "text": "Azure setup"
+        },
+        {
+          "current": null,
+          "href": "/docs/gcp-setup",
+          "text": "GCP setup"
+        },
+        {
+          "current": "page",
+          "href": "/docs/approval-workflow",
+          "text": "Approval workflow"
+        },
+        {
+          "current": null,
+          "href": "/docs/execution-plans",
+          "text": "Execution plans"
+        },
+        {
+          "current": null,
+          "href": "/docs/rollback",
+          "text": "AWS ECS rollback"
+        },
+        {
+          "current": null,
+          "href": "/docs/releaseops",
+          "text": "ReleaseOps overview"
+        },
+        {
+          "current": null,
+          "href": "/docs/releaseops/connectors",
+          "text": "CI/CD connectors"
+        },
+        {
+          "current": null,
+          "href": "/docs/releaseops/readiness",
+          "text": "Readiness scoring"
+        },
+        {
+          "current": null,
+          "href": "/docs/desktop-install",
+          "text": "Install the desktop app"
+        },
+        {
+          "current": null,
+          "href": "/docs/integration-setup",
+          "text": "Integration setup"
+        },
+        {
+          "current": null,
+          "href": "/docs/security-model",
+          "text": "Security model"
+        },
+        {
+          "current": null,
+          "href": "/docs/permissions-model",
+          "text": "Permissions model"
+        },
+        {
+          "current": null,
+          "href": "/docs/oauth-setup",
+          "text": "OAuth setup"
+        },
+        {
+          "current": null,
+          "href": "/docs/troubleshooting",
+          "text": "Troubleshooting"
+        },
+        {
+          "current": null,
+          "href": "/docs/audit-logs",
+          "text": "Audit evidence"
+        },
+        {
+          "current": null,
+          "href": "/docs/faq",
+          "text": "FAQ"
+        },
+        {
+          "current": null,
+          "href": "/docs/glossary",
+          "text": "Glossary"
+        }
+      ],
+      "query": "",
+      "status": "23 guides shown",
+      "url": "http://127.0.0.1:5262/docs/approval-workflow"
+    }
+  ],
+  "docsClearFocus": {
+    "tag": "BUTTON",
+    "text": "Clear guide filter"
+  },
+  "docsRecoveryFocus": {
+    "clearButtons": 0,
+    "isGuideSearch": true
+  },
+  "viewport": {
+    "width": 1280,
+    "height": 720
+  },
+  "scope": "Actual title/heading metadata filter, no full-text answers or article submission"
+}

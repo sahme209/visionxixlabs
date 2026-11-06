@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Documentation guide filtering — actual browser recovery
+
+~~Heading query→one exact guide, no-match→no links, Tab/Enter Clear→23 links and exact search focus observed~~ ([evidence](../recovery/2026-11-05/docs-filter-browser/README.md)); current article/URL preserved, five named source files match0c9. Metadata filter only, not full text/support answers; keyboard entry/IME/AT/mobile/performance/full B4/B6 remain open. No account/provider/form submission.
+
 ## Scripted Agent/cloud tutorials — actual browser boundaries
 
 ~~Manual Agent4/cloud3 stages, end controls, repository-reset and cross-story context observed~~ ([evidence](../recovery/2026-11-05/demo-story-boundaries-browser/README.md)); cloud ends held with missing authority and no apply-text button. No sample review decision clicked or real action performed. Not full keyboard/AT/mobile/timing/B6 or authentic Governance evidence; all21 parents remain open.
