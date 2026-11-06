@@ -1,0 +1,11 @@
+# Source-only release compatibility gate
+
+Recorded baseline: last accepted production source d3e591b9f262435cf05fe690742f6898fcebf742 (November4 receipt), NOT a new live production inspection. Current Prisma diff adds exactly two fields on PipelineAICallReservation: admissionContract String default coding_fixed_hold_v1, and quoteEvidence nullableJson. No corresponding migration file exists in the compared source range.
+
+Both fields are required even when quoted admission remains unavailable. governedExtractAdmission calls reserveCodingCall; codingRunReservation policyAndExposure/findMany and reservation findUnique/findFirst use full scalar results, the default fixed-hold create explicitly writes both fields, and dispatch/release/financial linkage/stored-row validation read both. The generated client against the recorded older schema would therefore fail reads/inserts. A feature flag does not avoid this compatibility requirement. Independent source review confirmed this finding; no actual database was read.
+
+Before the one production rollout, separately authorize exact target/schema/backup/concurrency preflight and any required additive apply. Candidate shape is admissionContract TEXT NOT NULL DEFAULT coding_fixed_hold_v1 and nullable JSONB quoteEvidence SQLNULL, preserving historical fixed-hold meaning with no UPDATE/repricing/delete. Existing five-row isolated rehearsal passed; do not repeat it without changed SQL or an unresolved concern. This does not qualify live recovery/cutover/version/migration-history or prove production currently lacks the columns.
+
+Do not run broad prisma migrate deploy or repair the pre-existing identity migration. Do not reuse expired November4 recovery evidence as a current backup. Preserve all rows/holds/unknowns and obtain ledger-aware rollback readiness. New schema/DB authority is not implied by the user’s Vercel deployment permission. No SQL ran during this audit.
+
+Full-source backup can preserve dormant unfinished code, but release messaging must not claim Governance, Store/Windows, installer release or customer acceptance complete. Vercel delivers website/backend; it does not publish a new signed desktop installer. No actual production/provider read, deployment, schema/flag change or spending performed.

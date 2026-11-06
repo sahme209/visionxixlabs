@@ -1,0 +1,52 @@
+{
+  "packet.json": {
+    "sha256": "ae277a53a0d232acb4cf03d8f7d118bf25360dfed8ec94a27c36b60c5ceffe10",
+    "size": 4671,
+    "savedAs": "packet.json"
+  },
+  "execution-authorization.json": {
+    "sha256": "4f18f227eafb8b9d7971bd2bfc7288bfd89ae11a1d0e889ff545de9a8bb8c2d6",
+    "size": 274,
+    "savedAs": "execution-authorization.json"
+  },
+  "attempt.json": {
+    "sha256": "56dcdcf911a9af5e1e8d2e1216ae9fea262e95fbb68567778ae147ebd466106b",
+    "size": 143,
+    "savedAs": "attempt.json"
+  },
+  "result.json": {
+    "sha256": "c883dca16dab8fd1c1f09f1b2834915430834ac33e083565378ae8da713f696a",
+    "size": 279,
+    "savedAs": "result.json"
+  },
+  "outer.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "savedAs": "outer.log"
+  },
+  "work/child-result.json": {
+    "sha256": "c883dca16dab8fd1c1f09f1b2834915430834ac33e083565378ae8da713f696a",
+    "size": 279,
+    "savedAs": "work-child-result.json"
+  },
+  "work/denied.stdout": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "savedAs": "work-denied.stdout"
+  },
+  "work/denied.stderr": {
+    "sha256": "d74021aa27bd5db5b3b72fbc249db319725d56e371220518f555c0f59794e812",
+    "size": 83,
+    "savedAs": "work-denied.stderr"
+  },
+  "work/control.stdout": {
+    "sha256": "1e3da664c3be02e73b4f5fa77195cd9f256eee5e4accdc9a25d3272497f9622c",
+    "size": 41,
+    "savedAs": "work-control.stdout"
+  },
+  "work/control.stderr": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0,
+    "savedAs": "work-control.stderr"
+  }
+}
