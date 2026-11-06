@@ -1,0 +1,35 @@
+{
+  "previewSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "files": {
+    "components/Navigation.tsx": {
+      "previewSha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5",
+      "currentSha256": "ffa56747f80f2b0b100bc28249d9acd943fab74cb1b42c390260648e3b62ecf5",
+      "matches": true
+    },
+    "app/product/page.tsx": {
+      "previewSha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+      "currentSha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+      "matches": true
+    },
+    "app/docs/page.tsx": {
+      "previewSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "currentSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "matches": true
+    },
+    "app/docs/layout.tsx": {
+      "previewSha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "currentSha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "matches": true
+    },
+    "app/integrations/page.tsx": {
+      "previewSha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce",
+      "currentSha256": "8c2df362981ba90618f39daaf704543ddb4cb38880473f3e487df3df746625ce",
+      "matches": true
+    },
+    "app/globals.css": {
+      "previewSha256": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4",
+      "currentSha256": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4",
+      "matches": true
+    }
+  }
+}

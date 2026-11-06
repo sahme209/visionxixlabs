@@ -1,0 +1,53 @@
+{
+  "skipRows": [
+    {
+      "label": "Product",
+      "afterSkip": {
+        "mainFocused": true,
+        "mainTabIndex": "-1",
+        "url": "/product"
+      },
+      "afterTab": {
+        "href": "/download",
+        "placeholder": null,
+        "tag": "A",
+        "text": "Download Axiom Agent",
+        "withinMain": true,
+        "withinPrimaryNavigation": false
+      }
+    },
+    {
+      "label": "Docs overview",
+      "afterSkip": {
+        "mainFocused": true,
+        "mainTabIndex": "-1",
+        "url": "/docs"
+      },
+      "afterTab": {
+        "href": "/docs/getting-started",
+        "placeholder": null,
+        "tag": "A",
+        "text": "Start with AxiomUnderstand the setup sequence and prerequisites.",
+        "withinMain": true,
+        "withinPrimaryNavigation": false
+      }
+    },
+    {
+      "label": "Integrations",
+      "afterSkip": {
+        "mainFocused": true,
+        "mainTabIndex": "-1",
+        "url": "/integrations"
+      },
+      "afterTab": {
+        "href": null,
+        "placeholder": "Find a tool…",
+        "tag": "INPUT",
+        "text": "",
+        "withinMain": true,
+        "withinPrimaryNavigation": false
+      }
+    }
+  ],
+  "scope": "Actual Enter activation and following Tab; initial Skip focus supplied by locator; no full keyboard page-entry or AT claim"
+}

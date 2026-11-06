@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Skip to content — actual browser cross-page focus
+
+~~Enter Skip focused main, then Tab stayed in main on Product/Docs/Integrations after client navigation~~ ([evidence](../recovery/2026-11-05/skip-content-browser/README.md)); reached Download/Start with Axiom/Search without activating them. Initial locator focus and AT/mobile/full keyboard/B6 limits explicit; no runtime change.
+
 ## Documentation sidebar routes — actual browser arrivals
 
 ~~Overview plus20 remaining sidebar destinations rendered expected route/h1/current-page state without measured page overflow at1280px~~ ([evidence](../recovery/2026-11-05/docs-sidebar-arrivals-browser/README.md)); two already accepted article journeys not repeated. Exact served/current differences retained; Quickstart duplicated brand title corrected in local metadata afterward; the historical preview and pre-correction comparisons remain preserved. Not article-content/editorial/all-controls/keyboard/AT/mobile/performance/full B4/B6 acceptance.

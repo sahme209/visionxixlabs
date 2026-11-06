@@ -1,0 +1,1 @@
+qualification_review verified three main-focus/tabindex/next-target containment records and six current/0c9 source bindings. Existing handler owns tabindex; no injection claim. Initial locator focus and already-active main press are disclosed; not full entry/AT/B6. Root aligned the board target name to exact Start with Axiom. No important overclaim; no rerun/UI/edit.
