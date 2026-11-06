@@ -1,0 +1,9 @@
+# One approved bundle — signing identity unavailable
+
+User conditional authorization was consumed ONCE against packet a6a26c936f54dd0019eb13554cd639f932ee5acf9ca5be417c288c63f955b4f6 after independent source/packet PASS. Code8c126882; source8bindings and6inputs matched. Source/pure tests:7comparator+6orchestration+9existing restoration checks passed. Review-found unknown-command/postload replacement regressions failed first and passed after correction; wrong synthetic unittest import/path failures are preserved in preparation history.
+
+The first signing command exited1, no supervisor error,60output bytes: existing identity4C2E59F247CA275001586AE020A9269464529452 reported `no identity found`. This establishes unavailable identity resolution for that invocation, not whether the certificate/key was deleted, expired, locked or unavailable for another reason. No identity enumeration, key export, new grant or alternate signing identity was attempted.
+
+The wrapper reports statusunknown/bundle_unavailable with finalInputCurrentnessverified. Detailed fixed command receipt identifies the stopped signing phase. Detached copy SHA remains originale0f4077c48e80b36425e6b0295803593eed753988c5f31adfab966b739d4809d/mode0600. No static verify/display, derivative comparison or Node load followed. Node was never made executable by this attempt; original library and Node bytes remain unchanged. No Governance qualification follows. No retry/reset/alternate target is authorized by this consumed permission.
+
+The master’s trusted-local model remains valid; optional vendor checksum is not a prerequisite. Actual signature compatibility, working existing signing-key availability, custody, same consumer, fleet and complete enforcement remain unresolved. No provider/database/install/production/spending action occurred. This evidence is a failed prerequisite, not completed Governance.

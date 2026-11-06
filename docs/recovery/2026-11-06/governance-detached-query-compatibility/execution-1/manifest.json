@@ -1,0 +1,34 @@
+{
+  "packet.json": {
+    "sha256": "a6a26c936f54dd0019eb13554cd639f932ee5acf9ca5be417c288c63f955b4f6",
+    "size": 6674
+  },
+  "packet-pre-review.json": {
+    "sha256": "540911cf770cec1d541835822f9cdc12e4560719688ff07d8d723d5640549e19",
+    "size": 6674
+  },
+  "attempt.json": {
+    "sha256": "69d5f9c4b6f6feb71881f8a5afe2fe36ab5d3ef0bbd7c91758209befe3c6cb4e",
+    "size": 143
+  },
+  "result.json": {
+    "sha256": "3cff292b8ccb2b3de37af81d4381ccb0d6ec62ddfa63dea3157d6021ec39701d",
+    "size": 480
+  },
+  "command-0.json": {
+    "sha256": "deeb00a023e21ff1cd930db1289e705359de847a5828bfdbf98befb5d08d0e76",
+    "size": 34
+  },
+  "work/command-0.log": {
+    "sha256": "60502c6f5c11aa268bc564fa4b2cfab3bfc67a26c3edf8b23008e95ef75c91c6",
+    "size": 60
+  },
+  "fixture.cjs": {
+    "sha256": "decc26bc97ed09d8738452f91a5ea91fb7b16fcecb927e5d1bebe56ba321c876",
+    "size": 1000
+  },
+  "empty.plist": {
+    "sha256": "97704a8960b4facceef54397a08fb5d0a456247c3627359215aa2a27df22656c",
+    "size": 181
+  }
+}
