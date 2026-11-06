@@ -29,7 +29,7 @@ export default function IntegrationSetupPage() {
           <li>Set the production Axiom origin as <code>NEXTAUTH_URL</code>; callback construction fails closed when the origin is not trusted.</li>
           <li>Register the exact HTTPS callback shown below. Wildcard callback domains are not supported.</li>
           <li>Store client secrets only in the hosting platform&apos;s encrypted secret manager—never in <code>NEXT_PUBLIC_*</code>, the desktop app, logs, or Git.</li>
-          <li>Redeploy the service after adding credentials, then use Plugins &amp; Skills or Settings → Integrations to start consent.</li>
+          <li>Redeploy the service after adding credentials, then use Apps &amp; skills or Settings → Integrations to start consent.</li>
           <li>Run the harmless validation step. Axiom does not label a connection active from consent alone.</li>
         </ol>
       </DocSection>

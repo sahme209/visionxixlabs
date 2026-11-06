@@ -25,8 +25,8 @@ export default function GettingStartedPage() {
                 summary="Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs."
             />
 
-            <Callout variant="safe" title="The installed app is the product">
-                The website provides product information, documentation, a sample-data sandbox, and verified release downloads. Operational work happens in Axiom Agent. Browser pages used during identity-provider approval are part of desktop authentication and are not a separate web application.
+            <Callout variant="safe" title="Desktop workflows and the web companion">
+                Use the desktop app for the operational workflows described in this guide. The website provides product information, documentation, a sample-data sandbox, and verified release downloads. Its signed-in web companion also provides profile, help, provider consent, and connection context, subject to workspace access and enabled features. Browser-assisted desktop pairing signs you into the app; it does not execute an operation.
             </Callout>
 
             <DocSection id="prereqs" title="Prerequisites" kicker="00 · Before you begin">
