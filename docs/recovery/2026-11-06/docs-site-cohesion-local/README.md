@@ -28,3 +28,7 @@ This is a separate agent's source-only review, not the visual author's self-revi
 Earlier visual-worker wording treated Hairline/Teardown too loosely as general design workflows. Their actual upstream tools concern **interactive isometric figures** (Hairline) and **3D machine simulators** (Teardown); they are not UX-audit or typography tools. Reading their master requirements or deciding they do not fit this task is not a completed upstream tool/security/license/compatibility evaluation. They are not used for this shell/type correction. Their meaningful-diagram research/pilot and adoption gates remain separate and open. The master already states their scope accurately; no master edit is needed or made.
 
 No stage/commit. Master/board, frozen image procedure/package/source64eca and open apps/drafts remain untouched.
+
+## Existing derived-index and historical binding check
+
+Separate source inspection confirmed the heading-index generator reads DocsSidebar.tsx and23guidepage files; their recorded hashes match. Neither presentation file is an index input, so no generation or build was run. Three historical internal drafts reference older layout/primitive bytes: website-docs-navigation-controls.sources.json, website-primary-navigation-controls.sources.json and website-navigation-docs-discovery.r1.json. These are retained as historical/internal drafts, not silently requalified or customer-approved. A later explicit current-source revision must refresh their hashes/ranges and run the required qualification.
