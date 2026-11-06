@@ -1,0 +1,20 @@
+{
+  "format": "axiom.isolated-stage-a-source/1",
+  "ref": "refs/heads/codex/stage-a-source-17bf3ff7-f5f1678c",
+  "sourceRevision": "e6f4ebf1c9a38b25ffb3d0c70aa0ea372132904a",
+  "tree": "dc9fa5432f4ccbe6b3532d4f2c40c2201189f17c",
+  "parent": "17bf3ff7306d99ace55a259525a8767de8a333ad",
+  "masterSha256": "f5f1678c58e6bd89246a0a04e900ab524bdeb09aa1b6d46333db6b1af6dcdc92",
+  "masterBlob": "53e8d59ca020fd672f171decdbf305e385050dae",
+  "mainCheckoutUnchanged": true,
+  "mainIndexContentsUnchanged": true,
+  "userDiffUnchanged": true,
+  "matchingGeneratedViews": [
+    "docs/product/plan-views/adoption-inventory.md",
+    "docs/product/plan-views/capabilities.md",
+    "docs/product/plan-views/dependencies-decisions.md",
+    "docs/product/plan-views/execution-brief.md"
+  ],
+  "executed": false,
+  "published": false
+}
