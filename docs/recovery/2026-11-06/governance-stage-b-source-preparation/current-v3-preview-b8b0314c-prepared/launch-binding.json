@@ -1,0 +1,72 @@
+{
+  "status": "prepared-not-started",
+  "source": "b8b0314c",
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "backend": "127.0.0.1:5291",
+  "proxy": "127.0.0.1:5290",
+  "files": [
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/preview_proxy.py",
+      "bytes": 8135,
+      "sha256": "fc7f08f12b3f775df01b033ef9bab1def27f1761838548fb71afe454eba0fbbe"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/launch_preview.py",
+      "bytes": 3983,
+      "sha256": "b15008075f06f0a560b1a9b25aa8495e4c94451c986f11c1696f463b10ce3d24"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/backend.sb",
+      "bytes": 384,
+      "sha256": "f75ef934d2cdbfa9424754bd5b94aaf78885ede851d2786853cbab8616f53a7b"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/proxy.sb",
+      "bytes": 269,
+      "sha256": "0aed056fc1ec4da58eda46a9ca3be0683250f0628250ee97d726dcf853629b3f"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/asset-manifest.json",
+      "bytes": 361774,
+      "sha256": "91807f0a55b5cc2dd5008b5d18e24c63edf392af6abb3517ff8e1c054a9ed74c"
+    },
+    {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "bytes": 122129232,
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+    },
+    {
+      "path": "/usr/bin/python3",
+      "bytes": 200560,
+      "sha256": "ed6f5284033aa2aae6a58427c25ba3ab119947b40365627b24e5d51a4b70a1cd"
+    },
+    {
+      "path": "/usr/bin/sandbox-exec",
+      "bytes": 135136,
+      "sha256": "10cf4a46a575e4747d2419cf343800db0d11ae6e6e9b8415998d3d8f336b2a92"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/stage/node_modules/next/dist/bin/next",
+      "bytes": 28419,
+      "sha256": "925f10f488ca8bf8fcf062aeef14024b33b1739e90b539f7f8af264dd85ab3c3"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/stage/.next/BUILD_ID",
+      "bytes": 21,
+      "sha256": "769a0efc04d6ec92628b88b52ffc5cfd94901c8d6dc84233457431281001d2a3"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/completed-observation.json",
+      "bytes": 419375,
+      "sha256": "02d1ecd964d844cba49259e22c41733270e6258ab7be325f5af68b24daaec721"
+    }
+  ],
+  "cacheDirectory": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/stage/.next/cache/images",
+    "device": 16777232,
+    "inode": 20178026,
+    "uid": 501,
+    "mode": 448
+  },
+  "runtimeDataAddition": "ONLY fixed owned image cache directory in preview clone; original acceptedstage unchanged"
+}

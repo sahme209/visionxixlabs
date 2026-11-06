@@ -1,0 +1,31 @@
+{
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "markerMatched": true
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "markerMatched": true
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "markerMatched": true
+    },
+    {
+      "path": "/api/desktop/governance-intelligence/read",
+      "status": 403,
+      "markerMatched": null
+    },
+    {
+      "path": "/app",
+      "status": 403,
+      "markerMatched": null
+    }
+  ],
+  "realProviderCalls": false
+}

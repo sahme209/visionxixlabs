@@ -1,0 +1,18 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS",
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "manifestSha256": "91807f0a55b5cc2dd5008b5d18e24c63edf392af6abb3517ff8e1c054a9ed74c",
+  "launchBindingSha256": "82912e4278ebc06325f8cf811eb9cd1306238dd9dc6b93a74d7f633097b1a400",
+  "metadataRecordsChecked": 1113,
+  "publicAssetsChecked": 45,
+  "staticAssetsChecked": 1152,
+  "internalSymlinksChecked": 53,
+  "allowlistedPublicRoutes": 47,
+  "guardBehaviorUnchanged": true,
+  "rootPortsAvailableBeforeStartup": [
+    5290,
+    5291
+  ],
+  "runtimeGovernanceAccepted": false
+}

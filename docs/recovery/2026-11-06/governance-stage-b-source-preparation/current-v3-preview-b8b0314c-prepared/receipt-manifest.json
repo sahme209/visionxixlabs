@@ -1,0 +1,67 @@
+{
+  "files": [
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/preview_proxy.py",
+      "savedPath": "preview_proxy.py",
+      "sha256": "fc7f08f12b3f775df01b033ef9bab1def27f1761838548fb71afe454eba0fbbe",
+      "size": 8135
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/launch_preview.py",
+      "savedPath": "launch_preview.py",
+      "sha256": "b15008075f06f0a560b1a9b25aa8495e4c94451c986f11c1696f463b10ce3d24",
+      "size": 3983
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/backend.sb",
+      "savedPath": "backend.sb",
+      "sha256": "f75ef934d2cdbfa9424754bd5b94aaf78885ede851d2786853cbab8616f53a7b",
+      "size": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/proxy.sb",
+      "savedPath": "proxy.sb",
+      "sha256": "0aed056fc1ec4da58eda46a9ca3be0683250f0628250ee97d726dcf853629b3f",
+      "size": 269
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/asset-manifest.json",
+      "savedPath": "asset-manifest.json",
+      "sha256": "91807f0a55b5cc2dd5008b5d18e24c63edf392af6abb3517ff8e1c054a9ed74c",
+      "size": 361774
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/launch-binding.json",
+      "savedPath": "launch-binding.json",
+      "sha256": "82912e4278ebc06325f8cf811eb9cd1306238dd9dc6b93a74d7f633097b1a400",
+      "size": 3223
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/clone-observation.json",
+      "savedPath": "clone-observation.json",
+      "sha256": "15671604798b25643aae070ad729a32fc5031abd2198cdad5cfe4431557bb1a9",
+      "size": 1009
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/preparation-first-attempt.json",
+      "savedPath": "preparation-first-attempt.json",
+      "sha256": "f773ad2027cebd2c2c24268ab5c49f2cde5a607da93e6d84e2a4dc8063e68184",
+      "size": 486
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/clone-stdout.log",
+      "savedPath": "clone-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/clone-stderr.log",
+      "savedPath": "clone-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "status": "prepared-not-started-independentguardreviewpending",
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "executionAuthorized": false
+}

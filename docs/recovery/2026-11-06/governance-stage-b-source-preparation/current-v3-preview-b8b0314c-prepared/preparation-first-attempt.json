@@ -1,0 +1,18 @@
+{
+  "execSession": 80376,
+  "exit": 1,
+  "phase": "manifest-prerender-only-assertion",
+  "cloneCommandExit": 0,
+  "cloneRepeated": false,
+  "failedAssertion": "all priorfinitepublicpages mustbeprerendered",
+  "actualSSRpublicRoutes": [
+    "/contact",
+    "/demo",
+    "/integrations",
+    "/plans",
+    "/status",
+    "/support"
+  ],
+  "resolution": "samefiniteallowlist confirmedbyactualNextapp-path-routes-manifest; resumeordinarymanifestonly authorizedbyroot",
+  "started": false
+}

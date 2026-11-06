@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "/bin/cp",
+    "-cR",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/stage",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/stage"
+  ],
+  "exit": 0,
+  "cloneExitEvidence": "prior80376 gotpast successfulcp assertion; no recopy",
+  "timeoutSeconds": 120,
+  "sourceStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/stage",
+  "previewStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290/stage",
+  "acceptedObservationSha256": "02d1ecd964d844cba49259e22c41733270e6258ab7be325f5af68b24daaec721",
+  "publicAssets": 45,
+  "nextStaticAssets": 1152,
+  "noSecondBuild": true,
+  "started": false,
+  "portsChecked": false,
+  "old5282Untouched": true,
+  "authorityReference": "call_HoKW5uadHa0HSPHYnGveqI2p"
+}

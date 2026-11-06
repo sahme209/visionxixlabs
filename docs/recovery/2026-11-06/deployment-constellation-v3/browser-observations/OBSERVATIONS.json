@@ -1,0 +1,54 @@
+{
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "url": "http://127.0.0.1:5290/",
+  "browser": "IAB",
+  "tab": "26",
+  "naturalViewport": {
+    "width": 907,
+    "height": 853,
+    "documentWidth": 901
+  },
+  "observations": [
+    "Initial scene has seven named deployment inspection controls",
+    "Actual pointer movement over artifact changes scene/readout to Build artifact; leaving restores Repository",
+    "Production click shows Production held and its no-action boundary",
+    "Keyboard Tab from Production previews Evidence; Tab away restores committed Production",
+    "Mobile390x844 has documentWidth384 and all seven named object buttons44px high/169.5px wide",
+    "Mobile production control selects held state",
+    "Temporary viewport override reset; default Repository restored and tab marked deliverable"
+  ],
+  "screenshots": [
+    {
+      "path": "axiom-deployment-constellation-v3-home.jpg",
+      "sha256": "2c8423003d731e01b15112adb61e0002c22767dea1fc97cb8e81b61e357463cd",
+      "bytes": 64858,
+      "imagePixels": [
+        901,
+        848
+      ]
+    },
+    {
+      "path": "axiom-deployment-constellation-v3-hover.jpg",
+      "sha256": "2acd9cc4bba31581382dd68d8bd1201c75bf03a886f4df94ed833f47dbff70ce",
+      "bytes": 68459,
+      "imagePixels": [
+        901,
+        848
+      ]
+    },
+    {
+      "path": "axiom-deployment-constellation-v3-mobile.jpg",
+      "sha256": "ac42f7e56464894cee64f5466056bc8eb09809286a57e425b2ef10135f3a33c7",
+      "bytes": 27495,
+      "imagePixels": [
+        384,
+        831
+      ]
+    }
+  ],
+  "limitations": [
+    "Partial representative browser acceptance only",
+    "No assistive technology audit, cross-browser acceptance or performance benchmark",
+    "No live provider action, custody or Governance activation established"
+  ]
+}
