@@ -1,0 +1,13 @@
+{
+  "artifactExecutionPerformed": false,
+  "gitExecuted": false,
+  "gitObjectBytes": 64726092,
+  "gitObjectFiles": 3822,
+  "originalRepo": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+  "qualification": "unavailable",
+  "sourceFileCount": 54,
+  "sourceRevision": "b8ced685ab8d1e46ed4d23ee1b7babbecd19d20e",
+  "stagedRepo": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-source-fixture-b8ced685-v2/repo",
+  "receiptPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-source-fixture-b8ced685-v2/copy-receipt.json",
+  "receiptSha256": "d78d02248131330394cc476cb970b7ad9fb412c33c112c1f1d260e0db8430e97"
+}

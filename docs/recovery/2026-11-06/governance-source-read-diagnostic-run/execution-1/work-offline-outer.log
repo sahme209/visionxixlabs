@@ -1,0 +1,1 @@
+{"error": "stage_a_artifact_unavailable", "gitDiagnostic": {"category": "os_access_refusal", "exit": 128, "operation": "revision"}, "offlineDiagnostic": {"phase": "source", "reason": "exact_git_read_failed"}}
