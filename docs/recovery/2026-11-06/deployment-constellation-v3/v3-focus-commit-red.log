@@ -1,0 +1,38 @@
+
+ RUN  v4.1.11 /private/tmp/axiom-assembly-check-92z2210h/source
+
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts (9 tests | 1 failed | 8 skipped) 71ms
+   ↓ uses the same selected record in the scene and semantic explanation
+   ↓ keeps modified/composing keyboard input untouched and separates instances
+   ↓ shows all three possible outcomes and has no network, timer or storage operation
+   ↓ mounts the actual shared assembly in Home first screen without losing its primary route or availability limits
+   ↓ server renders a complete ordered no-JavaScript reading of every record and boundary
+   ↓ keeps the compact hero object and essential limits visible while details open deliberately
+   ↓ previews a physical object on hover/focus, restores on leave, and commits the same inspection by touch click
+   ↓ server renders seven distinct deployment objects and their named equivalent controls
+   × commits a touch choice over an earlier focus preview even without a blur event 70ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/GovernanceAssembly.test.ts > commits a touch choice over an earlier focus preview even without a blur event
+AssertionError: expected 'gate' to be 'production' // Object.is equality
+
+Expected: "production"
+Received: "gate"
+
+ ❯ components/marketing/__tests__/GovernanceAssembly.test.ts:111:54
+    109|  fireEvent.click(production);
+    110|  expect(production.getAttribute('aria-pressed')).toBe('true');
+    111|  expect(scene.getAttribute('data-inspected-object')).toBe('production'…
+       |                                                      ^
+    112|  expect(screen.getByRole('region',{name:'Separate requester execution'…
+    113| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 8 skipped (9)
+   Start at  19:02:12
+   Duration  670ms (transform 95ms, setup 0ms, import 227ms, tests 71ms, environment 310ms)
+

@@ -1,0 +1,14 @@
+
+ RUN  v4.1.11 /private/tmp/axiom-assembly-check-92z2210h/source
+
+ ✓ components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts (3 tests) 230ms
+ ✓ components/marketing/__tests__/GovernanceAssembly.test.ts (8 tests) 246ms
+ ✓ components/marketing/__tests__/ProductHierarchy.test.ts (2 tests) 92ms
+ ✓ components/marketing/__tests__/governanceAssemblyModel.test.ts (4 tests) 5ms
+ ✓ components/marketing/__tests__/HomepageMediaShowcase.test.ts (6 tests) 2ms
+
+ Test Files  5 passed (5)
+      Tests  23 passed (23)
+   Start at  18:54:48
+   Duration  1.93s (transform 116ms, setup 0ms, import 350ms, tests 575ms, environment 742ms)
+

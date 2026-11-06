@@ -1,0 +1,9 @@
+{
+  "exit": 0,
+  "elapsedSeconds": 0.664376667,
+  "selectedTests": 3,
+  "sourceHashes": {
+    "components/marketing/GovernanceAssembly.tsx": "465c796ef8d610f363467bd4cccd281d26c0623017828a975ca93d2c4be305bc",
+    "components/marketing/__tests__/GovernanceAssembly.test.ts": "5bcd5c23cdd7a53d8aefa21447bf7730f0c7700e38175393fea427c61c09530f"
+  }
+}

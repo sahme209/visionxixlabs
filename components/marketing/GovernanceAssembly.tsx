@@ -1,57 +1,22 @@
 "use client";
 
-import {useEffect,useId,useRef,useState,type KeyboardEvent,type PointerEvent} from 'react';
-import {ASSEMBLY_STAGES,deriveAssembly,linePath,platePath,type AssemblyView,type WorldPoint} from './governanceAssemblyModel';
+import {useId,useRef,useState,type KeyboardEvent} from 'react';
+import {ASSEMBLY_STAGES,DEPLOYMENT_OBJECTS,PRIMARY_OBJECTS,deriveAssembly,type AssemblyView,type DeploymentObjectId} from './governanceAssemblyModel';
+import {DeploymentConstellationScene} from './DeploymentConstellationScene';
 import styles from './GovernanceAssembly.module.css';
-
-/** Original SVG geometry; Hairline construction/Teardown inspection adapted, no upstream runtime. */
-function RecordFeatures({index,x,y,z,camera}:{index:number;x:number;y:number;z:number;camera:number}){
- const line=(points:WorldPoint[])=>linePath(points,camera);
- const rule=(a:number,b:number,c:number,d:number)=>line([[x+a,y+b,z],[x+c,y+d,z]]);
- const box=(a:number,b:number,w:number,h:number)=>platePath(x+a,y+b,w,h,z,camera,2);
- if(index===0)return <g className={styles.detail}>
-  {[0,1,2].map(i=><path key={i} d={box(-51+i*28,-24,21,44)}/>)}
-  {[0,1,2].map(i=><path key={i} d={rule(-47+i*28,-12,-35+i*28,-12)}/>)}
-  <path d={rule(-52,30,52,30)}/><path d={rule(-52,34,28,34)}/>
- </g>;
- if(index===1)return <g className={styles.detail}>
-  <path d={box(-53,-28,106,56)}/>
-  {[-16,-5,6,17].map((v,i)=><path key={v} d={rule(-41,v,i===1?2:41,v)}/>)}
-  <path d={rule(15,-9,15,-1)}/><path d={rule(11,-5,19,-5)}/>
- </g>;
- if(index===2)return <g className={styles.detail}>
-  <path d={box(-53,-28,48,56)}/><path d={box(5,-28,48,56)}/>
-  {[-14,-2,10].flatMap(v=>[-1,1].map(side=><path key={`${v}:${side}`} d={rule(side<0?-43:15,v,side<0?-15:43,v)}/>))}
-  <path d={rule(0,-34,0,34)}/>
- </g>;
- if(index===3)return <g className={styles.detail}>
-  <path d={box(-52,-26,104,52)}/><path d={box(-39,-13,46,26)}/>
-  <path d={rule(19,-21,19,21)}/><path d={rule(26,-21,26,21)}/>
-  <path d={box(14,-4,22,8)}/>
- </g>;
- return <g className={styles.detail}>
-  {[-24,-3,18].map(v=><g key={v}><path d={box(-52,v,104,14)}/><path d={rule(-36,v+7,38,v+7)}/></g>)}
- </g>;
-}
 
 export function GovernanceAssembly({compact=false}:{compact?:boolean}){
  const prefix=useId(),panelId=`${prefix}-record`,sceneId=`${prefix}-scene`,helpId=`${prefix}-help`;
- const [selected,setSelected]=useState(0),[view,setView]=useState<AssemblyView>('inspect'),[camera,setCamera]=useState(0),[reduced,setReduced]=useState(false);
+ const [committed,setCommitted]=useState<DeploymentObjectId>('repository'),[hovered,setHovered]=useState<DeploymentObjectId|null>(null),[focused,setFocused]=useState<DeploymentObjectId|null>(null),[view,setView]=useState<AssemblyView>('inspect'),[camera,setCamera]=useState(0);
  const controls=useRef<(HTMLButtonElement|null)[]>([]);
  const [detailsOpen,setDetailsOpen]=useState(false);
- function selectStage(index:number){setSelected(index);setView('inspect');if(compact)setDetailsOpen(true)}
- useEffect(()=>{const media=window.matchMedia?.('(prefers-reduced-motion: reduce)');if(!media)return;const update=()=>setReduced(media.matches);update();media.addEventListener?.('change',update);return()=>media.removeEventListener?.('change',update)},[]);
- const model=deriveAssembly({selected,view,camera});
+ function selectStage(index:number){setCommitted(PRIMARY_OBJECTS[index]);setHovered(null);setFocused(null);setView('inspect');if(compact)setDetailsOpen(true)}
+ function commitObject(id:DeploymentObjectId){setCommitted(id);setHovered(null);setFocused(null);setView('inspect')}
+ const model=deriveAssembly({selected:0,objectId:hovered??focused??committed,view,camera}),selected=model.selected;
  function navigate(event:KeyboardEvent<HTMLButtonElement>,index:number){
   if(event.altKey||event.ctrlKey||event.metaKey||event.shiftKey||event.nativeEvent.isComposing||event.nativeEvent.keyCode===229)return;
   const key=event.key;const next=key==='Home'?0:key==='End'?4:key==='ArrowRight'||key==='ArrowDown'?(index+1)%5:key==='ArrowLeft'||key==='ArrowUp'?(index+4)%5:null;
   if(next===null)return;event.preventDefault();selectStage(next);controls.current[next]?.focus();
- }
- function orbit(event:PointerEvent<HTMLDivElement>){
-  if(reduced||event.pointerType!=='mouse'||!window.matchMedia?.('(hover: hover) and (pointer: fine)').matches)return;
-  const rect=event.currentTarget.getBoundingClientRect();if(rect.width<=0)return;
-  // Fixed stage bounds affect only ornamental camera orientation, never stage selection.
-  setCamera(Math.max(-8,Math.min(8,((event.clientX-rect.left)/rect.width-.5)*16)));
  }
  const recordPanel=(
    <div id={panelId} role="region" aria-labelledby={`${prefix}-stage-${selected+1}`} className={styles.record}>
@@ -69,38 +34,29 @@ export function GovernanceAssembly({compact=false}:{compact?:boolean}){
     </div>
    </div>
  );
- return <section className={`${styles.assembly} ${compact?styles.compact:''}`} aria-label="Explore the evidence assembly">
-  <div className={styles.intro}><p className={styles.eyebrow}>Inside a governed decision</p><p className={styles.instruction}>Five records. Distinct responsibilities.</p></div>
-  <p id={helpId} className={styles.caption}>Conceptual illustration · local explanation only. Choose a stage to inspect its record; no actions are performed.</p>
+ return <section className={`${styles.assembly} ${compact?styles.compact:''}`} aria-label="Explore the deployment constellation">
+  <div className={styles.intro}><p className={styles.eyebrow}>Inside a deployment decision</p><p className={styles.instruction}>Inspect the objects behind a deployment.</p></div>
+  <p id={helpId} className={styles.caption}>Conceptual illustration · local explanation only. Hover, focus or choose an object to inspect its record; no actions are performed.</p>
   <noscript><div className={styles.staticReading}>
    <h3>Read the complete workflow</h3><p>Interactive controls require JavaScript. All five conceptual records and their limits are available below.</p>
+   <ul aria-label="Deployment objects">{DEPLOYMENT_OBJECTS.map(object=><li key={object.id}><h4>{object.label}</h4><p>{object.detail}</p></li>)}</ul>
    <ol>{ASSEMBLY_STAGES.map(stage=><li key={stage.number}><h4>{stage.number} · {stage.title}</h4><p>{stage.detail}</p><p>{stage.boundary}</p></li>)}</ol>
   </div></noscript>
   <ol aria-label="Conceptual workflow" aria-describedby={helpId} className={styles.stages}>
    {ASSEMBLY_STAGES.map((stage,index)=><li key={stage.number}><h3><button id={`${prefix}-stage-${index+1}`} ref={node=>{controls.current[index]=node}} type="button" aria-pressed={selected===index} aria-controls={panelId} onClick={()=>selectStage(index)} onKeyDown={event=>navigate(event,index)}><span className={styles.number} aria-hidden="true">{stage.number}</span><span>{stage.title}</span></button></h3></li>)}
   </ol>
   <div className={styles.workspace}>
-   <div className={styles.visual} onPointerMove={orbit} onPointerLeave={()=>setCamera(0)}>
-    <svg id={sceneId} className={styles.scene} viewBox="0 0 640 470" role="img" aria-label={`Evidence assembly — ${model.record.title}. Conceptual records, not execution status.`} data-selected-stage={model.selected} data-view={model.view}>
-     <title>One folio, five separate records</title><desc>Layered repository, proposal, review, requester intent and outcome records. Inspect separates the layers. Stage buttons provide the same explanation without interpreting the drawing.</desc>
-     <defs>
-      <linearGradient id={`${prefix}-matte`} x1="0" y1="0" x2=".8" y2="1"><stop stopColor="var(--face-light)"/><stop offset="1" stopColor="var(--face-dark)"/></linearGradient>
-      <linearGradient id={`${prefix}-base`} x1="0" y1="0" x2="1" y2="1"><stop stopColor="var(--base-light)"/><stop offset="1" stopColor="var(--base-dark)"/></linearGradient>
-     </defs>
-     <g aria-hidden="true">
-      <path className={styles.baseSide} d={platePath(-97,-66,194,132,-7,camera,11)}/><path className={styles.base} style={{fill:`url(#${prefix}-base)`}} d={platePath(-97,-66,194,132,0,camera,11)}/>
-      <path className={styles.guide} d={linePath([[-76,-45,5],[-76,-45,153]],camera)}/><path className={styles.guide} d={linePath([[76,45,5],[76,45,153]],camera)}/>
-      {model.paintOrder.map(index=>model.plates[index]).map(plate=><g key={plate.index} data-plate={plate.index} className={`${styles.plate} ${plate.active?styles.active:''}`}>
-       <path className={styles.plateSide} d={platePath(-75+plate.x,-45+plate.y,150,90,plate.z-5,camera,8)}/>
-       <path className={styles.plateFace} style={{fill:`url(#${prefix}-matte)`}} d={platePath(-75+plate.x,-45+plate.y,150,90,plate.z,camera,8)}/>
-       <path className={styles.crease} d={platePath(-70+plate.x,-40+plate.y,140,80,plate.z+.1,camera,5)}/>
-       <RecordFeatures index={plate.index} x={plate.x} y={plate.y} z={plate.z+.3} camera={camera}/>
-       <path className={styles.tab} d={platePath(-63+plate.x+plate.index*24,45+plate.y,17,8,plate.z,camera,2)}/>
-      </g>)}
-      <path className={styles.baseMark} d={linePath([[-56,72,0],[-23,72,0]],camera)}/>
-     </g>
-    </svg>
-    <div className={styles.sceneMeta} aria-hidden="true"><span>Evidence assembly / {model.record.number}</span><span>{view==='inspect'?'Separated layers':'Resting assembly'}</span></div>
+   <div className={styles.visual}>
+    <div className={styles.constellation}>
+     <svg id={sceneId} className={styles.scene} viewBox="0 0 640 470" role="img" aria-label={`Deployment constellation — ${model.object.label}. Conceptual objects, no actions performed.`} data-selected-stage={model.selected} data-view={model.view} data-inspected-object={model.object.id}>
+      <title>Repository, artifact, review gate, services, environments and evidence</title><desc>Seven original deployment objects. Production remains held behind a broken conceptual route. Hover, keyboard focus and touch buttons inspect the same local model.</desc>
+      <DeploymentConstellationScene model={model} prefix={prefix} onHover={setHovered} onLeave={()=>setHovered(null)}/>
+     </svg>
+     <div className={styles.objectControls} role="group" aria-label="Deployment object inspection">
+      {DEPLOYMENT_OBJECTS.map(object=><button key={object.id} type="button" className={styles.objectButton} aria-label={`Inspect ${object.label}`} aria-controls={panelId} aria-describedby={`${prefix}-inspection`} aria-pressed={committed===object.id} data-active={model.object.id===object.id} onPointerEnter={event=>{if(event.pointerType!=='touch')setHovered(object.id)}} onPointerLeave={()=>setHovered(null)} onFocus={()=>setFocused(object.id)} onBlur={()=>setFocused(null)} onClick={()=>commitObject(object.id)}><span>{object.label}</span></button>)}
+     </div>
+    </div>
+    <p id={`${prefix}-inspection`} className={styles.inspectionReadout}><strong>{model.object.label}</strong><span>{model.object.detail}</span></p>
    </div>
    {compact?<details className={styles.compactDetails} open={detailsOpen} onToggle={event=>setDetailsOpen(event.currentTarget.open)}><summary>Read the selected record</summary>{recordPanel}</details>:recordPanel}
   </div>

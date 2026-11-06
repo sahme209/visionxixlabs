@@ -1,0 +1,37 @@
+{
+  "scope": "v3 user-directed deployment constellation, not final folio",
+  "files": [
+    {
+      "path": "components/marketing/GovernanceAssembly.tsx",
+      "sha256": "465c796ef8d610f363467bd4cccd281d26c0623017828a975ca93d2c4be305bc"
+    },
+    {
+      "path": "components/marketing/DeploymentConstellationScene.tsx",
+      "sha256": "8bbaeabcadfbcd12d9cee8ed2791dea9c98bc9f02421ea007306006e5ee228f5"
+    },
+    {
+      "path": "components/marketing/governanceAssemblyModel.ts",
+      "sha256": "f9cc32d8f8a1b73fd9a19528a70a9321f08ac673f81d3977041853d23dc922be"
+    },
+    {
+      "path": "components/marketing/GovernanceAssembly.module.css",
+      "sha256": "10c2fea495c4a94f33aa1e13bfe7aa88bbc5d628d0db44a4e46934cc5d8e8b76"
+    },
+    {
+      "path": "app/page.tsx",
+      "sha256": "a6dbbbdc1f1621b34385a0b899c179a2f8adf13f116ee1280419a9767efc905a"
+    },
+    {
+      "path": "components/marketing/__tests__/GovernanceAssembly.test.ts",
+      "sha256": "5bcd5c23cdd7a53d8aefa21447bf7730f0c7700e38175393fea427c61c09530f"
+    },
+    {
+      "path": "components/marketing/__tests__/governanceAssemblyModel.test.ts",
+      "sha256": "2d0a24e406b9016b80d2d841a31c5d65718ca4ea7736702d512fd703e0099dbf"
+    }
+  ],
+  "testNote": "23tests passed before type-only widening of pure Solid default-parameter annotations; strict/noEmit then passed current exact runtime source. No runtime semantics changed after tests.",
+  "upstream": "reviewed Hairline/Teardown techniques adapted; no upstream engine imported/executed",
+  "browserAccepted": false,
+  "followup": "Independent focus/commit defect reproduced then fixed: focused transient preview cleared on commit;3relevant tests pass/6skipped. Prior23fullselection pass remains historical, not rerun. No type/interface change; no repeated types/build."
+}

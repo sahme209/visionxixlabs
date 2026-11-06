@@ -17,15 +17,15 @@ it('uses the same selected record in the scene and semantic explanation',()=>{
  const list=screen.getByRole('list',{name:'Conceptual workflow'});
  const stages=within(list).getAllByRole('button');
  fireEvent.click(stages[3]);
- expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-selected-stage')).toBe('3');
+ expect(screen.getByRole('img',{name:/Deployment constellation/}).getAttribute('data-selected-stage')).toBe('3');
  expect(screen.getByRole('region',{name:'Separate requester execution'})).toBeTruthy();
- expect(screen.getByRole('img',{name:/Evidence assembly/}).querySelectorAll('[data-plate]')[4].getAttribute('data-plate')).toBe('3');
+ expect(screen.getByRole('img',{name:/Deployment constellation/}).getAttribute('data-inspected-object')).toBe('staging');
  fireEvent.click(screen.getByRole('button',{name:'Inspect layers'}));
- expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-view')).toBe('inspect');
+ expect(screen.getByRole('img',{name:/Deployment constellation/}).getAttribute('data-view')).toBe('inspect');
  fireEvent.click(screen.getByRole('button',{name:'Camera right'}));
  expect(stages[3].getAttribute('aria-pressed')).toBe('true');
  fireEvent.click(screen.getByRole('button',{name:'Assemble layers'}));
- expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-view')).toBe('assembled');
+ expect(screen.getByRole('img',{name:/Deployment constellation/}).getAttribute('data-view')).toBe('assembled');
 });
 it('keeps modified/composing keyboard input untouched and separates instances',()=>{
  render(createElement('div',null,createElement(GovernanceAssembly),createElement(GovernanceAssembly)));
@@ -51,7 +51,7 @@ it('mounts the actual shared assembly in Home first screen without losing its pr
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();
  expect(within(first).getByText('Existing media fixture')).toBeTruthy();
  const purpose=within(first).getByText(/^A governed workspace for deployments and connected operational changes/);
- expect(purpose.compareDocumentPosition(within(first).getByRole('img',{name:/Evidence assembly/}))&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ expect(purpose.compareDocumentPosition(within(first).getByRole('img',{name:/Deployment constellation/}))&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
 });
 
 it('server renders a complete ordered no-JavaScript reading of every record and boundary',()=>{
@@ -70,11 +70,44 @@ it('keeps the compact hero object and essential limits visible while details ope
  render(createElement(GovernanceAssembly,{compact:true}));
  const disclosure=screen.getByText('Read the selected record').closest('details')!;
  expect(disclosure.open).toBe(false);
- expect(screen.getByRole('img',{name:/Evidence assembly/})).toBeTruthy();
+ expect(screen.getByRole('img',{name:/Deployment constellation/})).toBeTruthy();
  expect(screen.getByText(/Governance Intelligence remains incomplete/).closest('details')).toBeNull();
  expect(screen.getByText(/no actions are performed/).closest('details')).toBeNull();
  const stages=within(screen.getByRole('list',{name:'Conceptual workflow'})).getAllByRole('button');
  fireEvent.click(stages[2]);expect(disclosure.open).toBe(true);
  expect(screen.getByRole('region',{name:'Independent review'})).toBeTruthy();
- expect(screen.getByRole('img',{name:/Evidence assembly/}).getAttribute('data-view')).toBe('inspect');
+ expect(screen.getByRole('img',{name:/Deployment constellation/}).getAttribute('data-view')).toBe('inspect');
+});
+
+it('previews a physical object on hover/focus, restores on leave, and commits the same inspection by touch click',()=>{
+ render(createElement(GovernanceAssembly));
+ const scene=screen.getByRole('img',{name:/Deployment constellation/});
+ const artifact=scene.querySelector('[data-hit-target="artifact"]')!;
+ fireEvent.pointerOver(artifact);expect(scene.getAttribute('data-inspected-object')).toBe('artifact');
+ fireEvent.pointerOut(artifact);expect(scene.getAttribute('data-inspected-object')).toBe('repository');
+ const gate=screen.getByRole('button',{name:'Inspect Review gate'});
+ fireEvent.focus(gate);expect(scene.getAttribute('data-inspected-object')).toBe('gate');
+ fireEvent.blur(gate);expect(scene.getAttribute('data-inspected-object')).toBe('repository');
+ fireEvent.click(screen.getByRole('button',{name:'Inspect Production · held'}));
+ expect(scene.getAttribute('data-inspected-object')).toBe('production');expect(scene.getAttribute('data-selected-stage')).toBe('3');
+ fireEvent.pointerOver(artifact);fireEvent.pointerOut(artifact);expect(scene.getAttribute('data-inspected-object')).toBe('production');
+ const held=scene.querySelector('[data-route="production"]')!;expect(held.getAttribute('data-held')).toBe('true');expect(held.querySelectorAll('path')).toHaveLength(2);
+});
+it('server renders seven distinct deployment objects and their named equivalent controls',()=>{
+ const markup=renderToStaticMarkup(createElement(GovernanceAssembly,{compact:true}));const doc=new DOMParser().parseFromString(markup,'text/html');
+ expect(doc.querySelectorAll('[data-object]')).toHaveLength(7);expect(doc.querySelectorAll('[data-hit-target]')).toHaveLength(7);
+ const fallback=doc.querySelector('noscript')!;expect(fallback.querySelectorAll('ul > li')).toHaveLength(7);
+ expect(fallback.textContent).toContain('Production · held');expect(fallback.textContent).toContain('does not run or authorize a deployment');
+});
+
+it('commits a touch choice over an earlier focus preview even without a blur event',()=>{
+ render(createElement(GovernanceAssembly));
+ fireEvent.focus(screen.getByRole('button',{name:'Inspect Review gate'}));
+ const scene=screen.getByRole('img',{name:/Deployment constellation/});
+ expect(scene.getAttribute('data-inspected-object')).toBe('gate');
+ const production=screen.getByRole('button',{name:'Inspect Production · held'});
+ fireEvent.click(production);
+ expect(production.getAttribute('aria-pressed')).toBe('true');
+ expect(scene.getAttribute('data-inspected-object')).toBe('production');
+ expect(screen.getByRole('region',{name:'Separate requester execution'})).toBeTruthy();
 });

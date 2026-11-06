@@ -1,0 +1,11 @@
+{
+  "exit": 0,
+  "elapsedSeconds": 0.42452620799999996,
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/private/tmp/axiom-assembly-check-92z2210h/source/node_modules/typescript/bin/tsc",
+    "--project",
+    "/private/tmp/axiom-assembly-check-92z2210h/tsconfig-scene.json"
+  ],
+  "scope": "three scene/runtime files; framework-equivalent CSS module type declaration, strict/noEmit; not whole app build"
+}

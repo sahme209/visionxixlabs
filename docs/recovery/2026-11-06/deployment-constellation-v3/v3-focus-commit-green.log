@@ -1,0 +1,10 @@
+
+ RUN  v4.1.11 /private/tmp/axiom-assembly-check-92z2210h/source
+
+ ✓ components/marketing/__tests__/GovernanceAssembly.test.ts (9 tests | 6 skipped) 124ms
+
+ Test Files  1 passed (1)
+      Tests  3 passed | 6 skipped (9)
+   Start at  19:02:27
+   Duration  516ms (transform 84ms, setup 0ms, import 151ms, tests 124ms, environment 183ms)
+
