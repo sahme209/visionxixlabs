@@ -6,7 +6,8 @@ const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
 const SCHEMA='50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031';
 const ENGINE='57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a';
 function prepareSyntheticFixtureRecipe(repo,output,ports={run:child.spawnSync}){
- const root=fs.realpathSync(repo),schema=path.join(root,'prisma/schema.prisma'),engine=path.join(root,'node_modules/@prisma/engines/schema-engine-darwin-arm64'),cli=path.join(root,'node_modules/prisma/build/index.js');
+ const root=fs.realpathSync(repo),schema=path.join(root,'prisma/schema.prisma'),engine=ports.schemaEnginePath===undefined?path.join(root,'node_modules/@prisma/engines/schema-engine-darwin-arm64'):ports.schemaEnginePath,cli=path.join(root,'node_modules/prisma/build/index.js');
+ if(typeof engine!=='string'||!path.isAbsolute(engine)||engine.includes('\0'))throw Error('synthetic_recipe_engine_unavailable');
  if(hash(fs.readFileSync(schema))!==SCHEMA||hash(fs.readFileSync(engine))!==ENGINE||fs.existsSync(output))throw Error('synthetic_recipe_unavailable');
  const original=fs.readFileSync(schema,'utf8');const needle='url      = env("DATABASE_URL")';if(original.split(needle).length!==2)throw Error('synthetic_recipe_datasource_unavailable');
  const staging=fs.mkdtempSync(path.join(os.tmpdir(),'axiom-schema-only-'));let result;const prepared=original.replace(needle,'url      = "postgresql://qualification.invalid/qualification"');try{const input=path.join(staging,'schema.prisma');fs.writeFileSync(input,prepared,{mode:0o600,flag:'wx'});result=ports.run(process.execPath,[cli,'migrate','diff','--from-empty','--to-schema-datamodel',input,'--script'],{cwd:staging,env:{NODE_ENV:'production',PRISMA_SCHEMA_ENGINE_BINARY:engine,PRISMA_HIDE_UPDATE_MESSAGE:'true'},encoding:'utf8',timeout:60000,maxBuffer:8*1024*1024});}finally{fs.rmSync(staging,{recursive:true,force:true});}

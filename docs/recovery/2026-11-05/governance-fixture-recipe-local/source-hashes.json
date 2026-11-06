@@ -1,0 +1,9 @@
+{
+  "scripts/prepare-synthetic-fixture-recipe.cjs": "122c83781b78b914eaf8639ec18ff0001d1a612eb3aee6c1d608444b77559d5d",
+  "scripts/synthetic-fixture-recipe-driver.cjs": "92c792aabd17abdeb9388c03bc1a2e4f6737ec83561c96e489fc00a28e19cf48",
+  "scripts/governance_local_issuer/fixture_recipe_packet.py": "e2c0e9af6c58aa91b767db66a3a14cd7a95530d48a470f31b6da3fb70c3ab103",
+  "scripts/local_prisma_engine_inputs.py": "82e56a85c386ba735a5237c87546e1b41576c37a8f34fdab6769cee36f8743a0",
+  "scripts/tests/test_recipe_packet_driver.cjs": "77ce28c18194284cda4ad4a62ed2ed025693d8b1afae5a9fccc46249ed0b07ec",
+  "scripts/governance_local_issuer/tests/test_fixture_recipe_packet.py": "18dc8d08260db1adaa76470801e5dd02b8d8a2c715b64c93b5f5995cec3b7a09",
+  "lib/governance/qualification/__tests__/syntheticFixtureRecipe.test.ts": "b9b584c236756fb1099ab031b965e50ee9c8a310ec451db5c47f06eb46fb4098"
+}

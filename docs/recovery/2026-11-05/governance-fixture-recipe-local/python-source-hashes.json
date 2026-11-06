@@ -1,0 +1,4 @@
+{
+  "scripts/governance_local_issuer/fixture_recipe_packet.py": "e2c0e9af6c58aa91b767db66a3a14cd7a95530d48a470f31b6da3fb70c3ab103",
+  "scripts/governance_local_issuer/tests/test_fixture_recipe_packet.py": "18dc8d08260db1adaa76470801e5dd02b8d8a2c715b64c93b5f5995cec3b7a09"
+}
