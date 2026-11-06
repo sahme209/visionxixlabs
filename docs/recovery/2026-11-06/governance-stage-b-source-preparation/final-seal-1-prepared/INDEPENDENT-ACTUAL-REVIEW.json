@@ -1,0 +1,21 @@
+{
+  "status": "PASS_static_checkpoint_only",
+  "reviewMode": "ordinary_file_reads_hash_stat_and_byte_comparison_no_helper_execution",
+  "currentBindingsChecked": 26,
+  "mismatches": [],
+  "unchangedOriginalFullMetadataFiles": 12,
+  "inventory": "13 original files plus immutable assembly receipt and sole newCodeResources",
+  "mainSha256": "57a2deb9fb1a4971e35eb2924621c512019aa056e814e32d87b5fd2062378c62",
+  "mainSize": 35472,
+  "mainCdhash": "d48fe6ddfc21c2d7bad9a54bdc288bbfab2c7ab3",
+  "mainPrefixComparison": "equal through16560 except exact numeric fields368/8,384/8,772/4; signature offset16560 size18912",
+  "savedTools": "sign/strictverify/display allcompleted exit0/reaped_original_child; exact baseline and targetAfter joins; allstreams<=65536",
+  "display": "expectedcustodian/TeamFG5N98FE6W/runtime0x10000; parsedentitlements{}",
+  "controller": "completed/driverExit0/187.220285458s/stdout154/stderr0/reaped_original_driver/noerrors",
+  "evidence": {
+    "fixture-postseal.json": "72307f31ed997d7636829aede7f9c1f3e897e907963bf0caea79207437b4f0b9",
+    "fixture-seal-baseline.json": "37d2660891b7efcc239cf8258f0843775409c85a39542fb0c7a96b432541f3b0",
+    "result.json": "48b1ea2990f8c71622ee14c14f0b34f05c62f0d70c7cb98d99423e37eb8e585d"
+  },
+  "authority": "No launch/installation/custody/runtime identity/enforcement/activation acceptance. One signing grant consumed; no retry inferred."
+}
