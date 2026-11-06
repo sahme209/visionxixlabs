@@ -1,0 +1,26 @@
+{
+  "questionId": "call_y7LNwrapWdVjM4XODORO2VUU",
+  "answer": "Approve one conditional four-helper batch",
+  "scope": [
+    "prepare/test/independently review runner",
+    "compile four fixed offline recipes once",
+    "independently review exact compiled outputs",
+    "sign/strictverify/display four detached copies once"
+  ],
+  "roles": [
+    "controller",
+    "owner",
+    "maintenance",
+    "bootstrap"
+  ],
+  "perCommandSeconds": 10,
+  "combinedOutputCap": 65536,
+  "cleanupSeconds": 5,
+  "retry": false,
+  "targetLaunch": false,
+  "accountRootServiceChanges": false,
+  "database": false,
+  "installation": false,
+  "deployment": false,
+  "spending": false
+}

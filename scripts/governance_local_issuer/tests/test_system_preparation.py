@@ -24,7 +24,7 @@ class SystemPreparationTests(unittest.TestCase):
   app=self.stage/'assembly/Axiom Synthetic Custodian.app'
   self.assertTrue((app/'Contents/Info.plist').is_file())
   plist=plistlib.loads((self.stage/'assembly/LaunchDaemons'/f'{s.OWNER_SERVICE}.plist').read_bytes())
-  self.assertEqual(plist['ProgramArguments'],[s.OWNER_PATH]);self.assertEqual(plist['MachServices'],{s.OWNER_SERVICE:True});self.assertFalse(plist['KeepAlive'])
+  self.assertEqual(plist['ProgramArguments'],[s.OWNER_PATH]);self.assertEqual(plist['MachServices'],{s.OWNER_SERVICE:True,s.BROKER_SERVICE:True,s.REQUEST_SERVICE:True});self.assertFalse(plist['KeepAlive']);self.assertFalse(plist['RunAtLoad'])
   self.assertFalse(r['executionAuthorized']);self.assertFalse(r['installationReady']);self.assertFalse(r['activationAllowed'])
   self.assertIn('actual_installation_and_runtime_qualification_missing',r['unresolved'])
   roles={x['role']:x for x in r['compileRecipes']}
