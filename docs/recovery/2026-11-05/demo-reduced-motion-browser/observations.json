@@ -1,0 +1,17 @@
+{
+  "motionInitial": {
+    "guidance": true,
+    "pauseButtons": 0,
+    "playDisabled": true,
+    "preference": true,
+    "step": "1 / 5Step 1 of 5: Choose the working context."
+  },
+  "motionNext": "2 / 5Step 2 of 5: Make a small, reviewable edit.",
+  "motionReplay": {
+    "guidance": true,
+    "pauseButtons": 0,
+    "playDisabled": true,
+    "step": "1 / 5Step 1 of 5: Choose the working context."
+  },
+  "scope": "Actual browser emulated reduce at default 1280x720; manual Code & review steps only; no sustained timer or physical OS-setting test"
+}

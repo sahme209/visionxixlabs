@@ -1,0 +1,11 @@
+{
+  "previewSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "matchingCurrentFiles": {
+    "app/product/page.tsx": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+    "components/marketing/CinematicAxiomDemo.tsx": "37b1b387856bb84435479fa26dadd894d312a659e1e7f998f1c9c7ed9a1c8536",
+    "components/marketing/useStoryPlayback.ts": "9c01f59e03ce0ad783f2a14f709c8107a75fdecab616f5a544262f9a06e3984a",
+    "components/marketing/workflowStories.ts": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0",
+    "components/marketing/WorkflowStoryScene.tsx": "71ca9de87aa3624bc998d74d5a92883ee511c19d4b46e5d35ce8f6b5b39d14fa",
+    "app/globals.css": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4"
+  }
+}
