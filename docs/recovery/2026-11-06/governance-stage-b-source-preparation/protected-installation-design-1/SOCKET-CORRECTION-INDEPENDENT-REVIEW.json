@@ -1,0 +1,14 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS finite local source and tests only",
+  "bindingsMatched": 11,
+  "socketPathBytesIncludingNul": 70,
+  "darwinSunPathBytes": 104,
+  "productionConsumers": 4,
+  "existingHbaIdentPrivacyAndGenerationChecks": "preserved",
+  "hostPermissionDesignResolved": false,
+  "installationReady": false,
+  "recommendedPermissionDirection": "private socket access group; no automatic world-accessible fallback",
+  "newMembershipGrantAuthorized": false,
+  "hostOperationsPerformed": false
+}

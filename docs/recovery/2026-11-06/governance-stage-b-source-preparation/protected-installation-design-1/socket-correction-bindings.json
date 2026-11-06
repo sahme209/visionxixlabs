@@ -1,0 +1,74 @@
+{
+  "format": "axiom.socket-correction-design/1",
+  "oldDirectory": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/fixture/socket",
+  "newDirectory": "/Library/AxiomQ/c3b7bf334ce56a64575183b7a66e5109/socket",
+  "socketSuffix": "/.s.PGSQL.5432",
+  "budget": {
+    "oldDirectoryBytes": 130,
+    "oldFullBytes": 144,
+    "newDirectoryBytes": 55,
+    "newFullBytes": 69,
+    "sunPathBytes": 104,
+    "nulBytes": 1,
+    "newRemainingBytes": 34
+  },
+  "sourceBindings": [
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer.c",
+      "sha256": "45a38b4069ca11ed77a558ed398279783882180fd04a60bac4b6ab99d1758c4e",
+      "size": 13338
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_contract.h",
+      "sha256": "ec5fd7e35fe6eddfca537729d132bb1dbdc72af0e6e586d70ab0bf79cd007b87",
+      "size": 2864
+    },
+    {
+      "path": "lib/governance/qualification/privateSyntheticFixtureProducer.ts",
+      "sha256": "0590a04643552cf48e334d8d8702d40efd1dadd50b3baeeeb41864b54cf3e320",
+      "size": 9837
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureSchedule.ts",
+      "sha256": "bb9999208f16ee744ad3e858b5597b4e827489b9a6c8568917540b1516c141d7",
+      "size": 2500
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureAuthentication.ts",
+      "sha256": "48a254ed9653b02dc48b001dc4a974ffc99050a17a31520c75653c49a5f2acbe",
+      "size": 3334
+    },
+    {
+      "path": "lib/governance/qualification/fixtureAuthorizationFrame.ts",
+      "sha256": "4be8a17aaf209225cad1aa9a9c697cbcc733a5df7406dff6ee16ba64605afc47",
+      "size": 3681
+    },
+    {
+      "path": "scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "f22c68e1dc19319a406bb27ed22de349f290ae8ec8c7c7d51a1b85f0f233564e",
+      "size": 17924
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureAuthentication.test.ts",
+      "sha256": "6af09cc08eaa7dbc2caaf04bc2e2914f651f38f21758055eda011b40ad6db6b4",
+      "size": 4645
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureJoined.test.ts",
+      "sha256": "3f99285f7e9c5d99c169508bf73a28435d88436a9b7230038fa1b2fc49473b0f",
+      "size": 12853
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureSchedule.test.ts",
+      "sha256": "55b7c058dfee68d6337d49bd39645cae3c3518dfb74ff04c359d18b819892072",
+      "size": 2137
+    },
+    {
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/un.h",
+      "sha256": "a733cb89955ef81312f4bc3a42002c6cc873e27381eb43656c7158ef9a433c24",
+      "size": 4671
+    }
+  ],
+  "executionAuthorized": false,
+  "implementationAuthorized": false
+}

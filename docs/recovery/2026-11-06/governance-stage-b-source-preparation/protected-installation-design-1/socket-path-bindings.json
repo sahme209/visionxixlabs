@@ -1,0 +1,55 @@
+{
+  "reviewKind": "ordinary_source_file_and_installed_sdk_header_read_only",
+  "actualHostOrRuntimeProbe": false,
+  "directory": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/fixture/socket",
+  "directoryUtf8Bytes": 130,
+  "normalDefaultPortSocket": "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109/fixture/socket/.s.PGSQL.5432",
+  "normalDefaultPortSocketUtf8Bytes": 144,
+  "sdkSunPathBytes": 104,
+  "bindings": {
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/lib/governance/qualification/privateSyntheticFixtureProducer.ts": {
+      "sha256": "0590a04643552cf48e334d8d8702d40efd1dadd50b3baeeeb41864b54cf3e320",
+      "size": 9837,
+      "references": [
+        {
+          "line": 11,
+          "text": "const SOCKET=ROOT+'/fixture/socket';"
+        },
+        {
+          "line": 23,
+          "text": "async function inspect(client:Client){const rows=await client.$queryRawUnsafe(\"SELECT current_setting('hba_file') AS hba, current_setting('ident_file') AS ident, current_setting('listen_addresses') AS listen, current_setting('unix_socket_directories') AS sockets, current_setting('logging_collector') AS collector, current_setting('log_statement') AS statement, current_setting('log_min_duration_statement') AS duration, current_setting('log_duration') AS logduration, current_setting('log_min_error_statement') AS errors, current_setting('log_parameter_max_length') AS parameters, current_setting('log_parameter_max_length_on_error') AS errorparameters, current_setting('password_encryption') AS encryption\");if(!Array.isArray(rows)||rows.length!==1)return false;const r=rows[0];return r.hba===ROOT+'/fixture/pg_hba.conf'&&r.ident===ROOT+'/fixture/pg_ident.conf'&&r.listen===''&&r.sockets===SOCKET&&r.collector==='off'&&r.statement==='none'&&r.duration==='-1'&&r.logduration==='off'&&r.errors==='panic'&&r.parameters==='0'&&r.errorparameters==='0'&&r.encryption==='scram-sha-256';}"
+        }
+      ]
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/lib/governance/qualification/privateFixtureSchedule.ts": {
+      "sha256": "bb9999208f16ee744ad3e858b5597b4e827489b9a6c8568917540b1516c141d7",
+      "size": 2500,
+      "references": [
+        {
+          "line": 10,
+          "text": " if(r.length!==1||r[0].database!=='axiom_issuer_qualification'||r[0].actor!=='axiom_fixture_runtime'||r[0].listen!==''||r[0].sockets!=='/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/'+FIXTURE_GENERATION+'/fixture/socket')throw Error('fixed_fixture_schedule_unavailable');"
+        }
+      ]
+    },
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_producer.c": {
+      "sha256": "45a38b4069ca11ed77a558ed398279783882180fd04a60bac4b6ab99d1758c4e",
+      "size": 13338,
+      "references": [
+        {
+          "line": 76,
+          "text": " if(ok&&file_hash(FIXTURE_NODE,AX_FIXTURE_NODE_SHA256)&&file_hash(PRODUCER,AX_FIXTURE_PRODUCER_SHA256)&&recipe_files_current()&&shared_backing_protected()&&ax_fixture_maintenance_current()&&axiom_origin_root_current(&root)){char password[65],socket[4096];for(unsigned i=0;i<32;i++)snprintf(password+2*i,3,\"%02x\",material.password[i]);const unsigned char*raw=(const unsigned char*)AX_SYNTH_ROOT \"/fixture/socket\";size_t used=0;for(;*raw;raw++){if(used+4>=sizeof socket){ok=0;break;}if((*raw>='a'&&*raw<='z')||(*raw>='A'&&*raw<='Z')||(*raw>='0'&&*raw<='9')||strchr(\"-_.~\",*raw))socket[used++]=(char)*raw;else{snprintf(socket+used,4,\"%%%02X\",*raw);used+=3;}}socket[used]=0;if(ok){int n=snprintf((char*)out->datasource,sizeof out->datasource,\"postgresql://axiom_fixture_runtime:%s@localhost/axiom_issuer_qualification?host=%s\",password,socket);ok=n>0&&(size_t)n<sizeof out->datasource;if(ok){out->datasource_length=(size_t)n;memcpy(out->vault,material.vault,32);memcpy(out->session,material.session,32);out->session_length=32;}}volatile char*p=password;for(unsigned i=0;i<sizeof password;i++)p[i]=0;}else ok=0;"
+        }
+      ]
+    },
+    "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/un.h": {
+      "sha256": "a733cb89955ef81312f4bc3a42002c6cc873e27381eb43656c7158ef9a433c24",
+      "size": 4671,
+      "references": [
+        {
+          "line": 79,
+          "text": "\tchar            sun_path[104];  /* [XSI] path name (gag) */"
+        }
+      ]
+    }
+  }
+}
