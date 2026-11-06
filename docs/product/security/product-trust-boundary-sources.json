@@ -1,0 +1,427 @@
+{
+  "sourceCommit": "ce754fb4baea8aba8554537e3b9fbef54a4e4cdf",
+  "classification": "internal source-only assessment; not deployed control evidence",
+  "sources": {
+    "identity": {
+      "path": "lib/auth/currentContext.ts",
+      "sha256": "8ad71ac9507376030ec947824abcabb455568407e513c1f530d008915b2da907",
+      "lineCount": 187,
+      "ranges": [
+        {
+          "start": 47,
+          "end": 143,
+          "sha256": "787e3a9c5c65e86300998ac085d04f57bd91bb177b7433f981753874bb01470c"
+        }
+      ]
+    },
+    "device-token": {
+      "path": "lib/desktop/privateDesktopToken.ts",
+      "sha256": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba",
+      "lineCount": 63,
+      "ranges": [
+        {
+          "start": 36,
+          "end": 58,
+          "sha256": "667c37d2d06d0fca3d7d75cea206eef0db01464d96cd0fba8141dc98d4fa037b"
+        }
+      ]
+    },
+    "device-session": {
+      "path": "lib/desktop/desktopSessionResolverCore.ts",
+      "sha256": "e5e2d8bfb719aba3dbb30846f314fd5ee11c1550fe0a3402d1d5e5ba1b7d15b5",
+      "lineCount": 173,
+      "ranges": [
+        {
+          "start": 64,
+          "end": 151,
+          "sha256": "fc3dceecd0f98d4de70ffd3cf26d9ba5ddc72321238372e328f11c3ac73a3ae0"
+        }
+      ]
+    },
+    "isolation": {
+      "path": "lib/security/tenantIsolation.ts",
+      "sha256": "d5ff7d01f66be9ee7ed03e7d6d31ba6b906f15814df43d36748dc05e81c43cc6",
+      "lineCount": 157,
+      "ranges": [
+        {
+          "start": 36,
+          "end": 110,
+          "sha256": "220d9e9668c656b584ff29f045a3ff10c14ff1c3b5cdd80d7b74cfa5d3622fdd"
+        }
+      ]
+    },
+    "oauth": {
+      "path": "lib/integrations/outlook/outlookOAuth.ts",
+      "sha256": "572cc5f688a13de08765ac13a083d30fa757f158f63893790526bdce3826bcbf",
+      "lineCount": 64,
+      "ranges": [
+        {
+          "start": 31,
+          "end": 60,
+          "sha256": "84fe5dfc486e3aa260499102f0e8e30243a4b332dc6c49ca31cc7127b543c72e"
+        }
+      ]
+    },
+    "connection-authority": {
+      "path": "lib/integrations/tenantAuthorization.ts",
+      "sha256": "83581d5108933efeaf6506e9bfe4efe1f4568a81a9cff1bc61e62afb8afa7486",
+      "lineCount": 72,
+      "ranges": [
+        {
+          "start": 27,
+          "end": 71,
+          "sha256": "dc981a8ffee20f1e810cb2f5564afa2be500f1d67d1e7be8875ea7df5df101b0"
+        }
+      ]
+    },
+    "vault": {
+      "path": "lib/security/credentialVault.ts",
+      "sha256": "27fb296b8f79c24a4328ab940b0879e77b0789df3083243b55be4aa7ed0245a2",
+      "lineCount": 65,
+      "ranges": [
+        {
+          "start": 24,
+          "end": 64,
+          "sha256": "9d05e584090892b057a69c7d4f9c4bea965dff68efdd5890226b7b75b2cddb71"
+        }
+      ]
+    },
+    "vault-crypto": {
+      "path": "lib/security/credentialVaultCrypto.ts",
+      "sha256": "528e72f5edaa22b7d46e9f32a32dc3251eb0d7bbdd957cfe3d3aebcf841e6239",
+      "lineCount": 21,
+      "ranges": [
+        {
+          "start": 6,
+          "end": 20,
+          "sha256": "63bbab6584d23abe458ccb10b2738700013be129ba51ce0ccb6b35313ca392b9"
+        }
+      ]
+    },
+    "github-auth": {
+      "path": "lib/connectors/github/githubAppAuthCore.ts",
+      "sha256": "222f87e72c91d3479895ba21c413c554d2cb4f424b00200a62f45f524f025cb1",
+      "lineCount": 277,
+      "ranges": [
+        {
+          "start": 103,
+          "end": 239,
+          "sha256": "50e570adb13f19fc3f7445ef6767778fdbdf530f2fb95882143803b2551563db"
+        }
+      ]
+    },
+    "coding-context": {
+      "path": "lib/workforce/pipelines/codingGithubCredential.ts",
+      "sha256": "fbfe68df6e91e8ea1d8ee9b59121ea7ceeba1d56bb7ffe9ead4cf09fbbd2c285",
+      "lineCount": 100,
+      "ranges": [
+        {
+          "start": 9,
+          "end": 55,
+          "sha256": "27aeda23e48c851390565e02ffa8bd97cdb1aa798c5214bb4b997737cde8f14d"
+        }
+      ]
+    },
+    "repo-context": {
+      "path": "lib/workforce/pipelines/repoContextFetcher.ts",
+      "sha256": "6ed432485e256c29ef601a1f1b2eabc11240cd021a937b89e20dbf01664665fa",
+      "lineCount": 217,
+      "ranges": [
+        {
+          "start": 92,
+          "end": 109,
+          "sha256": "b675c1972ecfeba950fbfb5fa21a5b7d3ec9d630a919d46ef54649d35287c616"
+        }
+      ]
+    },
+    "prompt": {
+      "path": "lib/workforce/pipelines/buildCodeProposeMessages.ts",
+      "sha256": "a60348a1d8ef2eaab309c871e0b871239d643b5762ed545d483120e646467c4f",
+      "lineCount": 79,
+      "ranges": [
+        {
+          "start": 58,
+          "end": 65,
+          "sha256": "fc6f8bd6db2fc2b3fc2786c24426b248c6aa1bfdaf43775f8cce5b5aecb9db05"
+        }
+      ]
+    },
+    "ai-policy": {
+      "path": "lib/ai/textAdmissionPolicy.ts",
+      "sha256": "6aa3daf8c9ff6120abce64381807493933df980a7c89a2f83d54978de508a2b2",
+      "lineCount": 29,
+      "ranges": [
+        {
+          "start": 18,
+          "end": 28,
+          "sha256": "c25c060f07b645c2d1078ad14cec5e3a98a7fd8e62450c06c681ef19d0784b44"
+        }
+      ]
+    },
+    "ai-admission": {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "sha256": "8480a12435cd52052fec3b340a0809e56864293d84921c93d169f5850db0879d",
+      "lineCount": 199,
+      "ranges": [
+        {
+          "start": 131,
+          "end": 151,
+          "sha256": "e7019f056418b3155d389abffb226c052f4e0bf9b85f76abe7719479f82b8d63"
+        }
+      ]
+    },
+    "ai-manager": {
+      "path": "lib/ai/AIProviderManager.ts",
+      "sha256": "d35b424781c8ea415c1294f8a68fcbb48ae842906112165f29b9d3b4287a97b4",
+      "lineCount": 406,
+      "ranges": [
+        {
+          "start": 129,
+          "end": 143,
+          "sha256": "3f050c16e376f2405be6eb5ed2f5c18b454dcc343f2df7de5c70a5fa9fd23f40"
+        },
+        {
+          "start": 233,
+          "end": 238,
+          "sha256": "66d677297c48e9e23cdc5a53600bf6fd819d4a8e6551a436ad9a2bac3eccef5a"
+        }
+      ]
+    },
+    "coding-reservation": {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "sha256": "f57067373e4fd4912960c908ea24ec3b7ce53f7f7f525cf749cad5d9b43894c7",
+      "lineCount": 293,
+      "ranges": [
+        {
+          "start": 109,
+          "end": 124,
+          "sha256": "dfbddd8a3805d05630357bd07de46e816a641936197c37104e48ae76b6b10c53"
+        }
+      ]
+    },
+    "quote": {
+      "path": "lib/ai/codingRequestQuote.ts",
+      "sha256": "368b1b67adf0e3eb17c8332298821fc0439d2720707f81981037cee60712ab40",
+      "lineCount": 118,
+      "ranges": [
+        {
+          "start": 42,
+          "end": 48,
+          "sha256": "4ade0a018a64f6837891af4d1a908ad27e45c6e64079dcfd718d104f3af37cdb"
+        },
+        {
+          "start": 74,
+          "end": 79,
+          "sha256": "9ad243e3e8dc0829e3c963fe5c66b881279c549460f93d5e2b5dc5fdc1e2262d"
+        }
+      ]
+    },
+    "run-budget": {
+      "path": "lib/workforce/pipelines/codingRunBudget.ts",
+      "sha256": "7f06f98aefd8fa0af2f9619ac4a5fc5f7cdb1d9ffa2a5ca95141f229b08fdb01",
+      "lineCount": 20,
+      "ranges": [
+        {
+          "start": 5,
+          "end": 19,
+          "sha256": "26e8728e6c34037caabc18e877e63b0ec65276546afd0bcc165ad828af8fbded"
+        }
+      ]
+    },
+    "approved-code": {
+      "path": "lib/workforce/pipelines/approvedCodingArtifact.ts",
+      "sha256": "ba892ccfd149f8828f211abd80b1aa17b655c264811a8dd6dff24efa479468af",
+      "lineCount": 33,
+      "ranges": [
+        {
+          "start": 15,
+          "end": 30,
+          "sha256": "195e56744a21bb1afd01cc7444fa7cbde524ee9edccb817f0f64a418412ae6c6"
+        }
+      ]
+    },
+    "ai-logs": {
+      "path": "lib/ai/instrumentation.ts",
+      "sha256": "2b66bbc7d2d515f7d0d96de9289c2443b568f33495f23dfb1929b23eb37a6be2",
+      "lineCount": 84,
+      "ranges": [
+        {
+          "start": 47,
+          "end": 82,
+          "sha256": "0b8306e3604bb12ba10c095dd56e25e9e20fea005bbb64ba422649a90feaaf49"
+        }
+      ]
+    },
+    "legacy-chat": {
+      "path": "app/api/chat/route.ts",
+      "sha256": "8efae19c7ecb6da9754cb35ae369884612b7e8b2f44681728b67708814445730",
+      "lineCount": 104,
+      "ranges": [
+        {
+          "start": 19,
+          "end": 99,
+          "sha256": "995b44b010275efd0fa23b645c132fef07372c6ee8bd7c2911db831e104d2da3"
+        }
+      ]
+    },
+    "legacy-orchestrator": {
+      "path": "lib/ai/orchestrator.ts",
+      "sha256": "289333872bfa934ef59edd089f8ccb3f2e15ef9e3fd7ff8461c98bfe69d74bc5",
+      "lineCount": 200,
+      "ranges": [
+        {
+          "start": 118,
+          "end": 135,
+          "sha256": "f1e0bebb13b61db906d2df7a6ff7b9c3392f207b2f400fb89f00f0441787f94a"
+        },
+        {
+          "start": 189,
+          "end": 199,
+          "sha256": "7741277b2012c363fad9e30bde64502d5ccd16530ad526d943a67ed94d1900f9"
+        }
+      ]
+    },
+    "legacy-gateway": {
+      "path": "lib/ai/providers/VercelGatewayProvider.ts",
+      "sha256": "731e2dd434a80271ad45a4a3bcd91767ff04abcfebd472f809f9acc5de339cce",
+      "lineCount": 335,
+      "ranges": [
+        {
+          "start": 107,
+          "end": 121,
+          "sha256": "f95a71c405d3185a6b3ac766d30fa68750295cc27e3422180470811b9cd9f51f"
+        }
+      ]
+    },
+    "edge": {
+      "path": "proxy.ts",
+      "sha256": "f6f882318b11aa22fe35babf35bd017ffc4b5af7f99cd1f29c92ff3935acf0a1",
+      "lineCount": 123,
+      "ranges": [
+        {
+          "start": 13,
+          "end": 29,
+          "sha256": "74b4ba7de962135b31569870e6df294b50d465661632852305af0942fa67e5c8"
+        },
+        {
+          "start": 110,
+          "end": 123,
+          "sha256": "368fc948a6a09b04b811f22a1b4fa282b4183f7c85834e8d4bb9082c62b2b89d"
+        }
+      ]
+    },
+    "release-metadata": {
+      "path": "lib/desktop/releaseManifest.ts",
+      "sha256": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25",
+      "lineCount": 315,
+      "ranges": [
+        {
+          "start": 155,
+          "end": 216,
+          "sha256": "7e85a5a7fe75773928405121ec62b4cf9c446155ecb82854e202a435a89dc32c"
+        }
+      ]
+    },
+    "download": {
+      "path": "app/api/desktop/download/route.ts",
+      "sha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+      "lineCount": 97,
+      "ranges": [
+        {
+          "start": 35,
+          "end": 95,
+          "sha256": "0d92b5c2c2c9a502062901bd97a604d59845539592386cb073f1ae23271dcb96"
+        }
+      ]
+    },
+    "audit": {
+      "path": "lib/audit/secureAudit.ts",
+      "sha256": "80e79deec8031b0ed95365f37eba440f648f17db39056790c9ba494b06e296c6",
+      "lineCount": 323,
+      "ranges": [
+        {
+          "start": 246,
+          "end": 282,
+          "sha256": "9b7bb4dfbe6cb08769b2bf9c07d785e5cfb692e3d914d98f7930063de590f3d9"
+        }
+      ]
+    },
+    "legacy-audit": {
+      "path": "lib/security/auditLog.ts",
+      "sha256": "5f04f890439c957aa47ee10cae5f30e64ed6f051e0126de616c58bd374fb2eaf",
+      "lineCount": 29,
+      "ranges": [
+        {
+          "start": 12,
+          "end": 29,
+          "sha256": "446e714fa7994b4f3d76ab6f00c0833c6ffa0713a379899bc6f9d9a6bce9d697"
+        }
+      ]
+    },
+    "public-security": {
+      "path": "app/security/page.tsx",
+      "sha256": "c449cb38d23eba652b7738f59dc6e8515167f6de4247de9e175e99468d736639",
+      "lineCount": 42,
+      "ranges": [
+        {
+          "start": 12,
+          "end": 38,
+          "sha256": "f259aab64a2dab23917ad06932bc900eafc529911f27a8e2e49de4bcd4e34a8e"
+        }
+      ]
+    },
+    "ai-illustration": {
+      "path": "components/marketing/BotAiDataFlow.tsx",
+      "sha256": "ea2c279c7fe4ea42a3e9d6c86cd18ffdc266c254e4295090fd35987d1278a93b",
+      "lineCount": 58,
+      "ranges": [
+        {
+          "start": 29,
+          "end": 53,
+          "sha256": "1f6d3c01a9625e48a3a6b303ba199284c86f9b90edb1ec891949d982e8c8ced7"
+        }
+      ]
+    },
+    "knowledge": {
+      "path": "scripts/support-knowledge/core.cjs",
+      "sha256": "377e90d5800eec1129e0aec6fe4cae6f8edccb7b60f0f2c685bc6719666bc2b1",
+      "lineCount": 412,
+      "ranges": [
+        {
+          "start": 241,
+          "end": 314,
+          "sha256": "674aecd93397ecd041d9742e4d8a7d8a102f04298c91d6b7a7a29bb529601326"
+        },
+        {
+          "start": 330,
+          "end": 364,
+          "sha256": "50fb36f927da1c48402d0596d5058bce0d3cdbf6bb9e017fd0542b4a0719c3ec"
+        }
+      ]
+    },
+    "knowledge-cli": {
+      "path": "scripts/support-knowledge/cli.cjs",
+      "sha256": "fc393fe468796f6146ee8dd3796cfcbc2a9555ff07a6f04d5fc3cd4947a284dd",
+      "lineCount": 15,
+      "ranges": [
+        {
+          "start": 6,
+          "end": 15,
+          "sha256": "2217fd7af041e00b48c5bc3d9655a38f7b62dc5bbf1ae00001f84e4db835fb66"
+        }
+      ]
+    },
+    "security-docs": {
+      "path": "app/docs/security-model/page.tsx",
+      "sha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+      "lineCount": 60,
+      "ranges": [
+        {
+          "start": 35,
+          "end": 51,
+          "sha256": "6a5c41240bc168577242b98aa2e9f36c61271c2687e049c2840159782fa65aee"
+        }
+      ]
+    }
+  }
+}

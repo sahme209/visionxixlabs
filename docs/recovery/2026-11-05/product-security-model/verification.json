@@ -1,0 +1,9 @@
+{
+  "method": "ordinary source-byte/range and finite document-reference checks, not behavior/security tests",
+  "boundSources": 33,
+  "threatRows": 16,
+  "allSourceReferencesResolved": true,
+  "allHashesMatched": true,
+  "runtimeChanged": false,
+  "operationalAcceptance": false
+}

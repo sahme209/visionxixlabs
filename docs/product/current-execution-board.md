@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Product security boundaries — finite source assessment
+
+~~A broader16-boundary source threat model now connects33 pinned sources across identity/tenant/OAuth/AI/cost/tools/release/audit/knowledge~~ ([model/evidence](../recovery/2026-11-05/product-security-model/README.md)); reference/hash checks are metadata only. Legacy bot-chat needs its own ownership/publication/admission classification before a runtime decision; no leak/bypass/overspend was demonstrated. No implementation or security-certification claim; full A7/A2/all21 parent acceptance remains open.
+
 ## Scripted timed playback — actual review stop
 
 ~~One Play traversed Code & review to its scripted review step and stopped there with Play restored~~ ([evidence](../recovery/2026-11-05/demo-review-stop-browser/README.md)); initial short observation timeout preserved and same run observed without replay. No sample decision or provider action; not genuine review enforcement, precise timing, all-story visibility/performance/full B6 acceptance.
