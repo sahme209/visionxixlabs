@@ -1,0 +1,49 @@
+{
+  "files": [
+    {
+      "name": "attempt-03.claim.json",
+      "sha256": "7efbbbeffa209cd9e216a06ab0e176a7053f7e442822f7c31ff39ccae5f9ef98",
+      "size": 1705
+    },
+    {
+      "name": "attempt-03.terminal.json",
+      "sha256": "9d6ef8810b35643f3ca497ba7810ede660e8ef7285e76f2a67779d8e46efaab6",
+      "size": 371
+    },
+    {
+      "name": "attempt-03.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-03.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-04.claim.json",
+      "sha256": "7b74d04acb4dd6980315cbe5ed8fdd60579149c2d876dd74a20737bf7194df34",
+      "size": 907
+    },
+    {
+      "name": "attempt-04.terminal.json",
+      "sha256": "c8893f0a00a9f2a3ab80f110a7de8a239fe7a1d44208c88da56cadc92fdbd8de",
+      "size": 360
+    },
+    {
+      "name": "attempt-04.stdout.log",
+      "sha256": "4688a0a76f7b4c6ca8e56add77a42bf07344e01e019392d0c73e22b777535006",
+      "size": 41
+    },
+    {
+      "name": "attempt-04.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "binaryRetainedInOwnedLabNotCopiedToGit": true,
+  "actualOsAclBehaviorObserved": false,
+  "model": "SDK-documented nonempty ACL entry success represented by stub return0/non-null entry",
+  "wholeUnitInvocationsUsed": 4,
+  "twoPreparationChildrenReserved": true
+}

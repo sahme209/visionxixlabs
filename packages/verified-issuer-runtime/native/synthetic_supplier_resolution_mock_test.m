@@ -1,5 +1,12 @@
 /* Isolated closed-gate test: every Security function is renamed to an inert
  * aborting stub. Never invoke actual supplier OS paths or maintenance entry. */
+/* Filesystem ACL paths are outside this fixture; fail if reached.
+ * Keep the actual shared helper compiled against inert platform stubs. */
+#define acl_get_fd_np mock_acl_get_fd_np
+#define acl_init mock_acl_init
+#define acl_size mock_acl_size
+#define acl_copy_ext mock_acl_copy_ext
+#define acl_free mock_acl_free
 #define SecKeychainSetUserInteractionAllowed mock_UI
 #define SecKeychainItemGetTypeID mock_Type
 #define SecKeychainItemCopyKeychain mock_Containing
@@ -15,6 +22,11 @@
 #include "origin_private_resource_supplier.m"
 #include <assert.h>
 #include <stdlib.h>
+acl_t mock_acl_get_fd_np(int fd,acl_type_t type){(void)fd;(void)type;abort();}
+acl_t mock_acl_init(int count){(void)count;abort();}
+ssize_t mock_acl_size(acl_t acl){(void)acl;abort();}
+ssize_t mock_acl_copy_ext(void*bytes,acl_t acl,ssize_t size){(void)bytes;(void)acl;(void)size;abort();}
+int mock_acl_free(void*acl){(void)acl;abort();}
 typedef struct {
  CSSM_ACL_OWNER_PROTOTYPE owner; CSSM_ACL_ENTRY_INFO entry;
  CSSM_LIST_ELEMENT n[18]; CSSM_ACL_PROCESS_SUBJECT_SELECTOR process;

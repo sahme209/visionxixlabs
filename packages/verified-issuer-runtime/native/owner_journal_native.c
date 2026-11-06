@@ -5,13 +5,14 @@
 #include "synthetic_resource_contract.h"
 #include <sys/stat.h>
 #include <sys/acl.h>
+#include "protected_acl_empty.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
 static int native_safe_stat(int fd,int directory,struct stat*out){
  struct stat s;if(fstat(fd,&s)||s.st_uid!=0||(directory?!S_ISDIR(s.st_mode):!S_ISREG(s.st_mode))||(s.st_mode&0022)||(!directory&&((s.st_mode&0777)!=0600||s.st_gid!=0||s.st_nlink!=1)))return 0;
  /* Reject all extended ACLs, rather than mistake mode bits for exclusive access. */
- acl_t acl=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!acl)return 0;acl_entry_t entry;int count=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry);int freed=acl_free(acl);if(count!=0||freed)return 0;
+ acl_t acl=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!acl)return 0;int empty=ax_acl_is_empty(acl);int freed=acl_free(acl);if(!empty||freed)return 0;
  if(out)*out=s;return 1;
 }
 static int native_directory(void){

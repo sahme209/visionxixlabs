@@ -1,0 +1,16 @@
+{
+  "result": "PASS_TWO_EXACT_GREEN_TESTS",
+  "reviewer": "offline_diagnostic_review",
+  "frozenHarnessSha256": "6f120f350d062f8349391126566037d3d07b53ea5949f23ed8ad185e44bdea8c",
+  "steps": [
+    "green-caller-test",
+    "green-helper-test"
+  ],
+  "expectedExit": 0,
+  "requiresExactStdoutAndEmptyStderr": true,
+  "nextWholeUnitInvocations": [
+    7,
+    8
+  ],
+  "realAclSecurityApiAllowed": false
+}

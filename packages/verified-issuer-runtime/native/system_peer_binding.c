@@ -6,6 +6,7 @@
 #include <mach-o/loader.h>
 #include <mach/machine.h>
 #include <sys/acl.h>
+#include "protected_acl_empty.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -22,7 +23,7 @@ static const char*peer_identifier(int role){return role==AX_SYSTEM_PEER_OWNER?AX
 static int metadata_equal(const struct stat*a,const struct stat*b){return a->st_dev==b->st_dev&&a->st_ino==b->st_ino&&a->st_uid==b->st_uid&&a->st_gid==b->st_gid&&a->st_mode==b->st_mode&&a->st_nlink==b->st_nlink&&a->st_size==b->st_size&&a->st_mtimespec.tv_sec==b->st_mtimespec.tv_sec&&a->st_mtimespec.tv_nsec==b->st_mtimespec.tv_nsec&&a->st_ctimespec.tv_sec==b->st_ctimespec.tv_sec&&a->st_ctimespec.tv_nsec==b->st_ctimespec.tv_nsec;}
 static int protected_fd(int fd,int directory,struct stat*out){
  struct stat s;if(fstat(fd,&s)||s.st_uid!=0||(!directory&&s.st_gid!=0)||(s.st_mode&07777)!=0755||!(directory?S_ISDIR(s.st_mode):S_ISREG(s.st_mode))||(!directory&&(s.st_nlink!=1||s.st_size<(off_t)sizeof(struct mach_header_64)||s.st_size>AX_SYSTEM_PEER_MAX_BYTES)))return 0;
- acl_t acl=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!acl)return 0;acl_entry_t entry;int n=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry);int freed=acl_free(acl);if(n!=0||freed)return 0;if(out)*out=s;return 1;
+ acl_t acl=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!acl)return 0;int empty=ax_acl_is_empty(acl);int freed=acl_free(acl);if(!empty||freed)return 0;if(out)*out=s;return 1;
 }
 static int open_peer(int role,struct stat*out){
  const char*path=peer_path(role);if(!path||path[0]!='/')return -1;char copy[PATH_MAX];if(strlen(path)>=sizeof copy)return -1;memcpy(copy,path,strlen(path)+1);

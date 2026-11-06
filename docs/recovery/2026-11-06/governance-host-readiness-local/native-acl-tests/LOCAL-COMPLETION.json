@@ -1,0 +1,20 @@
+{
+  "result": "LOCAL_STUBBED_RED_TO_GREEN_ACCEPTED",
+  "redObserved": true,
+  "greenCallerObserved": true,
+  "greenHelperMatrixObserved": true,
+  "purePreparationChildren": 2,
+  "compilerChildren": 3,
+  "compiledStubTestChildren": 3,
+  "wholeUnitInvocationsUsed": 8,
+  "maximumInvocations": 32,
+  "chargedActiveSeconds": 2.501227584,
+  "maximumActiveSeconds": 480,
+  "allActualChildrenReaped": true,
+  "realAclSecurityKeychainCalls": false,
+  "nativeDeploymentArtifactBuiltSignedOrRun": false,
+  "legacyFixturesSourceReviewedButNotRun": 9,
+  "fiveOtherListedChecksNeedNoAclAdaptation": true,
+  "governanceComplete": false,
+  "productionChanged": false
+}

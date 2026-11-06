@@ -1,0 +1,8 @@
+{
+  "result": "PASS_TWO_FIXED_GREEN_COMPILES_ONLY",
+  "reviewer": "offline_diagnostic_review",
+  "frozenHarnessSha256": "9c2cc88f6f6236fbb4384d2fe0980fb534358d64c84c259f83e67c05a7f3473f",
+  "recipeBindingsVerified": 25,
+  "wholeUnitInvocationsUsedBeforeCompiles": 4,
+  "testExecutionAllowedYet": false
+}

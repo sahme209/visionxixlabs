@@ -1,0 +1,62 @@
+{
+  "actualImports": [
+    "___assert_rtn",
+    "___memset_chk",
+    "_memcpy",
+    "_puts"
+  ],
+  "architecture": "arm64",
+  "binary": {
+    "mode": 448,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/red/caller-test",
+    "sha256": "14ccead9c19c0150333d989364a70ccb2b954faa0c046977fc2f6fce904053ec",
+    "size": 51128
+  },
+  "binaryExecuted": false,
+  "compilerAlreadyCompletedOnce": true,
+  "definitionJoin": "test_acl_* and test_fstat from owned caller object only; SDK libSystem/libsystem_c for memory/assert/stdio",
+  "dynamicLinker": "/usr/lib/dyld",
+  "format": "axiom.actual-stub-binary-source-review/1",
+  "fortifiedMemsetLines": [
+    [
+      135,
+      137
+    ],
+    [
+      242,
+      244
+    ]
+  ],
+  "fortifiedMemsetSource": {
+    "mode": 292,
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h",
+    "sha256": "66ece2d83b7528b0eb85a1f82c8aab0465cbd074397ea1aa6155706a0244cc67",
+    "size": 9919
+  },
+  "guardAfter": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/binary_guard.py",
+    "sha256": "25344408fa3c38ac99cc104094b448e7f38017050fa54904d58444d8ec4bd4db",
+    "size": 2660
+  },
+  "guardBefore": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/before-red-test-pin/binary_guard.py",
+    "sha256": "2bacdfaaaf8b799338cdeb2282f27e0101933487d1eddb34c8a4d78360fa2317",
+    "size": 2644
+  },
+  "ledger": "same fixed ROOT, preparation2calls/2seconds plus actual compiler attempt03; next actual test attempt04",
+  "libraries": [
+    "/usr/lib/libSystem.B.dylib"
+  ],
+  "linkMap": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/red/caller-test.map",
+    "sha256": "22f446ef9ab5b4607bbfd4808d7f58cbda0631209691c9f6759633f1ef901878",
+    "size": 4333
+  },
+  "narrowGuardAddition": "___memset_chk",
+  "productionCodeImplemented": false,
+  "reviewResult": "PASS_REPORTED_BY_ROOT_AFTER_INDEPENDENT_REVIEW",
+  "rpaths": []
+}

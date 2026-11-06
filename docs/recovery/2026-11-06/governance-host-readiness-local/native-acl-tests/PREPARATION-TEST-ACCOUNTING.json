@@ -1,0 +1,33 @@
+{
+  "commands": [
+    [
+      "python3",
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py"
+    ],
+    [
+      "python3",
+      "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py"
+    ]
+  ],
+  "compilerChildren": 0,
+  "conservativeChargedActiveSeconds": 2,
+  "distinctPythonUnittestChildren": 2,
+  "exactChildActiveTimingAvailable": false,
+  "format": "axiom.native-acl-preparation-test-accounting/1",
+  "furtherAgentChildInvocationsAllowed": false,
+  "nativeTestChildren": 0,
+  "noFurtherPreparationTestsInvoked": true,
+  "outcomes": [
+    "RED_three_missing_verifier_failures",
+    "GREEN_three_pass"
+  ],
+  "performedBeforeIntendedIndependentFirstTestReview": true,
+  "proceduralDeviation": "Two Python test children ran before the intended independent first-test review gate. This is preserved as a procedural miss, not retroactive preapproval.",
+  "remainingActiveSeconds": 478,
+  "remainingInvocationBudget": 30,
+  "reportedToolWallSecondsApproximately": [
+    0.2,
+    0.2
+  ],
+  "reservedInvocations": 2
+}

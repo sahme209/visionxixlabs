@@ -1,0 +1,1 @@
+{"activeSeconds": 0.04035983300000001, "cleanup": "reaped_original_child", "descendantQuiescence": "unavailable", "executionAuthorized": false, "exit": 0, "expectedExit": 0, "installationReady": false, "matchedExpectedOutcome": true, "retryAuthorized": false, "state": "completed", "step": "green-helper-test", "totalWallSeconds": 0.040640333, "unknown": false}

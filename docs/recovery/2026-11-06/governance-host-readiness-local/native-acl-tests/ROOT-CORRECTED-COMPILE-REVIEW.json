@@ -1,0 +1,12 @@
+{
+  "result": "PASS_COMPILE_ONLY",
+  "independentReviewer": "offline_diagnostic_review",
+  "rootVerifiedRecipeBindings": 18,
+  "frozenHarnessSha256": "8b558baf006aa47c60a6f17d243db8a6d43f85927a6793de4118229f2ddb8a13",
+  "knownPriorFailureBeforeChild": true,
+  "preparationReservation": {
+    "calls": 2,
+    "seconds": 2
+  },
+  "compiledTestExecutionAllowedYet": false
+}

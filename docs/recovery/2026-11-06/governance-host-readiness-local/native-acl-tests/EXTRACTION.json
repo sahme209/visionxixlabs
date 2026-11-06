@@ -1,0 +1,25 @@
+{
+  "byteEnd": 2052,
+  "byteStart": 1545,
+  "compilerInvokedForGreen": false,
+  "exactByteSlice": true,
+  "fragment": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/subject_protected_fd.inc",
+    "sha256": "25e1743433b029d34081391a2478c05a7f76fc5fae4e50248b255690c59be72e",
+    "size": 507
+  },
+  "originalActualRedExtraction": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/EXTRACTION.json",
+    "sha256": "f05f053646ff33d3099ee069fbcca2f578f3dc82f9eb02e2c5d5a6c70843cc85",
+    "size": 949
+  },
+  "scope": "same complete real protected_fd function after approved ACL-only correction",
+  "source": {
+    "mode": 420,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/system_peer_binding.c",
+    "sha256": "18dda50bd867271c107c368f97fec836a4d762a849e793a9fe6952162afefbe1",
+    "size": 8068
+  }
+}

@@ -1,0 +1,81 @@
+{
+  "compileObservationHistorical": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/before-green-test-pin/ACTUAL-GREEN-COMPILED-OUTPUTS.json",
+    "sha256": "e4e671bad43599a65c768c04c6a1098658fb205518d9c858e6a37125647bb26b",
+    "size": 1262
+  },
+  "compilerActiveSecondsReportedByRoot": [
+    0.050434,
+    0.0486
+  ],
+  "compilerAttempts": [
+    5,
+    6
+  ],
+  "format": "axiom.actual-green-stub-output-review/1",
+  "outputs": [
+    {
+      "binary": {
+        "mode": 448,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/green/caller-test",
+        "sha256": "f3562c4b651a340328d46bf2fdc8ac2d43d70ab835ca4b8ebe2792ff00662c72",
+        "size": 51576
+      },
+      "definitions": "actual ax_acl_is_empty, test_acl_* and caller test_fstat from owned object; only SDK libSystem/libsystem_c/libsystem_malloc otherwise",
+      "executed": false,
+      "imports": [
+        "___assert_rtn",
+        "___memset_chk",
+        "_free",
+        "_malloc",
+        "_memcmp",
+        "_memcpy",
+        "_puts"
+      ],
+      "libraries": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "map": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/green/caller-test.map",
+        "sha256": "6364691e91851e2f26e329d7a4944bd4a465417a0a01ac446ed0a3f3f8a01183",
+        "size": 5180
+      },
+      "noAclSecurityProtectedOperationImports": true,
+      "step": "green-caller-test"
+    },
+    {
+      "binary": {
+        "mode": 448,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/green/helper-test",
+        "sha256": "eeacb03bda5f9dbc20355004fe30f93aee58c99c6e707120d939c50c096ad1ea",
+        "size": 51464
+      },
+      "definitions": "actual ax_acl_is_empty, test_acl_* and caller test_fstat from owned object; only SDK libSystem/libsystem_c/libsystem_malloc otherwise",
+      "executed": false,
+      "imports": [
+        "___assert_rtn",
+        "___memset_chk",
+        "_free",
+        "_malloc",
+        "_memcmp",
+        "_puts"
+      ],
+      "libraries": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "map": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/green/helper-test.map",
+        "sha256": "a007564a153b3a0724934c35be4bdedcf784ff5fa6e86be87416bae9d4757e94",
+        "size": 5290
+      },
+      "noAclSecurityProtectedOperationImports": true,
+      "step": "green-helper-test"
+    }
+  ],
+  "productionArtifactsCompiled": false,
+  "result": "PASS_REPORTED_BY_ROOT_AFTER_INDEPENDENT_ACTUAL_BINARY_AND_MAP_REVIEW",
+  "testsExecuted": false
+}

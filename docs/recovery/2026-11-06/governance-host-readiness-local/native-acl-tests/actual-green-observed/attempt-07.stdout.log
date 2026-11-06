@@ -1,0 +1,1 @@
+PASS actual protected_fd predicate with inert fstat/ACL and guarded effect

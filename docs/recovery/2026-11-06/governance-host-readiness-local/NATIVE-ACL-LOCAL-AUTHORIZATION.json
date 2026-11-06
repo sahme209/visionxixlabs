@@ -1,0 +1,29 @@
+{
+  "decision": "approved",
+  "source": "Direct asynchronous user approval call_4U9eMwsQi8jEUFzTDX2N12SO",
+  "scopeSha256": "e8bb4d10fc072930d6667e0811247dd9628effa6f6a7daf6c2a79cf800672b58",
+  "maximumCompilerOrTestInvocations": 32,
+  "maximumActiveSeconds": 480,
+  "perChildSeconds": 30,
+  "perChildSharedBytes": 65536,
+  "cleanupSeconds": 5,
+  "requiresIndependentHarnessReviewBeforeFirstInvocation": true,
+  "allows": [
+    "local helper/caller implementation",
+    "fixed fully stubbed test compilation/execution after review"
+  ],
+  "excludes": [
+    "actual ACL/Security/Keychain calls",
+    "deployment-native compilation",
+    "signing",
+    "native/runtime or PG launch",
+    "host inspection",
+    "installation/accounts/grants",
+    "provider/network/DB actions",
+    "production changes",
+    "spending"
+  ],
+  "directoryDiagnosticAuthorized": false,
+  "actualCompilerOrTestInvocationPerformed": false,
+  "recordedAt": "2026-11-06T22:27:49.013396+00:00"
+}

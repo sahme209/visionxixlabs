@@ -19,6 +19,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/acl.h>
+#include "protected_acl_empty.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <signal.h>
@@ -48,8 +49,8 @@ static int protected_file(const char*path,int directory){
  strcpy(copy,path);struct stat s;
  for(;;){if(lstat(copy,&s)||S_ISLNK(s.st_mode)||s.st_uid!=0||(s.st_mode&0022))return 0;
   acl_t acl=acl_get_file(copy,ACL_TYPE_EXTENDED);if(!acl)return 0;
-  acl_entry_t entry;int acl_result=acl_get_entry(acl,ACL_FIRST_ENTRY,&entry);acl_free(acl);
-  if(acl_result!=0)return 0;
+  int empty=ax_acl_is_empty(acl);int freed=acl_free(acl);
+  if(!empty||freed)return 0;
   if(!strcmp(copy,path)){if(directory?!S_ISDIR(s.st_mode):(!S_ISREG(s.st_mode)||s.st_nlink!=1))return 0;}
   else if(!S_ISDIR(s.st_mode))return 0;
   char*end=strrchr(copy,'/');if(!end)return 0;if(end==copy)break;*end=0;

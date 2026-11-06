@@ -1,0 +1,34 @@
+{
+  "independentReviewer": "offline_diagnostic_review",
+  "result": "PASS_COMPILED_OUTPUT_FOR_PINNING",
+  "binary": {
+    "sha256": "14ccead9c19c0150333d989364a70ccb2b954faa0c046977fc2f6fce904053ec",
+    "bytes": 51128
+  },
+  "linkMap": {
+    "sha256": "22f446ef9ab5b4607bbfd4808d7f58cbda0631209691c9f6759633f1ef901878",
+    "bytes": 4333
+  },
+  "actualImports": [
+    "___assert_rtn",
+    "___memset_chk",
+    "_memcpy",
+    "_puts"
+  ],
+  "linkedLibrary": "/usr/lib/libSystem.B.dylib",
+  "rpathPresent": false,
+  "actualOsAclOrSecurityImports": false,
+  "actualBinaryExecuted": false,
+  "narrowNewAllowance": "___memset_chk only",
+  "sdkMemoryMapping": {
+    "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/secure/_string.h",
+    "sha256": "66ece2d83b7528b0eb85a1f82c8aab0465cbd074397ea1aa6155706a0244cc67",
+    "lines": [
+      135,
+      137,
+      242,
+      244
+    ]
+  },
+  "nextGate": "pin exact binary/map hashes and independently review changed guard/runner/packet before test"
+}

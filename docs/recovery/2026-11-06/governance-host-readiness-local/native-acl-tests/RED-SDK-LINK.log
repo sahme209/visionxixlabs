@@ -1,0 +1,29 @@
+FFF
+======================================================================
+FAIL: test_exact_alias_and_canonical_target_accept (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py", line 9, in setUp
+    def setUp(self):self.assertTrue(hasattr(m,'verify_binding'),'explicit reviewed SDK-link binding verifier missing')
+AssertionError: False is not true : explicit reviewed SDK-link binding verifier missing
+
+======================================================================
+FAIL: test_link_currentness_refuses (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py", line 9, in setUp
+    def setUp(self):self.assertTrue(hasattr(m,'verify_binding'),'explicit reviewed SDK-link binding verifier missing')
+AssertionError: False is not true : explicit reviewed SDK-link binding verifier missing
+
+======================================================================
+FAIL: test_other_literal_or_resolution_refuses (__main__.Tests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/test_sdk_link_binding.py", line 9, in setUp
+    def setUp(self):self.assertTrue(hasattr(m,'verify_binding'),'explicit reviewed SDK-link binding verifier missing')
+AssertionError: False is not true : explicit reviewed SDK-link binding verifier missing
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.000s
+
+FAILED (failures=3)

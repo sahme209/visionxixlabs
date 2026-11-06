@@ -8,6 +8,7 @@
 #include <mach-o/dyld.h>
 #include <sys/stat.h>
 #include <sys/acl.h>
+#include "protected_acl_empty.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <limits.h>
@@ -19,8 +20,8 @@ static int protected_fd(int fd,int directory){
  struct stat s;
  if(fstat(fd,&s)||s.st_uid!=0||(s.st_mode&0022)||(directory?!S_ISDIR(s.st_mode):(!S_ISREG(s.st_mode)||s.st_nlink!=1)))return 0;
  acl_t a=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!a)return 0;
- acl_entry_t entry;int count=acl_get_entry(a,ACL_FIRST_ENTRY,&entry),freed=acl_free(a);
- return count==0&&!freed;
+ int empty=ax_acl_is_empty(a);int freed=acl_free(a);
+ return empty&&!freed;
 }
 static int protected_parent(void){
  int fd=open("/",O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);if(fd<0)return 0;

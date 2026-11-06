@@ -1,0 +1,51 @@
+{
+  "binaries": [
+    {
+      "sha256": "f3562c4b651a340328d46bf2fdc8ac2d43d70ab835ca4b8ebe2792ff00662c72",
+      "size": 51576,
+      "imports": [
+        "___assert_rtn",
+        "___memset_chk",
+        "_free",
+        "_malloc",
+        "_memcmp",
+        "_memcpy",
+        "_puts"
+      ],
+      "libraries": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "noAclSecurityProtectedOperationImports": true,
+      "name": "caller-test",
+      "mapSha256": "6364691e91851e2f26e329d7a4944bd4a465417a0a01ac446ed0a3f3f8a01183",
+      "mapBytes": 5180,
+      "executed": false
+    },
+    {
+      "sha256": "eeacb03bda5f9dbc20355004fe30f93aee58c99c6e707120d939c50c096ad1ea",
+      "size": 51464,
+      "imports": [
+        "___assert_rtn",
+        "___memset_chk",
+        "_free",
+        "_malloc",
+        "_memcmp",
+        "_puts"
+      ],
+      "libraries": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "noAclSecurityProtectedOperationImports": true,
+      "name": "helper-test",
+      "mapSha256": "a007564a153b3a0724934c35be4bdedcf784ff5fa6e86be87416bae9d4757e94",
+      "mapBytes": 5290,
+      "executed": false
+    }
+  ],
+  "independentActualOutputReviewPending": true,
+  "compilerAttempts": [
+    5,
+    6
+  ],
+  "noTestExecuted": true
+}

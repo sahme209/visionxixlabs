@@ -1,0 +1,10 @@
+{
+  "result": "PASS_ONE_RED_TEST",
+  "reviewer": "offline_diagnostic_review",
+  "frozenHarnessSha256": "241dd1adbb251c47ddd8e61a576b7e262405f5a550aba356139a2480049026a4",
+  "binarySha256": "14ccead9c19c0150333d989364a70ccb2b954faa0c046977fc2f6fce904053ec",
+  "expectedExit": 1,
+  "expectedStdout": "FAIL nonempty ACL reached guarded effect\n",
+  "productionCodeUnchanged": true,
+  "nextWholeUnitInvocation": 4
+}

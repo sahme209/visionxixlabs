@@ -1,0 +1,9 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS",
+  "scopeSha256": "e8bb4d10fc072930d6667e0811247dd9628effa6f6a7daf6c2a79cf800672b58",
+  "isolationReviewBeforeFirstInvocation": true,
+  "requiresLinkAndCallerLevelStubProof": true,
+  "aggregateCounterAcrossPhasesRequired": true,
+  "productionArtifactAuthority": false
+}

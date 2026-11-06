@@ -8,25 +8,32 @@
 #define fchmod ax_mock_fchmod
 #define fstat ax_mock_fstat
 #define acl_get_fd_np ax_mock_acl_get_fd_np
-#define acl_get_entry ax_mock_acl_get_entry
+#define acl_init ax_mock_acl_init
+#define acl_size ax_mock_acl_size
+#define acl_copy_ext ax_mock_acl_copy_ext
 #define acl_free ax_mock_acl_free
 #define write ax_mock_write
-#define fsync ax_mock_fsync
+#define fcntl ax_mock_fcntl
+#define ax_fixture_authorization_locators_published ax_mock_authorization_locators_published
 #define close ax_mock_close
 #define renameatx_np ax_mock_rename
 #include "synthetic_resource_provisioner.m"
 #include <assert.h>
-static char events[100];static size_t nevents;static int fs_mode;
+static char events[100];static size_t nevents;static int fs_mode,publication_refused;
 static void event(char c){assert(nevents+1<sizeof events);events[nevents++]=c;events[nevents]=0;}
 int ax_mock_openat(int fd,const char*name,int flags,...){assert(fd==5);assert(!strcmp(name,"bootstrap-locators.v1.staging"));assert((flags&(O_EXCL|O_NOFOLLOW|O_CREAT))==(O_EXCL|O_NOFOLLOW|O_CREAT));event('O');return 7;}
 int ax_mock_fchown(int f,uid_t u,gid_t g){assert(f==7&&u==0&&g==0);event('H');return 0;}
 int ax_mock_fchmod(int f,mode_t m){assert(f==7&&m==0644);event('M');return 0;}
 int ax_mock_fstat(int f,struct stat*s){assert(f==7);memset(s,0,sizeof *s);s->st_mode=S_IFREG|0644;s->st_nlink=1;event('T');return 0;}
 acl_t ax_mock_acl_get_fd_np(int f,acl_type_t t){assert(f==7&&t==ACL_TYPE_EXTENDED);return (acl_t)(uintptr_t)1;}
-int ax_mock_acl_get_entry(acl_t a,int i,acl_entry_t*e){(void)e;assert((uintptr_t)a==1&&i==ACL_FIRST_ENTRY);return 0;}
-int ax_mock_acl_free(void*a){assert((uintptr_t)a==1);return 0;}
+acl_t ax_mock_acl_init(int n){assert(n==0);return (acl_t)(uintptr_t)2;}
+ssize_t ax_mock_acl_size(acl_t a){assert((uintptr_t)a==1||(uintptr_t)a==2);return 8;}
+ssize_t ax_mock_acl_copy_ext(void*p,acl_t a,ssize_t n){assert(((uintptr_t)a==1||(uintptr_t)a==2)&&n==8);memset(p,0,8);return 8;}
+int ax_mock_acl_free(void*a){assert((uintptr_t)a==1||(uintptr_t)a==2);return 0;}
 ssize_t ax_mock_write(int f,const void*p,size_t n){assert((f==7||f==6)&&p&&n>0);event('W');return (ssize_t)n;}
-int ax_mock_fsync(int f){assert(f==5||f==6||f==7);event('S');if(fs_mode==2&&f==7){errno=EIO;return -1;}return 0;}
+int ax_mock_fcntl(int f,int cmd,...){assert((f==5||f==6||f==7)&&cmd==F_FULLFSYNC);event('S');if(fs_mode==2&&f==7){errno=EIO;return -1;}return 0;}
+/* Simulated publication notification only; no authorization state is created. */
+int ax_mock_authorization_locators_published(void){assert(!strcmp(events,"OHMTWSCRS"));event('A');return !publication_refused;}
 int ax_mock_close(int f){assert(f==7);event('C');return 0;}
 int ax_mock_rename(int a,const char*x,int b,const char*y,unsigned flags){assert(a==5&&b==5&&!strcmp(x,"bootstrap-locators.v1.staging")&&!strcmp(y,"bootstrap-locators.v1")&&flags==RENAME_EXCL);event('R');if(fs_mode==1){errno=EEXIST;return -1;}return 0;}
 static id expected_keychain,expected_access;
@@ -66,7 +73,8 @@ int main(void){@autoreleasepool{
  Native io={.dir=5,.journal=6};unsigned char record[32]={0};
  nevents=0;assert(journal_write(&io,record));assert(!strcmp(events,"WSS"));
  AxSyntheticLocators loc={.length={1,1,1},.bytes={{1},{2},{3}}};
- nevents=0;assert(publish(&io,&loc)==AX_SYNTH_PUBLISH_OK);assert(!strcmp(events,"OHMTWSCRS"));
+ nevents=0;assert(publish(&io,&loc)==AX_SYNTH_PUBLISH_OK);assert(!strcmp(events,"OHMTWSCRSA"));
+ nevents=0;publication_refused=1;assert(publish(&io,&loc)==AX_SYNTH_PUBLISH_UNKNOWN);assert(!strcmp(events,"OHMTWSCRSA"));publication_refused=0;
  nevents=0;fs_mode=1;assert(publish(&io,&loc)==AX_SYNTH_PUBLISH_COLLISION);assert(!strcmp(events,"OHMTWSCR"));
  nevents=0;fs_mode=2;assert(publish(&io,&loc)==AX_SYNTH_PUBLISH_UNKNOWN);assert(!strcmp(events,"OHMTWSC"));
  puts("PASS actual journal/publish callbacks with renamed inert filesystem mocks");

@@ -1,0 +1,8 @@
+{
+  "result": "PASS_COMPILE_ONLY",
+  "independentReviewer": "offline_diagnostic_review",
+  "rootVerifiedBindings": 15,
+  "frozenHarnessSha256": "fcf0a2c9dde524b9ed916698eac18a3dea0fe433a393cc46cb8c5ce685c8b17a",
+  "testExecutionAllowedYet": false,
+  "permittedStep": "red-caller-compile"
+}

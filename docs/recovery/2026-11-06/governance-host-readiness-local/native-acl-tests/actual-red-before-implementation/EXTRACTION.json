@@ -1,0 +1,22 @@
+{
+  "source": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/system_peer_binding.c",
+    "sha256": "ce3f111e3e0704697062daadc9ef012ceae630fa75110914215946589cbe92c2",
+    "size": 8068,
+    "mode": 420
+  },
+  "byteStart": 1512,
+  "byteEnd": 2052,
+  "fragment": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/subject_protected_fd.inc",
+    "sha256": "efa3db1e6678b0d231741efc3ff9e1a5e3fbb6e3826b7b6a4532faa33030cc20",
+    "size": 540,
+    "mode": 420
+  },
+  "exactByteSlice": true,
+  "scope": "one complete unchanged static predicate; no substituted production body; all external callees inert test functions",
+  "currentProductionSourceUnchanged": true,
+  "productionCodeImplemented": false,
+  "compilerInvoked": false,
+  "testsInvoked": false
+}

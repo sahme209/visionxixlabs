@@ -1,0 +1,90 @@
+{
+  "actualOutcomes": [
+    {
+      "activeSeconds": 0.20427333400000003,
+      "cleanup": "reaped_original_child",
+      "descendantQuiescence": "unavailable",
+      "executionAuthorized": false,
+      "exit": 0,
+      "expectedExit": 0,
+      "installationReady": false,
+      "matchedExpectedOutcome": true,
+      "retryAuthorized": false,
+      "state": "completed",
+      "step": "red-caller-compile",
+      "totalWallSeconds": 0.20449479200000004,
+      "unknown": false
+    },
+    {
+      "activeSeconds": 0.079228083,
+      "cleanup": "reaped_original_child",
+      "descendantQuiescence": "unavailable",
+      "executionAuthorized": false,
+      "exit": 1,
+      "expectedExit": 1,
+      "installationReady": false,
+      "matchedExpectedOutcome": true,
+      "retryAuthorized": false,
+      "state": "completed",
+      "step": "red-caller-test",
+      "totalWallSeconds": 0.07950358300000002,
+      "unknown": false
+    }
+  ],
+  "childInvocationsByPreparingAgentAfterRootRed": 0,
+  "meaningfulRedEstablished": true,
+  "records": [
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-03.claim.json",
+      "sha256": "7efbbbeffa209cd9e216a06ab0e176a7053f7e442822f7c31ff39ccae5f9ef98",
+      "size": 1705
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-03.terminal.json",
+      "sha256": "9d6ef8810b35643f3ca497ba7810ede660e8ef7285e76f2a67779d8e46efaab6",
+      "size": 371
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-03.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-03.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-04.claim.json",
+      "sha256": "7b74d04acb4dd6980315cbe5ed8fdd60579149c2d876dd74a20737bf7194df34",
+      "size": 907
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-04.terminal.json",
+      "sha256": "c8893f0a00a9f2a3ab80f110a7de8a239fe7a1d44208c88da56cadc92fdbd8de",
+      "size": 360
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-04.stdout.log",
+      "sha256": "4688a0a76f7b4c6ca8e56add77a42bf07344e01e019392d0c73e22b777535006",
+      "size": 41
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-stub-tests-1/attempt-04.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "remainingChargedActiveSeconds": 477.716498583,
+  "remainingInvocations": 28,
+  "unitCallsUsedIncludingPreparation": 4,
+  "unitChargedActiveSecondsIncludingPreparation": 2.283501417
+}

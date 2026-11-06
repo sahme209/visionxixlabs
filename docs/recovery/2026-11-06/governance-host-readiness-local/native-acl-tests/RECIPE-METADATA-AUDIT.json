@@ -1,0 +1,9 @@
+{
+  "actualReviewSourceModeUnchanged": true,
+  "allPassed": true,
+  "changedOnlyRecipeField": "actualCompiledBinaryReview.mode 420 -> actual lstat384",
+  "compilerOrTestChildInvoked": false,
+  "purpose": "ORDINARY_FILE_METADATA_BINDING_COMPARISON_NOT_TEST_CHILD",
+  "recipeBindingCount": 18,
+  "recordsVerified": 21
+}

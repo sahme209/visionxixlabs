@@ -1,0 +1,16 @@
+{
+  "entryInvocations": 1,
+  "compilerOrCompiledTestChildren": 0,
+  "ownedRootExistsAfterFailure": false,
+  "phase": "recipe_input_binding_before_claim_or_Popen",
+  "terminalExit": 1,
+  "fixedReason": "fixed_regular_binding_required",
+  "causeEstablished": "SDK libSystem.tbd is an existing literal symlink; packet recorded followed target as regular",
+  "rawTarget": "libSystem.B.tbd",
+  "targetSha256": "20cfce043f11a083e2eb6111efe3579919a8082fa4cc912a7bd839af2010ec57",
+  "unknownProcessOutcome": false,
+  "productionCodeChanged": false,
+  "testAllowanceConsumed": 0,
+  "correctiveReviewStillRequired": true,
+  "recordedAt": "2026-11-06T22:35:56.340967+00:00"
+}

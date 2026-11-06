@@ -1,0 +1,86 @@
+{
+  "files": [
+    {
+      "name": "attempt-05.claim.json",
+      "sha256": "a5dcf1eb939273fd280ab16b25652539fbbfc91b8e0c8552a093d2cae39061be",
+      "size": 1711
+    },
+    {
+      "name": "attempt-05.terminal.json",
+      "sha256": "fcbf1bc9c5a12d1b812d190787e42239dfcca1d2d6a6758658cc436e44cb0f53",
+      "size": 366
+    },
+    {
+      "name": "attempt-05.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-05.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-06.claim.json",
+      "sha256": "918ffd86c23aaac0626f1b3290dbb95bbf44a00ba156721a188ebccb7356b555",
+      "size": 1715
+    },
+    {
+      "name": "attempt-06.terminal.json",
+      "sha256": "965dbfe810246182865cb3d79788385dbd45e28a45cef8e729b45f84d348d713",
+      "size": 375
+    },
+    {
+      "name": "attempt-06.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-06.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-07.claim.json",
+      "sha256": "c926035d2ad17dfd628fb820aef6daa1ca38cde2de56ea1aa8a2234571263397",
+      "size": 942
+    },
+    {
+      "name": "attempt-07.terminal.json",
+      "sha256": "c27d1f80a40ea4775a266f31c204c42dbcfaef13e56f05451e818ca4ddf3a1e5",
+      "size": 354
+    },
+    {
+      "name": "attempt-07.stdout.log",
+      "sha256": "b5bf84b36d959a09523c81663bc1021637ad45b467a640a9f35c1de016236362",
+      "size": 75
+    },
+    {
+      "name": "attempt-07.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-08.claim.json",
+      "sha256": "12f71ad55f804b468475e1640a4d3d8c2e531798f7c7892bf6ec135fb38d0149",
+      "size": 931
+    },
+    {
+      "name": "attempt-08.terminal.json",
+      "sha256": "c62d759450a6964ff4fccca7eabaec2a0ba5d483c5bb67bf2024996594aac239",
+      "size": 362
+    },
+    {
+      "name": "attempt-08.stdout.log",
+      "sha256": "b95840149add88d820b750775933e87d0905c001b824b05f645ab5f0d27d172e",
+      "size": 91
+    },
+    {
+      "name": "attempt-08.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "copiesOfActualOwnedResults": true,
+  "testBinariesRemainInPrivateLab": true
+}

@@ -1,0 +1,147 @@
+{
+  "callers": [
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_launch_owner.c",
+        "sha256": "f4c1fccad536533faa5d05b4eebf1bf802006fec81f524cf2749a12bcb9ce489",
+        "size": 14420
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/origin_launch_owner.c",
+        "sha256": "b0d6883dfa92a87c02f423515fb10907dedc23859709d18e96e537c36138fffe",
+        "size": 14421
+      }
+    },
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_readiness.c",
+        "sha256": "e7f076ebf20f2d7b52d2625d711bd0787ce31380d62fb8a0f5d3683d71de0ef8",
+        "size": 1718
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/synthetic_fixture_readiness.c",
+        "sha256": "315960d485fb2788ed03bd25ceb7040b4f82aeb2aee012fa9d3f4e42f2e80ca3",
+        "size": 1715
+      }
+    },
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_resource_supplier.m",
+        "sha256": "a2d236fa774c68da3d45cb49f209c18bd759f7e880208925ac50ed12f0b48126",
+        "size": 9719
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/origin_private_resource_supplier.m",
+        "sha256": "5958707022f7ffd515ffcd2ef9c11bbb9522aff97566bee0ad9ee0c21fafe299",
+        "size": 9694
+      }
+    },
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m",
+        "sha256": "15c5c5fea2b43cf9d688160d3294732c96fd3384b877b6dddbdc4bcd6063de13",
+        "size": 7253
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/synthetic_resource_provisioner.m",
+        "sha256": "8fceba2e14355cdca3e0afc65097a883744aca4104d027a27288f6ee9ba45590",
+        "size": 7228
+      }
+    },
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_maintenance_main.c",
+        "sha256": "c152f6c0b31511224a87b5cf83c4d3ff9565ca756aae8c0af7bc153adb0c77f5",
+        "size": 2464
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/synthetic_resource_maintenance_main.c",
+        "sha256": "ac1ff015e512451bb2988a21092a1ecfed248091533f8d76e7aa8d9afcf065e6",
+        "size": 2469
+      }
+    },
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_journal_native.c",
+        "sha256": "70df1020c3fb387adbd5cc01c66fa1634848327186e561de765f1a06ee2b719c",
+        "size": 3758
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/owner_journal_native.c",
+        "sha256": "5b7d8d85be2eccb138902c42e092bccd38a413e863adf14f31a3db0b8e227e12",
+        "size": 3766
+      }
+    },
+    {
+      "allOtherBytesUnchanged": true,
+      "onlyChanges": [
+        "quoted shared-helper include",
+        "ACL emptiness predicate and mandatory caller-owned acl_free result"
+      ],
+      "sourceAfter": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/system_peer_binding.c",
+        "sha256": "18dda50bd867271c107c368f97fec836a4d762a849e793a9fe6952162afefbe1",
+        "size": 8068
+      },
+      "sourceBefore": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/actual-red-before-implementation/native/system_peer_binding.c",
+        "sha256": "ce3f111e3e0704697062daadc9ef012ceae630fa75110914215946589cbe92c2",
+        "size": 8068
+      }
+    }
+  ],
+  "otherLegacyAffectedFixturesChanged": false,
+  "productionCompilerOrRuntimeInvoked": false,
+  "remainingNativeTestBudgetAfterActualRed": "same ledger, root reports4used;28callsleft before GREEN, remainingactive computed from actual terminals plus2secondreservation",
+  "sharedHeader": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_acl_empty.h",
+    "sha256": "688fe24d8865b9c1a210c395effefdf52471eb64e871e641207659138ddd9f0c",
+    "size": 1120
+  },
+  "unrunLegacyFixtures": "Existing13affectedfixture sources remain historical/unrequalified; do not run their old partially stubbed ACL mocks until explicitly updated/reviewed for new helper APIs. Current two fixed targets fully stub new APIs."
+}

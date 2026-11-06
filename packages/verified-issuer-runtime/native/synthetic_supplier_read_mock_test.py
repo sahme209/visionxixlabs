@@ -11,8 +11,8 @@ evidence.mkdir(parents=True,exist_ok=False)
 source=native/'origin_private_resource_supplier.m'
 original=source.read_bytes()
 before=b'''static int installation_context(void){
- /* Actual installed backing identity, principal and pre-main integrity remain
-  * unresolved. operational is immutable false; no manifest/flag can qualify. */
+ /* Current owned origin and protected installed coordinates; item policy is
+  * checked separately around every retained reference access. */
  return axiom_private_supplier_operational()&&axiom_owner_binding_current();
 }'''
 after=b'''static int installation_context(void){

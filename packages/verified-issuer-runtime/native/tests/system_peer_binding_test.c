@@ -6,7 +6,9 @@
 #define fstat fake_fstat
 #define pread fake_pread
 #define acl_get_fd_np fake_acl_get_fd_np
-#define acl_get_entry fake_acl_get_entry
+#define acl_init fake_acl_init
+#define acl_size fake_acl_size
+#define acl_copy_ext fake_acl_copy_ext
 #define acl_free fake_acl_free
 #define CFURLCreateFromFileSystemRepresentation fake_CFURLCreateFromFileSystemRepresentation
 #define CFStringCreateWithCString fake_CFStringCreateWithCString
@@ -44,8 +46,10 @@ int fake_close(int fd){assert(fd>=0);close_calls++;return 0;}
 int fake_fstat(int fd,struct stat*s){memset(s,0,sizeof(*s));s->st_uid=(uid_t)fake_uid;s->st_gid=(gid_t)(fd==100?fake_gid:fake_directory_gid);s->st_mode=(mode_t)((fd==100?S_IFREG:S_IFDIR)|fake_mode);s->st_nlink=(nlink_t)(fd==100?fake_link:1);s->st_size=fd==100?(off_t)sizeof(image):0;s->st_dev=1;s->st_ino=(ino_t)(fd==100?100+fake_changed_inode:fd);s->st_mtimespec.tv_sec=1;s->st_ctimespec.tv_sec=2;return 0;}
 ssize_t fake_pread(int fd,void*out,size_t n,off_t offset){assert(fd==100);if((size_t)offset>=sizeof image)return 0;if(n>sizeof image-(size_t)offset)n=sizeof image-(size_t)offset;memcpy(out,image+offset,n);return(ssize_t)n;}
 acl_t fake_acl_get_fd_np(int fd,acl_type_t type){(void)fd;assert(type==ACL_TYPE_EXTENDED);return(acl_t)(uintptr_t)1;}
-int fake_acl_get_entry(acl_t a,int entry,acl_entry_t*out){(void)a;(void)entry;(void)out;return fake_acl;}
-int fake_acl_free(void*p){(void)p;return 0;}
+acl_t fake_acl_init(int n){assert(n==0);return (acl_t)(uintptr_t)2;}
+ssize_t fake_acl_size(acl_t a){assert((uintptr_t)a==1||(uintptr_t)a==2);return 8;}
+ssize_t fake_acl_copy_ext(void*p,acl_t a,ssize_t n){assert(((uintptr_t)a==1||(uintptr_t)a==2)&&n==8);if(fake_acl<0)return -1;memset(p,fake_acl&&(uintptr_t)a==1?1:0,8);return 8;}
+int fake_acl_free(void*p){assert((uintptr_t)p==1||(uintptr_t)p==2);return 0;}
 CFURLRef fake_CFURLCreateFromFileSystemRepresentation(CFAllocatorRef a,const UInt8*path,CFIndex n,Boolean directory){(void)a;assert(!directory);assert(n>0&&(size_t)n<sizeof checked_path);memcpy(checked_path,path,(size_t)n);checked_path[n]=0;assert(!strcmp(checked_path,fake_role==AX_SYSTEM_PEER_OWNER?AX_OWNER_PATH:fake_role==AX_SYSTEM_PEER_BROKER?AX_SYNTH_BROKER:AX_SYNTH_APP "/Contents/MacOS/AxiomIssuerController"));return(CFURLRef)(uintptr_t)99;}
 CFStringRef fake_CFStringCreateWithCString(CFAllocatorRef a,const char*s,CFStringEncoding enc){(void)a;(void)enc;assert(strstr(s,"anchor apple generic")&&strstr(s,"FG5N98FE6W"));assert(strstr(s,fake_role==AX_SYSTEM_PEER_OWNER?AX_SYSTEM_PEER_OWNER_ID:fake_role==AX_SYSTEM_PEER_BROKER?AX_SYSTEM_PEER_BROKER_ID:"com.visionxixlabs.axiom.synthetic.controller"));return(CFStringRef)(uintptr_t)98;}
 void fake_CFRelease(CFTypeRef x){assert(x);}

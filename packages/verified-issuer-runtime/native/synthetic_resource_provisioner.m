@@ -7,6 +7,7 @@
 #import <Foundation/Foundation.h>
 #include <sys/stat.h>
 #include <sys/acl.h>
+#include "protected_acl_empty.h"
 #include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
@@ -20,7 +21,7 @@ typedef struct {int dir,journal;SecKeychainRef keychain;SecAccessRef access;cons
  * paths to root; extended ACLs refuse rather than infer absence of write grants. */
 static int safe_stat(int fd,int directory,mode_t mode){
  struct stat s;if(fstat(fd,&s)||s.st_uid||(!directory&&s.st_gid)||!((directory?S_ISDIR(s.st_mode):S_ISREG(s.st_mode)))||(s.st_mode&0777)!=mode||(!directory&&s.st_nlink!=1))return 0;
- acl_t a=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!a)return 0;acl_entry_t e;int n=acl_get_entry(a,ACL_FIRST_ENTRY,&e);acl_free(a);return n==0;
+ acl_t a=acl_get_fd_np(fd,ACL_TYPE_EXTENDED);if(!a)return 0;int empty=ax_acl_is_empty(a);int freed=acl_free(a);return empty&&!freed;
 }
 static int protected_directory(void){
  int fd=open("/",O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);if(fd<0)return -1;
