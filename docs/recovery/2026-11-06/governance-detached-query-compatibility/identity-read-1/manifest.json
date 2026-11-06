@@ -1,0 +1,18 @@
+{
+  "authorization.json": {
+    "sha256": "6000aa37f26b6b35d944428d9826ad5261237baf51bf4a524a7e2da70dc53df0",
+    "size": 269
+  },
+  "attempt.json": {
+    "sha256": "224b27a861c77b6987b706a9bacd3db163ec57ae556093d20f2287b3e25eb4a3",
+    "size": 61
+  },
+  "output.log": {
+    "sha256": "2d07f99e77f5ffddd52ca203e45f7f5bdfc2f369bfb100bf656c1b153e2c9960",
+    "size": 345
+  },
+  "result.json": {
+    "sha256": "d5b64a63a09c3c7833f6505d5cd8d6b426c1e191f5db8e8616d653ebb703b74d",
+    "size": 140
+  }
+}

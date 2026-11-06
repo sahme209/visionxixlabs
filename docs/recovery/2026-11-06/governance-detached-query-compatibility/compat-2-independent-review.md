@@ -1,0 +1,3 @@
+# Exact compat-2 source and packet review — PASS
+
+Reviewer file-only review confirmed only fresh ROOT and signing/static-command minimal environment changed; runtime private HOME/TMPDIR/network/write/null controls unchanged. Packet571d77c16985d18b94590a05c6a4f051e96e14320c816d645991c81efe321291 matches8sources/6inputs/stats/modes. Originalquerye0/originalNodee4b5/signedNode1aa6 unchanged; copy0600; fixedkey/identifier/Runtime/emptyentitlements/no timestamp;10+5seconds/64KiB/private0700/device/closedqualificationflag match. No attempt/result/log markers. No important findings. No API/native/signing/execution performed by review. Fresh actual-run permission is pending.

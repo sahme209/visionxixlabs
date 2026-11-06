@@ -3,7 +3,7 @@ from pathlib import Path
 import hashlib,json,os,plistlib,re,stat,sys
 if __package__ in (None,''):sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from governance_local_issuer import runtime_query_probe as p,query_derivative as diff
-ROOT=p.BASE/'2026-11-06-detached-query-compat-1'
+ROOT=p.BASE/'2026-11-06-detached-query-compat-2'
 COPY=ROOT/'query-review-copy.node'
 IDENT='com.visionxixlabs.axiom.synthetic-query'
 KEY='4C2E59F247CA275001586AE020A9269464529452'
@@ -43,7 +43,7 @@ def verify(packet,node_after=None,copy_after=None):
  for name,b in packet['sources'].items():diff.need(p.binding(name)==b,'source_changed')
 def command(argv,index):
  logpath=ROOT/'work'/('command-'+str(index)+'.log')
- env={'PATH':'/usr/bin:/bin','HOME':str(ROOT/'work/home'),'TMPDIR':str(ROOT/'work/tmp'),'LANG':'C','TZ':'UTC'}
+ env={'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','LC_ALL':'C'} if index in (0,1,2) else {'PATH':'/usr/bin:/bin','HOME':str(ROOT/'work/home'),'TMPDIR':str(ROOT/'work/tmp'),'LANG':'C','TZ':'UTC'}
  with p.exclusive(logpath)as log:code,error=p.files.engine_tools._run_generation_child(argv,ROOT/'work',env,log,10,file_size_limit=p.CAP,creation_mask=0o077)
  result={'exit':code,'error':error,'bytes':logpath.stat().st_size}
  p.save(ROOT/('command-'+str(index)+'.json'),result)

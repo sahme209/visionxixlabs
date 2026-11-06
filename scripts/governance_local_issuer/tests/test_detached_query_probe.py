@@ -25,6 +25,21 @@ class Tests(unittest.TestCase):
     result=d.execute(root/'packet.json')
     self.assertEqual(result['status'],'unknown');self.assertNotIn('PRIVATE',str(result))
     with self.assertRaises(FileExistsError):d.execute(root/'packet.json')
+class EnvironmentTests(unittest.TestCase):
+ def test_signing_keeps_system_default_keychain_resolution(self):
+  with tempfile.TemporaryDirectory()as t:
+   root=Path(t).resolve();(root/'work').mkdir()
+   with patch.object(d,'ROOT',root),patch.object(d.p.files.engine_tools,'_run_generation_child',return_value=(0,None))as run:
+    d.command(['/usr/bin/codesign'],0)
+   environment=run.call_args.args[2]
+   self.assertNotIn('HOME',environment);self.assertNotIn('TMPDIR',environment)
+   self.assertEqual(environment,{'PATH':'/usr/bin:/bin:/usr/sbin:/sbin','LANG':'C','LC_ALL':'C'})
+ def test_runtime_keeps_disposable_home(self):
+  with tempfile.TemporaryDirectory()as t:
+   root=Path(t).resolve();(root/'work').mkdir()
+   with patch.object(d,'ROOT',root),patch.object(d.p.files.engine_tools,'_run_generation_child',return_value=(0,None))as run:
+    d.command(['/usr/bin/sandbox-exec'],'load')
+   self.assertEqual(run.call_args.args[2]['HOME'],str(root/'work/home'))
 class CurrentnessTests(unittest.TestCase):
  def test_comparison_hash_must_match_stable_binding(self):
   with tempfile.TemporaryDirectory()as t:

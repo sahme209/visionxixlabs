@@ -1,0 +1,5 @@
+# Approved read-only identity check — exact identity present
+
+The user’s “Approve” resumed the blocked goal and approved ONLY the pending read-only check. /usr/bin/security find-identity -v -p codesigning ran ONCE with PATH/LANG/LC_ALL only,10seconds plus at most5cleanup/64KiB/no retry. Exit0,345bytes,no supervisor error. The exact saved fingerprint4C2E59F247CA275001586AE020A9269464529452 appeared twice under Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W); listing reported3valid identities in total. Duplicate entries are not separately issued keys or permission to choose another identity. No key export/unlock/change, signature or runtime load occurred.
+
+This proves identity resolution in that observed minimal environment, not a successful private-key signing operation, not that the earlier failure was caused by HOME, and not current future key availability. Earlier no-identity signing result remains unchanged. Source environment correction and a fresh separately approved signing/load invocation remain next. No issuer or Governance qualification.

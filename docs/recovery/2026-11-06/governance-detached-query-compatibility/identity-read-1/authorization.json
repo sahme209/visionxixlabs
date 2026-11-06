@@ -1,0 +1,1 @@
+{"cap":65536,"cleanupSeconds":5,"command":["/usr/bin/security","find-identity","-v","-p","codesigning"],"keyExport":false,"keychainChange":false,"retry":false,"scope":"one read-only valid code-signing identity check","seconds":10,"signing":false,"userAnswer":"Approve"}
