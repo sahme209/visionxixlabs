@@ -1,0 +1,18 @@
+{
+  "sourceReceipt": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-2/materialization.json",
+  "recordedPayloadHostObservations": {
+    "osBuild": "26B123",
+    "apfsSnapshot": true
+  },
+  "recordedCompanionHostObservations": {
+    "osBuild": "26B123",
+    "apfsSnapshot": true
+  },
+  "sourceUtilities": [
+    "/usr/bin/sw_vers -buildVersion",
+    "/usr/sbin/diskutil info -plist /"
+  ],
+  "invocationsPerUtility": 2,
+  "rawIndependentCommandStreams": "not_produced_by_existing_materializer_do_not_invent",
+  "newHostCallsDuringPreservation": false
+}

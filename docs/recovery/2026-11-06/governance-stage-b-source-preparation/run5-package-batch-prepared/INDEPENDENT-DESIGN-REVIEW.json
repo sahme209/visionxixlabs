@@ -1,0 +1,15 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS after requested wording clarifications",
+  "currentInputBindingsChecked": 30,
+  "originalInertMainReuseAccepted": true,
+  "oldMainHistoryRestamped": false,
+  "designSha256": "7805e0aaa00487b883269a50f14babd6be3de2bb5a99ba87f0daa372a9150480",
+  "sourceBindingsSha256": "05a725fcc7e02348a8acf71f369084d71d95747e4ff0319e3e90e506f68eafb9",
+  "importantLimits": [
+    "Implementation not yet authorized",
+    "No actual package/image/seal operation yet",
+    "Independent actual unsigned review before new outer seal",
+    "No runtime/custody/activation acceptance"
+  ]
+}

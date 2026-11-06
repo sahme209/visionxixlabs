@@ -1,0 +1,33 @@
+{
+  "failedDriver": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-driver.py",
+    "sha256": "854c7c2d8382e6c6b67d4c1536ccfd11b53f512805daad75a6249063eb8f3d65",
+    "size": 9126,
+    "mode": 420
+  },
+  "actualDeclaredPostcompileExtra": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-fixture-container-source-1/stage/v2-main/leaves/AxiomSyntheticContainerMain",
+    "sha256": "b3a4f59e49b2f8a172a9071a16fbcb6c0b829f8eb2cbe53c7ca6d426dbe155d8",
+    "size": 16856,
+    "mode": 384
+  },
+  "expectedPREcompileNames": [
+    "compile-plan.json",
+    "container-preparation-v2.json",
+    "metadata/Info.plist",
+    "source/container_main.c"
+  ],
+  "actualPOSTcompileNames": [
+    "compile-plan.json",
+    "container-preparation-v2.json",
+    "leaves/AxiomSyntheticContainerMain",
+    "metadata/Info.plist",
+    "source/container_main.c"
+  ],
+  "onlyExtraIsDeclaredCompileOutput": true,
+  "newOrchestration": "fp.verify_fixture_container +UNCHANGEDa._main early BEFOREhost/image; later_reuse_main a._main retained",
+  "image2RootAbsent": true,
+  "controller3RootAbsent": true,
+  "validatorsChanged": false,
+  "filesDeletedOrReceiptsRestampedOrRecompiled": false
+}

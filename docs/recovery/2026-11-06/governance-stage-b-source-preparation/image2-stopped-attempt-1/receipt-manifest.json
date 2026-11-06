@@ -1,0 +1,75 @@
+{
+  "copies": [
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/claimed.json",
+      "savedPath": "controller/claimed.json",
+      "sha256": "5e67ffcb9898662ce19004c291abe922a255195775e9ceeeaba3c0d4c5d2ec95",
+      "size": 156,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/process.json",
+      "savedPath": "controller/process.json",
+      "sha256": "67d34d62e6fb6f0d78cd22670bfae9f653c907625a1ef93cf46c6d3513a399f2",
+      "size": 130,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/result.json",
+      "savedPath": "controller/result.json",
+      "sha256": "e98dbe265a0402c897440a60f59369376a49122c772fa334e0035e5ff75cf258",
+      "size": 349,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/stderr.log",
+      "savedPath": "controller/stderr.log",
+      "sha256": "cb37eededa025c7bd6ffcdd33ff64f2ed40a5bf4ac6c33463d7d4b60b7f852f7",
+      "size": 1259,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/stdout.log",
+      "savedPath": "controller/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-driver.py",
+      "savedPath": "frozen-source/prepared-image2-driver.py",
+      "sha256": "854c7c2d8382e6c6b67d4c1536ccfd11b53f512805daad75a6249063eb8f3d65",
+      "size": 9126,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-controller.py",
+      "savedPath": "frozen-source/prepared-image2-controller.py",
+      "sha256": "24fa650b93b177ecb69a46bd67b1a152b404160d45ab88476bd9cf3106c6e611",
+      "size": 5359,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/image-operation-inputs.json",
+      "savedPath": "frozen-source/image-operation-inputs.json",
+      "sha256": "bb632c9479a9590306a8ef0a729d865570324215e46fffa23d32d4efa2adeb66",
+      "size": 10165,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/STAGE-B-BINDINGS.json",
+      "savedPath": "frozen-source/STAGE-B-BINDINGS.json",
+      "sha256": "daa3aeed8084a03404f58164cdceddc60aadb10301b2f49658400525c083be20",
+      "size": 10232,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/STAGE-B-EXECUTION-REVIEW.md",
+      "savedPath": "frozen-source/STAGE-B-EXECUTION-REVIEW.md",
+      "sha256": "2e46da9a6b6190a3e7d569917e216003c7a57c0af4faa6acde09ff84f34f638b",
+      "size": 2743,
+      "mode": 420
+    }
+  ],
+  "payloadCopied": false
+}

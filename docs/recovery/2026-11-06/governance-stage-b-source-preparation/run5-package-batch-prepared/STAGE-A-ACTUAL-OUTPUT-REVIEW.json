@@ -1,0 +1,21 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS file-only actual package review",
+  "controllerSession": 60388,
+  "controllerExit": 0,
+  "controllerSeconds": 342.8428,
+  "originalDriverReaped": true,
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "regularFilesVerified": 95321,
+  "regularFileBytes": 3690032322,
+  "directoriesVerified": 12002,
+  "internalSymlinksVerified": 52,
+  "recordedBindingsVerified": 91,
+  "inventoryOrHashModeMismatches": 0,
+  "packageDigest": "555bc590871e405885ac84de755c27983face39f9a0ed9dcaf19b1122de42b53",
+  "manifestSha256": "f1b73e6d934873383895f308aa10c8f213b09c0f4b1eb41921de678886ba6ba1",
+  "materializationReceiptSha256": "d766b00d315daddf9e9cf78491d946bd1979265da61690ab1adacae0cda78c0c",
+  "fixtureDeliveryReceiptSha256": "acdfea65623e99c9cd410ab165a968cbfd98a07f9504e86246e94a18c6ad2f87",
+  "runtimeCustodyInstallationActivationQualified": false,
+  "repeatAuthorized": false
+}

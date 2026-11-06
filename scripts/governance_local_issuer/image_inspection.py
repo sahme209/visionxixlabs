@@ -4,6 +4,7 @@ import json,os,plistlib,re,selectors,signal,stat,subprocess,time
 from . import system_preparation as prep,manifest
 RUN_ROOT=Path('/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-05-real-container-assembly-558f12f1')
 FRESH_RUN_ROOT=Path('/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1')
+IMAGE2_ROOT=Path('/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2')
 CAP=256*1024
 class InspectionStopped(ValueError):
  def __init__(self,reason,possible_mounted_image=True):super().__init__(reason);self.possible_mounted_image=possible_mounted_image
@@ -14,7 +15,7 @@ def _device(value):
 def _root_for_image(image):
  _need(isinstance(image,(str,Path)),'fixed_inspection_image_required')
  path=Path(image);_need(str(path)==str(image),'canonical_inspection_image_required')
- roots=[root for root in (RUN_ROOT,FRESH_RUN_ROOT)if path==root/'image/issuer-package.dmg']
+ roots=[root for root in (RUN_ROOT,FRESH_RUN_ROOT,IMAGE2_ROOT)if path==root/'image/issuer-package.dmg']
  _need(len(roots)==1,'fixed_inspection_image_required');prep._path(path);return roots[0]
 def _attach_argv(image):
  root=_root_for_image(image);return ['/usr/bin/hdiutil','attach','-readonly','-nobrowse','-noautoopen','-plist','-mountpoint',str(root/'mount'),str(image)]
@@ -61,7 +62,7 @@ def _run(argv,seconds):
  return {'argv':argv,'state':state,'exit':p.returncode if p is not None else None,'stdout':bytes(data['stdout']),'stderr':bytes(data['stderr']),'cleanup':'reaped_original_child'if p is not None and p.returncode is not None else'unknown','errorType':error}
 def _success(record):return record.get('state')=='completed'and type(record.get('exit'))is int and record['exit']==0 and record.get('cleanup')=='reaped_original_child'and record.get('errorType')is None
 def _select_device(data,root=None):
- root=RUN_ROOT if root is None else root;_need(root in (RUN_ROOT,FRESH_RUN_ROOT),'fixed_inspection_root_required')
+ root=RUN_ROOT if root is None else root;_need(root in (RUN_ROOT,FRESH_RUN_ROOT,IMAGE2_ROOT),'fixed_inspection_root_required')
  _need(type(data)is bytes and len(data)<=CAP,'bounded_attach_plist_required');value=plistlib.loads(data)
  _need(type(value)is dict and type(value.get('system-entities'))is list and 1<=len(value['system-entities'])<=32 and all(type(x)is dict for x in value['system-entities']),'attach_entities_required')
  mounted=[x for x in value['system-entities']if type(x)is dict and 'mount-point'in x]

@@ -1,0 +1,10 @@
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-driver.py", line 64, in <module>
+    if __name__=='__main__':main()
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-driver.py", line 34, in main
+    wrapper=fp.verify_fixture_container(Path(config['fixturePreparation']['path']).parent);cp.verify_container(Path(config['containerPreparation']['path']).parent)
+  File "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-procedure-2/scripts/governance_local_issuer/container_preparation.py", line 75, in verify_container
+    _need(actual==set(r['files'])|{RECEIPT},'container_file_set_changed')
+  File "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-procedure-2/scripts/governance_local_issuer/container_preparation.py", line 25, in _need
+    if not ok:raise ValueError(reason)
+ValueError: container_file_set_changed

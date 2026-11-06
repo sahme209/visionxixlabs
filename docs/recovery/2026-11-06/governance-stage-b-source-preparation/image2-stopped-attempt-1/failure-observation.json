@@ -1,0 +1,12 @@
+{
+  "state": "whole_conditional_unit_stopped",
+  "controllerExit": 1,
+  "driverExit": 1,
+  "elapsedSeconds": 0.069565584,
+  "originalDriverReaped": true,
+  "image2RootAbsentAtRead": true,
+  "imageMountSignStarted": false,
+  "cause": "obsoletePREcompilecp.verify_container called on genuinePOSTcompilemaininventory",
+  "remainingStageCBlocked": true,
+  "retryAuthorized": false
+}

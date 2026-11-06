@@ -1,0 +1,12 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS",
+  "currentBindingsChecked": 45,
+  "functionASTsMatchAcceptedProcedure": true,
+  "freshRootsAbsent": true,
+  "maximumSeconds": 1800,
+  "maximumCapturedBytes": 1048576,
+  "cleanupMaximumSeconds": 5,
+  "hostReadCommands": 4,
+  "noPayloadLaunch": true
+}

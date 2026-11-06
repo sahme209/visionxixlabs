@@ -1,0 +1,69 @@
+{
+  "copies": [
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-2/attempt.json",
+      "savedPath": "run/attempt.json",
+      "sha256": "8851292e6ff0bec50d94d19b3edaad1303cef0017443b3592a227a2d7b5829b7",
+      "size": 2602,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-2/fixture-delivery.json",
+      "savedPath": "run/fixture-delivery.json",
+      "sha256": "acdfea65623e99c9cd410ab165a968cbfd98a07f9504e86246e94a18c6ad2f87",
+      "size": 4975,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-2/materialization.json",
+      "savedPath": "run/materialization.json",
+      "sha256": "d766b00d315daddf9e9cf78491d946bd1979265da61690ab1adacae0cda78c0c",
+      "size": 390835,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-2/terminal-summary.json",
+      "savedPath": "run/terminal-summary.json",
+      "sha256": "04aed41d8132b21749eeb365edf235e5447a6db05ecfc13febe064ac5a437aa6",
+      "size": 1818,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-controller-2/claimed.json",
+      "savedPath": "controller/claimed.json",
+      "sha256": "52260276d3759958ee4723167c2f78d3b1d38219067848038b211aeaf67201a3",
+      "size": 156,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-controller-2/process.json",
+      "savedPath": "controller/process.json",
+      "sha256": "af5c3a65c515f18f04ec7747042f08b7daa9b74403f2f4c77ceb21a95487fdb4",
+      "size": 130,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-controller-2/result.json",
+      "savedPath": "controller/result.json",
+      "sha256": "f0b6986ef02c57e9c9f898ea61d71006c26e9b9f55e518f45052656d2981eff1",
+      "size": 346,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-controller-2/stderr.log",
+      "savedPath": "controller/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-controller-2/stdout.log",
+      "savedPath": "controller/stdout.log",
+      "sha256": "ba647c6cfe9f4bffea6b6e7ff78c208b7a74c941cd961592666f6f608eaa521f",
+      "size": 90,
+      "mode": 384
+    }
+  ],
+  "packagePayloadCopied": false,
+  "executionAuthorized": false
+}

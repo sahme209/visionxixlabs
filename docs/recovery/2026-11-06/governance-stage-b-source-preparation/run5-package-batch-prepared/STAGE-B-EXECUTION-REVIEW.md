@@ -1,0 +1,13 @@
+# Stage B actual materialization-bound image2/unsigned assembly - frozen
+
+Conditionalgrant call_ReeEDKSPoK0JWmfZpePiOvIz applies onlyafter independentreview. Root ownsactualinvocation; thispreparation executedNOimage/mount/hdiutil/sign/clang. Exactcontroller prepared-image2-controller.py, outer1800s/shared1MiB/+5ownedcleanup, entryumask077. Driver uses fixedactualimage-operation-inputs.json SHA in its source; controller pins exactdriverSHA.
+
+Actualmat2 completed d766b00d...390835, fixtureacdfea65...4975, packageDigest555bc590871e405885ac84de755c27983face39f9a0ed9dcaf19b1122de42b53; rawmanifestf1b73e6d934873383895f308aa10c8f213b09c0f4b1eb41921de678886ba6ba1. Parentindependentactualfile reviewPASS95321files/3690032322bytes/12002dirs/52symlinks/91bindings/noextras. Fullsourceb8, actualproducerab6 andexisting6native/Node/query unchanged.
+
+19explicitpartialproceduralhelpers immutable at BASE/2026-11-06-stage-b-image-procedure-2, separatefromacceptedLab5/packageSourceb8. Seal2placeholder isEXCLUDED. Existingoldmainoriginalcompile/prep/v3wrapper boundexactly, _main currentness joined; sourceRevision64originalhistory preserved, packageb8separateprovenance. Main-reuse observation only, no compiler or restampedreceipt.
+
+Image2ROOT=BASE/2026-11-06-stage-b-image-2; exactimage/root/image/issuer-package.dmg, mount/root/mount, inspection/root/inspection, assembly/root/assembled; freshrootsrefuse. Existinghdiutilcreate600s, UDRO/HFS+/fixedvolname; actualmatcopiedFileBytes3690030774 +1GiB =imageartifactcap4763772598bytes; minimumfree10064416108bytes checkedbyactualdriverbeforeclaim (notcheckednow). Existingreadonlyattach90/detach60/shared256KiB/+5 andsameowneddevice/singlemount/currentnamespace/proofchecks unchanged. No guessed/forced/retrydetach; possibleMountedImageunknownstopsunit.
+
+Reverify packagebefore/afterimage, realoperation/inspectioncompletion and originalmainproof, then existingfixtureassembly/verify13deliveryfiles; no payloadlaunch, image1reuse, native/build/producerrepeat, keyuse, root/install/DB/provider/deploy. Thisstageincludes enumeratedhdiutil utilities, ordinarycopy/hash/statvfs only, notissuerexecution. SuccessfulStageB stopsforactualunsigned13inventory/presealreview; no automaticseal.
+
+StageC uses a SEPARATEproceduralcopy ONLYafteractualunsignedtargetreview and fixedFINAL_TARGET_REVIEW_SHA256/sourcepacket freeze. NevermutateStageBclosure; currentseal2PENDINGguard refuseskeys. Existing3commands60/30/30/shared64KiB andouter600s/+5 remainlaterstage, no userselectedtarget/reviewhash/identity. All13baseline/currentfiles anddirectories recheckedimmediatelyprekey, unchangedv3validator aftersign; onlymain signature/3derivedsizes/newCodeResourcesallowed. Actualunsignedreviewhash is NOTinventednow.

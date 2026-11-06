@@ -1,0 +1,157 @@
+{
+  "files": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-materialization-driver.py",
+      "sha256": "d604491e51ad8ad992327a3310e449d82bdc36f9964aca731fe2b2988e28d7be",
+      "size": 10416,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-materialization-controller.py",
+      "sha256": "a12d5c1b5bc14b8b68adfc9d3631fce3fb712b97e40d8d668e8fca2731441f13",
+      "size": 5378,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/operation-proposal.json",
+      "sha256": "cbe1d6f21e32b6c2d38392fbe8002e822a07306c711b9c3236669dc880535ede",
+      "size": 2977,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/completed-observation.json",
+      "sha256": "02d1ecd964d844cba49259e22c41733270e6258ab7be325f5af68b24daaec721",
+      "size": 419375,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/terminal-summary.json",
+      "sha256": "76fe919bce5b32334dfc85dcecadf2aa69d7913a0e69a5f588554e3e0da81a35",
+      "size": 968,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/build-run/attempt.json",
+      "sha256": "ce4d951606298b8c1359bed4e620b6751b0b3e56bdf4daa6e8d5ba49bfca77b2",
+      "size": 72195,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/build-run/result.json",
+      "sha256": "0c935067da8c3066f371889583fecca4e25aad85fab404d5f8175d27726c445c",
+      "size": 180799,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/stage/_axiom_system_build_inputs.json",
+      "sha256": "d744a597848b9093e98aeef89cdee456febcfa07dfb469a8bca641c56da517c5",
+      "size": 50053,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-5/stage/_axiom_fixture_delivery_inputs.json",
+      "sha256": "4ea7daf97c17adddbc9a07e27373fc497e06655eb793eb3aa12fdb52edd34ab7",
+      "size": 12296,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/SOURCE.json",
+      "sha256": "fd4ab8b0bceec7a0ec9e1bc1d754d651b407318f6b493f3b6fa3160888b1fb45",
+      "size": 2988,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+      "size": 122129232,
+      "mode": 493
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/build-local-issuer-package-source.py",
+      "sha256": "9f9a936bb5e6f8381483e796a24bba83b28cb3b53ee927d778f71df329dd17c0",
+      "size": 46531,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/local_prisma_engine_inputs.py",
+      "sha256": "5a692e45364745610cab6496cc2e2a9c7951069f147954b6e4eb2d571d8d55d1",
+      "size": 28469,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/__init__.py",
+      "sha256": "89b16b5e62a7f03009da2b7b09d865d8cbc6d6cf60629b203420c91b100b2878",
+      "size": 76,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/materialize.py",
+      "sha256": "be2adb392869efca16f66a5ba5792d7d598f36cf32d6d9380dec4c6abd7cf58a",
+      "size": 34808,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/manifest.py",
+      "sha256": "19304f8c9e9fbe8620cf6b484fd599b6f7fc3611d55eea3339a45030f0f5e5e0",
+      "size": 18081,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/native_linkage.py",
+      "sha256": "027a0f78c0341112fee376a828aeec5e62cbbdd2c9445873b7ed997af9be7490",
+      "size": 11644,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/system_build_inputs.py",
+      "sha256": "0961b52f2d4b525ac47ec8b34e66ca7f840a0b02da18fa70d3db422c4cb75c0e",
+      "size": 21477,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/system_role_profiles.py",
+      "sha256": "5acae3be191e3534e356d03523ec9b642afb79abc308033cd1128f8237b65c24",
+      "size": 5777,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/saved_profile_observation.py",
+      "sha256": "8e9a80b344b5a5bfee9e6f748346d828fc074d41f569bc5bdc858b558da3193e",
+      "size": 11610,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/system_preparation.py",
+      "sha256": "f22c68e1dc19319a406bb27ed22de349f290ae8ec8c7c7d51a1b85f0f233564e",
+      "size": 17924,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/fixture_delivery_inputs.py",
+      "sha256": "7bf1f6cfb45dba6d6155a372f42381d24a42912fdd2b99da0d77f8c1449e2e02",
+      "size": 16675,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/native_overlay.py",
+      "sha256": "4201318ae62dc89c3eba6a4048896dede274b365fa0754ec8055cf51095373a6",
+      "size": 11435,
+      "mode": 436
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/CONDITIONAL-BATCH-DESIGN.md",
+      "sha256": "7805e0aaa00487b883269a50f14babd6be3de2bb5a99ba87f0daa372a9150480",
+      "size": 10050,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/existing-main-reuse-source-observation.json",
+      "sha256": "c8f2b3abbc0bb68452f66b7d604b6b9b567f6bc85c09cbb7a963149f99f9338a",
+      "size": 1619,
+      "mode": 420
+    }
+  ],
+  "materializerDriverFunctionsASTUnchanged": true,
+  "controllerFunctionASTUnchanged": true,
+  "executionAuthorized": false
+}

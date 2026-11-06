@@ -1,0 +1,24 @@
+{
+  "existingContainerAssemblyMainPureJoin": "PASS",
+  "nativeCompilerInvoked": false,
+  "originalCompileReceipt": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/container-compile.json",
+  "originalCompileReceiptSha256": "70d91c064d45a091d819a07a5c4aa542ed745f6ee8c3894eda68f7d5b83addbe",
+  "originalHistoryRestamped": false,
+  "sourceParity": [
+    {
+      "path": "scripts/governance_local_issuer/container_main.c",
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/repo/scripts/governance_local_issuer/container_main.c",
+      "new": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/scripts/governance_local_issuer/container_main.c",
+      "sha256": "2b69d9fa99f0a12509878305aca4386c334cbab31115406a2a2546b45fa1cdc0",
+      "size": 106
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/origin_root_binding.m",
+      "original": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-3/repo/packages/verified-issuer-runtime/native/origin_root_binding.m",
+      "new": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo/packages/verified-issuer-runtime/native/origin_root_binding.m",
+      "sha256": "a74167becb5225348ff6c14bba01e17b93d857c81a5d00a50fccae88cb44b252",
+      "size": 8874
+    }
+  ],
+  "requiresIndependentReview": true
+}

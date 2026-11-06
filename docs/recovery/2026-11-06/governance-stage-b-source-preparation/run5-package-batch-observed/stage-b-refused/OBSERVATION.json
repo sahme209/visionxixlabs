@@ -1,0 +1,16 @@
+{
+  "controllerExit": 1,
+  "controllerSeconds": 0.069565584,
+  "driverExit": 1,
+  "driverReaped": true,
+  "monitorError": null,
+  "reason": "container_file_set_changed",
+  "causalFinding": "Driver called precompile-only cp.verify_container on original legitimately compiled preparation; sole extra file is exact declared compiled main. Existing postcompile a._main supports this genuine output.",
+  "imageRootExists": false,
+  "imageCreated": false,
+  "mountAttempted": false,
+  "signingAttempted": false,
+  "wholeConditionalUnitStopped": true,
+  "retryAuthorized": false,
+  "stageAAcceptancePreserved": true
+}

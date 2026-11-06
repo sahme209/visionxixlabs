@@ -1,0 +1,40 @@
+{
+  "copies": [
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/claimed.json",
+      "savedPath": "claimed.json",
+      "sha256": "5e67ffcb9898662ce19004c291abe922a255195775e9ceeeaba3c0d4c5d2ec95",
+      "bytes": 156,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/process.json",
+      "savedPath": "process.json",
+      "sha256": "67d34d62e6fb6f0d78cd22670bfae9f653c907625a1ef93cf46c6d3513a399f2",
+      "bytes": 130,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/result.json",
+      "savedPath": "result.json",
+      "sha256": "e98dbe265a0402c897440a60f59369376a49122c772fa334e0035e5ff75cf258",
+      "bytes": 349,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/stderr.log",
+      "savedPath": "stderr.log",
+      "sha256": "cb37eededa025c7bd6ffcdd33ff64f2ed40a5bf4ac6c33463d7d4b60b7f852f7",
+      "bytes": 1259,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-2/stdout.log",
+      "savedPath": "stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "mode": 384
+    }
+  ],
+  "payloadCopied": false
+}

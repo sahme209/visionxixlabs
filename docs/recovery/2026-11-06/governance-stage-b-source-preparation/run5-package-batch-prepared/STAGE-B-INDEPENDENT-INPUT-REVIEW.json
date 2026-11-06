@@ -1,0 +1,16 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS",
+  "bindingsVerified": 31,
+  "frozenPartialHelpers": 19,
+  "genuineOriginalMainReuse": true,
+  "freshRootsAbsent": true,
+  "imageCapBytes": 4763772598,
+  "minimumFreeBytes": 10064416108,
+  "maximumSeconds": 1800,
+  "captureBytes": 1048576,
+  "cleanupSeconds": 5,
+  "readonlyAttachSeconds": 90,
+  "ownedDetachSeconds": 60,
+  "stageCIncluded": false
+}

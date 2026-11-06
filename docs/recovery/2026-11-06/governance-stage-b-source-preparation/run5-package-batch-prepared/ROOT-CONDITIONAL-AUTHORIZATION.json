@@ -1,0 +1,28 @@
+{
+  "questionItemId": "call_ReeEDKSPoK0JWmfZpePiOvIz",
+  "decision": "Approve this conditional packaging batch",
+  "designSha256": "7805e0aaa00487b883269a50f14babd6be3de2bb5a99ba87f0daa372a9150480",
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "stages": [
+    {
+      "name": "materialization2",
+      "maximumSeconds": 1800,
+      "independentInputAndOutputReviewRequired": true
+    },
+    {
+      "name": "image2_and_unsigned_container",
+      "maximumSeconds": 1800,
+      "independentInputAndOutputReviewRequired": true
+    },
+    {
+      "name": "outer_seal2",
+      "maximumSeconds": 600,
+      "independentActualUnsignedReviewBeforeKeyUse": true
+    }
+  ],
+  "outerCleanupMaximumSecondsEach": 5,
+  "retryAuthorized": false,
+  "existingSigningKeyUse": "Only exact reviewed new outer-container seal; no synthetic Keychain-item access/provisioning",
+  "runtimeLaunchInstallationDatabaseProviderDeploymentAuthorized": false,
+  "status": "Local coordinate implementation and reviews in progress; no actual stages invoked"
+}

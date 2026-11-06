@@ -1,0 +1,74 @@
+{
+  "authorizationReference": "call_ReeEDKSPoK0JWmfZpePiOvIz",
+  "approvedDesignSha256": "7805e0aaa00487b883269a50f14babd6be3de2bb5a99ba87f0daa372a9150480",
+  "evidenceKind": "tool_returned_test_outputs_transcribed_not_independent_raw_stream_capture",
+  "focusedCases": {
+    "image2": {
+      "RED": "fixed_inspection_image_required beforeonlyliteralrootaddition",
+      "GREEN": 10,
+      "scope": "mock OSattach/device/mount/content; actual containerreader positive"
+    },
+    "seal2": {
+      "GREEN": 8,
+      "scope": "mockcodesign only +actualunchangedv3postsealvalidator; pending/changedtargetpacket andpostcaptureexternalNode/resource refusezerokeys"
+    },
+    "mainReuse": {
+      "GREEN": 4,
+      "scope": "3initialcases+onlynewsource-mutationcase rerun; actual_main withsyntheticoriginalcompile/preparation; no compiler/restamp"
+    }
+  },
+  "actualNativeCompileImageMountSignHostCalls": false,
+  "oldSealAdapterUnchanged": true,
+  "oldImageRootsPreserved": true,
+  "stageBHelperClosure": "19explicitfiles, partial, immutable andexcludesunusedseal2",
+  "stageBPacket": "pendingactualmaterialization",
+  "stageC": "separatehelpercopyonlyafterrealunsignedreviewandfixedconstantfreeze",
+  "testHarnessFailure": "initialseal2test extraction expectedmissingclass; correctedbeforetestfile existed; no realoperation",
+  "sourceFiles": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/image_inspection.py",
+      "sha256": "15f34dc1d2f1641f568a5ea08e51b50d8f1d87aaa4a55c98d6728bcc23b12c16",
+      "size": 12232
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/fixture_seal_sequence2.py",
+      "sha256": "7a963129fef3393b3ff4bbd4c13d8d33d25c4a745af7d351a3a25735b22330a0",
+      "size": 9243
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_image2_inspection.py",
+      "sha256": "3a683426d868a85961f4dfcad7e03376673056f2efa3828dfefe1b3a4ca5bc24",
+      "size": 7219
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_fixture_seal_sequence2.py",
+      "sha256": "734b6527c5a7ffe6740cf46adae8b71039207fdeb31d5e8bb4d21aed761c4a39",
+      "size": 5255
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-driver.py",
+      "sha256": "b59567627930cd6933500d41a300be8a1620f13f9c19747e5850dff2e6dc474e",
+      "size": 9099
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-controller.py",
+      "sha256": "d37100a717181db043d05ba56f42c9869cf1db613b4ae089bd08eb81ccef0460",
+      "size": 5359
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/test_prepared_image2_driver.py",
+      "sha256": "9d2a227e0f749fcb276ace62ef7f7ab69a4c8b09e48eab745d2961ddfd3f7f9b",
+      "size": 3870
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/image2-procedural-closure.json",
+      "sha256": "9c54977d817be7311499078239d23dbbb8465a66e104df82f473830516f6348a",
+      "size": 7935
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-procedure-2/SOURCE-PREPARATION.json",
+      "sha256": "75decfdd38eb90487b1ac1791bd9df8e08c51454c66331f87478fc568ef6bb0c",
+      "size": 8299
+    }
+  ]
+}
