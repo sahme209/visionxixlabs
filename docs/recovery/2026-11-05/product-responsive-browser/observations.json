@@ -1,0 +1,152 @@
+{
+  "source": "0c9d0e40",
+  "measurements": [
+    {
+      "buttons": [
+        {
+          "clientWidth": 307,
+          "height": 60,
+          "left": 33,
+          "right": 342,
+          "scrollWidth": 307,
+          "text": "01\nRepository context\n→",
+          "width": 309
+        },
+        {
+          "clientWidth": 307,
+          "height": 60,
+          "left": 33,
+          "right": 342,
+          "scrollWidth": 307,
+          "text": "02\nExact proposal",
+          "width": 309
+        },
+        {
+          "clientWidth": 307,
+          "height": 60,
+          "left": 33,
+          "right": 342,
+          "scrollWidth": 307,
+          "text": "03\nIndependent review",
+          "width": 309
+        },
+        {
+          "clientWidth": 307,
+          "height": 60,
+          "left": 33,
+          "right": 342,
+          "scrollWidth": 307,
+          "text": "04\nSeparate requester execution",
+          "width": 309
+        },
+        {
+          "clientWidth": 307,
+          "height": 60,
+          "left": 33,
+          "right": 342,
+          "scrollWidth": 307,
+          "text": "05\nRecorded outcome and recovery",
+          "width": 309
+        }
+      ],
+      "documentWidth": 375,
+      "heading": {
+        "clientWidth": 335,
+        "height": 74.875,
+        "left": 20,
+        "right": 355,
+        "scrollWidth": 335,
+        "width": 335
+      },
+      "panel": {
+        "clientWidth": 333,
+        "height": 362,
+        "left": 21,
+        "right": 354,
+        "scrollWidth": 333,
+        "width": 333
+      },
+      "viewport": {
+        "height": 812,
+        "width": 375
+      },
+      "workflow": {
+        "clientWidth": 333,
+        "height": 348,
+        "left": 21,
+        "right": 354,
+        "scrollWidth": 333,
+        "width": 333
+      }
+    },
+    {
+      "buttons": [
+        {
+          "clientWidth": 252,
+          "height": 60,
+          "left": 33,
+          "right": 287,
+          "scrollWidth": 252,
+          "text": "01\nRepository context\n→",
+          "width": 254
+        },
+        {
+          "clientWidth": 252,
+          "height": 60,
+          "left": 33,
+          "right": 287,
+          "scrollWidth": 252,
+          "text": "02\nExact proposal",
+          "width": 254
+        },
+        {
+          "clientWidth": 252,
+          "height": 60,
+          "left": 33,
+          "right": 287,
+          "scrollWidth": 252,
+          "text": "03\nIndependent review",
+          "width": 254
+        },
+        {
+          "clientWidth": 252,
+          "height": 66,
+          "left": 33,
+          "right": 287,
+          "scrollWidth": 252,
+          "text": "04\nSeparate requester execution",
+          "width": 254
+        },
+        {
+          "clientWidth": 252,
+          "height": 66,
+          "left": 33,
+          "right": 287,
+          "scrollWidth": 252,
+          "text": "05\nRecorded outcome and recovery",
+          "width": 254
+        }
+      ],
+      "documentWidth": 320,
+      "mobileMenuButton": [
+        {
+          "display": "flex",
+          "expanded": "false"
+        }
+      ],
+      "panel": {
+        "clientWidth": 278,
+        "scrollWidth": 278
+      },
+      "viewport": {
+        "height": 812,
+        "width": 320
+      }
+    }
+  ],
+  "limits": [
+    "CSS viewport emulation only",
+    "No physical-device, touch, assistive-technology or menu acceptance",
+    "Continuation browser access unavailable; retained observations recovered without fresh measurement"
+  ]
+}
