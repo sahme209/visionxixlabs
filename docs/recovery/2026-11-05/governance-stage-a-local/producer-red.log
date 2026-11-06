@@ -1,0 +1,13 @@
+.......F.
+======================================================================
+FAIL: test_producer_replacement_between_content_and_binding_refuses (test_stage_a_packet.StageAPacketTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_stage_a_packet.py", line 98, in test_producer_replacement_between_content_and_binding_refuses
+    with patch.object(p,'_binding',return_value=changed):self.assertRaises(p.StageAUnavailable,p._producer,packet)
+AssertionError: StageAUnavailable not raised by _producer
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.226s
+
+FAILED (failures=1)

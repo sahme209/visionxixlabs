@@ -1,0 +1,20 @@
+{
+  "format": "axiom.stage-a-source-verification/1",
+  "sourceFiles": {
+    "scripts/governance_local_issuer/stage_a_packet.py": "33c5ae188071065adc5f6831b15ac48d92509d7d429e290fe8d956b15ecd0c83",
+    "scripts/governance_local_issuer/tests/test_stage_a_packet.py": "d3ccdc46b6e6b9f47eb3279b8f8e3fb0c8815d36a24ac74a8a43139fd39c2786",
+    "docs/recovery/2026-11-05/governance-fixture-delivery/STAGE-A-PACKET-DESIGN.md": "52abbedf86c73434667af007949e363dfaaec118ea9647b30f36cbe722f3a9b5"
+  },
+  "tests": {
+    "command": "python3 -m unittest discover -s scripts/governance_local_issuer/tests -p test_stage_a_packet.py",
+    "exitCode": 0,
+    "count": 9,
+    "log": "/private/tmp/axiom-stage-a-packet-final.log",
+    "logSha256": "900f1973ec5e45a295b2e9a1813cbb47a0ba79319cb93d9eeaef2c28a8e5eec8"
+  },
+  "behaviorRed": "/private/tmp/axiom-stage-a-producer-red.log",
+  "vendorExecutionPerformed": false,
+  "artifactPrepared": false,
+  "executionAuthorized": false,
+  "qualification": "unavailable"
+}

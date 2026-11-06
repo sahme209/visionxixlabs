@@ -8,6 +8,13 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the joined fixture authentication/scenario driver and private registered execution-coverage source are now implemented and preserved in local checkpoint2f85ab5a, with the composed simulated-infrastructure ten-case journey and scoped types now passing. Complete that source evidence, then use the [ordered current-artifact/qualification dependencies](../recovery/2026-11-05/governance-fixture-delivery/NEXT-DRIVER-QUALIFICATION-PACKET.md) to prepare one useful fresh packet. Historical signed artifacts are obsolete for this path. Do not reuse production tokens, impersonate reviewers, install historical artifacts or infer custody from mocks. Actual System/SQL/SAME-consumer/fleet, production resource-owner/writer cutover, all mutation coverage and full A2/A9 remain open.
 
+## Joined StageA procedure — source verified, real execution pending
+
+1. ~~Fixed packet, offline child, generation/emission driver and parent reconciliation implemented~~ ([source evidence](../recovery/2026-11-05/governance-stage-a-local/README.md)).
+2. ~~Nine finite mocked/file-only tests passed; independent closing source review passed~~. The joined test invokes actual driver/parent and file-evidence checks; Git/npm/Prisma/emitter/supervision boundaries remain simulated. Original unknowns stay consumed; no automatic replay.
+3. **In Progress:** freeze the new source with unchanged working master/views and prepare exact nonsecret inputs/packet.
+4. **Pending separate exact authorization:** real offline artifact procedure; no runtime/System/custody/SQL/provider/production acceptance inferred.
+
 ## Canonical generation join — reviewed local correction
 
 ~~Raw generated schema is now checked against the recorded generation evidence rather than unformatted archive bytes~~ ([evidence](../recovery/2026-11-05/governance-fixture-delivery/CANONICAL-GENERATION-LOCAL.md)). Fourteen focused synthetic/file-only tests passed; root review and local commit18017328 plus verified incremental recovery bundle preserve the correction. The original recipe source/engine pins, query-copy and canonical scratch checks remain enforced. Private Git output scratch is explicitly selected and invalid selections refuse. No actual generator, runtime, SQL, provider or production acceptance is inferred.
