@@ -34,7 +34,8 @@
       "imagePixels": [
         901,
         848
-      ]
+      ],
+      "captureLimit": "Still depicts restored Repository, not transient artifact hover. Hover behavior is established by recorded actual semantic observations, not this still alone."
     },
     {
       "path": "axiom-deployment-constellation-v3-mobile.jpg",

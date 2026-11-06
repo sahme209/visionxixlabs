@@ -1,0 +1,205 @@
+{
+  "format": "axiom.actual-corrected-image2-receipts/1",
+  "copies": [
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/claimed.json",
+      "savedPath": "operation/claimed.json",
+      "sha256": "6a888839c8381631304b5e32d68d4cb9825e5d689c514ae684f984fab763e9b4",
+      "size": 216,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/fixture-base-inputs.json",
+      "savedPath": "operation/fixture-base-inputs.json",
+      "sha256": "fa23af0c773395e90d23a93a82f6035dc195a2bdf4d01fa2f8521739ba179866",
+      "size": 1954,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/fixture-container-inputs.json",
+      "savedPath": "operation/fixture-container-inputs.json",
+      "sha256": "bace357a618eb7906b0bcedb822286f028d5be1fd61f9ab874b6727be656657c",
+      "size": 1017,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/image-attempt.json",
+      "savedPath": "operation/image-attempt.json",
+      "sha256": "97c74f3c090a5ae4e325f5b624e53a9e953ef55adb9f469ced10b83bd952b11d",
+      "size": 739,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/image-completion.json",
+      "savedPath": "operation/image-completion.json",
+      "sha256": "a9aeac0fe9425d63366fbab523ee14258b174b83e90f33cfdd4f92e48ca8641c",
+      "size": 1301,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/image-operation.json",
+      "savedPath": "operation/image-operation.json",
+      "sha256": "d5ee38de46823c6905e6649a71a566de347c350305fd65bfbfbf23f354724efe",
+      "size": 1177,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/main-reuse-observation.json",
+      "savedPath": "operation/main-reuse-observation.json",
+      "sha256": "285961d697bf34b6e6fbb25b97d77735308fccfcd34e113ecdb45462b10b9e14",
+      "size": 991,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/result.json",
+      "savedPath": "operation/result.json",
+      "sha256": "0d65b91f89a7eabd89fd04c8ba83191f78fc4c2d372ca00665f2a4228317011c",
+      "size": 1208,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/attach-command.json",
+      "savedPath": "inspection/attach-command.json",
+      "sha256": "54da0435dace1b8fa726360f2248b3f29e193a44fb785ef9bcf3c92818dfdca7",
+      "size": 1001,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/attach-stderr.log",
+      "savedPath": "inspection/attach-stderr.log",
+      "sha256": "397cc021abd54dbd1c3b21133b76451ecfb23c1f78937dd2b27fbfcb841fcd7e",
+      "size": 182,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/attach-stdout.log",
+      "savedPath": "inspection/attach-stdout.log",
+      "sha256": "a7cc01a096e73989bf6cf461d5442bff35a4cfa0292d4c83e1d232c4f93c879d",
+      "size": 1311,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/detach-command.json",
+      "savedPath": "inspection/detach-command.json",
+      "sha256": "ddd07dd40e804f8b701289fe4399c0d2ffcb1e45f08008b59328c7416401ed8d",
+      "size": 691,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/detach-stderr.log",
+      "savedPath": "inspection/detach-stderr.log",
+      "sha256": "dd2e6d5d2227b9d3236b0a0f6cfe0fb59d68b9c29c990f4763c4a19ca9f7ae44",
+      "size": 95,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/detach-stdout.log",
+      "savedPath": "inspection/detach-stdout.log",
+      "sha256": "7a042615bf3722a3771413c5ae0834a1153311a88abad4deef4d8ad80a5c7273",
+      "size": 17,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/inspection/result.json",
+      "savedPath": "inspection/result.json",
+      "sha256": "c7468162658e04ba14c36828fd029d288ba3115fb4a3ded3f9f7a61e9fe55d16",
+      "size": 2288,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-3/claimed.json",
+      "savedPath": "controller/claimed.json",
+      "sha256": "92072882eb753dda8f92806448c47d1731ce7603b9cbc80ceeb30042764affbe",
+      "size": 156,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-3/process.json",
+      "savedPath": "controller/process.json",
+      "sha256": "f3cf0194e708554942c98f65356c4d4d1af4823fe1b53c1d5a6f38345cc501a7",
+      "size": 130,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-3/result.json",
+      "savedPath": "controller/result.json",
+      "sha256": "4244630d5949bcbfe71825a7b2384fb900a90343204a0a02407a7332a5008111",
+      "size": 344,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-3/stderr.log",
+      "savedPath": "controller/stderr.log",
+      "sha256": "686e42464285836aee32f0839a2aa6025e737b01e76ac06ef3fec484d3efc201",
+      "size": 152,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-3/stdout.log",
+      "savedPath": "controller/stdout.log",
+      "sha256": "ef7178d9d641a70fbe9e689ecdf6897eb6a61d589c0822013c8049b892e1a136",
+      "size": 293,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/assembled/fixture-container-assembly.json",
+      "savedPath": "operation/fixture-container-assembly.json",
+      "sha256": "ef61af9fbffea66e530bf5cb4b5c7c639cc41ec3b73416b5865b664ed9ec6065",
+      "size": 9317,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-driver3.py",
+      "savedPath": "frozen-invocation-source/prepared-image2-driver3.py",
+      "sha256": "9a08354874321fd73238a2af6e2c8a388dac88e63dc2dc58c0bf94900b3410be",
+      "size": 9179,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/prepared-image2-controller3.py",
+      "savedPath": "frozen-invocation-source/prepared-image2-controller3.py",
+      "sha256": "334389a35de6a75e22b193582b015792fc3d617c7f56278bcc00ec9d87714855",
+      "size": 5360,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/image-operation-inputs3.json",
+      "savedPath": "frozen-invocation-source/image-operation-inputs3.json",
+      "sha256": "bb632c9479a9590306a8ef0a729d865570324215e46fffa23d32d4efa2adeb66",
+      "size": 10165,
+      "mode": 384
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/DRIVER3-BINDINGS.json",
+      "savedPath": "frozen-invocation-source/DRIVER3-BINDINGS.json",
+      "sha256": "06e9479c29c4ef080ed7c543f03120653bea31fc2dbe5c4f77ff685c7eb03a3e",
+      "size": 10540,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/DRIVER3-CAUSAL-PROOF.json",
+      "savedPath": "frozen-invocation-source/DRIVER3-CAUSAL-PROOF.json",
+      "sha256": "a35049d26461fb36cdcf45753801632cd7491bb6cc9e1370dfa2dc1ec3827822",
+      "size": 1380,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/DRIVER3-REGRESSION-OBSERVATION.json",
+      "savedPath": "frozen-invocation-source/DRIVER3-REGRESSION-OBSERVATION.json",
+      "sha256": "39acb0ab78d94534aec17075dd3e8420791c05b79e89450ff7c21c3c4ea38a24",
+      "size": 699,
+      "mode": 420
+    },
+    {
+      "originalPath": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-stage-b-source-preparation/run5-package-batch-prepared/DRIVER3-CONTINUATION-REVIEW.md",
+      "savedPath": "frozen-invocation-source/DRIVER3-CONTINUATION-REVIEW.md",
+      "sha256": "421a2eaaf7303c71e4345cc8ab24ddbc5882aea7366cc0962bff9f760803dce8",
+      "size": 3292,
+      "mode": 420
+    }
+  ],
+  "payloadCopied": false,
+  "independentUnsignedDetachReview": "pending_at_checkpoint",
+  "executionAuthorized": false,
+  "installationReady": false
+}

@@ -1,0 +1,12 @@
+{
+  "authorization": "call_NLzmH1QkVaLHjCz8tQEGGCOz",
+  "decision": "Approve one corrected image/seal continuation",
+  "reviewFile": "DRIVER3-CONTINUATION-REVIEW.md",
+  "stage": "B corrected driver3 image2 inspect/owned detach/assembly",
+  "invocationClaimed": true,
+  "retryAuthorized": false,
+  "stageCOnlyAfterUnsignedReviewAndFixedTargetSourceFreeze": true,
+  "maximumActiveSecondsB": 1800,
+  "maximumActiveSecondsC": 600,
+  "noRuntimeInstallDBProviderDeployment": true
+}

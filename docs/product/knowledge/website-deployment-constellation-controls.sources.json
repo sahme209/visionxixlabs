@@ -1,0 +1,304 @@
+{
+  "schemaVersion": 1,
+  "status": "internal-draft-source-only-with-representative-browser-evidence",
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "owner": "Axiom documentation workstream",
+  "author": "Codex draft",
+  "genuineHumanEditorialOwner": null,
+  "sourceReviewDate": "2026-11-06",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "genuineEditorialApproval": false,
+  "mediaAccepted": false,
+  "browserNativeAssistiveTechnologyAccepted": false,
+  "representativeBrowserObserved": true,
+  "retrievalEvaluationExecuted": false,
+  "runtimeMetadataChanged": false,
+  "documentationIdsAreRuntimeIds": false,
+  "sources": [
+    {
+      "key": "component",
+      "path": "components/marketing/GovernanceAssembly.tsx",
+      "sha256": "465c796ef8d610f363467bd4cccd281d26c0623017828a975ca93d2c4be305bc",
+      "lineCount": 69,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 69,
+          "sha256": "465c796ef8d610f363467bd4cccd281d26c0623017828a975ca93d2c4be305bc"
+        }
+      ]
+    },
+    {
+      "key": "model",
+      "path": "components/marketing/governanceAssemblyModel.ts",
+      "sha256": "f9cc32d8f8a1b73fd9a19528a70a9321f08ac673f81d3977041853d23dc922be",
+      "lineCount": 42,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 42,
+          "sha256": "f9cc32d8f8a1b73fd9a19528a70a9321f08ac673f81d3977041853d23dc922be"
+        }
+      ]
+    },
+    {
+      "key": "geometry",
+      "path": "components/marketing/DeploymentConstellationScene.tsx",
+      "sha256": "8bbaeabcadfbcd12d9cee8ed2791dea9c98bc9f02421ea007306006e5ee228f5",
+      "lineCount": 29,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 29,
+          "sha256": "8bbaeabcadfbcd12d9cee8ed2791dea9c98bc9f02421ea007306006e5ee228f5"
+        }
+      ]
+    },
+    {
+      "key": "styles",
+      "path": "components/marketing/GovernanceAssembly.module.css",
+      "sha256": "10c2fea495c4a94f33aa1e13bfe7aa88bbc5d628d0db44a4e46934cc5d8e8b76",
+      "lineCount": 19,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 19,
+          "sha256": "10c2fea495c4a94f33aa1e13bfe7aa88bbc5d628d0db44a4e46934cc5d8e8b76"
+        }
+      ]
+    },
+    {
+      "key": "wrapper",
+      "path": "components/marketing/WorkflowEvidenceMap.tsx",
+      "sha256": "a28f0dfcf81ffb7980c33d0dc33924d5ad0313d51b53b28736dda2eed0e9d504",
+      "lineCount": 6,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 6,
+          "sha256": "a28f0dfcf81ffb7980c33d0dc33924d5ad0313d51b53b28736dda2eed0e9d504"
+        }
+      ]
+    },
+    {
+      "key": "home",
+      "path": "app/page.tsx",
+      "sha256": "a6dbbbdc1f1621b34385a0b899c179a2f8adf13f116ee1280419a9767efc905a",
+      "lineCount": 159,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 159,
+          "sha256": "a6dbbbdc1f1621b34385a0b899c179a2f8adf13f116ee1280419a9767efc905a"
+        }
+      ]
+    },
+    {
+      "key": "product",
+      "path": "app/product/page.tsx",
+      "sha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+      "lineCount": 76,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 76,
+          "sha256": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a"
+        }
+      ]
+    },
+    {
+      "key": "component-tests",
+      "path": "components/marketing/__tests__/GovernanceAssembly.test.ts",
+      "sha256": "5bcd5c23cdd7a53d8aefa21447bf7730f0c7700e38175393fea427c61c09530f",
+      "lineCount": 113,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 113,
+          "sha256": "5bcd5c23cdd7a53d8aefa21447bf7730f0c7700e38175393fea427c61c09530f"
+        }
+      ]
+    },
+    {
+      "key": "model-tests",
+      "path": "components/marketing/__tests__/governanceAssemblyModel.test.ts",
+      "sha256": "2d0a24e406b9016b80d2d841a31c5d65718ca4ea7736702d512fd703e0099dbf",
+      "lineCount": 28,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 28,
+          "sha256": "2d0a24e406b9016b80d2d841a31c5d65718ca4ea7736702d512fd703e0099dbf"
+        }
+      ]
+    },
+    {
+      "key": "compatibility-tests",
+      "path": "components/marketing/__tests__/WorkflowEvidenceMap.focused.test.ts",
+      "sha256": "c7463d88d691e881f740e243bd2718a4a90d3436e8efd5baca96feb5768b0170",
+      "lineCount": 45,
+      "ranges": [
+        {
+          "start": 1,
+          "end": 45,
+          "sha256": "c7463d88d691e881f740e243bd2718a4a90d3436e8efd5baca96feb5768b0170"
+        }
+      ]
+    }
+  ],
+  "controlFamilies": [
+    {
+      "id": "website.constellation.object",
+      "count": 7,
+      "labels": [
+        "Repository",
+        "Build artifact",
+        "Review gate",
+        "Services",
+        "Staging target",
+        "Production \u00b7 held",
+        "Evidence record"
+      ],
+      "sources": [
+        "component",
+        "model",
+        "geometry"
+      ],
+      "sourceStates": [
+        "committed",
+        "pointer preview overrides focus",
+        "focus preview when pointer absent",
+        "restore committed when both transients absent",
+        "click clears both transients"
+      ],
+      "actualBrowserSubset": [
+        "artifact pointer preview/restore",
+        "Production commit/held boundary",
+        "Tab Evidence preview/restore",
+        "mobile Production selection"
+      ]
+    },
+    {
+      "id": "website.constellation.stage",
+      "count": 5,
+      "labels": [
+        "Repository context",
+        "Exact proposal",
+        "Independent review",
+        "Separate requester execution",
+        "Recorded outcome and recovery"
+      ],
+      "sources": [
+        "component",
+        "model",
+        "compatibility-tests"
+      ],
+      "sourceStates": [
+        "selection/Inspect",
+        "arrow wrap",
+        "Home/End",
+        "modifier/IME refusal",
+        "compact details opens"
+      ],
+      "actualBrowserSubset": []
+    },
+    {
+      "id": "website.constellation.view",
+      "count": 2,
+      "labels": [
+        "Inspect layers",
+        "Assemble layers"
+      ],
+      "sources": [
+        "component",
+        "model"
+      ],
+      "sourceStates": [
+        "inspect lift",
+        "assembled lift removed",
+        "selected features may remain"
+      ],
+      "actualBrowserSubset": []
+    },
+    {
+      "id": "website.constellation.camera",
+      "count": 3,
+      "labels": [
+        "Camera left",
+        "Reset camera",
+        "Camera right"
+      ],
+      "sources": [
+        "component",
+        "model"
+      ],
+      "sourceStates": [
+        "8degree step",
+        "16degree clamp",
+        "reset zero",
+        "committed object unchanged"
+      ],
+      "actualBrowserSubset": []
+    },
+    {
+      "id": "website.constellation.details",
+      "count": 1,
+      "instanceScope": "compact Home only",
+      "labels": [
+        "Read the selected record"
+      ],
+      "sources": [
+        "component"
+      ],
+      "sourceStates": [
+        "initial closed",
+        "explicit toggle",
+        "stage selection opens"
+      ],
+      "actualBrowserSubset": []
+    }
+  ],
+  "coverage": {
+    "ordinaryButtonsPerInstance": 17,
+    "compactDisclosureAdditional": 1,
+    "equivalentSvgPointerRegions": 7,
+    "noJsReading": "seven objects and five full records, source/SSR tests only",
+    "mobileObserved": "root IAB390x844; seven buttons44x169.5CSSpx",
+    "exclusions": [
+      "global Navigation/Footer",
+      "CTAs/media/tour controls",
+      "real deployment/approval/provider/account/native actions",
+      "all-controls browser/AT/contrast/motion/performance/editorial acceptance"
+    ]
+  },
+  "actualEvidence": [
+    {
+      "path": "docs/recovery/2026-11-06/deployment-constellation-v3/browser-observations/OBSERVATIONS.json",
+      "sha256": "348634b217045731f1d08f7d07ce420204250c52c5789774ab62fb40b704ad3f",
+      "classification": "actual parent browser record/capture; representative only",
+      "priorSha256": "71e53f2556bdf2e13e0eb8529942af4bf6ed022a8377bc4b0c32265c86a52c08",
+      "clarification": "Only added explicit still-image capture limitation; actual behavior/media bytes unchanged."
+    },
+    {
+      "path": "docs/recovery/2026-11-06/deployment-constellation-v3/browser-observations/axiom-deployment-constellation-v3-home.jpg",
+      "sha256": "2c8423003d731e01b15112adb61e0002c22767dea1fc97cb8e81b61e357463cd",
+      "classification": "actual parent browser record/capture; representative only"
+    },
+    {
+      "path": "docs/recovery/2026-11-06/deployment-constellation-v3/browser-observations/axiom-deployment-constellation-v3-hover.jpg",
+      "sha256": "2acd9cc4bba31581382dd68d8bd1201c75bf03a886f4df94ed833f47dbff70ce",
+      "classification": "actual parent browser record/capture; representative only"
+    },
+    {
+      "path": "docs/recovery/2026-11-06/deployment-constellation-v3/browser-observations/axiom-deployment-constellation-v3-mobile.jpg",
+      "sha256": "ac42f7e56464894cee64f5466056bc8eb09809286a57e425b2ef10135f3a33c7",
+      "classification": "actual parent browser record/capture; representative only"
+    }
+  ],
+  "review": {
+    "independentSourceReview": "pending root review",
+    "genuineEditorialReview": false
+  },
+  "frozenGovernanceArtifactChanged": false
+}

@@ -1,0 +1,13 @@
+{
+  "reviewer": "root",
+  "author": "visual_refinement",
+  "scope": "Internal-only finite control guide/source and actual-evidence integrity",
+  "frozenSource": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "sourceFilesAndRangesVerified": 10,
+  "actualEvidenceFilesVerified": 4,
+  "controlCoverage": "17 buttons per instance, compact disclosure plus equivalent hover regions; existing registry unchanged",
+  "clarification": "Hover-named still depicts restored Repository; no transient-hover screenshot claim",
+  "remaining": "Customer editorial/media/AT/full-browser/retrieval acceptance",
+  "customerEligible": false,
+  "publicRegistryChanged": false
+}

@@ -1,0 +1,6 @@
+PHASE main-reuse
+PHASE image-create
+created: /Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-2/image/issuer-package.dmg
+PHASE image-inspection
+PHASE unsigned-fixture-assembly
+COMPLETE ordinary_fixture_preseal_assembly_unqualified

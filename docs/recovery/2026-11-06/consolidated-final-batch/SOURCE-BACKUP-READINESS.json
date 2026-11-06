@@ -1,0 +1,26 @@
+{
+  "repository": {
+    "fullName": "sahme209/visionxixlabs",
+    "id": "1130181785",
+    "visibility": "private",
+    "archived": false,
+    "currentConnectionCanPush": true,
+    "source": "Actual purpose-built GitHub get_repo response during backup preparation"
+  },
+  "plannedRefKind": "New private backup branch only; no main/integration/tag/PR changes",
+  "actionsSourceChecks": "Push workflows restricted to main or desktop-v* tags; neither triggered by the planned backup branch",
+  "vercelGitDeploymentEnabled": false,
+  "vercelConfigSha256": "f4391eeae74ac161281bfd4c0b3e71a279ff2bc8877ee2aa4828ef601e62d11d",
+  "vercelConfigCompared": [
+    "current",
+    "frozen b8b0314",
+    "accepted production d3e591b9"
+  ],
+  "trackedSensitiveFilenameCandidates": [],
+  "filenameCheckIsNotCompleteSecretScan": true,
+  "githubPushPerformed": false,
+  "deploymentPerformed": false,
+  "timing": "Only after verified remaining usage is below5percent, preserve one authorized push",
+  "databaseCompatibility": "Separate unresolved gate for whole-backend Vercel deployment; does not block safe private source backup",
+  "privateRuntimeArtifactsAndCredentials": "Not source backup payload; remain separately controlled, no key export"
+}

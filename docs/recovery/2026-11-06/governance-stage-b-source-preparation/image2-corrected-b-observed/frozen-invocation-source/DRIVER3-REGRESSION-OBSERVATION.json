@@ -1,0 +1,12 @@
+{
+  "evidenceKind": "tool_returned_outputs_transcribed_not_invented_raw_streams",
+  "RED": "full driver authenticprepared4files+genuinedeclaredoutput hit exactcontainer_file_set_changed",
+  "GREEN": {
+    "positive": "fullmain reachesmockimagestub with_main checked twice; noactualimage",
+    "negativeDeclaredOutputMutation": "zero disk/imagecalls, freshunitrootnotcreated",
+    "negativeOriginalSourceMutation": "zero disk/imagecalls, freshunitrootnotcreated"
+  },
+  "testHarnessCorrection": "mockRLIM_INFINITY=-1 wasnonDarwin; changedfixturetoactualresource.RLIM_INFINITY, reranONLYfailedpositive",
+  "actualProcessesOrLimitsOrImageMountSign": false,
+  "validatedWithUnchangedValidators": true
+}

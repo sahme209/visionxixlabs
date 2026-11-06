@@ -1,0 +1,11 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS",
+  "bindingsVerified": 32,
+  "validatorsUnchanged": true,
+  "postcompileProofBeforeEffects": true,
+  "laterProofRechecked": true,
+  "fullDriverRegressionCases": 3,
+  "freshImageAndControlRootsAbsent": true,
+  "priorFailedAttemptPreserved": true
+}
