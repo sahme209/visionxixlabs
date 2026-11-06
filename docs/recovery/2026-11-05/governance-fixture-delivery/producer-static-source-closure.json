@@ -1,0 +1,102 @@
+{
+  "kind": "conservative-static-literal-source-import-walk_not_compiler_acceptance",
+  "entry": "lib/governance/qualification/privateSyntheticFixtureEntry.ts",
+  "files": {
+    "lib/agent/workflows/releaseOperationPlanStore.ts": "c3e142e4395525c23b82bcabb3e7cc6df8b10ad48755537812c77dfd214d7cb8",
+    "lib/billing/newTestSubscription/anniversaryWindow.ts": "9996a150880c2f91e1618f81382362a99132f991f7d398880eb0e6ded431b298",
+    "lib/billing/newTestSubscriptionContract.ts": "93cd286a0ba6b2a78c1126114df03bad678542c678c3e31d01167e0425a8df3e",
+    "lib/billing/planRegistry.ts": "8dc5237bc376e1eeeb3530cde7b850e75f8adc0662f1d5f95a4ee8fa070a828a",
+    "lib/billing/publicBillingStore.ts": "23481fc24a6d181f19ec8ef15a5e9c97eddb4a43eba0bfebde084b39e8d3aff4",
+    "lib/billing/publicCreditAllocation.ts": "4c7322d163b4b6a56ad64a3eed9ca88d3492c3a201b6619866c5e95fe61214b8",
+    "lib/billing/publicCreditAuthority.ts": "59e66fd8f6ca6f6952b7f5501c9e214af85cb63fa5b34b3bc4b88bb762a9f6f9",
+    "lib/billing/publicEntitlementSnapshotCore.ts": "348c97138a300c02d3569559e444272e1e5933561b4882bd5a9adb0a0e1adaef",
+    "lib/billing/publicPlanCatalog.ts": "3c46f92b4f2f66a4b904ea81ba0903402fa35d3731c1ebfd3779aaeeb561b14f",
+    "lib/billing/publicSubscriptionAllowance.ts": "f877af235dd7197d2de9e44450bb1e9fe1fea33bad3f592ed44eb868a211555f",
+    "lib/billing/tenantBillingReadCore.ts": "1be57cb9fd83508e16e704f870d9d5cecf3ad6a048559b71092313b620e2ef26",
+    "lib/billing/tierCatalog.ts": "43b6efe7fb15685751b8bfeeebb21bb6048304fe1352e9e63e5bf82bf6d28bb2",
+    "lib/connectors/github/platformGithubAppCredentialContext.ts": "fafc2c18f47ce2107090ac7a7678736e141cea7bc3d8fb1261dcfe881e4000b5",
+    "lib/desktop/desktopAuthorization.ts": "525a513aa3c06b67eeb3b176a70802e8e6a2e1158b5b8f90c3d02ffdb6b0a7c3",
+    "lib/desktop/desktopCommercialAccessPolicy.ts": "1291e31d5481a3392c9546db1033fe90a13c95b1f91e8e69fbbacaf3b45239ff",
+    "lib/desktop/desktopSessionResolverCore.ts": "e5e2d8bfb719aba3dbb30846f314fd5ee11c1550fe0a3402d1d5e5ba1b7d15b5",
+    "lib/desktop/privateDesktopCommercialAccess.ts": "e4b1bf349066d605d963f97dce8814c01593a9aee5ba654b7704446de665e622",
+    "lib/desktop/privateDesktopSession.ts": "e3b615227850fb406c6d6795013fc101cf4b2adfb9d297700533a178a473a07a",
+    "lib/desktop/privateDesktopSessionStore.prisma.ts": "36899677e3465ab1dfa4d7ef299fa122904e28da92a6ea89cd25f2dadf37ebbe",
+    "lib/desktop/privateDesktopToken.ts": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba",
+    "lib/desktop/privateRequestDesktopSessionResolver.ts": "f41fb9a67081764f77ba89415af7a2498043ae00fccb7a261519b56d10b5e9e3",
+    "lib/errors/axiomErrors.ts": "db701a4d3456f5d2c61444f20137888137f450ba67c2f0cce01d83b3edc19c22",
+    "lib/governance/qualification/fixtureAuthorizationFrame.ts": "4be8a17aaf209225cad1aa9a9c697cbcc733a5df7406dff6ee16ba64605afc47",
+    "lib/governance/qualification/fixtureScenarioInputs.ts": "9f2a52eb4132cc600860a6c87989d36c76a078abceb3be68130322e238820cfd",
+    "lib/governance/qualification/privateFixtureAuthentication.ts": "48a254ed9653b02dc48b001dc4a974ffc99050a17a31520c75653c49a5f2acbe",
+    "lib/governance/qualification/privateFixtureBase.ts": "3b6abd76a1a66ac5dcca57463614964a00c22f642ce8e3c8eeff1898564dea11",
+    "lib/governance/qualification/privateSyntheticFixtureEntry.ts": "b4befdef8c5542e877cd4d7bf622cb1a57277d12f94c87dedae5cb3b761838cb",
+    "lib/governance/qualification/privateSyntheticFixtureProducer.ts": "0590a04643552cf48e334d8d8702d40efd1dadd50b3baeeeb41864b54cf3e320",
+    "lib/governance/qualification/syntheticFixtureSchema.ts": "0ab8719dd5cd3c66db106eff072caf41308ac1e9659ac9a5556c04eb74d78f82",
+    "lib/integrations/airflow/releaseDependencySchema.ts": "a9edd02a51353e3661931e187c3eedc8a89ab84290db3a8c0354a4b489dbda88",
+    "lib/security/credentialVaultCrypto.ts": "528e72f5edaa22b7d46e9f32a32dc3251eb0d7bbdd957cfe3d3aebcf841e6239",
+    "lib/security/privateAuthorityDatabase.ts": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
+    "lib/security/privateCredentialVault.ts": "4e0e93c0eefc21503a7c7f9aa008f656a8e2db5b61ace260cdee602ca71a2541",
+    "lib/tauri/contentHash.ts": "dfd566d156fd017ae0aaab6de5ce3e177ac470d313d71cf2f112f494af150d3b",
+    "lib/tauri/deploymentIntakeSchema.ts": "a2ceb9962f953ebae91693027a51faf005571ef2ab1c6ab79622dac4c103088b",
+    "lib/tauri/deploymentOperations.ts": "260fae363f7b973116a1bdcd5eb07de3eb786567b4817c69bf67d3b85ed3903b",
+    "lib/tauri/releaseMergePlan.ts": "2d9b7389088ce0c5ae4b1215f1a0318d28e73b0ae949ae4408fd51ebfb9b2d8d",
+    "lib/tauri/releaseOperationPlanContract.ts": "c6c6e3d144e105f1a1181f16af64edbff7d6de4054c044a53cd625bdf69e3a04"
+  },
+  "externalRequests": {
+    "@prisma/client": [
+      "lib/security/privateAuthorityDatabase.ts"
+    ],
+    "next/server": [
+      "lib/governance/qualification/privateFixtureAuthentication.ts"
+    ],
+    "node:crypto": [
+      "lib/billing/newTestSubscription/anniversaryWindow.ts",
+      "lib/billing/publicCreditAllocation.ts",
+      "lib/billing/publicCreditAuthority.ts",
+      "lib/billing/publicSubscriptionAllowance.ts",
+      "lib/desktop/privateDesktopToken.ts",
+      "lib/governance/qualification/privateFixtureBase.ts",
+      "lib/governance/qualification/privateSyntheticFixtureProducer.ts",
+      "lib/security/credentialVaultCrypto.ts",
+      "lib/tauri/contentHash.ts"
+    ],
+    "node:fs": [
+      "lib/governance/qualification/privateSyntheticFixtureProducer.ts"
+    ],
+    "server-only": [
+      "lib/billing/publicBillingStore.ts",
+      "lib/billing/publicCreditAuthority.ts",
+      "lib/billing/publicEntitlementSnapshotCore.ts",
+      "lib/billing/tenantBillingReadCore.ts",
+      "lib/desktop/desktopAuthorization.ts",
+      "lib/desktop/desktopSessionResolverCore.ts",
+      "lib/desktop/privateDesktopCommercialAccess.ts",
+      "lib/desktop/privateDesktopSession.ts",
+      "lib/desktop/privateDesktopSessionStore.prisma.ts",
+      "lib/desktop/privateDesktopToken.ts",
+      "lib/desktop/privateRequestDesktopSessionResolver.ts",
+      "lib/governance/qualification/fixtureScenarioInputs.ts",
+      "lib/governance/qualification/privateFixtureAuthentication.ts",
+      "lib/governance/qualification/privateFixtureBase.ts",
+      "lib/governance/qualification/privateSyntheticFixtureProducer.ts"
+    ],
+    "zod": [
+      "lib/agent/workflows/releaseOperationPlanStore.ts",
+      "lib/governance/qualification/fixtureAuthorizationFrame.ts",
+      "lib/governance/qualification/fixtureScenarioInputs.ts",
+      "lib/integrations/airflow/releaseDependencySchema.ts",
+      "lib/tauri/deploymentIntakeSchema.ts",
+      "lib/tauri/releaseMergePlan.ts",
+      "lib/tauri/releaseOperationPlanContract.ts"
+    ]
+  },
+  "runtimeNextServerImports": [
+    {
+      "path": "lib/governance/qualification/privateFixtureAuthentication.ts",
+      "line": 3,
+      "statement": "import {NextRequest} from 'next/server';"
+    }
+  ],
+  "dynamicOrRequireTokensForManualReview": [],
+  "unresolved": [],
+  "normalization": "canonical in-repository path de-duplication; identical SHA required"
+}

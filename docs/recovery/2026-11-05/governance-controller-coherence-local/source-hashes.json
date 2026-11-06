@@ -1,0 +1,5 @@
+{
+  "scripts/governance_local_issuer/system_build_inputs.py": "eb6d0e657c77da47ec562b3eb7b84f4aac254b60a68ab235bb19a357d1759d24",
+  "scripts/governance_local_issuer/fixture_delivery_inputs.py": "1027438137588ffc19c72c4859f9c489592e0fe1bd0483133c4c92e44c467a95",
+  "scripts/governance_local_issuer/tests/test_controller_configuration_coherence.py": "0b28dab380043bf9f40dd61e9bea91ec134162e2162bc47f090e3f0efa8ac12c"
+}

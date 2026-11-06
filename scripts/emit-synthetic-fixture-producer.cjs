@@ -6,7 +6,7 @@ const fs = require('node:fs');
 const root = path.resolve(__dirname, '..');
 const packageRoot='/Volumes/Axiom Synthetic Issuer-c3b7bf334ce56a64575183b7a66e5109';
 const preimport="'use strict';\n{const observation=require("+JSON.stringify(packageRoot+'/node_modules/@axiom/verified-issuer-runtime/internal/verify-package.cjs')+").verifyPackageFiles("+JSON.stringify(packageRoot)+");if(!observation||observation.qualification!==\"package_file_set_verified\")throw Error(\"fixture_package_unavailable\");}\n";
-const builtin=new Set(require('node:module').builtinModules.flatMap(name=>[name,'node:'+name]));
+const policy=require('./fixture-producer-compiler-policy.cjs').createFixtureProducerCompilerPolicy(root);
 const webpack = require('next/dist/compiled/webpack/webpack').webpack;
 const output = path.join(root, '.next/server/__axiom_private_fixture__');
 const forbidden = /(?:^|\/)lib\/(?:db|security\/credentialVault|desktop\/desktopSession|desktop\/desktopToken)\.tsx?$/;
@@ -15,16 +15,11 @@ const compiler = webpack({
   entry: path.join(root, 'lib/governance/qualification/privateSyntheticFixtureEntry.ts'),
   output: { path: output, filename: 'fixture-producer.cjs', library: { type: 'commonjs2' } },
   devtool: false, optimization: { minimize: false },
-  resolve: { extensions: ['.ts', '.tsx', '.js', '.cjs', '.json'], alias: { '@': root, 'server-only$': false } },
+  resolve: { extensions: ['.ts', '.tsx', '.js', '.cjs', '.json'], alias: { '@': root, 'server-only$': false,...policy.alias } },
   module: { rules: [{ test: /\.tsx?$/, exclude: /node_modules/, use: path.join(__dirname, 'private-bootstrap-typescript-loader.cjs') }] },
   externalsPresets: { node: true },
-  externals: [({ request }, done) => {
-    if(request==='@prisma/client')return done(null,'commonjs '+packageRoot+'/node_modules/@prisma/client');
-    if(request&&request!=='server-only'&&!request.startsWith('.')&&!path.isAbsolute(request)&&!request.startsWith('@/')&&!builtin.has(request))return done(Error('fixture_unmapped_external'));
-    if (request && !request.startsWith('.') && !path.isAbsolute(request) && !request.startsWith('@/') && request !== 'server-only') return done(null, `commonjs ${request}`);
-    done();
-  }],
-  plugins: [new webpack.BannerPlugin({banner:preimport,raw:true,entryOnly:true}),{ apply(compilation) {
+  externals: [policy.external],
+  plugins: [new webpack.BannerPlugin({banner:preimport,raw:true,entryOnly:true}),policy.plugin,{ apply(compilation) {
     compilation.hooks.normalModuleFactory.tap('PrivateBootstrapClosure', factory => {
       factory.hooks.afterResolve.tap('PrivateBootstrapClosure', data => {
         const file = data.createData?.resource?.split('?')[0];

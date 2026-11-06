@@ -7,10 +7,11 @@
   "models": 173,
   "missingModelCreateStatements": [],
   "sqlSha256": "cba845cd656a2d6ef15b16381490dcba5f277484ae582723d5ee9427e84ce472",
-  "engineExit": 0,
   "supervisorError": null,
   "databaseConnectionOrApplyPerformed": false,
   "runtimeQualification": "unavailable",
   "descendantQuiescence": "unavailable",
-  "retryAuthorized": false
+  "retryAuthorized": false,
+  "cliExit": 0,
+  "directEngineExitObservation": "not independently recorded; pinned engine export observed through the successful Prisma CLI"
 }

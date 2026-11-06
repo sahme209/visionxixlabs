@@ -1,0 +1,37 @@
+{
+  "kind": "readonly_lock_SRI_tarball_member_comparison",
+  "status": "matched",
+  "records": [
+    {
+      "package": "next",
+      "version": "16.4.2",
+      "integrity": "sha512-r+oBJojfefUjOiWkBhXgLS+igxX/7BWyK59uHnyOyplMSLtBZ+QLP3okrdYTbrfrbrmNTVWLBPaHDX9KRaIt3w==",
+      "selectedCount": 21,
+      "status": "matched",
+      "blob": "/Users/samirahmed/.npm/_cacache/content-v2/sha512/af/ea/012688df79f5233a25a40615e02d2fa28315ffec15b22b9f6e1e7c8eca994c48bb4167e40b3f7a24add6136eb7eb6eb98d4d558b04f6870d7f4a45a22ddf",
+      "verifiedTarballBytes": 43679232,
+      "mismatches": [],
+      "mismatchCount": 0
+    },
+    {
+      "package": "zod",
+      "version": "4.3.6",
+      "integrity": "sha512-rftlrkhHZOcjDwkGlnUtZZkvaPHCsDATp4pGpuOOMDaTdDDXF91wuVDJoWoPsKX/3YPQ5fHuF3STjcYyKr+Qhg==",
+      "selectedCount": 77,
+      "status": "matched",
+      "blob": "/Users/samirahmed/.npm/_cacache/content-v2/sha512/ad/fb/65ae484764e7230f090696752d65992f68f1c2b03013a78a46a6e38e3036937430d717dd70b950c9a16a0fb0a5ffdd83d0e5f1ee1774938dc6322abf9086",
+      "verifiedTarballBytes": 715997,
+      "mismatches": [],
+      "mismatchCount": 0
+    }
+  ],
+  "sourceClosure": "939696a74736a528303015b48488aabf184693d503c2a65291ed9110b7461e4b",
+  "operations": {
+    "install": false,
+    "extractToDisk": false,
+    "compiler": false,
+    "engine": false,
+    "network": false
+  },
+  "qualification": "selected_source_members_only_not_actual_emission"
+}

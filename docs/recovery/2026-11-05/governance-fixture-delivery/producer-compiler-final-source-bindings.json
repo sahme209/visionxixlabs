@@ -1,0 +1,41 @@
+{
+  "kind": "local_producer_compiler_preparation_final_source_bindings",
+  "files": {
+    "scripts/fixture-producer-compiler-policy.cjs": {
+      "sha256": "c09a156453d983437f4c806c91bf7b8c630ab92ef4fe544338ba0a0f369662a1",
+      "size": 4955
+    },
+    "scripts/fixture-producer-runtime-closure.json": {
+      "sha256": "939696a74736a528303015b48488aabf184693d503c2a65291ed9110b7461e4b",
+      "size": 15965
+    },
+    "scripts/emit-synthetic-fixture-producer.cjs": {
+      "sha256": "78844dd90018f20b9fc7b4131d3795bb5e7e26387ba8f4ef05957006b12851e1",
+      "size": 2770
+    },
+    "scripts/tests/test_fixture_producer_compiler_policy.cjs": {
+      "sha256": "e2e44de5f1b3cdd830daa3688e28ae1fccf8848933bd40eddd56ea6f97ac9e98",
+      "size": 5298
+    },
+    "scripts/tests/test_fixture_emitter_profile.cjs": {
+      "sha256": "235c4953b9fe91ed3f7fb65432e693810e14710dec570c618abcec38d7cc13aa",
+      "size": 2664
+    },
+    "scripts/build-local-issuer-package-source.py": {
+      "sha256": "55b50512c3868be7db8bae97ceba9da0a2980a46944ddab8e05d39822babb203",
+      "size": 44955
+    },
+    "scripts/governance_local_issuer/fixture_delivery_inputs.py": {
+      "sha256": "1027438137588ffc19c72c4859f9c489592e0fe1bd0483133c4c92e44c467a95",
+      "size": 15109
+    }
+  },
+  "verification": {
+    "command": "node --test scripts/tests/test_fixture_producer_compiler_policy.cjs scripts/tests/test_fixture_emitter_profile.cjs",
+    "passed": 7,
+    "exit": 0,
+    "log": "/private/tmp/axiom-producer-compiler-final.log"
+  },
+  "actualEmission": false,
+  "runtimeQualification": "unavailable"
+}

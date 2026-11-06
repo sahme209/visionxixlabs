@@ -92,16 +92,17 @@ def _observe(stage,repo,revision,run,build_node,packet_path,after_build=False):
  _need(packet.get('layout')==LAYOUT and packet.get('executionAuthorized')is False and packet.get('installationReady')is False,'fixed_closed_system_layout_required')
  roles=packet.get('roles');_need(isinstance(roles,dict) and set(roles)==set(ROLE_IDENTIFIERS),'complete_system_roles_required')
  receipts=packet.get('preparationReceipts');_need(isinstance(receipts,list) and 1<=len(receipts)<=8,'preparation_receipts_required')
- sources={};configs=[];preparations=[]
+ sources={};configs=[];phases=[];preparations=[]
  for bound in receipts:
   r=_json_bound(bound)
   _need(r.get('format')=='axiom.system-preparation/1' and r.get('generation')==prep.GENERATION and all(r.get(k)is False for k in ('executionAuthorized','installationReady','activationAllowed')),'closed_system_preparation_required')
   c=r.get('config',{});prep._config(c,r.get('preparationPhase'));_preparation_closure(r,bound,roles);principal=c.get('principal',{})
   if configs:
    _need(all(c[k]==configs[0][k]for k in ('principal','lifetimeNs','team','systemProfile','nativeProfile','node')),'mixed_system_configuration')
+   _need(c.get('controllerPrincipal')==configs[0].get('controllerPrincipal'),'mixed_controller_configuration')
   _need(c.get('generation')==prep.GENERATION and c.get('systemProfile')=='trusted-owner-root-journal/1' and c.get('nativeProfile')=='hardened-runtime-no-exceptions/1' and c.get('team')=='FG5N98FE6W','system_preparation_profile_required')
   _need(principal.get('account')=='_axiomissuer_synthetic' and all(type(principal.get(k))is int and 0<principal[k]<2**31 for k in ('uid','gid')),'declared_nonroot_principal_required')
-  configs.append(c);preparations.append(bound)
+  configs.append(c);phases.append(r['preparationPhase']);preparations.append(bound)
   _need(isinstance(r.get('sourceInputs'),dict) and len(r['sourceInputs'])<=256 and sum(x.get('size',0)for x in r['sourceInputs'].values())<=prep.MAX_TOTAL,'source_inventory_bound')
   for name,want in r.get('sourceInputs',{}).items():
    _need(not Path(name).is_absolute() and '..'not in Path(name).parts,'system_source_escape')
@@ -163,7 +164,14 @@ def _observe(stage,repo,revision,run,build_node,packet_path,after_build=False):
    exact_node=(type(profile)is dict and set(profile)=={'com.apple.security.cs.allow-jit'} and type(profile['com.apple.security.cs.allow-jit'])is bool and profile['com.apple.security.cs.allow-jit']is True)
    _need(exact_node if role=='node'else type(profile)is dict and not profile,'saved_entitlement_profile_mismatch')
   artifacts[role]=binding(Path(item['artifact']['path']));evidence[role]={k:item[k]for k in ('resultReceipt','displayStdout','displayStderr','provenance','rawLogs')}
- for c in configs:
+ for c,phase in zip(configs,phases):
+  if 'controllerPrincipal'in c:
+   expected_controller='cdhash H"'+cdhashes['controller']+'"'
+   if phase in ('complete','native-leaves','broker-leaf'):
+    _need(c.get('desktopRequirement')==expected_controller,'fixture_controller_requirement_role_mismatch')
+   elif phase in ('controller-first','independent-leaves'):
+    _need('desktopRequirement'not in c or c['desktopRequirement']==expected_controller,'fixture_controller_requirement_role_mismatch')
+   else:_need(False,'unsupported_controller_preparation_phase')
   for key,req in c['requirements'].items():
    role={'node':'node','controller':'controller','brokerForGuard':'broker'}[key]
    _need(req=='cdhash H"'+cdhashes[role]+'"','preparation_requirement_role_mismatch')

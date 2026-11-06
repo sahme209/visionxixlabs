@@ -1,0 +1,30 @@
+{
+  "kind": "cached-source-inspection_not_compiler_execution",
+  "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/next/dist/compiled/webpack/bundle5.js",
+  "sha256": "1a8627c55931e3486fc71af9cf2d7de1f0ccf34d6011607fe05ed5404f3b77b9",
+  "size": 2582707,
+  "observations": [
+    {
+      "offset": 720772,
+      "fact": "NormalModuleFactory uses xe=P(92956), the Module base."
+    },
+    {
+      "offset": 722138,
+      "fact": "factorize resolve callback returns immediately for R instanceof xe before invoking afterResolve."
+    },
+    {
+      "offset": 724388,
+      "fact": "resolve callback returns dependency.createIgnoredModule(context) when resolved resource is false."
+    },
+    {
+      "offset": 500554,
+      "fact": "Dependency.createIgnoredModule returns memoized RawModule P(56588)."
+    },
+    {
+      "offset": 745258,
+      "fact": "RawModule extends Module P(92956)."
+    }
+  ],
+  "conclusion": "false alias ignored RawModule bypasses afterResolve; absent-resource refusal remains unchanged",
+  "qualification": "source-only; real compiler acceptance unavailable"
+}

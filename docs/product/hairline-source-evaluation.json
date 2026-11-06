@@ -1,0 +1,56 @@
+{
+  "format": "axiom.hairline-public-review/1",
+  "date": "2026-11-05",
+  "repository": "lucasmarkes/hairline",
+  "commit": "37d2e78dcb333ab30c3338e28ed4a690364ea014",
+  "tree": "8dbb1b17cd5800a2c8503494a77e8d8d22f88e25",
+  "commitDate": "2026-10-14T20:32:55Z",
+  "metadata": {
+    "public": true,
+    "archived": false,
+    "defaultBranch": "main",
+    "headMessage": "Merge pull request #39 (release 0.5.1)"
+  },
+  "transport": "GitHub connector read-only public metadata/tree and six pinned files",
+  "fileCount": 6,
+  "files": [
+    {
+      "path": "README.md",
+      "gitBlobSha": "54f15867e38f7b06a44d35bd87431e184ab072f1",
+      "pinnedUrl": "https://github.com/lucasmarkes/hairline/blob/37d2e78dcb333ab30c3338e28ed4a690364ea014/README.md"
+    },
+    {
+      "path": "LICENSE",
+      "gitBlobSha": "dec068515ec56cbd7f56555cebc9d64818072e64",
+      "pinnedUrl": "https://github.com/lucasmarkes/hairline/blob/37d2e78dcb333ab30c3338e28ed4a690364ea014/LICENSE"
+    },
+    {
+      "path": "package.json",
+      "gitBlobSha": "a4e109ccb39669e9505af9593082bc49b934ef71",
+      "pinnedUrl": "https://github.com/lucasmarkes/hairline/blob/37d2e78dcb333ab30c3338e28ed4a690364ea014/package.json"
+    },
+    {
+      "path": "skills/hairline-create/SKILL.md",
+      "gitBlobSha": "7145c4e3033b3fb6dec519fed480d2e894af0036",
+      "pinnedUrl": "https://github.com/lucasmarkes/hairline/blob/37d2e78dcb333ab30c3338e28ed4a690364ea014/skills/hairline-create/SKILL.md"
+    },
+    {
+      "path": "skills/hairline-adopt/SKILL.md",
+      "gitBlobSha": "54d2e891c62d8a2dcaa0110e36e1fbe75bd98914",
+      "pinnedUrl": "https://github.com/lucasmarkes/hairline/blob/37d2e78dcb333ab30c3338e28ed4a690364ea014/skills/hairline-adopt/SKILL.md"
+    },
+    {
+      "path": "packages/hairline/package.json",
+      "gitBlobSha": "b52a133c70726bdde225b1ebaccafb229f3f69cb",
+      "pinnedUrl": "https://github.com/lucasmarkes/hairline/blob/37d2e78dcb333ab30c3338e28ed4a690364ea014/packages/hairline/package.json"
+    }
+  ],
+  "decision": "adapt workflow only; do not install skill or runtime package",
+  "scriptsInspected": false,
+  "engineInspected": false,
+  "license": "MIT; retain copyright and permission notice for copies/substantial portions",
+  "execution": false,
+  "installation": false,
+  "prototype": false,
+  "browserAcceptance": false
+}

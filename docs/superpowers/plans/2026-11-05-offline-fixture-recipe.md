@@ -19,4 +19,4 @@ Roles remain three backend workers and one visual lane; no extra agents. The mas
 
 ## Approved operational artifact outcome
 
-~~One exactofflineexport approved and completed~~ tool78579exit0, engine0/no supervisorerror; parentpre/post/input/outputjoinsPASS;173models/177091SQLbytes. Threeartifactbytes and raw/structuredreceipts saved under governance-fixture-recipe-local; SQLSHA cba845cd656a2d6ef15b16381490dcba5f277484ae582723d5ee9427e84ce472. No DBapply/credentials/services/sign/provider/deploy/spend. Grantconsumed/no retry. Actualmatchingclient/StageA/native/System/custody/SAMEconsumer/fleet/full21scope remainopen; nextsourceaudit only.
+~~One exactofflineexport approved and completed~~ tool78579exit0, CLI0/no supervisorerror; parentpre/post/input/outputjoinsPASS;173models/177091SQLbytes. Threeartifactbytes and raw/structuredreceipts saved under governance-fixture-recipe-local; SQLSHA cba845cd656a2d6ef15b16381490dcba5f277484ae582723d5ee9427e84ce472. No DBapply/credentials/services/sign/provider/deploy/spend. Grantconsumed/no retry. Actualmatchingclient/StageA/native/System/custody/SAMEconsumer/fleet/full21scope remainopen; nextsourceaudit only.

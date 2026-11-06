@@ -245,7 +245,7 @@ def observe_installed_sources(stage,lock,cache,locations):
 
 def observe_generation_sources(stage,lock,cache):
  return observe_installed_sources(stage,lock,cache,GENERATION_PACKAGES)
-BUILD_PACKAGES=('node_modules/next','node_modules/react','node_modules/react-dom','node_modules/typescript','node_modules/@next/swc-darwin-arm64')
+BUILD_PACKAGES=('node_modules/zod','node_modules/next','node_modules/react','node_modules/react-dom','node_modules/typescript','node_modules/@next/swc-darwin-arm64')
 def observe_build_sources(stage,lock,cache):
  locations=set(BUILD_PACKAGES)
  for name in lock.get('packages',{}):
