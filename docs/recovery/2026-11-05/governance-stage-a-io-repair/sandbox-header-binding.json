@@ -1,0 +1,9 @@
+{
+  "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sandbox.h",
+  "sha256": "5baa98c212110d6323f7d73f4b42b0072a4c66a826a46c8bfd8fb850305f9416",
+  "lines": [
+    23,
+    27
+  ],
+  "scope": "local source text only; no sandbox API invoked"
+}
