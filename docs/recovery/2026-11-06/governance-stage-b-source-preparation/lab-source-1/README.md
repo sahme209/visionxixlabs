@@ -1,0 +1,5 @@
+# Exact source in private Lab storage
+
+Actual source preparation completed at the SOURCE.json coordinates: selected commit2c6d4793/tree6c836d5b, full11240regularfile tree/content/modes and73native source inputs verified. Eight bounded local Git commands completed; file transport only, no remotes/hooks/alternates or hardlinked objects retained. Source archive125747200bytes SHAe6043d1343c5dbbc202e4baa2dcd8f2267dfdc28422b5d1b17b3f6c3efea7dd5 remains owned in Lab, not duplicated into this receipt. No MAIN working-source bodies were used.
+
+This is a source-coordinate change only. Original SOURCE3/failed attempt remain unchanged. No System recorder, npm, generation, compiler, native/helper launch, signing, database, provider or deployment ran during this preparation. Independent file-only review passed: full11240file inventory/bytes/modes/tar joins,73native inputs, exactoverlay hashes, privatecoordinates and localGit pack/index integrity all matched. This accepts source placement only; it does not establish the earlier failure cause or actualbuild readiness. A new operational attempt requires its separate exact decision.

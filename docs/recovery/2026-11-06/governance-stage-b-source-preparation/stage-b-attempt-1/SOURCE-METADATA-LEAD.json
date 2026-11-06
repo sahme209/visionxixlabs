@@ -1,0 +1,20 @@
+{
+  "observation": "metadata-only after terminal attempt",
+  "selectedNativeSourceCount": 73,
+  "nonzeroSizeZeroAllocatedBlocks": [
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_provisioner.m",
+      "size": 7228,
+      "st_blocks": 0
+    },
+    {
+      "path": "packages/verified-issuer-runtime/package.json",
+      "size": 518,
+      "st_blocks": 0
+    }
+  ],
+  "exactFailedFileKnown": false,
+  "failureCauseConfirmed": false,
+  "bodiesReadForThisObservation": false,
+  "snapshotCriteriaChanged": false
+}

@@ -1,0 +1,43 @@
+{
+  "buildExecuted": false,
+  "executionAuthorized": false,
+  "explicitWorkingOverlays": {
+    "app/docs/page.tsx": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de",
+    "docs/product/axiom-master-action-plan.md": "e99a61a3292746ab1ea3b6a32ce9bca08b6db38253ba171450c14917185784b1",
+    "docs/product/current-execution-board.md": "c4ce0f14024cfea58d7fe37a0c4140cc68a61e88760aef6efcbc28b603fe626a"
+  },
+  "installationReady": false,
+  "originalIndexUnchanged": true,
+  "originalMainRepo": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+  "originalSourceRecord": {
+    "mode": 420,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-full-source-3/SOURCE.json",
+    "sha256": "c9a3a9f8a87b1f7fec95bbb10f639e6f4b4e60f79a7180893bdb22c85fbb54b3",
+    "size": 835
+  },
+  "otherWorkingChangesNotInventoried": true,
+  "ownedArchive": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-1/source.tar",
+    "sha256": "e6043d1343c5dbbc202e4baa2dcd8f2267dfdc28422b5d1b17b3f6c3efea7dd5",
+    "size": 125747200
+  },
+  "ownedSourceFileManifest": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-1/source-file-manifest.json",
+    "sha256": "e7b9d45173522f7f6e2923e054e463fd75fb2aaf3793ea67a13f032761c5edd0",
+    "size": 2239540
+  },
+  "ownedSourcePreparation": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-1/preparation-result.json",
+    "sha256": "a72bfdde901e886ab189a1f0c007cd5802a5da0198957cc58be09a7138ca04cc",
+    "size": 6332
+  },
+  "parent": "795195f3820127417b7ce1eba160a97e071dd197",
+  "sourceCoordinateOnlyChange": true,
+  "sourceRepo": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-1/repo",
+  "sourceRevision": "2c6d47935cb858d4a78cf5efc03b09b4eeedba9e",
+  "sourceTree": "6c836d5beeb9d6009dab999d109c0218a83dedfd",
+  "untrackedIncluded": false
+}
