@@ -1,0 +1,55 @@
+{
+  "status": "prepared-not-started",
+  "sourceRevision": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684",
+  "root": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280",
+  "originalStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-4/stage",
+  "previewStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/stage",
+  "completedObservation": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-4/completed-observation.json",
+  "observationSha256": "6d665bb8b7ebd6479afc782fec67142bc7776409a0b7b7a2ff901958722b92f3",
+  "metadataCount": 1113,
+  "publicAssets": 45,
+  "staticAssets": 1150,
+  "dependencyLinksInternal": 53,
+  "copyMethod": "APFS cp-cR; all required metadata/public/static distinct-inode byte checks",
+  "manifestSha256": "cba4f683f44b720f718ba78d5542a162c65ebf9604dc0c8f0289cce7c84024c6",
+  "files": [
+    {
+      "path": "preview_proxy.py",
+      "sha256": "aa2ba88bcc2d2d17cbe12332fd08a54ec483f410f1f4039a5b2ee4056d0ecc54"
+    },
+    {
+      "path": "launch_preview.py",
+      "sha256": "3997ab5ad78c882c93abc0636604fec6cc02d48a089a24a9120089820e51632a"
+    },
+    {
+      "path": "backend.sb",
+      "sha256": "b2711daab82cf43102266b87700e239eddece9f8f1b4bdd9027838fe9d154d09"
+    },
+    {
+      "path": "proxy.sb",
+      "sha256": "b6b3110fb3d96fe20ef03b5a031b410dec8a731997b84d782abddb483f223927"
+    },
+    {
+      "path": "asset-manifest.json",
+      "sha256": "cba4f683f44b720f718ba78d5542a162c65ebf9604dc0c8f0289cce7c84024c6"
+    },
+    {
+      "path": "launch-binding.json",
+      "sha256": "acf6cb9f1091758344f537e966c24b8a40ec46ad9dec21c3e7fa9ee098b07d06"
+    },
+    {
+      "path": "test_preview_bindings.py",
+      "sha256": "8bc65c58cb8c9d55c29f4e09dc6a6761f6e9179bc1bad65671abdbc947193ea7"
+    },
+    {
+      "path": "check-http.py",
+      "sha256": "d60fc9c54a1ded2bac7684840b806dfa8f87e2445293e483c74017c90e94e13b"
+    },
+    {
+      "path": "changed-chunk-selection.json",
+      "sha256": "52dc565d7429d7b81f17326612112f9fce50c85e09b2ef00a93e2449f2fec16a"
+    }
+  ],
+  "serversStarted": false,
+  "buildRepeated": false
+}

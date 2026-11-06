@@ -1,0 +1,13 @@
+{
+  "command": [
+    "/usr/bin/python3",
+    "-B",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/test_preview_bindings.py"
+  ],
+  "exit": 0,
+  "testsPassed": 5,
+  "serversStarted": false,
+  "actualToolSession": "6e8e6e",
+  "note": "Five pure checks repeated only after adding exact built DocsHTML/page/master pins; allpass; no launch",
+  "finalLaunchBindingSha256": "acf6cb9f1091758344f537e966c24b8a40ec46ad9dec21c3e7fa9ee098b07d06"
+}

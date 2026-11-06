@@ -117,7 +117,7 @@ export function DocHeader({
   return (
     <header className="relative mb-12">
       {/* Subtle coral aurora behind the header */}
-      <div aria-hidden className="pointer-events-none absolute -inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute -inset-x-4 sm:-inset-x-6 lg:-inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden">
         <div className="absolute top-0 left-[10%] w-[420px] h-[260px] rounded-full bg-brand-coral/[0.05] blur-[120px] ambient-drift" />
         <div className="absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-orange/[0.06] blur-[110px] ambient-drift" style={{ animationDelay: "-8s" }} />
       </div>

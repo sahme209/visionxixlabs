@@ -1,0 +1,22 @@
+{
+  "scope": "candidate Docs HTML and its actual CSS; not browser acceptance",
+  "html": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/stage/.next/server/app/docs.html",
+    "sha256": "00a30387c0fec0a7e027b22fd3abb9f4438cb262890354974eaaabd4765f46ff",
+    "markers": [
+      "my-12 divide-y divide-white/[0.08]",
+      "xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)]",
+      "mt-1 block text-sm leading-6 text-zinc-400"
+    ]
+  },
+  "chunks": [
+    {
+      "url": "/_next/static/css/4f12ea188b9ba3e9.css",
+      "sha256": "a9ad81cd69c0181e3246906536d8a1c2140f661e77ec6c340ca1c55ec06e85c7"
+    },
+    {
+      "url": "/_next/static/css/fd496917896bbbdc.css",
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e"
+    }
+  ]
+}

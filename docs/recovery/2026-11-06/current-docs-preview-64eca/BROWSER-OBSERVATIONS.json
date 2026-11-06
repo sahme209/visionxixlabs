@@ -1,0 +1,38 @@
+{
+  "source": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684",
+  "tab": "24",
+  "url": "http://127.0.0.1:5280/docs",
+  "desktop": {
+    "viewport": [
+      1280,
+      900
+    ],
+    "clientWidth": 1274,
+    "scrollWidth": 1274,
+    "mainGroups": [
+      "Get started",
+      "Complete a task",
+      "Look up a control",
+      "Resolve a problem"
+    ]
+  },
+  "mobile": {
+    "viewport": [
+      375,
+      812
+    ],
+    "clientWidth": 369,
+    "scrollWidth": 385,
+    "overflowPixels": 16,
+    "observedOffender": "DocHeader decorative negative outset wrapper, left -16/right385"
+  },
+  "viewportReset": true,
+  "tabMarkedDeliverable": true,
+  "sourceFixAppliedSeparately": true,
+  "sourceFixRenderedInThisPreview": false,
+  "keyboardATContrastPerformanceAcceptance": false,
+  "httpChecks": 11,
+  "httpFailures": 0,
+  "backendSession": 62002,
+  "proxySession": 44657
+}

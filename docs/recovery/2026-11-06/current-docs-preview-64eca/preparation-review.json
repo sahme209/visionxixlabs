@@ -1,0 +1,19 @@
+{
+  "scope": "author source review; independent parent review still required",
+  "sourceRevision": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684",
+  "manifestSha256": "cba4f683f44b720f718ba78d5542a162c65ebf9604dc0c8f0289cce7c84024c6",
+  "launchBindingSha256": "acf6cb9f1091758344f537e966c24b8a40ec46ad9dec21c3e7fa9ee098b07d06",
+  "actualDocsHtmlSha256": "00a30387c0fec0a7e027b22fd3abb9f4438cb262890354974eaaabd4765f46ff",
+  "htmlMarkersObserved": true,
+  "originalObservationDigestRechecked": "6d665bb8b7ebd6479afc782fec67142bc7776409a0b7b7a2ff901958722b92f3",
+  "onlyRuntimeWrite": "cloned stage/.next/cache/images",
+  "startupStatus": "not-started",
+  "syntaxParsed": [
+    "preview_proxy.py",
+    "launch_preview.py",
+    "test_preview_bindings.py",
+    "check-http.py"
+  ],
+  "httpChecksExecuted": false,
+  "browserAccepted": false
+}

@@ -1,0 +1,76 @@
+{
+  "sourceRevision": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684",
+  "manifestSha256": "cba4f683f44b720f718ba78d5542a162c65ebf9604dc0c8f0289cce7c84024c6",
+  "checksCompleted": 11,
+  "rows": [
+    {
+      "path": "/docs",
+      "status": 200,
+      "bytes": 117468,
+      "sha256": "00a30387c0fec0a7e027b22fd3abb9f4438cb262890354974eaaabd4765f46ff"
+    },
+    {
+      "path": "/docs/getting-started",
+      "status": 200,
+      "bytes": 122465,
+      "sha256": "ca198984002c7c5fbbd1f02ff7a2cef3b6193f78f94f2b93b7e6508b7d3a0580"
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "bytes": 84253,
+      "sha256": "257cfad07fcfac1fbe49ad2f7c495e8fcb6a532e92108bb4eb74417424b25fd0"
+    },
+    {
+      "path": "/__axiom_preview",
+      "status": 200,
+      "bytes": 620,
+      "sha256": "08e37ba34b505c764879d42dca88183bde973c78d15ac4f5fb78f0ebaebaf6dd"
+    },
+    {
+      "asset": "/_next/static/css/4f12ea188b9ba3e9.css",
+      "status": 200,
+      "sha256": "a9ad81cd69c0181e3246906536d8a1c2140f661e77ec6c340ca1c55ec06e85c7",
+      "markers": "actual Docs-linked CSS bytes match accepted clone; not browser-rendered"
+    },
+    {
+      "asset": "/_next/static/css/fd496917896bbbdc.css",
+      "status": 200,
+      "sha256": "bffbbe2ed1c99c886f791371eabc83aabb07573428e6f501d742f54f1309812e",
+      "markers": "actual Docs-linked CSS bytes match accepted clone; not browser-rendered"
+    },
+    {
+      "method": "GET",
+      "path": "/api/auth/session",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/auth/signin",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "POST",
+      "path": "/api/contact",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/docs?_rsc=synthetic",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    },
+    {
+      "method": "GET",
+      "path": "/docs?unexpected=synthetic",
+      "status": 403,
+      "scope": "guard refusal; no backend operation"
+    }
+  ],
+  "elapsedSeconds": 0.056,
+  "failure": null,
+  "limits": "fixed-loopback HTTP delivery/current compiled markers and guard refusals; no browser/layout/keyboard/AT/runtime-custody/production acceptance"
+}
