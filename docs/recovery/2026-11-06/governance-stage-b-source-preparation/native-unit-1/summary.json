@@ -1,0 +1,136 @@
+{
+  "roles": {
+    "bootstrap": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/bootstrap-review-copy",
+        "sha256": "931e23df87110051a932c5e74d2fe5eeade593718cfb5c0d28120d46224b92fd",
+        "size": 53088
+      },
+      "cdhash": "aa0d751bb4dd68b082bb9bfb9c52021b33439c33",
+      "commands": [
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.045665792000001204,
+          "stdout_bytes": 0,
+          "stderr_bytes": 173
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.0169130000000024,
+          "stdout_bytes": 0,
+          "stderr_bytes": 339
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.01667125000000169,
+          "stdout_bytes": 184,
+          "stderr_bytes": 1269
+        }
+      ]
+    },
+    "controller": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/controller-review-copy",
+        "sha256": "798b6b3434cc81bff01ab3a7cba07054285958d1aff3afc9cdec56b42ec39eb5",
+        "size": 113168
+      },
+      "cdhash": "459c28699bb7ebc8383bba905b15882d54dda005",
+      "commands": [
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.051206207999999975,
+          "stdout_bytes": 0,
+          "stderr_bytes": 174
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.015318833000000254,
+          "stdout_bytes": 0,
+          "stderr_bytes": 341
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.0164994579999993,
+          "stdout_bytes": 184,
+          "stderr_bytes": 1271
+        }
+      ]
+    },
+    "maintenance": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/maintenance-review-copy",
+        "sha256": "9b19a34e178431b2ca21005a5a23923c1cb476c49b2bc1adc02ce9f6073b9b7d",
+        "size": 152304
+      },
+      "cdhash": "fe875f2a3254c22d725a7a4481f23cef47ca2262",
+      "commands": [
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.045019917000001186,
+          "stdout_bytes": 0,
+          "stderr_bytes": 175
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.014473416999997823,
+          "stdout_bytes": 0,
+          "stderr_bytes": 343
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.015691459000002794,
+          "stdout_bytes": 184,
+          "stderr_bytes": 1273
+        }
+      ]
+    },
+    "owner": {
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/owner-review-copy",
+        "sha256": "2b8f7a883596033aa602deb4c1676bbbc4bd0a3a8b5741cc4c9904b9b5c96d69",
+        "size": 98320
+      },
+      "cdhash": "6cb285f730d0eb4775864e8a10b580ea50222723",
+      "commands": [
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.04379779199999945,
+          "stdout_bytes": 0,
+          "stderr_bytes": 169
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.016105582999999868,
+          "stdout_bytes": 0,
+          "stderr_bytes": 331
+        },
+        {
+          "exit": 0,
+          "state": "completed",
+          "elapsed_seconds": 0.015433166999999415,
+          "stdout_bytes": 184,
+          "stderr_bytes": 1268
+        }
+      ]
+    }
+  },
+  "compiledTargetsExecuted": false,
+  "accountsCreated": false,
+  "installed": false,
+  "governanceQualified": false
+}

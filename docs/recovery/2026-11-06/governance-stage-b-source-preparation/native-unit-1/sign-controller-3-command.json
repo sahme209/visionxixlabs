@@ -1,0 +1,1 @@
+{"argv":["/usr/bin/codesign","--display","--verbose=4","--entitlements",":-","/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/controller-review-copy"],"cleanup":"reaped_original_child","elapsed_seconds":0.0164994579999993,"error":null,"exit":0,"state":"completed","stderr_bytes":1271,"stdout_bytes":184}

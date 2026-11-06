@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/bootstrap-review-copy
+Identifier=com.visionxixlabs.axiom.synthetic.bootstrap
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=471 flags=0x10000(runtime) hashes=3+7 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=aa0d751bb4dd68b082bb9bfb9c52021b33439c33
+CandidateCDHashFull sha256=aa0d751bb4dd68b082bb9bfb9c52021b33439c3308d64cf3a189ca7269775d12
+Hash choices=sha256
+CMSDigest=aa0d751bb4dd68b082bb9bfb9c52021b33439c3308d64cf3a189ca7269775d12
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=16384
+Executable Segment flags=0x1
+Page size=16384
+CDHash=aa0d751bb4dd68b082bb9bfb9c52021b33439c33
+Signature size=4680
+Authority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Signed Time=Nov 6, 2026 at 09:44:22
+Info.plist=not bound
+TeamIdentifier=FG5N98FE6W
+Runtime Version=26.5.0
+Sealed Resources=none
+Internal requirements count=1 size=204
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1

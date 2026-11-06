@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/owner-review-copy
+Identifier=com.visionxixlabs.axiom.synthetic.launch-owner
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=538 flags=0x10000(runtime) hashes=5+7 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=6cb285f730d0eb4775864e8a10b580ea50222723
+CandidateCDHashFull sha256=6cb285f730d0eb4775864e8a10b580ea5022272312e9e14a72551a533edfbc34
+Hash choices=sha256
+CMSDigest=6cb285f730d0eb4775864e8a10b580ea5022272312e9e14a72551a533edfbc34
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=49152
+Executable Segment flags=0x1
+Page size=16384
+CDHash=6cb285f730d0eb4775864e8a10b580ea50222723
+Signature size=4680
+Authority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Signed Time=Nov 6, 2026 at 09:44:07
+Info.plist=not bound
+TeamIdentifier=FG5N98FE6W
+Runtime Version=26.5.0
+Sealed Resources=none
+Internal requirements count=1 size=208
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1
