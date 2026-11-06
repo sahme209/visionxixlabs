@@ -1,0 +1,172 @@
+{
+  "method": "WCAG relative luminance; observed RGB/alpha background source-over until first opaque ancestor; no rounding before comparison",
+  "results": [
+    {
+      "index": 0,
+      "text": "A write starts as a proposal.",
+      "foreground": [
+        255.0,
+        255.0,
+        255.0
+      ],
+      "compositedBackground": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "ratio": 19.838679153309286,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 1,
+      "text": "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
+      "foreground": [
+        161.0,
+        161.0,
+        170.0
+      ],
+      "compositedBackground": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "ratio": 7.740690775367921,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 2,
+      "text": "In the separate-execution preview, approval records review only. The original requester must use a separate execution step for a supported action; current authorization, exact proposal and target checks still apply. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.",
+      "foreground": [
+        212.0,
+        212.0,
+        216.0
+      ],
+      "compositedBackground": [
+        9.0,
+        10.0,
+        8.0
+      ],
+      "ratio": 13.422639364401922,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 3,
+      "text": "Separate requester execution is a local preview and is not production-activated. Your installed version may not include an Execute control. Check the controls and release guidance for your installed version; approval status alone does not prove that an action ran.",
+      "foreground": [
+        212.0,
+        212.0,
+        216.0
+      ],
+      "compositedBackground": [
+        11.0,
+        14.8,
+        17.52
+      ],
+      "ratio": 13.036905552251667,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 4,
+      "text": "Deployment decisions.Clear from the start.",
+      "foreground": [
+        244.0,
+        244.0,
+        245.0
+      ],
+      "compositedBackground": [
+        16.0,
+        16.0,
+        16.0
+      ],
+      "ratio": 17.311419064694043,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "computed parent/direct text only; descendant span separately sampled"
+    },
+    {
+      "index": 5,
+      "text": "Clear from the start.",
+      "foreground": [
+        161.0,
+        161.0,
+        170.0
+      ],
+      "compositedBackground": [
+        16.0,
+        16.0,
+        16.0
+      ],
+      "ratio": 7.424421689103911,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 6,
+      "text": "A workspace for deployment proposals, review, and recorded outcomes. Explore the workflow, then check which controls your installed version supports.",
+      "foreground": [
+        212.0,
+        212.0,
+        216.0
+      ],
+      "compositedBackground": [
+        16.0,
+        16.0,
+        16.0
+      ],
+      "ratio": 12.874217264847255,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 7,
+      "text": "Download Axiom Agent",
+      "foreground": [
+        9.0,
+        9.0,
+        11.0
+      ],
+      "compositedBackground": [
+        244.0,
+        244.0,
+        245.0
+      ],
+      "ratio": 18.10042426312613,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    },
+    {
+      "index": 8,
+      "text": "Read the workflow guide",
+      "foreground": [
+        244.0,
+        244.0,
+        245.0
+      ],
+      "compositedBackground": [
+        12.8,
+        12.8,
+        12.8
+      ],
+      "ratio": 17.70540452589138,
+      "normalTextThreshold": 4.5,
+      "meetsNormalTextThreshold": true,
+      "scope": "selected element computed text color"
+    }
+  ],
+  "limits": [
+    "Default dark CSS state and named samples only",
+    "Not screenshot-pixel, anti-aliasing, pseudo-element/overlap, hover/focus or full-page audit",
+    "Parent heading direct text uses parent color; its contrasting child span sampled separately"
+  ]
+}

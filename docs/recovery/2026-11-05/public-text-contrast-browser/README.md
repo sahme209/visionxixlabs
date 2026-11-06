@@ -1,0 +1,7 @@
+# Finite rendered CSS text-contrast sample
+
+Actual computed styles were read in one owned hidden IAB tab at1280×720 on guarded0c9. Nine samples: Docs heading/summary/execution paragraph/local-preview warning, Product primary heading direct text/separately colored subtitle/summary/download-link text/workflow-guide-link text. The warning is a div and was collected separately after the initial paragraph-only selector omitted it.
+
+Every observed ancestor had opacity1, filter none and normal blend. Background images through the first opaque ancestor were none. Ratios use WCAG relative luminance with alpha source-over for warning/link backgrounds; no rounding before comparison. All nine observed CSS color pairs exceed4.5:1, ranging7.424–19.839:1. computed-styles.json retains actual colors/layers/font sizes; ratios.json retains the method and per-sample calculations. Parent heading color applies only to its direct text; the child span is separately sampled.
+
+These are computed CSS-pair results, not screenshot-pixel/anti-aliasing/pseudo-element/overlap or whole-page validation. No hover/focus/disabled/light-mode/mobile/screen-reader/nontext/performance/full WCAG or full B6 acceptance. Five named current content/style files match served0c9. No CSS or component change was needed. Navigation to Product used its observed top link; no account/AI/form/download/provider control activated. Owned tab15 closed successfully; no viewport override or user app/tab changes.

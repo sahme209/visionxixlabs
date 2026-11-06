@@ -1,0 +1,1012 @@
+{
+  "docContrast": {
+    "samples": [
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "font-display text-4xl md:text-5xl font-bold text-white leading-[1.04] mb-5",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "H1"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "relative mb-12",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HEADER"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "min-w-0",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(9, 10, 8)",
+            "blend": "normal",
+            "className": "min-h-screen bg-[#141414] text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(255, 255, 255)",
+        "fontSize": "48px",
+        "fontWeight": "700",
+        "text": "A write starts as a proposal."
+      },
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "text-[16px] text-zinc-400 leading-relaxed max-w-3xl",
+            "color": "rgb(161, 161, 170)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "P"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "relative mb-12",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HEADER"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "min-w-0",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(9, 10, 8)",
+            "blend": "normal",
+            "className": "min-h-screen bg-[#141414] text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(161, 161, 170)",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "text": "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval."
+      },
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(212, 212, 216)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "P"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "space-y-4 text-zinc-300 leading-relaxed",
+            "color": "rgb(212, 212, 216)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mb-12 scroll-mt-24",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SECTION"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "min-w-0",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(9, 10, 8)",
+            "blend": "normal",
+            "className": "min-h-screen bg-[#141414] text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(212, 212, 216)",
+        "fontSize": "16px",
+        "fontWeight": "400",
+        "text": "In the separate-execution preview, approval records review only. The original requester must use a separate execution step for a supported action; current authorization, exact proposal and target checks still apply. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority."
+      }
+    ],
+    "url": "http://127.0.0.1:5262/docs/approval-workflow",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "warningContrast": {
+    "chain": [
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5",
+        "color": "rgb(212, 212, 216)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "flex-1 min-w-0",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "flex items-start gap-3",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(59, 130, 246, 0.04)",
+        "blend": "normal",
+        "className": "rounded-xl border border-blue-500/15 bg-blue-500/[0.04] p-4 my-5",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "min-w-0",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "MAIN"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "max-w-[1400px] mx-auto grid lg:grid-cols-[260px_minmax(0,1fr)] gap-8",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "pt-24 pb-16 px-4 sm:px-6 lg:px-8",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgb(9, 10, 8)",
+        "blend": "normal",
+        "className": "min-h-screen bg-[#141414] text-zinc-100",
+        "color": "rgb(244, 244, 245)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "",
+        "color": "rgb(237, 237, 235)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "DIV"
+      },
+      {
+        "background": "rgb(16, 16, 16)",
+        "blend": "normal",
+        "className": "axiom-font-inter axiom-font-mono antialiased",
+        "color": "rgb(237, 237, 235)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "BODY"
+      },
+      {
+        "background": "rgba(0, 0, 0, 0)",
+        "blend": "normal",
+        "className": "",
+        "color": "rgb(255, 255, 255)",
+        "filter": "none",
+        "image": "none",
+        "opacity": "1",
+        "tag": "HTML"
+      }
+    ],
+    "color": "rgb(212, 212, 216)",
+    "fontSize": "14px",
+    "fontWeight": "400",
+    "text": "Separate requester execution is a local preview and is not production-activated. Your installed version may not include an Execute control. Check the controls and release guidance for your installed version; approval status alone does not prove that an action ran."
+  },
+  "productContrast": {
+    "samples": [
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mt-6 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.045em] text-zinc-100 sm:text-5xl lg:text-6xl",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "H1"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mx-auto max-w-[1280px]",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SECTION"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "overflow-hidden pt-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-canvas min-h-screen text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(244, 244, 245)",
+        "fontSize": "60px",
+        "fontWeight": "500",
+        "text": "Deployment decisions.Clear from the start."
+      },
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "block text-zinc-400",
+            "color": "rgb(161, 161, 170)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SPAN"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mt-6 max-w-3xl text-4xl font-medium leading-[1.04] tracking-[-0.045em] text-zinc-100 sm:text-5xl lg:text-6xl",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "H1"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mx-auto max-w-[1280px]",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SECTION"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "overflow-hidden pt-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-canvas min-h-screen text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(161, 161, 170)",
+        "fontSize": "60px",
+        "fontWeight": "500",
+        "text": "Clear from the start."
+      },
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "text-base leading-7 text-zinc-300 sm:text-lg",
+            "color": "rgb(212, 212, 216)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "P"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "max-w-xl",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mx-auto max-w-[1280px]",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SECTION"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "overflow-hidden pt-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-canvas min-h-screen text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(212, 212, 216)",
+        "fontSize": "18px",
+        "fontWeight": "400",
+        "text": "A workspace for deployment proposals, review, and recorded outcomes. Explore the workflow, then check which controls your installed version supports."
+      },
+      {
+        "chain": [
+          {
+            "background": "rgb(244, 244, 245)",
+            "blend": "normal",
+            "className": "inline-flex min-h-12 items-center justify-center rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white",
+            "color": "rgb(9, 9, 11)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "A"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mt-7 flex flex-col gap-3 sm:flex-row lg:flex-wrap",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "max-w-xl",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mx-auto max-w-[1280px]",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SECTION"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "overflow-hidden pt-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-canvas min-h-screen text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(9, 9, 11)",
+        "fontSize": "14px",
+        "fontWeight": "600",
+        "text": "Download Axiom Agent"
+      },
+      {
+        "chain": [
+          {
+            "background": "rgba(0, 0, 0, 0.2)",
+            "blend": "normal",
+            "className": "inline-flex min-h-12 items-center justify-center rounded-lg border border-white/[0.14] bg-black/20 px-6 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.08]",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "A"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mt-7 flex flex-col gap-3 sm:flex-row lg:flex-wrap",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "max-w-xl",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "mx-auto max-w-[1280px]",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "SECTION"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "overflow-hidden pt-16",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "MAIN"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-canvas min-h-screen text-zinc-100",
+            "color": "rgb(244, 244, 245)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "DIV"
+          },
+          {
+            "background": "rgb(16, 16, 16)",
+            "blend": "normal",
+            "className": "axiom-font-inter axiom-font-mono antialiased",
+            "color": "rgb(237, 237, 235)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "BODY"
+          },
+          {
+            "background": "rgba(0, 0, 0, 0)",
+            "blend": "normal",
+            "className": "",
+            "color": "rgb(255, 255, 255)",
+            "filter": "none",
+            "image": "none",
+            "opacity": "1",
+            "tag": "HTML"
+          }
+        ],
+        "color": "rgb(244, 244, 245)",
+        "fontSize": "14px",
+        "fontWeight": "500",
+        "text": "Read the workflow guide"
+      }
+    ],
+    "url": "http://127.0.0.1:5262/product",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  }
+}

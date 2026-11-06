@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the exact reviewed single-outer-policy artifact run ([packet and limits](../recovery/2026-11-05/governance-stage-a-single-outer/EXECUTION-REVIEW.md)) is prepared and awaits one fresh specific user execution decision. Do not restart completed source preparation, infer approval from goal continuation, reset the consumed3dd attempt or reuse unready19286. After an accepted artifact result, follow the [StageB dependencies](../recovery/2026-11-05/governance-stage-a-local/STAGE-B-DEPENDENCIES.md): real selected principals, signed runtime/query-loader qualification, current native roles, fresh same-source build and actual custody/SAME-consumer tests. No full A2/A9, fleet or universal mutation coverage acceptance exists.
 
+## Named public text contrast — actual browser CSS samples
+
+~~Nine rendered Docs/Product text/background pairs measured and compared against4.5:1~~ ([evidence](../recovery/2026-11-05/public-text-contrast-browser/README.md)); observed ratios7.424–19.839:1/default dark1280×720. Alpha backgrounds composited, heading child span separate; five named source/style files match served0c9. Not pixel/overlap/pseudo-element/state/theme/full-WCAG or full B6 qualification; no runtime change.
+
 ## Product to documentation — actual browser journey
 
 ~~Product workflow CTA and Enter-activated next-guide pagination reached the correct articles and updated sidebar current-page state~~ ([evidence](../recovery/2026-11-05/product-docs-browser-journey/README.md)); first-viewport headings and no measured document overflow at1280×720. Seven named current files match served0c9; not whole-site/current DocsContents or full keyboard/AT/customer acceptance. Owned test tab closed; no provider/account/form action. All21 parents remain open.

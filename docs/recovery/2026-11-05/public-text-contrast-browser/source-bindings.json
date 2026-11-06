@@ -1,0 +1,11 @@
+{
+  "previewSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "currentMatchingFiles": {
+    "app/product/page.tsx": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+    "app/docs/approval-workflow/page.tsx": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+    "app/docs/layout.tsx": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+    "components/docs/DocPrimitives.tsx": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+    "app/globals.css": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4"
+  },
+  "scope": "Named content/style source parity only"
+}
