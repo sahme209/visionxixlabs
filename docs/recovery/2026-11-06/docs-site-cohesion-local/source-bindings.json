@@ -1,0 +1,35 @@
+{
+  "scope": "local two-file visual presentation; no runtime/browser acceptance",
+  "baselineHead": "d8a5758d704f9d164b8e147d37c6fa845339a44b",
+  "files": [
+    {
+      "path": "app/docs/layout.tsx",
+      "beforeHeadSha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "afterWorkingTreeSha256": "73859c8329a993a17e2148b774ef911823313f7b1bb9b3378defbd8068adc9d1",
+      "beforeBytes": 640,
+      "afterBytes": 650
+    },
+    {
+      "path": "components/docs/DocPrimitives.tsx",
+      "beforeHeadSha256": "3eb9731b506f791a72acdff33b7559057371eddc4adbe72133cb75c3f7c72fb9",
+      "afterWorkingTreeSha256": "3bc783d41466159f120acedaa6336bb3544b6ccf7edf6551c0813658624a26ec",
+      "beforeBytes": 9293,
+      "afterBytes": 8282
+    }
+  ],
+  "checks": {
+    "layoutNonClassContentPreserved": true,
+    "preHeaderPrimitiveNonClassContentPreserved": true,
+    "postHeaderPrimitivesByteIdentical": true,
+    "gitDiffCheck": "passed in author verification"
+  },
+  "independentReview": {
+    "status": "no important defects found; source only",
+    "reviewer": "offline_diagnostic_review",
+    "provenance": "completed exact two-file review relayed by parent",
+    "conclusion": "Content, heading semantics, landmarks, anchor IDs, and navigation remain intact. Shared canvas and restrained typography improve cohesion; source review alone does not establish visual/browser acceptance."
+  },
+  "testsRun": false,
+  "buildRun": false,
+  "newBrowserAcceptance": false
+}

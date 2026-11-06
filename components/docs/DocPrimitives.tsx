@@ -58,7 +58,7 @@ export function DocSection({ id, title, kicker, children }: { id?: string; title
       {kicker && (
         <p className="text-[10px] font-semibold text-orange-400 uppercase tracking-widest mb-2">{kicker}</p>
       )}
-      <h2 className="text-2xl md:text-3xl font-bold text-white tracking-[-0.04em] mb-5">
+      <h2 className="text-2xl md:text-3xl font-medium text-zinc-100 tracking-[-0.04em] mb-5">
         {title}
       </h2>
       <div className="space-y-4 text-zinc-300 leading-relaxed">{children}</div>
@@ -109,35 +109,19 @@ export function DocHeader({
   /** Optional Axiom-style index marker — "01", "02", etc. Falls back to "—". */
   number?: string;
 }) {
-  // Split the title so the last word can get the coral underline.
-  const words = title.trim().split(/\s+/);
-  const lastWord = words.pop() ?? "";
-  const lead = words.join(" ");
-
   return (
     <header className="relative mb-12">
-      {/* Subtle coral aurora behind the header */}
-      <div aria-hidden className="pointer-events-none absolute -inset-x-4 sm:-inset-x-6 lg:-inset-x-8 -top-12 h-[260px] -z-10 overflow-hidden">
-        <div className="absolute top-0 left-[10%] w-[420px] h-[260px] rounded-full bg-brand-coral/[0.05] blur-[120px] ambient-drift" />
-        <div className="absolute top-4 right-[10%] w-[360px] h-[220px] rounded-full bg-brand-orange/[0.06] blur-[110px] ambient-drift" style={{ animationDelay: "-8s" }} />
-      </div>
-
       {kicker && (
-        <p className="mono-label mb-4 inline-flex items-center gap-3">
-          <span className="text-brand-coral/90 tabular-nums">{number ?? "—"}</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+        <p className="mb-4 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
+          <span className="tabular-nums text-zinc-400">{number ?? "—"}</span>
+          <span className="h-px w-6 bg-white/15" />
           {kicker}
         </p>
       )}
-      <h1 className="font-display text-4xl md:text-5xl font-bold text-white leading-[1.04] mb-5">
-        {lead && <>{lead} </>}
-        <span className="relative inline-block">
-          {lastWord}
-          {/* Restrained 2px coral hairline — Apple-grade */}
-          <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
-        </span>
+      <h1 className="mb-5 text-4xl font-medium leading-[1.05] tracking-[-0.045em] text-zinc-100 sm:text-5xl">
+        {title}
       </h1>
-      <p className="text-[16px] text-zinc-400 leading-relaxed max-w-3xl">{summary}</p>
+      <p className="max-w-3xl text-base leading-7 text-zinc-400">{summary}</p>
     </header>
   );
 }
