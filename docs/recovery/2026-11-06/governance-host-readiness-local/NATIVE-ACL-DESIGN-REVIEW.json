@@ -1,0 +1,19 @@
+{
+  "result": "PASS",
+  "reviewer": "offline_diagnostic_review",
+  "proposalSha256": "6ddcb6e5137847fe6d752c503393907ee0392a987474faa0cb2f67bc08e1d318",
+  "graphSha256": "e6209670fbd094484edfd46bbe675339be5955b1460f940b5b3e2f64c3f5b929",
+  "verifiedBindings": 31,
+  "directlyAffectedRoles": 4,
+  "eventualExistingApiBatchRoles": 6,
+  "nativeOnlyProducerReemissionRequired": false,
+  "actualPlatformBehaviorObserved": false,
+  "implementationAuthorized": false,
+  "compilerOrRuntimeExecutionAuthorized": false,
+  "implementationConditions": [
+    "single owner for caller ACL and helper allocations",
+    "actual caller behavior and missing-header tests",
+    "preserve all path/fd/currentness guards",
+    "preserve prior proofs without restamping"
+  ]
+}
