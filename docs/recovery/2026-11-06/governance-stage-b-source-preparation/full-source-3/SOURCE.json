@@ -1,0 +1,17 @@
+{
+  "sourceRevision": "2c6d47935cb858d4a78cf5efc03b09b4eeedba9e",
+  "sourceTree": "6c836d5beeb9d6009dab999d109c0218a83dedfd",
+  "parent": "795195f3820127417b7ce1eba160a97e071dd197",
+  "sourceRepo": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+  "originalIndexUnchanged": true,
+  "explicitWorkingOverlays": {
+    "app/docs/page.tsx": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de",
+    "docs/product/axiom-master-action-plan.md": "e99a61a3292746ab1ea3b6a32ce9bca08b6db38253ba171450c14917185784b1",
+    "docs/product/current-execution-board.md": "c4ce0f14024cfea58d7fe37a0c4140cc68a61e88760aef6efcbc28b603fe626a"
+  },
+  "otherWorkingChangesNotInventoried": true,
+  "untrackedIncluded": false,
+  "buildExecuted": false,
+  "executionAuthorized": false,
+  "installationReady": false
+}

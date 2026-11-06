@@ -1,0 +1,5 @@
+# Explicit-overlay source snapshot and System packet
+
+Actual source revision `2c6d47935cb858d4a78cf5efc03b09b4eeedba9e`, parent795195f3, preserved at local codex/system-source-2026-11-06 and verified system-source-2026-11-06.bundle. Private index included three explicit working overlays: Docs page, authoritative master and board. Their Git object hashes match working bytes; original index unchanged. No broader working-change inventory or untracked inclusion is claimed.
+
+System v2 packet055d8749370c44d358a96923d76fdea5bb3d3edb7a75bbe3010f25890aa0409f selects seven actual signed roles with canonical preparation references and accepted four-role observation. Independent review pending. No fullstage/System recorder/generation/build/materialization or runtime action occurred. Earlier snapshot stalls remain preserved separately.

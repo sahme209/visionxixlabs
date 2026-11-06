@@ -1,0 +1,86 @@
+# Docs task-path reading hierarchy — local source
+
+November 6, 2026. Source-only presentation improvement; not published or visible in the historical port5262 preview.
+
+The Docs landing previously placed four unequal task groups (3/4/5/3 links) in equally prominent glass cards. With the persistent desktop sidebar, that splits the remaining reading width between two long guide lists. The bounded change replaces those boxes with four quiet, separated task rows. At xl widths the task heading/summary occupies a smaller column beside a broad guide list; below xl each row stacks naturally. Guide explanations now use14px/24px instead of12px/relaxed. This retains task order and gives destination meaning more readable space without adding ornament, scripts or controls.
+
+Owned source: `app/docs/page.tsx`. Existing `app/docs/__tests__/landing.test.ts` checks are reused without adding class/snapshot tests. All15 guide destinations, exact descriptions, headings, accessibility attributes, focus classes, version/scope and unknown-outcome notices, feedback and handlers are preserved. A scripted comparison against HEAD confirmed exact PATHS data and all non-class content/attributes, allowing only the new heading wrapper. `git diff --check` passed. TSX transpilation completed without syntax diagnostics (not full type/build acceptance).
+
+Applied local `design:design-critique`: purpose, task order, reading hierarchy, restraint, consistent spacing and readability. Historical docs-shell screenshot `docs/recovery/2026-11-05/docs-filter-browser/empty-recovery.jpg` was inspected only as historical shell context; it is an article/filter state, not current candidate visual evidence. Current source and approved website architecture supplied the actual landing structure. No new screenshot was created or passed off as product evidence.
+
+## Live master additions and tool decisions
+
+Read the live master plus its uncommitted diff before editing, including B1 authenticated first-user journey research, B2 design-only adoption/AI economics, full B2/B6, and the new Hairline/Teardown requirements. Preserve all user master edits; no master/board edit or stage operation occurred.
+
+- Hairline: actively evaluated applicability. This is task navigation/typographic reading hierarchy, not an explanatory figure; pointer-responsive/isometric machinery would add no understanding here. Its skill and runtime package remain distinct; pinned executable-source/dependency/license review and its concept-selection/ten-rule/browser pilot remain unimplemented.
+- Teardown: actively evaluated against a simpler native HTML layout. No3D explanation is needed for guide navigation; this change chooses the simpler HTML treatment. Repository/license/full executable/compatibility/security review and any separately authorized proof of concept remain open.
+- Taste, Web Design Guidelines, Awesome Design, Image-to-Code and Playwright: existing local inventory/gaps reviewed; no claim those tools ran. Local critique and existing approved Axiom architecture suffice for this scoped change. Dedicated pilots and actual B6 browser evidence remain pending.
+- React Bits/GSAP/Motion/Lenis: no motion benefit for reading guide lists. No component/dependency adopted; native scrolling retained. Exact license/version review remains required before future adoption.
+- GetLayers/Prompt Motion/Figma: no asset or external service necessary; no account, install, paid call, template or external source read.
+- Cursor/Claude/ChatGPT/Codex/Grok/Apple/Harness: reuse only existing recorded clarity, task-first hierarchy and restraint principles; no copied assets/layouts or newly observed authenticated product journeys.
+- New adoption/AI-usage design directions do not authorize commercial messaging, billing or business logic changes; none made. New authenticated-reference research remains not observed here.
+
+No backend, provider, account, native, permissions, approvals, media, global styles, identity mark, build, server, restart, deployment, commit or push action. Actual candidate desktop/mobile/reflow/contrast/keyboard/AT/performance and visual acceptance remain open under B6; root coordinates a meaningful guarded preview milestone separately.
+
+## Validation result / unresolved test runner
+
+Candidate `app/docs/page.tsx` SHA256: `472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de`.
+
+Existing rendered test attempted with `node scripts/run-vitest.mjs app/docs/__tests__/landing.test.ts --maxWorkers=1`; runner started but produced no test results after more than two minutes with idle worker. Stopped only owned processes. One bounded threads-pool fallback likewise stalled before results. Initial accidental redundant `run` filter was stopped without an acceptance claim. No tests are claimed passing from these attempts. Root can complete rendered checks in its established runner environment. No dependency/configuration changes made to resolve the runner.
+
+## Acceptance continuation — preparation only
+
+Source-only harness inspection: `scripts/run-vitest.mjs` prepends `run` and spawns `process.execPath`, inheriting environment except its webstorage flag. The stalled commands therefore used observed Homebrew Node25.2.1 rather than website-build-pinned24.21.0. Vitest's declared engine range allows25; this difference is a diagnostic candidate, not a proven cause. The native-config warning also occurs in historical passing `website-execution-claim-correction/green.log`, so it does not establish failure. Current config has no global/setup hooks; the selected tests are synchronous and page/DocPrimitives import paths show no provider/DB/fetch initialization. A future authorized single bounded file check under already available pinned24 would discriminate the runtime difference without a harness edit. No further test launched in this continuation.
+
+Concrete guarded current-source preview plan, for root after native critical work:
+
+1. Review/freeze the exact candidate source revision (or explicitly bound source snapshot) and page SHA above. Historical266/959/5262 builds cannot show this candidate. Existing build drivers require an exact committed revision; do not silently call old hardcoded drivers with HEAD or overlay unrecorded files.
+2. Adapt the already reviewed `docs/recovery/2026-11-05/current-interaction-web-batch/build-driver.py`/`docs-focus-current-build/build-driver.py` recipe to the new exact reviewed revision and fresh owned build directory. Reuse `scripts/build-local-issuer-package-source.py` and `scripts/local_prisma_engine_inputs.py` with pinned Node24.21.0, existing local npm/Prisma engine caches, kernel-denied outbound network and synthetic build configuration. Root must authorize this build first; no driver written/executed here. Existing recipe reconstructs dependencies offline with lifecycle scripts disabled, not a new package/version adoption; if no offline reconstruction is permitted, root must first select a separately verified existing dependency stage with matching lock and byte provenance. No network fallback.
+3. Require exact generation/build result and required-metadata hashes. Prepare a fresh owned guard directory from latest `docs/recovery/2026-11-05/docs-focus-guarded-preview` helpers, not the older permissive3bfae proxy. Rebind only reviewed revision/build/root/ports/manifest, fresh0700image-cache identity, and exact assets/runtime inputs. Preserve old previews and native sessions. Choose unused loopback ports only at launch; never assume5262 is free/current.
+4. Reuse latest pure binding/profile checks before launch. Guard backend denies outbound and all writes except exact image cache; proxy permits only fixed loopback backend and curated public HTML/assets/image parameters. No cookies/authorization/Next-Action forwarding; API/auth/account/private paths, methods, unsupported queries and external redirects refused. Use synthetic DB URL at127.0.0.1:1 and synthetic local secret only; inherit no credentials. HTML/static mode does not qualify RSC/client navigation.
+5. Only after separate root launch decision, start the source-bound backend/proxy once with retained owned handles. Reuse bounded HTTP checks for `/docs`, exact built Docs asset bytes and private/API/POST/query refusals. Then actual supported browser: current candidate desktop1280 and narrow375/320, no page overflow, readable four ordered task headings/descriptions,15guide links, notice visibility and keyboard focus. Check a safe public guide arrival/Back with known HTML/static navigation limits. Capture source/version/viewport and show the real local candidate at the milestone. If browser control is unavailable, report actual visual acceptance blocked; no fabricated screenshot or substitution with5262.
+
+No build/server/browser/native action, harness edit or new installation was performed while preparing this plan.
+
+## Explicit live-master reread confirmation
+
+Re-read the full current working-tree diff (30 added/0 removed lines), full B2 and full B6 at master SHA256 `e99a61a3292746ab1ea3b6a32ce9bca08b6db38253ba171450c14917185784b1`. This matches the earlier live reread; no additional master change was observed between these reads. Added requirements comprise authenticated first-user reference research; design-only adoption/AI economics and authority boundaries; Hairline review/workflow; Teardown source/compatibility review, bounded research/proposal scope and 3D-versus-HTML comparison; and explicit preferential evaluation of reviewed Hairline/Teardown for meaningful explanatory visuals. B2's named tool/license/security/originality/motion requirements and B6's real-browser/visual-regression/manual/AT/performance/source-bound acceptance were reread in full.
+
+Acceptance-plan clarification: the narrow desktop/mobile check described above is a milestone only. Full B6 additionally retains reviewed desktop/mobile visual baselines,200%zoom/400%reflow under the approved architecture, manual contrast, actual keyboard/focus and assistive-technology review, scrolling/reduced-motion checks, recorded performance and complete link/claim/media coverage. Retain these as separate open gates even if candidate rendered tests and selected screenshots later pass. No diagram is introduced in the Docs refinement; reviewed-tool preference therefore does not justify inventing a3D figure for navigation. Future meaningful diagrams must actively compare applicable reviewed Hairline/Teardown workflows rather than inherit this typography-only decision. Their executable-source, dependency, license, Codex-compatibility and real-browser research/pilots remain incomplete, not claimed evaluated by merely reading the master.
+
+This reread only updated this receipt. Master remains untouched; no source restyling, external research, tool installation, paid call, build, server, deployment or authentication action.
+
+## One authorized pinned-Node targeted test
+
+After inspecting the wrapper to avoid redundant `run`, executed exactly once with existing dependencies:
+
+`/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node scripts/run-vitest.mjs app/docs/__tests__/landing.test.ts --maxWorkers=1`
+
+Tool session95029; owned process-group leader19985. A parent Python deadline bounded the entire invocation to60seconds. Captured output contained the same native-config warning and Vitest4.1.11 `RUN` banner, then no test results. At60.01seconds the parent killed only this newly owned process group; child result-9. Parent monitoring command itself exited0 after recording the timeout, which is not a test pass. No retries. The pinned-runtime check therefore did not resolve the startup stall and provides no evidence that Node25 alone caused it. Rendered tests remain unaccepted; source-preservation/syntax evidence remains the earlier bounded checks. No install/network/build/server/browser/native action, master or board edit.
+
+## Source-only startup diagnosis — concrete dependency-body obstruction
+
+No test/build/install/config mutation performed for this diagnosis. Version metadata alone was insufficient: root lock, installed hidden lock and package manifests agree on Vitest4.1.11/Vite8.3.1/jsdom30.1.3/React19.2.3; metadata does not prove materialized module bodies.
+
+Filesystem metadata (`ls -lO`, `stat`, no body read/hydration) shows directly imported `node_modules/@heroicons/react/24/outline/esm/ArrowRightIcon.js`, its CJS counterpart, and `InformationCircleIcon.js` as `compressed,dataless`. All298 outline ESM JavaScript files have nonzero logical sizes and zero allocated blocks in the working dependency tree. The materialized barrel exports ArrowRightIcon at29 and ServerStackIcon/ServerIcon at276–277; page imports ArrowRightIcon and DocPrimitives imports InformationCircleIcon and others through this barrel. The retained matching-lock999stage has zero such zero-block outline JavaScript files. This is a concrete local-dependency obstruction on the selected test's import path, although no runtime read trace proves which missing body blocked this particular invocation. Do not trigger hydration/network reads to repair it.
+
+Existing corroboration: `docs/recovery/2026-11-04/website-accessibility-pair/types-recovery.md` documented the same root dependency folder's dataless Heroicons declarations. `docs/recovery/2026-11-05/catalogue-loading-local/README.md`/`preparation.json`/`tests.log` record an isolated matching-lock materialized dependency tree resolving a prior runner-startup blockade:3passed/32skipped,673ms, same config warning. That historical test is different behavior/source and does not accept current Docs.
+
+Smallest supported next acceptance preparation, requiring root's separate execution decision: reuse that established isolation procedure, not a harness fix. Fresh owned exact-source archive/snapshot plus exact current Docs page/test/config/wrapper and all imported source dependencies; independently APFS-clone the existing matching-lock999stage dependencies into this new tree (no install, no original modification, no symlink escaping back into root). Verify root package+lock bytes match source999 (confirmed currently), critical dependency byte hashes/distinct inodes, all dependency links remain inside new tree, current candidate/import hashes match the actual worktree. Candidate page SHA remains472b6bac… . Then ONE pinnedNode24 wrapper invocation for only `app/docs/__tests__/landing.test.ts`, cleared credential environment/private cache with60second parent bound and output capture. Current tests must pass before an acceptance claim. Building/showing the actual candidate is a separate later milestone; a cloned test tree alone is not a browser preview. No preparation clone or test was executed here.
+
+## Actual isolated Docs regression result
+
+The separately authorized existing isolation recipe completed. Fresh source archive base `795195f3820127417b7ce1eba160a97e071dd197` plus selected exact current source files, APFS-independent materialized matching-lock999stage dependencies;10critical files matched byte hashes with distinct inodes and53dependency symlinks remained internal. No dependency installation, original dependency/configuration mutation or placeholder hydration. Private HOME/TMP/cache and cleared credential environment; no kernel-network-isolation claim.
+
+ONE command under existing pinnedNode24: `node scripts/run-vitest.mjs app/docs/__tests__/landing.test.ts --maxWorkers=1`. Tool session82385, owned PID22549: exit0,3tests passed,1file passed,1.166seconds wall/711ms Vitest, no timeout/retry. Tests verified15canonical guide links/fourtaskregions, visible version/uncertainty boundaries and retained focus/feedback. Original native-config warning remains but tests completed. This supports the materialized-dependency acceptance path; it does not prove which dataless read blocked the original process.
+
+Raw retained artifacts: `/private/tmp/axiom-docs-isolated-w2u8g7_y/preparation.json`, `tests.log`, `test-result.json`. These temporary paths are current local evidence; root can archive them at its coordinated milestone. Output SHA256 `caf1cd9630294c9f70736f84687ec7224a88b20a39bc55e6e587ace8b656da5e`. Current-root hashes rechecked after the run:
+
+- `app/docs/page.tsx`: `472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de`
+- `app/docs/__tests__/landing.test.ts`: `71b77b57cc046b6e34018da9e76db0b532026c68869935ee2de4beffd84a4567`
+- `components/docs/DocPrimitives.tsx`: `b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855`
+- `vitest.config.ts`: `48d5d1bb920398b20264209a5b01693763df73b27c472267a3dc30915443cb23`
+- `scripts/run-vitest.mjs`: `38a5f81f919e5bb6f1a76c769adc1713ee1c89f8d097a813e8d61c3121c08692`
+- `tsconfig.json`: `49995c2a39f9d8442187af48c2070474181bee8eca5812ca44075db407ece5d1`
+
+Rendered DOM regression is now passed for this exact source. Actual browser visual/mobile/AT/performance and final source-bound build/guarded preview remain open. No build/server/browser/native/deployment action followed this test.
