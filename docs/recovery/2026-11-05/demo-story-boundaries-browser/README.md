@@ -1,0 +1,7 @@
+# Scripted Agent/cloud story boundaries — actual browser
+
+One owned hidden IAB Product tab,1280×720, tab-scoped reduced-motion emulation. Manually selected Agent & approval and traversed its four steps. Exactly one story was selected; previous disabled at first and Next disabled at last; static sample disclaimer remained. Changing sample Repository at final step from customer-web to payments-api reset Agent to step1 with the new value. Switching to Terraform & cloud reset to its first step and retained that sample context. All three cloud steps traversed; final held state had Next disabled, the missing-authority limitation and no button whose text offered apply.
+
+No sample approval/rejection button was clicked. Selecting tutorial stages is not genuine independent review or provider execution. No sustained timer, Code&review complete traversal, all context permutations, full keyboard/select/AT/mobile/performance or full B6/Governance acceptance.
+
+One exact getByLabel Repository lookup failed before action; fresh DOM exposed combobox Repository and role-based selection succeeded. This tool mismatch is retained, not called an application bug. Actual observations/screenshot saved. Six named source hashes match the prior source binding and current files; earlier receipt independently compared them with served0c9. The media override was cleared and owned tab17 closed; user tabs/app untouched. No source/build/deploy/account/provider/AI change.

@@ -1,0 +1,211 @@
+{
+  "storyStates": [
+    {
+      "label": "Agent step1",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/customer-web"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": false,
+      "playDisabled": true,
+      "previousDisabled": true,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Agent & approval"
+      ],
+      "step": "1 / 4Step 1 of 4: Attach context to the request."
+    },
+    {
+      "label": "Agent step2",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/customer-web"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": false,
+      "playDisabled": true,
+      "previousDisabled": false,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Agent & approval"
+      ],
+      "step": "2 / 4Step 2 of 4: Inspect the proposed change."
+    },
+    {
+      "label": "Agent step3",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/customer-web"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": false,
+      "playDisabled": true,
+      "previousDisabled": false,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Agent & approval"
+      ],
+      "step": "3 / 4Step 3 of 4: Decide on the exact action."
+    },
+    {
+      "label": "Agent step4",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/customer-web"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": true,
+      "playDisabled": true,
+      "previousDisabled": false,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Agent & approval"
+      ],
+      "step": "4 / 4Step 4 of 4: Keep the outcome honest."
+    },
+    {
+      "label": "Agent context reset",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/payments-api"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": false,
+      "playDisabled": true,
+      "previousDisabled": true,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Agent & approval"
+      ],
+      "step": "1 / 4Step 1 of 4: Attach context to the request."
+    },
+    {
+      "label": "Cloud step1",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/payments-api"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": false,
+      "playDisabled": true,
+      "previousDisabled": true,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Terraform & cloud"
+      ],
+      "step": "1 / 3Step 1 of 3: Start with a configuration preview."
+    },
+    {
+      "label": "Cloud step2",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/payments-api"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": false,
+      "playDisabled": true,
+      "previousDisabled": false,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Terraform & cloud"
+      ],
+      "step": "2 / 3Step 2 of 3: Inspect the evidence boundary."
+    },
+    {
+      "label": "Cloud step3",
+      "context": [
+        {
+          "label": "Repositoryacme/customer-webacme/payments-api",
+          "value": "acme/payments-api"
+        },
+        {
+          "label": "Branchfeature/timeoutreview/retry-policy",
+          "value": "feature/timeout"
+        },
+        {
+          "label": "EnvironmentDevelopmentTestProduction · held",
+          "value": "Development"
+        }
+      ],
+      "nextDisabled": true,
+      "playDisabled": true,
+      "previousDisabled": false,
+      "sampleWarning": true,
+      "selectedStories": [
+        "Terraform & cloud"
+      ],
+      "step": "3 / 3Step 3 of 3: Keep the release on hold."
+    }
+  ],
+  "holdObservation": {
+    "applyButtons": [],
+    "holdVisible": true,
+    "unavailable": true
+  },
+  "selectorFailure": "Exact getByLabel Repository returned no match before action. Fresh DOM showed combobox Repository; getByRole combobox exact succeeded.",
+  "scope": "Manual Agent4 and Cloud3 stories plus sample repository reset, reduced-motion emulation at default1280x720; no sample decision button clicked"
+}
