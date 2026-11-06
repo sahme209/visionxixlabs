@@ -1,0 +1,14 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS_READINESS_STUB_TARGET_ONLY",
+  "attempts": [
+    13,
+    14
+  ],
+  "exactPassStdoutAndEmptyStderr": true,
+  "ownedCopiesVerified": 8,
+  "wholeUnitInvocations": 14,
+  "wholeUnitChargedActiveSeconds": 2.967374792,
+  "actualPlatformQualified": false,
+  "frameworkFixturesUnrun": true
+}

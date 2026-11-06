@@ -1,0 +1,27 @@
+{
+  "sha256": "b4c4807a3d4440bfc6be4fb1a418ace11348870a625892ff78d9b98becbc8fd7",
+  "size": 51888,
+  "imports": [
+    "___assert_rtn",
+    "___memset_chk",
+    "___stack_chk_fail",
+    "___stack_chk_guard",
+    "___strcpy_chk",
+    "_free",
+    "_malloc",
+    "_memcmp",
+    "_puts",
+    "_strcmp",
+    "_strlen",
+    "_strrchr",
+    "_strstr"
+  ],
+  "libraries": [
+    "/usr/lib/libSystem.B.dylib"
+  ],
+  "noAclSecurityProtectedOperationImports": true,
+  "mapSha256": "497a2d586191cfbb29b240cdba6ac9c0d283edbdd577c3f32f65c69407aaf2e5",
+  "mapBytes": 5491,
+  "executed": false,
+  "independentActualOutputReviewPending": true
+}

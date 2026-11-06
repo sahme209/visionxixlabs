@@ -1,0 +1,8 @@
+{
+  "result": "PASS_FIXED_READINESS_COMPILE_ONLY",
+  "independentReviewer": "offline_diagnostic_review",
+  "verifiedRuntimeBindings": 20,
+  "existingUnitInvocationsBeforeCompile": 12,
+  "actualPlatformApiCallsAllowed": false,
+  "testExecutionAllowedYet": false
+}

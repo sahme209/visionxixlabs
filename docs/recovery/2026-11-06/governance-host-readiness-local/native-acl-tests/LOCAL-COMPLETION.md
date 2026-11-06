@@ -17,3 +17,7 @@ Directory-shape diagnostic approval remains separate and pending; the earlier ho
 ## Subsequent bounded legacy extension
 
 The paragraphs above retain the initial8-invocation checkpoint. A later extension within the same original allowance compiled and passed two legacy targets: the journal adapter/failure sweep and maintenance closed-entry/descriptor guard. Their actual receipts, final12-call accounting and limitations are in [legacy observation](legacy-source-proposal/observed/README.md). Remaining legacy fixtures are still unrun. No real ACL/Security or custody acceptance is inferred.
+
+## Subsequent readiness/context extension
+
+The same original allowance later compiled and passed the actual readiness/supplier-context bodies against inert platform observations, including opaque mismatch and both input/reference cleanup refusals through supplier and maintenance contexts. [Readiness receipts](readiness-source-proposal/observed/README.md) retain attempts13/14 and14whole-unit invocations. This is not real platform/ACL qualification; prior checkpoint text remains historical.

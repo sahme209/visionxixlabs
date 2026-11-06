@@ -1,0 +1,45 @@
+{
+  "format": "axiom.readiness-source-currentness/1",
+  "sourceOnly": true,
+  "compilerChildrenInvoked": 0,
+  "testChildrenInvoked": 0,
+  "bindings": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/RECIPES.json",
+      "sha256": "53c91e7000d71ef664d1b4875478c82d316e3ff53c5b36a545aafb2f01f3dda1",
+      "size": 10314,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/run_step.py",
+      "sha256": "6d48edd94be4cca873ba07c3616daaabbf044a9eb51bf6445685a3ca0abc32d0",
+      "size": 8842,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/binary_guard.py",
+      "sha256": "b964f7b8a384272a47156b0625a1003dbda8e5671c6a91dbc1860cc94bca7b66",
+      "size": 2912,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/SOURCE-CLOSURE.json",
+      "sha256": "e67b9096675a039380a03cd33aebe8a906a4f0e8072ac6479cc9e1fbf5ded6b7",
+      "size": 2791,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/PROPOSAL.md",
+      "sha256": "172d902664cedbe1776ce9347f29df7d1022fdda10d4ef9b28678e625c4c6ad1",
+      "size": 3832,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/readiness-source-proposal/before-readiness-adaptation.c",
+      "sha256": "44ef3198113c37e22aad401208bc8318339ef4ebebf8f4bd4c62be9663fa0a09",
+      "size": 2986,
+      "mode": 420
+    }
+  ],
+  "finalRootReviewPending": true
+}

@@ -1,0 +1,16 @@
+{
+  "result": "READINESS_AND_SUPPLIER_CONTEXT_STUB_TEST_PASSED",
+  "compileAttempt": 13,
+  "testAttempt": 14,
+  "actualSharedHelperAndContextBodies": true,
+  "mismatchAndBothCleanupFailuresRefused": true,
+  "identityPathAclExecutableOwnerLoadedObservations": "all inert fixture definitions",
+  "wholeOriginalUnitInvocationsUsed": 14,
+  "wholeOriginalMaximumInvocations": 32,
+  "chargedActiveSecondsIncludingPreparation": 2.9673747919999998,
+  "maximumActiveSeconds": 480,
+  "allActualChildrenReaped": true,
+  "frameworkFixturesStillUnrun": true,
+  "realPlatformOrCustodyQualified": false,
+  "deploymentOrInstallationPerformed": false
+}

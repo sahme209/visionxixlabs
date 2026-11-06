@@ -1,0 +1,9 @@
+{
+  "result": "PASS_ONE_READINESS_STUB_TEST",
+  "independentReviewer": "offline_diagnostic_review",
+  "recipeSha256": "a150123c7fa641261126e5f60db7754d441013be88648364ad944116ce43dbe4",
+  "runtimeBindingsVerified": 24,
+  "nextWholeUnitInvocation": 14,
+  "newBudgetOrRealPlatformAuthority": false,
+  "requiresExactStdoutExitZeroAndEmptyStderr": true
+}

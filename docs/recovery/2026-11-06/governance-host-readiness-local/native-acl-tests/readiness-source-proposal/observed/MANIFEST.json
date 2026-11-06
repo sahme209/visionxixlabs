@@ -1,0 +1,46 @@
+{
+  "files": [
+    {
+      "name": "attempt-13.claim.json",
+      "sha256": "c21b85e02942d28a6ffb875b7cc0e060072dda0f2d5d68429bfcc8b65f2f11ae",
+      "size": 1352
+    },
+    {
+      "name": "attempt-13.terminal.json",
+      "sha256": "fa8f261d45780910a4bb9dc496adba84eb6a3d8c9e6ae698845b9330cfc81059",
+      "size": 370
+    },
+    {
+      "name": "attempt-13.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-13.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-14.claim.json",
+      "sha256": "e2861d7a865a8dd629fc819bb4609b3b0da061276871dc4acee9ccafbe9206ba",
+      "size": 1048
+    },
+    {
+      "name": "attempt-14.terminal.json",
+      "sha256": "c53b349ff0f272cee0ca4114b7e527ac142c93829f1b211dced451cb26c3c57e",
+      "size": 359
+    },
+    {
+      "name": "attempt-14.stdout.log",
+      "sha256": "0cb75330f4f4c47b8a879b001f53f9f38ddf05123f4de032b8425fd52a4cc7b8",
+      "size": 78
+    },
+    {
+      "name": "attempt-14.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "copiesMatchActualOwnedResults": true,
+  "actualPlatformObservationsWereFakes": true
+}
