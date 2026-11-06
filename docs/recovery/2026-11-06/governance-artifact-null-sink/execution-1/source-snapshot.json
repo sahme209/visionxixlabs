@@ -1,0 +1,9 @@
+{
+  "parent": "e280e4894f181b4169599d9aeb28bcef15f4ca49",
+  "commit": "0a18289793466cf7b101ba6165d5c829f07a61dc",
+  "tree": "06aed68589262bf5bc84e2b7d3c0b9cf7114a3f1",
+  "ref": "refs/heads/codex/stage-a-null-sink-e280e489",
+  "masterSha256": "f5f1678c58e6bd89246a0a04e900ab524bdeb09aa1b6d46333db6b1af6dcdc92",
+  "mainHeadUnchanged": true,
+  "mainIndexUnchanged": true
+}
