@@ -1,0 +1,11 @@
+# Narrow recipe engine-input amendment — local preparation only
+
+The selected accepted materialized dependency tree contains the Prisma CLI but **omits** `@prisma/engines/schema-engine-darwin-arm64`. The current checkout dependency inventory also differs from that accepted manifest (six absent paths/twenty-nine extras), so it must not silently substitute for the accepted dependency closure.
+
+Keep one fixed fresh source input view: current byte-bound schema/seed copies and one explicitly bound `node_modules` link to the accepted materialized dependency tree. Preserve the accepted package and current checkout/cache unchanged. The no-alias exception is only that exact dependency-root link and the accepted manifest's recorded internal symlinks; no arbitrary link selection or fallback.
+
+Add only optional `ports.schemaEnginePath` to `prepareSyntheticFixtureRecipe`: its absent/default value preserves the existing root-derived path and behavior; a present path must still satisfy the SAME hardcoded SHA256 `57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a`. The fixed future packet supplies the separately bound original cached executable `/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/node_modules/@prisma/engines/schema-engine-darwin-arm64` (regular19,831,920bytes, mode0755 observed by ordinary metadata). It is not represented as part of the accepted materialized package.
+
+The fixed driver must join that optional value to the exact packet binding, enforce the same path in the CLI's `PRISMA_SCHEMA_ENGINE_BINARY`, and verify stable regular/single-link/executable metadata and bytes before/after. The existing recipe binding retains the same engineSha256 meaning. No alternative hash, downloader, copy, chmod, installation, broader runtime selector or retry is added. The future execution review names the dual provenance explicitly: accepted dependency tree plus independently pinned original cached engine.
+
+This amendment permits source preparation and pure/mocked tests only. No actual Node/CLI/engine, sandbox, SQL, key, provider, installation or deployment operation is authorized or performed. Root selected this narrow integration; independent source/design review precedes implementation.
