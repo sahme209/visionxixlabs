@@ -23,7 +23,7 @@ if (!nextConfig.includes('tsconfigPath: "tsconfig.next.json"')) {
   throw new Error("Next.js must use the production-web TypeScript boundary.");
 }
 
-const requiredTypeExcludes = ["desktop", "**/__tests__/**", "**/*.test.ts", "**/*.test.tsx"];
+const requiredTypeExcludes = ["desktop", "**/__tests__/**", "**/*.test.ts", "**/*.test.tsx", "docs/recovery/**"];
 const missingTypeExcludes = requiredTypeExcludes.filter(
   (pattern) => !(nextTsConfig.exclude ?? []).includes(pattern),
 );

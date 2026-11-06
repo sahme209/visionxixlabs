@@ -1,0 +1,59 @@
+{
+  "changedSourceFiles": {
+    "scripts/check-vercel-build.mjs": "27206afbf8066590131c5c4a704d327bd8ae3e112d3f5a4081addbca03b496af",
+    "scripts/tests/test_docs_heading_build_gate.cjs": "2f4afeea865a4ee82cc68bac66fca3231148a0b35de944d80f9e7e8f3d842d31",
+    "tsconfig.next.json": "d2027302038c7fb1276839fba23a1418489a1e36faa74bbc2e520392e0191e45"
+  },
+  "compilerFlagsUnchanged": {
+    "ignoreBuildErrorsAdded": false,
+    "noEmit": true,
+    "strict": true
+  },
+  "excludedRootPattern": "docs/recovery/**",
+  "executionAuthorized": false,
+  "fullProjectTypecheckInvoked": false,
+  "green": {
+    "command": [
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "--test",
+      "scripts/tests/test_docs_heading_build_gate.cjs"
+    ],
+    "durationMs": 3477.259958,
+    "exit": 0,
+    "passed": 7,
+    "session": 21379,
+    "tests": 7
+  },
+  "installationReady": false,
+  "nextBuildInvoked": false,
+  "npmInvoked": false,
+  "oldStagesModified": false,
+  "prismaGenerationInvoked": false,
+  "productionImportInspection": "Targeted app/components/lib/packages source search found no production import of docs/recovery; incidental test fixture reads and unrelated recovery words are not production imports. Exclusion does not shield any imported source regardless.",
+  "rawTestOutputFilesCreated": false,
+  "red": {
+    "command": [
+      "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "--test",
+      "--test-name-pattern=recovery|production type",
+      "scripts/tests/test_docs_heading_build_gate.cjs"
+    ],
+    "exit": 1,
+    "expectedFailures": [
+      "missing archived-recovery contract exclusion incorrectly accepted",
+      "archived recovery source included among automatic production roots"
+    ],
+    "failures": 2,
+    "tests": 2
+  },
+  "status": "narrow_production_type_root_boundary_locally_verified",
+  "systemRecorderInvoked": false,
+  "testOutputProvenance": "Actual tool results summarized here; original tool output retained in chat.",
+  "typeFixtureVerified": [
+    "archived recovery file omitted as automatic root",
+    "app/lib/package/.next-types files remain roots",
+    "strict and noEmit retained",
+    "application TS2322 remains diagnosed",
+    "excluded recovery source explicitly imported by application still produces TS2322"
+  ]
+}
