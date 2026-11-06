@@ -1,0 +1,174 @@
+{
+  "format": "axiom.saved-system-role-profiles/2",
+  "representations": [
+    {
+      "role": "owner",
+      "identifier": "com.visionxixlabs.axiom.synthetic.launch-owner",
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/owner-review-copy",
+        "sha256": "2b8f7a883596033aa602deb4c1676bbbc4bd0a3a8b5741cc4c9904b9b5c96d69",
+        "size": 98320
+      },
+      "signingPacket": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/signing-packet.json",
+        "sha256": "df6e6407c59e04a4eb27f2bca6feff6e65b8ccb0bb65e19f4b63d24ffdb577ed",
+        "size": 13131
+      },
+      "savedCommands": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/owner-commands.json",
+        "sha256": "5d6b9bf50ad5c15e5aeddf2b2726da580187326d513750c749cbb2a70ece8922",
+        "size": 1369
+      },
+      "resultReceipt": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/owner-result.json",
+        "sha256": "9ddbbc9ef90bcf90f4c2add0f1f9f709af58800638a842ac971e79e8288ee03c",
+        "size": 2540
+      },
+      "sourceArtifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-source-3/independent-leaves/assembly/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticLaunchOwner",
+        "sha256": "3947b9a2393f7a9937ffe46dbab7a46d80c60a2b1c51d4eabc0504a95125b55b",
+        "size": 80216
+      },
+      "observation": {
+        "representation": "explicit_empty_dictionary_observed",
+        "executionAuthorized": false,
+        "installationReady": false
+      }
+    },
+    {
+      "role": "maintenance",
+      "identifier": "com.visionxixlabs.axiom.synthetic.provisioner",
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/maintenance-review-copy",
+        "sha256": "9b19a34e178431b2ca21005a5a23923c1cb476c49b2bc1adc02ce9f6073b9b7d",
+        "size": 152304
+      },
+      "signingPacket": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/signing-packet.json",
+        "sha256": "df6e6407c59e04a4eb27f2bca6feff6e65b8ccb0bb65e19f4b63d24ffdb577ed",
+        "size": 13131
+      },
+      "savedCommands": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/maintenance-commands.json",
+        "sha256": "1e9dc8a69c48faeaa8745184ce48ddf6722dbcd2501674ca6a5ec79948fdfd6a",
+        "size": 1387
+      },
+      "resultReceipt": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/maintenance-result.json",
+        "sha256": "b43d5c73a9fd4c9721dee24bd8009438e3071e921bb17ee9e9b8228b762da806",
+        "size": 2567
+      },
+      "sourceArtifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-source-3/independent-leaves/assembly/Axiom Synthetic Custodian.app/Contents/Helpers/AxiomSyntheticProvisioner",
+        "sha256": "b1f2d599e1d527fbea1e56334e4c484ac351bcb3d93361b74e95c50cb5d52314",
+        "size": 134488
+      },
+      "observation": {
+        "representation": "explicit_empty_dictionary_observed",
+        "executionAuthorized": false,
+        "installationReady": false
+      }
+    },
+    {
+      "role": "bootstrap",
+      "identifier": "com.visionxixlabs.axiom.synthetic.bootstrap",
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/leaves/bootstrap-review-copy",
+        "sha256": "931e23df87110051a932c5e74d2fe5eeade593718cfb5c0d28120d46224b92fd",
+        "size": 53088
+      },
+      "signingPacket": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/signing-packet.json",
+        "sha256": "df6e6407c59e04a4eb27f2bca6feff6e65b8ccb0bb65e19f4b63d24ffdb577ed",
+        "size": 13131
+      },
+      "savedCommands": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/bootstrap-commands.json",
+        "sha256": "37347ab5881cc6729f37922eed4c9457244a533a9de4f4aef53e2487cc7a45f7",
+        "size": 1376
+      },
+      "resultReceipt": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-native-1/bootstrap-result.json",
+        "sha256": "9cbcf0b8cdfdf26fc7b2038e56ac9ea207ab656718f641d2267183d2994bf905",
+        "size": 2473
+      },
+      "sourceArtifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-source-3/independent-leaves/payload/__axiom_runtime__/origin-bootstrap",
+        "sha256": "a3013078ec6976efdd81d2e916fce4f1a737047a2ffe28bcec2fce4accd64ad9",
+        "size": 34688
+      },
+      "observation": {
+        "representation": "explicit_empty_dictionary_observed",
+        "executionAuthorized": false,
+        "installationReady": false
+      }
+    },
+    {
+      "role": "guard",
+      "identifier": "com.visionxixlabs.axiom.synthetic.guard",
+      "artifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/leaves/guard-review-copy",
+        "sha256": "fea0f1e1376c38eb3a2eea9b54f50553d168bbc9fc07e1efedadbd5f19af114b",
+        "size": 112000
+      },
+      "signingPacket": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/guard-signing-packet.json",
+        "sha256": "d28aa6324325d93c8ba8db770831f4d1eeb6601662ec651efeb725b50e6244c6",
+        "size": 3825
+      },
+      "savedCommands": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/guard-commands.json",
+        "sha256": "4d8cc5e1c9b8a0b262ddd06702054a9f6333f8abeb770528c4b52bf45e426380",
+        "size": 1383
+      },
+      "resultReceipt": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/guard-result.json",
+        "sha256": "3b50b61d4b139b18fcace2bb45a6c85179fe0a19c5bf32280f1d729b938f5a39",
+        "size": 2551
+      },
+      "sourceArtifact": {
+        "mode": 384,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/guard-source/payload/node_modules/@axiom/verified-issuer-runtime/native/origin_guard.node",
+        "sha256": "f1b788d1ba5c0fc26b52633f667e5416aa10a53388befa931ef685ae6c045826",
+        "size": 94224
+      },
+      "observation": {
+        "representation": "no_encoded_entitlement_payload_observed",
+        "machOFileType": 8,
+        "signatureSlots": [
+          0,
+          2,
+          65536
+        ],
+        "codeDirectorySha256": "b24dc29ce5381317909ac9382af70505ce9db536d8df30ee97537cd1864bb801",
+        "cdhash": "b24dc29ce5381317909ac9382af70505ce9db536",
+        "executionAuthorized": false,
+        "installationReady": false,
+        "cryptographicSignatureVerifiedHere": false
+      }
+    }
+  ],
+  "executionAuthorized": false,
+  "installationReady": false,
+  "cryptographicSignatureVerifiedHere": false,
+  "operationalIdentity": "unavailable"
+}

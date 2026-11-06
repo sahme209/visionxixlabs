@@ -1,0 +1,1 @@
+{"argv":["/usr/bin/codesign","--verify","--strict","--verbose=2","/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/leaves/broker-review-copy"],"cleanup":"reaped_original_child","elapsed_seconds":0.015633084000000075,"error":null,"exit":0,"state":"completed","stderr_bytes":345,"stdout_bytes":0}

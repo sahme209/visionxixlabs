@@ -1,0 +1,5 @@
+# Broker and guard: actual static batch
+
+Both approved compile/sign/strict-verification/display sequences produced saved completion records. Broker CDHash `047e110e9684d9ae37362c9757ab6163b0e8f657`; guard CDHash `b24dc29ce5381317909ac9382af70505ce9db536`. Signed bytes and raw log hashes were checked against their saved records; detached targets remain mode 0600. No target was launched.
+
+Original consumed attempts remain intact. This is static artifact evidence only: operational identity, custody, installation, same-consumer qualification, fleet qualification and complete Governance enforcement remain unavailable. No production or provider change occurred. Independent post-run file review passed: current hashes/modes, compile/preimage joins, bounded commands/logs, profiles and closed flags agree. The actual four-role profile observer also accepted owner, maintenance, bootstrap and guard against their individual saved evidence; this performs file reads only and does not reverify cryptographic signatures or establish runtime custody.

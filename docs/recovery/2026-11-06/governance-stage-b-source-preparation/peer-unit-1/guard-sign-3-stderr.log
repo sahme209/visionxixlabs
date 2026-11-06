@@ -1,0 +1,31 @@
+Executable=/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-broker-guard-1/leaves/guard-review-copy
+Identifier=com.visionxixlabs.axiom.synthetic.guard
+Format=Mach-O thin (arm64)
+CodeDirectory v=20500 size=403 flags=0x10000(runtime) hashes=6+2 location=embedded
+VersionPlatform=1
+VersionMin=851968
+VersionSDK=1705216
+Hash type=sha256 size=32
+CandidateCDHash sha256=b24dc29ce5381317909ac9382af70505ce9db536
+CandidateCDHashFull sha256=b24dc29ce5381317909ac9382af70505ce9db536d8df30ee97537cd1864bb801
+Hash choices=sha256
+CMSDigest=b24dc29ce5381317909ac9382af70505ce9db536d8df30ee97537cd1864bb801
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=49152
+Executable Segment flags=0x0
+Page size=16384
+CDHash=b24dc29ce5381317909ac9382af70505ce9db536
+Signature size=4680
+Authority=Developer ID Application: Vision XIX Labs LLC (FG5N98FE6W)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Signed Time=Nov 6, 2026 at 10:15:33
+Info.plist=not bound
+TeamIdentifier=FG5N98FE6W
+Runtime Version=26.5.0
+Sealed Resources=none
+Internal requirements count=1 size=200
+warning: Specifying ':' in the path is deprecated and will not work in a future release
+Total signatures=1
+Chosen signature=1

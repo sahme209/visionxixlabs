@@ -1,0 +1,222 @@
+{
+  "files": [
+    {
+      "file": "broker-commands.json",
+      "sha256": "a84d00fe9973a75aabb6619d561392ec71a9afe7a40c978c384224f399975887",
+      "size": 1390
+    },
+    {
+      "file": "broker-compile-1-command.json",
+      "sha256": "a6f766277f992093175949453cde55c30c25ced0a529048c4e324b165ed59f11",
+      "size": 4629
+    },
+    {
+      "file": "broker-compile-1-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "broker-compile-1-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "broker-compile-attempt.json",
+      "sha256": "2fa1155fad990b4e08bc5e9baf262b4dd96757142fdfa79bb31e757cead96381",
+      "size": 460
+    },
+    {
+      "file": "broker-compile-packet.json",
+      "sha256": "7c423fab977e34096a7338410cedfbac76e7e3becbf91cd99ab39c2649787f6b",
+      "size": 2184823
+    },
+    {
+      "file": "broker-compile-result.json",
+      "sha256": "5baac903d221cdf3bf214fef0de13afabd31ff4671439b65f979c3ee0aecb8cb",
+      "size": 5029
+    },
+    {
+      "file": "broker-completion.json",
+      "sha256": "856f7f3de400e57ef88df47172476e47aec995cced509039fa43d6a3ae446ed6",
+      "size": 8338
+    },
+    {
+      "file": "broker-result.json",
+      "sha256": "34141274fbce3c6c9d6cf71e2fc45cab3c5fb14bcf6342c0600fa1aa889fa1ed",
+      "size": 2457
+    },
+    {
+      "file": "broker-sign-1-command.json",
+      "sha256": "4c322a0b056eb1091b390065e11282825d1ef2360f70d51a47d811cc9c0f5eb0",
+      "size": 641
+    },
+    {
+      "file": "broker-sign-1-stderr.log",
+      "sha256": "4aa6ba914d44216ef63239f59f116a7ad25e7bf61c6c03452b8c0b128dfc081d",
+      "size": 176
+    },
+    {
+      "file": "broker-sign-1-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "broker-sign-2-command.json",
+      "sha256": "dbdd2fb71f6e8a1c0c09e35c395c90f4fe26687dff1728115429a8c7f1e3d537",
+      "size": 366
+    },
+    {
+      "file": "broker-sign-2-stderr.log",
+      "sha256": "a64626363b288ddb64974304462037591159987f9f904029e74aeda48cb6539e",
+      "size": 345
+    },
+    {
+      "file": "broker-sign-2-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "broker-sign-3-command.json",
+      "sha256": "db15f9ca22854f81a9cb89bf89c2fb60bd9c02430aa7c2916940b4766ad0c2eb",
+      "size": 381
+    },
+    {
+      "file": "broker-sign-3-stderr.log",
+      "sha256": "802481238aee4d99877ce55b5415b9be0de5d79123690cd101612f14bc68c69a",
+      "size": 1270
+    },
+    {
+      "file": "broker-sign-3-stdout.log",
+      "sha256": "00491886daae07a5296c8bad50f116bf006b0004d7bf7338ad46669fbd903a4a",
+      "size": 184
+    },
+    {
+      "file": "broker-sign-attempt.json",
+      "sha256": "9fe7113877367d9dafe71d9832a67eb796214726d4806775a481a98a02dae497",
+      "size": 457
+    },
+    {
+      "file": "broker-signing-packet.json",
+      "sha256": "5a2da75e932278ce5c3c746b284b3966566521ecf10c301317ef19995ea98bb4",
+      "size": 3737
+    },
+    {
+      "file": "broker-signing-result.json",
+      "sha256": "3ee08b8d6dc19eb34080bd8ba442384fc260cdaa2f40a19c049d814cf184ee4b",
+      "size": 3877
+    },
+    {
+      "file": "guard-commands.json",
+      "sha256": "4d8cc5e1c9b8a0b262ddd06702054a9f6333f8abeb770528c4b52bf45e426380",
+      "size": 1383
+    },
+    {
+      "file": "guard-compile-1-command.json",
+      "sha256": "1d2ddc1539b61666796108ad35380abe83978780bbb8d027d86b25b8618d2e6d",
+      "size": 2125
+    },
+    {
+      "file": "guard-compile-1-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "guard-compile-1-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "guard-compile-attempt.json",
+      "sha256": "a5d8b719bd5bf876213a2aee4da4bb750b5392e3c974a5e2597812f896d74116",
+      "size": 459
+    },
+    {
+      "file": "guard-compile-packet.json",
+      "sha256": "71b2af6648c84664bd15d9506c18716be08471a042861824eac035539a775eae",
+      "size": 2182636
+    },
+    {
+      "file": "guard-compile-result.json",
+      "sha256": "e4c2fe9d53866d71f4afc3f8814af5064e2da4a9bf5b6fc4057096e16396c551",
+      "size": 2574
+    },
+    {
+      "file": "guard-completion.json",
+      "sha256": "6c47124bf238eb760faaa1f72331ccd18ab1c2c2d5071a6efbf5d31612b9ad3d",
+      "size": 8665
+    },
+    {
+      "file": "guard-prepare-attempt.json",
+      "sha256": "34246973c032115d0c9be429087c95313eea9f8ef77b1a3889d7f5cf72247b44",
+      "size": 456
+    },
+    {
+      "file": "guard-result.json",
+      "sha256": "3b50b61d4b139b18fcace2bb45a6c85179fe0a19c5bf32280f1d729b938f5a39",
+      "size": 2551
+    },
+    {
+      "file": "guard-sign-1-command.json",
+      "sha256": "87f631d8bb1599dc9bb9440166b83b9a3bfcef3930cb59185b858660a77abe2b",
+      "size": 639
+    },
+    {
+      "file": "guard-sign-1-stderr.log",
+      "sha256": "ade5da8dbcd63c3005b5adaa1093bf2babace1f7fa491980bb46943d4d88f235",
+      "size": 175
+    },
+    {
+      "file": "guard-sign-1-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "guard-sign-2-command.json",
+      "sha256": "8453ac04a02d9990688d025b30cc61672c8dff7af96c89e57a8b9a71f626880a",
+      "size": 364
+    },
+    {
+      "file": "guard-sign-2-stderr.log",
+      "sha256": "bd4e31218621bd243dc9f594ee638fa6d132e4331858c2b391e118f437eb8657",
+      "size": 343
+    },
+    {
+      "file": "guard-sign-2-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "guard-sign-3-command.json",
+      "sha256": "08b2a28d3d150a19e70e76e94919a328034b47f02fb82116792bd45d167e621e",
+      "size": 378
+    },
+    {
+      "file": "guard-sign-3-stderr.log",
+      "sha256": "c4f84cc3bf047c436bc5759a44fc851ace2a922774ff9a169dce59d28d3e4803",
+      "size": 1267
+    },
+    {
+      "file": "guard-sign-3-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "guard-sign-attempt.json",
+      "sha256": "1c7f408363fcd9a33393c864a47fa1ec8e81856fae99824dec16e0feb39efd3e",
+      "size": 456
+    },
+    {
+      "file": "guard-signing-packet.json",
+      "sha256": "d28aa6324325d93c8ba8db770831f4d1eeb6601662ec651efeb725b50e6244c6",
+      "size": 3825
+    },
+    {
+      "file": "guard-signing-result.json",
+      "sha256": "e1e7fec5586a4f3b693acd352d8ead9797589e51e65246b4021510340affcb8a",
+      "size": 4125
+    }
+  ],
+  "targetsExecuted": false,
+  "installationReady": false,
+  "activationAllowed": false
+}
