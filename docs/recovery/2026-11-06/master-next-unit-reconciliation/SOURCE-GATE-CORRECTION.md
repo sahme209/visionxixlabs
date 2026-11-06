@@ -1,0 +1,9 @@
+# Superseding source-gate correction
+
+The README's statement that AX_OWNER_OPERATIONAL literal0 and a constant unavailable supplier block the current candidate is superseded. It came from historical trusted-owner prose, not the current executable control flow. That was an incorrect current-source inference.
+
+Read-only current-source inspection finds AX_OWNER_OPERATIONAL only defined in owner_config.h; owner, maintenance and binding use derived selected-principal/context checks. The source integration test rejects !AX_OWNER_OPERATIONAL use. axiom_private_supplier_operational() returns ax_fixture_supplier_context_current(), which requires selected principals, exact real/effective UID/GID, current owner binding, and protected broker/locator files.
+
+Independently compared seven relevant source files byte-for-byte with accepted source64eca Lab3; all equal. Native1 frozen compile packet also binds matching owner/binding/supplier/readiness/maintenance source hashes (including staged compile copies). Thus this is not merely an unfrozen later working-source correction. This file-only evidence establishes source/provenance alignment, not runtime success.
+
+No new positive-gate implementation is required merely to remove this unused macro. After exact static seal, the actual next operational gate is a reviewed and specifically authorized protected installation/principal/service/resource-material/journal preparation and qualification, followed by actual owner→broker→Node/SAME compiled consumer, custody and adversarial/loss/drain enforcement acceptance. Existing readiness checks must remain intact. Protected filesystem, live owner binding, installed principals and locator/material are not established by current local app assembly or signatures. No operations executed by this review. Original audit text/history preserved to expose the correction.

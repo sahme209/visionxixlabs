@@ -1,0 +1,4 @@
+PHASE capture-current-baseline
+PHASE exact-sign-static-verify-display
+PHASE validate-postseal-mutations
+COMPLETE static_fixture_seal_observed_unqualified
