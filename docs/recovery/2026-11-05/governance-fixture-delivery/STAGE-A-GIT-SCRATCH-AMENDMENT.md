@@ -1,0 +1,7 @@
+# Narrow artifact Git spool refinement
+
+Root selected explicit `AXIOM_PRIVATE_GIT_SCRATCH` for the existing artifact-only `git_bytes` helper. If the key is **absent**, preserve literal `/private/tmp` behavior, regardless of generic TMPDIR. If present, require a nonempty absolute canonical path to an already existing current-user-owned directory with exact0700 permissions, no symlink/alias; invalid selection refuses with no fallback. Use only that validated coordinate for `tempfile.TemporaryFile(dir=...)`.
+
+The fixed future StageA controller binds/creates one work-contained scratch directory and includes this nonstandard key in its **dedicated artifact subprocess** environment. It does not mutate a global server environment, supply an issuer resource, permit arbitrary commands or allow broad `/private/tmp` writes. Fresh builder module imports naturally read the fixed child env. Preserve existing Git argv, network-denied sandbox, no-lazy-fetch, output/timeout limits and qualified/unqualified ownership meaning.
+
+This changes only the ordinary output-spool location. Source/mock tests will cover absent/default, explicit valid selection, invalid/missing/relative/alias/wrong-mode selection and no fallback, with every subprocess invocation replaced. No actual Git, sandbox, Node, vendor, SQL, signing or runtime operation belongs to this source refinement. This amendment is not the later StageA execution approval.

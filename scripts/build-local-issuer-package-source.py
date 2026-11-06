@@ -178,9 +178,21 @@ def extract_archive(data,stage):
   return {"archiveSha256":sha(data),"verifiedRegularFiles":count,"archiveBytes":len(data)}
  except BaseException:shutil.rmtree(stage);raise
 def git_bytes(repo,args):
+ # Artifact-controller-only output spool selection. Generic TMPDIR deliberately
+ # does not alter historical callers; a present invalid key never falls back.
+ scratch='/private/tmp'
+ if 'AXIOM_PRIVATE_GIT_SCRATCH'in os.environ:
+  value=os.environ['AXIOM_PRIVATE_GIT_SCRATCH']
+  try:
+   selected=Path(value)
+   if not value or not selected.is_absolute()or str(selected)!=value:fail('artifact_git_scratch_unavailable')
+   directory=private_dir(selected)
+   if str(directory)!=value or stat.S_IMODE(directory.stat().st_mode)!=0o700:fail('artifact_git_scratch_unavailable')
+  except(OSError,RuntimeError,ValueError):fail('artifact_git_scratch_unavailable')
+  scratch=str(directory)
  # No promisor/lazy fetch or unbounded pipe buffering from a partial repository.
  def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(MAX_ARCHIVE,MAX_ARCHIVE))
- with tempfile.TemporaryFile(dir="/private/tmp")as output:
+ with tempfile.TemporaryFile(dir=scratch)as output:
   r=subprocess.run(["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args],env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=subprocess.DEVNULL,timeout=60,preexec_fn=limits)
   if r.returncode:fail("exact_git_read_failed")
   output.seek(0);data=output.read(MAX_ARCHIVE+1)
@@ -424,18 +436,9 @@ def prepare_build_inputs(stage,repo,revision,cache,bound_dir,generation_run,node
  archive=verify_build_archive(stage,repo,revision,phase);validate_local_links(stage,lock_plan(package,lock))
  compilers=observe_build_sources(stage,lock,cache);types=framework_type_profile(stage);tool=_engine_tool()
  preparation=tool.prepare_generation(stage,bound_dir,repo,revision,cache,node)
- attempt_raw=_build_bytes(generation_run/'attempt.json',4*1024*1024);result_raw=_build_bytes(generation_run/'result.json',4*1024*1024)
- attempt=json_data(attempt_raw);result=json_data(result_raw)
- if not isinstance(attempt,dict)or attempt.get('format')!='axiom.local-generation-attempt/1'or attempt.get('sourceRevision')!=revision or attempt.get('preparation')!=preparation or attempt.get('node')!=tool.stable_file_hash(node):fail('generation_input_provenance_mismatch')
- if not isinstance(result,dict)or result.get('format')!='axiom.local-generation-result/1'or result.get('status')!='generated_outputs_observed_unqualified'or result.get('generationCompatibilityVerified')is not False or result.get('executionAuthorized')is not False or result.get('executingIssuerIdentity')!='unavailable'or result.get('descendantQuiescence')!='unavailable':fail('generation_observation_not_unqualified')
- current=tool.verify_generated_outputs(stage,preparation)
- if current!=result.get('outputs'):fail('current_generated_inputs_changed')
- comparison=result.get('schemaComparison')
- if not isinstance(comparison,dict)or comparison.get('kind')!='canonical_formatted_scratch_bytes'or comparison.get('semanticAttestation')!='unavailable'or comparison.get('rawArchiveSha256')!=preparation['schemaSha256']or comparison.get('rawGeneratedSha256')!=current['schema.prisma']['sha256']:fail('generation_schema_provenance_mismatch')
- archive_canonical=_build_bytes(generation_run/'tmp/archive-schema.prisma',16*1024*1024);emitted_canonical=_build_bytes(generation_run/'tmp/emitted-schema.prisma',16*1024*1024)
- if archive_canonical!=emitted_canonical or sha(archive_canonical)!=comparison.get('canonicalArchiveSha256')or sha(emitted_canonical)!=comparison.get('canonicalGeneratedSha256'):fail('generation_canonical_observation_changed')
+ generation_evidence=tool.verify_generation_observation(stage,generation_run,preparation,node,revision)
  return {**source,'sourceArchive':archive,'compilerSources':compilers,'frameworkTypeProfile':types,'generationInputSources':preparation['sources'],
-         'boundInputs':preparation['engines'],'generationEvidence':{'attemptSha256':sha(attempt_raw),'resultSha256':sha(result_raw),'currentRequiredOutputs':current,'schemaComparison':comparison},
+         'boundInputs':preparation['engines'],'generationEvidence':generation_evidence,
          'upstreamAuthenticity':'unavailable','executingIssuerIdentity':'unavailable','executionAuthorized':False}
 
 def verify_build_outputs(stage):

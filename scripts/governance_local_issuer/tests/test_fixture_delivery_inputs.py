@@ -25,11 +25,29 @@ class FixtureDeliveryFixture:
   binding={'format':'axiom.synthetic-fixture-schema/1','schemaSha256':self.schema_sha,'engineSha256':self.engine_sha,'diffInputSha256':hashlib.sha256(schema.replace(b'url      = env("DATABASE_URL")',b'url      = "postgresql://qualification.invalid/qualification"')).hexdigest(),'sqlSha256':system.binding(self.sql)['sha256'],'seedSha256':system.binding(self.seed)['sha256'],'models':sorted(re.findall(r'^model ([A-Za-z0-9_]+) \{',schema.decode(),re.M)),'completeSchema':True,'qualification':False}
   self.binding=self.js(self.root/'fixture-schema.binding.json',binding)
   self.packet=self.js(self.root/'fixture-input-packet.json',{'format':'axiom.fixture-delivery-inputs/1','profile':'compiled-private-fixture/1','generation':prep.GENERATION,'sourceRevision':self.revision,'stage':str(self.stage),'schemaSource':system.binding(self.schema),'engine':system.binding(self.engine),'resources':{'schema':system.binding(self.sql),'binding':system.binding(self.binding),'seed':system.binding(self.seed)},'toolNode':self.observation['runtimeNode']})
+  self.generation_fixture()
+ def generation_fixture(self):
+  # Only preparation/source/native observations are synthetic. The shared
+  # attempt/result/current-output/canonical validator remains actual code.
+  import local_prisma_engine_inputs as generation
+  self.generation=generation;self.generation_run=self.root/'generation-run';self.generation_run.mkdir(mode=0o700)
+  self.bound_inputs=self.root/'bound-engines';self.bound_inputs.mkdir(mode=0o700)
+  self.cache=self.root/'cache';self.cache.mkdir(mode=0o700)
+  self.generated_schema=self.schema.read_bytes()+b'\n// canonical formatting fixture\n'
+  for name in f.PRISMA_ANCHORS:self.put(self.stage/name,self.generated_schema if name.endswith('schema.prisma')else b'SYNTHETIC PRISMA DEPENDENCY; NEVER LOADED')
+  self.put(self.stage/'node_modules/.prisma/client/index.d.ts',b'SYNTHETIC TYPES')
+  query=generation.stable_file_hash(self.stage/'node_modules/.prisma/client/libquery_engine-darwin-arm64.dylib.node')
+  self.plan={'format':'axiom.local-prisma-generation-preparation/1','schemaSha256':self.schema_sha,'sourceRevision':self.revision,'engines':{'inputs':{'query':query,'schema':generation.stable_file_hash(self.engine)}}}
+  self.js(self.generation_run/'attempt.json',{'format':'axiom.local-generation-attempt/1','sourceRevision':self.revision,'node':generation.stable_file_hash(self.system.build),'preparation':self.plan})
+  output=generation.verify_generated_outputs(self.stage,self.plan)
+  self.js(self.generation_run/'result.json',{'format':'axiom.local-generation-result/1','status':'generated_outputs_observed_unqualified','generatedOutputsVerified':True,'generationCompatibilityVerified':False,'executionAuthorized':False,'executingIssuerIdentity':'unavailable','descendantQuiescence':'unavailable','outputs':output,'schemaComparison':{'kind':'canonical_formatted_scratch_bytes','rawArchiveSha256':self.schema_sha,'rawGeneratedSha256':output['schema.prisma']['sha256'],'canonicalArchiveSha256':output['schema.prisma']['sha256'],'canonicalGeneratedSha256':output['schema.prisma']['sha256'],'semanticAttestation':'unavailable'}})
+  for name in ('archive-schema.prisma','emitted-schema.prisma'):self.put(self.generation_run/'tmp'/name,self.generated_schema)
+  patcher=patch.object(generation,'prepare_generation',return_value=self.plan);patcher.start();self.patches.append(patcher)
+  packet=json.loads(self.packet.read_text());packet['generationInputs']={'run':str(self.generation_run),'boundInputs':str(self.bound_inputs),'cache':str(self.cache)};self.js(self.packet,packet)
  def put(self,p,data,mode=0o600):p.parent.mkdir(parents=True,exist_ok=True);p.write_bytes(data);p.chmod(mode);return p
  def js(self,p,data):return self.put(p,(json.dumps(data,sort_keys=True)+'\n').encode())
  def record(self):return f.record_fixture_delivery_inputs(self.stage,self.packet)
  def emit(self):
-  for name in f.PRISMA_ANCHORS:self.put(self.stage/name,(self.schema.read_bytes()if name.endswith('schema.prisma')else b'SYNTHETIC PRISMA DEPENDENCY; NEVER LOADED'))
   return self.put(self.stage/'.next/server/__axiom_private_fixture__/fixture-producer.cjs',self.helper_data)
  def materialize(self):
   from governance_local_issuer import materialize as m

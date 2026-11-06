@@ -230,11 +230,11 @@ def _run_generation_child(command,stage,environment,log,timeout,file_size_limit=
    except subprocess.TimeoutExpired:raise RuntimeError('generation_original_child_cleanup_unknown')from None
   raise
 
-def _schema_bytes(path):
+def _schema_bytes(path,limit=16*1024*1024):
  path=Path(path);before=path.lstat();fd=os.open(path,os.O_RDONLY|os.O_NOFOLLOW)
  try:
   opened=os.fstat(fd)
-  if not stat.S_ISREG(opened.st_mode)or opened.st_nlink!=1 or state(before)!=state(opened)or not 0<opened.st_size<=16*1024*1024:fail('schema_observation_unavailable')
+  if not stat.S_ISREG(opened.st_mode)or opened.st_nlink!=1 or state(before)!=state(opened)or not 0<opened.st_size<=limit:fail('schema_observation_unavailable')
   parts=[];count=0
   while True:
    chunk=os.read(fd,min(1024*1024,opened.st_size-count+1))
@@ -262,6 +262,34 @@ def verify_generated_outputs(stage,plan):
  expected=plan['engines']['inputs']['query'];query=observations['libquery_engine-darwin-arm64.dylib.node']
  if query!={'sha256':expected['sha256'],'size':expected['size']}:fail('generated_query_engine_mismatch')
  return observations
+
+def verify_generation_observation(stage,run,preparation,node,revision):
+ """Recheck existing generation evidence only; never format or execute a tool."""
+ stage=private(stage);run=private(run)
+ def read(path,cap):
+  data=_schema_bytes(path,cap)
+  if len(data)>cap:fail('generation_evidence_limit')
+  return data
+ def document(raw):
+  def pairs(items):
+   out={}
+   for key,value in items:
+    if key in out:fail('duplicate_generation_evidence_key')
+    out[key]=value
+   return out
+  try:return json.loads(raw,object_pairs_hook=pairs)
+  except(ValueError,TypeError,RecursionError):fail('generation_evidence_json_invalid')
+ attempt_raw=read(run/'attempt.json',4*1024*1024);result_raw=read(run/'result.json',4*1024*1024)
+ attempt=document(attempt_raw);result=document(result_raw)
+ if not isinstance(attempt,dict)or attempt.get('format')!='axiom.local-generation-attempt/1'or attempt.get('sourceRevision')!=revision or attempt.get('preparation')!=preparation or attempt.get('node')!=stable_file_hash(node):fail('generation_input_provenance_mismatch')
+ if not isinstance(result,dict)or result.get('format')!='axiom.local-generation-result/1'or result.get('status')!='generated_outputs_observed_unqualified'or result.get('generatedOutputsVerified')is not True or result.get('generationCompatibilityVerified')is not False or result.get('executionAuthorized')is not False or result.get('executingIssuerIdentity')!='unavailable'or result.get('descendantQuiescence')!='unavailable':fail('generation_observation_not_unqualified')
+ current=verify_generated_outputs(stage,preparation)
+ if current!=result.get('outputs'):fail('current_generated_inputs_changed')
+ comparison=result.get('schemaComparison')
+ if not isinstance(comparison,dict)or comparison.get('kind')!='canonical_formatted_scratch_bytes'or comparison.get('semanticAttestation')!='unavailable'or comparison.get('rawArchiveSha256')!=preparation['schemaSha256']or comparison.get('rawGeneratedSha256')!=current['schema.prisma']['sha256']:fail('generation_schema_provenance_mismatch')
+ archive=read(run/'tmp/archive-schema.prisma',16*1024*1024);emitted=read(run/'tmp/emitted-schema.prisma',16*1024*1024)
+ if archive!=emitted or hashlib.sha256(archive).hexdigest()!=comparison.get('canonicalArchiveSha256')or hashlib.sha256(emitted).hexdigest()!=comparison.get('canonicalGeneratedSha256'):fail('generation_canonical_observation_changed')
+ return {'attemptSha256':hashlib.sha256(attempt_raw).hexdigest(),'resultSha256':hashlib.sha256(result_raw).hexdigest(),'currentRequiredOutputs':current,'schemaComparison':comparison}
 
 def execute_generation(stage,directory,repo,revision,cache,node,owned_run,timeout=120):
  import math,platform,time

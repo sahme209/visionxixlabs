@@ -1,6 +1,7 @@
 """Exact fixture delivery inputs/copies. File observations never grant execution."""
 from pathlib import Path
 import hashlib,json,re,os,stat
+import local_prisma_engine_inputs as generation
 from . import system_preparation as prep,system_build_inputs as system,manifest
 RECEIPT='_axiom_fixture_delivery_inputs.json'
 PROFILE='compiled-private-fixture/1'
@@ -22,7 +23,7 @@ def _bound(item,cap=32*1024*1024):
  _need(system.binding(item['path'])==item and s['sha256']==item['sha256'],'fixture_bound_input_changed');return data
 def _json(item):return manifest.strict_json(_bound(item))
 def _observe(stage,packet_path,after_build):
- stage=system._private(Path(stage));p=_json(system.binding(packet_path));keys={'format','profile','generation','sourceRevision','stage','schemaSource','engine','resources','toolNode'}
+ stage=system._private(Path(stage));p=_json(system.binding(packet_path));keys={'format','profile','generation','sourceRevision','stage','schemaSource','engine','resources','toolNode','generationInputs'}
  _need(type(p)is dict and set(p)==keys and p['format']=='axiom.fixture-delivery-inputs/1'and p['profile']==PROFILE and p['generation']==prep.GENERATION and p['stage']==str(stage),'fixed_fixture_input_profile_required')
  current=system.verify_system_inputs(stage,after_build=after_build);_need(current is not None and current['sourceRevision']==p['sourceRevision']and p['toolNode']==current['runtimeNode'],'paired_fixture_system_inputs_required')
  _bound(p['toolNode'],2*1024**3);_need(p['toolNode']['mode']==0o600,'quarantined_fixture_node_required')
@@ -35,7 +36,13 @@ def _observe(stage,packet_path,after_build):
  _need(p['schemaSource']['sha256']==SCHEMA_SHA and p['engine']['sha256']==ENGINE_SHA,'pinned_fixture_schema_engine_required')
  sources={name:system.binding(stage/name)for name in SOURCE_PATHS}
  _need(_bound(sources['prisma/schema.prisma'],8*1024*1024)==schema,'fixture_schema_source_changed')
- _need(system.binding(stage/'node_modules/@prisma/engines/schema-engine-darwin-arm64')['sha256']==p['engine']['sha256'],'fixture_generation_engine_changed')
+ selected=p['generationInputs'];_need(type(selected)is dict and set(selected)=={'run','boundInputs','cache'},'fixed_fixture_generation_coordinates_required')
+ for value in selected.values():_need(type(value)is str and Path(value).is_absolute()and str(Path(value).resolve())==value,'fixed_fixture_generation_coordinates_required')
+ preparation=generation.prepare_generation(stage,Path(selected['boundInputs']),Path(current['repo']),p['sourceRevision'],Path(selected['cache']),Path(current['buildNode']['path']))
+ _need(preparation['schemaSha256']==p['schemaSource']['sha256']and preparation['engines']['inputs']['schema']['sha256']==p['engine']['sha256']and preparation['engines']['inputs']['schema']['size']==p['engine']['size'],'fixture_generation_source_join_required')
+ proof=generation.verify_generation_observation(stage,Path(selected['run']),preparation,Path(current['buildNode']['path']),p['sourceRevision'])
+ generation_files={name:system.binding(Path(selected['run'])/name)for name in ('attempt.json','result.json','tmp/archive-schema.prisma','tmp/emitted-schema.prisma')}
+ _need(generation_files['attempt.json']['sha256']==proof['attemptSha256']and generation_files['result.json']['sha256']==proof['resultSha256']and generation_files['tmp/archive-schema.prisma']['sha256']==proof['schemaComparison']['canonicalArchiveSha256']and generation_files['tmp/emitted-schema.prisma']['sha256']==proof['schemaComparison']['canonicalGeneratedSha256'],'fixture_generation_evidence_changed')
  r=p['resources'];_need(type(r)is dict and set(r)=={'schema','binding','seed'},'exact_fixture_recipe_resources_required')
  for item in r.values():_bound(item,8*1024*1024);_need(item['mode']==0o600,'quarantined_fixture_recipe_required')
  _need(_bound(r['seed'])==_bound(sources['lib/governance/qualification/fixture-seed.sql']),'fixture_seed_source_changed')
@@ -45,8 +52,8 @@ def _observe(stage,packet_path,after_build):
  if after_build:
   helper=system.binding(stage/HELPER);data=_bound(helper);_need(helper['mode']==0o600 and helper['sha256']==pins['producerSha256']and data.startswith(preimport_banner())and json.dumps(prep.PACKAGE_ROOT+'/node_modules/@prisma/client').encode()in data,'fixture_helper_preimport_mapping_required')
   for name in PRISMA_ANCHORS:_bound(system.binding(stage/name),128*1024*1024)
-  _need((stage/'node_modules/.prisma/client/schema.prisma').read_bytes()==schema,'fixture_generated_client_schema_changed')
- return {'format':'axiom.prebuild-fixture-delivery/1','profile':PROFILE,'generation':prep.GENERATION,'sourceRevision':p['sourceRevision'],'stage':str(stage),'packet':system.binding(packet_path),'systemInputs':system.binding(stage/system.RECEIPT),'emitter':emitter,'sourceFiles':sources,'nativePins':{'tools':pins,'principal':principal},'schemaSource':p['schemaSource'],'engine':p['engine'],'resources':r,'toolNode':p['toolNode'],'executionAuthorized':False,'installationReady':False,'activationAllowed':False}
+  _need(generation.stable_file_hash(stage/'node_modules/.prisma/client/schema.prisma')==proof['currentRequiredOutputs']['schema.prisma'],'fixture_generated_client_schema_changed')
+ return {'format':'axiom.prebuild-fixture-delivery/1','profile':PROFILE,'generation':prep.GENERATION,'sourceRevision':p['sourceRevision'],'stage':str(stage),'packet':system.binding(packet_path),'systemInputs':system.binding(stage/system.RECEIPT),'emitter':emitter,'sourceFiles':sources,'nativePins':{'tools':pins,'principal':principal},'schemaSource':p['schemaSource'],'engine':p['engine'],'generationEvidence':proof,'generationFiles':generation_files,'resources':r,'toolNode':p['toolNode'],'executionAuthorized':False,'installationReady':False,'activationAllowed':False}
 def record_fixture_delivery_inputs(stage,packet_path):
  stage=system._private(Path(stage));_need(not(stage/RECEIPT).exists()and not(stage/RECEIPT).is_symlink()and not(stage/'.next').exists(),'fresh_fixture_source_record_required');r=_observe(stage,packet_path,False);prep._write(stage/RECEIPT,manifest.canonical(r)+b'\n');return r
 def verify_fixture_delivery_inputs(stage,*,after_build=False):
@@ -89,4 +96,4 @@ def verify_fixture_materialization(receipt_path):
  _need(type(m.get('dependencySources'))is dict and set(m['dependencySources'])==set(PRISMA_ANCHORS),'fixture_dependency_source_inventory_required')
  for name in PRISMA_ANCHORS:
   selected=m['dependencySources'][name];_need(selected==system.binding(stage/name),'fixture_dependency_source_changed');_bound(selected,128*1024*1024);actual=system.binding(package/name);_need(actual['sha256']==selected['sha256']and actual['size']==selected['size'],'fixture_packaged_dependency_mismatch')
- _need(system.binding(package/'node_modules/.prisma/client/schema.prisma')['sha256']==inputs['schemaSource']['sha256'],'fixture_payload_schema_changed');observed=manifest.verify_package(package);tree=manifest.strict_json((package/manifest.MANIFEST).read_bytes());_need(observed['packageDigest']==r['packageDigest']and tree['provenance']['sourceRevision']==r['sourceRevision']and tree['provenance']['materializationReceiptSha256']==r['mainMaterialization']['sha256'],'fixture_package_manifest_join_required');return r
+ _need(system.binding(package/'node_modules/.prisma/client/schema.prisma')['sha256']==inputs['generationEvidence']['currentRequiredOutputs']['schema.prisma']['sha256'],'fixture_payload_schema_changed');observed=manifest.verify_package(package);tree=manifest.strict_json((package/manifest.MANIFEST).read_bytes());_need(observed['packageDigest']==r['packageDigest']and tree['provenance']['sourceRevision']==r['sourceRevision']and tree['provenance']['materializationReceiptSha256']==r['mainMaterialization']['sha256'],'fixture_package_manifest_join_required');return r

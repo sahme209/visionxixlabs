@@ -1,0 +1,17 @@
+{
+  "scope": "local source and synthetic file tests only",
+  "files": {
+    "scripts/local_prisma_engine_inputs.py": "e4ec3bf16c7083ec7530e2eac1e3126f1c34880d5f80f58f09a932cfc58e2ff3",
+    "scripts/build-local-issuer-package-source.py": "4c865abba6f1d0f341352a0bf7fe5d23bfbe8f881df1a26c05a11140e41b4288",
+    "scripts/governance_local_issuer/fixture_delivery_inputs.py": "7bf1f6cfb45dba6d6155a372f42381d24a42912fdd2b99da0d77f8c1449e2e02",
+    "scripts/governance_local_issuer/tests/test_fixture_delivery_inputs.py": "79f3b54db1c98afd9fc8b3701bf07005228e7dc39c2a813f9f850da98f458789",
+    "scripts/governance_local_issuer/tests/test_fixture_generation_schema.py": "77fa442b5fc9a0f93f7d8b71e11c2ce45429e8e69a7a8d60f4a44b3c7775b468"
+  },
+  "finalTests": {
+    "count": 14,
+    "exit": 0,
+    "log": "/private/tmp/axiom-fdi-canonical-final14.log"
+  },
+  "executionAuthorized": false,
+  "activationAllowed": false
+}
