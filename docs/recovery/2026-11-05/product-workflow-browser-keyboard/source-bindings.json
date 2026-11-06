@@ -1,0 +1,9 @@
+{
+  "previewSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "currentComparedFiles": {
+    "app/product/page.tsx": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+    "components/marketing/WorkflowEvidenceMap.tsx": "5cd40555b99a49708328db5511428b5e4bf87f3b380c512f9598f1f257898d4a",
+    "app/globals.css": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4"
+  },
+  "scope": "these three source files match; not all backend/app code"
+}

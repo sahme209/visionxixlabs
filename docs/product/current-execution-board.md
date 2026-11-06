@@ -8,6 +8,10 @@ User's November5 deadline is recorded in the master plan with all21parents retai
 
 **Next core priority:** the joined fixture authentication/scenario driver and private registered execution-coverage source are now implemented and preserved in local checkpoint2f85ab5a, with the composed simulated-infrastructure ten-case journey and scoped types now passing. Complete that source evidence, then use the [ordered current-artifact/qualification dependencies](../recovery/2026-11-05/governance-fixture-delivery/NEXT-DRIVER-QUALIFICATION-PACKET.md) to prepare one useful fresh packet. Historical signed artifacts are obsolete for this path. Do not reuse production tokens, impersonate reviewers, install historical artifacts or infer custody from mocks. Actual System/SQL/SAME-consumer/fleet, production resource-owner/writer cutover, all mutation coverage and full A2/A9 remain open.
 
+## Product workflow — actual browser keyboard evidence
+
+~~Conceptual Product workflow keyboard/selection/focus relationships observed in a supported real browser~~ ([evidence](../recovery/2026-11-05/product-workflow-browser-keyboard/README.md)) at1280×720; matched current Product/component/global-style source and saved settled screenshot. Screen-reader, measured contrast, motion, touch, zoom, other viewports and full B6 remain open. No provider/native-action/Governance acceptance.
+
 ## Catalogue loading — local regression milestone
 
 ~~Apps & skills now distinguishes pending, failed and successfully empty results~~ ([evidence](../recovery/2026-11-05/catalogue-loading-local/README.md)). Three targeted mocked lifecycle checks passed,32unselected. Root reviewed exact source; standalone dependency startup failures remain preserved and unclaimed. An independent matching-lock dependency copy allowed verification without installing or changing original dependencies. Native/browser/AT/build/publication acceptance remains open; current signed475preview does not include this commit.

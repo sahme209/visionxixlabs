@@ -1,0 +1,135 @@
+{
+  "source": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "url": "http://127.0.0.1:5262/product",
+  "initial": {
+    "buttons": [
+      {
+        "controls": "_R_a6av5tlb_-record",
+        "height": 60,
+        "id": "_R_a6av5tlb_-stage-1",
+        "outline": "rgb(244, 244, 245) none 3px",
+        "pressed": "true",
+        "text": "01\nRepository context\n→",
+        "width": 527.6171875
+      },
+      {
+        "controls": "_R_a6av5tlb_-record",
+        "height": 60,
+        "id": "_R_a6av5tlb_-stage-2",
+        "outline": "rgb(161, 161, 170) none 3px",
+        "pressed": "false",
+        "text": "02\nExact proposal",
+        "width": 527.6171875
+      },
+      {
+        "controls": "_R_a6av5tlb_-record",
+        "height": 60,
+        "id": "_R_a6av5tlb_-stage-3",
+        "outline": "rgb(161, 161, 170) none 3px",
+        "pressed": "false",
+        "text": "03\nIndependent review",
+        "width": 527.6171875
+      },
+      {
+        "controls": "_R_a6av5tlb_-record",
+        "height": 60,
+        "id": "_R_a6av5tlb_-stage-4",
+        "outline": "rgb(161, 161, 170) none 3px",
+        "pressed": "false",
+        "text": "04\nSeparate requester execution",
+        "width": 527.6171875
+      },
+      {
+        "controls": "_R_a6av5tlb_-record",
+        "height": 60,
+        "id": "_R_a6av5tlb_-stage-5",
+        "outline": "rgb(161, 161, 170) none 3px",
+        "pressed": "false",
+        "text": "05\nRecorded outcome and recovery",
+        "width": 527.6171875
+      }
+    ],
+    "focused": "BODY",
+    "viewport": {
+      "height": 720,
+      "width": 1280
+    }
+  },
+  "keyboard": [
+    {
+      "key": "Home",
+      "focusId": "_R_a6av5tlb_-stage-1",
+      "focusedText": "01\nRepository context\n→",
+      "selected": "01\nRepository context\n→",
+      "selectedCount": 1,
+      "selectedId": "_R_a6av5tlb_-stage-1"
+    },
+    {
+      "key": "ArrowUp",
+      "focusId": "_R_a6av5tlb_-stage-5",
+      "focusedText": "05\nRecorded outcome and recovery\n→",
+      "selected": "05\nRecorded outcome and recovery\n→",
+      "selectedCount": 1,
+      "selectedId": "_R_a6av5tlb_-stage-5"
+    },
+    {
+      "key": "ArrowDown",
+      "focusId": "_R_a6av5tlb_-stage-1",
+      "focusedText": "01\nRepository context\n→",
+      "selected": "01\nRepository context\n→",
+      "selectedCount": 1,
+      "selectedId": "_R_a6av5tlb_-stage-1"
+    },
+    {
+      "key": "Tab",
+      "focusId": "_R_a6av5tlb_-stage-2",
+      "focusedText": "02\nExact proposal",
+      "selected": "01\nRepository context\n→",
+      "selectedCount": 1,
+      "selectedId": "_R_a6av5tlb_-stage-1"
+    }
+  ],
+  "activation": [
+    {
+      "key": "Enter",
+      "focusInsideWorkflow": true,
+      "focusedText": "02\nExact proposal\n→",
+      "regionLabelMatches": true,
+      "selected": "02\nExact proposal\n→",
+      "selectedCount": 1
+    },
+    {
+      "key": "Shift+Tab",
+      "focusInsideWorkflow": true,
+      "focusedText": "01\nRepository context",
+      "regionLabelMatches": true,
+      "selected": "02\nExact proposal\n→",
+      "selectedCount": 1
+    },
+    {
+      "key": "Space",
+      "focusInsideWorkflow": true,
+      "focusedText": "01\nRepository context\n→",
+      "regionLabelMatches": true,
+      "selected": "01\nRepository context\n→",
+      "selectedCount": 1
+    },
+    {
+      "key": "End",
+      "focusInsideWorkflow": true,
+      "focusedText": "05\nRecorded outcome and recovery\n→",
+      "regionLabelMatches": true,
+      "selected": "05\nRecorded outcome and recovery\n→",
+      "selectedCount": 1
+    },
+    {
+      "key": "Tab",
+      "focusInsideWorkflow": false,
+      "focusedText": "Code & review",
+      "regionLabelMatches": true,
+      "selected": "05\nRecorded outcome and recovery\n→",
+      "selectedCount": 1
+    }
+  ],
+  "scope": "Actual browser at1280x720; not screen-reader, contrast, zoom or full B6 acceptance"
+}
