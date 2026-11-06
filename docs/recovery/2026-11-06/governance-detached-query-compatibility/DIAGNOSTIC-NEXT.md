@@ -1,0 +1,7 @@
+# Signing refusal — next diagnostic, not another attempt
+
+The one read-only identity-list question is pending. Its requested command is /usr/bin/security find-identity -v -p codesigning, once, bounded10seconds/64KiB, no retry. It must run only after explicit approval, with a minimal environment that does not override HOME to the disposable fixture directory. No key export, certificate provisioning, keychain unlock or change, alternate identity or signing follows.
+
+Source inspection found the failed detached bundle supplies HOME=its private work/home to all commands, including codesign. The existing final_seal.py runner instead omits HOME from its fixed environment. The saved successful Node signing evidence establishes that the identity previously resolved, not that it is available now. This environment difference is a plausible diagnostic lead, NOT a demonstrated cause of the actual no-identity failure. Do not report the key as deleted, expired or locked from that message. Do not rerun signing merely to test the hypothesis.
+
+If the specifically approved normal-environment identity read reports the exact saved fingerprint, investigate the signing environment in source and present one corrected reviewed attempt for fresh permission; no automatic retry. If absent or uncertain, stop and request only the minimum genuine operator action. Preserve original raw attempt/history and no full Governance claim.
