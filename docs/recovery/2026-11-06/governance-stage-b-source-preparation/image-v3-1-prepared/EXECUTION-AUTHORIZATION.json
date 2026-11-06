@@ -1,0 +1,8 @@
+{
+  "approvalCall": "call_98PZJXPfzsigHDrJYsyv0uJ4",
+  "answer": "Approve one image/container operation",
+  "recordedAt": "2026-11-06T17:07:03.266204+00:00",
+  "invocationsAuthorized": 1,
+  "retry": false,
+  "controllerSha256": "66bd67b4f231dcc0f12578e30d0e015e02d58cc60707b041e37991efa9fcab42"
+}

@@ -1,0 +1,240 @@
+{
+  "assemblyReceipt": {
+    "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/assembled/fixture-container-assembly.json",
+    "sha256": "476dfd942d3bf7febccae9a72dd330b2edc9f27af6fc8b9ecc8deee5b7c610db",
+    "size": 9317
+  },
+  "binariesImagesAssembledPayloadCopied": false,
+  "commandsOrVerifierInvoked": false,
+  "executionAuthorized": false,
+  "files": [
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/main-compile-stdout.log",
+      "savedMode": 384,
+      "savedPath": "operation/main-compile-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/main-compile-command.json",
+      "savedMode": 384,
+      "savedPath": "operation/main-compile-command.json",
+      "sha256": "cc25ee9cd5f70da0c6425b3ca5e28629c82e4811533225acc3bcefeda658bd23",
+      "size": 1197
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/image-attempt.json",
+      "savedMode": 384,
+      "savedPath": "operation/image-attempt.json",
+      "sha256": "79bee913865d1973355307234e51f12c503807fdcb616fdd5bad2992168ef8c3",
+      "size": 739
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/main-compile-attempt.json",
+      "savedMode": 384,
+      "savedPath": "operation/main-compile-attempt.json",
+      "sha256": "b3c37cd33ec15b87c27942fd115e3f1ad32ebc554b59dc45bbca4dee1346653e",
+      "size": 833
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/result.json",
+      "savedMode": 384,
+      "savedPath": "operation/result.json",
+      "sha256": "e25976fe1b415f936b5804354f8ffcde66c8a76193fb8e670256e996f6c8ec09",
+      "size": 1203
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/fixture-base-inputs.json",
+      "savedMode": 384,
+      "savedPath": "operation/fixture-base-inputs.json",
+      "sha256": "004483b4735a997437f9231d6c2ccf7df7dfb0cc861a933ab983dfc9fcb186ac",
+      "size": 1954
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/claimed.json",
+      "savedMode": 384,
+      "savedPath": "operation/claimed.json",
+      "sha256": "190bcf87761115111824c8b06086182b7c71922481cd0542811119f4e91754d8",
+      "size": 216
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/image-completion.json",
+      "savedMode": 384,
+      "savedPath": "operation/image-completion.json",
+      "sha256": "ddb6ebba08ca0f38066676303694d96b60b5a5bdb2adf83eecf1fa40b965dd4a",
+      "size": 1301
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/main-compile-stderr.log",
+      "savedMode": 384,
+      "savedPath": "operation/main-compile-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/container-compile.json",
+      "savedMode": 384,
+      "savedPath": "operation/container-compile.json",
+      "sha256": "70d91c064d45a091d819a07a5c4aa542ed745f6ee8c3894eda68f7d5b83addbe",
+      "size": 1378
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/image-operation.json",
+      "savedMode": 384,
+      "savedPath": "operation/image-operation.json",
+      "sha256": "ab3094a110630830557032791bf4ec9625da51485a69c41b0a1d862be0cc5607",
+      "size": 1177
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/fixture-container-inputs.json",
+      "savedMode": 384,
+      "savedPath": "operation/fixture-container-inputs.json",
+      "sha256": "88737bdeac04be33ac685c8aea2048e63033a47e007f3d910faff91f888a5ec9",
+      "size": 1017
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/detach-stderr.log",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/detach-stderr.log",
+      "sha256": "dd2e6d5d2227b9d3236b0a0f6cfe0fb59d68b9c29c990f4763c4a19ca9f7ae44",
+      "size": 95
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/result.json",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/result.json",
+      "sha256": "15a549e191ad962ff78c20baa59c6da4358928b17dab9d02d0b06d02a91c3315",
+      "size": 2288
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/attach-stderr.log",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/attach-stderr.log",
+      "sha256": "397cc021abd54dbd1c3b21133b76451ecfb23c1f78937dd2b27fbfcb841fcd7e",
+      "size": 182
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/attach-command.json",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/attach-command.json",
+      "sha256": "5ea50252694522d2aafb618b3dd65009182b3c695f23263673bbff5d6ad1fb17",
+      "size": 1001
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/detach-stdout.log",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/detach-stdout.log",
+      "sha256": "7a042615bf3722a3771413c5ae0834a1153311a88abad4deef4d8ad80a5c7273",
+      "size": 17
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/attach-stdout.log",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/attach-stdout.log",
+      "sha256": "0e52e4dce0e571e4ce50572a2d628967bc1872beaa6b36fb1e4bcc9f44d35200",
+      "size": 1311
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/inspection/detach-command.json",
+      "savedMode": 384,
+      "savedPath": "operation/inspection/detach-command.json",
+      "sha256": "f2bddb12255bb8c650dba02b44f6796da92ee728ab6e290faff2eb9ff43b301f",
+      "size": 691
+    },
+    {
+      "originalMode": 420,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-1/stderr.log",
+      "savedMode": 384,
+      "savedPath": "controller/stderr.log",
+      "sha256": "686e42464285836aee32f0839a2aa6025e737b01e76ac06ef3fec484d3efc201",
+      "size": 152
+    },
+    {
+      "originalMode": 420,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-1/result.json",
+      "savedMode": 384,
+      "savedPath": "controller/result.json",
+      "sha256": "ebe7fec192983b02c8088470bc9118d9f818e50070a45200990d64fca4d666b2",
+      "size": 344
+    },
+    {
+      "originalMode": 420,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-1/claimed.json",
+      "savedMode": 384,
+      "savedPath": "controller/claimed.json",
+      "sha256": "0d51241e7b928501ef4c464aa64f2b8341d2a75871209a6f0d432911dd815a84",
+      "size": 156
+    },
+    {
+      "originalMode": 420,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-1/stdout.log",
+      "savedMode": 384,
+      "savedPath": "controller/stdout.log",
+      "sha256": "a4e370fd394eb6c3857a92bb48e1c038c5c16a56663363df4a58421447b0ef8b",
+      "size": 295
+    },
+    {
+      "originalMode": 420,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-controller-1/process.json",
+      "savedMode": 384,
+      "savedPath": "controller/process.json",
+      "sha256": "4361eb3fa0a8d7f664939eefa8bcc815afcf4d422e148ac8cdfe097b70ff0785",
+      "size": 130
+    },
+    {
+      "originalMode": 384,
+      "originalPath": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/assembled/fixture-container-assembly.json",
+      "savedMode": 384,
+      "savedPath": "operation/assembled/fixture-container-assembly.json",
+      "sha256": "476dfd942d3bf7febccae9a72dd330b2edc9f27af6fc8b9ecc8deee5b7c610db",
+      "size": 9317
+    }
+  ],
+  "format": "axiom.raw-operation-receipts/1",
+  "installationReady": false,
+  "originalFixtureDelivery": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-1/fixture-delivery.json",
+    "sha256": "1a5c35429764bd37337eb17ea7ff7c56fc6713c41310fff49770fea49e2611d7",
+    "size": 4975
+  },
+  "originalMaterializationReceipt": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-1/materialization.json",
+    "sha256": "e96c59baa983133096acfab4c56644995a7c5dda827f95fadd29fe380b6876d5",
+    "size": 390381
+  },
+  "originalPackageManifest": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-materialization-1/package/_axiom_local_issuer_manifest.json",
+    "sha256": "4052270281cac69127847aa1b4b120044bf2914f4c0719fa7c9be0a0b444c59e",
+    "size": 17957004
+  },
+  "packageDigest": "6bf466785e75b6034fe2dae29ace452fb467746e8d1267a7ad13c11bf793e6d2",
+  "recordedImageBinding": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-image-1/image/issuer-package.dmg",
+    "sha256": "d5a7fe7cb98f732c0a6f568e54343d472921c91f240870693084d78048859b4f",
+    "size": 4022884469
+  },
+  "sourceRevision": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684"
+}

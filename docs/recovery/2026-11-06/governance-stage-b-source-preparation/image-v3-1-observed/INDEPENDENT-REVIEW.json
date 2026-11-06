@@ -1,0 +1,17 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS bounded saved preseal checkpoint",
+  "boundFilesVerified": 35,
+  "imageCopiesBytesEach": 4022884469,
+  "assemblyInventoryFiles": 13,
+  "assemblySymlinks": 0,
+  "savedCompileExit": 0,
+  "savedReadOnlyVerification": "content_verified_detached",
+  "savedOwnedDetachExit": 0,
+  "savedNamespaceRestored": true,
+  "stderr": "deprecation warnings only",
+  "fileOnlyReview": true,
+  "runtimeQualified": false,
+  "installationReady": false,
+  "activationAllowed": false
+}
