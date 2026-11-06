@@ -1,0 +1,10 @@
+{
+  "approvalReference": "call_oX1l0VA28cemfXIBoeIvmTWh",
+  "answer": "Approve one local packaging operation",
+  "attempts": 1,
+  "retryAuthorized": false,
+  "sourceRevision": "64eca1cd5ba954e6ce03deceeb9e5eef541f6684",
+  "hostReadCommands": 4,
+  "runtimeLaunchAuthorized": false,
+  "productionAuthority": false
+}

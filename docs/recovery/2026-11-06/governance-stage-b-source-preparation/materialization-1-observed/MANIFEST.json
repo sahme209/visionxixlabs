@@ -1,0 +1,55 @@
+{
+  "files": [
+    {
+      "file": "run/attempt.json",
+      "sha256": "aa1699fb347245837ee596f306b31f8109a46f4d941b1d8477331ad2789fc120",
+      "size": 2602
+    },
+    {
+      "file": "run/fixture-delivery.json",
+      "sha256": "1a5c35429764bd37337eb17ea7ff7c56fc6713c41310fff49770fea49e2611d7",
+      "size": 4975
+    },
+    {
+      "file": "run/materialization.json",
+      "sha256": "e96c59baa983133096acfab4c56644995a7c5dda827f95fadd29fe380b6876d5",
+      "size": 390381
+    },
+    {
+      "file": "run/terminal-summary.json",
+      "sha256": "a520a1bfdeb69f276accbf1e32c217d1ab29f35d2037f22b860c8bb05d6f4d6e",
+      "size": 1818
+    },
+    {
+      "file": "controller/claimed.json",
+      "sha256": "68438bd71bf1496738911bafabec641db71f8a766627c96b021838f2a2d2e18f",
+      "size": 156
+    },
+    {
+      "file": "controller/process.json",
+      "sha256": "bef1f214f59239d43eb0b35583f493014c82c65978dd6325ce8a10630dad65ff",
+      "size": 130
+    },
+    {
+      "file": "controller/result.json",
+      "sha256": "395e980205d17920c3828559b2f8bc602ef8218bda1e4db7cee99b148a644e12",
+      "size": 341
+    },
+    {
+      "file": "controller/stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "controller/stdout.log",
+      "sha256": "ba647c6cfe9f4bffea6b6e7ff78c208b7a74c941cd961592666f6f608eaa521f",
+      "size": 90
+    },
+    {
+      "file": "_axiom_local_issuer_manifest.json",
+      "sha256": "4052270281cac69127847aa1b4b120044bf2914f4c0719fa7c9be0a0b444c59e",
+      "size": 17957004
+    }
+  ],
+  "packageBinariesCopiedIntoGit": false
+}
