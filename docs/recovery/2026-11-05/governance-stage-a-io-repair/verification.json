@@ -1,0 +1,30 @@
+{
+  "sourceSha256": {
+    "scripts/local_prisma_engine_inputs.py": "21fec22bdae82f4cfb509f3d2ab524b27a3b612e51aad60457ef71503122f63d",
+    "scripts/build-local-issuer-package-source.py": "34e6e425f2d2aabe96b6d9b13bbe4696c2d836ea50faef629c3fe31216b8c5ad",
+    "scripts/governance_local_issuer/stage_a_packet.py": "f4212c64f9b059b855a1460e396ca4a09e2f3f857bf56f6ce7e7b580885e518a",
+    "scripts/governance_local_issuer/tests/test_artifact_process_io.py": "8fdab5cd9da964d9fe545b8cc0cd8189011d4aaf0b112dc9e4e977233dd540ac",
+    "scripts/governance_local_issuer/tests/test_artifact_git_scratch.py": "6f028e014e1a91a89d694b41ef62ebbd512700e42bf42f7e12e27e62b94789ec",
+    "scripts/governance_local_issuer/tests/test_stage_a_packet.py": "709d00ebf4d92b2d6ae51496613440ec40a0dc7521927f4ce2c9a6547bf794c4",
+    "scripts/tests/test_local_generation_owned_cleanup.py": "f2fa0ae5271b60858c3831ad67532963517af0a5c5b9995e3c56389ba1d3261a"
+  },
+  "logs": {
+    "/private/tmp/axiom-artifact-io-red.log": "9fd081a0e317f814a092b24592478ce4fd8210de6dbd880b58c6bec1ab995c33",
+    "/private/tmp/axiom-artifact-io-final3.log": "5f0635b83af38a6c5d516fcb60dc3fa63c9c6ca4854e51a6a29ca33c92ccef16",
+    "/private/tmp/axiom-artifact-git-scratch-io.log": "af55efa5c3ceb122f8184c380aa405d3f3b4e7e0c1e892773d0eff31d0645c8a",
+    "/private/tmp/axiom-stage-a-packet-io-final2.log": "bf2c0c750d8410aa2f99615f7d837c37a5ef8995c85c35ab16918fa2da41fd81",
+    "/private/tmp/axiom-stage-a-stdin-unknown.log": "e4e546ca7b81002d7c075340176048edded67482ed6cfb9c74f3b7c0e8b43862",
+    "/private/tmp/axiom-artifact-git-timeout.log": "d10ffbd9f0faa72cd6837063279524e199b59fbc3d035051302a1e8dbc4b36ad",
+    "/private/tmp/axiom-generation-cleanup-io.log": "b95b5805bef96b568b1b2424b637003cd6f306e6312d682e4f2e4e23f635b26a"
+  },
+  "checks": {
+    "io": 9,
+    "scratch": 4,
+    "stage_a_prior_current": 10,
+    "new_stdin_unknown_selected": 1,
+    "new_git_timeout_selected": 1,
+    "existing_owned_cleanup_affected_suite": 6
+  },
+  "operations": "fully mocked subprocesses/null opens; synthetic owned files only",
+  "actualExecution": false
+}

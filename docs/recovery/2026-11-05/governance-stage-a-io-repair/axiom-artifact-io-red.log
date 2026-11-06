@@ -1,0 +1,73 @@
+E.FEF
+======================================================================
+ERROR: test_git_launch_refusal_closes_spools_and_sanitizes (test_artifact_process_io.ProcessIOTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_artifact_process_io.py", line 35, in test_git_launch_refusal_closes_spools_and_sanitizes
+    with self.assertRaises(b.Unavailable)as caught:b.git_bytes('/synthetic',['show'])
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/build-local-issuer-package-source.py", line 196, in git_bytes
+    r=subprocess.run(["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args],env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=subprocess.DEVNULL,timeout=60,preexec_fn=limits)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1093, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1097, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1152, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 13] SECRET
+
+======================================================================
+ERROR: test_supervisor_launch_refusal_closes_and_sanitizes (test_artifact_process_io.ProcessIOTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_artifact_process_io.py", line 17, in test_supervisor_launch_refusal_closes_and_sanitizes
+    with self.assertRaises(e.Unavailable)as caught:e._run_generation_child(['NEVER_EXECUTE'],Path('/synthetic'),{},log,1)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/local_prisma_engine_inputs.py", line 203, in _run_generation_child
+    process=subprocess.Popen(command,cwd=stage,env=environment,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=limits)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1093, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1097, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1152, in _execute_mock_call
+    raise effect
+PermissionError: [Errno 1] SECRET /private/path
+
+======================================================================
+FAIL: test_git_selected_stderr_is_separate_private_spool_and_stdout_intact (test_artifact_process_io.ProcessIOTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_artifact_process_io.py", line 25, in test_git_selected_stderr_is_separate_private_spool_and_stdout_intact
+    with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':tmp},clear=True),patch.object(b.tempfile,'TemporaryFile',side_effect=spool),patch.object(b.subprocess,'run',side_effect=launch):self.assertEqual(b.git_bytes('/synthetic',['archive']),b'ARCHIVE')
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/build-local-issuer-package-source.py", line 196, in git_bytes
+    r=subprocess.run(["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args],env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=subprocess.DEVNULL,timeout=60,preexec_fn=limits)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1093, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1097, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1158, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_artifact_process_io.py", line 24, in launch
+    self.assertIsNot(kw['stdout'],kw['stderr']);self.assertNotEqual(kw['stderr'],b.subprocess.DEVNULL);kw['stdout'].write(b'ARCHIVE');kw['stderr'].write(b'DIAGNOSTIC');return types.SimpleNamespace(returncode=0)
+AssertionError: -3 == -3
+
+======================================================================
+FAIL: test_supervisor_readonly_eof_and_owned_close_on_success (test_artifact_process_io.ProcessIOTests)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_artifact_process_io.py", line 13, in test_supervisor_readonly_eof_and_owned_close_on_success
+    self.assertEqual(e._run_generation_child(['NEVER_EXECUTE'],Path('/synthetic'),{},log,1),(0,None))
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/local_prisma_engine_inputs.py", line 203, in _run_generation_child
+    process=subprocess.Popen(command,cwd=stage,env=environment,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=limits)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1093, in __call__
+    return self._mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1097, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/unittest/mock.py", line 1158, in _execute_mock_call
+    result = effect(*args, **kwargs)
+  File "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/governance_local_issuer/tests/test_artifact_process_io.py", line 11, in launch
+    def launch(*args,**kw):self.assertEqual(kw['stdin'],91);return process
+AssertionError: -3 != 91
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.005s
+
+FAILED (failures=2, errors=2)

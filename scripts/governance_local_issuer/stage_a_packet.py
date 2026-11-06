@@ -178,7 +178,9 @@ def run_stage_a_driver(path):
   if before!=after or verify_stage_a_packet(path)!=p:refuse('artifact_inputs_changed')
   producer=_producer(p);emission={'format':'axiom.stage-a-emission-result/1','status':'compiled','sourceRevision':p['sourceRevision'],'producer':producer,'generation':after,'executionAuthorized':False};_write(work/'emission/result.json',_json(emission));result.update(status='artifact_observed',sourceRevision=p['sourceRevision'],offline=_binding(work/'offline/result.json'),generation=after,emission=_binding(work/'emission/result.json'),producer=producer)
  except Exception as error:
-  if isinstance(error,engine_tools.Unavailable)and len(error.args)==1 and error.args[0]in ('generation_original_child_cleanup_unknown','generation_parent_wall_timeout','generation_output_limit'):result['status']='unknown'
+  diagnostic=getattr(error,'launchDiagnostic',None)
+  if type(diagnostic)is dict and set(diagnostic)=={'phase','class','errno'}and diagnostic['phase']in ('null_input','spawn','git_spawn')and diagnostic['class']in ('OSError','SubprocessError')and diagnostic['errno']in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC','UNKNOWN'):result['launchDiagnostic']=diagnostic
+  if isinstance(error,engine_tools.Unavailable)and len(error.args)==1 and error.args[0]in ('generation_original_child_cleanup_unknown','generation_parent_wall_timeout','generation_output_limit','generation_parent_stdin_cleanup_unknown'):result['status']='unknown'
   allowed={'active_budget_expired','offline_cleanup_unknown','offline_child_failed','offline_receipt_refused','packet_inputs_changed','fresh_emission_required','emission_cleanup_unknown','emission_child_failed','artifact_inputs_changed','producer_output_refused','archived_source_changed'}
   result.update(phase=phase,reason=error.args[0]if isinstance(error,StageAUnavailable)and len(error.args)==1 and error.args[0]in allowed else'artifact_phase_unavailable')
  _write(work/'driver-result.json',_json(result));return result
@@ -210,4 +212,8 @@ if __name__=='__main__':
  try:
   if len(sys.argv)!=3 or sys.argv[1]not in ('--offline-child','--driver-child'):refuse('fixed_child_invocation_required')
   value=run_offline_child(sys.argv[2])if sys.argv[1]=='--offline-child'else run_stage_a_driver(sys.argv[2]);sys.exit(0 if value['status']in ('installed','artifact_observed')else 73)
- except Exception:sys.stderr.write('stage_a_artifact_unavailable\n');sys.exit(74)
+ except Exception as error:
+  diagnostic=getattr(error,'launchDiagnostic',None)
+  if type(diagnostic)is dict and set(diagnostic)=={'phase','class','errno'}and diagnostic['phase']in ('null_input','spawn','git_spawn')and diagnostic['class']in ('OSError','SubprocessError')and diagnostic['errno']in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC','UNKNOWN'):sys.stderr.write(json.dumps({'error':'stage_a_artifact_unavailable','launchDiagnostic':diagnostic},sort_keys=True)+'\n')
+  else:sys.stderr.write('stage_a_artifact_unavailable\n')
+  sys.exit(74)

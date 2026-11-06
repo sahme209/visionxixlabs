@@ -59,7 +59,7 @@ class StageAPacketTests(unittest.TestCase):
    events.append('offline');self.assertEqual(args[0],stage);self.assertEqual(args[3],self.node);return{'status':'offline_dependencies_installed','exit':0,'network':'kernel_denied','lifecycleScriptsExecuted':False}
   def generate(*args,**kwargs):
    events.append('generate');self.assertLessEqual(kwargs['timeout'],120)
-   if generation_unknown:raise p.engine_tools.Unavailable('generation_original_child_cleanup_unknown')
+   if generation_unknown:raise p.engine_tools.Unavailable(generation_unknown if type(generation_unknown)is str else'generation_original_child_cleanup_unknown')
    generated=self.schema.replace(b' id ',b'  id ')
    for name in p.ANCHORS:self.put(stage/name,generated if name.endswith('/schema.prisma')else(self.bound/'libquery_engine-darwin-arm64.dylib.node').read_bytes()if name.endswith('.dylib.node')else b'SYNTHETIC GENERATED OR SUPPORT CODE')
    self.put(stage/'node_modules/.prisma/client/index.d.ts',b'SYNTHETIC TYPES');run=self.dest/'work/generation';outputs=p.engine_tools.verify_generated_outputs(stage,plan)
@@ -96,3 +96,14 @@ class StageAPacketTests(unittest.TestCase):
   prefix=("'use strict';\n{const observation=require("+json.dumps(p.PACKAGE_ROOT+'/node_modules/@axiom/verified-issuer-runtime/internal/verify-package.cjs')+").verifyPackageFiles("+json.dumps(p.PACKAGE_ROOT)+");if(!observation||observation.qualification!==\"package_file_set_verified\")throw Error(\"fixture_package_unavailable\");}\n").encode()
   self.put(target,prefix+json.dumps(p.PACKAGE_ROOT+'/node_modules/@prisma/client').encode());original=p._binding(target);changed=dict(original,sha256='f'*64)
   with patch.object(p,'_binding',return_value=changed):self.assertRaises(p.StageAUnavailable,p._producer,packet)
+
+ def test_offline_cli_preserves_only_sanitized_launch_diagnostic(self):
+  import ast,contextlib,io,runpy,sys
+  path=self.prepare();failure=p.builder.Unavailable('git_launch_unavailable');failure.launchDiagnostic={'phase':'git_spawn','class':'OSError','errno':'EPERM'};capture=io.StringIO()
+  namespace=runpy.run_path(str(Path(p.__file__)),run_name='source_only');namespace.update(__name__='__main__');namespace['run_offline_child'].__globals__.update(builder=p.builder,verify_stage_a_packet=lambda unused:p._load(path));main=ast.parse(Path(p.__file__).read_text()).body[-1]
+  with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':str(self.dest/'work/tmp')},clear=True),patch.object(p.builder,'source_inputs',side_effect=failure),patch.object(sys,'argv',[str(Path(p.__file__)),'--offline-child',str(path)]),contextlib.redirect_stderr(capture):
+   with self.assertRaises(SystemExit)as exited:exec(compile(ast.Module(body=[main],type_ignores=[]),p.__file__,'exec'),namespace)
+  self.assertEqual(exited.exception.code,74);self.assertEqual(json.loads(capture.getvalue()),{'error':'stage_a_artifact_unavailable','launchDiagnostic':failure.launchDiagnostic});self.assertNotIn(str(self.dest),capture.getvalue())
+
+ def test_generation_stdin_cleanup_uncertainty_stays_unknown_through_parent(self):
+  path=self.prepare();result,events=self.joined(path,generation_unknown='generation_parent_stdin_cleanup_unknown');self.assertEqual(result['status'],'unknown');self.assertEqual(events,['offline','generate']);self.assertRaises(Exception,p.execute_stage_a_packet,path)

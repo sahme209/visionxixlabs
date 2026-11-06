@@ -1,0 +1,11 @@
+# Routine artifact process I/O compatibility repair
+
+Supervisor opens a fixed read-only/no-follow/close-on-exec /dev/null descriptor and passes that owned FD as stdin, avoiding CPython DEVNULL O_RDWR under the inherited write-deny policy. Parent attempts close once on every launch path. Close uncertainty after a created child enters existing owned stop/bounded-reap logic and remains unknown; failed construction never signals a guessed PID and preserves its sanitized failure.
+
+Explicit artifact Git scratch selection now creates separate stdout/stderr TemporaryFiles in that validated private directory. Returned archive/source bytes are stdout only. Legacy key-absent DEVNULL behavior remains unchanged. No sandbox rule, write allowance, timeout, authority or consumed packet was changed.
+
+Launch failures retain only fixed phase, OSError/SubprocessError class and allowlisted errno; no exception message/path. Nested offline __main__ emits this fixed JSON to existing child stderr. The driver preserves sanitized launch metadata and new parent-input-cleanup unknown classification.
+
+Evidence: initial actualbody mock RED on readonly supervisor/stdout-stderr behavior, then IO9 PASS; existing scratch4 PASS; StageA10 PASS plus one later narrowly selected new stdin-cleanup-unknown end-to-end mocked test PASS (do not claim all11 run together). A final selected timeout regression PASS preserves TimeoutExpired rather than mislabeling a launched Git timeout as a spawn failure. Source/log hashes in verification.json. Tests invoke actual supervisor/Git/driver/parent logic with subprocess APIs mocked, owned synthetic files only. No sandbox, Git, Node, npm, CLI, engine, native/security, SQL or vendor program ran. Consumed a1 packet/source remains untouched; changed source requires a new frozen packet and new execution decision. Vendor-internal I/O compatibility and actual wall-clock/descendant qualification remain unverified.
+
+Affected existing supervisor ownership suite inspected (all Popen/killpg calls mocked) and run once: scripts/tests/test_local_generation_owned_cleanup.py, 6 PASS; /private/tmp/axiom-generation-cleanup-io.log. This additionally verifies original reaping/timeout/no-postreap-signal behavior on the changed helper.

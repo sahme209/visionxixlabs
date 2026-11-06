@@ -193,7 +193,16 @@ def git_bytes(repo,args):
  # No promisor/lazy fetch or unbounded pipe buffering from a partial repository.
  def limits():resource.setrlimit(resource.RLIMIT_FSIZE,(MAX_ARCHIVE,MAX_ARCHIVE))
  with tempfile.TemporaryFile(dir=scratch)as output:
-  r=subprocess.run(["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args],env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=subprocess.DEVNULL,timeout=60,preexec_fn=limits)
+  def run(stderr):
+   try:return subprocess.run(["/usr/bin/sandbox-exec","-p","(version 1)(allow default)(deny network*)","/usr/bin/git","-C",str(repo),*args],env={"PATH":"/usr/bin:/bin","GIT_NO_LAZY_FETCH":"1"},stdout=output,stderr=stderr,timeout=60,preexec_fn=limits)
+   except subprocess.TimeoutExpired:raise
+   except (OSError,subprocess.SubprocessError)as error:
+    import errno
+    code=errno.errorcode.get(getattr(error,'errno',None),'UNKNOWN');code=code if code in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC')else'UNKNOWN'
+    failure=Unavailable('git_launch_unavailable');failure.launchDiagnostic={'phase':'git_spawn','class':'OSError'if isinstance(error,OSError)else'SubprocessError','errno':code};raise failure from None
+  if 'AXIOM_PRIVATE_GIT_SCRATCH'in os.environ:
+   with tempfile.TemporaryFile(dir=scratch)as diagnostics:r=run(diagnostics)
+  else:r=run(subprocess.DEVNULL)
   if r.returncode:fail("exact_git_read_failed")
   output.seek(0);data=output.read(MAX_ARCHIVE+1)
   if len(data)>MAX_ARCHIVE:fail("git_output_limit")

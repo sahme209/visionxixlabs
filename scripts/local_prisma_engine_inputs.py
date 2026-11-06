@@ -200,8 +200,22 @@ def _run_generation_child(command,stage,environment,log,timeout,file_size_limit=
  def limits():
   resource.setrlimit(resource.RLIMIT_FSIZE,(file_size_limit,file_size_limit))
   if creation_mask is not None:os.umask(creation_mask)
- process=subprocess.Popen(command,cwd=stage,env=environment,stdin=subprocess.DEVNULL,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=limits)
- reason=None;deadline=time.monotonic()+timeout;kill_attempted=False
+ nullfd=None;process=None;launch_failure=None;null_cleanup_unknown=False
+ try:
+  nullfd=os.open('/dev/null',os.O_RDONLY|os.O_CLOEXEC|os.O_NOFOLLOW)
+  process=subprocess.Popen(command,cwd=stage,env=environment,stdin=nullfd,stdout=log,stderr=subprocess.STDOUT,start_new_session=True,preexec_fn=limits)
+ except (OSError,subprocess.SubprocessError)as error:
+  import errno
+  code=errno.errorcode.get(getattr(error,'errno',None),'UNKNOWN');code=code if code in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC')else'UNKNOWN'
+  launch_failure=Unavailable('generation_launch_unavailable');launch_failure.launchDiagnostic={'phase':'null_input'if nullfd is None else'spawn','class':'OSError'if isinstance(error,OSError)else'SubprocessError','errno':code}
+ finally:
+  if nullfd is not None:
+   try:os.close(nullfd)
+   except OSError:null_cleanup_unknown=True
+ if launch_failure is not None:
+  if null_cleanup_unknown:launch_failure.parentInputCleanup='unknown'
+  raise launch_failure from None
+ reason='generation_parent_stdin_cleanup_unknown'if null_cleanup_unknown else None;deadline=time.monotonic()+timeout;kill_attempted=False
  def kill_owned_once():
   nonlocal kill_attempted
   if process.returncode is not None or kill_attempted:return
@@ -209,7 +223,7 @@ def _run_generation_child(command,stage,environment,log,timeout,file_size_limit=
   try:os.killpg(process.pid,signal.SIGKILL)
   except ProcessLookupError:pass
  try:
-  while process.poll()is None:
+  while reason is None and process.poll()is None:
    if time.monotonic()>=deadline:reason='generation_parent_wall_timeout';break
    if os.fstat(log.fileno()).st_size>64*1024*1024:reason='generation_output_limit';break
    time.sleep(min(0.025,max(0,deadline-time.monotonic())))
