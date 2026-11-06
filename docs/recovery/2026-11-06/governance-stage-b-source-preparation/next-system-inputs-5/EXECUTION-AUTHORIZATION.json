@@ -1,0 +1,9 @@
+{
+  "questionItemId": "call_HoKW5uadHa0HSPHYnGveqI2p",
+  "userDecision": "Approve one combined build and conditional local preview",
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "maximumSeconds": 1800,
+  "retryAuthorized": false,
+  "previewOnlyAfterOutputAndIndependentGuardAcceptance": true,
+  "databaseProviderSigningInstallationDeploymentAuthorized": false
+}

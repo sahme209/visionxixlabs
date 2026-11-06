@@ -1,0 +1,45 @@
+{
+  "status": "source-scaffold-only-not-startable",
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "futureRoot": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-b8b0314c-5290",
+  "backend": "127.0.0.1:5291",
+  "proxy": "127.0.0.1:5290",
+  "assetManifest": null,
+  "launchBinding": null,
+  "cacheIdentity": null,
+  "acceptedBuild": null,
+  "actualCopyPerformed": false,
+  "portsChecked": false,
+  "executionAuthorized": false,
+  "old5282PreviewUntouched": true,
+  "files": [
+    {
+      "file": "preview_proxy.py",
+      "sha256": "7ece23558ff8fadf882938d23279b20a28d059e842d6f340c3895d3dde6f30be",
+      "size": 8122,
+      "acceptedOrigin": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/preview_proxy.py",
+      "functionASTSameAfterFixedCoordinates": true
+    },
+    {
+      "file": "launch_preview.py",
+      "sha256": "b15008075f06f0a560b1a9b25aa8495e4c94451c986f11c1696f463b10ce3d24",
+      "size": 3983,
+      "acceptedOrigin": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/launch_preview.py",
+      "functionASTSameAfterFixedCoordinates": true
+    },
+    {
+      "file": "backend.sb",
+      "sha256": "f75ef934d2cdbfa9424754bd5b94aaf78885ede851d2786853cbab8616f53a7b",
+      "size": 384,
+      "acceptedOrigin": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/backend.sb",
+      "functionASTSameAfterFixedCoordinates": false
+    },
+    {
+      "file": "proxy.sb",
+      "sha256": "0aed056fc1ec4da58eda46a9ca3be0683250f0628250ee97d726dcf853629b3f",
+      "size": 269,
+      "acceptedOrigin": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280/proxy.sb",
+      "functionASTSameAfterFixedCoordinates": false
+    }
+  ]
+}

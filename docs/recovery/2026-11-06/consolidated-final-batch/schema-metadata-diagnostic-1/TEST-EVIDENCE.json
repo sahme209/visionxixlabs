@@ -1,0 +1,36 @@
+{
+  "scope": "pure source and synthetic/mock test execution only",
+  "red": {
+    "exit": 1,
+    "tests": 8,
+    "failed": 8,
+    "reason": "missing projector function assertion (not import error)",
+    "log": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/red.log",
+      "sha256": "40a18219fd0718a41e7ec3dac6ee4806a12e346911de257f87c8a5691889446c",
+      "size": 11576
+    }
+  },
+  "green": {
+    "exit": 0,
+    "tests": 8,
+    "passed": 8,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 37.634416,
+    "log": {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/green.log",
+      "sha256": "4a5ce29ce8ffaf0aa619ceed6c09638ceac4df34016cb8403146005b846ce01a",
+      "size": 934
+    }
+  },
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "--test",
+    "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs"
+  ],
+  "actualProviderCalls": 0,
+  "environmentOrCredentialReads": false,
+  "testSecretsSyntheticOnly": true,
+  "existingEndpointCollectorModified": false
+}

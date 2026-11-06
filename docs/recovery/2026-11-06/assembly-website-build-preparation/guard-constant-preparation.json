@@ -1,0 +1,40 @@
+{
+  "sourceRevision": "bd3648b634edf1d3881c283d8c088afbd3bcc37d",
+  "template": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280",
+  "root": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-bd3648b6-5282",
+  "stage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-evidence-assembly-build-bd3648b6/stage",
+  "records": [
+    {
+      "path": "preview_proxy.py",
+      "templateSha256": "aa2ba88bcc2d2d17cbe12332fd08a54ec483f410f1f4039a5b2ee4056d0ecc54",
+      "candidateSha256": "1da7077cf98c46a2cb457800823b59f4ca4dc053fa63a81ae46ba928abc70e34",
+      "scope": "exact literal substitutions only"
+    },
+    {
+      "path": "launch_preview.py",
+      "templateSha256": "3997ab5ad78c882c93abc0636604fec6cc02d48a089a24a9120089820e51632a",
+      "candidateSha256": "5734e6d1fecdaf27b6844de7dbd002e2efa7fea8b2218840942df9ce6fbd3dea",
+      "scope": "exact literal substitutions only"
+    },
+    {
+      "path": "backend.sb",
+      "templateSha256": "b2711daab82cf43102266b87700e239eddece9f8f1b4bdd9027838fe9d154d09",
+      "candidateSha256": "f8d919ab3e841210d747bb64aadbf9aab651b7afc478fce17b880e1acffe1935",
+      "scope": "exact literal substitutions only"
+    },
+    {
+      "path": "proxy.sb",
+      "templateSha256": "b6b3110fb3d96fe20ef03b5a031b410dec8a731997b84d782abddb483f223927",
+      "candidateSha256": "69665442b3af5cdcec9d1a58f6630348422c5c651ca09d1dede075e279482d55",
+      "scope": "exact literal substitutions only"
+    },
+    {
+      "path": "test_preview_bindings.py",
+      "templateSha256": "8bc65c58cb8c9d55c29f4e09dc6a6761f6e9179bc1bad65671abdbc947193ea7",
+      "candidateSha256": "de3236b93fd0b24c11420339815f136fa68048b946d6e06fc66be7811881a265",
+      "scope": "exact literal substitutions only"
+    }
+  ],
+  "manifestStatus": "pending actual compiler result",
+  "serversStarted": false
+}

@@ -1,0 +1,11 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS ordinary website build only",
+  "sourceFilesMatched": 11667,
+  "outputMetadataMatched": 1111,
+  "staticPages": 303,
+  "assemblyAndNoscriptAndCaveatsInHomeProduct": true,
+  "privateEmitterOutputExists": false,
+  "browserAccepted": false,
+  "systemOrRuntimeQualified": false
+}

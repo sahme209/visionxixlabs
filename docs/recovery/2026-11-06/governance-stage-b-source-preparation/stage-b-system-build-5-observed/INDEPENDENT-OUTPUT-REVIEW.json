@@ -1,0 +1,15 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "scope": "Actual emitted files and original build receipts only",
+  "result": "PASS",
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "completedObservationSha256": "02d1ecd964d844cba49259e22c41733270e6258ab7be325f5af68b24daaec721",
+  "sourceEngineGenerationSystemFixtureBindings": 107,
+  "outputMetadataRecords": 1113,
+  "compilerExit": 0,
+  "producerSha256": "ab6de13646a3c295bd74ee9476d0934d41f5daa6112e5b338be3fa0ebb027a52",
+  "producerBytes": 772578,
+  "homeProductConstellationEmitted": true,
+  "controllerSeconds": 222.167,
+  "runtimeCustodyActivationQualified": false
+}

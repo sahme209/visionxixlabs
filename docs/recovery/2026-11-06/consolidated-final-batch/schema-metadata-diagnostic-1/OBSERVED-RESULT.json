@@ -1,0 +1,19 @@
+{
+  "callCount": 1,
+  "categories": {
+    "callOutcome": "returned",
+    "toolError": false,
+    "envelope": "text_blocks",
+    "textBlockCount": "one",
+    "textParsing": "accepted_json_object",
+    "envArray": "absent",
+    "productionDatabaseMatches": "not_applicable",
+    "selectedId": "not_applicable",
+    "selectedUpdatedAt": "not_applicable"
+  },
+  "decryptedDetailCalled": false,
+  "neonOrSQLCalled": false,
+  "retryPerformed": false,
+  "authorityConsumed": true,
+  "meaning": "The supported decoded payload did not contain an envs array. Underlying connector/server cause not established; no schema-state or missing-variable conclusion."
+}

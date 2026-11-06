@@ -1,0 +1,208 @@
+✖ actual pure projector selects only finite categories and discards fake values/keys/identity (0.988666ms)
+✖ exception and isError stop without reading error messages or response payloads (0.277083ms)
+✖ supported envelope precedence and bounded text parsing do not expose raw text (0.537375ms)
+✖ zero/duplicate selection and invalid IDs are distinguished without returning records (0.2805ms)
+✖ updatedAt types are classified without their contents, including missing and nonfinite (0.262625ms)
+✖ hostile accessors and excessive env arrays fail to fixed categories without error strings (0.23375ms)
+✖ reviewed private caller makes exactly the single fixed metadata call and refuses repeat (0.263583ms)
+✖ call failure consumes attempt, returns only categorical exception and never inspects error (0.234042ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 0
+ℹ fail 8
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39.337334
+
+✖ failing tests:
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:11:1
+✖ actual pure projector selects only finite categories and discards fake values/keys/identity (0.988666ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:11:113)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:12:1
+✖ exception and isError stop without reading error messages or response payloads (0.277083ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:12:100)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:13:1
+✖ supported envelope precedence and bounded text parsing do not expose raw text (0.537375ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:13:99)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:14:1
+✖ zero/duplicate selection and invalid IDs are distinguished without returning records (0.2805ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:14:106)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:15:1
+✖ updatedAt types are classified without their contents, including missing and nonfinite (0.262625ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:15:108)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:16:1
+✖ hostile accessors and excessive env arrays fail to fixed categories without error strings (0.23375ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:16:111)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:17:1
+✖ reviewed private caller makes exactly the single fixed metadata call and refuses repeat (0.263583ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:17:114)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:18:1
+✖ call failure consumes attempt, returns only categorical exception and never inspects error (0.234042ms)
+  AssertionError [ERR_ASSERTION]: missing pure metadata projector
+  + actual - expected
+  
+  + 'undefined'
+  - 'function'
+  
+      at projector (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:6:70)
+      at TestContext.<anonymous> (/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs:18:117)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'undefined',
+    expected: 'function',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

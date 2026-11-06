@@ -1,0 +1,59 @@
+{
+  "sourceRevision": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "sourceTree": "a6dade9628dd1aab7732a8922f74c10c6399d879",
+  "sourceRepo": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/repo",
+  "originalMainRepo": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion",
+  "originalSourceRecord": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/work/deployment-constellation-v3-source-freeze-20261106/SOURCE.json",
+    "sha256": "f382b5cffc4a8e0c0bdd522bfafcd33f487c64de63fe78ad1b2107906bcc0a92",
+    "size": 1947,
+    "mode": 420
+  },
+  "ownedArchive": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/source.tar",
+    "sha256": "54ecaeeec46752f568829705bf79d0d78571705c8f80384adb9b493dffd1557d",
+    "size": 156805120,
+    "mode": 384
+  },
+  "ownedSourceFileManifest": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/source-file-manifest.json",
+    "sha256": "2a7a974d21dedee3ab7f7a3a02dca1dae2374722f63edf5c5bcab017ea574c53",
+    "size": 2221135,
+    "mode": 384
+  },
+  "ownedSourcePreparation": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/preparation-result.json",
+    "sha256": "f23d3b8ef07f2668d2a5ad96efcb9381dd57f6c0e1d9d2e8a6f85ee09511c091",
+    "size": 4985,
+    "mode": 384
+  },
+  "all38CompilerSourcePinsVerified": true,
+  "executionAuthorized": false,
+  "installationReady": false,
+  "emitterExecuted": false,
+  "buildExecuted": false,
+  "systemPacket": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/system-build-packet.json",
+    "sha256": "71485802f6f890a38471f510f4f4f508f9d7ee4383d247f63f4c70e4075c52d8",
+    "size": 28655,
+    "mode": 384
+  },
+  "profileObservation": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/FOUR-ROLE-PROFILE-OBSERVATION.json",
+    "sha256": "e6aa5ebe24ac443bf08416a9c143ce8fb420f757e4c49ff5c739b1ee3449db78",
+    "size": 6919,
+    "mode": 384
+  },
+  "nativeSourceJoin": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/native-source-join.json",
+    "sha256": "c38a6787a342b9342da6b3b7c629e768be1b4ec3608d25d5dd46811c49c8408e",
+    "size": 365,
+    "mode": 384
+  },
+  "readonlySystemObservation": {
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-5/readonly-system-observation.json",
+    "sha256": "fba910340038d325a35336d834c46189b8f23a4b764cf6d36d2d895bd777d493",
+    "size": 50060,
+    "mode": 384
+  }
+}

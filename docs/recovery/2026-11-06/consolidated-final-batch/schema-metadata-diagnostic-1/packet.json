@@ -1,0 +1,96 @@
+{
+  "format": "axiom.metadata-shape-diagnostic/1",
+  "authorizationReference": "call_Vd4Hz0Otjf0XGTo4HjQB6Dwo",
+  "proposal": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/PROPOSAL.md",
+    "sha256": "5af605f75b7c2671f97ca19e63840ab0601c415843e498cb5277161366eec644",
+    "size": 4470
+  },
+  "projector": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/metadata-diagnostic.cjs",
+    "sha256": "2140f23f836ef7f9ea892673523b517d49e91e28a811c9c2ca92cb4a7ab3557d",
+    "size": 3460
+  },
+  "privateCaller": {
+    "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/private-isolate-diagnostic.cjs",
+    "sha256": "b532ccd2bd9fe1b9fd01a3e9f9395e43c3af78e6bd78c1ba4611a1c09db29e76",
+    "size": 758
+  },
+  "tool": "mcp__codex_apps__vercel_filter_project_envs",
+  "arguments": {
+    "idOrName": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+    "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm",
+    "decrypt": "false"
+  },
+  "maximumProviderCalls": 1,
+  "automaticRetries": 0,
+  "actualCallsPerformed": 0,
+  "independentReviewRequiredBeforeActualCall": true,
+  "rootOwnsActualInvocation": true,
+  "readOnlyMetadataDiagnosticOnly": true,
+  "endpointBindingOrSchemaAcceptance": false,
+  "noDecryptedDetail": true,
+  "noNeonOrSql": true,
+  "privatePlatformTraceRetentionDisclosed": true,
+  "rawResponseWorkspaceOrOrdinaryMessageExportPermitted": false,
+  "projectorTraversalCaps": {
+    "singleTextUtf8Bytes": 1048576,
+    "contentBlocks": 4096,
+    "envRecords": 10000
+  },
+  "allowedResultValues": {
+    "callOutcome": [
+      "returned",
+      "exception"
+    ],
+    "toolError": [
+      true,
+      false,
+      "unknown"
+    ],
+    "envelope": [
+      "structured_object",
+      "text_blocks",
+      "raw_object",
+      "unsupported"
+    ],
+    "textBlockCount": [
+      "zero",
+      "one",
+      "multiple",
+      "not_applicable"
+    ],
+    "textParsing": [
+      "accepted_json_object",
+      "malformed_or_unsupported",
+      "oversized",
+      "not_applicable"
+    ],
+    "envArray": [
+      "present",
+      "absent",
+      "not_applicable"
+    ],
+    "productionDatabaseMatches": [
+      "zero",
+      "one",
+      "multiple",
+      "not_applicable"
+    ],
+    "selectedId": [
+      "valid",
+      "invalid",
+      "not_applicable"
+    ],
+    "selectedUpdatedAt": [
+      "missing",
+      "safe_integer",
+      "other_number",
+      "string",
+      "other",
+      "not_applicable"
+    ]
+  },
+  "sourceLoading": "Read/hash only these nonsecret sources before provider call; verify exact hashes, instantiate each via new Function(module, source + return module.exports) with module.exports object in SAME Functions isolate; call privateCaller.runApprovedMetadataDiagnostic(tools,projector) once and emit only its finite projected return. Do not import via a process or forward raw response.",
+  "runtimeLimitations": "One in-isolate attempted flag prevents a second call on this instance. User grant is one actual call across all instances; root must durably record its one attempt before invocation and must not recreate/retry runner. No overall provider wall deadline claimed. Raw private tool traces may persist outside assistant control. String erasure is not guaranteed."
+}

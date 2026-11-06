@@ -1,0 +1,16 @@
+✔ actual pure projector selects only finite categories and discards fake values/keys/identity (1.102334ms)
+✔ exception and isError stop without reading error messages or response payloads (0.693083ms)
+✔ supported envelope precedence and bounded text parsing do not expose raw text (0.449667ms)
+✔ zero/duplicate selection and invalid IDs are distinguished without returning records (0.2775ms)
+✔ updatedAt types are classified without their contents, including missing and nonfinite (0.295209ms)
+✔ hostile accessors and excessive env arrays fail to fixed categories without error strings (0.262042ms)
+✔ reviewed private caller makes exactly the single fixed metadata call and refuses repeat (0.9035ms)
+✔ call failure consumes attempt, returns only categorical exception and never inspects error (0.4855ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 37.634416

@@ -1,0 +1,15 @@
+{
+  "sourceRevision": "bd3648b634edf1d3881c283d8c088afbd3bcc37d",
+  "status": "waiting-for-actual-ordinary-website-build",
+  "acceptedGuardTemplate": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Previews/source-64eca1cd-5280",
+  "proposedFreshProxy": "127.0.0.1:5282",
+  "proposedFreshBackend": "127.0.0.1:5283",
+  "portsRequireRecheck": true,
+  "preserveExisting5280": true,
+  "publicPagesToCheck": ["/", "/product", "/docs", "/support"],
+  "refusals": ["private/account/auth/API", "mutation methods", "authority headers", "RSC/unsupported queries", "redirects/external assets"],
+  "nextRequiredInputs": ["actual result.json buildOutputsVerified", "actual source+requiredMetadata", "actual public/static asset hashes", "fixed new cache identity", "four guard files+runtime/config bindings"],
+  "serversStarted": false,
+  "browserAccepted": false,
+  "issuerSystemQualified": false
+}

@@ -1,0 +1,17 @@
+{
+  "reviewer": "root",
+  "author": "offline_diagnostic_review",
+  "result": "PASS",
+  "checks": [
+    "exact nine fixed output keys/enums or booleans",
+    "bounded supported envelope only; no dynamic key enumeration",
+    "no raw values IDs timestamps errors or records returned",
+    "single fixed decrypt=false call and one-attempt guard",
+    "no Neon SQL detail or other provider path"
+  ],
+  "sourceHashes": {
+    "projector": "2140f23f836ef7f9ea892673523b517d49e91e28a811c9c2ca92cb4a7ab3557d",
+    "runner": "b532ccd2bd9fe1b9fd01a3e9f9395e43c3af78e6bd78c1ba4611a1c09db29e76"
+  },
+  "actualCallPerformedAtReview": false
+}

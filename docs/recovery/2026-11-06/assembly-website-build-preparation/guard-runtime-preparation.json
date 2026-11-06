@@ -1,0 +1,23 @@
+{
+  "status": "prepared-not-started",
+  "sourceRevision": "bd3648b634edf1d3881c283d8c088afbd3bcc37d",
+  "actualResultSha256": "6c81625d2de608e104139693c50f52581e56d6d23c49d0e79a6b40bb193f58fb",
+  "actualResultStatus": "ordinary_public_web_outputs_observed",
+  "metadataRecords": 1111,
+  "publicAssets": 45,
+  "staticAssets": 1152,
+  "manifestSha256": "0ea7875c942c268bd9aad17bba41687b15bc180ad8aeec801a42b689e7d87eb2",
+  "launchBindingSha256": "3fe369d2191ac075bac0d5a392de22db7a63d29e941d7fe98067f2a0d533fe25",
+  "sourceHashes": {
+    "app/page.tsx": "2c8532f9425d19dae221d1c7c95864181a2e230eb00f889815737cccae35c14e",
+    "app/product/page.tsx": "c8802cc6cb5e3929ec621c4a0092561fd9e8a236eaee8fba63d8586619a2607a",
+    "app/docs/layout.tsx": "73859c8329a993a17e2148b774ef911823313f7b1bb9b3378defbd8068adc9d1",
+    "components/docs/DocPrimitives.tsx": "3bc783d41466159f120acedaa6336bb3544b6ccf7edf6551c0813658624a26ec",
+    "app/(marketing)/support/page.tsx": "4530446892636681c0af1e68f14f1e2a6e47d17825ceadf3ee506a48c548640c",
+    "components/marketing/GovernanceAssembly.tsx": "9b67caa576e93d886f17ff73c437d9383f7b67376f18972aaee6f31f391a5706",
+    "components/marketing/governanceAssemblyModel.ts": "31cd86bde2966b4eeceed0fb7accc90ec2e1d08376a9d32ae01136cfbc33d98b",
+    "components/marketing/GovernanceAssembly.module.css": "2c2f8f68a53e42b254ca41ee4d18e72e0c57f2abf5900427eeafdaf9d6fc043e",
+    "components/marketing/WorkflowEvidenceMap.tsx": "a28f0dfcf81ffb7980c33d0dc33924d5ad0313d51b53b28736dda2eed0e9d504"
+  },
+  "serversStarted": false
+}

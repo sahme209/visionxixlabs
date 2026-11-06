@@ -1,0 +1,66 @@
+{
+  "format": "axiom.ordinary-visual-web-build-preparation/1",
+  "sourceRevision": "bd3648b634edf1d3881c283d8c088afbd3bcc37d",
+  "archiveSha256": "b6f49450d8ce0d5381adf3506695a39bdd99525013c2c877b29003c6b1f9f857",
+  "executionAuthorized": true,
+  "ownedName": "axiom-evidence-assembly-build-bd3648b6",
+  "nodeSha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+  "preparedInputs": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/assembly-website-build-preparation/prepared-build.py",
+      "sha256": "2755dc67f8ea7200325ae23d1c99806169e005ab3415c7d01b15601fcb39e5d4"
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/assembly-website-build-preparation/public-output-verification.py",
+      "sha256": "21747d3661b8b0500a74ac0e28ffc1adab07dcd2e7328cac7c66feb6b71b174d"
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/local_prisma_engine_inputs.py",
+      "sha256": "5a692e45364745610cab6496cc2e2a9c7951069f147954b6e4eb2d571d8d55d1"
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/scripts/build-local-issuer-package-source.py",
+      "sha256": "9f9a936bb5e6f8381483e796a24bba83b28cb3b53ee927d778f71df329dd17c0"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-4/generation-run/result.json",
+      "sha256": "226b31921a269de1c8eb3efffc1507706ede6b307e14d4ba41775dd5c6c16dd9"
+    },
+    {
+      "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-4/completed-observation.json",
+      "sha256": "6d665bb8b7ebd6479afc782fec67142bc7776409a0b7b7a2ff901958722b92f3"
+    }
+  ],
+  "dependencyStage": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-system-build-4/stage",
+  "dependencyInputs": [
+    {
+      "relativePath": "node_modules/next/dist/bin/next",
+      "sha256": "925f10f488ca8bf8fcf062aeef14024b33b1739e90b539f7f8af264dd85ab3c3"
+    },
+    {
+      "relativePath": "node_modules/next/package.json",
+      "sha256": "e84ada0a68191fed192392bfb8ee35ad4ed8e7439f645a40dd48cf139588ddc5"
+    },
+    {
+      "relativePath": "node_modules/typescript/lib/typescript.js",
+      "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    {
+      "relativePath": "node_modules/react/package.json",
+      "sha256": "c383aced6a67c8d06f02996015c0a163e78532a330a96dff1ccfd107b00ab326"
+    },
+    {
+      "relativePath": "node_modules/react-dom/package.json",
+      "sha256": "d926f158e1be15885aaeac259c39567a46f6525fbdd14c380528486c31459996"
+    }
+  ],
+  "commands": [
+    "node scripts/check-vercel-build.mjs",
+    "node node_modules/next/dist/bin/next build --webpack"
+  ],
+  "maxCompilerBundleSeconds": 600,
+  "noPrismaGeneration": true,
+  "noEmitter": true,
+  "noSystemQualification": true,
+  "previewStarted": false
+}

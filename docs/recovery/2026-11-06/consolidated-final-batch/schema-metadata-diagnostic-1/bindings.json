@@ -1,0 +1,46 @@
+{
+  "files": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/PROPOSAL.md",
+      "sha256": "5af605f75b7c2671f97ca19e63840ab0601c415843e498cb5277161366eec644",
+      "size": 4470
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/metadata-diagnostic.cjs",
+      "sha256": "2140f23f836ef7f9ea892673523b517d49e91e28a811c9c2ca92cb4a7ab3557d",
+      "size": 3460
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/private-isolate-diagnostic.cjs",
+      "sha256": "b532ccd2bd9fe1b9fd01a3e9f9395e43c3af78e6bd78c1ba4611a1c09db29e76",
+      "size": 758
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/test-metadata-diagnostic.cjs",
+      "sha256": "ce23cc4ad4f99f948ff7dd6e1a509e21cf05aed748dac15f0e4521cf5558c76c",
+      "size": 6394
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/AUTHORIZATION.json",
+      "sha256": "261c6a62d26567e1a5ade2af2f309fa09a440f1b2a730a5a8e9295aee15555bf",
+      "size": 883
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/packet.json",
+      "sha256": "ca112b68ce8864104f47dc42cb2d7f0cb259066dd31d92b4f84e42267173d954",
+      "size": 3522
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/TEST-EVIDENCE.json",
+      "sha256": "dce24c99cd3271288b535cf54d161dac659e41ec611e52e0c4279ba89b0b524e",
+      "size": 1381
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-metadata-diagnostic-1/IMPLEMENTATION-REVIEW.md",
+      "sha256": "0d6a0be63a3d1ba9b1afc9878db1d1f47565421b049ff2b858749602f2f1ec90",
+      "size": 3167
+    }
+  ],
+  "actualProviderCallsPerformed": 0,
+  "independentReviewPending": true
+}

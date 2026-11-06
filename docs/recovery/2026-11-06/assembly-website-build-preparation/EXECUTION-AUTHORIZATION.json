@@ -1,0 +1,10 @@
+{
+  "approvalCall": "call_yj0yiHwb8EV2EMUwPA6rCz0h",
+  "answer": "Approve one website build and local preview",
+  "recordedAt": "2026-11-06T18:19:28.374972+00:00",
+  "reviewedPacketSha256": "f16263bd434c125d134c6f8af56533cdd1098b876477d21a7b9729a60f1cd708",
+  "authorizedPacketSha256": "c5a8a622e001bcc7e3e70b3a18607cefcbf9f640742a5fd9e23a41e0c31ef5fb",
+  "onlyPacketFieldChanged": "executionAuthorized false to true",
+  "attemptsAuthorized": 1,
+  "retryAuthorized": false
+}

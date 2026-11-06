@@ -1,0 +1,6 @@
+{
+  "status": "proposal_only_implementation_and_execution_not_authorized",
+  "maximumProviderCallsAfterConditionalApproval": 1,
+  "proposalSha256": "5af605f75b7c2671f97ca19e63840ab0601c415843e498cb5277161366eec644",
+  "priorObservation": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/consolidated-final-batch/schema-readonly-preflight-3/OBSERVED-RESULT.json"
+}

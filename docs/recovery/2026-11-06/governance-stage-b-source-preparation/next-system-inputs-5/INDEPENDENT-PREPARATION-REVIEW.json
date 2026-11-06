@@ -1,0 +1,11 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS source and packet preparation only",
+  "source": "b8b0314c39324ba3a918fd0f6672faf0297c2041",
+  "archiveFilesChecked": 11712,
+  "nativeBasisFilesChecked": 150,
+  "compilerSourcePinsChecked": 38,
+  "provenanceBindingsChecked": 81,
+  "fixedDriverBindingsChecked": 19,
+  "noRuntimeAcceptance": true
+}
