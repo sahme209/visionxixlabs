@@ -1,0 +1,10 @@
+{
+  "base": "1cdda8b6",
+  "files": {
+    "app/page.tsx": "a9bab59420b1424903c0ac684926b32a482e44fa028bf2b406391a24f174e75b",
+    "components/marketing/GovernanceAssembly.module.css": "1e28f2d9e39800d0c41ba86f7e463c9c2a2df049ed472aee5ce028c7b01894a7"
+  },
+  "independentSourceReview": "no concrete regressions; actual rendering unverified",
+  "built": false,
+  "published": false
+}

@@ -64,14 +64,14 @@ export default function Home() {
                 Explore the scripted tour <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
-          </div>
-
-          <div className={assemblyStyles.homeArt}><GovernanceAssembly compact /></div>
           <p className={`${assemblyStyles.homeScope} mt-6 max-w-3xl text-sm leading-6 text-zinc-400`}>
             Actual actions depend on the installed version, current permissions, and enabled workflow. Complete Governance enforcement and activation are not established.{" "}
             <Link href="/security" className="text-zinc-200 underline underline-offset-4">Assess security boundaries</Link>{" · "}
             <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4">Read the approval workflow</Link>.
           </p>
+          </div>
+
+          <div className={assemblyStyles.homeArt}><GovernanceAssembly compact /></div>
 
           </div>
           <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />

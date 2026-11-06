@@ -1,0 +1,7 @@
+# Home CTA and scope adjacency — local source only
+
+Addresses item1 of docs/product/visual-refinement-next-batch.md under the existing approved website/layout scope and delegated visual decisions. The exact existing scope paragraph now follows the primary/secondary CTA group inside the heading column, before the scene in mobile reading order. Text, two link labels/destinations and every handler/component remain unchanged. CSS gives24px separation and removes the obsolete second grid row/art span.
+
+Root verified exact paragraph preservation, reversible node relocation and `git diff --check`. An independent source reviewer found no concrete regressions; source order is heading→actions→scope→scene. This reversible presentation edit adds no test that merely mirrors markup. No compiler, browser, network, signing or provider action ran. Actual907/390/320reflow, overlay/clipping/overflow and keyboard visual acceptance remain open. Existing b8 build, preview and Governance carrier remain byte-bound to their original version; no candidate screenshot/build acceptance is claimed.
+
+This change occurred AFTER the single authorized GitHub backup and is local-only, not in the verified682268 snapshot or production. No additional push/deploy is authorized. Rollback: restore the paragraph as a homeHero sibling, scope margin0/gridrow2 and art span2 from parent1cdda8b6. Preserve all21 master parents.
