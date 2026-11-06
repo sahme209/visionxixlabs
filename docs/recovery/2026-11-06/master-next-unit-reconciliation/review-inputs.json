@@ -1,0 +1,17 @@
+{
+  "reviewKind": "source_and_saved_evidence_only",
+  "actualOperationsPerformed": false,
+  "masterEdited": false,
+  "boardEdited": false,
+  "inputs": {
+    "docs/product/axiom-master-action-plan.md": {
+      "sha256": "e99a61a3292746ab1ea3b6a32ce9bca08b6db38253ba171450c14917185784b1",
+      "size": 220021
+    },
+    "docs/product/current-execution-board.md": {
+      "sha256": "a840d409183dc06ad2e0b1e91f34fce91e3f6e3f346d3ce23b16b3c2b289cac4",
+      "size": 169760
+    }
+  },
+  "reportSha256": "9d72c192e2b34be0db22c37b6bf7dccb77024b5a44051437d62941af4afa16f6"
+}
