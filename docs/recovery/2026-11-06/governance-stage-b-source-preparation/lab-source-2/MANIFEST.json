@@ -1,0 +1,115 @@
+{
+  "files": [
+    {
+      "file": "SOURCE.json",
+      "sha256": "7c2727051ee24901a4d0fceb947b9b9e1d450ad68913a165d72bd29903792b36",
+      "size": 2600
+    },
+    {
+      "file": "git-1-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-1-stdout.log",
+      "sha256": "5ab1c58f3c80c0cadd38e80b8fd36bd5ca3565424c30a069c52d753730f0e812",
+      "size": 171
+    },
+    {
+      "file": "git-2-stderr.log",
+      "sha256": "2913b25fb93eceffeb43459283eb5ba0952bad17248d2cf0d9b772f3940c8cd0",
+      "size": 166
+    },
+    {
+      "file": "git-2-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-3-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-3-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-4-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-4-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-5-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-6-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-6-stdout.log",
+      "sha256": "79ef303a12436914902ea89b608610f47a99b6ee644a734e75ad2d08934b674b",
+      "size": 41
+    },
+    {
+      "file": "git-7-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-7-stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-8-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "git-8-stdout.log",
+      "sha256": "7b68d0fadc3e1cc32b38ce93a05f8bb697c986f567471d18200a6078714b6a45",
+      "size": 41
+    },
+    {
+      "file": "preparation-result.json",
+      "sha256": "e1ed8d1461d6a9faa6e1b2885431aa5eab03ec6107cd3f58528946a9d908a3f2",
+      "size": 6249
+    },
+    {
+      "file": "readonly-contract-result.json",
+      "sha256": "dcb9588e2ae8d4725a3985269521e97ac585ee49f463acede844aa700c06e572",
+      "size": 3753
+    },
+    {
+      "file": "readonly-contract-stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "file": "readonly-contract-stdout.log",
+      "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+      "size": 185
+    },
+    {
+      "file": "source-file-manifest.json",
+      "sha256": "f164becc5123921330ceab4cf9f37d9a2c16c31d69a339d833578451e74d0d2d",
+      "size": 2239540
+    },
+    {
+      "file": "system-build-packet.json",
+      "sha256": "63f2da80cad0e7f7f852bdced593a4362758fd1024f01d7003357b23b9aa4fd6",
+      "size": 28284
+    }
+  ],
+  "archiveCopiedIntoGit": false
+}

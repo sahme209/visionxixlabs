@@ -1,0 +1,86 @@
+{
+  "argv": [
+    "/usr/bin/sandbox-exec",
+    "-p",
+    "(version 1)(allow default)(deny network*)",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-2/repo/scripts/check-vercel-build.mjs"
+  ],
+  "dependencyIdentities": {
+    "node_modules/typescript/lib/typescript.js": {
+      "existingPreparedSource": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-signin-current-build-999658d6-kyr6nbqq/stage/node_modules/typescript/lib/typescript.js",
+        "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+        "size": 9112572
+      },
+      "sameBytes": true,
+      "selected": {
+        "mode": 420,
+        "path": "/private/tmp/axiom-docs-isolated-w2u8g7_y/source/node_modules/typescript/lib/typescript.js",
+        "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+        "size": 9112572
+      }
+    },
+    "node_modules/typescript/package.json": {
+      "existingPreparedSource": {
+        "mode": 420,
+        "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Local Website Builds/axiom-signin-current-build-999658d6-kyr6nbqq/stage/node_modules/typescript/package.json",
+        "sha256": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+        "size": 3620
+      },
+      "sameBytes": true,
+      "selected": {
+        "mode": 420,
+        "path": "/private/tmp/axiom-docs-isolated-w2u8g7_y/source/node_modules/typescript/package.json",
+        "sha256": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+        "size": 3620
+      }
+    },
+    "package-lock.json": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+    "package.json": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1"
+  },
+  "dependencyInstallationPerformed": false,
+  "environment": {
+    "LANG": "C",
+    "NODE_ENV": "development",
+    "NODE_PATH": "/private/tmp/axiom-docs-isolated-w2u8g7_y/source/node_modules",
+    "PATH": "/usr/bin:/bin"
+  },
+  "executionAuthorized": false,
+  "exit": 0,
+  "format": "axiom.exact-source-contract-preflight/1",
+  "fullCompilerInvoked": false,
+  "generationInvoked": false,
+  "installationReady": false,
+  "moduleRuntimeAdoptionClaimed": false,
+  "node": {
+    "mode": 493,
+    "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "size": 122129232
+  },
+  "preparationProvenance": {
+    "mode": 420,
+    "path": "/private/tmp/axiom-docs-isolated-w2u8g7_y/preparation.json",
+    "sha256": "4e2428357cc1eb568393febe9bba0d5a7a6a8f19202d1583e619919d048fe110",
+    "size": 3143
+  },
+  "sourceRepo": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-2/repo",
+  "sourceRevision": "8b10308fa832f8395dbdeec51b995f8f83686243",
+  "stderr": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-2/readonly-contract-stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "size": 0
+  },
+  "stdout": {
+    "mode": 384,
+    "path": "/Users/samirahmed/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-stage-b-lab-source-2/readonly-contract-stdout.log",
+    "sha256": "fde63fa082a15ecd5a425a1cdfac720bf0e5909709000032e2efee81eac9227b",
+    "size": 185
+  },
+  "systemRecorderInvoked": false,
+  "timeoutSeconds": 30,
+  "typescriptVersion": "5.9.3"
+}
