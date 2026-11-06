@@ -22,3 +22,19 @@ class ArtifactGitScratchTests(unittest.TestCase):
  def test_wrong_owner_refuses_without_execution(self):
   with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':str(self.directory)},clear=True),patch.object(b.os,'getuid',return_value=os.getuid()+1),patch.object(b.subprocess,'run')as child:
    self.assertRaises(b.Unavailable,b.git_bytes,'/synthetic/repo',['show','fixed']);child.assert_not_called()
+
+ def test_failed_fixed_git_read_exposes_only_bounded_outcome(self):
+  def run(command,**kw):
+   kw['stderr'].write(b'xcrun: PRIVATE PATH secret denied')
+   return types.SimpleNamespace(returncode=72)
+  with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':str(self.directory)},clear=True),patch.object(b.tempfile,'TemporaryFile',side_effect=lambda **kw:io.BytesIO()),patch.object(b.subprocess,'run',side_effect=run):
+   with self.assertRaises(b.Unavailable) as raised:b.git_bytes('/synthetic/repo',['rev-parse','a'*40+'^{commit}'])
+   self.assertEqual(getattr(raised.exception,'gitDiagnostic',None),{'operation':'revision','exit':72,'category':'developer_tool_dispatch'})
+   self.assertNotIn('PRIVATE',str(raised.exception.gitDiagnostic))
+ def test_failed_unknown_git_command_never_discloses_arguments(self):
+  def run(command,**kw):
+   kw['stderr'].write(b'PRIVATE TOKEN')
+   return types.SimpleNamespace(returncode=1)
+  with patch.dict(os.environ,{'AXIOM_PRIVATE_GIT_SCRATCH':str(self.directory)},clear=True),patch.object(b.tempfile,'TemporaryFile',side_effect=lambda **kw:io.BytesIO()),patch.object(b.subprocess,'run',side_effect=run):
+   with self.assertRaises(b.Unavailable) as raised:b.git_bytes('/synthetic/repo',['show','PRIVATE'])
+   self.assertEqual(getattr(raised.exception,'gitDiagnostic',None),{'operation':'other','exit':1,'category':'unclassified'})

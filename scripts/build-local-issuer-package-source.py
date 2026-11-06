@@ -183,6 +183,22 @@ class _StandaloneArtifactCommands:
   profile='(version 1)(allow default)(deny network*)(deny file-write* (subpath '+json.dumps(str(Path(source_cache).resolve()))+') (subpath '+json.dumps(str(Path(protected_repo).resolve()))+'))'
   return ["/usr/bin/sandbox-exec","-p",profile,str(node)]
 def git_bytes(repo,args):return _git_bytes_core(repo,args,_StandaloneArtifactCommands())
+def _git_failure_outcome(args,code,stderr):
+ operation='other'
+ if len(args)==2 and args[0]=='rev-parse'and re.fullmatch(r'[a-f0-9]{40}\^\{commit\}',args[1]):operation='revision'
+ elif len(args)==2 and args[0]=='show':
+  for name,label in (('package.json','manifest'),('package-lock.json','lock'),('prisma/schema.prisma','schema')):
+   if re.fullmatch('[a-f0-9]{40}:'+re.escape(name),args[1]):operation=label
+ elif len(args)==3 and args[:2]==['archive','--format=tar']and re.fullmatch('[a-f0-9]{40}',args[2]):operation='archive'
+ category='unclassified'
+ # Classification of bounded stderr, never its raw text or arguments.
+ lower=stderr.lower()
+ if b'xcrun:'in lower:category='developer_tool_dispatch'
+ elif b'dubious ownership'in lower:category='ownership_refusal'
+ elif b'not a git repository'in lower:category='repository_unavailable'
+ elif b'operation not permitted'in lower or b'permission denied'in lower:category='os_access_refusal'
+ elif b'bad revision'in lower or b'unknown revision'in lower or b'invalid object name'in lower:category='revision_unavailable'
+ return {'operation':operation,'exit':code if type(code)is int and 0<=code<=255 else None,'category':category}
 def _git_bytes_core(repo,args,commands):
  # Artifact-controller-only output spool selection. Generic TMPDIR deliberately
  # does not alter historical callers; a present invalid key never falls back.
@@ -206,10 +222,18 @@ def _git_bytes_core(repo,args,commands):
     import errno
     code=errno.errorcode.get(getattr(error,'errno',None),'UNKNOWN');code=code if code in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC')else'UNKNOWN'
     failure=Unavailable('git_launch_unavailable');failure.launchDiagnostic={'phase':'git_spawn','class':'OSError'if isinstance(error,OSError)else'SubprocessError','errno':code};raise failure from None
+  outcome=None
   if 'AXIOM_PRIVATE_GIT_SCRATCH'in os.environ:
-   with tempfile.TemporaryFile(dir=scratch)as diagnostics:r=run(diagnostics)
+   with tempfile.TemporaryFile(dir=scratch)as diagnostics:
+    r=run(diagnostics)
+    if r.returncode:
+     diagnostics.seek(0);outcome=_git_failure_outcome(args,r.returncode,diagnostics.read(8192))
   else:r=run(subprocess.DEVNULL)
-  if r.returncode:fail("exact_git_read_failed")
+  if r.returncode:
+   failure=Unavailable('exact_git_read_failed')
+   if outcome is not None:failure.gitDiagnostic=outcome
+   raise failure
+
   output.seek(0);data=output.read(MAX_ARCHIVE+1)
   if len(data)>MAX_ARCHIVE:fail("git_output_limit")
   return data

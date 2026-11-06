@@ -120,10 +120,24 @@ def _stage_sources(p):
   if (got['sha256'],got['size'])!=(want['sha256'],want['size']):refuse('archived_source_changed')
  return stage
 
+_OFFLINE_REFUSALS=('fixed_child_context_required','archive_package_changed','offline_install_refused','exact_git_read_failed','artifact_git_scratch_unavailable','git_output_limit','exact_commit_required','commit_mismatch','invalid_json','duplicate_json_key','git_launch_unavailable')
+_OFFLINE_PYTHON_REASONS=('attribute_error','type_error','unicode_decode_error','timeout_expired')
+_OFFLINE_ERRNOS=('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC')
+_OFFLINE_PHASES=('packet','context','source','archive','extraction','archived_sources','install','receipt')
 def _offline_diagnostic(phase,error):
- if phase not in ('packet','context','source','archive','extraction','archived_sources','install','receipt'):return None
+ if phase not in _OFFLINE_PHASES:return None
  reason='offline_operation_unavailable'
- if type(error)is StageAUnavailable and len(error.args)==1 and type(error.args[0])is str and error.args[0]in ('fixed_child_context_required','archive_package_changed','offline_install_refused'):reason=error.args[0]
+ if type(error)in (StageAUnavailable,builder.Unavailable,stage_a_tools.builder.Unavailable) and len(error.args)==1 and type(error.args[0])is str and error.args[0]in _OFFLINE_REFUSALS:reason=error.args[0]
+ elif type(error)is AttributeError:reason='attribute_error'
+ elif type(error)is TypeError:reason='type_error'
+ elif type(error)is UnicodeDecodeError:reason='unicode_decode_error'
+ elif isinstance(error,OSError):
+  import errno
+  code=errno.errorcode.get(error.errno)
+  if code in _OFFLINE_ERRNOS:reason='os_'+code
+ else:
+  import subprocess
+  if type(error)is subprocess.TimeoutExpired:reason='timeout_expired'
  return {'phase':phase,'reason':reason}
 def run_offline_child(path):
  phase='packet'
@@ -227,7 +241,12 @@ def _child_failure_message(error):
  diagnostic=getattr(error,'launchDiagnostic',None)
  if type(diagnostic)is dict and set(diagnostic)=={'phase','class','errno'}and diagnostic['phase']in ('null_input','spawn','git_spawn')and diagnostic['class']in ('OSError','SubprocessError')and diagnostic['errno']in ('EPERM','EACCES','ENOENT','EMFILE','ENFILE','ENOMEM','EAGAIN','EIO','ENOEXEC','UNKNOWN'):return json.dumps({'error':'stage_a_artifact_unavailable','launchDiagnostic':diagnostic},sort_keys=True)+'\n'
  offline=getattr(error,'offlineDiagnostic',None)
- if type(offline)is dict and set(offline)=={'phase','reason'} and _offline_diagnostic(offline.get('phase'),StageAUnavailable(offline.get('reason')))==offline:return json.dumps({'error':'stage_a_artifact_unavailable','offlineDiagnostic':offline},sort_keys=True)+'\n'
+ allowed_reasons=(*_OFFLINE_REFUSALS,*_OFFLINE_PYTHON_REASONS,*('os_'+x for x in _OFFLINE_ERRNOS),'offline_operation_unavailable')
+ if type(offline)is dict and set(offline)=={'phase','reason'} and type(offline['phase'])is str and offline['phase']in _OFFLINE_PHASES and type(offline['reason'])is str and offline['reason']in allowed_reasons:
+  message={'error':'stage_a_artifact_unavailable','offlineDiagnostic':offline}
+  git=getattr(error,'gitDiagnostic',None)
+  if type(git)is dict and set(git)=={'operation','exit','category'} and type(git['operation'])is str and git['operation']in ('other','revision','manifest','lock','schema','archive') and (git['exit']is None or type(git['exit'])is int and 0<=git['exit']<=255) and type(git['category'])is str and git['category']in ('unclassified','developer_tool_dispatch','ownership_refusal','repository_unavailable','os_access_refusal','revision_unavailable'):message['gitDiagnostic']=git
+  return json.dumps(message,sort_keys=True)+'\n'
  return 'stage_a_artifact_unavailable\n'
 if __name__=='__main__':
  try:

@@ -63,4 +63,15 @@ class OfflineDiagnosticsTests(unittest.TestCase):
     else:saved.side_effect=error;packet['cacheSelection']={}
     with self.assertRaises(ValueError) as raised:p.run_offline_child('/synthetic-packet')
     self.assertEqual(raised.exception.offlineDiagnostic,{'phase':phase,'reason':'offline_operation_unavailable'})
+ def test_known_source_refusals_and_python_errors_have_finite_classification(self):
+  self.assertEqual(p._offline_diagnostic('source',p.stage_a_tools.builder.Unavailable('exact_git_read_failed')),{'phase':'source','reason':'exact_git_read_failed'})
+  self.assertEqual(p._offline_diagnostic('source',AttributeError('PRIVATE')),{'phase':'source','reason':'attribute_error'})
+  self.assertEqual(p._offline_diagnostic('source',PermissionError(1,'PRIVATE')),{'phase':'source','reason':'os_EPERM'})
+ def test_fixed_git_outcome_survives_cli_without_raw_error(self):
+  error=RuntimeError('PRIVATE')
+  error.offlineDiagnostic={'phase':'source','reason':'offline_operation_unavailable'}
+  error.gitDiagnostic={'operation':'revision','exit':72,'category':'developer_tool_dispatch'}
+  self.assertEqual(json.loads(p._child_failure_message(error)),{'error':'stage_a_artifact_unavailable','offlineDiagnostic':error.offlineDiagnostic,'gitDiagnostic':{'operation':'revision','exit':72,'category':'developer_tool_dispatch'}})
+  error.gitDiagnostic={'operation':'SECRET','exit':72,'category':'developer_tool_dispatch'}
+  self.assertNotIn('gitDiagnostic',p._child_failure_message(error))
 if __name__=='__main__':unittest.main()
