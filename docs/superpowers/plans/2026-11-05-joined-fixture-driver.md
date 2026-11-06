@@ -38,10 +38,10 @@
 **Interfaces:** consume the Task2 encoder's exact frame. Provide a bounded parser/state record with no I/O, and fixed source wiring that concurrently collects stdout/fd3, owns/reaps the helper and delivers once to the confirmed-owned controller. Preserve existing phase protocol and controller/native request types.
 
 - [ ] Write/run failing pure cases for wrong generation, malformed/excess length, extra/duplicate JSON keys/cases, bad token/plan/nonce fields, fragmentation and incomplete EOF.
-- [ ] Implement parser and source handoff; keep all real platform calls behind fully substituted test functions.
+- [x] ~~Implement parser and source handoff; keep all real platform calls behind fully substituted test functions.~~
 - [ ] Write/run failing fake-platform cases for64KiB pipe pressure, interleaved phase/HBA ACK, failed/unknown reap, cancellation and zero delivery before provisioning commits; implement then verify GREEN.
-- [ ] Add controller six-op source/retained-connection logic and fake ownership/lifetime tests; compile operational objects only and leave them nonexecutable/unrun.
-- [ ] Record commands, source hashes, test scope and task review; root commits after integration.
+- [x] ~~Add controller six-op source/retained-connection logic and fake ownership/lifetime tests; compile operational objects only and leave them nonexecutable/unrun.~~
+- [x] ~~Record commands, source hashes, test scope and task review; root commits after integration.~~
 
 ## Task 2 — TypeScript frame, actual authentication and fixed scenario/provider program
 
@@ -63,9 +63,9 @@
 **Interfaces:** internal `createPrivateMergeExecutionCoverage(repo,capturedAuthority,registeredPrivateGraph)` with direct import of actual canonical identity. Capture actual private session resolver, clock and graph factories/configuration, not request DTOs. Produce request-bound `readCoverage(selection,signal,tx?)` and `verifyBaselineActivation(tx,scope,baseline)`, plus a per-attempt binding/currentness check. Derive scope by parsing actual stored plan/release and current connection; request ID/plan ID come from the validated six-op route and are rechecked against storage. Optional service coverage port is absent in global/default composition and must be recognized as an actual private registration, not an arbitrary boolean callback.
 
 - [ ] Write/run RED tests for registered positive scope, absent/mismatched factories/repo/auth/transport/current origin, stale source, wrong scope/action/tenant and revoked authority.
-- [ ] Implement one private registration reader and reuse actual release/plan/source authority contracts; validate registration again after awaited work. No provider/network I/O inside the locked registration check.
-- [ ] Add optional recognized private coverage to revision-store verification, readExecutionCoverage and guarded baseline activate(id,parent,nonce); preserve default unavailable behavior and current evidence/preflight/roles/independent review/CAS.
-- [ ] Bind actual per-attempt guard/credential/transport construction back to the same registration before claim, credential exposure and final intent. Preserve existing default V2 executor.
+- [x] ~~Implement one private registration reader and reuse actual release/plan/source authority contracts; validate registration again after awaited work. No provider/network I/O inside the locked registration check.~~
+- [x] ~~Add optional recognized private coverage to revision-store verification, readExecutionCoverage and guarded baseline activate(id,parent,nonce); preserve default unavailable behavior and current evidence/preflight/roles/independent review/CAS.~~
+- [x] ~~Bind actual per-attempt guard/credential/transport construction back to the same registration before claim, credential exposure and final intent. Preserve existing default V2 executor.~~
 - [ ] Test service activation/read/guard using the actual coverage code and mocked transactions/native facts, not seeded pointers or verifyCoverage=>true. Record limitations and review.
 
 ## Task 4 — Joined canonical lifecycle and source inventory
@@ -75,7 +75,7 @@
 - [ ] Wire F0 producer's fixed auth frame without changing phase stdout, then F1 canonical initialize before readiness.
 - [ ] Wire F3 only after true pending-handler drain and before dispatch resolves/native completion; test aborted/expired/lost-origin response cannot issue a decision or advance a case.
 - [ ] Join exact controller descriptors, helper hashes, source closure and fixed synthetic bootstrap/provider selection; no environment/URL/body fixture switch or arbitrary callback.
-- [ ] Exercise actual six-op dispatcher→private graph→real registered coverage/guard/store code with simulated native/storage/provider observations. Required positive is enrolled; unenrolled compatibility cannot replace it.
+- [x] ~~Exercise actual six-op dispatcher→private graph→real registered coverage/guard/store code with simulated native/storage/provider observations. Required positive is enrolled; unenrolled compatibility cannot replace it.~~ Final two-test batch includes the full ten-case sequence; actual native/SQL/compiled consumer acceptance remains open.
 - [ ] Preserve older tests/receipts and original operational matrix. Save exact remaining actual artifact/SQL/System/custody/fleet/human gates.
 
 ## Task 5 — Closing verification and recovery
@@ -90,3 +90,14 @@
 - Ruling: retain existing specialized workers and parallelize only disjoint owned files, rather than spawning fresh agents per task. The user explicitly requested three backend workers plus one visual worker; uncoordinated shared edits would cost rework.
 - Ruling: pure/mock approval does not authorize any actual isolated PostgreSQL run. Prepare those tests but defer actual SQL to an exact later decision; claiming mock atomicity would misrepresent completion.
 - Initial state: reviewed design approved; Task2 codec RED observed before implementation. All implementation/acceptance checkboxes remain open.
+
+## Source checkpoint 2f85ab5a
+
+1. ~~Native source implementation/review/compile-only receipts saved~~;27native source hashes and3mode0600 artifacts verified, outputs unrun.
+2. ~~TypeScript fixed-profile implementation and shared private coverage wiring saved~~; joint scoped types pass. Eight coverage checks plus one separately selected cancellation regression pass under simulated native/storage facts. Broader exhaustive negative cases remain as unchecked above; mechanical/postimplementation tests are not claimed test-first.
+3. **In Progress:** composed actual writer/private graph/default V2 guard journey. Initial positive read/prepare/execute and separate policy revocation pass under mocked infrastructure; all ten ordered cases are still being verified.
+4. ~~Local incremental source bundle verified over924eb650~~. Full operational SQL/System/custody/SAME-consumer/fleet/all-mutation and genuine review acceptance remain open. No production change or new authority.
+
+Final joined mock-infrastructure evidence:2testsPASS (all10orderedcases plus separatepreclaimrevocation), scopedtypesPASS. No runtime source correction was needed; finalnewtest included. Root source review confirms only declared infrastructure/crypto/native observations mocked. Actual SQL atomicity/nativecustody/SAMEconsumer/fleet remain OPEN.
+
+Automatic-bootstrap supplement:1selectedPASS/2unselected through real fixed initializer/schedule/graph/dispatch/drain/F3/close for10cases; finalscopedtypesPASS. Only DBfactory and declaredinfra/native/crypto/provider facts mocked. RealSQL/nativecontroller/custody/fleet remainOPEN. No operating targetlaunch.
