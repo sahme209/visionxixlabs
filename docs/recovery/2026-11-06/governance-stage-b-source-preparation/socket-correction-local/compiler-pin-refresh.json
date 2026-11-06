@@ -1,0 +1,31 @@
+{
+  "format": "axiom.compiler-source-pin-refresh/1",
+  "oldManifestSha256": "939696a74736a528303015b48488aabf184693d503c2a65291ed9110b7461e4b",
+  "newManifestSha256": "33166f2beb5398a8becfcffba77c17164d8b813141fa7902622380fe8393d2ff",
+  "exactChangedEntries": [
+    {
+      "path": "lib/governance/qualification/fixtureAuthorizationFrame.ts",
+      "old": "4be8a17aaf209225cad1aa9a9c697cbcc733a5df7406dff6ee16ba64605afc47",
+      "new": "282b073b25a7454c36cd1c17d69eb52b03d27c55b490e8bce63a855b08cd8c03"
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureAuthentication.ts",
+      "old": "48a254ed9653b02dc48b001dc4a974ffc99050a17a31520c75653c49a5f2acbe",
+      "new": "1ab6d893cbfc0f8a2b3f4339887b8be43d6572b5e999690531186feee4fff34c"
+    },
+    {
+      "path": "lib/governance/qualification/privateSyntheticFixtureProducer.ts",
+      "old": "0590a04643552cf48e334d8d8702d40efd1dadd50b3baeeeb41864b54cf3e320",
+      "new": "87a0a7725634b31e9717627ea54b045e3b337883d1132fe1e97ef1b75f316316"
+    }
+  ],
+  "all98PackagePinsUnchanged": true,
+  "allOtherParsedEntriesUnchanged": true,
+  "serializationPreservedExcept3HashStrings": true,
+  "sourcePinValidation": {
+    "before": "3 mismatches refuse existing equality requirement",
+    "after": "all3 actualsource hashes match",
+    "scope": "ordinary hash equality assertions; compiler policy/webpack not executed"
+  },
+  "executionAuthorized": false
+}
