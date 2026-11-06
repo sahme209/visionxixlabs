@@ -1,0 +1,10 @@
+{
+  "receipt.json": {
+    "sha256": "84b8f1982eb222d3259c6179a1a25bafac3a357270b3e124baa24b53ddfdcbd8",
+    "size": 876
+  },
+  "execution-authorization.json": {
+    "sha256": "d37bc16ddfbd10de8edc2a48a5e78953d126b1947a672fc224055317afcc5d7f",
+    "size": 246
+  }
+}

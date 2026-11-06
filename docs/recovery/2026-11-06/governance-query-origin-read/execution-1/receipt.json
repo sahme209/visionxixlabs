@@ -1,0 +1,25 @@
+{
+  "allMatched": false,
+  "binaryDownloads": 0,
+  "buildStarted": false,
+  "engineCommit": "605197351a3c8bdd595af2d2a9bc3025bca48ea2",
+  "executingIssuerIdentity": "unavailable",
+  "executionAuthorized": false,
+  "format": "axiom.local-prisma-vendor-checksum/1",
+  "mutableSidecarsRead": false,
+  "parentWallDeadlineSecondsPerRequest": 22,
+  "platform": "darwin-arm64",
+  "requestsAttempted": 1,
+  "results": [
+    {
+      "cachePath": "/Users/samirahmed/.cache/prisma/master/605197351a3c8bdd595af2d2a9bc3025bca48ea2/darwin-arm64/libquery-engine",
+      "errorType": "HTTPError",
+      "httpStatus": 403,
+      "match": false,
+      "reason": "request_or_local_read_failed",
+      "sourceUrl": "https://binaries.prisma.sh/all_commits/605197351a3c8bdd595af2d2a9bc3025bca48ea2/darwin-arm64/libquery_engine.dylib.node.sha256"
+    }
+  ],
+  "retries": 0,
+  "selection": "query"
+}
