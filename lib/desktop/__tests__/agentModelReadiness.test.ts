@@ -27,6 +27,19 @@ beforeEach(() => {
 });
 afterEach(() => { cleanup(); vi.restoreAllMocks(); });
 async function draft() { await waitFor(() => expect((screen.getByRole("combobox", { name: "Agent conversation" }) as HTMLSelectElement).value).toBe("conversation-1")); fireEvent.change(screen.getByRole("textbox", {name:"Agent request"}), { target: { value: "Keep this unsent request" } }); }
+it("presents mode and model before the prompt while retaining the unsent request", async () => {
+  render(createElement(AgentChatView)); await draft();
+  const controls = screen.getByRole("group", {name:"Agent controls"});
+  const model = screen.getByRole("combobox", {name:"Agent model"});
+  const prompt = screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement;
+  expect(controls.compareDocumentPosition(prompt) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  expect(model.compareDocumentPosition(prompt) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+  fireEvent.click(within(controls).getByRole("button", {name:"Engineer"}));
+  expect(within(controls).getByRole("button", {name:"Engineer"}).getAttribute("aria-pressed")).toBe("true");
+  expect(prompt.value).toBe("Keep this unsent request");
+  expect((screen.getByRole("combobox", {name:"Agent conversation"}) as HTMLSelectElement).value).toBe("conversation-1");
+  expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
+});
 it("publishes ready model and context while conversation history is still loading", async () => {
   const history = deferred<unknown>(); m.client.listAgentConversations.mockReturnValue(history.promise);
   render(createElement(AgentChatView)); await openWorkspaceContext();

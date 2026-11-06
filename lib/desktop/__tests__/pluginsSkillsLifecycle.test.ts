@@ -18,6 +18,7 @@ it("uses one catalogue view while preserving search and read-only action guards"
   m.client.listAgentSkills.mockResolvedValue(ok({skills:[{...skill,status:"enabled"},{...skill,id:"other",name:"Release guidance",status:"disabled"}],storageAvailable:true}));
   show(false); await screen.findByText("Safe change");
   const views=within(screen.getByRole("group",{name:"Choose catalogue view"}));
+  expect(screen.getByText("Select one view at a time. Enabled and Disabled show saved skills.")).toBeTruthy();
   const search=screen.getByRole("searchbox",{name:"Search apps and skills"});
   fireEvent.change(search,{target:{value:"Safe"}});
   fireEvent.click(views.getByRole("button",{name:"Apps"}));
@@ -222,10 +223,10 @@ it.each([['read_only_connected','Manage'],['not_connected','Connect']])('keeps A
 
 it('finds existing Outlook controls from Apps without opening consent or showing a false empty result',async()=>{show();await screen.findByText('Safe change');expect(screen.queryByText('Existing Outlook connection controls')).toBeNull();fireEvent.change(screen.getByPlaceholderText('Search apps and skills'),{target:{value:'outlook'}});expect(screen.getByRole('button',{name:'Open Outlook'})).toBeTruthy();expect(screen.queryByText('No matching capabilities')).toBeNull();fireEvent.click(screen.getByRole('button',{name:'Open Outlook'}));expect(screen.getByText('Existing Outlook connection controls')).toBeTruthy();expect(m.open).not.toHaveBeenCalled();expect(m.client.startIntegrationConnection).not.toHaveBeenCalled()});
 
-it('organizes browsing separately from status and groups app connections without granting access',async()=>{
+it('groups exclusive catalogue views and app connections without granting access',async()=>{
  show();await screen.findByText('Safe change');
  expect(screen.getByRole('group',{name:'Browse capabilities'})).toBeTruthy();
- expect(screen.getByRole('group',{name:'Filter by saved status'})).toBeTruthy();
+ expect(screen.getByRole('group',{name:'Saved catalogue views'})).toBeTruthy();
  expect(screen.getByRole('heading',{name:'App connections'})).toBeTruthy();
  for(const name of ['Source control','Collaboration','Work management','Cloud delivery','Batch automation'])expect(screen.getByRole('heading',{name})).toBeTruthy();
  const search=screen.getByRole('searchbox',{name:'Search apps and skills'});

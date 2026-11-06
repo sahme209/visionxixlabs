@@ -1329,6 +1329,19 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           <p aria-label="Request configuration" className="sr-only">
             {OPERATION_MODES.find(mode => mode.id === operationMode)?.label} · {resolveAgentProfile(agentProfile)?.label} · {modelOptions.find(model => model.key === selectedModel)?.label ?? "No approved model"}{composerMode === "code" ? ` · File: ${filePath || "Choose a file below"}` : " · Chat"}
           </p>
+          <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
+            {OPERATION_MODES.map((mode) => (
+              <button data-help-id="agent.workspace.operation-mode" key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-white/10 text-zinc-100 ring-1 ring-white/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
+            ))}
+            <AgentModelSelector loading={modelState === "loading"} options={modelOptions} value={selectedModel} disabled={sending || modelState !== "ready"} onChange={key => {
+              if (!modelOptions.some(option => option.key === key && !option.unavailableReason)) return;
+              selectedChoice.current = key;
+              setSelectedModel(key);
+              setModelNotice(null);
+              try { if (preferenceKey) window.localStorage.setItem(preferenceKey, key); }
+              catch { setModelNotice("This model choice applies to the current session. Local preferences could not be saved."); }
+            }} />
+          </div>
           <div className="agent-prompt-row mb-2 flex items-end gap-3">
           <textarea data-help-id="agent.workspace.request"
             ref={composerRef}
@@ -1381,19 +1394,6 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           <p className="mb-3 text-[11px] text-zinc-500">{OPERATION_MODES.find((mode) => mode.id === operationMode)?.description}. Provider selection and customer credit checks remain governed by your workspace policy.</p>
           <p className="mb-2 text-[10px] text-zinc-500">Unsent prompts stay with each conversation in this session only. Sign-out or credential verification may clear them; targets and permissions remain workspace-controlled.</p>
           </Disclosure>
-          <div className="mb-3 flex flex-wrap items-center gap-1" role="group" aria-label="Agent controls">
-            {OPERATION_MODES.map((mode) => (
-              <button data-help-id="agent.workspace.operation-mode" key={mode.id} type="button" title={mode.description} aria-pressed={operationMode === mode.id} onClick={() => setOperationMode(mode.id)} className={`rounded-md px-3 py-1.5 text-xs ${operationMode === mode.id ? "bg-white/10 text-zinc-100 ring-1 ring-white/20" : "text-zinc-500 hover:text-zinc-300"}`}>{mode.label}</button>
-            ))}
-            <AgentModelSelector loading={modelState === "loading"} options={modelOptions} value={selectedModel} disabled={sending || modelState !== "ready"} onChange={key => {
-              if (!modelOptions.some(option => option.key === key && !option.unavailableReason)) return;
-              selectedChoice.current = key;
-              setSelectedModel(key);
-              setModelNotice(null);
-              try { if (preferenceKey) window.localStorage.setItem(preferenceKey, key); }
-              catch { setModelNotice("This model choice applies to the current session. Local preferences could not be saved."); }
-            }} />
-          </div>
           {selectedModelUnavailable && <p role="status" className="mb-2 text-[11px] text-amber-300">{selectedModelUnavailable}</p>}
           {modelNotice && <p role="status" className="mb-2 text-[11px] text-amber-300">{modelNotice}</p>}
           {modelState !== "ready" && modelState !== "loading" && <div role="status" className="mb-3 flex flex-wrap items-center justify-between gap-2 rounded-lg border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-zinc-400">
