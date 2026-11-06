@@ -1,0 +1,9 @@
+{
+  "parent": "484678213b8528a2447557b0380e07c082bdd444",
+  "commit": "b8ced685ab8d1e46ed4d23ee1b7babbecd19d20e",
+  "tree": "86ed37c5de3669f63ea640cbf9546b06142acce4",
+  "ref": "refs/heads/codex/stage-a-source-diagnostics-48467821",
+  "masterSha256": "f5f1678c58e6bd89246a0a04e900ab524bdeb09aa1b6d46333db6b1af6dcdc92",
+  "mainHeadUnchanged": true,
+  "mainIndexUnchanged": true
+}
