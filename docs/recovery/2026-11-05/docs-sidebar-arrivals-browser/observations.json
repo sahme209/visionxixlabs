@@ -1,0 +1,523 @@
+{
+  "inventory": [
+    {
+      "href": "/docs",
+      "text": "Overview"
+    },
+    {
+      "href": "/docs/quickstart-checklist",
+      "text": "Quickstart checklist"
+    },
+    {
+      "href": "/docs/getting-started",
+      "text": "Getting started"
+    },
+    {
+      "href": "/docs/source-modes",
+      "text": "Source modes"
+    },
+    {
+      "href": "/docs/surfaces",
+      "text": "Product surfaces"
+    },
+    {
+      "href": "/docs/aws-setup",
+      "text": "AWS setup"
+    },
+    {
+      "href": "/docs/azure-setup",
+      "text": "Azure setup"
+    },
+    {
+      "href": "/docs/gcp-setup",
+      "text": "GCP setup"
+    },
+    {
+      "href": "/docs/approval-workflow",
+      "text": "Approval workflow"
+    },
+    {
+      "href": "/docs/execution-plans",
+      "text": "Execution plans"
+    },
+    {
+      "href": "/docs/rollback",
+      "text": "AWS ECS rollback"
+    },
+    {
+      "href": "/docs/releaseops",
+      "text": "ReleaseOps overview"
+    },
+    {
+      "href": "/docs/releaseops/connectors",
+      "text": "CI/CD connectors"
+    },
+    {
+      "href": "/docs/releaseops/readiness",
+      "text": "Readiness scoring"
+    },
+    {
+      "href": "/docs/desktop-install",
+      "text": "Install the desktop app"
+    },
+    {
+      "href": "/docs/integration-setup",
+      "text": "Integration setup"
+    },
+    {
+      "href": "/docs/security-model",
+      "text": "Security model"
+    },
+    {
+      "href": "/docs/permissions-model",
+      "text": "Permissions model"
+    },
+    {
+      "href": "/docs/oauth-setup",
+      "text": "OAuth setup"
+    },
+    {
+      "href": "/docs/troubleshooting",
+      "text": "Troubleshooting"
+    },
+    {
+      "href": "/docs/audit-logs",
+      "text": "Audit evidence"
+    },
+    {
+      "href": "/docs/faq",
+      "text": "FAQ"
+    },
+    {
+      "href": "/docs/glossary",
+      "text": "Glossary"
+    }
+  ],
+  "arrivals": [
+    {
+      "target": {
+        "href": "/docs",
+        "text": "Overview"
+      },
+      "current": [
+        {
+          "href": "/docs",
+          "text": "Overview"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Find your next step."
+      ],
+      "mainTextLength": 2217,
+      "title": "Documentation — Axiom | Vision XIX Labs",
+      "url": "/docs",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/quickstart-checklist",
+        "text": "Quickstart checklist"
+      },
+      "current": [
+        {
+          "href": "/docs/quickstart-checklist",
+          "text": "Quickstart checklist"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Install, configure, and verify your first workflow."
+      ],
+      "mainTextLength": 2835,
+      "title": "Quickstart Checklist — Axiom Agent | VisionXIXLabs | Vision XIX Labs",
+      "url": "/docs/quickstart-checklist",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/getting-started",
+        "text": "Getting started"
+      },
+      "current": [
+        {
+          "href": "/docs/getting-started",
+          "text": "Getting started"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Getting started with Axiom Agent."
+      ],
+      "mainTextLength": 6458,
+      "title": "Getting started — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/getting-started",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/source-modes",
+        "text": "Source modes"
+      },
+      "current": [
+        {
+          "href": "/docs/source-modes",
+          "text": "Source modes"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Know which source you are using."
+      ],
+      "mainTextLength": 4466,
+      "title": "Source modes — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/source-modes",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/surfaces",
+        "text": "Product surfaces"
+      },
+      "current": [
+        {
+          "href": "/docs/surfaces",
+          "text": "Product surfaces"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Find the right place to work."
+      ],
+      "mainTextLength": 4404,
+      "title": "Product surfaces — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/surfaces",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/aws-setup",
+        "text": "AWS setup"
+      },
+      "current": [
+        {
+          "href": "/docs/aws-setup",
+          "text": "AWS setup"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Deploy through your workflow and your AWS role."
+      ],
+      "mainTextLength": 2215,
+      "title": "AWS ECS setup — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/aws-setup",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/azure-setup",
+        "text": "Azure setup"
+      },
+      "current": [
+        {
+          "href": "/docs/azure-setup",
+          "text": "Azure setup"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Azure setup."
+      ],
+      "mainTextLength": 3905,
+      "title": "Azure setup — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/azure-setup",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/gcp-setup",
+        "text": "GCP setup"
+      },
+      "current": [
+        {
+          "href": "/docs/gcp-setup",
+          "text": "GCP setup"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "GCP setup."
+      ],
+      "mainTextLength": 2669,
+      "title": "GCP setup — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/gcp-setup",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/execution-plans",
+        "text": "Execution plans"
+      },
+      "current": [
+        {
+          "href": "/docs/execution-plans",
+          "text": "Execution plans"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Understand a saved plan."
+      ],
+      "mainTextLength": 3457,
+      "title": "Execution plans — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/execution-plans",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/rollback",
+        "text": "AWS ECS rollback"
+      },
+      "current": [
+        {
+          "href": "/docs/rollback",
+          "text": "AWS ECS rollback"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Rollback is specific to the execution path."
+      ],
+      "mainTextLength": 1800,
+      "title": "AWS ECS rollback — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/rollback",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/releaseops",
+        "text": "ReleaseOps overview"
+      },
+      "current": [
+        {
+          "href": "/docs/releaseops",
+          "text": "ReleaseOps overview"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "ReleaseOps overview."
+      ],
+      "mainTextLength": 2817,
+      "title": "ReleaseOps overview — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/releaseops",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/releaseops/connectors",
+        "text": "CI/CD connectors"
+      },
+      "current": [
+        {
+          "href": "/docs/releaseops/connectors",
+          "text": "CI/CD connectors"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Integration boundaries."
+      ],
+      "mainTextLength": 4258,
+      "title": "Integration boundaries — ReleaseOps Documentation | Vision XIX Labs",
+      "url": "/docs/releaseops/connectors",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/releaseops/readiness",
+        "text": "Readiness scoring"
+      },
+      "current": [
+        {
+          "href": "/docs/releaseops/readiness",
+          "text": "Readiness scoring"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Deployment readiness."
+      ],
+      "mainTextLength": 2968,
+      "title": "Readiness checks — ReleaseOps Documentation | Vision XIX Labs",
+      "url": "/docs/releaseops/readiness",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/desktop-install",
+        "text": "Install the desktop app"
+      },
+      "current": [
+        {
+          "href": "/docs/desktop-install",
+          "text": "Install the desktop app"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Install the desktop app."
+      ],
+      "mainTextLength": 6880,
+      "title": "Install the desktop app — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/desktop-install",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/integration-setup",
+        "text": "Integration setup"
+      },
+      "current": [
+        {
+          "href": "/docs/integration-setup",
+          "text": "Integration setup"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Operator integration configuration"
+      ],
+      "mainTextLength": 4408,
+      "title": "Release integration setup — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/integration-setup",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/permissions-model",
+        "text": "Permissions model"
+      },
+      "current": [
+        {
+          "href": "/docs/permissions-model",
+          "text": "Permissions model"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Each capability has its own authority boundary."
+      ],
+      "mainTextLength": 2715,
+      "title": "Permissions model — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/permissions-model",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/oauth-setup",
+        "text": "OAuth setup"
+      },
+      "current": [
+        {
+          "href": "/docs/oauth-setup",
+          "text": "OAuth setup"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Enable Google + GitHub sign-in"
+      ],
+      "mainTextLength": 3773,
+      "title": "OAuth setup (Google + GitHub) — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/oauth-setup",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/troubleshooting",
+        "text": "Troubleshooting"
+      },
+      "current": [
+        {
+          "href": "/docs/troubleshooting",
+          "text": "Troubleshooting"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Troubleshooting"
+      ],
+      "mainTextLength": 3861,
+      "title": "Troubleshooting — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/troubleshooting",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/audit-logs",
+        "text": "Audit evidence"
+      },
+      "current": [
+        {
+          "href": "/docs/audit-logs",
+          "text": "Audit evidence"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Read the evidence, not just the status."
+      ],
+      "mainTextLength": 2865,
+      "title": "Audit evidence — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/audit-logs",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/faq",
+        "text": "FAQ"
+      },
+      "current": [
+        {
+          "href": "/docs/faq",
+          "text": "FAQ"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Frequently asked questions."
+      ],
+      "mainTextLength": 6251,
+      "title": "FAQ — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/faq",
+      "width": 1280
+    },
+    {
+      "target": {
+        "href": "/docs/glossary",
+        "text": "Glossary"
+      },
+      "current": [
+        {
+          "href": "/docs/glossary",
+          "text": "Glossary"
+        }
+      ],
+      "documentWidth": 1274,
+      "headings": [
+        "Glossary."
+      ],
+      "mainTextLength": 2704,
+      "title": "Glossary — Axiom Documentation | Vision XIX Labs",
+      "url": "/docs/glossary",
+      "width": 1280
+    }
+  ],
+  "notRepeated": [
+    "/docs/approval-workflow",
+    "/docs/security-model"
+  ],
+  "scope": "20 new sidebar clicks plus initial overview; two prior accepted article journeys not repeated; default1280x720"
+}

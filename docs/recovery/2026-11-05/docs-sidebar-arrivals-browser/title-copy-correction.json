@@ -1,0 +1,10 @@
+{
+  "file": "app/docs/quickstart-checklist/page.tsx",
+  "beforeSha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+  "afterSha256": "49eb4234bdd59f012d637751029d2fb0d10acb6fd0cbf4ac31556581b3979357",
+  "old": "title: \"Quickstart Checklist \u2014 Axiom Agent | VisionXIXLabs\",",
+  "new": "title: \"Quickstart Checklist \u2014 Axiom Agent\",",
+  "verification": "Reversing this one metadata-string replacement reconstructs complete prior file",
+  "layoutTemplate": "%s | Vision XIX Labs",
+  "scope": "Local source only; no rebuild/browser/live title acceptance"
+}

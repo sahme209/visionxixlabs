@@ -1,0 +1,9 @@
+# Documentation sidebar arrivals — actual browser
+
+One owned hidden IAB tab at1280×720 on guarded0c9. Captured the actual23-link sidebar inventory. Observed initial Overview and followed20 other sidebar links; Approval workflow/Security model were intentionally excluded because their actual journey was already verified. Every one of these21 observations had the expected local pathname, one main h1, one matching current-page sidebar link, nonempty main text and documentWidth1274≤1280. Titles/headings/widths retained per page.
+
+This is browser route/render/navigation-state evidence, not page-content/security correctness, all internal article controls, keyboard-only entry, AT/contrast/mobile/zoom/performance/media/editorial/customer readiness or complete B4/B6. Navigation used supported clicks, not a redirect-follow or account action. No code/auth/provider/download/form/AI control operated. Owned tab19 closed; original tabs/app unchanged.
+
+Source-bindings records the25 named served/current comparisons made before the following local copy correction. Any difference remains explicit; no all-current-source acceptance inferred from a historical build. Open copy issue: Quickstart title repeats the company brand suffix (“VisionXIXLabs | Vision XIX Labs”). No title was changed during this observation pass.
+
+After the observation pass, root removed only the duplicate brand from Quickstart metadata; app/layout.tsx retains its existing company title template. title-copy-correction.json records whole-file reversal and before/after hashes. This creates a third served/current difference after the two recorded article-caption differences; the historical binding is not silently restamped. No build or runtime test repeated for this metadata-only correction, and the running preview remains unchanged.

@@ -11,7 +11,7 @@ import {
 import { Callout, DocFeedback, DocHeader } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-    title: "Quickstart Checklist — Axiom Agent | VisionXIXLabs",
+    title: "Quickstart Checklist — Axiom Agent",
     description: "A verified checklist for installing Axiom Agent and completing a first non-production deployment workflow.",
 };
 

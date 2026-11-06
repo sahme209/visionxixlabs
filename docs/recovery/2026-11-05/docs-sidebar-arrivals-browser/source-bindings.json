@@ -1,0 +1,130 @@
+{
+  "previewSource": "0c9d0e4072056f56c28d95bf53925afc429ccaf2",
+  "files": {
+    "components/docs/DocsSidebar.tsx": {
+      "previewSha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+      "currentSha256": "80527df44ee29e8def19b010d97be3b2a7288d31898f4ec183c6d4eb5d2e118a",
+      "matches": true
+    },
+    "components/docs/DocPrimitives.tsx": {
+      "previewSha256": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+      "currentSha256": "b53fd5489949e44ac93fba83f4abb27fe655e08dcf5a21d485fada6ae3326855",
+      "matches": true
+    },
+    "app/docs/layout.tsx": {
+      "previewSha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "currentSha256": "43374b3a74c3aab6138a37d6b73fcc93cf22ffd7db05f1dc54482214043ea8ce",
+      "matches": true
+    },
+    "app/globals.css": {
+      "previewSha256": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4",
+      "currentSha256": "e0699f89ffebf7d68baa4fd58591afc6ad0eb2129f81501149ea45de2facc8f4",
+      "matches": true
+    },
+    "app/docs/page.tsx": {
+      "previewSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "currentSha256": "196e46613fe87de17d15b6714815aa31cf5525f573c2327a7997ca0caf6add32",
+      "matches": true
+    },
+    "app/docs/quickstart-checklist/page.tsx": {
+      "previewSha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+      "currentSha256": "a8a74e01a867d9101350eb8849bd6c66ba42062ed52c1fb3c1f9c500c13e9dcc",
+      "matches": true
+    },
+    "app/docs/getting-started/page.tsx": {
+      "previewSha256": "73d5f64e12ad08fedcf8a05c0c5ded47bf799daa772f1bd0e72f8e19fd0e315e",
+      "currentSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4",
+      "matches": false
+    },
+    "app/docs/source-modes/page.tsx": {
+      "previewSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+      "currentSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+      "matches": true
+    },
+    "app/docs/surfaces/page.tsx": {
+      "previewSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+      "currentSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+      "matches": true
+    },
+    "app/docs/aws-setup/page.tsx": {
+      "previewSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+      "currentSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+      "matches": true
+    },
+    "app/docs/azure-setup/page.tsx": {
+      "previewSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+      "currentSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+      "matches": true
+    },
+    "app/docs/gcp-setup/page.tsx": {
+      "previewSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+      "currentSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+      "matches": true
+    },
+    "app/docs/execution-plans/page.tsx": {
+      "previewSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+      "currentSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+      "matches": true
+    },
+    "app/docs/rollback/page.tsx": {
+      "previewSha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+      "currentSha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+      "matches": true
+    },
+    "app/docs/releaseops/page.tsx": {
+      "previewSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+      "currentSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+      "matches": true
+    },
+    "app/docs/releaseops/connectors/page.tsx": {
+      "previewSha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+      "currentSha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+      "matches": true
+    },
+    "app/docs/releaseops/readiness/page.tsx": {
+      "previewSha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+      "currentSha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+      "matches": true
+    },
+    "app/docs/desktop-install/page.tsx": {
+      "previewSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+      "currentSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+      "matches": true
+    },
+    "app/docs/integration-setup/page.tsx": {
+      "previewSha256": "f939343248aa38633f7ee1f8e4b13ae136b9a34bfbb74eef02686109df07269c",
+      "currentSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206",
+      "matches": false
+    },
+    "app/docs/permissions-model/page.tsx": {
+      "previewSha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "currentSha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "matches": true
+    },
+    "app/docs/oauth-setup/page.tsx": {
+      "previewSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+      "currentSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+      "matches": true
+    },
+    "app/docs/troubleshooting/page.tsx": {
+      "previewSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+      "currentSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+      "matches": true
+    },
+    "app/docs/audit-logs/page.tsx": {
+      "previewSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+      "currentSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+      "matches": true
+    },
+    "app/docs/faq/page.tsx": {
+      "previewSha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+      "currentSha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+      "matches": true
+    },
+    "app/docs/glossary/page.tsx": {
+      "previewSha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+      "currentSha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+      "matches": true
+    }
+  }
+}
