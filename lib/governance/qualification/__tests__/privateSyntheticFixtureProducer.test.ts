@@ -1,5 +1,5 @@
 import {describe,it,expect,vi} from 'vitest';
-import {decodeSyntheticFixtureFrame,createSyntheticFixtureProducerCore,fixtureHba} from '../privateSyntheticFixtureProducer';
+import {inspectFixedFixtureDatabase,decodeSyntheticFixtureFrame,createSyntheticFixtureProducerCore,fixtureHba} from '../privateSyntheticFixtureProducer';
 const frame=()=>{const b=Buffer.alloc(136,1);Buffer.from([65,88,70,73,88,0,0,1]).copy(b);b.write('c3b7bf334ce56a64575183b7a66e5109',8);return b;};
 describe('fixed synthetic producer',()=>{
  it('decodes fixed private frame only',()=>{const f=decodeSyntheticFixtureFrame(frame());expect(f.vault.length).toBe(32);expect(()=>decodeSyntheticFixtureFrame(frame().subarray(1))).toThrow();const bad=frame();bad[8]=0;expect(()=>decodeSyntheticFixtureFrame(bad)).toThrow();});
@@ -8,3 +8,13 @@ describe('fixed synthetic producer',()=>{
  it('refuses missing real recipe before SQL',async()=>{const connect=vi.fn();const core=createSyntheticFixtureProducerCore({connect,readRecipe:async()=>{throw Error();},inspect:async()=>true,parentFinalHba:async()=>true,validateFinal:async()=>true,seed:async()=>{}});await expect(core(frame())).rejects.toThrow();expect(connect).not.toHaveBeenCalled();});
  it('preserves uncertain final HBA without retry and closes clients',async()=>{const close=vi.fn(async()=>{}),client={$executeRawUnsafe:async()=>0,$queryRawUnsafe:async()=>[],$disconnect:close};const parentFinalHba=vi.fn(async()=>false);const core=createSyntheticFixtureProducerCore({connect:()=>client,readRecipe:async()=>({sql:'CREATE TABLE x(id text);',sha256:'a'.repeat(64)}),inspect:async()=>true,parentFinalHba,validateFinal:async()=>true,seed:async()=>{}});await expect(core(frame())).rejects.toThrow();expect(parentFinalHba).toHaveBeenCalledOnce();expect(close).toHaveBeenCalledTimes(3);await expect(core(frame())).rejects.toThrow();expect(parentFinalHba).toHaveBeenCalledOnce();});
 });
+
+const fixedRoot='/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/c3b7bf334ce56a64575183b7a66e5109';
+const currentSettings=()=>({hba:fixedRoot+'/fixture/pg_hba.conf',ident:fixedRoot+'/fixture/pg_ident.conf',listen:'',sockets:'/Library/AxiomQ/c3b7bf334ce56a64575183b7a66e5109/socket',collector:'off',statement:'none',duration:'-1',logduration:'off',errors:'panic',parameters:'0',errorparameters:'0',encryption:'scram-sha-256'});
+it('actual producer predicate accepts exact short coordinate and unchanged privacy/HBA/ident',async()=>{const query=vi.fn(async()=>[currentSettings()]);expect(await inspectFixedFixtureDatabase({$queryRawUnsafe:query} as any)).toBe(true);expect(query).toHaveBeenCalledOnce()});
+it.each([
+ ['old',{sockets:fixedRoot+'/fixture/socket'}],
+ ['foreign',{sockets:'/Library/AxiomQ/00000000000000000000000000000000/socket'}],
+ ['alias',{sockets:'/Library/AxiomQ/c3b7bf334ce56a64575183b7a66e5109/../c3b7bf334ce56a64575183b7a66e5109/socket'}],
+ ['TCP',{listen:'localhost'}],['HBA',{hba:'/tmp/pg_hba.conf'}],['ident',{ident:'/tmp/pg_ident.conf'}],['privacy',{parameters:'-1'}],
+])('actual producer predicate refuses %s before any SQL effects',async(_case,changed)=>{const client={$queryRawUnsafe:vi.fn(async()=>[{...currentSettings(),...changed}]),$executeRawUnsafe:vi.fn(),$disconnect:vi.fn(async()=>{})};expect(await inspectFixedFixtureDatabase(client as any)).toBe(false);const core=createSyntheticFixtureProducerCore({connect:()=>client,inspect:inspectFixedFixtureDatabase,readRecipe:async()=>({sql:'CREATE TABLE x(id text);',sha256:'a'.repeat(64)}),parentFinalHba:async()=>true,validateFinal:async()=>true,seed:async()=>{}});await expect(core(frame())).rejects.toThrow('synthetic_fixture_unavailable');expect(client.$executeRawUnsafe).not.toHaveBeenCalled()});

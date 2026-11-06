@@ -1,0 +1,36 @@
+{
+  "format": "axiom.local-mocked-test-observation/1",
+  "evidenceKind": "tool_returned_output_transcribed_not_independent_raw_stream_capture",
+  "python": {
+    "command": "python3 scripts/governance_local_issuer/tests/test_fixture_socket_coordinate.py",
+    "red": "missing AX_SYNTH_SOCKET_PATH causes NoneType.groups error",
+    "green": {
+      "exit": 0,
+      "tests": 1,
+      "result": "OK"
+    },
+    "initialHarnessError": "module invocation scripts.governance_local_issuer unavailable; direct script invocation used"
+  },
+  "typescript": {
+    "source": "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-socket-correction-uxcdnyl5/source",
+    "dependencies": "/private/tmp/axiom-docs-isolated-w2u8g7_y/source/node_modules",
+    "runtime": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "command": "scripts/run-vitest.mjs lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts lib/governance/qualification/__tests__/privateFixtureAuthentication.test.ts lib/governance/qualification/__tests__/privateFixtureSchedule.test.ts lib/governance/qualification/__tests__/privateFixtureJoined.test.ts --maxWorkers=1",
+    "red": {
+      "exit": 1,
+      "tests": 13,
+      "failed": 8,
+      "passed": 5,
+      "reason": "actual predicate named export not yet implemented"
+    },
+    "green": {
+      "execSession": 66065,
+      "exit": 0,
+      "files": 4,
+      "tests": 32,
+      "durationSeconds": 18.94
+    },
+    "warning": "existing Vite CommonJS/ESM config-loader future compatibility warning"
+  },
+  "noActualDatabaseSocketCompilerNativeBuildOrSigning": true
+}

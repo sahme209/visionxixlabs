@@ -1,0 +1,9 @@
+{
+  "approvalCall": "call_beVUg0U60qGpqaWybpHpiDYC",
+  "answer": "Approve local socket correction and tests",
+  "scope": "finite local source and pure/mocked tests",
+  "recordedAt": "2026-11-06T17:41:41.532288+00:00",
+  "installationAuthorized": false,
+  "compilationSigningBuildAuthorized": false,
+  "hostOrDatabaseActionsAuthorized": false
+}

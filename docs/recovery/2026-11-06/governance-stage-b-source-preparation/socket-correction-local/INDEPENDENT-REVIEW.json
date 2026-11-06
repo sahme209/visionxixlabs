@@ -1,0 +1,13 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "disposition": "PASS no important defects",
+  "bindingsMatched": 11,
+  "sourceBindingsSha256": "f05280a7238788085199d8733e0e3922efbbc6a36dfca03d343a23db5f795ec6",
+  "consumers": 4,
+  "nativeEncodingAndHbaIdentPrivacyPreserved": true,
+  "tenantActorNoTcpPreserved": true,
+  "scope": "local source review only",
+  "testsRerunByReviewer": false,
+  "installationReady": false,
+  "runtimeQualified": false
+}

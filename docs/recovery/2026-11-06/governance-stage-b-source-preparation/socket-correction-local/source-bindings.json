@@ -1,0 +1,64 @@
+{
+  "format": "axiom.local-source-change-evidence/1",
+  "authorizationReference": "call_beVUg0U60qGpqaWybpHpiDYC",
+  "files": [
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_resource_contract.h",
+      "sha256": "fd88568de48140ef62d269d14a3582bcf495dd409756979c535dd556abf8057f",
+      "size": 2942
+    },
+    {
+      "path": "packages/verified-issuer-runtime/native/synthetic_fixture_producer.c",
+      "sha256": "a71c82f32d4169198dca2da1a858389f2d74fc51790d152683c0c1b5d60479a4",
+      "size": 13327
+    },
+    {
+      "path": "lib/governance/qualification/fixtureAuthorizationFrame.ts",
+      "sha256": "282b073b25a7454c36cd1c17d69eb52b03d27c55b490e8bce63a855b08cd8c03",
+      "size": 3768
+    },
+    {
+      "path": "lib/governance/qualification/privateSyntheticFixtureProducer.ts",
+      "sha256": "87a0a7725634b31e9717627ea54b045e3b337883d1132fe1e97ef1b75f316316",
+      "size": 10051
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureAuthentication.ts",
+      "sha256": "1ab6d893cbfc0f8a2b3f4339887b8be43d6572b5e999690531186feee4fff34c",
+      "size": 3242
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureSchedule.ts",
+      "sha256": "e172b42b2b7d213a8bf23160e9b3a2c5bcd9f7fa0f3ae14edee3ad1dc5bb6290",
+      "size": 2408
+    },
+    {
+      "path": "scripts/governance_local_issuer/tests/test_fixture_socket_coordinate.py",
+      "sha256": "fb5fee682dce9b207af828af9ba3eb3a5666cbaa0b7b46e3053877fa5ec5d47b",
+      "size": 2040
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateSyntheticFixtureProducer.test.ts",
+      "sha256": "5e6687e6e075462507562109681114dbd6a7c4f63c544be8c97510ba3a925359",
+      "size": 5025
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureAuthentication.test.ts",
+      "sha256": "6dcc481f0b4c623001d15be21ec1b3ffe65ceca724bf916785d4a82ed8e17e8a",
+      "size": 5390
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureSchedule.test.ts",
+      "sha256": "112ef692ec99fb68b9e2f9e43ae3fed1823a32b335ce50e76a72a69fa0a2d1d2",
+      "size": 2928
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureJoined.test.ts",
+      "sha256": "07197d50faee0f519481e548438b38b2df3833f9e75478903dd62309a072a37e",
+      "size": 12778
+    }
+  ],
+  "executionAuthorized": false,
+  "installationReady": false,
+  "activationAllowed": false
+}

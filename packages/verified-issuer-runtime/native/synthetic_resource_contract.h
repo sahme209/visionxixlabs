@@ -6,6 +6,7 @@
 #include <string.h>
 /* Candidate installation identity only. Never proof of installation or custody. */
 #define AX_SYNTH_GENERATION "c3b7bf334ce56a64575183b7a66e5109"
+#define AX_SYNTH_SOCKET_PATH "/Library/AxiomQ/" AX_SYNTH_GENERATION "/socket"
 #define AX_SYNTH_ROOT "/Library/Application Support/Vision XIX Labs/Axiom Synthetic Custodian/generations/" AX_SYNTH_GENERATION
 #define AX_SYNTH_APP AX_SYNTH_ROOT "/Axiom Synthetic Custodian.app"
 #define AX_SYNTH_BROKER_SUFFIX "/Contents/MacOS/AxiomIssuerBroker"

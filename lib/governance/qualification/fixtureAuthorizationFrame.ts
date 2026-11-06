@@ -1,6 +1,7 @@
 import {z} from 'zod';
 export const FIXTURE_TENANT='qualification_workspace' as const;
 export const FIXTURE_GENERATION='c3b7bf334ce56a64575183b7a66e5109' as const;
+export const FIXTURE_SOCKET_DIRECTORY='/Library/AxiomQ/'+FIXTURE_GENERATION+'/socket';
 export const FIXTURE_CASE_IDS=['read_execution','prepare_enrolled','execute_enrolled','cancel_prepared','read_operation','execute_unknown','recover_unknown','revoke_before_claim','revoke_after_await','revoke_before_send'] as const;
 export const FIXTURE_SCENARIO_IDS=FIXTURE_CASE_IDS;
 const token=(actor:'requester'|'reviewer')=>z.string().max(512).regex(new RegExp('^axm\\.desk\\.dsk\\.qualification\\.'+actor+'\\.[a-f0-9]{64}$'));
