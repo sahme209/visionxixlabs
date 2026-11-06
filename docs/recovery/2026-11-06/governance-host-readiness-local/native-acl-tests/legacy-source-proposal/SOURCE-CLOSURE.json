@@ -1,0 +1,109 @@
+{
+  "bindings": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/test_owner_journal_native.c",
+      "sha256": "5b8706d0b63adfa4167ef28cd3d9ca45c8f3a95a15f7bae027a93bb3ce1d54fe",
+      "size": 4232,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_journal_native.h",
+      "sha256": "766dfbd8a2ca0d39d713775d821a1e0d7643863f3df1a9265db239d7d2d7f919",
+      "size": 501,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_journal.h",
+      "sha256": "8a5914c9be5b25602e18b419a41ecd5e133804aa1d854329ca089e137d638c4e",
+      "size": 1624,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_journal_native.c",
+      "sha256": "70df1020c3fb387adbd5cc01c66fa1634848327186e561de765f1a06ee2b719c",
+      "size": 3758,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_contract.h",
+      "sha256": "fd88568de48140ef62d269d14a3582bcf495dd409756979c535dd556abf8057f",
+      "size": 2942,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_acl_empty.h",
+      "sha256": "688fe24d8865b9c1a210c395effefdf52471eb64e871e641207659138ddd9f0c",
+      "size": 1120,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_journal.c",
+      "sha256": "ab8055bf5e9023bd61c4b29f0f41c1a917d354ba838d21eb532c5a383d3a32c6",
+      "size": 3704,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/tests/maintenance_closed_test.c",
+      "sha256": "bcfe03fe2eea52ddbd01f68c439ffb95a7c556bd680fd6f6294a36d6d2bfd76e",
+      "size": 4320,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_maintenance_main.c",
+      "sha256": "c152f6c0b31511224a87b5cf83c4d3ff9565ca756aae8c0af7bc153adb0c77f5",
+      "size": 2464,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/owner_config.h",
+      "sha256": "45d11a75cd5d283b0e841164211d5523e679d95d7e642b40601a3a2e4dec5245",
+      "size": 1383,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_readiness.h",
+      "sha256": "ba4c44339004791144134afe38a62756453c1ffb189bbace5b8332faa4806474",
+      "size": 363,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_resource_provisioner.h",
+      "sha256": "d3ba876483abff5bab626f31ce2a1ca7eaecd8d8e20ca685aff2d2407b1198f4",
+      "size": 624,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_prepared.h",
+      "sha256": "84fd33ce50a03cdb4fc86b3775a4614b035c40a4e3848ce97951f9dfccf154e0",
+      "size": 426,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/cssm_policy_copy.h",
+      "sha256": "3aa8ace9335dbc63fb20aafec7ba717fb0dc76f13035c0b31efa1b6b1d0a1574",
+      "size": 1035,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/synthetic_fixture_producer.h",
+      "sha256": "1858001dc0381d7a8643f471840cbf35786b505dae0b59dbf5117cd8a6f3b2e6",
+      "size": 498,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_private_resource_supplier.h",
+      "sha256": "fb84c3e36b940cf6fd25a0c10d258fb41d9ab76c736169c5250fbac8ff0655c0",
+      "size": 844,
+      "mode": 420
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/origin_process_identity.h",
+      "sha256": "bc31f80b03880648aaf28cc8ed4467b6bd20996576a1d2a0524a5c5290df52e0",
+      "size": 1050,
+      "mode": 420
+    }
+  ],
+  "productionSourcesChanged": false,
+  "testChildrenInvoked": 0,
+  "compilerChildrenInvoked": 0
+}

@@ -1,0 +1,22 @@
+{
+  "result": "TWO_ADDITIONAL_ACTUAL_COMPILED_STUB_TESTS_PASSED",
+  "journalAdapterAndFailureSweep": true,
+  "maintenanceClosedEntryAndFdGuard": true,
+  "allProtectedEffectsStubbed": true,
+  "actualCompiles": [
+    9,
+    10
+  ],
+  "actualTests": [
+    11,
+    12
+  ],
+  "originalUnitInvocationsUsed": 12,
+  "originalMaximumInvocations": 32,
+  "chargedActiveSecondsIncludingReservedPreparation": 2.840560875,
+  "originalMaximumActiveSeconds": 480,
+  "allActualChildrenReaped": true,
+  "otherLegacyFixturesUnrun": true,
+  "realAclSecurityCalls": false,
+  "platformOrCustodyQualified": false
+}

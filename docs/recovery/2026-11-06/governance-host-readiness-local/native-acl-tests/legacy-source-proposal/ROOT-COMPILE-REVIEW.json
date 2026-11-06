@@ -1,0 +1,9 @@
+{
+  "result": "PASS_TWO_FIXED_LEGACY_COMPILES_ONLY",
+  "independentReviewer": "offline_diagnostic_review",
+  "verifiedRecipeBindings": 27,
+  "unitLedgerRetained": true,
+  "invocationsUsedBeforeCompiles": 8,
+  "realOsCallsAllowed": false,
+  "actualBinaryReviewRequiredBeforeTests": true
+}

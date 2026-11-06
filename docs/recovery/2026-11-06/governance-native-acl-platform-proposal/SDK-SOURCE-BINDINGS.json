@@ -1,0 +1,127 @@
+{
+  "format": "axiom.in-memory-acl-platform-design-bindings/1",
+  "memoryApiOrCompilerInvoked": false,
+  "purpose": "design grounding only; no filesystem ACL/runtime qualification",
+  "sourceTextAndHeaderBindings": [
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/acl.h",
+      "sha256": "9511f84f0abe1e108e10979900d4fea8567534aef78f0984f7050c49f6c29ff7",
+      "size": 8877
+    },
+    {
+      "mode": 292,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/sys/_types/_guid_t.h",
+      "sha256": "7fa1d7251dbc7160b64401e61ec841c0f70414976c8d65b9204887fc65e2c618",
+      "size": 1642
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_init.3",
+      "sha256": "3a255e9b01bfcc1a1f84971741a989265a6395c81241415086635ce294d06aec",
+      "size": 3101
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_dup.3",
+      "sha256": "ff106b33d06525c8d53ad9bfb0b97cfa5526d7bb7dbf10434d604d339fecbb34",
+      "size": 2977
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_create_entry.3",
+      "sha256": "380d1fec63ad606e7bae2447d6bcaf9a024bf5eaa18e0c8c855649593d783c18",
+      "size": 3288
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_set_tag_type.3",
+      "sha256": "22ff5ed70de6b64f262ff32471718f3be24dbb9a2c2b2158ce09378e8e5fe51e",
+      "size": 2324
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_set_qualifier.3",
+      "sha256": "1cf5706a734ef918603c0c253ed0718b3dc0abccd8852d2dd3987f0a5bde63d1",
+      "size": 2881
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_get_permset.3",
+      "sha256": "f980fb37abf6a5c5b3a23ca9ebed472b61d954fed093fa241d26318e1ff5503c",
+      "size": 2470
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_clear_perms.3",
+      "sha256": "a750d97427c537de6c6f2cf4faecd98feb451a0f14132599fafda4b7f7ee2801",
+      "size": 2309
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_add_perm.3",
+      "sha256": "fd0b5b3a0777b0d791395f4b9e5aa33a889f1de3b807e35168df40be0f29739e",
+      "size": 2522
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_set_permset.3",
+      "sha256": "fe8374e5962a4ab114ee8b0422685a07e2461c332e8748bfba65e4ad87fc7314",
+      "size": 2359
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_get_perm_np.3",
+      "sha256": "41f9670cc11835b7c4bdb2f075b1f3826adf82be6eb75c58e932b6e05e676772",
+      "size": 2637
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_get_tag_type.3",
+      "sha256": "1c4ade7548ec700fec995c8896e8244c230843f930e706be20a43d8d3c91d5e0",
+      "size": 2522
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_get_flagset_np.3",
+      "sha256": "6ae2a611b3476070575bad363a656b6aefc28fc652f9db74b3d270771760b150",
+      "size": 2415
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_clear_flags_np.3",
+      "sha256": "a653cfc9b9c3c1898623e391def874877a4fdf05b9e2bec9e0d8f9a964910e69",
+      "size": 2237
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_set_flagset_np.3",
+      "sha256": "c884a44c311066989cfc567df69bf7bec9392497697b5b9705d2cddbd97ef0bb",
+      "size": 2375
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_copy_ext.3",
+      "sha256": "1cf4d84bf340dda10d433b6b2d627667a0ec1263af37d0eb5ca50f46d7bcafb9",
+      "size": 3868
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_free.3",
+      "sha256": "d111db2e113297a8af8c64cb926a47d99353558617746884271b22665f64865f",
+      "size": 2385
+    },
+    {
+      "mode": 420,
+      "path": "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/share/man/man3/acl_valid.3",
+      "sha256": "7be040bf2c77d1318f4da3bedb39a1392e433d7421ff5449ad62fb0cacb79f0a",
+      "size": 4356
+    },
+    {
+      "mode": 384,
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/packages/verified-issuer-runtime/native/protected_acl_empty.h",
+      "sha256": "688fe24d8865b9c1a210c395effefdf52471eb64e871e641207659138ddd9f0c",
+      "size": 1120
+    }
+  ]
+}

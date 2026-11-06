@@ -13,3 +13,7 @@ Nine legacy fixture sources were adapted and independently source-reviewed, incl
 No actual ACL/Security/Keychain operation, deployment-native component build, company-key signing, custodian/runtime launch, installation, account/group/grant, database/provider/network request or production change occurred. Accepted b8 carrier/signatures remain original and unlaunched. Actual OS ACL semantics/custody, all affected native compile/sign/provenance, complete legacy test qualification and real workflow enforcement remain open. A bounded real platform-memory qualification should precede avoidable six-role artifact rebuilding; it requires separate reviewed authority.
 
 Directory-shape diagnostic approval remains separate and pending; the earlier host preflight is consumed and must not be replayed. Single GitHub source push is consumed, Vercel is unspent but blocked by actual database compatibility. These later local changes are not in remote682268. No parent requirement is declared complete.
+
+## Subsequent bounded legacy extension
+
+The paragraphs above retain the initial8-invocation checkpoint. A later extension within the same original allowance compiled and passed two legacy targets: the journal adapter/failure sweep and maintenance closed-entry/descriptor guard. Their actual receipts, final12-call accounting and limitations are in [legacy observation](legacy-source-proposal/observed/README.md). Remaining legacy fixtures are still unrun. No real ACL/Security or custody acceptance is inferred.

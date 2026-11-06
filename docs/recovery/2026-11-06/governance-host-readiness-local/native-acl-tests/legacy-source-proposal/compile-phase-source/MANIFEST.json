@@ -1,0 +1,35 @@
+{
+  "purpose": "Exact compile-phase source before actual-output test pins",
+  "bindings": [
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/legacy-source-proposal/compile-phase-source/RECIPES.json",
+      "sha256": "0e20a7f25913cf85d6f1e3c3c865b44b6c1b9848f1ae0ac4038f715a0f101e06",
+      "size": 13951,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/legacy-source-proposal/compile-phase-source/run_step.py",
+      "sha256": "8adffda90ae10b30e68361d04bb8268b36b8a8f69790f8ebec6468454e8e1c6f",
+      "size": 8913,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/legacy-source-proposal/compile-phase-source/SOURCE-CLOSURE.json",
+      "sha256": "83b027e39a16d1ed0a0741343fa213d3a5c21aeeafe9cbb79a4cc7f3ab437ab5",
+      "size": 5125,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/legacy-source-proposal/compile-phase-source/binary_guard.py",
+      "sha256": "09a7724883caad4bf1f4a332a49f906f1453f834c3734cb66ecc2c6f6f271692",
+      "size": 2937,
+      "mode": 384
+    },
+    {
+      "path": "/Users/samirahmed/Documents/Codex/2026-10-29/axiom-ticket-install-completion/docs/recovery/2026-11-06/governance-host-readiness-local/native-acl-tests/legacy-source-proposal/compile-phase-source/PROPOSAL.md",
+      "sha256": "e9a7d398703d24ed01136bf2ccf9324b2b49c298cc617cca73a1b6f5d9914814",
+      "size": 4995,
+      "mode": 384
+    }
+  ]
+}

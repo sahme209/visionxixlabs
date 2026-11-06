@@ -1,0 +1,17 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS_DESIGN_ONLY",
+  "proposalSha256": "09139ec5566c8cd9220ffc852ef197ff07fadb93e67d24a56458b3c1e0a0b460",
+  "sdkBindingsSha256": "67f27a5bfa9a7df612444cec8c267c783da8466bac56acd47a535edb5298b7ae",
+  "verifiedSourceBindings": 20,
+  "subjects": [
+    "empty0",
+    "capacity1_no_entry",
+    "duplicate_empty",
+    "explicit_allow",
+    "explicit_deny"
+  ],
+  "fileOrDescriptorAclAccessAllowed": false,
+  "requiresFreshUserDecision": true,
+  "implementationOrActualApiAuthority": false
+}

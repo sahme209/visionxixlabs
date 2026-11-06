@@ -1,0 +1,63 @@
+{
+  "targets": [
+    {
+      "sha256": "cf1a243a1cbc758e21cb34e140e0232f524c454143e0a808e92bedb54d3a35db",
+      "size": 35776,
+      "imports": [
+        "___assert_rtn",
+        "___memset_chk",
+        "___stack_chk_fail",
+        "___stack_chk_guard",
+        "_free",
+        "_malloc",
+        "_memcmp",
+        "_memcpy",
+        "_memset",
+        "_puts",
+        "_strchr",
+        "_strcmp",
+        "_strlen",
+        "_strtok_r"
+      ],
+      "libraries": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "noAclSecurityProtectedOperationImports": true,
+      "name": "owner-journal-test",
+      "mapSha256": "22cf20955165a3c623020cb062c4f578b46144f543565e9d36f287205156dd56",
+      "mapBytes": 7342,
+      "executed": false
+    },
+    {
+      "sha256": "33a51952854996cdbd89386dfa6c3a304013d340883a8af6c7fc77d74aa0c088",
+      "size": 35504,
+      "imports": [
+        "___assert_rtn",
+        "___memset_chk",
+        "___stack_chk_fail",
+        "___stack_chk_guard",
+        "_free",
+        "_malloc",
+        "_memcmp",
+        "_memcpy",
+        "_memset",
+        "_puts",
+        "_strcmp",
+        "_strtok_r"
+      ],
+      "libraries": [
+        "/usr/lib/libSystem.B.dylib"
+      ],
+      "noAclSecurityProtectedOperationImports": true,
+      "name": "maintenance-test",
+      "mapSha256": "c7dd68f51718ae3c353a28433393dc3d59be46096af5043dd45a5bb2047e7898",
+      "mapBytes": 6636,
+      "executed": false
+    }
+  ],
+  "independentActualOutputReviewPending": true,
+  "compilerAttempts": [
+    9,
+    10
+  ]
+}

@@ -1,0 +1,86 @@
+{
+  "files": [
+    {
+      "name": "attempt-09.claim.json",
+      "sha256": "084bedc83337aab8cda7c33a0388359a89f89c142e75f1a2d38d7f1234406969",
+      "size": 1515
+    },
+    {
+      "name": "attempt-09.terminal.json",
+      "sha256": "b125a5da8adac9d6d19d5464b47c3b2988f5f6b5f1e223d37cbb60c0c3554313",
+      "size": 373
+    },
+    {
+      "name": "attempt-09.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-09.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-10.claim.json",
+      "sha256": "7c4460c0ee33c8e5160def853bf8a0b3ab7662ea28caa2f6b2739fc3e52c54f9",
+      "size": 1379
+    },
+    {
+      "name": "attempt-10.terminal.json",
+      "sha256": "e985ee76a18a75e8e78fc8f5cc4f307b93c1563be7433bb6dd424ccfc0280564",
+      "size": 371
+    },
+    {
+      "name": "attempt-10.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-10.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-11.claim.json",
+      "sha256": "8b1216eb454ad3dadebe0e09c60f21cb47e1d05af0ded7bb133dd27625859301",
+      "size": 1060
+    },
+    {
+      "name": "attempt-11.terminal.json",
+      "sha256": "eb99a0cfa7c5e06664ac272c3273fdf39df75aabc6d8bab2e8b46f7594028a88",
+      "size": 378
+    },
+    {
+      "name": "attempt-11.stdout.log",
+      "sha256": "c70812ad1a8adad26e9e8672ce2c4b590642e3b6553697c09cbed49396ea365d",
+      "size": 47
+    },
+    {
+      "name": "attempt-11.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    },
+    {
+      "name": "attempt-12.claim.json",
+      "sha256": "21e5738e94e089d03606618b0d692d3e2da0e790e6d69c149c2f3657481a4db7",
+      "size": 1034
+    },
+    {
+      "name": "attempt-12.terminal.json",
+      "sha256": "fce717057e229239920998c74e1bab376270b6864bc669a5c9cc4dd45bac62a6",
+      "size": 368
+    },
+    {
+      "name": "attempt-12.stdout.log",
+      "sha256": "5ae28c369fbe96e1624ee75234e7db23b0a42b77f62f6b1235b297f1e101a634",
+      "size": 76
+    },
+    {
+      "name": "attempt-12.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "size": 0
+    }
+  ],
+  "copiesMatchActualOwnedResults": true,
+  "actualPlatformAclBehaviorObserved": false
+}

@@ -1,0 +1,41 @@
+# One in-memory macOS ACL qualification — design only
+
+Local correction `905e5f0a` and its actual stub RED/GREEN establish source behavior against synthetic APIs. They do not establish real macOS opaque ACL serialization behavior. Before any avoidable six-role artifact batch, propose one separately authorized bounded compile and one **in-memory-only** platform process using the unchanged production `protected_acl_empty.h`. The existing local-unit ledger remains at8/32; this proposal grants nothing and does not consume, reset or extend that ledger. No implementation, compiler, test process, ACL API, host/path inspection or external read was performed in preparing this document. Local SDK header/man text and the current helper are hash-bound in [SDK-SOURCE-BINDINGS.json](SDK-SOURCE-BINDINGS.json).
+
+Use fresh fixed private root `Axiom Qualification Lab/2026-11-06-native-acl-memory-platform-1`, preserving all old packages, source proofs, receipts and carrier bytes. After source/recipe/isolation review and explicit user decision: ONE cached CLT clang compile (30seconds/shared64KiB/+5owned cleanup), independent actual executable/link-map/import review, then ONE fixed runtime (10seconds/shared64KiB/+5owned cleanup), no retry. External review time is excluded; active ceilings total40seconds, cleanup at most10seconds. Reuse the accepted single-outer sandbox pattern: network denied, filesystem writes limited to this owned root plus literal `/dev/null` data-write exception, private tmp/cache; child RLIMIT_CORE=0, no RLIMIT_FSIZE output clamp. Root owns invocations. Known compile/shape/case/cleanup failure or unknown outcome stops the entire unit, with no automatic fallback or rerun.
+
+## Exact memory subjects and expected results
+
+| Subject | Construction | Required helper result |
+| --- | --- | --- |
+| E0 | `acl_init(0)` |1, repeated once on the same borrowed handle |
+| E1 | `acl_init(1)`, with **no** `acl_create_entry` |1 |
+| ED | `acl_dup(E0)` |1 |
+| A | Fresh initialized ACL with one fully initialized explicit allow entry |0, repeated once |
+| D | Fresh initialized ACL with one fully initialized explicit deny entry |0, repeated once |
+
+The SDK acl_init(3) explicitly says count reserves space for at least that many entries while the new ACL contains **no entries**. Therefore E1 is an empty-capacity control, never the nonempty negative. acl_dup(3) returns independent owned working storage and preserves existing source pointers. ED tests actual duplicate-empty serialization, not constructor capacity. This matrix qualifies the production helper's real `acl_init`/`acl_size`/`acl_copy_ext` equality and cleanup behavior for these real memory subjects; it does not infer absence from `acl_get_entry` return values.
+
+## Valid explicit-entry construction, with no principal lookup
+
+For A and D, use the same fixed literal nonsecret GUID value in independent ACLs: `guid_t` with `.g_guid = {0x00,0x11,0x22,0x33,0x44,0x55,0x66,0x77,0x88,0x99,0xaa,0xbb,0xcc,0xdd,0xee,0xff}`. This is synthetic data, not an asserted user/group identity or grant. The SDK declares guid_t as a16byte union; no string/GUID parser or account resolver is needed.
+
+Exact checked call order for each independent nonempty ACL:
+
+1. `acl_init(1)` returns a nonnull owned ACL; `acl_create_entry(&acl,&entry)` returns0 and nonnull borrowed entry. Always retain the possibly updated ACL handle, not an old pointer.
+2. `acl_set_tag_type(entry, ACL_EXTENDED_ALLOW)` for A, `ACL_EXTENDED_DENY` for D. SDK constants are1 and2. Then `acl_set_qualifier(entry,&literal_guid)` returns0. The qualifier documentation requires that tag to have been set first and accepts a pointer to guid_t.
+3. `acl_get_permset(entry,&perms)` yields a nonnull borrowed descriptor. `acl_clear_perms(perms)`, `acl_add_perm(perms,ACL_READ_DATA)`, and `acl_set_permset(entry,perms)` each return0. SDK READ_DATA is1<<1. Readback `acl_get_perm_np(perms,ACL_READ_DATA)` must return1; negative/error is not absence.
+4. `acl_get_flagset_np(entry,&flags)` yields a borrowed descriptor; `acl_clear_flags_np(flags)` and `acl_set_flagset_np(entry,flags)` each return0. These are entry/working-storage memory setters, never file/fd ACL setters. No inheritance/installation policy is requested.
+5. `acl_get_tag_type(entry,&observed_tag)` returns0 and the exact selected tag. Only then call the production helper and require0 for the explicitly created entry. Entry/permission/flag descriptors are borrowed, never individually freed.
+
+No `acl_valid*` call is proposed: its documentation allows implementation-defined qualifier validation and contextual variants refer to filesystem objects. Construction/readback checks use explicit memory operations only; no account existence is asserted. Do not add name/UUID resolution, textual ACL conversion, membership lookup or a context validation fallback. No `acl_get_entry` is necessary to establish this matrix. The later source reviewer must verify every used signature against the bound SDK and keep this construction sequence finite.
+
+## Ownership, failures and actual-output review
+
+Keep E0/E1/ED/A/D as five independently owned top-level handles. All exit paths attempt exactly one `acl_free` per successfully acquired top-level handle, using the post-create handle for A/D. Any nonzero cleanup return fails the unit. The helper borrows the input, owns/frees only its own empty ACL and at-most64KiB buffers, and must remain byte-identical to the reviewed production header. Repeated calls exercise continued borrowed-handle usability; they are fixed cases within one process, not retries after failure. Stop new cases on the first unexpected result, but still clean up already acquired handles. Never dump opaque bytes, GUID text, entry content or raw errors; emit a fixed case/status enum and one exact final PASS line only after all five cases and cleanup succeed. No malformed/dangling pointer is passed to a real API. Existing allocation/short-copy/failure-injection proof stays in the stub unit; do not manufacture real allocator failures here.
+
+Before runtime, independently inspect the actual bounded ARM64 Mach-O and map using the existing pure-file guard approach. Permit only system dyld/libSystem and exact reviewed memory/assert/stdio imports plus these17 ACL memory symbols: `acl_init`, `acl_dup`, `acl_create_entry`, `acl_set_tag_type`, `acl_set_qualifier`, `acl_get_permset`, `acl_clear_perms`, `acl_add_perm`, `acl_set_permset`, `acl_get_perm_np`, `acl_get_tag_type`, `acl_get_flagset_np`, `acl_clear_flags_np`, `acl_set_flagset_np`, `acl_size`, `acl_copy_ext`, `acl_free`. No rpath, extra library, dynamic symbol lookup or unexpected import. The actual import subset/map and both final source/binary hashes must be frozen after compile and before the sole runtime. No broad prefix allowance for acl_set_* is acceptable. Review the source, not merely absent imports, to confirm all arguments are synthetic memory.
+
+Explicitly excluded: `acl_get_file`, any `acl_get_fd*`, `acl_get_link_np`, `acl_set_file`, any `acl_set_fd*`/`acl_set_link_np`, file ACL deletion, `acl_to_text`/`acl_from_text`, membership/NSS/GUID-name APIs, Security.framework/Keychain, actual protected native/helper/runtime/PG launch, principal or filesystem ACL inspection/change, accounts/groups/grants, credentials, installation, signing/key use, network/provider/database/deployment/spend. The compiler and dynamic loader necessarily read their already selected toolchain/SDK/system libraries; that is not filesystem ACL qualification. Direct-import/source checks do not attest arbitrary system-library internals.
+
+A PASS is limited to the selected host/toolchain's **synthetic in-memory** ACL construction, opaque helper acceptance/refusal and observed cleanup completion. It does not qualify ACL retrieval from any file/descriptor, effective authorization, filesystem ownership, journal durability, protected PG closure, installation, custody, executing identity or fleet behavior. If a real empty subject fails equality, preserve exact finite case/status and stop; do not weaken the helper, edit old receipts or start six-role rebuilds. Review the actual semantics and smallest correction before any new artifact decision. Fresh explicit authority is required for this real-API unit after independent proposal/source preparation review.

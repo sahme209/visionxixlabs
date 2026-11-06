@@ -1,0 +1,21 @@
+{
+  "reviewer": "offline_diagnostic_review",
+  "result": "PASS_TWO_LEGACY_STUB_TARGETS_ONLY",
+  "attempts": [
+    9,
+    10,
+    11,
+    12
+  ],
+  "actualTestExits": [
+    0,
+    0
+  ],
+  "exactStdoutAndEmptyStderr": true,
+  "copiesVerified": 16,
+  "ledgerWholeUnitInvocations": 12,
+  "ledgerChargedActiveSeconds": 2.840560875,
+  "otherLegacyFixturesRemainUnrun": true,
+  "realPlatformOrCustodyQualified": false,
+  "newAuthorityInferred": false
+}
