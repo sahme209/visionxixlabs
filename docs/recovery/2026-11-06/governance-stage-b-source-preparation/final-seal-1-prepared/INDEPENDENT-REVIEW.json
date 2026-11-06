@@ -1,0 +1,33 @@
+{
+  "status": "PASS_source_and_exact_prepared_bindings_only",
+  "reviewerExecutedHelpersTestsTargetsOrKeyUse": false,
+  "checkedCurrentFileBindings": 42,
+  "bindingMismatches": [],
+  "helperClosureCount": 21,
+  "unexpectedPythonHelpers": [],
+  "outputAndControllerAbsent": true,
+  "resolvedFinding": "Existing full assembly verifier and all13 file metadata plus directory baseline comparisons now run before exclusive sequence attempt and first signing call. New externalNode/fixture-resource mutation cases assert zero calls. Tests inspected only, producer reports7PASS; reviewer did not rerun.",
+  "controllerFunctionsPreserved": true,
+  "bounds": {
+    "signSeconds": 60,
+    "verifySeconds": 30,
+    "displaySeconds": 30,
+    "eachSharedOutputBytes": 65536,
+    "outerSeconds": 600,
+    "outerSharedOutputBytes": 1048576,
+    "ownedCleanupSeconds": 5
+  },
+  "unchangedValidatorSha256": "aedf14044271b381cc0a8e8864033766184664a16dc4afb05172ff6078ea36b8",
+  "frozenInputs": {
+    "operation-inputs.json": "16cbe8844f61b33045838e9472b1c35db5b3b947405770c516a56a218c46d606",
+    "source-bindings.json": "4ce957d5a27a9f7c47fca9ad8cf0312583ea51bfecabf3b0bbf0c581c6d55fea",
+    "prepared-final-seal-driver.py": "fede288bb751d8102232c1637c9c4fe2b7cfe0b9c8404d85e13517ad1bed9b98",
+    "prepared-final-seal-controller.py": "e7088914f5563a2034c397c85c4ff08e33a6a4d73a1608b4ef39a33bf734b831"
+  },
+  "scope": "One exact existing-key app sign/strict verify/display, baseline capture and unchanged v3postseal validator. Static only. No target launch, mount, installation, custody, provider/database or activation. Fresh specific user approval still required.",
+  "limitations": [
+    "Source and ordinary current-file review only",
+    "No signature/runtime/identity acceptance claimed",
+    "No new authority inferred from historical Nov5 grant"
+  ]
+}
