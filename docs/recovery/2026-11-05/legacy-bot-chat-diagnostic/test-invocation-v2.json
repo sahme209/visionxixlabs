@@ -1,0 +1,11 @@
+{
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "app/api/chat/__tests__/legacyAdmissionDiagnostic.test.ts",
+    "--pool=threads",
+    "--maxWorkers=1"
+  ],
+  "status": "started",
+  "reason": "source-confirmed CLI-only correction after precollection failure"
+}

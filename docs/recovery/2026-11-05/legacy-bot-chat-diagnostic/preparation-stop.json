@@ -1,0 +1,7 @@
+{
+  "phase": "before source extraction",
+  "error": "Local Python tarfile lacks extractall filter argument",
+  "testsRun": false,
+  "dependencyCopyStarted": false,
+  "reusedOwnedArchive": true
+}

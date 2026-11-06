@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "3474dfe2be7b7b4f80e997957b2fe5d54a1a6bc1",
+  "root": "/private/tmp/axiom-legacy-chat-diagnostic-jh3xmtse",
+  "stage": "/private/tmp/axiom-legacy-chat-diagnostic-jh3xmtse/source",
+  "dependencySource": "/private/tmp/axiom-catalogue-isolated-9uy2v02f/source",
+  "archiveSha256": "872e89e7f2492552792fbc6a08203044b24f3cda3509b9dccddf92a200f9f344",
+  "criticalBindings": [
+    {
+      "path": "package.json",
+      "sha256": "3f484e77eedd0eede93df152b8c1c4fedd139072b72dfa52957257d8d5a2e4d1",
+      "distinctInode": true
+    },
+    {
+      "path": "package-lock.json",
+      "sha256": "472bd3b6cabeca9129214fd58f3caf104a973cce0332d2ad3b29d82a8fa86775",
+      "distinctInode": true
+    },
+    {
+      "path": "node_modules/vitest/package.json",
+      "sha256": "a28126d97bcaf567da5bed69443b7f3bcd9a7a8c38c8b66e554686b6bb2c10e0",
+      "distinctInode": true
+    },
+    {
+      "path": "node_modules/vite/package.json",
+      "sha256": "fd3af4eaf4eecb2069f3e2715d6aaa2137d084a8a95097389523f52213c08094",
+      "distinctInode": true
+    },
+    {
+      "path": "node_modules/.package-lock.json",
+      "sha256": "42a4502ffb2cd63b21b0e8bf846f85e1279df2a86ba432d280e3c2e4924aff82",
+      "distinctInode": true
+    }
+  ],
+  "dependencySymlinks": 53,
+  "allLinksInsideOwnedSource": true,
+  "testsRun": false,
+  "masterWorktreeEditIncluded": false,
+  "scope": "Finite diagnostic source snapshot; not Governance artifact/build/backup qualification",
+  "priorPreparationStop": "preparation-stop.json"
+}

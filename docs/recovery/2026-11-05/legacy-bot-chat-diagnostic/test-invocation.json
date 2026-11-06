@@ -1,0 +1,12 @@
+{
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "app/api/chat/__tests__/legacyAdmissionDiagnostic.test.ts",
+    "--pool=threads",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "status": "started",
+  "scope": "four pure/synthetic diagnostic cases, terminalSDK+DB mocked"
+}

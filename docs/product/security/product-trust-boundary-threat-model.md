@@ -69,6 +69,10 @@ Source keys resolve to exact paths/ranges in the manifest. Controls are observed
 
 Example acceptance vectors are proposals, not tests run by this unit: revoked member between read/claim/final send; cross-tenant source ID and ciphertext swap; hostile repository text seeking unrelated context; duplicate/concurrent and dropped-response AI cost; legacy public/private bot classification; lost provider response with read-only recovery and no resend; missing audit store versus required operation history; substituted/stale installer metadata; stale/internal support article versus a released public answer. Each needs the right actual authority/storage/runtime boundaries and both positive and negative controls.
 
+## Later bounded diagnostic — T11 remains unqualified
+
+The [selected legacy-bot diagnostic](../../recovery/2026-11-05/legacy-bot-chat-diagnostic/README.md) subsequently passed four synthetic characterization/control cases using the actual selected call graph and mocked SDK/storage. It confirms the distinct unattributed legacy call family, not a production leak, real charge or universal policy bypass. Public embedding intent is established by source; publication/owner/accounting decisions remain required. The reviewed local containment proposal changes availability and has not been implemented or approved. This follow-up satisfies the proposed synthetic diagnostic step only; it does not satisfy T11's broader acceptance gates or change the33-runtime-source baseline.
+
 ## Verification, recovery and cost
 
 Three specialist source inventories and root review supplied this finite map. The accompanying manifest pins files/ranges; it does not validate runtime call coverage or security properties. No programs under qualification, OS/Security/Keychain operations, database/provider/model calls, scans, installs, credentials, grants, builds or deployments were run. No new dependency or spending. Documentation can be reverted without changing runtime behavior; retain historical models, evidence and the original master scope. Independent assessment and the complete A7 security program remain open, as do all21 master parents.

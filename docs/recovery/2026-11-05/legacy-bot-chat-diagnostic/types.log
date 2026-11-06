@@ -1,0 +1,7 @@
+lib/ai/gatewayModelCatalog.ts(22,135): error TS2769: No overload matches this call.
+  Overload 1 of 2, '(input: string | URL | Request, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type '{ cache: "no-store"; } | { next: { revalidate: number; }; }' is not assignable to parameter of type 'RequestInit | undefined'.
+      Object literal may only specify known properties, and 'next' does not exist in type 'RequestInit'.
+  Overload 2 of 2, '(input: URL | RequestInfo, init?: RequestInit | undefined): Promise<Response>', gave the following error.
+    Argument of type '{ cache: "no-store"; } | { next: { revalidate: number; }; }' is not assignable to parameter of type 'RequestInit | undefined'.
+      Object literal may only specify known properties, and 'next' does not exist in type 'RequestInit'.

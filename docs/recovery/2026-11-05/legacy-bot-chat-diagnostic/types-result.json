@@ -1,0 +1,5 @@
+{
+  "exitCode": 2,
+  "seconds": 1.494,
+  "scope": "new diagnostic test and actual TypeScript import closure, existing compiler/no emit"
+}

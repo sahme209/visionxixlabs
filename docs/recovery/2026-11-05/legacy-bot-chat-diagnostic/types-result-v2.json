@@ -1,0 +1,6 @@
+{
+  "exitCode": 0,
+  "seconds": 1.329,
+  "correction": "Owned source archive excludes generated next-env.d.ts; include actual installed node/next global types, no source declaration suppression",
+  "scope": "new test/import closure, noEmit"
+}

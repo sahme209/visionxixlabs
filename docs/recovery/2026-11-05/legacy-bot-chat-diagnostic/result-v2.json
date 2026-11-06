@@ -1,0 +1,9 @@
+{
+  "exitCode": 0,
+  "seconds": 0.916,
+  "boundFailure": null,
+  "logBytes": 695,
+  "testHashUnchanged": true,
+  "scope": "actual selected JS path with synthetic SDK/storage/rate; no production or real provider qualification",
+  "descendantQuiescence": "not established"
+}

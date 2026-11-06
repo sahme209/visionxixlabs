@@ -1,0 +1,15 @@
+{
+  "path": "app/api/chat/__tests__/legacyAdmissionDiagnostic.test.ts",
+  "sha256": "4257ccaf8f82765682288d37091b3b9f24350ef4853068b4edd2317d805e7bd1",
+  "sourceReviewed": true,
+  "command": [
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+    "scripts/run-vitest.mjs",
+    "app/api/chat/__tests__/legacyAdmissionDiagnostic.test.ts",
+    "--pool=threads",
+    "--maxWorkers=1",
+    "--minWorkers=1"
+  ],
+  "limitSeconds": 45,
+  "logLimitBytes": 1048576
+}

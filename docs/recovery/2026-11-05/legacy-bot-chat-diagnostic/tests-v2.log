@@ -1,0 +1,13 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v4.1.11 /private/tmp/axiom-legacy-chat-diagnostic-jh3xmtse/source
+
+ ✓ app/api/chat/__tests__/legacyAdmissionDiagnostic.test.ts (4 tests) 174ms
+
+ Test Files  1 passed (1)
+      Tests  4 passed (4)
+   Start at  23:52:22
+   Duration  237ms (transform 117ms, setup 0ms, import 19ms, tests 174ms, environment 0ms)
+
