@@ -17,7 +17,13 @@ export type ControlPlaneLayer = {
   readonly parts: readonly [ControlPlanePart, ControlPlanePart, ControlPlanePart];
   readonly guarantee: string;
   readonly onFailure: string;
+  /** What flows through the pipe to the next stage, and why it matters. Null for the last stage. */
+  readonly passesOn: { readonly label: string; readonly detail: string } | null;
+  /** Calm per-stage colour, from the shared pipe-flow palette. */
+  readonly tone: PipeTone;
 };
+
+export type PipeTone = "sky" | "teal" | "violet" | "amber" | "emerald";
 
 export const CONTROL_PLANE_LAYERS: readonly ControlPlaneLayer[] = [
   {
@@ -31,6 +37,8 @@ export const CONTROL_PLANE_LAYERS: readonly ControlPlaneLayer[] = [
     ],
     guarantee: "Every entry point uses the same governed backend; no side door skips policy.",
     onFailure: "Unauthenticated or out-of-scope calls are refused before reaching the core.",
+    passesOn: { label: "signed request", detail: "Who sent it, from which app, and exactly what they asked for." },
+    tone: "sky",
   },
   {
     id: "identity_policy",
@@ -43,6 +51,8 @@ export const CONTROL_PLANE_LAYERS: readonly ControlPlaneLayer[] = [
     ],
     guarantee: "Permissions are read fresh at each decision, not trusted from sign-in.",
     onFailure: "A missing or changed permission stops the request.",
+    passesOn: { label: "verified identity + policy", detail: "The confirmed person, their role and the rules that apply to this workspace." },
+    tone: "teal",
   },
   {
     id: "governance_core",
@@ -55,6 +65,8 @@ export const CONTROL_PLANE_LAYERS: readonly ControlPlaneLayer[] = [
     ],
     guarantee: "Approval is never execution, and no one approves their own request.",
     onFailure: "Rejected or expired proposals end there, and the reason is recorded.",
+    passesOn: { label: "approved proposal", detail: "The exact change a second person reviewed, frozen so only that change can run." },
+    tone: "violet",
   },
   {
     id: "intelligence",
@@ -67,6 +79,8 @@ export const CONTROL_PLANE_LAYERS: readonly ControlPlaneLayer[] = [
     ],
     guarantee: "No AI call without current policy and a held credit; never charged beyond prepaid.",
     onFailure: "Policy off or credit short: no call is made and the hold is released.",
+    passesOn: { label: "plan + settled credit", detail: "The AI-assisted plan, paid from prepaid credit with any unused hold released." },
+    tone: "amber",
   },
   {
     id: "execution_evidence",
@@ -79,6 +93,8 @@ export const CONTROL_PLANE_LAYERS: readonly ControlPlaneLayer[] = [
     ],
     guarantee: "Execution runs in your own account, and success needs evidence.",
     onFailure: "Unknown outcomes are reconciled before anything else runs.",
+    passesOn: null,
+    tone: "emerald",
   },
 ];
 
