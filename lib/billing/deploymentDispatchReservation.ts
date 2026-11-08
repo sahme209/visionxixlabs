@@ -2,7 +2,8 @@ import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./p
 import { publicDatabaseNow } from "./publicCreditAuthority";
 import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
 import { lockPublicOrganization, type PublicSql } from "./publicBillingStore";
-import { PUBLIC_PLAN_CATALOG, type PublicPlanId } from "./publicPlanCatalog";
+import type { PublicPlanId } from "./publicPlanCatalog";
+import { monthlyDeploymentLimitFor, DESIGN_PARTNER_DEPLOYMENT_OVERRIDES, type DeploymentQuotaOverrides } from "./deploymentAllowance";
 import { billingTierToPublicPlan } from "./deploymentQuota";
 import type { DeploymentExecutionRow } from "@/lib/releaseops/deploymentExecutionResponder";
 
@@ -69,6 +70,7 @@ export async function reserveDeploymentDispatch(
   repo: DeploymentReservationRepo,
   input: DeploymentReservationInput,
   now = new Date(),
+  overrides: DeploymentQuotaOverrides = DESIGN_PARTNER_DEPLOYMENT_OVERRIDES,
 ): Promise<DeploymentReservationResult> {
   if (!input.idempotencyKey || input.idempotencyKey.length > 200) {
     return { ok: false, error: "deployment_quota_unavailable" };
@@ -99,7 +101,7 @@ export async function reserveDeploymentDispatch(
           if(!publicPlan.usable)return {ok:false as const,error:"deployment_quota_unavailable" as const};
           const used=await tx.deploymentExecution.count({where:{organizationId:input.organizationId,createdAt:monthRange(decisionNow)}});
           if(!Number.isSafeInteger(used)||used<0)throw Error("deployment_count_unavailable");
-          const limit=publicPlan.monthlyDeployments;
+          const limit=monthlyDeploymentLimitFor(input.organizationId, overrides);
           if(used>=limit)return {ok:false as const,error:"deployment_quota_exhausted" as const,used,limit};
           const reservation=await tx.deploymentExecution.create({data:{...input,status:"reserved"}});
           return {ok:true as const,reservation,reused:false,planId:publicPlan.planId,used,limit};
@@ -110,14 +112,16 @@ export async function reserveDeploymentDispatch(
       // merely because time elapsed; reconcile the external outcome first.
       const billing = await tx.tenantBillingPlan.findUnique({ where: { organizationId: input.organizationId } });
       const planId = billingTierToPublicPlan(billing?.tier, billing?.status);
-      const plan = PUBLIC_PLAN_CATALOG.find((candidate) => candidate.id === planId);
-      if (!plan) return { ok: false as const, error: "deployment_quota_unavailable" as const };
+      // Every organization: 10 counted deployments per month or its
+      // design-partner override; plans no longer change the number.
+      const limit = monthlyDeploymentLimitFor(input.organizationId, overrides);
       const used = await tx.deploymentExecution.count({ where: { organizationId: input.organizationId, createdAt: monthRange(now) } });
-      if (plan.monthlyDeployments !== null && used >= plan.monthlyDeployments) {
-        return { ok: false as const, error: "deployment_quota_exhausted" as const, used, limit: plan.monthlyDeployments };
+      if (!Number.isSafeInteger(used) || used < 0) throw Error("deployment_count_unavailable");
+      if (used >= limit) {
+        return { ok: false as const, error: "deployment_quota_exhausted" as const, used, limit };
       }
       const reservation = await tx.deploymentExecution.create({ data: { ...input, status: "reserved" } });
-      return { ok: true as const, reservation, reused: false, planId, used, limit: plan.monthlyDeployments };
+      return { ok: true as const, reservation, reused: false, planId, used, limit };
     }, { isolationLevel: "Serializable" });
   } catch {
     return { ok: false, error: "deployment_quota_unavailable" };

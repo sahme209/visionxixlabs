@@ -24,7 +24,7 @@ beforeEach(() => {
   io.pending.mockResolvedValue(1);
   io.purchases.mockImplementation(async (query) => query.select?.id ? [] : [{ sku: "credits", status: "paid", validFor: "current_month", deliveredAICreditsCents: 500, reversedAICreditsCents: 0, deliveredSeats: 0, deliveredConnectors: 0 }]);
   io.holds.mockResolvedValue({ _sum: { reservedCents: 0 } });
-  io.quota.mockResolvedValue({ allowed: true, planId: "pro", used: 2, limit: 100, remaining: 98 });
+  io.quota.mockResolvedValue({ allowed: true, planId: "pro", used: 2, limit: 10, remaining: 8 });
 });
 afterEach(() => { cleanup(); vi.unstubAllEnvs(); });
 
@@ -32,7 +32,7 @@ describe("canonical customer billing evidence", () => {
   it("renders actual available records and scopes every financial query to the current tenant", async () => {
     render(await Page({}));
     expect(value("Organization seats")).toBe("3 / 3");
-    expect(value("Counted deployments")).toBe("2 / 100");
+    expect(value("Counted deployments")).toBe("2 / 10");
     expect(value("Included AI allowance remaining")).toBe("$204.70");
     expect(value("Gateway calls")).toBe("2");
     expect(screen.getByText("$0.30 settled")).toBeTruthy();
@@ -56,7 +56,7 @@ describe("canonical customer billing evidence", () => {
     expect(screen.queryByText(/listed plan and paid top-ups/)).toBeNull();
     expect(screen.queryByText("$0.00 settled")).toBeNull();
     // The independently verified quota is preserved, not replaced with unknown/unlimited.
-    expect(value("Counted deployments")).toBe("2 / 100");
+    expect(value("Counted deployments")).toBe("2 / 10");
   });
 
   it("does not turn a failed quota read into unlimited deployments or hide other available evidence", async () => {
@@ -111,9 +111,9 @@ describe("canonical customer billing evidence", () => {
   });
 
   it("preserves a known exhausted quota rather than treating denial as missing evidence", async () => {
-    io.quota.mockResolvedValue({ allowed: false, planId: "pro", used: 100, limit: 100, remaining: 0, reason: "deployment_quota_exhausted" });
+    io.quota.mockResolvedValue({ allowed: false, planId: "pro", used: 10, limit: 10, remaining: 0, reason: "deployment_quota_exhausted" });
     render(await Page({}));
-    expect(value("Counted deployments")).toBe("100 / 100");
+    expect(value("Counted deployments")).toBe("10 / 10");
     expect(screen.queryByRole("alert")).toBeNull();
   });
 

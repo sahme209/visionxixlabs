@@ -2,10 +2,8 @@ import { publicBillingPolicyEnabled, configuredPublicBillingIdentity } from "./p
 import { publicDatabaseNow } from "./publicCreditAuthority";
 import { readPublicEntitlementSnapshot } from "./publicBillingEntitlements";
 import type { PublicSqlRepository } from "./publicBillingStore";
-import {
-  PUBLIC_PLAN_CATALOG,
-  type PublicPlanId,
-} from "./publicPlanCatalog";
+import type { PublicPlanId } from "./publicPlanCatalog";
+import { monthlyDeploymentLimitFor, type DeploymentQuotaOverrides, DESIGN_PARTNER_DEPLOYMENT_OVERRIDES } from "./deploymentAllowance";
 
 export interface DeploymentQuotaRepo {
   tenantBillingPlan: {
@@ -57,41 +55,34 @@ export async function checkDeploymentQuota(
   repo: DeploymentQuotaRepo,
   organizationId: string,
   now = new Date(),
+  overrides: DeploymentQuotaOverrides = DESIGN_PARTNER_DEPLOYMENT_OVERRIDES,
 ): Promise<DeploymentQuotaDecision> {
   try {
+    // Every organization: 10 counted deployments per month, or its
+    // design-partner override. Plans no longer change the number.
+    const limit = monthlyDeploymentLimitFor(organizationId, overrides);
     if (publicBillingPolicyEnabled()) {
       const publicPlan = await (repo as unknown as PublicSqlRepository).$transaction(async tx=>readPublicEntitlementSnapshot(tx,organizationId,configuredPublicBillingIdentity(),await publicDatabaseNow(tx)),{isolationLevel:"RepeatableRead"});
       if(publicPlan){
         if(!publicPlan.usable)return {allowed:false,reason:"deployment_quota_unavailable",planId:publicPlan.planId,used:null,limit:null,remaining:0};
         const used=await repo.deploymentExecution.count({where:{organizationId,createdAt:currentMonthUtc(now)}});
         if(!Number.isSafeInteger(used)||used<0)throw Error("deployment_count_unavailable");
-        const limit=publicPlan.monthlyDeployments;
         if(used>=limit)return {allowed:false,reason:"deployment_quota_exhausted",planId:publicPlan.planId,used,limit,remaining:0};
         return {allowed:true,planId:publicPlan.planId,used,limit,remaining:limit-used};
       }
     }
     const billing = await repo.tenantBillingPlan.findUnique({ where: { organizationId } });
     const planId = billingTierToPublicPlan(billing?.tier, billing?.status);
-    const plan = PUBLIC_PLAN_CATALOG.find((candidate) => candidate.id === planId);
-    if (!plan) {
-      return { allowed: false, planId: null, used: null, limit: null, remaining: 0, reason: "deployment_quota_unavailable" };
-    }
 
     const used = await repo.deploymentExecution.count({
       where: { organizationId, createdAt: currentMonthUtc(now) },
     });
-    const limit = plan.monthlyDeployments;
-    if (limit !== null && used >= limit) {
+    if (!Number.isSafeInteger(used) || used < 0) throw Error("deployment_count_unavailable");
+    if (used >= limit) {
       return { allowed: false, planId, used, limit, remaining: 0, reason: "deployment_quota_exhausted" };
     }
 
-    return {
-      allowed: true,
-      planId,
-      used,
-      limit,
-      remaining: limit === null ? null : Math.max(0, limit - used),
-    };
+    return { allowed: true, planId, used, limit, remaining: Math.max(0, limit - used) };
   } catch {
     return { allowed: false, planId: null, used: null, limit: null, remaining: 0, reason: "deployment_quota_unavailable" };
   }
