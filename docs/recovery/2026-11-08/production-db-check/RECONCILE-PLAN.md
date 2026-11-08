@@ -31,3 +31,16 @@ These need Node plus the production `DATABASE_URL`. Options:
 - **(a)** You run the exact commands on your Mac with `DATABASE_URL` set only for that terminal.
 - **(b)** A reviewed one-off GitHub workflow using the repo's existing production database secret, dispatched manually with an explicit confirmation input. That's a production write via CI, so it needs separate approval.
 Either way, nothing secret goes into chat, files or logs.
+
+
+## CORRECTION and convergence strategy (2026-11-08, after reading Codex's records)
+**Corrections to the above:**
+- `WorkspaceAgentIdentity` was **not** left behind by a partial migration. Codex created it on 2026-10-23 through an approved schema-only repair (`ops/recovery/20261022_agent_identity_schema_only.sql`, record `ops/recovery/20261023_agent_identity_storage_repair_record.md`): zero rows, disabled, no tools, rehearsed on a restored backup first.
+- That record holds: *"Do not run its broad enabling/tool-grant backfill … or falsely mark omitted work complete. Generic migration deployment remains blocked pending an explicit migration-history convergence strategy."* So `migrate resolve --applied 20261013172000…` (step 3) would **falsely** claim its backfill ran. **Withdrawn.**
+
+**Proposed truthful convergence strategy (needs your explicit decision):**
+1. `20261013172000_add_workspace_agent_identity`: mark **`--rolled-back`**. That's true: the migration itself failed and applied nothing; its table came from the separate approved repair.
+2. Make that migration file **idempotent and non-granting**: `CREATE TABLE IF NOT EXISTS`, and seed nothing (no enabling, no tools). Fresh databases get the same disabled default production has, and a normal `migrate deploy` can re-run it on production as a no-op. *(PR #204 currently keeps the broad seed for fresh databases. It would be amended to match before merge.)*
+3. The 11 later migrations: `--applied` is true for them, since their objects exist exactly (69 objects, 203 columns verified). Before that, confirm how they were applied (the `ops/recovery/*_schema_only.sql` records) so the history note is accurate.
+4. **Agent identities for the 2 organizations:** your choice of enabled with 9 read-only tools stays a **separate, explicit data change** (`AGENT-IDENTITY-SEED-READONLY.sql`), recorded as a deliberate user override of the Oct 23 hold, narrowed from a broad grant to read-only. Not part of any migration.
+5. Quote fields: a new guarded migration, applied by `migrate deploy` once history converges.
