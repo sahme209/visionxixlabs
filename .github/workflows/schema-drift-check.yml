@@ -1,4 +1,4 @@
-name: Schema drift check (one-off)
+name: Expected schema export (one-off)
 # One-off, user-approved 2026-11-08: compare the migration chain with prisma/schema.prisma on a
 # disposable Postgres inside this job. No secrets, no production, no deployment. Throwaway branch only.
 on:
@@ -32,20 +32,22 @@ jobs:
       - name: Create disposable databases
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -c 'CREATE DATABASE fresh' -c 'CREATE DATABASE shadow'
-      - name: Replay the migration chain on an empty database
-        continue-on-error: true
-        run: DATABASE_URL="$FRESH" npx prisma migrate deploy 2>&1 | tee replay.log
-      - name: Diff migrations vs schema.prisma
-        continue-on-error: true
+      - name: Build the expected schema directly from schema.prisma
+        run: DATABASE_URL="$FRESH" npx prisma db push --skip-generate --accept-data-loss 2>&1 | tail -5
+      - name: Export the expected structure (same shape as the production read-only query)
         run: |
-          npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma \
-            --shadow-database-url "$SHADOW" --script > drift.sql 2> drift.err || true
-          wc -l drift.sql drift.err
+          PGPASSWORD=postgres psql -h localhost -U postgres -d fresh -At -c "
+          SELECT json_build_object(
+            'columns', (SELECT json_object_agg(table_name, cols) FROM (
+                SELECT table_name, json_object_agg(column_name, udt_name || CASE WHEN is_nullable='NO' THEN ' NOT NULL' ELSE '' END || coalesce(' DEFAULT ' || column_default, '')) AS cols
+                FROM information_schema.columns WHERE table_schema='public' GROUP BY table_name) t),
+            'indexes', (SELECT json_agg(indexname ORDER BY indexname) FROM pg_indexes WHERE schemaname='public'),
+            'enums', (SELECT json_object_agg(t.typname, (SELECT json_agg(e.enumlabel ORDER BY e.enumsortorder) FROM pg_enum e WHERE e.enumtypid=t.oid))
+                      FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname='public' AND t.typtype='e'))" > expected.json
+          wc -c expected.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: schema-drift
           path: |
-            replay.log
-            drift.sql
-            drift.err
+            expected.json
           retention-days: 3
