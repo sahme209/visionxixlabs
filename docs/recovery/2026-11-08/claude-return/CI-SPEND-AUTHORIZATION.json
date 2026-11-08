@@ -58,5 +58,15 @@
   "expectedUSD": 0,
   "used": 1,
   "note": "push after in-flight e3339fde run completes"
+ },
+ "final": {
+  "commit": "e9cd5f80",
+  "result": "all green incl. production build",
+  "runs": [
+   42492564156,
+   42492564160,
+   42492564159,
+   42492564188
+  ]
  }
 }
