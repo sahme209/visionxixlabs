@@ -36,7 +36,8 @@ Also updated: `docs/product/current-execution-board.md` (Nov 8 item 2) and the m
 - `npm ci`: **FAILED** — `getaddrinfo ENOTFOUND registry.npmjs.org` (machine-wide DNS, also outside the sandbox). `--offline` failed: cache incomplete (`zod-validation-error-4.0.2`). `node_modules` is not installed.
 - Full `tsc --noEmit --incremental false`: **NOT RUN** (no dependencies).
 - Targeted vitest: **NOT RUN**.
-- Desktop types/build, Python CLI tests: **NOT RUN**.
+- Python CLI: `python3 -m unittest sdk.python.__tests__.test_vxl_cli` — **PASS, 30 tests** (no npm needed).
+- Desktop types/build: **NOT RUN** (no dependencies).
 
 ## External effects
 
