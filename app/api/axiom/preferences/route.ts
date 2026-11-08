@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { loadPreferences, savePreferences } from "@/lib/axiom/agent/preferences";
 import type { PreferenceUpdates } from "@/lib/axiom/agent/preferences";
@@ -47,6 +48,9 @@ export async function GET(req: NextRequest) {
   if (!organizationId) {
     return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
   }
+  if (!await authorizedForOrganization(userId, organizationId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
 
   const prefs = await loadPreferences(organizationId);
 
@@ -67,6 +71,10 @@ export async function PUT(req: NextRequest) {
 
   if (!organizationId) {
     return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
+  }
+  // Preferences include the approval policy, so changing them needs a workspace admin.
+  if (!await authorizedForOrganization(userId, organizationId, true)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   const errors: string[] = [];

@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 
 export async function GET(req: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -21,6 +22,9 @@ export async function GET(req: NextRequest) {
 
   if (!organizationId) {
     return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
+  }
+  if (!await authorizedForOrganization(userId, organizationId)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 
   try {
