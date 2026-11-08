@@ -15,6 +15,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { runFirstExperience } from "@/lib/axiom/agent/onboarding";
 
@@ -54,6 +55,16 @@ export async function POST(req: NextRequest) {
 
     if (!organizationId || typeof organizationId !== "string") {
       return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
+    }
+
+    // Onboarding validates credentials and starts a scan: require admin authority in this
+    // workspace, and the cloud account must belong to it (tenant-scoping audit 2026-11-08).
+    if (!await authorizedForOrganization(userId, organizationId, true)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    const account = await prisma.cloudAccount.findUnique({ where: { id: connectedAccountId }, select: { organizationId: true } });
+    if (!account || account.organizationId !== organizationId) {
+      return NextResponse.json({ error: "Cloud account not found" }, { status: 404 });
     }
 
     const summary = await runFirstExperience({

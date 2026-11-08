@@ -8,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { retryTask } from "@/lib/axiom/taskQueue/runner";
 
@@ -33,6 +34,12 @@ export async function POST(req: NextRequest) {
 
   if (!taskId || typeof taskId !== "string") {
     return NextResponse.json({ error: "taskId is required" }, { status: 400 });
+  }
+
+  // Retrying can re-run apply or rollback work: require admin authority in the task's own workspace.
+  const task = await prisma.axiomAgentTask.findUnique({ where: { id: taskId }, select: { run: { select: { organizationId: true } } } });
+  if (!task || !await authorizedForOrganization(userId, task.run.organizationId, true)) {
+    return NextResponse.json({ error: "Task not found" }, { status: 404 });
   }
 
   try {

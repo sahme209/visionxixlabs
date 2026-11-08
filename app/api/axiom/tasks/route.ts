@@ -7,6 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { enqueueTasks, processQueue } from "@/lib/axiom/taskQueue/runner";
 import type { AgentTaskType } from "@/lib/axiom/taskQueue/types";
@@ -42,6 +43,11 @@ export async function GET(req: NextRequest) {
   const runId = req.nextUrl.searchParams.get("runId");
   if (!runId) {
     return NextResponse.json({ error: "runId is required" }, { status: 400 });
+  }
+  // The run's own workspace decides access; the caller must be an accepted member of it.
+  const run = await prisma.axiomAgentRun.findUnique({ where: { id: runId }, select: { organizationId: true } });
+  if (!run || !await authorizedForOrganization(userId, run.organizationId)) {
+    return NextResponse.json({ error: "Run not found" }, { status: 404 });
   }
 
   const tasks = await prisma.axiomAgentTask.findMany({
@@ -98,6 +104,19 @@ export async function POST(req: NextRequest) {
   const invalid = taskTypes.filter((t: string) => !VALID_TASK_TYPES.has(t));
   if (invalid.length > 0) {
     return NextResponse.json({ error: `Invalid task types: ${invalid.join(", ")}` }, { status: 400 });
+  }
+
+  // Tasks can apply or roll back cloud changes: require admin authority in this workspace, and
+  // the run and cloud account must both belong to it (tenant-scoping audit 2026-11-08).
+  if (!await authorizedForOrganization(userId, organizationId, true)) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
+  const [run, account] = await Promise.all([
+    prisma.axiomAgentRun.findUnique({ where: { id: agentRunId }, select: { organizationId: true, cloudAccountId: true } }),
+    prisma.cloudAccount.findUnique({ where: { id: cloudAccountId }, select: { organizationId: true } }),
+  ]);
+  if (!run || run.organizationId !== organizationId || !account || account.organizationId !== organizationId || run.cloudAccountId !== cloudAccountId) {
+    return NextResponse.json({ error: "Run or cloud account not found" }, { status: 404 });
   }
 
   try {
