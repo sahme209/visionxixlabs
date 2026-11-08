@@ -3,12 +3,16 @@ import type { PipeFlowStage } from "@/components/marketing/pipeKit/PipeFlow";
 import { CONTROL_PLANE_LAYERS } from "../controlPlaneModel";
 import { SECURITY_ASSESSMENT_STAGES } from "../securityAssessmentModel";
 import { INTEGRATION_FLOW_STAGES } from "../integrationFlowModel";
+import { DESKTOP_SETUP_STAGES } from "../desktopSetupFlowModel";
+import { PERMISSIONS_FLOW_STAGES } from "../permissionsFlowModel";
 
 /** Every page explanation built on PipeFlow must follow the same readable, honest shape. */
 const FLOWS: Record<string, readonly PipeFlowStage[]> = {
   product: CONTROL_PLANE_LAYERS,
   security: SECURITY_ASSESSMENT_STAGES,
   integrations: INTEGRATION_FLOW_STAGES,
+  download: DESKTOP_SETUP_STAGES,
+  permissions: PERMISSIONS_FLOW_STAGES,
 };
 
 describe.each(Object.entries(FLOWS))("pipe flow data: %s", (_name, stages) => {
