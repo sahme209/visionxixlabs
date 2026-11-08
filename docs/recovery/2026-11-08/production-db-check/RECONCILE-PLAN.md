@@ -44,3 +44,20 @@ Either way, nothing secret goes into chat, files or logs.
 3. The 11 later migrations: `--applied` is true for them, since their objects exist exactly (69 objects, 203 columns verified). Before that, confirm how they were applied (the `ops/recovery/*_schema_only.sql` records) so the history note is accurate.
 4. **Agent identities for the 2 organizations:** your choice of enabled with 9 read-only tools stays a **separate, explicit data change** (`AGENT-IDENTITY-SEED-READONLY.sql`), recorded as a deliberate user override of the Oct 23 hold, narrowed from a broad grant to read-only. Not part of any migration.
 5. Quote fields: a new guarded migration, applied by `migrate deploy` once history converges.
+
+## ADOPTED by the user (2026-11-08): exact sequence (still not executed)
+How the 11 migrations reached production: Codex's approved schema-only storage repairs (`ops/recovery/20261015_auth_schema_only.sql`, `20261022_billing_storage_repair.sql`, `20261022_public_billing_v1.sql`, `20261023_durable_agent_storage_only.sql`, `20261023_email_verification_storage_only.sql`, `20261023_cloud_enrollment_storage_only.sql`, legacy storage review, each with a `*_record.md`), applied outside Prisma's ledger. Checks 3–4 confirmed that the result matches the migration files exactly.
+
+Codex's `20261023_migration_replay_refusal.md` removed a "roll back then deploy everything" shortcut because it could replay the **broad** tool backfill. The adopted strategy keeps that protection: after a rollback, only the reviewed **non-granting** revision (checksum `fa3703cc…`) can pass the deploy preflight (PR #204).
+
+**Order matters:** if the failed row is rolled back while the 11 are still unrecorded, `migrate deploy` would try to re-create existing tables and fail partway. So:
+1. ~~Recovery: 6-hour restore window plus the snapshot at 17:59:32 UTC~~ ✅
+2. Merge PR #204 (idempotent, non-granting revision plus preflight gate) after CI passes.
+3. `prisma migrate resolve --applied <name>` for each of the 11, in this order: `20261013193000_add_durable_agent_workflow`, `20261013220000_add_founding_supporters`, `20261014090000_add_ai_usage_stripe_settlement`, `20261014120000_add_email_verification`, `20261014190000_verified_ai_credit_fulfillment`, `20261014210000_ai_usage_reservations`, `20261016010000_cloud_account_enrollment`, `20261016020000_cloud_account_credential_revocation`, `20261016030000_ecs_release_review_core`, `20261023220000_bind_legacy_cloud_tenant_relations`, `20261025174000_add_bot_saved_tasks`.
+4. `prisma migrate resolve --rolled-back 20261013172000_add_workspace_agent_identity`.
+5. `npm run db:migrate:deploy`. The preflight must report `deployAllowed: true`; Prisma then runs the no-op revision (`CREATE TABLE IF NOT EXISTS`) and the new quote-field migration once it's added.
+6. Agent identities for the 2 organizations: `AGENT-IDENTITY-SEED-READONLY.sql`, run separately as the user's explicit, recorded override of the Oct 23 hold (enabled, 9 read-only tools).
+7. Re-run read-only check 1: both quote columns present, `matches_repo_latest` true, `migrations_unfinished` 0.
+8. Production build 1 of 3, then smoke checks, then promote.
+
+Steps 3–6 write to production, and each needs your explicit go-ahead at the time it runs.
