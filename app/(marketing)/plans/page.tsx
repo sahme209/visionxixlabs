@@ -1,3 +1,5 @@
+import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
+import { PREPAID_FLOW_STAGES } from "@/lib/marketing/prepaidFlowModel";
 import { ownedPlansBinding, ownedPlansIntentState } from "@/lib/billing/ownedCheckoutBridge/http";
 import { isolatedRuntimeRequested } from "@/lib/billing/isolatedApplication/runtime";
 import type { Metadata } from "next";
@@ -150,6 +152,12 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           <p className="mt-3 text-xs leading-5 text-zinc-500">
             Example: {EXAMPLE_INPUT_TOKENS.toLocaleString("en-US")} input and {EXAMPLE_OUTPUT_TOKENS.toLocaleString("en-US")} output tokens on {exampleRate.displayName} cost {usd(exampleProviderCents)} at provider rates, so you pay {usd(exampleCustomerCents)}. Provider rates: {AI_RATE_CARD.providerRateSource}.
           </p>
+
+          <section aria-labelledby="prepaid-flow" className="mt-12">
+            <h3 id="prepaid-flow" className="text-lg font-medium text-zinc-100">How prepaid AI works</h3>
+            <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">From top-up to final debit, your credit moves through five steps. You see the cost first, and you are never charged beyond what you prepaid.</p>
+            <div className="mt-6"><PipeFlow stages={PREPAID_FLOW_STAGES} label="How prepaid AI works" /></div>
+          </section>
 
           <h3 className="mt-10 text-sm font-medium text-zinc-100">Expected cost per action, by AI level</h3>
           <div className="mt-3 overflow-x-auto">

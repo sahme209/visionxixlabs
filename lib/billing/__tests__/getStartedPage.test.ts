@@ -59,7 +59,8 @@ describe("Get started page (/plans)", () => {
     for (const banned of ["$29", "$23.20", "$79", "$63.20", "per user", "per seat", "Choose Pro", "Choose Enterprise", "Recommended", "Annual · save 20%", "Upgrade"]) {
       expect(text).not.toContain(banned);
     }
-    expect(screen.queryByRole("button")).toBeNull();
+    // The only buttons belong to the "How prepaid AI works" explanation (stages and Pause); none buys or upgrades.
+    for (const b of screen.queryAllByRole("button")) expect(b.closest("ol[aria-label='How prepaid AI works']") || /flow$/.test(b.textContent ?? "")).toBeTruthy();
     expect(io.context).not.toHaveBeenCalled();
     expect(io.fetch).not.toHaveBeenCalled();
   });
