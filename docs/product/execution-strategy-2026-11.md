@@ -47,3 +47,6 @@ Each reconcile write step (at execution time); a separate Preview DB; UID501 dia
 1. A "verifiable claims" page: each website claim links to its test or evidence.
 2. An interactive governance sandbox on synthetic data (approve, reject, rollback).
 3. A public trust center with an evidence-backed security posture once A7 lands.
+
+## Watch list
+- `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`: failed on PR #204 (2026-11-08) with `fixed_fixture_scenario_unavailable` at `afterSettled`, within the 60 s bound, while passing on PR #203's runs with identical Governance code. Treated as **possibly flaky**: one re-run of the failed job was requested. If it fails again, investigate the scenario race (A2 fixture), not the migration change.
