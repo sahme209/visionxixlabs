@@ -28,7 +28,7 @@ function supportsWebGL(): boolean {
     const probe = document.createElement("canvas");
     // failIfMajorPerformanceCaveat refuses software rendering (no GPU), where the scene would
     // saturate the main thread; those visitors get the 2D stage rail instead.
-    const opts = { failIfMajorPerformanceCaveat: true } as const;
+    const opts: WebGLContextAttributes = { failIfMajorPerformanceCaveat: true };
     const gl = probe.getContext("webgl2", opts) ?? probe.getContext("webgl", opts);
     if (!gl) return false;
     // Some software GPUs (e.g. SwiftShader in headless Chrome) do not raise the caveat; refuse them by name too.
