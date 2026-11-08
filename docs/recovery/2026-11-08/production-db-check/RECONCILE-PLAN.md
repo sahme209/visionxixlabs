@@ -21,7 +21,7 @@ Evidence: read-only checks 1–4, all run by the user in the Neon SQL Editor (br
    - `prisma migrate resolve --rolled-back 20261013172000_add_workspace_agent_identity`, then `prisma migrate resolve --applied 20261013172000_add_workspace_agent_identity` (its table already exists with the exact shape).
    - `prisma migrate resolve --applied <name>` for each of the 11 verified migrations, in order.
    - Then `prisma migrate status` must report no pending or failed migrations.
-4. **Agent seed: your product decision.** Either create identities for the 2 organizations as the migration intended (Agent **enabled** with the migration's tool list), or leave them disabled until each owner enables it. This has security weight (it grants the Agent its read and preview tools for those workspaces).
+4. ~~**Agent seed decision: user chose CREATE ENABLED (2026-11-08).**~~ Prepared as `AGENT-IDENTITY-SEED.sql` (idempotent `ON CONFLICT DO NOTHING`, count check, not executed). Original decision text: Either create identities for the 2 organizations as the migration intended (Agent **enabled** with the migration's tool list), or leave them disabled until each owner enables it. This has security weight (it grants the Agent its read and preview tools for those workspaces).
 5. **Quote fields as a proper new migration**, e.g. `20261108120000_add_pipeline_ai_call_quote_fields`, containing Codex's reviewed guarded SQL (refuses if the columns exist, timeouts, postcondition). After step 3, a normal `migrate deploy` applies it and history stays truthful.
 6. Re-run read-only check 1: both quote columns present, and `matches_repo_latest` true.
 7. Only then: **production build 1 of 3** → smoke checks → promote.
