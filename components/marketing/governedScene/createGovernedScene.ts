@@ -26,6 +26,8 @@ export type GovernedSceneOptions = {
   reducedMotion: boolean;
   onReached(index: number): void;
   onSelect(index: number): void;
+  /** Called once if frames stay over budget; the caller should switch to the 2D view. */
+  onTooSlow(): void;
 };
 
 const ACCENT = 0x6fc3ff;
@@ -51,7 +53,7 @@ function label(text: string, height: number, color: string, font: string): THREE
 
 export function createGovernedScene(canvas: HTMLCanvasElement, options: GovernedSceneOptions): GovernedSceneHandle {
   const mobile = Math.min(canvas.clientWidth, canvas.clientHeight) < 500;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: "high-performance", failIfMajorPerformanceCaveat: true });
   renderer.setPixelRatio(Math.min(mobile ? 1.5 : 2, window.devicePixelRatio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
@@ -209,10 +211,16 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
 
   const clock = new THREE.Clock();
   let frame = 0;
+  // Frame-budget guard: after a short warm-up, sustained frames over ~45 ms hand control back to 2D.
+  let sampled = 0, slow = 0, gaveUp = false;
   const tick = () => {
     frame = requestAnimationFrame(tick);
     if (!visible || document.hidden || !scenario) return;
-    const dt = Math.min(clock.getDelta(), 0.05), elapsed = clock.elapsedTime;
+    const raw = clock.getDelta(), dt = Math.min(raw, 0.05), elapsed = clock.elapsedTime;
+    if (!gaveUp && elapsed > 1.5 && sampled < 90) {
+      sampled += 1; if (raw > 0.045) slow += 1;
+      if (sampled >= 45 && slow / sampled > 0.6) { gaveUp = true; options.onTooSlow(); return; }
+    }
     const last = FLOW_STATIONS.length - 1, end = scenario.stop / last;
     if (playing) { progress += dt * 0.055; if (progress > end + 0.3) { progress = 0; history.length = 0; } }
     const p = Math.min(progress, end), k = Math.floor(p * last + 0.001), atEnd = p >= end - 1e-4;
