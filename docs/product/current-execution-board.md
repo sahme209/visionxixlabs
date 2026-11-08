@@ -427,7 +427,7 @@ Evidence-class tags describe only the bounded work in each row, not complete par
 
 ## Current execution unit
 
-**SECURITY — top priority (2026-11-08):** repo made public; full-history scan found live-format Stripe secret key, Stripe webhook secret and Resend API key in commit `252d1cf2` (`origin/ai-website-build`). Must be rotated by the user; not confirmed — [record](../recovery/2026-11-08/security-public-exposure/README.md). No values recorded.
+**SECURITY — top priority (2026-11-08):** repo made public; full-history scan found live-format Stripe secret key, Stripe webhook secret and Resend API key in commit `252d1cf2` (`origin/ai-website-build`). User reports all three rotated 2026-11-08 (not independently verified); repo stays public by user choice — [record](../recovery/2026-11-08/security-public-exposure/README.md). No values recorded.
 
 Current handoff November8: finish safe-release validation, then the approved memory-only ACL qualification; full A2/A7 and all21 parents remain open. [Claude start here](../recovery/2026-11-08/claude-handoff/README.md) and [tool/skill register](../recovery/2026-11-08/claude-handoff/TOOLS-AND-SKILLS.md).
 
