@@ -20,6 +20,9 @@ export async function inspectAuthRecovery(client, options = {}) {
     .filter((name) => /^\d+_/.test(name)).sort().map((name) => ({
       name,
       checksum: createHash("sha256").update(readFileSync(join(root, "prisma/migrations", name, "migration.sql"))).digest("hex"),
+      // Only a migration whose SQL actually reads "Organization" depends on that table (the original agent
+      // migration did; its approved 2026-11-08 convergence revision does not).
+      readsOrganization: /FROM\s+"Organization"\s*;/.test(readFileSync(join(root, "prisma/migrations", name, "migration.sql"), "utf8")),
     }));
   const workspaceId = `ws_${createHash("sha256").update(email).digest("hex").slice(0, 16)}`;
   return client.$transaction(async (tx) => {
@@ -45,7 +48,8 @@ export async function inspectAuthRecovery(client, options = {}) {
       ...applied.filter((row) => !knownNames.has(row.name)).map((row) => `unknown_applied:${row.name}`),
       ...localMigrations.filter((local) => applied.some((row) => row.name === local.name && row.checksum !== local.checksum)).map((row) => `checksum_mismatch:${row.name}`),
     ];
-    if (pending.includes("20261013172000_add_workspace_agent_identity") && !tables.has("Organization")) {
+    const agentMigration = localMigrations.find((row) => row.name === "20261013172000_add_workspace_agent_identity");
+    if (pending.includes("20261013172000_add_workspace_agent_identity") && agentMigration?.readsOrganization && !tables.has("Organization")) {
       migrationProblems.push("missing_relation:20261013172000_add_workspace_agent_identity:Organization");
     }
     const columns = await tx.$queryRaw`

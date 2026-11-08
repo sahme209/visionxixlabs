@@ -62,7 +62,8 @@ describe("read-only login recovery preflight", () => {
     expect(report.schema.verificationColumnPresent).toBe(false);
     expect(report.migrations.pending).toContain("20261014120000_add_email_verification");
     expect(report.migrations.pending).toContain("20261014190000_verified_ai_credit_fulfillment");
-    expect(report.migrations.problems).toContain("missing_relation:20261013172000_add_workspace_agent_identity:Organization");
+    // The approved convergence revision no longer reads "Organization", so its absence is not a problem.
+    expect(report.migrations.problems).not.toContain("missing_relation:20261013172000_add_workspace_agent_identity:Organization");
     expect(report.founder.canonicalUserId).toBe("existing-user");
     expect(report.founder.personalMembership).toBeNull();
     expect(report.founder.platformAdmin).toBe("configuration_unavailable");

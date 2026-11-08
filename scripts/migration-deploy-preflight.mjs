@@ -6,14 +6,25 @@ import { PrismaClient } from "@prisma/client";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const manualRecovery = new Set(["20261013172000_add_workspace_agent_identity"]);
+// User-approved convergence revision (2026-11-08): the agent migration file now only ensures its table
+// exists (idempotent, no enabling, no tool grant). After its failed ledger row is marked rolled back,
+// deploy may re-run exactly this revision; any other text still requires manual recovery.
+const approvedConvergence = new Map([
+  ["20261013172000_add_workspace_agent_identity", "fa3703cc048fe9f0f7c1285e44e01280725a2a39dd2a39e5411c52edbaca6ec4"],
+]);
 
 // This is a refusal gate, not a migration planner or permission to deploy.
-// Historical SQL and ledger entries remain immutable. In particular, the old
-// Agent migration combines table creation with an unapproved broad tool grant.
+// Historical ledger entries are never rewritten here. The original Agent migration text (pinned at
+// scripts/fixtures/agent-identity-migration.production-original.sql) combined table creation with an
+// unapproved broad tool grant; only the approved non-granting revision may be re-run after rollback.
 export function migrationDeployProblems(local, history, historyPresent) {
   const active = history.filter(row => row.finished && !row.rolledBack);
   const known = new Map(local.map(row => [row.name, row.checksum]));
   const completed = new Set(active.map(row => row.name));
+  for (const row of local) {
+    const rolledBack = history.some(h => h.name === row.name && h.rolledBack) && !history.some(h => h.name === row.name && !h.finished && !h.rolledBack);
+    if (rolledBack && approvedConvergence.get(row.name) === row.checksum) completed.add(row.name);
+  }
   return [...new Set([
     ...(!historyPresent ? ["migration_history_missing"] : []),
     ...history.filter(row => !row.finished && !row.rolledBack).map(row => `unfinished:${row.name}`),

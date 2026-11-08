@@ -19,6 +19,19 @@ it("blocks a new or rolled-back broad agent-permission backfill", () => {
   expect(migrationDeployProblems(local, [applied[0], { ...applied[1], finished: false, rolledBack: true }], true)).toContain(`manual_recovery_required:${unsafe}`);
 });
 
+it("allows only the approved non-granting agent revision to re-run after an explicit rollback", () => {
+  const approved = "fa3703cc048fe9f0f7c1285e44e01280725a2a39dd2a39e5411c52edbaca6ec4";
+  const original = "761c693202763e71c7ee25f99e194fe010335cf902b5ed37124351a93d42e3f7";
+  const withRevision = (checksum: string) => [local[0], { name: unsafe, checksum }];
+  const rolledBack = [applied[0], { name: unsafe, checksum: original, finished: false, rolledBack: true }];
+  expect(migrationDeployProblems(withRevision(approved), rolledBack, true)).toEqual([]);
+  expect(migrationDeployProblems(withRevision(original), rolledBack, true)).toContain(`manual_recovery_required:${unsafe}`);
+  expect(migrationDeployProblems(withRevision("other"), rolledBack, true)).toContain(`manual_recovery_required:${unsafe}`);
+  const stillFailed = [...rolledBack, { name: unsafe, checksum: original, finished: false, rolledBack: false }];
+  expect(migrationDeployProblems(withRevision(approved), stillFailed, true)).toContain(`manual_recovery_required:${unsafe}`);
+  expect(migrationDeployProblems(withRevision(approved), [applied[0]], true)).toContain(`manual_recovery_required:${unsafe}`);
+});
+
 it("blocks unfinished, changed, unknown and absent history independently", () => {
   expect(migrationDeployProblems(local, [{ ...applied[0], finished: false }], true)).toContain(`unfinished:${local[0].name}`);
   expect(migrationDeployProblems(local, [{ ...applied[0], checksum: "modified" }, applied[1]], true)).toContain(`checksum_mismatch:${local[0].name}`);

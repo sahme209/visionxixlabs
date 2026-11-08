@@ -1,4 +1,11 @@
-CREATE TABLE "WorkspaceAgentIdentity" (
+-- Convergence revision (2026-11-08, user-approved): idempotent and non-granting.
+-- The original text (pinned at scripts/fixtures/agent-identity-migration.production-original.sql,
+-- sha256 761c6932…, the checksum production recorded) ended with a broad enabling/tool-grant backfill
+-- that selected from a nonexistent "Organization" table and failed in production on 2026-10-14.
+-- Production's table was created separately by the approved 2026-10-23 schema-only repair, and the
+-- Oct 23 operational hold forbids the broad backfill. This revision only ensures the table exists:
+-- no identity is enabled and no tool is granted. Any identity grant is a separate, explicit decision.
+CREATE TABLE IF NOT EXISTS "WorkspaceAgentIdentity" (
     "organizationId" TEXT NOT NULL,
     "displayName" TEXT NOT NULL DEFAULT 'Axiom Agent',
     "enabled" BOOLEAN NOT NULL DEFAULT false,
@@ -9,12 +16,3 @@ CREATE TABLE "WorkspaceAgentIdentity" (
 
     CONSTRAINT "WorkspaceAgentIdentity_pkey" PRIMARY KEY ("organizationId")
 );
-
--- Preserve the already-enabled desktop Agent for existing organizations.
--- New organizations still fail closed until an owner enables their identity.
-INSERT INTO "WorkspaceAgentIdentity" ("organizationId", "displayName", "enabled", "allowedTools", "updatedBy", "updatedAt")
-SELECT "id", 'Axiom Agent', true,
-       '["list_environments","list_integrations","check_deploy_status","list_deployment_executions","list_github_files","inspect_github_repository","search_github_code","read_github_file","preview_scim_lifecycle","create_environment","configure_deployment_target","connect_identity_provider","create_github_branch","commit_github_file","commit_github_files","open_github_pull_request","trigger_aws_deploy"]'::jsonb,
-       'migration:preserve-existing-agent', CURRENT_TIMESTAMP
--- "Organization" never existed; tenants are text organizationIds with members in "OrgMembership".
-FROM (SELECT DISTINCT "organizationId" AS "id" FROM "OrgMembership") AS "Organization";
