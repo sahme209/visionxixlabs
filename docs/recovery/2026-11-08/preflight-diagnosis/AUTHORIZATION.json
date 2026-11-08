@@ -2,7 +2,7 @@
  "format": "axiom.preflight-diagnostic.authorization.v1",
  "date": "2026-11-08",
  "userApproval": "Approve, run in Codex (Claude session chat, 2026-11-08)",
- "grantedTo": "Codex runtime (existing authenticated Vercel tool), not Claude",
+ "grantedTo": "Originally approved to run in Codex; project ownership stays with Claude (user, 2026-11-08). Runs only through an authenticated Vercel tool available to Claude's session; none is connected yet.",
  "scope": {
   "providerCalls": 1,
   "tool": "vercel_filter_project_envs",
@@ -30,5 +30,6 @@
   "deployment",
   "the full preflight (still consumed)"
  ],
- "consumedAfterOneInvocation": true
+ "consumedAfterOneInvocation": true,
+ "status": "approved_not_run"
 }

@@ -1,4 +1,4 @@
-# Codex validation for Claude's branch — UNVERIFIED until these pass
+# Reference validation commands (historical: written for Codex; owner is now Claude — see CI-VALIDATION-PLAN.md) — UNVERIFIED until these pass
 
 Claude could not install dependencies (npm registry blocked on its Mac), so **nothing below has been type-checked or tested**. Use your **existing** `node_modules`. Do not copy `node_modules` between machines/architectures.
 

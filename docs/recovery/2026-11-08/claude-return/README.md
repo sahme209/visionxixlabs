@@ -1,4 +1,6 @@
-# Claude → Codex return — November 8, 2026
+# Claude work record — November 8, 2026
+
+> **Ownership:** the user directed that Claude stays responsible for the project; it is NOT handed back to Codex. The Codex validation notes in `VALIDATE.md` are kept as a reference command list only. The active path is `CI-VALIDATION-PLAN.md`.
 
 ## Where the work is
 
