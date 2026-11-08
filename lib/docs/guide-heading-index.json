@@ -251,7 +251,7 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc",
       "fields": [
         "Each capability has its own authority boundary.",
         "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. Axiom does not treat one successful connection as authority for everything else.",

@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
+import { PERMISSIONS_FLOW_STAGES } from "@/lib/marketing/permissionsFlowModel";
 
 export const metadata: Metadata = {
   title: "Permissions model — Axiom Documentation",
@@ -22,6 +24,12 @@ export default function PermissionsModelPage() {
       <Callout variant="safe" title="Fail closed">
         Desktop APIs resolve a bearer-token desktop session. GitHub tokens are tenant- and repository-scoped. AI requires both available credit and explicit workspace provider policy. Write permissions and approval requirements depend on the supported workflow. Review the action’s required capabilities and approval state before execution.
       </Callout>
+
+      <section aria-labelledby="permissions-flow" className="my-10">
+        <h2 id="permissions-flow" className="text-xl font-medium text-zinc-100">The boundaries a request crosses</h2>
+        <p className="mt-2 text-[15px] leading-7 text-zinc-400">Each stage is its own permission. Passing one never grants the next.</p>
+        <div className="mt-6"><PipeFlow stages={PERMISSIONS_FLOW_STAGES} label="The boundaries a request crosses" /></div>
+      </section>
 
       <DocSection id="roles" title="Workspace roles" kicker="01">
         <p>Workspace membership establishes the tenant boundary. Each supported action checks its required capability at the server; approval authority is distinct from permission to execute.</p>
