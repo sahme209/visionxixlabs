@@ -39,6 +39,8 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-08 | **Pricing direction confirmed** (plan L272): Axiom free to explore; **only AI is paid, as optional transparent prepaid usage**; enterprise by scoped evaluation; prices and refund rules shown before any charge; not a token reseller. Exact markup/BYOK/vendor still open (L276). The current per-seat plans ($29/$79) are not the direction | user plus plan |
 | 2026-11-08 | Stripe stays donations-only (Founding Supporters) until an explicit payment decision; AI-credit/subscription code stays test-mode | user plus plan L280 |
 | 2026-11-08 | User approved proceeding as long as everything is configured properly and works | user |
+| 2026-11-08 | **8 pricing defaults accepted** (audit §5): (1) 10 counted deployments per month per org for everyone, plus per-tenant design-partner overrides; (2) one versioned 1.5x rate card with exact cost per action; (3) $10 minimum top-up, no credit expiry for now; (4) unused balance refundable within 30 days, failed actions auto-released; (5) Stripe one-time Checkout behind the existing live flags (Axiom owns tax compliance); (6) BYOK for enterprise evaluations only, at first; (7) free time-boxed 30–60 day enterprise evaluations with a capped AI credit grant; (8) Sonnet 5.5 paid lane, retired model IDs removed | user; `pricing-economics-audit-2026-11-08.md` |
+| 2026-11-08 | **"Get started" pricing concept approved**: Axiom free to explore; prepaid AI usage as the only paid part (credit meter, cost shown first, never over prepaid); enterprise scoped evaluation; all rates/limits/refunds/disclosures before any charge. No live payments; per-seat plans retired from the page; markup stays open | user |
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.
@@ -47,3 +49,10 @@ Each reconcile write step (at execution time); a separate Preview DB; UID501 dia
 1. A "verifiable claims" page: each website claim links to its test or evidence.
 2. An interactive governance sandbox on synthetic data (approve, reject, rollback).
 3. A public trust center with an evidence-backed security posture once A7 lands.
+
+## Merged (2026-11-08, no deploy)
+- PR #203, the homepage 3D model (v4), restyle, render tooling and planning docs → `main` `68e74afe`.
+- PR #204, the converged agent migration plus the deploy-preflight gate → `main` `87ea0882`.
+
+## Watch list
+- `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`: failed on PR #204 (2026-11-08) with `fixed_fixture_scenario_unavailable` at `afterSettled`, within the 60 s bound, while passing on PR #203's runs with identical Governance code. **Confirmed intermittent:** the single re-run passed. It needs its own A2 fixture investigation (a race in the composed scenario); it isn't caused by PR #204.
