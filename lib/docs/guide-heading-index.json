@@ -117,7 +117,7 @@
     {
       "href": "/docs/approval-workflow",
       "source": "app/docs/approval-workflow/page.tsx",
-      "sourceSha256": "85b6c19186f099f536e100017139af83798c0236fd5f8b9148b4b690f3d3da16",
+      "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a",
       "fields": [
         "A write starts as a proposal.",
         "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
@@ -251,7 +251,7 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "a819f236e2c0202e1e3d779706aea36ef47f41ad93b25b13ced55ddee7a5427c",
+      "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc",
       "fields": [
         "Each capability has its own authority boundary.",
         "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. Axiom does not treat one successful connection as authority for everything else.",

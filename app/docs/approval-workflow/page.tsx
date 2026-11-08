@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
+import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
+import { APPROVAL_FLOW_STAGES } from "@/lib/marketing/approvalFlowModel";
 
 export const metadata: Metadata = {
   title: "Approval workflow — Axiom Documentation",
@@ -18,6 +20,12 @@ export default function ApprovalWorkflowPage() {
       <Callout title="Preview workflow reference">
         Separate requester execution is a local preview and is not production-activated. Your installed version may not include an Execute control. Check the controls and release guidance for your installed version; approval status alone does not prove that an action ran.
       </Callout>
+
+      <section aria-labelledby="approval-flow" className="my-10">
+        <h2 id="approval-flow" className="text-xl font-medium text-zinc-100">How a write moves through Axiom</h2>
+        <p className="mt-2 text-[15px] leading-7 text-zinc-400">Five stages, each passing something specific to the next. If a stage refuses, the request stops there and the decision is recorded.</p>
+        <div className="mt-6"><PipeFlow stages={APPROVAL_FLOW_STAGES} label="How a write moves through Axiom" /></div>
+      </section>
 
       <Callout variant="safe" title="Proposal approval boundary">
         Medium- and high-risk tool calls do not execute inside the decision loop. An authorized independent human reviewer must approve the exact persisted proposal. Approval permission is distinct from execution permission.
