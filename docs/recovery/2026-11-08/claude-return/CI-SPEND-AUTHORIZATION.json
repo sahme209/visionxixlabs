@@ -12,5 +12,13 @@
   "workflow_dispatch of any other workflow"
  ],
  "estimateWorstCaseUSD": 2.96,
- "estimateIsNotInvoice": true
+ "estimateIsNotInvoice": true,
+ "pr": "https://github.com/sahme209/visionxixlabs/pull/202",
+ "headSha": "4b38cc94",
+ "runs": {
+  "Test": 42485996318,
+  "Desktop CI": 42485996303,
+  "Isolated website acceptance": 42485996268
+ },
+ "status": "in_progress (2026-11-08T13:39Z); repo public, so standard-runner minutes expected free"
 }
