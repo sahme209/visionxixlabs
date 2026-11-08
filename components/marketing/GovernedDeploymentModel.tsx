@@ -82,7 +82,7 @@ export function GovernedDeploymentModel() {
             reducedMotion: prefersReducedMotion(),
             frameGuard: !force,
             onReached: (k) => setReached(k),
-            onSelect: (i) => setSelected(i),
+            onSelect: (i) => { flyOnSelect.current = true; setSelected(i); },
             onTooSlow: () => { sceneRef.current?.dispose(); sceneRef.current = null; setMode("2d"); },
           });
           setMode("3d");
@@ -103,7 +103,10 @@ export function GovernedDeploymentModel() {
     else setReached(scenario.stop);
   }, [scenario, mode]);
   useEffect(() => { sceneRef.current?.setPlaying(playing); }, [playing, mode]);
-  useEffect(() => { sceneRef.current?.select(selected); }, [selected, mode]);
+  // Fly the camera only after the visitor picks a stage; until then the scene keeps its overview.
+  const flyOnSelect = useRef(false);
+  const choose = (index: number) => { flyOnSelect.current = true; setSelected(index); };
+  useEffect(() => { sceneRef.current?.select(selected, flyOnSelect.current); }, [selected, mode]);
 
   const shown = Math.max(0, reached);
   const gauges = flowGauges(scenario, shown);
@@ -112,7 +115,7 @@ export function GovernedDeploymentModel() {
   const canAnimate = mode === "3d" && !reducedMotion;
 
   return (
-    <section aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
+    <section aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 py-16 sm:px-6">
       <p className="text-xs uppercase tracking-[0.18em] text-sky-300/80">Illustrative model · not a live deployment</p>
       <h2 id={`${id}-title`} className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">How a governed deployment moves through Axiom</h2>
       <p className="mt-3 max-w-3xl text-zinc-300">
@@ -167,7 +170,7 @@ export function GovernedDeploymentModel() {
 
       <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-4" role="group" aria-label="Inspect a stage">
         {FLOW_STATIONS.map((s, i) => (
-          <button key={s.id} type="button" aria-pressed={i === selected} aria-controls={`${id}-inspector`} onClick={() => setSelected(i)}
+          <button key={s.id} type="button" aria-pressed={i === selected} aria-controls={`${id}-inspector`} onClick={() => choose(i)}
             className={`rounded-md border px-3 py-1.5 text-left text-sm ${i === selected ? "border-sky-300/70 text-sky-100" : "border-zinc-700 text-zinc-300 hover:border-zinc-500"}`}>
             <span className="font-mono text-xs text-zinc-500">{String(i + 1).padStart(2, "0")}</span> {s.name}
           </button>

@@ -17,7 +17,8 @@ export type GovernedSceneHandle = {
   setScenario(scenario: FlowScenario): void;
   setPlaying(playing: boolean): void;
   setVisible(visible: boolean): void;
-  select(index: number): void;
+  /** Highlight a station; `fly` (default true) moves the camera to it. */
+  select(index: number, fly?: boolean): void;
   overview(): void;
   dispose(): void;
 };
@@ -59,6 +60,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
   const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: "high-performance", failIfMajorPerformanceCaveat: guard });
   renderer.setPixelRatio(Math.min(mobile ? 1.5 : 2, window.devicePixelRatio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 0.85;
 
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(0x03050a);
@@ -66,6 +68,8 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
   const pmrem = new THREE.PMREMGenerator(renderer);
   const envTexture = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
   scene.environment = envTexture;
+  // Keep the studio environment as a subtle sheen so the void stays near-black.
+  scene.environmentIntensity = 0.3;
 
   const camera = new THREE.PerspectiveCamera(32, 1, 0.1, 200);
   camera.position.copy(OVERVIEW.camera);
@@ -87,7 +91,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
     return { group, edge };
   };
 
-  const floor = new THREE.Mesh(track(new THREE.CircleGeometry(44, 96)), track(new THREE.MeshStandardMaterial({ color: 0x05080e, roughness: 0.12, metalness: 0.85 })));
+  const floor = new THREE.Mesh(track(new THREE.CircleGeometry(44, 96)), track(new THREE.MeshStandardMaterial({ color: 0x05080e, roughness: 0.55, metalness: 0.35 })));
   floor.rotation.x = -Math.PI / 2; scene.add(floor);
   const gridMaterial = track(new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, uniforms: { t: { value: 0 } },
@@ -178,7 +182,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
 
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.95, 0.55, 0.12); composer.addPass(bloom);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.75, 0.5, 0.6); composer.addPass(bloom);
   composer.addPass(new OutputPass());
   disposables.push(composer, bloom);
 
@@ -280,11 +284,11 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
     setScenario(next) { scenario = next; progress = options.reducedMotion ? next.stop / (FLOW_STATIONS.length - 1) : 0; reached = -1; history.length = 0; },
     setPlaying(next) { playing = next && !options.reducedMotion; },
     setVisible(next) { visible = next; if (next) clock.getDelta(); },
-    select(index) {
+    select(index, fly = true) {
       selected = index; drawHolo(index);
       const root = stations[index].root.position;
       holo.position.set(root.x, 4.1, root.z + 0.2);
-      flyTo(new THREE.Vector3(root.x, 1.8, root.z), new THREE.Vector3(root.x + 3, 4.6, root.z + 7));
+      if (fly) flyTo(new THREE.Vector3(root.x, 1.8, root.z), new THREE.Vector3(root.x + 3, 4.6, root.z + 7));
     },
     overview() { flyTo(OVERVIEW.target.clone(), OVERVIEW.camera.clone()); },
     dispose() {
