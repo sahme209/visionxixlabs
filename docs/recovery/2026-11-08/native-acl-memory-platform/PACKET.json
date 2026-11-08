@@ -1,0 +1,37 @@
+{
+ "format": "axiom.native-acl-memory-platform.packet.v1",
+ "proposalSha256": "09139ec5566c8cd9220ffc852ef197ff07fadb93e67d24a56458b3c1e0a0b460",
+ "host": {
+  "macos": "26.7.1",
+  "arch": "arm64",
+  "cltClang": "clang-2100.3.34.2",
+  "sdkAliasTarget": "MacOSX27.0.sdk"
+ },
+ "inputs": {
+  "acl_memory_platform.c": "1ff57fe2eed3e51b8ae7aecb77edc7da00b3e81c6d154e8ca33bffdbc574eb10",
+  "platform.sb": "749268d55f386637463de96ff42f6638adc69040b954e32884a1e61fc61455c6",
+  "binary_guard.py": "814716e7108057aab4733f7c0f7d145bc197bb6509090d5269445e748ed061f6",
+  "run_unit.py": "bb8a6c93c5c91eed47a8957abb5dd1441e2a4df598a4ecc9adeb84d3176eda57"
+ },
+ "compilerInvoked": true,
+ "runtimeInvoked": false,
+ "sourceReview": {
+  "result": "PASS",
+  "blocking": 0,
+  "minorFixed": [
+   "guard rejects N_INDR/N_PBUD"
+  ],
+  "minorAccepted": [
+   "exec-by-path TOCTOU inside private 0700 root",
+   "map hash-only; map reviewed by root before runtime",
+   "BINARY-REVIEW user flag set only after user go-ahead in chat"
+  ]
+ },
+ "postCompileGuardAmendment": {
+  "added": [
+   "_memset"
+  ],
+  "reason": "compiler zero-init of acl_t handles[5] at -O0; libsystem_c; memory import within proposal scope; present on prior accepted 2026-11-06 stub guard",
+  "observedFirstAs": "binary_unreviewed_import:_memset (file-only review, no execution, no attempt consumed)"
+ }
+}

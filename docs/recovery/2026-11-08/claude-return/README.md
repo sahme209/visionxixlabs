@@ -40,7 +40,7 @@ Also updated: `docs/product/current-execution-board.md` (Nov 8 item 2) and the m
 
 ## External effects
 
-None. No push, CI run, Vercel/Neon call, deployment, database access, credential read, signing, native/ACL unit, or spend. The handoff's consumed preflight attempt was not repeated. The approved memory-only ACL unit remains NOT STARTED.
+None. No push, CI run, Vercel/Neon call, deployment, database access, credential read, signing, native/ACL unit, or spend. The handoff's consumed preflight attempt was not repeated. Memory-only ACL unit: user approved running on Claude's Mac; 1 sandboxed compile + 1 run, both PASS and consumed — see `../native-acl-memory-platform/RESULT.md`. Different host/toolchain from Codex's.
 
 ## Remaining blockers (in order)
 
@@ -48,7 +48,7 @@ None. No push, CI run, Vercel/Neon call, deployment, database access, credential
 2. Freeze one candidate and do the coherent production build.
 3. Production preflight is still unresolved; it needs a reviewed diagnosis and fresh bounded authority. The `PipelineAICallReservation.admissionContract` / `quoteEvidence` schema gate is unchanged — do not deploy the backend past it.
 4. A new push/CI run needs fresh spend authorization (the $2 allowance was for the one Nov 8 main update).
-5. A2 memory-only ACL unit: approved, not started.
+5. A2 memory-only ACL unit: PASS on Claude's Mac (in-memory only). Next A2 gates (six-role proofs, filesystem ACL, custody, install) need their own approvals.
 
 ## Uncommitted files
 

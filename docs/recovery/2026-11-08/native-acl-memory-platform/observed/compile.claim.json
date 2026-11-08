@@ -1,0 +1,35 @@
+{
+ "argv": [
+  "/usr/bin/sandbox-exec",
+  "-f",
+  "/Users/sahme209/visionxixlabs/docs/recovery/2026-11-08/native-acl-memory-platform/platform.sb",
+  "/Library/Developer/CommandLineTools/usr/bin/clang",
+  "-std=c11",
+  "-Wall",
+  "-Wextra",
+  "-Werror",
+  "-fno-modules",
+  "-O0",
+  "-arch",
+  "arm64",
+  "-mmacosx-version-min=13.0",
+  "-isysroot",
+  "/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk",
+  "-I",
+  "/Users/sahme209/visionxixlabs/packages/verified-issuer-runtime/native",
+  "/Users/sahme209/visionxixlabs/docs/recovery/2026-11-08/native-acl-memory-platform/acl_memory_platform.c",
+  "-o",
+  "/Users/sahme209/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-memory-platform-1/bin/acl-memory-platform",
+  "-Wl,-map,/Users/sahme209/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-memory-platform-1/bin/acl-memory-platform.map"
+ ],
+ "claimedAtUnix": 1794143441.158829,
+ "limits": {
+  "bytes": 65536,
+  "cleanupSeconds": 5,
+  "seconds": 30
+ },
+ "preexecBinaryGuard": null,
+ "proposalSha256": "09139ec5566c8cd9220ffc852ef197ff07fadb93e67d24a56458b3c1e0a0b460",
+ "retryAuthorized": false,
+ "step": "compile"
+}

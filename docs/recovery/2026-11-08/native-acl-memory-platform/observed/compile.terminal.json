@@ -1,0 +1,22 @@
+{
+ "activeSeconds": 2.494,
+ "cleanup": "reaped_original_child",
+ "descendantQuiescence": "unavailable",
+ "exit": 0,
+ "matchedExpectedOutcome": true,
+ "outputs": {
+  "acl-memory-platform": {
+   "sha256": "2b7413c77e84980529e9b20ee7f3220f03df576aca982bb3c6bdde943ec6ceaf",
+   "size": 34896
+  },
+  "acl-memory-platform.map": {
+   "sha256": "1912d73a38559d8d034e7133fab18bb64bdf7085da4ccd06a54e5488202f001f",
+   "size": 3757
+  }
+ },
+ "retryAuthorized": false,
+ "state": "completed",
+ "stdout": null,
+ "step": "compile",
+ "unknown": false
+}

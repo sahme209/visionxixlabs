@@ -1,0 +1,1 @@
+(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath "/Users/sahme209/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-memory-platform-1"))(allow file-write-data (literal "/dev/null"))
