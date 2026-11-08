@@ -61,3 +61,19 @@ Codex's `20261023_migration_replay_refusal.md` removed a "roll back then deploy 
 8. Production build 1 of 3, then smoke checks, then promote.
 
 Steps 3–6 write to production, and each needs your explicit go-ahead at the time it runs.
+
+## Check 6 result and the single catch-up script (2026-11-08)
+**Check 6 (read-only, user):** 29 of the 30 index names flagged by the comparison exist under older or PostgreSQL-truncated names (63-byte limit), so they need no change. **Only `Lead_source_idx` is truly missing.** Extra columns: `AuditEvent.status` (`NOT NULL DEFAULT 'pending'`) and `Lead.phone` (nullable text). Both are harmless to current inserts and are on the cleanup list (adopt in `schema.prisma` or drop later). They are not part of the catch-up.
+
+**Why SQL rather than Prisma CLI:** Node and Prisma can't run on this Mac (npm blocker). `CATCH-UP-AND-RECONCILE.sql` writes exactly the ledger rows that `prisma migrate resolve` would write, using each repo file's SHA-256 checksum, so later `migrate deploy` and the deploy preflight see a truthful, converged history.
+
+**`CATCH-UP-AND-RECONCILE.sql`**: one `DO` block, so it is all or nothing. Pre-checks refuse unless the state is exactly the one checks 1–6 observed. It then:
+- records the 11 verified migrations as applied;
+- marks the failed agent row rolled back;
+- records its non-granting revision (`fa3703cc…`) as applied;
+- adds the 2 quote columns and records the new repo migration `20261108120000_add_pipeline_ai_call_quote_fields` (`70b81533…`);
+- creates `Lead_source_idx`.
+
+Post-checks follow, then a result row is printed. The Agent seed is not included. `READ-ONLY-CHECK.sql` now expects `20261108120000_add_pipeline_ai_call_quote_fields` as the latest migration.
+
+**Status: prepared, NOT executed.** It needs the user's explicit go-ahead in the Neon SQL Editor (project `odd-union-57413470`, branch `main`, database `neondb`). The new migration file must be merged before production build 1, so the deployed code and the ledger agree.
