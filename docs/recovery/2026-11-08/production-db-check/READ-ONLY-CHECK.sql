@@ -8,4 +8,4 @@ SELECT
   (SELECT count(*) FROM public."_prisma_migrations") AS migrations_total,
   (SELECT count(*) FROM public."_prisma_migrations" WHERE finished_at IS NULL AND rolled_back_at IS NULL) AS migrations_unfinished,
   (SELECT max(migration_name) FROM public."_prisma_migrations" WHERE finished_at IS NOT NULL) AS latest_applied_migration,
-  (SELECT max(migration_name) FROM public."_prisma_migrations" WHERE finished_at IS NOT NULL) = '20261027030000_azure_guided_authorization' AS matches_repo_latest;
+  (SELECT max(migration_name) FROM public."_prisma_migrations" WHERE finished_at IS NOT NULL) = '20261108120000_add_pipeline_ai_call_quote_fields' AS matches_repo_latest;
