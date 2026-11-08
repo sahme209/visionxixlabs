@@ -47,6 +47,9 @@
   "approved": 3,
   "userApproval": "Approve 3 more runs (chat, 2026-11-08)",
   "expectedUSD": 0,
-  "used": 2
+  "used": 3
+ },
+ "runResults": {
+  "d06f5105": "types/desktop/website PASS; Vitest 4 failing (decision tests); PG fail (expired Oct period)"
  }
 }
