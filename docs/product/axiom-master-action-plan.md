@@ -2,7 +2,7 @@
 
 ## November 8 — current handoff; read this before historical checkpoints
 
-**Execution strategy and decision log (Claude, 2026-11-08):** [execution-strategy-2026-11.md](execution-strategy-2026-11.md): phases, two parallel tracks and every user decision in one place. The [requirements index](master-plan-requirements-index.md) is the full checklist.
+~~**Pricing source and economics audit (plan L274) completed read-only 2026-11-08**~~: [audit](pricing-economics-audit-2026-11-08.md). Key findings: three inconsistent markups (1.5x, 2x, about 2.25x); prepaid credits are largely built but gated by live flags; deployment quotas are plan-tied (10/100/500); retired model IDs remain in the default registry; Stripe fees cut margins on small top-ups. 8 user decisions are pending before implementation. **Execution strategy and decision log (Claude, 2026-11-08):** [execution-strategy-2026-11.md](execution-strategy-2026-11.md): phases, two parallel tracks and every user decision in one place. The [requirements index](master-plan-requirements-index.md) is the full checklist.
 
 **SECURITY — top priority (2026-11-08):** repo made public; full-history scan found live-format Stripe secret key, Stripe webhook secret and Resend API key in commit `252d1cf2` (`origin/ai-website-build`). User reports all three rotated 2026-11-08 (not independently verified); repo stays public by user choice — [record](../recovery/2026-11-08/security-public-exposure/README.md). No values recorded.
 
