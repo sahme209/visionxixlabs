@@ -37,5 +37,10 @@
   "Test": "failure (2 TS errors)",
   "Isolated website acceptance": "success",
   "Desktop CI": "success"
+ },
+ "run3": {
+  "Test": "typecheck pass; vitest 73 failed (pre-existing)",
+  "Desktop CI": "success",
+  "Isolated website acceptance": "success"
  }
 }
