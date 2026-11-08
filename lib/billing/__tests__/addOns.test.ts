@@ -19,17 +19,17 @@ describe("ADD_ON_CATALOG — invariants", () => {
     expect(new Set(skus).size).toBe(skus.length);
   });
 
-  it("every ai_credits row delivers floor(price / rate-card multiplier) of provider-cost budget", () => {
+  it("every ai_credits row credits its full price; the 1.5x margin applies once, at debit", () => {
     expect(AI_RATE_CARD.marginMultiplier).toBe(1.5);
     for (const a of ADD_ON_CATALOG) {
       if (a.category === "ai_credits") {
-        expect(a.deliveredAICreditsCents).toBe(Math.floor(a.priceCents / AI_RATE_CARD.marginMultiplier));
+        expect(a.deliveredAICreditsCents).toBe(a.priceCents);
         expect(a.priceCents).toBeGreaterThanOrEqual(AI_RATE_CARD.minimumTopUpCents);
       }
     }
-    expect(findAddOn("ai_credits_small")).toMatchObject({ priceCents: 1000, deliveredAICreditsCents: 666 });
-    expect(findAddOn("ai_credits_medium")).toMatchObject({ priceCents: 4000, deliveredAICreditsCents: 2666 });
-    expect(findAddOn("ai_credits_large")).toMatchObject({ priceCents: 15000, deliveredAICreditsCents: 10000 });
+    expect(findAddOn("ai_credits_small")).toMatchObject({ priceCents: 1000, deliveredAICreditsCents: 1000 });
+    expect(findAddOn("ai_credits_medium")).toMatchObject({ priceCents: 4000, deliveredAICreditsCents: 4000 });
+    expect(findAddOn("ai_credits_large")).toMatchObject({ priceCents: 15000, deliveredAICreditsCents: 15000 });
   });
 
   it("every row is permanent: prepaid AI credits never expire", () => {

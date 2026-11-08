@@ -7,8 +7,9 @@
  *
  * Consumers:
  *   - `aiBillingMargin.ts` (usage ledger margin) reads `marginMultiplier`.
- *   - `addOnCatalog.ts` derives each credit pack's delivered provider-cost
- *     budget from its price with `deliveredBudgetCentsForPrice`.
+ *   - `addOnCatalog.ts` derives each credit pack's delivered credit with
+ *     `deliveredCreditCentsForPrice` and its provider-cost budget with
+ *     `providerCostBudgetCentsForPrice`.
  *   - The public "Get started" page (`/plans`) renders `perModelRates`,
  *     limits, refund rules and disclosures directly from this object.
  *
@@ -21,6 +22,12 @@
  * the hold, and the unused part of the hold is released. A failed action is
  * released in full. The balance can never go below zero: Axiom never charges
  * beyond what was prepaid.
+ *
+ * Ledger units: usage is debited from the prepaid balance at CUSTOMER price
+ * (`UsageEvent.billedCents` = `applyMargin(provider cost)`), so a $10 top-up
+ * credits 1,000 cents of balance, which buys 1000 / 1.5 = 666 cents of
+ * provider cost. Crediting price / 1.5 instead would apply the margin twice
+ * (2.25x). The 1.5x is therefore applied exactly once, at debit time.
  *
  * A change to any value here is a pricing change: bump `version`, update the
  * Pricing & Usage demo scenario and `planRegistry.ts` in the same change.
@@ -89,12 +96,22 @@ export function customerPriceCents(providerCostCents: number): number {
   return Math.round(providerCostCents * AI_RATE_CARD.marginMultiplier);
 }
 
-/**
- * Provider-cost budget delivered for a prepaid top-up price. Rounded down so
- * the delivered budget never exceeds price / multiplier.
- */
-export function deliveredBudgetCentsForPrice(priceCents: number): number {
+function assertTopUp(priceCents: number): void {
   if (!Number.isSafeInteger(priceCents) || priceCents < AI_RATE_CARD.minimumTopUpCents) throw new Error("top_up_below_minimum");
+}
+
+/** Prepaid balance credited for a top-up, in customer-price cents (= price). */
+export function deliveredCreditCentsForPrice(priceCents: number): number {
+  assertTopUp(priceCents);
+  return priceCents;
+}
+
+/**
+ * Provider-cost budget a top-up buys: price / multiplier, rounded down so the
+ * customer price is never less than 1.5x the provider cost it covers.
+ */
+export function providerCostBudgetCentsForPrice(priceCents: number): number {
+  assertTopUp(priceCents);
   return Math.floor(priceCents / AI_RATE_CARD.marginMultiplier);
 }
 

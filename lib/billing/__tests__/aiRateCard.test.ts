@@ -5,7 +5,8 @@ import {
   AI_RATE_CARD,
   customerPriceCents,
   customerUsdPerMTok,
-  deliveredBudgetCentsForPrice,
+  deliveredCreditCentsForPrice,
+  providerCostBudgetCentsForPrice,
   isAllowedTopUpCents,
 } from "../aiRateCard";
 import { AI_CUSTOMER_USAGE_MARGIN_MULT, applyMargin, loadAiBillingMargin } from "../aiBillingMargin";
@@ -33,14 +34,17 @@ describe("AI rate card (ai_rate_card_v1)", () => {
     const packs = ADD_ON_CATALOG.filter((a) => a.category === "ai_credits");
     expect(packs.length).toBeGreaterThan(0);
     for (const pack of packs) {
-      expect(pack.deliveredAICreditsCents).toBe(deliveredBudgetCentsForPrice(pack.priceCents));
-      expect(pack.deliveredAICreditsCents * AI_RATE_CARD.marginMultiplier).toBeLessThanOrEqual(pack.priceCents);
+      // Balance is credited in customer-price cents and debited at 1.5x
+      // provider cost, so the margin is applied exactly once.
+      expect(pack.deliveredAICreditsCents).toBe(deliveredCreditCentsForPrice(pack.priceCents));
+      expect(pack.deliveredAICreditsCents).toBe(pack.priceCents);
+      expect(providerCostBudgetCentsForPrice(pack.priceCents) * AI_RATE_CARD.marginMultiplier).toBeLessThanOrEqual(pack.priceCents);
     }
   });
 
   it("leaves no second hard-coded multiplier in the margin or add-on sources", () => {
     expect(source("lib/billing/aiBillingMargin.ts")).not.toMatch(/=\s*1\.5\s*;/);
-    expect(source("lib/billing/addOnCatalog.ts")).not.toMatch(/twice|\b2x\b|deliveredAICreditsCents:\s*\d/);
+    expect(source("lib/billing/addOnCatalog.ts")).not.toMatch(/twice|\b2x\b|deliveredAICreditsCents:\s*[1-9]/);
   });
 
   it("prices the paid-lane model at 1.5x the provider card", () => {
@@ -56,8 +60,10 @@ describe("AI rate card (ai_rate_card_v1)", () => {
     expect(isAllowedTopUpCents(999)).toBe(false);
     expect(isAllowedTopUpCents(1_000)).toBe(true);
     expect(isAllowedTopUpCents(1_000.5)).toBe(false);
-    expect(() => deliveredBudgetCentsForPrice(500)).toThrow("top_up_below_minimum");
-    expect(deliveredBudgetCentsForPrice(1_000)).toBe(666);
+    expect(() => deliveredCreditCentsForPrice(500)).toThrow("top_up_below_minimum");
+    expect(() => providerCostBudgetCentsForPrice(999)).toThrow("top_up_below_minimum");
+    expect(deliveredCreditCentsForPrice(1_000)).toBe(1_000);
+    expect(providerCostBudgetCentsForPrice(1_000)).toBe(666);
     const smallest = Math.min(...ADD_ON_CATALOG.filter((a) => a.category === "ai_credits").map((a) => a.priceCents));
     expect(smallest).toBe(AI_RATE_CARD.minimumTopUpCents);
   });
