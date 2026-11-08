@@ -105,3 +105,11 @@ python3 -m unittest sdk.python.__tests__.test_vxl_cli   # Claude: PASS, 30 tests
 ## Still gated after this passes
 
 No deploy until: types + tests pass, one frozen production build passes, and the production DB compatibility check (`admissionContract`, `quoteEvidence`, recovery, cutover) passes under fresh authority. No push/CI without spend approval.
+
+## Approved: one preflight diagnostic call (run in Codex)
+
+The user approved exactly one Vercel metadata call for the counts-only diagnostic — see `../preflight-diagnosis/AUTHORIZATION.json` (binds the source by sha256). Steps:
+
+1. `shasum -a 256 docs/recovery/2026-11-08/preflight-diagnosis/env-metadata-diagnostic.cjs` must equal `sourceSha256`.
+2. `node docs/recovery/2026-11-08/preflight-diagnosis/test-env-metadata-diagnostic.cjs` must print 14 cases PASS.
+3. Call `runEnvMetadataDiagnostic({vercel_filter_project_envs: <your existing Vercel filter_project_envs tool>})` **once**. Save only the returned object as `docs/recovery/2026-11-08/preflight-diagnosis/OBSERVED-RESULT.json`. No retry, no Neon, no SQL, no `get_project_env`, no printing values. The authority is consumed after that single invocation, whatever the result.

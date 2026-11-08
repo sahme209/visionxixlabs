@@ -1,0 +1,34 @@
+{
+ "format": "axiom.preflight-diagnostic.authorization.v1",
+ "date": "2026-11-08",
+ "userApproval": "Approve, run in Codex (Claude session chat, 2026-11-08)",
+ "grantedTo": "Codex runtime (existing authenticated Vercel tool), not Claude",
+ "scope": {
+  "providerCalls": 1,
+  "tool": "vercel_filter_project_envs",
+  "args": {
+   "idOrName": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+   "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm",
+   "decrypt": "false"
+  },
+  "via": "runEnvMetadataDiagnostic from env-metadata-diagnostic.cjs",
+  "sourceSha256": "bbf897c1483e3927df064e35cd0cc3ab2fe24deab6a56372569484dd42cf3cdf",
+  "mockedTestSha256": "7bf3a98cbba50ac78471fb1f1d77017489df3012336b93400c78a2811940f06a"
+ },
+ "mustFirst": [
+  "verify sourceSha256",
+  "run the mocked test: 14 cases PASS"
+ ],
+ "returnOnly": "the frozen reason/counts object; record it as OBSERVED-RESULT.json here",
+ "forbidden": [
+  "retry",
+  "any Neon call",
+  "SQL",
+  "vercel_get_project_env",
+  "reading/printing env values or ids",
+  "writes",
+  "deployment",
+  "the full preflight (still consumed)"
+ ],
+ "consumedAfterOneInvocation": true
+}
