@@ -16,6 +16,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { runAgent } from "@/lib/axiom/agent/runAgent";
 import { applyFreePreview, buildUpgradeSummary, FREE_PREVIEW_COPY } from "@/lib/axiom/proGating";
@@ -59,6 +60,18 @@ export async function POST(req: NextRequest) {
         { error: "Cloud scanning requires a paid plan. See /pricing" },
         { status: 403 },
       );
+    }
+
+    // A run scans the workspace's cloud account: require admin authority there, and the account
+    // must belong to it (tenant-scoping audit 2026-11-08).
+    if (!await authorizedForOrganization(userId, organizationId, true)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    if (typeof connectedAccountId === "string") {
+      const account = await prisma.cloudAccount.findUnique({ where: { id: connectedAccountId }, select: { organizationId: true } });
+      if (!account || account.organizationId !== organizationId) {
+        return NextResponse.json({ error: "Cloud account not found" }, { status: 404 });
+      }
     }
 
     const agentTrigger: AgentTrigger = VALID_TRIGGERS.has(trigger) ? trigger : "manual";

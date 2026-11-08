@@ -10,6 +10,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import {
   explainFinding,
@@ -66,6 +67,11 @@ export async function GET(req: NextRequest) {
       },
       { status: 400 },
     );
+  }
+
+  const finding = await prisma.axiomFinding.findUnique({ where: { id: findingId }, select: { run: { select: { organizationId: true } } } });
+  if (!finding || !await authorizedForOrganization(userId, finding.run.organizationId)) {
+    return NextResponse.json({ error: "Finding not found" }, { status: 404 });
   }
 
   try {

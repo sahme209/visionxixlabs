@@ -9,6 +9,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import { compareAgentRuns } from "@/lib/axiom/diffEngine";
 
@@ -39,6 +40,13 @@ export async function GET(req: NextRequest) {
       { error: "Both previousRunId and currentRunId are required" },
       { status: 400 },
     );
+  }
+
+  const runs = await prisma.axiomAgentRun.findMany({ where: { id: { in: [previousRunId, currentRunId] } }, select: { id: true, organizationId: true } });
+  const orgs = new Set(runs.map((r) => r.organizationId));
+  const found = new Set(runs.map((r) => r.id));
+  if (!found.has(previousRunId) || !found.has(currentRunId) || orgs.size !== 1 || !await authorizedForOrganization(userId, [...orgs][0])) {
+    return NextResponse.json({ error: "Run not found" }, { status: 404 });
   }
 
   try {
