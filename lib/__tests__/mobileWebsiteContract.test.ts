@@ -38,7 +38,7 @@ describe("mobile website contract", () => {
     expect(navigation).toContain('{ href: "/account/help", label: "Support (account required)" }');
     expect(navigation).toContain('{ href: "/axiom", label: "Company" }');
     expect(navigation).toContain('{ href: "/status", label: "Status" }');
-    expect(navigation).toContain('{ href: "/plans", label: "Pricing" }');
+    expect(navigation).toContain('{ href: "/plans", label: "Get started" }');
     expect(navigation).toContain('{ href: "/support", label: "Founding Supporters" }');
     expect(navigation).toContain('document.body.style.overflow = "hidden"');
     expect(navigation).toContain('document.documentElement.style.overflow = "hidden"');

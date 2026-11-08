@@ -32,8 +32,12 @@ const MODELS: Record<AIProviderName, RegisteredModel[]> = {
     { id: "gpt-4o-mini", label: "GPT-4o mini", tier: "fast", family: "openai", freeNote: "Service-managed OpenAI access" },
   ],
   anthropic: [
-    { id: "claude-sonnet-4-20250514", label: "Claude Sonnet", tier: "preferred", family: "anthropic", freeNote: "Service-managed Anthropic access" },
-    { id: "claude-3-5-haiku-latest", label: "Claude Haiku", tier: "fast", family: "anthropic", freeNote: "Service-managed Anthropic access" },
+    // Retired IDs claude-sonnet-4-20250514 and claude-3-5-haiku-latest were
+    // removed (2026-11-08). Both replacements are on the current Anthropic
+    // rate card. The paid lane stays pinned to anthropic/claude-sonnet-5.5
+    // through the Gateway (smallSonnet55Request.ts).
+    { id: "claude-sonnet-4-6", label: "Claude Sonnet 4.6", tier: "preferred", family: "anthropic", freeNote: "Service-managed Anthropic access" },
+    { id: "claude-haiku-4-5", label: "Claude Haiku 4.5", tier: "fast", family: "anthropic", freeNote: "Service-managed Anthropic access" },
   ],
   xai: [
     { id: "grok-4.7", label: "Grok 4.7", tier: "preferred", family: "xai", freeNote: "Service-managed xAI access" },

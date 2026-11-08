@@ -16,21 +16,22 @@ beforeEach(() => { vi.resetAllMocks(); vi.stubGlobal("fetch", io.fetch); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("pricing navigation and explicit plan selection", () => {
-  // Current layout: Pricing lives in the desktop "More" menu; the public support page is "Founding Supporters" (mobile + footer).
-  it("restores desktop, mobile and footer Pricing links to one canonical route while preserving support", () => {
+  // Current layout: "Get started" (formerly "Pricing") lives in the desktop "More" menu; the public support page is "Founding Supporters" (mobile + footer).
+  it("labels desktop, mobile and footer links Get started on the one canonical /plans route while preserving support", () => {
     const nav = render(createElement(Navigation));
+    expect(screen.queryByRole("link", { name: "Get started" })).toBeNull();
     expect(screen.queryByRole("link", { name: "Pricing" })).toBeNull();
     fireEvent.click(screen.getByRole("button", { name: /^More/ }));
     const more = within(screen.getByRole("group", { name: "More destinations" }));
-    expect(more.getAllByRole("link", { name: "Pricing" })).toHaveLength(1);
-    expect(more.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
+    expect(more.getAllByRole("link", { name: "Get started" })).toHaveLength(1);
+    expect(more.getByRole("link", { name: "Get started" }).getAttribute("href")).toBe("/plans");
     fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
     const mobile = within(screen.getByRole("dialog", { name: "Site navigation" }));
-    expect(mobile.getAllByRole("link", { name: "Pricing" })).toHaveLength(1);
-    expect(mobile.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
+    expect(mobile.getAllByRole("link", { name: "Get started" })).toHaveLength(1);
+    expect(mobile.getByRole("link", { name: "Get started" }).getAttribute("href")).toBe("/plans");
     expect(mobile.getByRole("link", { name: "Founding Supporters" }).getAttribute("href")).toBe("/support");
     nav.unmount(); render(createElement(Footer));
-    expect(screen.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
+    expect(screen.getByRole("link", { name: "Get started" }).getAttribute("href")).toBe("/plans");
     const supporters = screen.getAllByRole("link", { name: /Founding Supporters/ });
     expect(supporters.length).toBeGreaterThan(0);
     for (const link of supporters) expect(link.getAttribute("href")).toBe("/support");
@@ -45,10 +46,9 @@ describe("pricing navigation and explicit plan selection", () => {
     expect(io.push).toHaveBeenCalledWith(publicPlanSignInPath({planId:"pro",billingInterval:"annual"}));
     expect(io.fetch).not.toHaveBeenCalled();
   });
-  it("restores validated selection after authentication and requires a fresh explicit purchase with rendered workspace binding", async () => {
-    vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", "true");
-    io.context.mockResolvedValue({isAuthenticated:true,organizationId:"org_1",workspaceLabel:"Engineering workspace",roles:["owner"]});
-    render(await PlansPage({searchParams:Promise.resolve({plan:"enterprise",interval:"annual"})}));
+  it("restores validated selection in the workspace plan catalog and requires a fresh explicit purchase with rendered workspace binding", async () => {
+    // Seat plans are no longer offered on the public page; the component remains for the signed-in test-mode workspace route.
+    render(createElement(PublicPlansCatalog,{checkoutEnabled:true,workspace:ready,initialSelection:{planId:"enterprise",billingInterval:"annual"}}));
     expect(screen.getByRole("button", {name:"Annual · save 20%"}).getAttribute("aria-pressed")).toBe("true");
     expect(screen.getByText(/Restored Enterprise selection/)).toBeTruthy();
     expect(screen.getByText(/Billing workspace: Engineering workspace/)).toBeTruthy();
@@ -82,9 +82,8 @@ describe("pricing navigation and explicit plan selection", () => {
     await waitFor(()=>expect(screen.getByRole("button",{name:"Choose Pro"}).hasAttribute("disabled")).toBe(false));
     expect(io.push).not.toHaveBeenCalled(); expect(io.fetch).toHaveBeenCalledTimes(1);
   });
-  it("keeps the public pricing page usable but prevents checkout when workspace lookup fails", async () => {
-    vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","true"); io.context.mockRejectedValue(new Error("context unavailable"));
-    render(await PlansPage({}));
+  it("prevents seat checkout when the workspace cannot be verified", async () => {
+    render(createElement(PublicPlansCatalog,{checkoutEnabled:true,workspace:{status:"unavailable"}}));
     expect(screen.getByRole("button",{name:"Choose Pro"}).hasAttribute("disabled")).toBe(true);
     expect(screen.getByRole("status").textContent).toContain("Workspace verification unavailable");
     expect(io.fetch).not.toHaveBeenCalled();
@@ -92,36 +91,45 @@ describe("pricing navigation and explicit plan selection", () => {
   it("does not read authority or enable billing when the existing preview gate is closed", async () => {
     vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","false"); render(await PlansPage({}));
     expect(io.context).not.toHaveBeenCalled(); expect(io.fetch).not.toHaveBeenCalled();
-    expect(screen.getByRole("link",{name:"Start free"}).getAttribute("href")).toBe("/auth/signin?callbackUrl=%2Fcontrol%3Fplan%3Dfree%26interval%3Dmonthly");
+    expect(screen.getByRole("link",{name:"Create workspace"}).getAttribute("href")).toBe("/auth/signin?callbackUrl=%2Fcontrol");
+    expect(screen.getByText(/Credit purchases are not open yet/)).toBeTruthy();
+    expect(screen.queryByRole("link",{name:"Buy prepaid credits"})).toBeNull();
     expect(screen.queryByRole("button",{name:"Choose Pro"})).toBeNull();
+  });
+  it("never offers seat-plan checkout or reads workspace authority on the public page, even when self-service billing is on", async () => {
+    vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED","true"); render(await PlansPage({searchParams:Promise.resolve({plan:"pro",interval:"annual"})}));
+    expect(io.context).not.toHaveBeenCalled(); expect(io.fetch).not.toHaveBeenCalled();
+    expect(screen.queryByRole("button",{name:/Choose (Pro|Enterprise)/})).toBeNull();
+    expect(screen.queryByText(/Restored .* selection/)).toBeNull();
   });
 });
 
 it("explains cancellation return context without asserting a payment or subscription outcome", async () => {
   vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", "false");
   render(await PlansPage({ searchParams: Promise.resolve({ checkout: "canceled" }) }));
-  expect(screen.getByRole("status").textContent).toContain("This page makes no subscription changes");
+  expect(screen.getByRole("status").textContent).toContain("This page makes no billing changes");
   expect(screen.getByRole("link", { name: "Review workspace billing" }).getAttribute("href")).toBe("/control/usage-billing");
   expect(io.fetch).not.toHaveBeenCalled();
 });
 it.each([undefined, "success", ["canceled"]])("ignores unrecognized checkout return context %j", async checkout => {
   vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", "false");
   render(await PlansPage({ searchParams: Promise.resolve({ checkout }) }));
-  expect(screen.queryByText(/This page makes no subscription changes/)).toBeNull();
+  expect(screen.queryByText(/This page makes no billing changes/)).toBeNull();
   expect(io.fetch).not.toHaveBeenCalled();
 });
 
-it.each([true, false])("keeps pricing activation copy consistent with the checkout gate (%s)", async enabled => {
+it.each([true, false])("keeps prepaid-credit purchase copy consistent with the existing checkout gate (%s)", async enabled => {
   vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", String(enabled));
-  io.context.mockResolvedValue({ isAuthenticated: false });
   render(await PlansPage({}));
   if (enabled) {
-    expect(screen.queryByText(/activation remains locked/i)).toBeNull();
-    expect(screen.getByText(/Paid access activates only after Stripe verifies payment/)).toBeTruthy();
+    expect(screen.getByRole("link", {name: "Buy prepaid credits"}).getAttribute("href")).toBe("/dashboard/billing/add-ons");
+    expect(screen.queryByText(/Credit purchases are not open yet/)).toBeNull();
   } else {
-    expect(screen.getByText(/Pricing preview.*no charges/)).toBeTruthy();
-    expect(screen.queryByRole("button", {name: "Choose Pro"})).toBeNull();
+    expect(screen.getByText(/Credit purchases are not open yet. No charge can be started from this page./)).toBeTruthy();
+    expect(screen.queryByRole("link", {name: "Buy prepaid credits"})).toBeNull();
   }
+  expect(screen.queryByRole("button", {name: "Choose Pro"})).toBeNull();
+  expect(io.fetch).not.toHaveBeenCalled();
 });
 
 it("routes every signed-out preview plan to sign-in while checkout is disabled", () => {

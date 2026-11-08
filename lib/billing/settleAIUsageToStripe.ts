@@ -1,4 +1,5 @@
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
+import { meteredSettlementExclusivityFailure } from "./prepaidMeteredExclusivity";
 /**
  * Durable AI usage settlement.
  *
@@ -65,6 +66,9 @@ function monthKey(date = new Date()): string {
 
 function testModeFailure(): string | null {
   if (isolatedRuntimeRequested()) return "isolated_invoice_submission_disabled";
+  // Fail closed: metered post-use billing can never run alongside prepaid.
+  const exclusive = meteredSettlementExclusivityFailure();
+  if (exclusive) return exclusive;
   const key = process.env.STRIPE_SECRET_KEY?.trim() ?? "";
   if (process.env.AXIOM_AI_USAGE_BILLING_TEST_ENABLED !== "true") {
     return "AI usage settlement is disabled (set AXIOM_AI_USAGE_BILLING_TEST_ENABLED=true only in a Stripe test environment).";

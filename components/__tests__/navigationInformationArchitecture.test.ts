@@ -13,11 +13,11 @@ const width=window.innerWidth;
 beforeEach(()=>{route.pathname='/';Object.defineProperty(window,'innerWidth',{configurable:true,value:1400});vi.stubGlobal('requestAnimationFrame',(fn:FrameRequestCallback)=>{fn(0);return 0;});});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();Object.defineProperty(window,'innerWidth',{configurable:true,value:width});});
 const primary=[['Product','/product'],['Integrations','/integrations'],['Security','/security'],['Docs','/docs'],['Demo','/demo']];
-const secondary=[['Pricing','/plans'],['Support (account required)','/account/help'],['Status','/status'],['Company','/axiom']];
+const secondary=[['Get started','/plans'],['Support (account required)','/account/help'],['Status','/status'],['Company','/axiom']];
 it('keeps the five approved primary destinations and quiet account/download links visible',()=>{
  render(createElement(Navigation));
  for(const[label,href]of [...primary,['Sign in','/auth/signin'],['Download','/download']])expect(screen.getByRole('link',{name:label}).getAttribute('href')).toBe(href);
- expect(screen.queryByRole('link',{name:'Pricing'})).toBeNull();expect(screen.queryByRole('link',{name:'Support Axiom'})).toBeNull();
+ expect(screen.queryByRole('link',{name:'Get started'})).toBeNull();expect(screen.queryByRole('link',{name:'Support Axiom'})).toBeNull();
  expect(screen.getByRole('button',{name:'More'}).getAttribute('aria-expanded')).toBe('false');
 });
 it('opens More deliberately, supports keyboard focus and Escape return, outside close and route close',()=>{
@@ -25,7 +25,7 @@ it('opens More deliberately, supports keyboard focus and Escape return, outside 
  trigger.focus();fireEvent.keyDown(trigger,{key:'ArrowDown'});
  const links=screen.getByRole('group',{name:'More destinations'});
  for(const[label,href]of secondary)expect(within(links).getByRole('link',{name:label}).getAttribute('href')).toBe(href);
- expect(document.activeElement).toBe(within(links).getByRole('link',{name:'Pricing'}));
+ expect(document.activeElement).toBe(within(links).getByRole('link',{name:'Get started'}));
  fireEvent.keyDown(document,{key:'Escape'});expect(screen.queryByRole('group',{name:'More destinations'})).toBeNull();expect(document.activeElement).toBe(trigger);
  fireEvent.click(trigger);fireEvent.pointerDown(document.body);expect(screen.queryByRole('group',{name:'More destinations'})).toBeNull();
  fireEvent.click(trigger);route.pathname='/product';view.rerender(createElement(Navigation));expect(screen.queryByRole('group',{name:'More destinations'})).toBeNull();

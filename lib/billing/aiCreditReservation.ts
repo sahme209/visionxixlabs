@@ -147,7 +147,11 @@ export async function reserveAICreditsInTransaction(
       const pool = applyAddOnsToEntitlements(plan, purchases).includedAICreditsCents;
       const used = usage._sum.billedCents ?? 0;
       const held = active._sum.reservedCents ?? 0;
-      if (plan.entitlements.overagePolicy === "hard_stop" && pool - used - held < input.reservedCents) {
+      // Never beyond prepaid (2026-11-08): every tier hard-stops. Legacy
+      // metered_billing / soft_warn / custom_contract no longer admit usage
+      // the balance cannot cover; post-use metered settlement is not a
+      // substitute for prepaid balance.
+      if (pool - used - held < input.reservedCents) {
         return { ok: false as const, error: "ai_credit_pool_exhausted" as const };
       }
       const reservation = guard ? (await fenceNewTestAdmission(tx, isolatedPlan!, input, true))! : await tx.aIUsageReservation.create({ data: { ...input, status: "reserved", expiresAt: new Date(now.getTime() + RESERVATION_TTL_MS) } });

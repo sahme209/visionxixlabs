@@ -35,7 +35,7 @@ describe("AI credit checkout", () => {
     mocks.isSameOriginRequest.mockReturnValue(true);
     mocks.isAdminOrOwner.mockReturnValue(true);
     mocks.currentContext.mockResolvedValue({ isAuthenticated: true, organizationId: "org-1", userId: "user-1", email: "owner@example.com", roles: ["owner"] });
-    mocks.create.mockResolvedValue({ id: "purchase-1", organizationId: "org-1", sku: "ai_credits_small", status: "pending", pricePaidCents: 1000, deliveredAICreditsCents: 500, validFor: "current_month", createdAt: new Date() });
+    mocks.create.mockResolvedValue({ id: "purchase-1", organizationId: "org-1", sku: "ai_credits_small", status: "pending", pricePaidCents: 1000, deliveredAICreditsCents: 1000, validFor: "permanent", createdAt: new Date() });
     mocks.update.mockResolvedValue({});
     mocks.updateMany.mockResolvedValue({ count: 1 });
     mocks.createCheckout.mockResolvedValue({ ok: true, url: "https://checkout.stripe.test/session", sessionId: "cs_test_1" });
@@ -62,12 +62,20 @@ describe("AI credit checkout", () => {
     expect(mocks.create).not.toHaveBeenCalled();
   });
 
+  it.each(["seat_addon", "connector_addon"])("refuses a %s purchase: AI credits are the only paid part", async (sku) => {
+    const response = await POST(request({ sku }) as never);
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ ok: false, error: "add_on_not_offered", reason: expect.stringMatching(/Only prepaid AI credits/) });
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.createCheckout).not.toHaveBeenCalled();
+  });
+
   it("creates a server-priced pending purchase and returns the real Stripe URL", async () => {
     const response = await POST(request() as never);
     expect(response.status).toBe(200);
     await expect(response.json()).resolves.toEqual({ ok: true, url: "https://checkout.stripe.test/session" });
     expect(mocks.create).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ pricePaidCents: 1000, deliveredAICreditsCents: 500, status: "pending" }),
+      data: expect.objectContaining({ pricePaidCents: 1000, deliveredAICreditsCents: 1000, validFor: "permanent", status: "pending" }),
     }));
     expect(mocks.createCheckout).toHaveBeenCalledWith(expect.objectContaining({ priceCents: 1000, purchaseId: "purchase-1" }));
     expect(mocks.update).toHaveBeenCalledWith({ where: { id: "purchase-1" }, data: { stripeCheckoutSessionId: "cs_test_1" } });

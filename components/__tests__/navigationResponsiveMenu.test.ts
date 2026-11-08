@@ -56,7 +56,7 @@ it("moves focus from the desktop More menu to the visible home link when narrowe
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1280 });
   render(createElement(Navigation));
   fireEvent.click(screen.getByRole("button", { name: /More/ }));
-  screen.getByRole("link", { name: "Pricing" }).focus();
+  screen.getByRole("link", { name: "Get started" }).focus();
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1279 });
   fireEvent(window, new Event("resize"));
   expect(screen.queryByRole("group", { name: "More destinations" })).toBeNull();

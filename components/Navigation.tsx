@@ -14,7 +14,7 @@ const primaryLinks = [
   { href: "/demo", label: "Demo" },
 ];
 const secondaryLinks = [
-  { href: "/plans", label: "Pricing" },
+  { href: "/plans", label: "Get started" },
   { href: "/account/help", label: "Support (account required)" },
   { href: "/status", label: "Status" },
   { href: "/axiom", label: "Company" },

@@ -334,7 +334,7 @@ export const SCENARIO_CLOSERS: Record<DemoScenarioId, string> = {
     "The five panels (registry, tool access, approval rules, activity, audit) ALL read from the same canonical state. There's no separate 'agent dashboard' or hidden ops view — what you see here is what compliance auditors see in the audit logs.",
 
   pricing_and_usage:
-    "Quota is enforced at the API boundary with a fail-open guarantee on the billing-DB path. The 70/90/100% alert thresholds run on the same UsageEvent rows you see in the gauge — no separate cron, no separate aggregation.",
+    "Every organization gets 10 counted deployments a month (plus any design-partner override); an unreadable quota fails closed. AI usage is prepaid from one versioned rate card (ai_rate_card_v1, 1.5x provider cost) and debited only after a conservative hold, so no one is charged beyond what they prepaid. The 70/90/100% alert thresholds run on the same UsageEvent rows you see in the gauge.",
 
   internal_growth_automation:
     "Internal-only. Drafts always require explicit human approval before any post fires. The audience='internal_only' tag on the scenario is enforced by listScenarios() — a real workspace can NEVER see this surface.",

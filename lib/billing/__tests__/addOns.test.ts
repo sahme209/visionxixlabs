@@ -3,7 +3,9 @@ import {
   ADD_ON_CATALOG,
   findAddOn,
   findAddOnsForPlan,
+  isOfferedAddOn,
 } from "../addOnCatalog";
+import { AI_RATE_CARD } from "../aiRateCard";
 import { applyAddOnsToEntitlements, type AddOnPurchaseRow } from "../applyAddOnsToEntitlements";
 import { findPlan } from "../planRegistry";
 
@@ -18,17 +20,22 @@ describe("ADD_ON_CATALOG — invariants", () => {
     expect(new Set(skus).size).toBe(skus.length);
   });
 
-  it("every ai_credits row sells provider-cost budget at exactly 2x", () => {
+  it("every ai_credits row credits its full price; the 1.5x margin applies once, at debit", () => {
+    expect(AI_RATE_CARD.marginMultiplier).toBe(1.5);
     for (const a of ADD_ON_CATALOG) {
       if (a.category === "ai_credits") {
-        expect(a.priceCents).toBe(a.deliveredAICreditsCents * 2);
+        expect(a.deliveredAICreditsCents).toBe(a.priceCents);
+        expect(a.priceCents).toBeGreaterThanOrEqual(AI_RATE_CARD.minimumTopUpCents);
       }
     }
+    expect(findAddOn("ai_credits_small")).toMatchObject({ priceCents: 1000, deliveredAICreditsCents: 1000 });
+    expect(findAddOn("ai_credits_medium")).toMatchObject({ priceCents: 4000, deliveredAICreditsCents: 4000 });
+    expect(findAddOn("ai_credits_large")).toMatchObject({ priceCents: 15000, deliveredAICreditsCents: 15000 });
   });
 
-  it("seats + connectors rows are permanent; ai_credits are current_month", () => {
+  it("every row is permanent: prepaid AI credits never expire", () => {
     for (const a of ADD_ON_CATALOG) {
-      if (a.category === "ai_credits") expect(a.validFor).toBe("current_month");
+      if (a.category === "ai_credits") expect(a.validFor).toBe("permanent");
       if (a.category === "seats")      expect(a.validFor).toBe("permanent");
       if (a.category === "connectors") expect(a.validFor).toBe("permanent");
     }
@@ -40,25 +47,18 @@ describe("ADD_ON_CATALOG — invariants", () => {
   });
 });
 
-describe("findAddOnsForPlan", () => {
-  it("Starter sees small + medium ai credits + seat + connector (no large)", () => {
-    const r = findAddOnsForPlan(STARTER);
-    const skus = r.map((a) => a.sku).sort();
-    expect(skus).toEqual([
-      "ai_credits_medium", "ai_credits_small", "connector_addon", "seat_addon",
-    ]);
+describe("findAddOnsForPlan — AI credits are the only paid part", () => {
+  const credits = ["ai_credits_large", "ai_credits_medium", "ai_credits_small"];
+  it.each([["starter", STARTER], ["growth", GROWTH], ["business", BUSINESS], ["enterprise", ENTERPRISE]] as const)("%s is offered every AI credit pack and nothing else", (_tier, plan) => {
+    expect(findAddOnsForPlan(plan).map((a) => a.sku).sort()).toEqual(credits);
   });
 
-  it("Growth sees all 5 add-ons (including large)", () => {
-    expect(findAddOnsForPlan(GROWTH).length).toBe(5);
-  });
-
-  it("Business sees all 5 add-ons", () => {
-    expect(findAddOnsForPlan(BUSINESS).length).toBe(5);
-  });
-
-  it("Enterprise sees the full catalog (reference pricing for custom contracts)", () => {
-    expect(findAddOnsForPlan(ENTERPRISE).length).toBe(ADD_ON_CATALOG.length);
+  it("keeps seat and connector SKUs readable for historical purchases but never offered", () => {
+    for (const sku of ["seat_addon", "connector_addon"]) {
+      const addOn = findAddOn(sku);
+      expect(addOn).not.toBeNull();
+      expect(isOfferedAddOn(addOn!)).toBe(false);
+    }
   });
 });
 

@@ -16,9 +16,14 @@ export interface PublicPlan {
 }
 
 /**
- * Proposed customer-facing catalog. It is intentionally separate from legacy
- * Stripe identifiers until organization billing, quotas, and webhooks all use
- * the same authority. No checkout endpoint may infer activation from this file.
+ * INTERNAL test-mode seat-plan terms. Not advertised (user decision
+ * 2026-11-08): the public /plans page is "Get started" and renders
+ * `AI_RATE_CARD` instead. These terms remain only because the isolated
+ * new-test subscription / owned TEST checkout contracts are pinned to them.
+ * `monthlyDeployments` here is a test-lane contract term; the deployment
+ * quota no longer reads it (every organization gets 10, see
+ * deploymentAllowance.ts). No checkout endpoint may infer activation from
+ * this file.
  */
 export const PUBLIC_PLAN_CATALOG: readonly PublicPlan[] = [
   {

@@ -151,7 +151,7 @@ export default async function AddOnsPage() {
               {a.category === "ai_credits" ? (
                 <PurchaseAddOnButton organizationId={orgId} sku={a.sku} label={`Buy for ${formatCents(a.priceCents)}`} />
               ) : (
-                <p className="text-xs text-zinc-400">Self-service checkout is unavailable for this add-on. Contact support.</p>
+                <p className="text-xs text-zinc-400">Not offered. Only prepaid AI credits can be purchased.</p>
               )}
             </article>
           );
