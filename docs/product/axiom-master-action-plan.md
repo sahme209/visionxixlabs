@@ -2,6 +2,8 @@
 
 ## November 8 — current handoff; read this before historical checkpoints
 
+**SECURITY — top priority (2026-11-08):** repo made public; full-history scan found live-format Stripe secret key, Stripe webhook secret and Resend API key in commit `252d1cf2` (`origin/ai-website-build`). Must be rotated by the user; not confirmed — [record](../recovery/2026-11-08/security-public-exposure/README.md). No values recorded.
+
 This section is the operative start point for Claude. Earlier dated "next", "pending", "current execution unit" and preparation paragraphs below are preserved historical evidence, **not instructions to repeat completed operations**. All 21 A1–A9/B1–B6/C1–C6 parent requirements remain open; strike-through qualifies only the exact completed subtask and evidence scope.
 
 1. ~~Latest committed source and current planning snapshot backed up on private GitHub; existing main history preserved by conflict-free fast-forward~~. GitHub `main` is `fe63452fc1eeea34b39c0a72e8e72e3a04420629`, tree `a5e4ce1cb219e435aab55db8c6fb72f7ec5d92b2`; the prior `main` `568110c2` is an ancestor. No PR was created. This is source preservation, not a successful CI/release. [Actual receipt](../recovery/2026-11-08/claude-handoff/axiom-nov8-main-update-receipt.json).
