@@ -392,6 +392,8 @@ Visualizations must explain Axiom **from A to Z**: deployment intake → AI anal
 
 **Docs (`/docs`) is the exception:** no decorative 3D. It must be complete documentation of every supported screen and control (B4) with **real recorded demos** from the actual product (B3): authentic captures, redaction, captions/transcripts, posters and version/source binding. No staged success, ever.
 
+~~**3D visual language v4 locked by the user (2026-11-08)**~~: futuristic, clean, high-tech glass-and-light system with connected systems, holo panels, HUD and audit stream; spec in [3d-visual-language-v4.md](../design/3d-visual-language-v4.md). Implementation not started.
+
 Realism stack candidates (reviewed licenses, not yet installed): three.js, React Three Fiber, drei, react-postprocessing (MIT; core postprocessing Zlib), three-gpu-pathtracer, GSAP (free standard license), Poly Haven CC0 HDRIs/textures (self-hosted), glTF-Transform, CloudAI-X/threejs-skills; Spline and Theatre.js rejected. Source review is required before adding any dependency.
 
 #### Restrained premium animation
