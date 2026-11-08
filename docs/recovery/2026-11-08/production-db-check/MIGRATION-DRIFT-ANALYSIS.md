@@ -33,3 +33,14 @@ Open before any history change (read-only check 4):
 - Whether `WorkspaceAgentIdentity` has seed rows. The failed `INSERT` was meant to keep the desktop Agent enabled for existing organizations; if it never ran, they may be **fail-closed (Agent disabled)**. Re-enabling is a product/security decision for the user.
 - The truncated index name, and the legacy foreign-key names from `20261023220000_bind_legacy_cloud_tenant_relations`.
 - Exact column shapes for 21 tables, to compare with the migration files before any `migrate resolve --applied`.
+
+## Check 5 result (user-run, 2026-11-08): production vs schema.prisma
+- **Missing tables:** none (all 173 exist).
+- **Missing columns:** only `PipelineAICallReservation.admissionContract` and `quoteEvidence` (the deploy blockers).
+- **9 default/nullability differences, all pre-existing with today's live code:**
+  - Production is stricter on four array columns.
+  - The legacy `Lead` model differs: `name` is NOT NULL, `fullPayload` has no default, `status` defaults to `'new'` instead of `'created'`.
+  - `ExecutionLog.startedAt` has no default; `DesktopHandoffRecord.updatedAt` has an extra default.
+  - These go on the cleanup list and aren't deploy blockers.
+- **2 extra live columns:** `AuditEvent.status` and `Lead.phone`. If either is NOT NULL without a default, new-code inserts would fail. Check 6 inspects them.
+- **30 "missing" indexes:** mostly Prisma-vs-PostgreSQL name truncation. Check 6 compares by definition to find any genuinely missing unique keys.
