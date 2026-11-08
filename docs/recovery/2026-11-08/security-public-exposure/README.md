@@ -19,3 +19,5 @@ Also public now (not credentials): planning/handoff docs, named people/decisions
 Recommended: make the repo private until rotation is done; rotation (not branch deletion or history rewrite) is the remedy, since copies may already exist.
 
 **Update 2026-11-08:** user reports all three keys rolled and chose to keep the repo public. Claude did not verify with Stripe/Resend/Vercel. Vercel env vars must hold the new values for payments/email to work.
+
+**Second incident (2026-11-08):** the user shared a screenshot containing a full Neon connection string for the `neondb_owner` role (endpoint `ep-small-mountain-ailw0kvt-pooler`, us-east-1). The value was never stored or used by Claude. The user reports the password was reset and Vercel `DATABASE_URL` updated (not independently verified). Still open: confirm whether Preview and Production share this database before any preview deploy.
