@@ -50,5 +50,9 @@ Each reconcile write step (at execution time); a separate Preview DB; UID501 dia
 2. An interactive governance sandbox on synthetic data (approve, reject, rollback).
 3. A public trust center with an evidence-backed security posture once A7 lands.
 
+## Merged (2026-11-08, no deploy)
+- PR #203, the homepage 3D model (v4), restyle, render tooling and planning docs → `main` `68e74afe`.
+- PR #204, the converged agent migration plus the deploy-preflight gate → `main` `87ea0882`.
+
 ## Watch list
 - `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`: failed on PR #204 (2026-11-08) with `fixed_fixture_scenario_unavailable` at `afterSettled`, within the 60 s bound, while passing on PR #203's runs with identical Governance code. **Confirmed intermittent:** the single re-run passed. It needs its own A2 fixture investigation (a race in the composed scenario); it isn't caused by PR #204.
