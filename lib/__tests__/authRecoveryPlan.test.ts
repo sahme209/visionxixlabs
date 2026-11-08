@@ -18,7 +18,10 @@ describe("reviewed authentication-only recovery boundary", () => {
     const original = readFileSync("prisma/migrations/20261014120000_add_email_verification/migration.sql", "utf8");
     const sql = readFileSync("ops/recovery/20261015_auth_schema_only.sql", "utf8");
     expect(createHash("sha256").update(original).digest("hex")).toBe("ad968345199bb9fa84add0340777631f99d5583aafe1949790051ccdf6d9873f");
-    expect(createHash("sha256").update(readFileSync("prisma/migrations/20261013172000_add_workspace_agent_identity/migration.sql")).digest("hex")).toBe("761c693202763e71c7ee25f99e194fe010335cf902b5ed37124351a93d42e3f7");
+    // The text production recorded for the failed agent migration stays pinned byte-for-byte as a fixture.
+    expect(createHash("sha256").update(readFileSync("scripts/fixtures/agent-identity-migration.production-original.sql")).digest("hex")).toBe("761c693202763e71c7ee25f99e194fe010335cf902b5ed37124351a93d42e3f7");
+    // The repo migration is the user-approved idempotent, non-granting convergence revision (2026-11-08).
+    expect(createHash("sha256").update(readFileSync("prisma/migrations/20261013172000_add_workspace_agent_identity/migration.sql")).digest("hex")).toBe("fa3703cc048fe9f0f7c1285e44e01280725a2a39dd2a39e5411c52edbaca6ec4");
     expect(sql.split("-- BEGIN UNCHANGED AUTH MIGRATION\n")[1].split("\n-- END UNCHANGED AUTH MIGRATION")[0]).toBe(original);
     expect(sql).toContain("BEGIN;");
     expect(sql.trim()).toMatch(/COMMIT;$/);

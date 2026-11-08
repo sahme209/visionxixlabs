@@ -58,6 +58,10 @@ export async function rehearseAuthRecovery(connectionString) {
     mkdirSync(join(temp, "prisma"));
     cpSync(join(root, "prisma/schema.prisma"), schema);
     cpSync(join(root, "prisma/migrations"), join(temp, "prisma/migrations"), { recursive: true });
+    // Production recorded the ORIGINAL migration text (which selects from a nonexistent "Organization"
+    // table) as failed on 2026-10-14. The repo file is now corrected for fresh databases, so the rehearsal
+    // replays the pinned original to reproduce production history faithfully.
+    writeFileSync(join(temp, "prisma/migrations", agentMigration, "migration.sql"), readFileSync(join(root, "scripts/fixtures/agent-identity-migration.production-original.sql")));
     const failure = cli(["migrate", "deploy"], false);
     assert.match(failure, /P3018/);
     assert.match(failure, /Organization/);
