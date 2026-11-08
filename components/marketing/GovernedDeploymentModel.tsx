@@ -29,7 +29,13 @@ function supportsWebGL(): boolean {
     // failIfMajorPerformanceCaveat refuses software rendering (no GPU), where the scene would
     // saturate the main thread; those visitors get the 2D stage rail instead.
     const opts = { failIfMajorPerformanceCaveat: true } as const;
-    return Boolean(probe.getContext("webgl2", opts) ?? probe.getContext("webgl", opts));
+    const gl = probe.getContext("webgl2", opts) ?? probe.getContext("webgl", opts);
+    if (!gl) return false;
+    // Some software GPUs (e.g. SwiftShader in headless Chrome) do not raise the caveat; refuse them by name too.
+    const info = gl.getExtension("WEBGL_debug_renderer_info");
+    const name = String(info ? gl.getParameter(info.UNMASKED_RENDERER_WEBGL) : gl.getParameter(gl.RENDERER));
+    gl.getExtension("WEBGL_lose_context")?.loseContext();
+    return !/swiftshader|llvmpipe|softpipe|software|basic render/i.test(name);
   } catch {
     return false;
   }

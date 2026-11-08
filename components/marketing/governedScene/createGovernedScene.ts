@@ -211,15 +211,18 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
 
   const clock = new THREE.Clock();
   let frame = 0;
-  // Frame-budget guard: after a short warm-up, sustained frames over ~45 ms hand control back to 2D.
+  // Frame-budget guard (see tick): slow devices hand control back to the 2D view.
   let sampled = 0, slow = 0, gaveUp = false;
   const tick = () => {
     frame = requestAnimationFrame(tick);
     if (!visible || document.hidden || !scenario) return;
     const raw = clock.getDelta(), dt = Math.min(raw, 0.05), elapsed = clock.elapsedTime;
-    if (!gaveUp && elapsed > 1.5 && sampled < 90) {
-      sampled += 1; if (raw > 0.045) slow += 1;
-      if (sampled >= 45 && slow / sampled > 0.6) { gaveUp = true; options.onTooSlow(); return; }
+    if (!gaveUp && sampled < 90) {
+      // Any single frame over 400 ms, or a 10-frame sample averaging over 60 ms after warm-up, means
+      // this device cannot run the scene without freezing the page: hand back to 2D immediately.
+      if (raw > 0.4 && sampled > 2) { gaveUp = true; options.onTooSlow(); return; }
+      if (elapsed > 1) { sampled += 1; slow += raw; if (sampled >= 10 && slow / sampled > 0.06) { gaveUp = true; options.onTooSlow(); return; } }
+      else sampled = sampled < 2 ? sampled + 1 : sampled;
     }
     const last = FLOW_STATIONS.length - 1, end = scenario.stop / last;
     if (playing) { progress += dt * 0.055; if (progress > end + 0.3) { progress = 0; history.length = 0; } }
