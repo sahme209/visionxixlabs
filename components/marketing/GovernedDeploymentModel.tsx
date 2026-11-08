@@ -41,6 +41,12 @@ function supportsWebGL(): boolean {
   }
 }
 
+/** Browser-local override used only by the software-render capture job: `localStorage["axiom:force-3d"]="1"`
+ * skips the GPU check and frame guard in that one browser. It cannot affect other visitors. */
+function forced3d(): boolean {
+  try { return typeof window !== "undefined" && window.localStorage.getItem("axiom:force-3d") === "1"; } catch { return false; }
+}
+
 function prefersReducedMotion(): boolean {
   return typeof window !== "undefined" && typeof window.matchMedia === "function" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
@@ -61,7 +67,8 @@ export function GovernedDeploymentModel() {
 
   useEffect(() => {
     setReducedMotion(prefersReducedMotion());
-    if (!supportsWebGL() || typeof IntersectionObserver === "undefined") { setMode("2d"); return; }
+    const force = forced3d();
+    if ((!force && !supportsWebGL()) || typeof IntersectionObserver === "undefined") { setMode("2d"); return; }
     let cancelled = false;
     const frame = frameRef.current;
     if (!frame) return;
@@ -73,6 +80,7 @@ export function GovernedDeploymentModel() {
           if (cancelled || !canvasRef.current) return;
           sceneRef.current = createGovernedScene(canvasRef.current, {
             reducedMotion: prefersReducedMotion(),
+            frameGuard: !force,
             onReached: (k) => setReached(k),
             onSelect: (i) => setSelected(i),
             onTooSlow: () => { sceneRef.current?.dispose(); sceneRef.current = null; setMode("2d"); },

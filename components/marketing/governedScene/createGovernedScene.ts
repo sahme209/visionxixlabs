@@ -24,6 +24,8 @@ export type GovernedSceneHandle = {
 
 export type GovernedSceneOptions = {
   reducedMotion: boolean;
+  /** Hand back to 2D on slow frames (default true). */
+  frameGuard?: boolean;
   onReached(index: number): void;
   onSelect(index: number): void;
   /** Called once if frames stay over budget; the caller should switch to the 2D view. */
@@ -53,7 +55,8 @@ function label(text: string, height: number, color: string, font: string): THREE
 
 export function createGovernedScene(canvas: HTMLCanvasElement, options: GovernedSceneOptions): GovernedSceneHandle {
   const mobile = Math.min(canvas.clientWidth, canvas.clientHeight) < 500;
-  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: "high-performance", failIfMajorPerformanceCaveat: true });
+  const guard = options.frameGuard !== false;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: !mobile, powerPreference: "high-performance", failIfMajorPerformanceCaveat: guard });
   renderer.setPixelRatio(Math.min(mobile ? 1.5 : 2, window.devicePixelRatio));
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
 
@@ -217,7 +220,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
     frame = requestAnimationFrame(tick);
     if (!visible || document.hidden || !scenario) return;
     const raw = clock.getDelta(), dt = Math.min(raw, 0.05), elapsed = clock.elapsedTime;
-    if (!gaveUp && sampled < 90) {
+    if (guard && !gaveUp && sampled < 90) {
       // Any single frame over 400 ms, or a 10-frame sample averaging over 60 ms after warm-up, means
       // this device cannot run the scene without freezing the page: hand back to 2D immediately.
       if (raw > 0.4 && sampled > 2) { gaveUp = true; options.onTooSlow(); return; }
