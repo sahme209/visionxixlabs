@@ -1,3 +1,4 @@
+import { testTextPolicyRow, isTextPolicyQuery } from "@/test/textPolicyFixture";
 import { afterEach, beforeEach, expect, it, vi } from "vitest";
 
 // Only storage and the final SDK transport are synthetic. The executor,
@@ -14,7 +15,7 @@ vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: f.write
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: async () => ({ kind: "allow" }) }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: vi.fn() }));
 vi.mock("../budgetConfigStore", () => ({ loadBudgetConfig: async () => ({}) }));
-vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({
+vi.mock("@/lib/ai/workspaceProviderPolicy", async original => ({ ...await original<typeof import("@/lib/ai/workspaceProviderPolicy")>(),
   loadWorkspaceAIProviderPolicyWithState: async () => ({ storageState: "ready", policy: {
     enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "anthropic/claude-sonnet-5" }, fallbackOrder: ["vercel_gateway"],
   } }), resolveWorkspaceAIProviderPolicy: ({ stored }: { stored: unknown }) => stored,
@@ -27,7 +28,7 @@ beforeEach(() => {
   f.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "hold" } });
   f.claim.mockResolvedValue(true);
   f.transaction.mockImplementation(async fn => fn({
-    $queryRawUnsafe: async () => [{ id: "hold", organizationId: "org", status: "dispatch_unknown", usageEventId: null }],
+    $queryRawUnsafe: async (sql: string) => isTextPolicyQuery(sql) ? [testTextPolicyRow] : [{ id: "hold", organizationId: "org", status: "dispatch_unknown", usageEventId: null }],
     usageEvent: { findUnique: async () => null, create: vi.fn() },
     aIUsageReservation: { updateMany: async () => ({ count: 1 }) },
   }));

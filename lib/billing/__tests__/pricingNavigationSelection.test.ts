@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { cleanup, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 const io = vi.hoisted(() => ({ push: vi.fn(), fetch: vi.fn(), context: vi.fn() }));
-vi.mock("next/navigation", () => ({ useRouter: () => ({ push: io.push }) }));
+vi.mock("next/navigation", () => ({ useRouter: () => ({ push: io.push }), usePathname: () => "/" }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: io.context }));
 import { PublicPlansCatalog } from "@/components/billing/PublicPlansCatalog";
 import { Navigation } from "@/components/Navigation";

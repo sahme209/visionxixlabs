@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: mocks.status, generateTextWithAdmission: mocks.generateAdmitted }) }));
-vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, resolveWorkspaceAIProviderPolicy: mocks.resolvePolicy }));
+vi.mock("@/lib/ai/workspaceProviderPolicy", async original => ({ ...await original<typeof import("@/lib/ai/workspaceProviderPolicy")>(), loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, resolveWorkspaceAIProviderPolicy: mocks.resolvePolicy }));
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkCredits }));
 vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: mocks.reserve, releaseAICreditReservation: mocks.release, claimLegacyAICreditDispatch: mocks.legacyClaim }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: mocks.recordUsage, recordReservedAIUsageEventV2: mocks.recordReserved }));

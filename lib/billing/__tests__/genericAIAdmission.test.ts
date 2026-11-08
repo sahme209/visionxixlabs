@@ -5,9 +5,10 @@ vi.mock("../aiCreditReservation", () => ({ reserveAICredits: m.reserve, claimLeg
 vi.mock("../recordAIUsageEvent", () => ({ recordAIUsageEvent: m.write, recordReservedAIUsageEventV2: m.v2Write }));
 vi.mock("../newTestSubscription/usageAllocationIO", () => ({ claimNewTestBillableDispatch: m.v2Claim }));
 vi.mock("../isolatedApplication/runtime", () => ({ denyIsolatedExternalIO: m.deny }));
+import { testTextPolicy, testTextPolicyRow, isTextPolicyQuery } from "@/test/textPolicyFixture";
 import { admitAIText, admitGovernedExtract, consumeGovernedTextAdmission, consumeGovernedExtractAdmission } from "../governedExtractAdmission";
 
-const scope = { organizationId: "org", userId: "actor", correlationId: "correlation" };
+const scope = { organizationId: "org", userId: "actor", correlationId: "correlation", textPolicy: testTextPolicy };
 const key = "public_request_key_123456";
 const response = { provider: "vercel_gateway", model: "provider/model", gatewayGenerationId: "generation", usage: { promptTokens: 1, completionTokens: 2 } } as const;
 describe("shared generic text admission kernel", () => {
@@ -16,7 +17,7 @@ describe("shared generic text admission kernel", () => {
     m.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "hold" } });
     m.legacyClaim.mockResolvedValue(true); m.v2Claim.mockResolvedValue(true);
     m.transaction.mockImplementation(async fn => fn({
-      $queryRawUnsafe: async () => [{ id: "hold", organizationId: "org", status: "dispatch_unknown", usageEventId: null }],
+      $queryRawUnsafe: async (sql: string) => isTextPolicyQuery(sql) ? [testTextPolicyRow] : [{ id: "hold", organizationId: "org", status: "dispatch_unknown", usageEventId: null }],
       usageEvent: { findUnique: async () => null }, aIUsageReservation: { updateMany: async () => ({ count: 1 }) },
     }));
     m.write.mockResolvedValue({ recorded: true, usageEventId: "usage" });

@@ -31,7 +31,7 @@
    "deploy",
    "more than 3 pushes"
   ],
-  "used": 2
+  "used": 3
  },
  "run2": {
   "Test": "failure (2 TS errors)",
