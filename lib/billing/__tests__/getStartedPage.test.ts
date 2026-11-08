@@ -31,7 +31,7 @@ describe("Get started page (/plans)", () => {
 
   it("shows exact per-model rates from the rate card before any charge", async () => {
     await renderPage();
-    const table = screen.getByRole("table");
+    const table = screen.getByRole("table", { name: /Per-model AI rates/ });
     const row = within(table).getByRole("row", { name: /Claude Sonnet 5\.5/ });
     expect(row.textContent).toContain("$3.00 / 1M tokens");
     expect(row.textContent).toContain("$0.15 / 1M tokens");
@@ -62,5 +62,17 @@ describe("Get started page (/plans)", () => {
     expect(screen.queryByRole("button")).toBeNull();
     expect(io.context).not.toHaveBeenCalled();
     expect(io.fetch).not.toHaveBeenCalled();
+  });
+});
+
+describe("Get started page per-level cost ranges", () => {
+  it("shows an estimated range for each AI level, labelled as an estimate", async () => {
+    await renderPage();
+    const table = screen.getByRole("table", { name: /Estimated cost per action by AI level/ });
+    for (const [level, range] of [["Inspect", "$0.01 – $0.31"], ["Engineer", "$0.01 – $0.61"], ["DeepOps", "$0.01 – $0.91"]]) {
+      const row = within(table).getByRole("row", { name: new RegExp(level) });
+      expect(row.textContent).toContain(range);
+    }
+    expect(screen.getByText(/Every level uses the same 1.5x/)).toBeTruthy();
   });
 });

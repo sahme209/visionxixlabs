@@ -3,7 +3,7 @@ import { isolatedRuntimeRequested } from "@/lib/billing/isolatedApplication/runt
 import type { Metadata } from "next";
 import Link from "next/link";
 import { COUNTED_DEPLOYMENT_DEFINITION, isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
-import { AI_RATE_CARD, customerPriceCents, customerUsdPerMTok, providerCostBudgetCentsForPrice } from "@/lib/billing/aiRateCard";
+import { AI_RATE_CARD, customerPriceCents, EFFORT_LEVEL_ESTIMATE, effortLevelCostRangeCents, customerUsdPerMTok, providerCostBudgetCentsForPrice } from "@/lib/billing/aiRateCard";
 import { ADD_ON_CATALOG } from "@/lib/billing/addOnCatalog";
 import { currentContext } from "@/lib/auth/currentContext";
 import { parsePublicPlanSelection } from "@/lib/billing/planSelection";
@@ -149,6 +149,30 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           </div>
           <p className="mt-3 text-xs leading-5 text-zinc-500">
             Example: {EXAMPLE_INPUT_TOKENS.toLocaleString("en-US")} input and {EXAMPLE_OUTPUT_TOKENS.toLocaleString("en-US")} output tokens on {exampleRate.displayName} cost {usd(exampleProviderCents)} at provider rates, so you pay {usd(exampleCustomerCents)}. Provider rates: {AI_RATE_CARD.providerRateSource}.
+          </p>
+
+          <h3 className="mt-10 text-sm font-medium text-zinc-100">Expected cost per action, by AI level</h3>
+          <div className="mt-3 overflow-x-auto">
+            <table className="w-full min-w-[520px] text-left text-sm text-zinc-300">
+              <caption className="sr-only">Estimated cost per action by AI level, in USD</caption>
+              <thead className="text-xs text-zinc-500"><tr><th scope="col" className="pb-2 pr-4 font-normal">Level</th><th scope="col" className="pb-2 pr-4 font-normal">Up to</th><th scope="col" className="pb-2 pr-4 font-normal">Typical use</th><th scope="col" className="pb-2 font-normal">Estimated range</th></tr></thead>
+              <tbody>
+                {EFFORT_LEVEL_ESTIMATE.levels.map((level) => {
+                  const range = effortLevelCostRangeCents(level.label);
+                  return (
+                    <tr key={level.label} className="border-t border-white/[0.07]">
+                      <th scope="row" className="py-3 pr-4 font-medium">{level.label}</th>
+                      <td className="py-3 pr-4 tabular-nums">{range.maxSteps} steps</td>
+                      <td className="py-3 pr-4 text-zinc-400">{level.use}</td>
+                      <td className="py-3 tabular-nums">{usd(range.lowCents)} – {usd(range.highCents)}</td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          <p className="mt-3 text-xs leading-5 text-zinc-500">
+            Estimates on {exampleRate.displayName}. Every level uses the same 1.5x; higher levels cost more only because they can take more steps. The low end is an action that finishes in one short step; the high end is every allowed step using large context and maximum output. The exact hold is shown before each action, and you pay 1.5x the actual provider cost, never more than the hold.
           </p>
 
           <div className="mt-10 grid gap-8 lg:grid-cols-3">
