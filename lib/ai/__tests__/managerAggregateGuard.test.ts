@@ -6,8 +6,9 @@ import { consumeGovernedTextAdmission, consumeGovernedExtractAdmission } from "@
 import type { GovernedAIAdmission } from "@/lib/billing/governedExtractAdmission";
 
 vi.mock("@/lib/billing/governedExtractAdmission", () => ({
-  consumeGovernedTextAdmission: vi.fn(() => ({ record: vi.fn() })),
-  consumeGovernedExtractAdmission: vi.fn(() => ({ record: vi.fn() })),
+  consumeGovernedTextAdmission: vi.fn(() => ({ record: vi.fn(), assertCurrentPolicy: async () => {} })),
+  consumeGovernedExtractAdmission: vi.fn(() => ({ record: vi.fn(), assertCurrentPolicy: async () => {} })),
+  discardGovernedAIAdmission: vi.fn(),
 }));
 const blocked = "spacexai/grok-4.20-multi-agent";
 const response = { text: '{"action":"respond"}', provider: "vercel_gateway" as const, model: "vendor/safe", latencyMs: 0 };

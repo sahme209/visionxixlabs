@@ -6,7 +6,7 @@ vi.mock("../providers/VercelGatewayProvider", () => ({ VercelGatewayProvider: cl
   isConfigured() { return true; } generateTextOnce = m.text;
 } }));
 import { AIProviderManager } from "../AIProviderManager";
-beforeEach(() => { vi.clearAllMocks(); m.consume.mockReturnValue({ record: m.record, codingDispatch: m.dispatch }); m.text.mockResolvedValue({ text: "synthetic" }); });
+beforeEach(() => { vi.clearAllMocks(); m.consume.mockReturnValue({ record: m.record, codingDispatch: m.dispatch, assertCurrentPolicy: async () => {} }); m.text.mockResolvedValue({ text: "synthetic" }); });
 it("pins final effective model before consuming exact text authority and forwards the private dispatch", async () => {
   const secret = `ghp_${"a".repeat(36)}`;
   const opts = { organizationId: "org", correlationId: "correlation", model: "service-default", modelSelections: { vercel_gateway: "anthropic/claude-sonnet-5" }, maxTokens: 4096, temperature: 0.2, system: `System ${secret}` } as const;

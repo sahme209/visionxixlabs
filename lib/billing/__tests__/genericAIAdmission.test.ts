@@ -5,10 +5,12 @@ vi.mock("../aiCreditReservation", () => ({ reserveAICredits: m.reserve, claimLeg
 vi.mock("../recordAIUsageEvent", () => ({ recordAIUsageEvent: m.write, recordReservedAIUsageEventV2: m.v2Write }));
 vi.mock("../newTestSubscription/usageAllocationIO", () => ({ claimNewTestBillableDispatch: m.v2Claim }));
 vi.mock("../isolatedApplication/runtime", () => ({ denyIsolatedExternalIO: m.deny }));
-import { testTextPolicy, testTextPolicyRow, isTextPolicyQuery } from "@/test/textPolicyFixture";
+import { TEST_TEXT_MODEL, testTextPolicy, testTextPolicyRow, isTextPolicyQuery } from "@/test/textPolicyFixture";
 import { admitAIText, admitGovernedExtract, consumeGovernedTextAdmission, consumeGovernedExtractAdmission } from "../governedExtractAdmission";
 
-const scope = { organizationId: "org", userId: "actor", correlationId: "correlation", textPolicy: testTextPolicy };
+const scope = { organizationId: "org", userId: "actor", correlationId: "correlation" };
+const admitScope = { ...scope, textPolicy: testTextPolicy };
+const dispatchBinding = { ...scope, model: TEST_TEXT_MODEL };
 const key = "public_request_key_123456";
 const response = { provider: "vercel_gateway", model: "provider/model", gatewayGenerationId: "generation", usage: { promptTokens: 1, completionTokens: 2 } } as const;
 describe("shared generic text admission kernel", () => {
@@ -24,49 +26,49 @@ describe("shared generic text admission kernel", () => {
     m.v2Write.mockResolvedValue({ recorded: true, usageEventId: "usage" });
   });
   it("retains the public request key and returns an opaque task-bound one-use handle", async () => {
-    const admitted = await admitAIText({ ...scope, idempotencyKey: key });
+    const admitted = await admitAIText({ ...admitScope, idempotencyKey: key });
     if (!admitted.ok) throw new Error("expected admission");
     expect(m.reserve).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ organizationId: "org", idempotencyKey: key, correlationId: "correlation" }));
     expect(m.legacyClaim).toHaveBeenCalledWith(expect.anything(), scope, "hold");
-    const authority = consumeGovernedTextAdmission(admitted.admission, scope);
+    const authority = consumeGovernedTextAdmission(admitted.admission, dispatchBinding);
     await authority.record(response);
     expect(m.write).toHaveBeenCalledWith(expect.objectContaining({ metadata: { route: "api/ai/generate" }, triggeredBy: "actor" }), expect.anything());
-    expect(() => consumeGovernedTextAdmission(admitted.admission, scope)).toThrow();
+    expect(() => consumeGovernedTextAdmission(admitted.admission, dispatchBinding)).toThrow();
   });
   it.each(["ai_credit_pool_exhausted", "ai_credit_reservation_unavailable", "idempotency_key_conflict"])("preserves reservation failure %s without claiming", async error => {
     m.reserve.mockResolvedValue({ ok: false, error });
-    await expect(admitAIText({ ...scope, idempotencyKey: key })).resolves.toEqual({ ok: false, error });
+    await expect(admitAIText({ ...admitScope, idempotencyKey: key })).resolves.toEqual({ ok: false, error });
     expect(m.legacyClaim).not.toHaveBeenCalled(); expect(m.v2Claim).not.toHaveBeenCalled(); expect(m.deny).not.toHaveBeenCalled();
   });
   it("denies reused holds before the isolated guard or a claim", async () => {
     m.reserve.mockResolvedValue({ ok: true, reused: true, reservation: { id: "hold" } });
-    await expect(admitAIText({ ...scope, idempotencyKey: key })).resolves.toEqual({ ok: false, error: "request_already_reserved" });
+    await expect(admitAIText({ ...admitScope, idempotencyKey: key })).resolves.toEqual({ ok: false, error: "request_already_reserved" });
     expect(m.deny).not.toHaveBeenCalled(); expect(m.legacyClaim).not.toHaveBeenCalled();
   });
   it.each([false, true])("isolated denial precedes legacy/v2 claim and releases only the unclaimed hold (v2=%s)", async v2 => {
     m.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "hold" }, ...(v2 ? { allocationPolicy: "axiom_test_anniversary_v2" } : {}) });
     m.deny.mockImplementation(() => { throw new Error("isolated_provider_io_disabled"); });
-    await expect(admitAIText({ ...scope, idempotencyKey: key })).rejects.toThrow("isolated_provider_io_disabled");
+    await expect(admitAIText({ ...admitScope, idempotencyKey: key })).rejects.toThrow("isolated_provider_io_disabled");
     expect(m.release).toHaveBeenCalledWith(expect.anything(), "org", "hold");
     expect(m.legacyClaim).not.toHaveBeenCalled(); expect(m.v2Claim).not.toHaveBeenCalled();
   });
   it.each([false, true])("claim/write failure retains legacy/v2 uncertainty (v2=%s)", async v2 => {
     m.reserve.mockResolvedValue({ ok: true, reused: false, reservation: { id: "hold" }, ...(v2 ? { allocationPolicy: "axiom_test_anniversary_v2" } : {}) });
-    const admitted = await admitAIText({ ...scope, idempotencyKey: key });
+    const admitted = await admitAIText({ ...admitScope, idempotencyKey: key });
     if (!admitted.ok) throw new Error("expected admission");
     m.write.mockResolvedValue({ recorded: false }); m.v2Write.mockResolvedValue({ recorded: false });
-    await expect(consumeGovernedTextAdmission(admitted.admission, scope).record(response)).rejects.toThrow();
+    await expect(consumeGovernedTextAdmission(admitted.admission, dispatchBinding).record(response)).rejects.toThrow();
     expect(m.release).not.toHaveBeenCalled();
     if (v2) { expect(m.write).not.toHaveBeenCalled(); expect(m.v2Claim).toHaveBeenCalledOnce(); }
     else { expect(m.v2Write).not.toHaveBeenCalled(); expect(m.legacyClaim).toHaveBeenCalledOnce(); }
   });
   it("extract and generic text authority cannot cross lanes even with identical scope", async () => {
-    const text = await admitAIText({ ...scope, idempotencyKey: key });
+    const text = await admitAIText({ ...admitScope, idempotencyKey: key });
     if (!text.ok) throw new Error("expected admission");
     expect(() => consumeGovernedExtractAdmission(text.admission, scope)).toThrow();
-    expect(() => consumeGovernedTextAdmission(text.admission, scope)).toThrow();
+    expect(() => consumeGovernedTextAdmission(text.admission, dispatchBinding)).toThrow();
     const extract = await admitGovernedExtract(scope);
-    expect(() => consumeGovernedTextAdmission(extract, scope)).toThrow();
+    expect(() => consumeGovernedTextAdmission(extract, dispatchBinding)).toThrow();
     expect(() => consumeGovernedExtractAdmission(extract, scope)).toThrow();
   });
 });
