@@ -1,17 +1,21 @@
 /**
- * Tenant isolation guarantees.
+ * Tenant isolation helpers.
  *
- * The single rule: every customer-data query passes through a TenantScope
- * gate. `tenantScope.ts` provides the structural type; this module wraps it
- * with audit emission and Prisma-shaped helpers so callers can't accidentally
- * forget the audit trail on cross-tenant attempts.
+ * Intended rule: every customer-data query is scoped by a TenantScope.
+ * `tenantScope.ts` provides the structural type; this module wraps it with
+ * audit emission and Prisma-shaped helpers so callers can't forget the audit
+ * trail on cross-tenant attempts.
  *
- * Tenant isolation in Axiom rests on three guarantees:
- *  (1) The session carries `organizationId` — without it, all guards throw.
- *  (2) Every `findMany`/`update`/`delete` includes an `organizationId`
- *      filter — `tenantWhere()` produces it.
- *  (3) Cross-tenant access attempts are *logged*, not just rejected — the
- *      audit row exists so security teams can spot probing.
+ * IMPORTANT (threat model 2026-11-08, docs/product/security/consolidated-threat-model-2026-11-08.md):
+ * this gate is NOT applied centrally. Most routes add their own `organizationId`
+ * filter by hand, and only a few call `tenantWhere()`/`enforceTenant()`. There is
+ * no database row-level security. Do not assume a query is tenant-safe because
+ * this module exists; check the query itself.
+ *
+ * What the helpers guarantee when they ARE used:
+ *  (1) Without an `organizationId` in the scope, the guards throw.
+ *  (2) `tenantWhere()` adds the `organizationId` filter to a Prisma where.
+ *  (3) Cross-tenant attempts are logged, not just rejected, so probing is visible.
  */
 
 import { AxiomErrors, isAxiomError } from "@/lib/errors/axiomErrors";
