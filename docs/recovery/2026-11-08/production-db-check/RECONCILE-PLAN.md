@@ -77,3 +77,17 @@ Steps 3–6 write to production, and each needs your explicit go-ahead at the ti
 Post-checks follow, then a result row is printed. The Agent seed is not included. `READ-ONLY-CHECK.sql` now expects `20261108120000_add_pipeline_ai_call_quote_fields` as the latest migration.
 
 **Status: prepared, NOT executed.** It needs the user's explicit go-ahead in the Neon SQL Editor (project `odd-union-57413470`, branch `main`, database `neondb`). The new migration file must be merged before production build 1, so the deployed code and the ledger agree.
+
+## EXECUTED (2026-11-08, user, Neon SQL Editor, project odd-union-57413470 / main / neondb)
+`CATCH-UP-AND-RECONCILE.sql` ran on the user's explicit go-ahead ("run it") and returned "Statement executed successfully". The user then ran this read-only verification:
+
+| migrations_unfinished | latest_applied | rows_written_today | quote_columns | lead_source_idx | agent_identity_rows |
+|---|---|---|---|---|---|
+| 0 | 20261108120000_add_pipeline_ai_call_quote_fields | 13 | admissionContract,quoteEvidence | true | 1 (unchanged) |
+
+Every value matches the expected result. Migration history has converged, the quote fields are present, and the Agent identities are untouched (the read-only seed is still a separate decision, not run).
+
+Next:
+1. Merge PR #207, so the repo contains `20261108120000`.
+2. The production deploy preflight must report `deployAllowed: true`.
+3. Production build 1 of 3, then smoke checks, then promote.
