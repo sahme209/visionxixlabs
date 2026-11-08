@@ -10,7 +10,7 @@ const columns = [
       ["Docs", "/docs"],
       ["Download", "/download"],
       ["Integrations", "/integrations"],
-      ["Pricing", "/plans"],
+      ["Get started", "/plans"],
       ["Security", "/security"],
     ],
   },
