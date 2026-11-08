@@ -14,6 +14,7 @@ import { Footer } from "@/components/Footer";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
+import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
 import assemblyStyles from "@/components/marketing/GovernanceAssembly.module.css";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
@@ -76,6 +77,8 @@ export default function Home() {
           </div>
           <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
         </section>
+
+        <GovernedDeploymentModel />
 
         <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
           <div className="mx-auto max-w-[1280px]">
