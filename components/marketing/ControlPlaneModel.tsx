@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useState } from "react";
 import { CONTROL_PLANE_DEFAULT_LAYER, CONTROL_PLANE_LAYERS, layerNumber } from "@/lib/marketing/controlPlaneModel";
 import type { ControlPlaneSceneHandle } from "./controlPlaneScene/createControlPlaneScene";
-import { forced3d, prefersReducedMotion, supportsWebGL } from "./webglSupport";
+import { useLazyScene } from "./visualKit/useLazyScene";
 
 /** Product page control-plane model (visual language v4, calm). Illustrative; never a live system. */
 export function ControlPlaneModel() {
@@ -11,43 +11,10 @@ export function ControlPlaneModel() {
   const [selected, setSelected] = useState(CONTROL_PLANE_DEFAULT_LAYER);
   const [exploded, setExploded] = useState(true);
   const [playing, setPlaying] = useState(true);
-  const [mode, setMode] = useState<"pending" | "3d" | "2d">("pending");
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const frameRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sceneRef = useRef<ControlPlaneSceneHandle | null>(null);
-
-  useEffect(() => {
-    setReducedMotion(prefersReducedMotion());
-    const force = forced3d();
-    if ((!force && !supportsWebGL()) || typeof IntersectionObserver === "undefined") { setMode("2d"); return; }
-    let cancelled = false;
-    const frame = frameRef.current;
-    if (!frame) return;
-    const load = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      load.disconnect();
-      import("./controlPlaneScene/createControlPlaneScene")
-        .then(({ createControlPlaneScene }) => {
-          if (cancelled || !canvasRef.current) return;
-          sceneRef.current = createControlPlaneScene(canvasRef.current, {
-            reducedMotion: prefersReducedMotion(),
-            frameGuard: !force,
-            onSelect: (i) => setSelected(i),
-            onTooSlow: () => { sceneRef.current?.dispose(); sceneRef.current = null; setMode("2d"); },
-          });
-          setMode("3d");
-        })
-        .catch(() => { if (!cancelled) setMode("2d"); });
-    }, { rootMargin: "300px" });
-    load.observe(frame);
-    const visibility = new IntersectionObserver((entries) => sceneRef.current?.setVisible(entries.some((e) => e.isIntersecting)));
-    visibility.observe(frame);
-    return () => {
-      cancelled = true; load.disconnect(); visibility.disconnect();
-      sceneRef.current?.dispose(); sceneRef.current = null;
-    };
-  }, []);
+  const { mode, reducedMotion, frameRef, canvasRef, sceneRef } = useLazyScene<ControlPlaneSceneHandle>(async (canvas, env) => {
+    const { createControlPlaneScene } = await import("./controlPlaneScene/createControlPlaneScene");
+    return createControlPlaneScene(canvas, { ...env, onSelect: (i) => setSelected(i) });
+  });
 
   useEffect(() => { sceneRef.current?.select(selected); }, [selected, mode]);
   useEffect(() => { sceneRef.current?.setExploded(exploded); }, [exploded, mode]);

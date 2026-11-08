@@ -26,3 +26,24 @@ Inspector with: summary, numbered internal steps, data in → out, systems, guar
 
 ## Implementation stack (pending source review before adding)
 three.js, React Three Fiber, drei, react-postprocessing, GSAP for camera choreography, glTF-Transform for any modeled assets, self-hosted Poly Haven CC0 HDRI if needed. The in-chat concept used three.js r160 with built-in RoomEnvironment, UnrealBloom and OrbitControls.
+
+## Shared visual kit (calm v4), 2026-11-08
+Every new page model is built on `components/marketing/visualKit/`. The homepage model predates the kit and keeps its locked engine; it shares only `webglSupport.ts`.
+
+- `theme.ts` (pure, tested): every colour, the type, bloom, exposure, glass recipe, motion speeds and the frame-guard decision. **Change the look here once, not per page.**
+- `stage.ts`: renderer, void, studio sheen, floor, grid, low bloom, resize, visibility pause, frame guard, click-to-pick, `glass()`, titled `label()` and full disposal. A model only adds its own objects and an `update(dt)`.
+- `useLazyScene.ts`: the client lifecycle. 2D unless WebGL runs on a real GPU; loads only near view; pauses off-screen; falls back to 2D on import failure or a slow frame budget.
+
+**Rules the kit enforces (user, 2026-11-08):**
+- Inter at regular weight in soft off-white (`#dde6f0`), never pure white on black. Monospace only for short numbers and codes.
+- **Every element has a visible title** (`label()`), and the same titles appear in the 2D fallback and the inspector.
+- Calm: one full pulse pass takes ≥ 8 s, bloom strength ≤ 0.6, one accent colour, no flashing.
+- Honest: each model is labelled illustrative, and its text comes from one tested data file in `lib/marketing/`.
+
+**Adding a page model:**
+1. Write `lib/marketing/<page>Model.ts` and its tests (titles, parts, guarantees).
+2. Write `components/marketing/<page>Scene/create<Page>Scene.ts` on `createStage`.
+3. Write the section component with `useLazyScene`, a 2D list fallback and an inspector.
+4. Add a jsdom test for the 2D fallback.
+
+The Product page `ControlPlaneModel` is the reference implementation.
