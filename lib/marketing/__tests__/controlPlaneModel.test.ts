@@ -38,3 +38,18 @@ describe("control-plane model", () => {
     expect(pulseLayer(2)).toBe(4);
   });
 });
+
+describe("control-plane pipe data", () => {
+  it("passes a titled, explained packet between every pair of stages and ends with none", () => {
+    const layers = CONTROL_PLANE_LAYERS;
+    layers.slice(0, -1).forEach((l) => {
+      expect(l.passesOn?.label.length).toBeGreaterThan(0);
+      expect(l.passesOn?.detail.length).toBeGreaterThan(0);
+    });
+    expect(layers[layers.length - 1].passesOn).toBeNull();
+  });
+
+  it("gives each stage its own calm tone", () => {
+    expect(new Set(CONTROL_PLANE_LAYERS.map((l) => l.tone)).size).toBe(CONTROL_PLANE_LAYERS.length);
+  });
+});

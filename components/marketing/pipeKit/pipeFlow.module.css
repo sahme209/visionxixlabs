@@ -1,0 +1,31 @@
+/* Pipe-flow kit (calm v4, 2D). Data moves through pipes; nothing flashes.
+   Tones are muted so text stays the brightest thing on screen. */
+.flow { --sky: 125 196 245; --teal: 94 205 196; --violet: 167 150 240; --amber: 232 190 120; --emerald: 120 214 168; }
+.tone { --c: var(--sky); }
+.sky { --c: var(--sky); } .teal { --c: var(--teal); } .violet { --c: var(--violet); } .amber { --c: var(--amber); } .emerald { --c: var(--emerald); }
+
+.stage { border-left: 3px solid rgb(var(--c) / 0.55); }
+.stageSelected { border-color: rgb(var(--c) / 0.55); border-left-color: rgb(var(--c) / 0.9); background: rgb(var(--c) / 0.05); }
+.number { color: rgb(var(--c) / 0.85); }
+
+/* Horizontal pipe behind a stage's three steps. */
+.tube { position: absolute; left: 6%; right: 6%; top: 50%; height: 8px; margin-top: -4px; border-radius: 4px;
+  background: rgb(255 255 255 / 0.03); border: 1px solid rgb(255 255 255 / 0.08); overflow: hidden; }
+.bit { position: absolute; top: 1px; width: 16px; height: 4px; border-radius: 2px; background: rgb(var(--c) / 0.85);
+  animation: across 3.6s linear infinite; }
+@keyframes across { from { left: -16px; } to { left: 100%; } }
+
+/* Vertical pipe between stages, carrying a labelled packet. */
+.link { position: relative; height: 88px; }
+.vtube { position: absolute; left: 32px; top: 0; bottom: 0; width: 10px; margin-left: -5px; border-radius: 5px;
+  background: rgb(255 255 255 / 0.03); border: 1px solid rgb(255 255 255 / 0.08); }
+.packet { position: absolute; left: 32px; width: 8px; height: 14px; margin-left: -4px; border-radius: 3px;
+  background: rgb(var(--c) / 0.9); animation: down 3.2s ease-in-out infinite; }
+@keyframes down { 0% { top: 0; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: calc(100% - 14px); opacity: 0; } }
+
+.paused .bit, .paused .packet { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) {
+  .bit, .packet { animation: none; }
+  .bit { left: 45%; }
+  .packet { top: calc(50% - 7px); }
+}
