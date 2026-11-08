@@ -12,7 +12,7 @@ export async function generateText(
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
-  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-20250514";
+  const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
   const maxTokens = opts.maxTokens ?? 4096;
   const temperature = opts.temperature ?? 0.4;
 

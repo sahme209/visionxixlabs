@@ -23,7 +23,7 @@ Set env vars for task-specific models:
 Defaults (when not set):
 
 - OpenAI: `OPENAI_MODEL` or `gpt-4o`
-- Anthropic: `ANTHROPIC_MODEL` or `claude-sonnet-4-20250514`
+- Anthropic: `ANTHROPIC_MODEL` or `claude-sonnet-4-6`
 - Gemini: `GEMINI_MODEL` or `gemini-2.0-flash`
 
 ## Usage
