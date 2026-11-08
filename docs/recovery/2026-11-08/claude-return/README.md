@@ -43,6 +43,12 @@ Also updated: `docs/product/current-execution-board.md` (Nov 8 item 2) and the m
 
 None. No push, CI run, Vercel/Neon call, deployment, database access, credential read, signing, native/ACL unit, or spend. The handoff's consumed preflight attempt was not repeated. Memory-only ACL unit: user approved running on Claude's Mac; 1 sandboxed compile + 1 run, both PASS and consumed — see `../native-acl-memory-platform/RESULT.md`. Different host/toolchain from Codex's.
 
+## Also prepared (offline, no provider calls)
+
+- npm blocker recorded on board/master: do not retry until the network or environment changes; never copy `node_modules` across machines.
+- Validation steps for Codex: `VALIDATE.md`; branch bundle `Axiom-Claude-Branch-2026-11-08.bundle` + `BUNDLE.sha256` in the OneDrive Documents folder (no push, no CI).
+- Preflight diagnosis + counts-only diagnostic: `../preflight-diagnosis/DIAGNOSIS.md` (mocked tests PASS; NOT run against providers; needs one-call authority).
+
 ## Remaining blockers (in order)
 
 1. Install dependencies on a machine that can reach the npm registry (or configure an approved internal mirror), then run full types and the changed tests. Expect possible residual errors beyond the recorded 190.
