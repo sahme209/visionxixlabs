@@ -11,7 +11,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { UnrealBloomPass } from "three/examples/jsm/postprocessing/UnrealBloomPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
-import { FLOW_EXTERNAL_SYSTEMS, FLOW_STATIONS, flowStationState, type FlowScenario, type FlowStationState } from "@/lib/marketing/governedFlowModel";
+import { FLOW_EXTERNAL_SYSTEMS, FLOW_STATIONS, flowReadout, flowStationState, type FlowScenario, type FlowStationState } from "@/lib/marketing/governedFlowModel";
 
 export type GovernedSceneHandle = {
   setScenario(scenario: FlowScenario): void;
@@ -167,7 +167,8 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
     ctx.strokeStyle = "#6fc3ff"; ctx.lineWidth = 3; ctx.strokeRect(2, 2, 508, 252);
     ctx.fillStyle = "#6fc3ff"; ctx.font = "500 26px monospace"; ctx.fillText(FLOW_STATIONS[i].name.toUpperCase(), 20, 40);
     ctx.fillStyle = "#d6e6f7"; ctx.font = "400 24px monospace";
-    FLOW_STATIONS[i].readout.forEach((line, j) => ctx.fillText(line, 20, 90 + j * 40));
+    const lines = scenario ? flowReadout(scenario, i) : FLOW_STATIONS[i].readout;
+    lines.forEach((line, j) => ctx.fillText(line, 20, 90 + j * 40));
     holoTexture.needsUpdate = true;
   };
 
@@ -282,7 +283,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
   frame = requestAnimationFrame(tick);
 
   const handle: GovernedSceneHandle = {
-    setScenario(next) { scenario = next; progress = options.reducedMotion ? next.stop / (FLOW_STATIONS.length - 1) : 0; reached = -1; history.length = 0; },
+    setScenario(next) { scenario = next; drawHolo(selected); progress = options.reducedMotion ? next.stop / (FLOW_STATIONS.length - 1) : 0; reached = -1; history.length = 0; },
     setPlaying(next) { playing = next && !options.reducedMotion; },
     setVisible(next) { visible = next; if (next) clock.getDelta(); },
     select(index, fly = true) {

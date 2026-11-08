@@ -7,6 +7,7 @@ import {
   FLOW_STATIONS,
   flowAuditLog,
   flowGauges,
+  flowReadout,
   flowScenario,
   flowStationState,
 } from "../governedFlowModel";
@@ -73,6 +74,17 @@ describe("governed flow model", () => {
     expect(flowAuditLog(flowScenario("rejected"), 7).at(-1)).toMatchObject({ event: "approval.rejected", level: "blocked" });
     expect(flowAuditLog(flowScenario("unknown_outcome"), 7).at(-1)).toMatchObject({ event: "execution.unknown", level: "warning" });
     expect(flowAuditLog(flowScenario("rollback"), 7).map((e) => e.event)).toContain("rollback.requested");
+  });
+
+  it("never shows a decision or outcome the scenario did not produce in the holo read-out", () => {
+    const gate = FLOW_STATION_IDS.indexOf("approval_gate");
+    expect(flowReadout(flowScenario("rejected"), gate).join(" ")).toMatch(/DECISION rejected/);
+    expect(flowReadout(flowScenario("rejected"), gate).join(" ")).not.toMatch(/approved/);
+    expect(flowReadout(flowScenario("approved"), gate).join(" ")).toMatch(/DECISION approved/);
+    expect(flowReadout(flowScenario("failed_scan"), gate).join(" ")).toMatch(/not reached/);
+    expect(flowReadout(flowScenario("failed_scan"), FLOW_STATION_IDS.indexOf("policy_scans")).join(" ")).toMatch(/blocked/);
+    expect(flowReadout(flowScenario("unknown_outcome"), FLOW_STATION_IDS.indexOf("execute")).join(" ")).toMatch(/reconcile/);
+    for (const s of FLOW_SCENARIOS) for (let i = s.stop + 1; i < FLOW_STATIONS.length; i++) expect(flowReadout(s, i).join(" ")).toMatch(/not reached/);
   });
 
   it("rejects an unknown scenario id", () => {

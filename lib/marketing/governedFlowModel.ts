@@ -280,3 +280,19 @@ export const FLOW_EXTERNAL_SYSTEMS: readonly Readonly<{ name: string; station: F
   { name: "GitHub Actions", station: "orchestrate" },
   { name: "AWS ECS", station: "execute" },
 ];
+
+/** Holo-panel read-out for a station in a scenario. Sample identifiers stay illustrative, but
+ * decisions and outcomes always match the scenario: a rejected request never reads "approved". */
+export function flowReadout(scenario: FlowScenario, index: number): readonly string[] {
+  const base = FLOW_STATIONS[index].readout;
+  if (index > scenario.stop) return [base[0].split(" ")[0] + "  not reached", "", "", ""];
+  const id = FLOW_STATIONS[index].id;
+  if (id === "policy_scans" && scenario.blockedAt === index) return ["LINT pass", "TEST pass", "BUILD pass", "SCAN stale -> blocked"];
+  if (id === "approval_gate") {
+    const decision = scenario.blockedAt === index ? "rejected" : scenario.stop > index ? "approved" : "pending";
+    return [base[0], base[1], `DECISION ${decision}`, base[3]];
+  }
+  if (id === "execute" && scenario.warningAt === index) return [base[0], base[1], "TASKS unknown", "RESULT reconcile"];
+  if (id === "validate" && scenario.warningAt === index) return ["RUN  success", "HEALTH degraded", "ACTION rollback", "CHECK new request"];
+  return base;
+}
