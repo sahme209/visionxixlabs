@@ -19,7 +19,7 @@ import { PurchaseAddOnButton } from "@/components/billing/PurchaseAddOnButton";
 import { POST as purchase } from "@/app/api/billing/add-ons/purchase/route";
 import { POST as webhook } from "@/app/api/billing/stripe-webhook/route";
 
-const initial = () => ({ id: "purchase_1", organizationId: "org_1", sku: "ai_credits_small", pricePaidCents: 1000, deliveredAICreditsCents: 500, validFor: "current_month", status: "pending", stripeCheckoutSessionId: null as string | null, appliedAt: null as Date | null, createdAt: new Date() });
+const initial = () => ({ id: "purchase_1", organizationId: "org_1", sku: "ai_credits_small", pricePaidCents: 1000, deliveredAICreditsCents: 666, validFor: "permanent", status: "pending", stripeCheckoutSessionId: null as string | null, appliedAt: null as Date | null, createdAt: new Date() });
 let row = initial();
 let events = new Set<string>();
 
@@ -99,7 +99,7 @@ describe("uncertain credit Checkout → late signed fulfillment", () => {
     expect(await retry.json()).toMatchObject({ error: "checkout_reconciliation_required" });
     expect(io.stripeCreate).toHaveBeenCalledTimes(1);
     expect((await webhook(paidEvent())).status).toBe(200);
-    expect(row).toMatchObject({ status: "paid", stripeCheckoutSessionId: "cs_test_lost", deliveredAICreditsCents: 500 });
+    expect(row).toMatchObject({ status: "paid", stripeCheckoutSessionId: "cs_test_lost", deliveredAICreditsCents: 666 });
     expect(await (await webhook(paidEvent())).json()).toMatchObject({ replay: true });
     expect(io.update).toHaveBeenCalledTimes(1);
     expect(events.size).toBe(1);
@@ -120,7 +120,7 @@ describe("uncertain credit Checkout → late signed fulfillment", () => {
 
   it.each([
     ["organizationId", "org_other"], ["sku", "ai_credits_medium"],
-    ["pricePaidCents", 900], ["deliveredAICreditsCents", 999], ["validFor", "permanent"],
+    ["pricePaidCents", 900], ["deliveredAICreditsCents", 999], ["validFor", "current_month"],
   ])("blocks a mismatched persisted %s before Stripe", async (field, value) => {
     Object.assign(row, { [field]: value });
     expect((await purchase(request())).status).toBe(409);

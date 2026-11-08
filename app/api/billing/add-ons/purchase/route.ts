@@ -5,6 +5,7 @@ import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { prisma } from "@/lib/db";
 import { findAddOn } from "@/lib/billing/addOnCatalog";
+import { isAllowedTopUpCents } from "@/lib/billing/aiRateCard";
 import { createAddOnCheckoutSession } from "@/lib/billing/stripeHelper";
 import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
 import { resolveCorrelationId } from "@/lib/api";
@@ -40,7 +41,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "workspace_changed" }, { status: 409 });
   }
   const addOn = typeof body?.sku === "string" ? findAddOn(body.sku) : null;
-  if (!addOn || addOn.category !== "ai_credits") {
+  if (!addOn || addOn.category !== "ai_credits" || !isAllowedTopUpCents(addOn.priceCents)) {
     return NextResponse.json({ ok: false, error: "ai_credit_sku_invalid" }, { status: 400 });
   }
 

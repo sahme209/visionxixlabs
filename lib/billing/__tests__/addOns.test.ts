@@ -4,6 +4,7 @@ import {
   findAddOn,
   findAddOnsForPlan,
 } from "../addOnCatalog";
+import { AI_RATE_CARD } from "../aiRateCard";
 import { applyAddOnsToEntitlements, type AddOnPurchaseRow } from "../applyAddOnsToEntitlements";
 import { findPlan } from "../planRegistry";
 
@@ -18,17 +19,22 @@ describe("ADD_ON_CATALOG — invariants", () => {
     expect(new Set(skus).size).toBe(skus.length);
   });
 
-  it("every ai_credits row sells provider-cost budget at exactly 2x", () => {
+  it("every ai_credits row delivers floor(price / rate-card multiplier) of provider-cost budget", () => {
+    expect(AI_RATE_CARD.marginMultiplier).toBe(1.5);
     for (const a of ADD_ON_CATALOG) {
       if (a.category === "ai_credits") {
-        expect(a.priceCents).toBe(a.deliveredAICreditsCents * 2);
+        expect(a.deliveredAICreditsCents).toBe(Math.floor(a.priceCents / AI_RATE_CARD.marginMultiplier));
+        expect(a.priceCents).toBeGreaterThanOrEqual(AI_RATE_CARD.minimumTopUpCents);
       }
     }
+    expect(findAddOn("ai_credits_small")).toMatchObject({ priceCents: 1000, deliveredAICreditsCents: 666 });
+    expect(findAddOn("ai_credits_medium")).toMatchObject({ priceCents: 4000, deliveredAICreditsCents: 2666 });
+    expect(findAddOn("ai_credits_large")).toMatchObject({ priceCents: 15000, deliveredAICreditsCents: 10000 });
   });
 
-  it("seats + connectors rows are permanent; ai_credits are current_month", () => {
+  it("every row is permanent: prepaid AI credits never expire", () => {
     for (const a of ADD_ON_CATALOG) {
-      if (a.category === "ai_credits") expect(a.validFor).toBe("current_month");
+      if (a.category === "ai_credits") expect(a.validFor).toBe("permanent");
       if (a.category === "seats")      expect(a.validFor).toBe("permanent");
       if (a.category === "connectors") expect(a.validFor).toBe("permanent");
     }
@@ -41,11 +47,11 @@ describe("ADD_ON_CATALOG — invariants", () => {
 });
 
 describe("findAddOnsForPlan", () => {
-  it("Starter sees small + medium ai credits + seat + connector (no large)", () => {
+  it("Starter can buy every AI credit pack (every organization may prepay any size)", () => {
     const r = findAddOnsForPlan(STARTER);
     const skus = r.map((a) => a.sku).sort();
     expect(skus).toEqual([
-      "ai_credits_medium", "ai_credits_small", "connector_addon", "seat_addon",
+      "ai_credits_large", "ai_credits_medium", "ai_credits_small", "connector_addon", "seat_addon",
     ]);
   });
 

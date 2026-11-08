@@ -3,7 +3,7 @@
  *
  * Deterministic multiplier applied on top of authoritative provider cost.
  * The customer-price ledger records `provider_cost × 1.5` (a 50% service
- * margin). It is deliberately not an environment setting: a deployment
+ * margin), taken from `AI_RATE_CARD` (ai_rate_card_v1). It is deliberately not an environment setting: a deployment
  * variable must never silently change the amount a workspace is charged.
  *
  * This module computes a ledger amount only. It does not create a Stripe
@@ -11,7 +11,10 @@
  * settlement path and Stripe test-mode verification are complete.
  */
 
-export const AI_CUSTOMER_USAGE_MARGIN_MULT = 1.5;
+import { AI_RATE_CARD } from "./aiRateCard";
+
+/** Read from the single versioned rate card (`aiRateCard.ts`). */
+export const AI_CUSTOMER_USAGE_MARGIN_MULT: number = AI_RATE_CARD.marginMultiplier;
 
 export function loadAiBillingMargin(): number {
   return AI_CUSTOMER_USAGE_MARGIN_MULT;

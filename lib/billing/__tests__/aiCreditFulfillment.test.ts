@@ -23,7 +23,7 @@ const purchase = {
   organizationId: "org-1",
   sku: "ai_credits_small",
   pricePaidCents: 1000,
-  deliveredAICreditsCents: 500,
+  deliveredAICreditsCents: 666,
   stripeCheckoutSessionId: "cs_test_1",
   status: "pending",
   appliedAt: null,
@@ -61,7 +61,7 @@ describe("AI credit Stripe fulfillment", () => {
       { payment_intent: "pi_test_1", amount_refunded: 250, currency: "usd" },
     );
     expect(mocks.updateMany).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ refundedAmountCents: 250, reversedAICreditsCents: 125, status: "partially_refunded" }),
+      data: expect.objectContaining({ refundedAmountCents: 250, reversedAICreditsCents: 167, status: "partially_refunded" }),
     }));
   });
 
@@ -77,7 +77,7 @@ describe("AI credit Stripe fulfillment", () => {
     for (const [id, amount] of [["full", 1000], ["older_partial", 250], ["older_zero", 0]] as const) {
       await reverseAICreditRefund({ id: `evt_${id}`, type: "charge.refunded" }, { payment_intent: "pi_test_1", amount_refunded: amount, currency: "usd" });
     }
-    expect(stored).toMatchObject({ status: "refunded", refundedAmountCents: 1000, reversedAICreditsCents: 500 });
+    expect(stored).toMatchObject({ status: "refunded", refundedAmountCents: 1000, reversedAICreditsCents: 666 });
     expect(mocks.eventCreate).toHaveBeenCalledTimes(3);
     expect(mocks.updatePurchase).not.toHaveBeenCalled();
   });
@@ -106,7 +106,7 @@ describe("AI credit Stripe fulfillment", () => {
       { id: `evt_concurrent_${amount}`, type: "charge.refunded" },
       { payment_intent: "pi_test_1", amount_refunded: amount, currency: "usd" },
     )));
-    expect(stored).toMatchObject({ status: "refunded", refundedAmountCents: 1000, reversedAICreditsCents: 500 });
+    expect(stored).toMatchObject({ status: "refunded", refundedAmountCents: 1000, reversedAICreditsCents: 666 });
     expect(mocks.updatePurchase).not.toHaveBeenCalled();
   });
 
@@ -117,7 +117,7 @@ describe("AI credit Stripe fulfillment", () => {
       { payment_intent: "pi_test_1", amount_refunded: 1000, currency: "usd" },
     );
     expect(mocks.updateMany).toHaveBeenCalledWith(expect.objectContaining({
-      data: expect.objectContaining({ refundedAmountCents: 1000, reversedAICreditsCents: 500, status: "refunded", refundedAt: expect.any(Date) }),
+      data: expect.objectContaining({ refundedAmountCents: 1000, reversedAICreditsCents: 666, status: "refunded", refundedAt: expect.any(Date) }),
     }));
   });
 });

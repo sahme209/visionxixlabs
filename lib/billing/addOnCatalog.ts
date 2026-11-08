@@ -6,16 +6,18 @@
  * lives in code so we can ship + tune SKUs without a migration.
  *
  * Three categories: AI credit packs, seat packs, connector packs.
- * Add credits roll off at month boundary (validFor="current_month");
- * seats + connectors persist (validFor="permanent") so a one-time
- * purchase keeps applying month after month.
+ * Prepaid AI credits never expire (validFor="permanent", user decision
+ * 2026-11-08); seats + connectors also persist (validFor="permanent").
  *
- * Pricing intent: customer price is twice the provider-cost budget
- * credited to the workspace. Keeping the sale price and delivered
- * budget separate makes the 2x gross-margin invariant explicit.
+ * Pricing intent: one versioned rate card (`aiRateCard.ts`). The customer
+ * price is `AI_RATE_CARD.marginMultiplier` (1.5x) times the provider-cost
+ * budget credited to the workspace, so the delivered budget is derived from
+ * the price, never typed by hand. The smallest pack equals the $10 minimum
+ * top-up. Every organization may buy every credit pack.
  */
 
 import type { PricingPlan, PlanTier } from "./planRegistry";
+import { AI_RATE_CARD, deliveredBudgetCentsForPrice } from "./aiRateCard";
 
 export type AddOnCategory = "ai_credits" | "seats" | "connectors";
 export type AddOnValidity = "current_month" | "permanent";
@@ -38,44 +40,28 @@ export interface AddOnPackageDef {
   allowedTiers: ReadonlyArray<PlanTier>;
 }
 
-const AI_CREDITS_SMALL: AddOnPackageDef = {
-  sku: "ai_credits_small",
-  displayName: "AI credits · small",
-  category: "ai_credits",
-  tagline: "Add $5 of provider-cost budget for the current month.",
-  priceCents: 1000,                  // $10
-  deliveredAICreditsCents: 500,      // $5 provider-cost budget
-  deliveredSeats: 0,
-  deliveredConnectors: 0,
-  validFor: "current_month",
-  allowedTiers: ["starter", "growth", "business"],
-};
+const ALL_SELF_SERVICE_TIERS: ReadonlyArray<PlanTier> = ["starter", "growth", "business"];
+const fmt = (cents: number) => `$${(cents / 100).toFixed(2)}`;
+function creditPack(sku: string, size: string, priceCents: number): AddOnPackageDef {
+  const delivered = deliveredBudgetCentsForPrice(priceCents);
+  return {
+    sku,
+    displayName: `AI credits · ${size}`,
+    category: "ai_credits",
+    tagline: `Prepay ${fmt(priceCents)} once for ${fmt(delivered)} of provider-cost budget (rate card ${AI_RATE_CARD.version}). Never expires.`,
+    priceCents,
+    deliveredAICreditsCents: delivered,
+    deliveredSeats: 0,
+    deliveredConnectors: 0,
+    validFor: "permanent",
+    allowedTiers: ALL_SELF_SERVICE_TIERS,
+  };
+}
 
-const AI_CREDITS_MEDIUM: AddOnPackageDef = {
-  sku: "ai_credits_medium",
-  displayName: "AI credits · medium",
-  category: "ai_credits",
-  tagline: "Add $20 of provider-cost budget for the current month.",
-  priceCents: 4000,                  // $40
-  deliveredAICreditsCents: 2000,     // $20 provider-cost budget
-  deliveredSeats: 0,
-  deliveredConnectors: 0,
-  validFor: "current_month",
-  allowedTiers: ["starter", "growth", "business"],
-};
-
-const AI_CREDITS_LARGE: AddOnPackageDef = {
-  sku: "ai_credits_large",
-  displayName: "AI credits · large",
-  category: "ai_credits",
-  tagline: "Add $75 of provider-cost budget for the current month.",
-  priceCents: 15000,                 // $150
-  deliveredAICreditsCents: 7500,     // $75 provider-cost budget
-  deliveredSeats: 0,
-  deliveredConnectors: 0,
-  validFor: "current_month",
-  allowedTiers: ["growth", "business"],
-};
+// $10 -> $6.66, $40 -> $26.66, $150 -> $100.00 of provider-cost budget.
+const AI_CREDITS_SMALL = creditPack("ai_credits_small", "small", AI_RATE_CARD.minimumTopUpCents);
+const AI_CREDITS_MEDIUM = creditPack("ai_credits_medium", "medium", 4000);
+const AI_CREDITS_LARGE = creditPack("ai_credits_large", "large", 15000);
 
 const SEAT_ADDON: AddOnPackageDef = {
   sku: "seat_addon",
