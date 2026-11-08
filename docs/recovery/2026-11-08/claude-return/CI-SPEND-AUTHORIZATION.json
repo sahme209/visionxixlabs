@@ -31,6 +31,11 @@
    "deploy",
    "more than 3 pushes"
   ],
-  "used": 1
+  "used": 2
+ },
+ "run2": {
+  "Test": "failure (2 TS errors)",
+  "Isolated website acceptance": "success",
+  "Desktop CI": "success"
  }
 }
