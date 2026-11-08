@@ -19,6 +19,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
+import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { getEntitlementsFromPlan } from "@/lib/entitlements";
 import {
   routeMessage,
@@ -56,6 +57,16 @@ export async function POST(req: NextRequest) {
 
     if (!organizationId || typeof organizationId !== "string") {
       return NextResponse.json({ error: "organizationId is required" }, { status: 400 });
+    }
+    if (!await authorizedForOrganization(userId, organizationId)) {
+      return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+    }
+    // A supplied conversation must belong to this user; otherwise its history could leak.
+    if (conversationId !== undefined && conversationId !== null) {
+      const owned = typeof conversationId === "string"
+        ? await prisma.axiomConversation.findFirst({ where: { id: conversationId, userId }, select: { id: true } })
+        : null;
+      if (!owned) return NextResponse.json({ error: "Conversation not found" }, { status: 404 });
     }
 
     const convoId = conversationId ?? await createConversation(userId, message.slice(0, 80));
