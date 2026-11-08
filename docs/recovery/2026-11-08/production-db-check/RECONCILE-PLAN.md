@@ -15,7 +15,7 @@ Evidence: read-only checks 1–4, all run by the user in the Neon SQL Editor (br
 **The same bug breaks any fresh database built from migrations**, including the separate Preview database we still need. So the migration file itself must be corrected.
 
 ## Proposed steps (each needs your explicit approval; none is done)
-1. **Recovery first.** Confirm the Neon restore window covers "now", then create a backup branch from production (instant; a Neon write).
+1. ~~**Recovery confirmed (user, 2026-11-08):** Neon project `odd-union-57413470`, branch `main` (`br-holy-voice-ai303o8m`, default, **not protected**); 6-hour restore window with "now" restorable; manual snapshot **`main at 2026-11-08 17:59:32 UTC (manual)`**, never expires (plus Codex's `axiom-before-billing-repair-20261022`).~~ Recommendations (not done): protect `main`; add a snapshot schedule. Original step: Confirm the Neon restore window covers "now", then create a backup branch from production (instant; a Neon write).
 2. **Correct the broken migration file in the repo**, so fresh databases work. Replace `FROM "Organization"` with organizations taken from `OrgMembership` (`SELECT DISTINCT "organizationId" …`), keeping the original intent. PR + CI. *Changes a migration file, which changes its checksum; that's acceptable here because production records it as failed, not applied.*
 3. **Resolve history in production** (this modifies migration history; held per your instruction):
    - `prisma migrate resolve --rolled-back 20261013172000_add_workspace_agent_identity`, then `prisma migrate resolve --applied 20261013172000_add_workspace_agent_identity` (its table already exists with the exact shape).
