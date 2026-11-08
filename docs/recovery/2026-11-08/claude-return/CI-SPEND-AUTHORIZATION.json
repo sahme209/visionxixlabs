@@ -1,0 +1,16 @@
+{
+ "format": "axiom.ci-spend-authorization.v1",
+ "date": "2026-11-08",
+ "userApproval": "Approve $3 cap (Claude session chat, 2026-11-08)",
+ "capUSD": 3,
+ "scope": "one draft PR from claude/axiom-ci-test-repairs-2026-11-08 into main; one run each of Test, Website visual, Desktop CI",
+ "forbidden": [
+  "re-runs",
+  "additional pushes without fresh approval",
+  "merge",
+  "deployment",
+  "workflow_dispatch of any other workflow"
+ ],
+ "estimateWorstCaseUSD": 2.96,
+ "estimateIsNotInvoice": true
+}
