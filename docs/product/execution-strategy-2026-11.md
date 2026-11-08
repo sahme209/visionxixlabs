@@ -39,6 +39,7 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-08 | **Pricing direction confirmed** (plan L272): Axiom free to explore; **only AI is paid, as optional transparent prepaid usage**; enterprise by scoped evaluation; prices and refund rules shown before any charge; not a token reseller. Exact markup/BYOK/vendor still open (L276). The current per-seat plans ($29/$79) are not the direction | user plus plan |
 | 2026-11-08 | Stripe stays donations-only (Founding Supporters) until an explicit payment decision; AI-credit/subscription code stays test-mode | user plus plan L280 |
 | 2026-11-08 | User approved proceeding as long as everything is configured properly and works | user |
+| 2026-11-08 | **"Get started" pricing concept approved**: Axiom free to explore; prepaid AI usage as the only paid part (credit meter, cost shown first, never over prepaid); enterprise scoped evaluation; all rates/limits/refunds/disclosures before any charge. No live payments; per-seat plans retired from the page; markup stays open | user |
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.
