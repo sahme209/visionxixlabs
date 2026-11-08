@@ -118,3 +118,41 @@ export function providerCostBudgetCentsForPrice(priceCents: number): number {
 export function isAllowedTopUpCents(priceCents: number): boolean {
   return Number.isSafeInteger(priceCents) && priceCents >= AI_RATE_CARD.minimumTopUpCents;
 }
+
+/**
+ * Expected cost range per agent effort level (user decision 2026-11-08: one 1.5x for every
+ * level; the price rises naturally with steps and model). These are ESTIMATES for the public
+ * page, not quotes: the exact hold is shown before every action, and the final debit is
+ * 1.5x the actual provider cost. Step limits come from `resolveAgentEffortProfile`
+ * (lib/axiom/agentRuntime/decisionLoop.ts); output per step is capped at 4,096 tokens.
+ */
+export const EFFORT_LEVEL_ESTIMATE = {
+  /** A light step: short context, short answer. */
+  lightStep: { inputTokens: 4_000, outputTokens: 500 },
+  /** A heavy step: large repository context and the maximum output. */
+  heavyStep: { inputTokens: 30_000, outputTokens: 4_096 },
+  levels: [
+    { label: "Inspect", maxSteps: 2, use: "Read-only questions and explanations." },
+    { label: "Engineer", maxSteps: 4, use: "Default: investigate and prepare a reviewed proposal." },
+    { label: "DeepOps", maxSteps: 6, use: "Larger multi-step investigations." },
+  ],
+} as const;
+
+function stepCustomerCents(step: { inputTokens: number; outputTokens: number }, rate: AIModelRate): number {
+  const providerCents = (step.inputTokens * rate.providerUsdPerMTok.input + step.outputTokens * rate.providerUsdPerMTok.output) / 10_000;
+  return providerCents * AI_RATE_CARD.marginMultiplier;
+}
+
+/**
+ * Low = an action that finishes in one light step; high = every allowed step is heavy.
+ * Rounded outward to whole cents, so the shown range never understates.
+ */
+export function effortLevelCostRangeCents(label: (typeof EFFORT_LEVEL_ESTIMATE.levels)[number]["label"], rate: AIModelRate = AI_RATE_CARD.perModelRates[0]): { lowCents: number; highCents: number; maxSteps: number } {
+  const level = EFFORT_LEVEL_ESTIMATE.levels.find((l) => l.label === label);
+  if (!level) throw new Error("effort_level_unknown");
+  return {
+    lowCents: Math.floor(stepCustomerCents(EFFORT_LEVEL_ESTIMATE.lightStep, rate)),
+    highCents: Math.ceil(stepCustomerCents(EFFORT_LEVEL_ESTIMATE.heavyStep, rate) * level.maxSteps),
+    maxSteps: level.maxSteps,
+  };
+}
