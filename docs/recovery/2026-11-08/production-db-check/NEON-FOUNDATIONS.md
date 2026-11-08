@@ -22,3 +22,11 @@ Goal: preview deployments must never touch production data (standing rule: no pr
 4. Tell Claude "preview DB done". Claude will then give a read-only check for the preview branch: same 173 tables, 0 rows in customer tables, migration history equal to production.
 
 Until step 4 is verified, preview deploys stay off.
+
+## Status (2026-11-08, user)
+- ✅ 1. `main` protected.
+- ✅ 2. Daily snapshot schedule: 00:00 UTC, kept 14 days (Neon default; weekly/monthly off).
+- ⏸ 3. `preview` branch created (schema only, auto-delete **Never**). **Not wired yet.** The Neon–Vercel integration creates a branch for each Vercel preview deployment, and those are normally **full-data copies of `main`**; the user saw several in the branch list. Its "create branch for preview deployments" setting couldn't be found in Neon Integrations or Vercel Storage settings, so it's deferred by the user's choice.
+- **Holds until resolved:** preview deploys stay **off** (git deploys are already disabled; never click a Preview deploy). Open items:
+  - find and turn off the integration's preview-branch setting, or set Preview `DATABASE_URL` to `preview`, then verify;
+  - review and delete the old auto-created preview branches, which may hold copies of customer data, after confirming none is in use.
