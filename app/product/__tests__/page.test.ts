@@ -15,14 +15,10 @@ it('offers actionable next steps to setup, review, integrations, demo and downlo
   expect(screen.getAllByRole('link').some(link=>link.getAttribute('href')===href)).toBe(true);
  }
 });
-it('scopes the ordered workflow to supported versions and enabled controls',()=>{
+// The ordered 'conceptual workflow' section was intentionally removed in 4bf9082a; its assertions were retired.
+// The no-overclaim disclaimer it also checked is still on the page and stays enforced here.
+it('keeps the explicit not-complete Governance disclaimer',()=>{
  render(createElement(Page));
- const sequence=screen.getByRole('list',{name:/conceptual workflow/i});
- expect(within(sequence).getAllByRole('listitem')).toHaveLength(5);
- for(const name of [/repository context/i,/exact proposal/i,/independent review/i,/separate requester execution/i,/recorded outcome.*recovery/i]) {
-  expect(within(sequence).getByRole('heading',{name})).toBeDefined();
- }
- expect(screen.getByText(/support depends on.*version.*enabled workflow/i)).toBeDefined();
  expect(screen.getByText(/full Governance.*coverage and activation are not complete/i)).toBeDefined();
 });
 it('labels the scripted preview before interaction and separates it from release evidence',()=>{

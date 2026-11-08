@@ -16,17 +16,24 @@ beforeEach(() => { vi.resetAllMocks(); vi.stubGlobal("fetch", io.fetch); });
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); vi.unstubAllEnvs(); });
 
 describe("pricing navigation and explicit plan selection", () => {
+  // Current layout: Pricing lives in the desktop "More" menu; the public support page is "Founding Supporters" (mobile + footer).
   it("restores desktop, mobile and footer Pricing links to one canonical route while preserving support", () => {
     const nav = render(createElement(Navigation));
-    expect(screen.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
-    expect(screen.getByRole("link", { name: "Support Axiom" }).getAttribute("href")).toBe("/support");
+    expect(screen.queryByRole("link", { name: "Pricing" })).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /^More/ }));
+    const more = within(screen.getByRole("group", { name: "More destinations" }));
+    expect(more.getAllByRole("link", { name: "Pricing" })).toHaveLength(1);
+    expect(more.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
     fireEvent.click(screen.getByRole("button", { name: "Open navigation menu" }));
     const mobile = within(screen.getByRole("dialog", { name: "Site navigation" }));
     expect(mobile.getAllByRole("link", { name: "Pricing" })).toHaveLength(1);
     expect(mobile.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
+    expect(mobile.getByRole("link", { name: "Founding Supporters" }).getAttribute("href")).toBe("/support");
     nav.unmount(); render(createElement(Footer));
     expect(screen.getByRole("link", { name: "Pricing" }).getAttribute("href")).toBe("/plans");
-    expect(screen.getByRole("link", { name: "Founding Supporters" }).getAttribute("href")).toBe("/support");
+    const supporters = screen.getAllByRole("link", { name: /Founding Supporters/ });
+    expect(supporters.length).toBeGreaterThan(0);
+    for (const link of supporters) expect(link.getAttribute("href")).toBe("/support");
   });
   it.each([{plan:"other",interval:"annual"},{plan:"pro",interval:"weekly"},{plan:["pro"],interval:"annual"},{plan:"enterprise",interval:["annual"]},{plan:"https://evil.test",interval:"monthly"},{}])("rejects unsupported query selection %j", (query) => {
     expect(parsePublicPlanSelection(query)).toBeNull();
