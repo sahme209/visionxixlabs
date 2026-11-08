@@ -25,3 +25,11 @@ On PostgreSQL, Prisma does not wrap a migration in a single transaction, so its 
 - The fix for the quote columns stays sequenced after this, and recovery must be confirmed first (restore window plus a backup branch).
 
 **Nothing is applied, resolved or deployed.**
+
+## Check 3 result (user-run, 2026-11-08)
+**68 of 69** expected objects exist. All 11 queued migrations are effectively present, and `WorkspaceAgentIdentity` exists from the failed one. The only "missing" item is the index `CloudAccountEnrollmentAttempt_organizationId_userId_expiresAt_idx` (66 characters), which PostgreSQL would store truncated to 63, so it's likely present under the shortened name. **The reconcile path is indicated.**
+
+Open before any history change (read-only check 4):
+- Whether `WorkspaceAgentIdentity` has seed rows. The failed `INSERT` was meant to keep the desktop Agent enabled for existing organizations; if it never ran, they may be **fail-closed (Agent disabled)**. Re-enabling is a product/security decision for the user.
+- The truncated index name, and the legacy foreign-key names from `20261023220000_bind_legacy_cloud_tenant_relations`.
+- Exact column shapes for 21 tables, to compare with the migration files before any `migrate resolve --applied`.
