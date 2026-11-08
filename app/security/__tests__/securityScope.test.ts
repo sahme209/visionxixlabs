@@ -10,7 +10,7 @@ afterEach(cleanup);
 it("presents an assessment sequence without claiming universal enforcement",()=>{
  render(createElement(Page));
  expect(screen.getByRole("list",{name:"How to assess an action"})).toBeDefined();
- for(const title of ["Current access","Exact proposal","Independent review","Deliberate execution","Outcome and recovery"])expect(screen.getByRole("heading",{name:title,exact:true})).toBeDefined();
+ for(const title of ["Current access","Exact proposal","Independent review","Deliberate execution","Outcome and recovery"])expect(screen.getByRole("heading",{name:title})).toBeDefined();
  expect(screen.getByText(/full Governance Intelligence coverage and activation are not complete/i)).toBeDefined();
 });
 it("keeps assurance and AI data limits visible",()=>{

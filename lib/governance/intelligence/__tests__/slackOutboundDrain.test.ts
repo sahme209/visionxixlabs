@@ -35,7 +35,7 @@ function fixture(){
  const claimed=vi.fn(async(t:any,s:any,id:string,p:any)=>{
   expect(t).toBe(tx);expect(inTransaction).toBe(true);
   if(!valid||hash(s)!==hash(scope)||id!==op||hash(p)!==hash(plan))throw Error('original claimed operation changed');
-  return {attemptId:'original-one-attempt',targetDigest:hash({workspaceId:plan.workspaceId,teamId:plan.teamId,channelId:plan.channelId,targetEvidenceDigest:plan.targetEvidenceDigest}),connectionId:plan.connectionId,sourceDigest:hash(plan),fresh:()=>{if(!valid)throw Error('original authority revoked')}};
+  return {attemptId:'original-one-attempt',targetDigest:hash({workspaceId:plan.workspaceId,channelId:plan.channelId}),connectionId:plan.connectionId,sourceDigest:hash(plan),fresh:()=>{if(!valid)throw Error('original authority revoked')}};
  });
  const make=()=>createSlackOutboundDrain(repo,{signal:parent.signal} as never,scope,op,{readClaimedSlackOutboundLocked:claimed} as never,{signal:parent.signal,isEnabled:()=>true});
  return {make,repo,parent,rows:()=>rows,events:()=>events,claimed,revoke:()=>{valid=false},onCommit:(fn:()=>void)=>{afterCommit=fn},inTransaction:()=>inTransaction};

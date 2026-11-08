@@ -49,7 +49,7 @@ describe.skipIf(!socket)('actual coordinator SQL/CAS/guard/fixed transport; simu
   const proposal=await f.db.agentActionProposal.create({data:{...source,argsJson:args,actionDigest:agentActionDigest(input),riskLevel:'medium',approvalExpiresAt:new Date(Date.now()+60000)}});
   expect(await decideAgentAction({organizationId,proposalId:proposal.id,actorUserId:'reviewer',actorRole:'security_reviewer',decision:'approve'})).toEqual({ok:true,status:'approved'});
   const scope={organizationId,actorUserId:'requester',sessionId};
-  const principal={id:sessionId,organizationId,userId:'requester',credentialKind:'desktop_session' as const,capabilities:toolName==='trigger_aws_deploy'?['deploy:execute' as const,'workspace:read' as const]:['github:write' as const,'workspace:read' as const]};f.principal=principal;
+  const principal={id:sessionId,organizationId,userId:'requester',credentialKind:'desktop_session' as const,role:'operator' as const,capabilities:toolName==='trigger_aws_deploy'?['deploy:execute' as const,'workspace:read' as const]:['github:write' as const,'workspace:read' as const]};f.principal=principal;
   const store=createAgentActionExecutionStore(f.db,{async assertCurrent(_tx,current){
    // Simulated request authentication only. Persisted store authority is not
    // replaced: store and final guard query actual rows independently.

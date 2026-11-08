@@ -88,7 +88,7 @@ describe("ECS restart proposal server target evidence", () => {
   const row = { id: "target", organizationId: "org-1", provider: "aws", updatedAt: new Date("2026-10-16T00:00:00Z"), roleArn: "arn:aws:iam::123456789012:role/restart", region: "us-east-1", ecsCluster: "cluster", ecsService: "service" };
   const deploymentArgs = {repositoryFullName:"acme/widgets",environmentId:"env",sourceKind:"tag",sourceRef:"v1"};
   const source = {kind:"github_immutable_restart_source_v1",repositoryFullName:"acme/widgets",repositoryId:"1",tagName:"v1",ref:"refs/tags/v1",tagObjectSha:"a".repeat(40),tagObjectType:"commit",sourceCommitSha:"a".repeat(40),releaseId:"2",publishedAt:"2026-10-01T00:00:00.000Z",workflowFile:"axiom-deploy-aws-ecs.yml",workflowBlobSha:"b".repeat(40),workflowContentSha256:AGENT_RESTART_WORKFLOW_CONTENT_SHA256};
-  const installation={id:"connection",githubInstallationId:"123",updatedAt:new Date("2026-10-16T00:00:00.000Z"),revokedAt:null,suspendedAt:null};
+  const installation={id:"connection",githubInstallationId:"123",updatedAt:new Date("2026-10-16T00:00:00.000Z"),revokedAt:null as Date|null,suspendedAt:null as Date|null};
   beforeEach(()=>{vi.clearAllMocks();mocks.resolveTenantScopedToken.mockResolvedValue({ok:true,token:"scoped-read-token"});mocks.observeRestartSource.mockImplementation(async()=>({source,observedAt:Date.now(),expiresAt:Date.now()+10000}));});
   const targetRepo = { gitHubInstallation:{findFirst:vi.fn(async()=>installation)},environment: { findUnique: vi.fn(async () => ({ id: "env", organizationId: "org-1", tier: "dev" })) }, deploymentTarget: { findUnique: vi.fn(async () => row) } };
   it("discards forged caller review and captures exact current tenant target", async () => {

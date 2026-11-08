@@ -37,6 +37,7 @@
   ],
   "exclude": [
     "node_modules",
+    "docs/recovery",
     "desktop",
     "lib/__tests__/desktop-platform.test.ts",
     "lib/__tests__/desktop-auth-session.test.ts",
