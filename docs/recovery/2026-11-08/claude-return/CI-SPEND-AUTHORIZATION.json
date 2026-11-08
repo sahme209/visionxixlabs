@@ -51,5 +51,12 @@
  },
  "runResults": {
   "d06f5105": "types/desktop/website PASS; Vitest 4 failing (decision tests); PG fail (expired Oct period)"
+ },
+ "additionalRuns3": {
+  "approved": 1,
+  "userApproval": "Approve one run (chat, 2026-11-08)",
+  "expectedUSD": 0,
+  "used": 0,
+  "note": "push after in-flight e3339fde run completes"
  }
 }
