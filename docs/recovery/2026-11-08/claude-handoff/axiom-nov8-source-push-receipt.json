@@ -1,0 +1,19 @@
+{
+  "commit": "fe63452fc1eeea34b39c0a72e8e72e3a04420629",
+  "tree": "a5e4ce1cb219e435aab55db8c6fb72f7ec5d92b2",
+  "ref": "refs/heads/backup/axiom-complete-source-2026-11-08",
+  "sourceHead": "dbebae1c679f531be96cc1f8fd1ede10a8386fb6",
+  "overlayFiles": [
+    "docs/product/axiom-master-action-plan.md",
+    "docs/product/current-execution-board.md",
+    "docs/product/plan-views/adoption-inventory.md",
+    "docs/product/plan-views/capabilities.md",
+    "docs/product/plan-views/dependencies-decisions.md",
+    "docs/product/plan-views/execution-brief.md",
+    "docs/recovery/2026-11-06/docs-path-hierarchy/README.md",
+    "docs/product/axiom-master-action-plan.md.backup-20261103-195450"
+  ],
+  "excluded": "untracked work payloads, runtime images/binaries, databases, credentials and signing keys",
+  "remoteVerified": true,
+  "verifiedAt": "2026-11-08T12:15:27.662287+00:00"
+}

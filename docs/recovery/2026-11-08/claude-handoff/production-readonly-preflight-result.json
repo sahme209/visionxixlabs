@@ -1,0 +1,16 @@
+{
+  "date": "2026-11-08",
+  "authority": "Fresh explicit private read-only preflight approved by user",
+  "invocationCount": 1,
+  "maximumProviderCalls": 8,
+  "result": {
+    "status": "unverified",
+    "reason": "private_readonly_preflight_stopped",
+    "executionAuthorized": false
+  },
+  "credentialOrRawResponsePersisted": false,
+  "schemaOrTargetProven": false,
+  "writePerformed": false,
+  "retryPermitted": false,
+  "note": "Frozen private preflight returned fail-closed. No claim about the failing phase or actual call count without additional evidence. Do not repeat the consumed attempt or treat read approval as write permission."
+}

@@ -1,0 +1,11 @@
+{
+  "candidate": "fe63452fc1eeea34b39c0a72e8e72e3a04420629",
+  "errorsBySource": {
+    "test source": 188,
+    "historical evidence source": 2
+  },
+  "applicationErrors": [],
+  "deploymentBlocked": true,
+  "databaseGate": "admissionContract and quoteEvidence production compatibility unverified",
+  "noDeploymentInvoked": true
+}

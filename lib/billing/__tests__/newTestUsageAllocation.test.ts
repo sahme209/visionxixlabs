@@ -49,6 +49,7 @@ function fixture(purchased = false) {
     create: vi.fn(async ({ data }: { data: Record<string, unknown> }) => { const event = { id: "u", ...data } as typeof usages[number]; usages.push(event); return structuredClone(event); }),
     updateMany: vi.fn(async ({ where, data }: { where: { id: string; billingStatus: string }; data: object }) => { const u = usages.find(u => u.id === where.id && u.billingStatus === where.billingStatus); if (!u) return { count: 0 }; Object.assign(u, data); return { count: 1 }; }) },
     aIUsageReservation: { findUnique: async () => structuredClone(hold), updateMany: vi.fn(async ({ where, data }: { where: { status: string; usageEventId?: string | null }; data: object }) => { if (where.status !== hold.status || where.usageEventId !== undefined && where.usageEventId !== hold.usageEventId) return { count: 0 }; Object.assign(hold, data); return { count: 1 }; }) },
+    pipelineAICallReservation: { findUnique: async () => null },
     addOnPurchase: { findMany: async () => structuredClone(purchases) } } as unknown as Prisma.TransactionClient;
   const input: RecordAIUsageInput = { organizationId: "o", provider: "openai", model: "model", inputTokens: 10, outputTokens: 20, metadata: { unrelated: "kept" } };
   function paidIncludedHold(status = "reserved") {

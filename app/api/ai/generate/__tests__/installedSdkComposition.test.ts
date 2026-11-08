@@ -32,7 +32,7 @@ beforeEach(() => {
   p.createUsage.mockImplementation(async () => { p.events.push('usage'); return { id: 'synthetic-usage', billingStatus: 'pending' }; });
   p.findUsage.mockResolvedValue(null);
   p.link.mockImplementation(async () => { p.events.push('link'); return { count: 1 }; });
-  p.transaction.mockImplementation(async callback => callback({ $queryRawUnsafe: async () => [{ id: 'synthetic-hold', organizationId: scope.organizationId, status: 'dispatch_unknown', usageEventId: null }], usageEvent: { findUnique: p.findUsage, create: p.createUsage }, aIUsageReservation: { updateMany: p.link } }));
+  p.transaction.mockImplementation(async callback => callback({ $queryRawUnsafe: async (sql: string) => String(sql).includes('FROM "OrganizationAIProviderPolicy"') ? [await p.policy()] : [{ id: 'synthetic-hold', organizationId: scope.organizationId, status: 'dispatch_unknown', usageEventId: null }], usageEvent: { findUnique: p.findUsage, create: p.createUsage }, aIUsageReservation: { updateMany: p.link } }));
   p.fetcher.mockImplementation(async () => {
     p.events.push('transport');
     return new Response(JSON.stringify({ content: [{ type: 'text', text: 'Synthetic result' }], finishReason: { unified: 'stop', raw: 'stop' }, usage: { inputTokens: { total: 5, noCache: 5 }, outputTokens: { total: 2, text: 2 } }, providerMetadata: { gateway: { generationId: 'synthetic-generation' } }, warnings: [] }), { headers: { 'content-type': 'application/json' } });

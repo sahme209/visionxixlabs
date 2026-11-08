@@ -1,0 +1,47 @@
+{
+  "base": "568110c239684dcca9bbd18a082ac8c3a45988cf",
+  "candidate": "fe63452fc1eeea34b39c0a72e8e72e3a04420629",
+  "mergeTree": "a5e4ce1cb219e435aab55db8c6fb72f7ec5d92b2",
+  "conflicts": false,
+  "remoteMainAncestor": true,
+  "mainUpdated": true,
+  "reviewedAt": "2026-11-08T12:18:58.345229+00:00",
+  "limits": [
+    "Conflict-free history does not prove full runtime compatibility",
+    "Full current candidate build and CI acceptance not established",
+    "No production database apply or Vercel deployment included"
+  ],
+  "mainTriggeredWorkflows": [
+    "Test",
+    "Desktop CI",
+    "Isolated commercial PostgreSQL acceptance",
+    "Isolated auth recovery rehearsal"
+  ],
+  "nextGate": "Explicit CI spending authority before main update; preserve validation workflows",
+  "updateType": "fast-forward; all prior main history retained",
+  "ciBudgetUSD": 2,
+  "actualRuns": [
+    42479724176,
+    42479724307
+  ],
+  "ciStatus": "terminal: Test failed; Desktop CI cancelled after failure; no retry",
+  "updatedAt": "2026-11-08T12:20:59.987005+00:00",
+  "typeErrors": 190,
+  "failureLog": "/private/tmp/axiom-main-ci-failure-20261108.log",
+  "conservativeComputeEstimateAtStopUSD": 0.48,
+  "estimateIsNotInvoice": true,
+  "runs": [
+    {
+      "id": 42479724176,
+      "status": "completed",
+      "conclusion": "cancelled",
+      "html_url": "https://github.com/sahme209/visionxixlabs/actions/runs/42479724176"
+    },
+    {
+      "id": 42479724307,
+      "status": "completed",
+      "conclusion": "failure",
+      "html_url": "https://github.com/sahme209/visionxixlabs/actions/runs/42479724307"
+    }
+  ]
+}

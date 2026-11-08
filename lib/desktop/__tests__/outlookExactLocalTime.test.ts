@@ -1,3 +1,5 @@
+// This suite asserts New York local-time semantics; pin it so it does not depend on the runner's zone.
+process.env.TZ = 'America/New_York';
 /** @vitest-environment jsdom */
 import { createElement } from 'react';
 import { afterEach, expect, it, vi } from 'vitest';

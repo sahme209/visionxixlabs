@@ -28,7 +28,7 @@ it('discovers existing Outlook and ServiceNow settings without inventing connect
  expect(screen.getByRole('link',{name:'Open Outlook settings'}).getAttribute('href')).toBe('/account/integrations/outlook');
  expect(screen.getByRole('link',{name:'Open ServiceNow settings'}).getAttribute('href')).toBe('/account/integrations/servicenow');
  for(const name of ['Outlook','ServiceNow']){
-  const row=screen.getByRole('heading',{name,exact:true}).closest('article')!;
+  const row=screen.getByRole('heading',{name}).closest('article')!;
   expect(row.textContent).toMatch(name==='Outlook'?/current connection status is not shown here/i:/status is checked in settings/i);
   expect(row.textContent).not.toMatch(/\bconnected\b|\bactive\b|\bvalidated\b/i);
  }
@@ -39,8 +39,8 @@ it('discovers existing Outlook and ServiceNow settings without inventing connect
 
 it('keeps new setup controls unavailable to a read-only viewer while showing provider purpose',async()=>{
  render(await Integrations());
- expect(screen.getByRole('heading',{name:'Outlook',exact:true})).toBeTruthy();
- expect(screen.getByRole('heading',{name:'ServiceNow',exact:true})).toBeTruthy();
+ expect(screen.getByRole('heading',{name:'Outlook'})).toBeTruthy();
+ expect(screen.getByRole('heading',{name:'ServiceNow'})).toBeTruthy();
  expect(screen.queryByRole('link',{name:'Open Outlook settings'})).toBeNull();
  expect(screen.queryByRole('link',{name:'Open ServiceNow settings'})).toBeNull();
  expect(screen.getByText('Read-only access')).toBeTruthy();
@@ -53,7 +53,7 @@ it('keeps admin settings navigation independent of unavailable aggregate records
  expect(screen.getByRole('alert').textContent).toContain('Connection records are temporarily unavailable');
  expect(screen.getByRole('link',{name:'Open Outlook settings'}).getAttribute('href')).toBe('/account/integrations/outlook');
  expect(screen.getByRole('link',{name:'Open ServiceNow settings'}).getAttribute('href')).toBe('/account/integrations/servicenow');
- for(const name of ['Outlook','ServiceNow'])expect(screen.getByRole('heading',{name,exact:true}).closest('article')!.textContent).not.toMatch(/\bconnected\b|\bactive\b|\bvalidated\b/i);
+ for(const name of ['Outlook','ServiceNow'])expect(screen.getByRole('heading',{name}).closest('article')!.textContent).not.toMatch(/\bconnected\b|\bactive\b|\bvalidated\b/i);
  expect(io.jira.mock.calls[0][0].canManage).toBe(false);
 });
 
@@ -61,7 +61,7 @@ it('does not expose setup links or query records without current membership',asy
  io.context.mockResolvedValue({isAuthenticated:true,organizationId:'org-current',userId:'user-current',email:'reader@example.test',roles:[]});
  render(await Integrations());
  expect(screen.getByRole('alert').textContent).toContain('current workspace membership');
- expect(screen.queryByRole('heading',{name:'Outlook',exact:true})).toBeNull();
+ expect(screen.queryByRole('heading',{name:'Outlook'})).toBeNull();
  expect(screen.queryByRole('link',{name:'Open ServiceNow settings'})).toBeNull();
  expect(io.connections).not.toHaveBeenCalled();expect(io.cloud).not.toHaveBeenCalled();
 });

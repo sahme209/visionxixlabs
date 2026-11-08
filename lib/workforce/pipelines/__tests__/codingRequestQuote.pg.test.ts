@@ -202,7 +202,7 @@ describe.skipIf(!root)('fresh owned quoted coding database journey',()=>{
   return {...x,allowance,attributionCount};
  }
  type AllocationFixture=Awaited<ReturnType<typeof allocationFixture>>;
- async function reserveAllocation(x:AllocationFixture,input={idempotencyKey:x.key,phase:'initial' as const,prepared:x.prepared,quote:x.quote()},repo=f.db){return x.coordinator.reserveQuotedCodingCall(repo,x.claim,x.scope,input,x.resolver);}
+ async function reserveAllocation(x:AllocationFixture,input:ReturnType<typeof freshRequest>={idempotencyKey:x.key,phase:'initial',prepared:x.prepared,quote:x.quote()},repo=f.db){return x.coordinator.reserveQuotedCodingCall(repo,x.claim,x.scope,input,x.resolver);}
  async function pendingAllocation(x:AllocationFixture){
   const held=await reserveAllocation(x),dispatch=await x.coordinator.dispatchQuotedCodingCall(f.db,x.claim,x.scope,held.callId,x.prepared,held.quoteReservation),provider=x.protocol.consumeManager(dispatch.managerQuote,x.prepared,Date.now());x.protocol.consumeProvider(provider,x.prepared,Date.now());
   const generation='synthetic_allocation_'+randomUUID();

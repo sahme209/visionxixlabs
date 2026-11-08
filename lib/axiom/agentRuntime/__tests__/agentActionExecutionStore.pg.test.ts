@@ -17,6 +17,12 @@ import {decideAgentAction} from '../browserApprovalDecision';
 import {agentActionDigest} from '../proposalIntegrity';
 import {readAgentDeploymentAuthoritySnapshot} from '../agentDeploymentAuthoritySnapshot';
 import {createAgentActionExecutionStore} from '../agentActionExecutionStore';
+async function requireExecutionClaim(store:ReturnType<typeof createAgentActionExecutionStore>,scope:Parameters<typeof store.claim>[0],id:string){
+ const result=await store.claim(scope,id);
+ expect(result.claimed).toBe(true);
+ if(!result.claimed)throw Error('expected_execution_claim');
+ return result;
+}
 const socket=process.env.AXIOM_EXECUTION_POLICY_PG_SOCKET;
 describe.skipIf(!socket)('actual new-review requester execution store; no provider transport',()=>{
  beforeAll(async()=>{
@@ -44,7 +50,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  it('claims once, keeps an unknown outcome consumed, and preserves original review rows',async()=>{
   const t=await fixture(),before=await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}}),op=await t.store.prepare(t.scope,t.proposal.id);
   expect(op).toMatchObject({state:'prepared',attemptCount:0});const results=await Promise.all([t.store.claim(t.scope,op.id),t.store.claim(t.scope,op.id)]),winner=results.find(r=>r.claimed);
-  expect(results.filter(r=>r.claimed)).toHaveLength(1);expect(winner).toBeTruthy();
+  expect(results.filter(r=>r.claimed)).toHaveLength(1);expect(winner).toBeTruthy();if(!winner?.claimed)throw Error('expected_single_execution_claim');
   const binding=await t.store.beforeDispatch(t.scope,winner.claim);expect(binding).toMatchObject({toolName:'open_github_pull_request',args:{repositoryFullName:'fixture/repository'}});
   await t.store.complete(winner.claim,'unknown',{code:'provider_outcome_unknown'});
   expect(await t.store.get(t.scope,op.id)).toMatchObject({state:'unknown',attemptCount:1,version:2});expect((await t.store.claim(t.scope,op.id)).claimed).toBe(false);
@@ -66,19 +72,19 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   await expect(t.store.claim(t.scope,op.id)).rejects.toThrow();expect(await t.store.get(t.scope,op.id)).toMatchObject({state:'prepared',attemptCount:0});
  });
  it('refuses changed content after claim, and still records the private claimed refusal',async()=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   await f.db.agentActionProposal.update({where:{id:t.proposal.id},data:{argsJson:{repositoryFullName:'different/repository'}}});
   await expect(t.store.beforeDispatch(t.scope,claimed.claim)).rejects.toThrow();await t.store.complete(claimed.claim,'refused',{code:'pre_dispatch_refused'});
   expect(await t.store.get(t.scope,op.id)).toMatchObject({state:'refused',attemptCount:1});
  });
  it('rejects copied claim objects and tenant or actor substitution',async()=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   await expect(t.store.beforeDispatch(t.scope,{...claimed.claim})).rejects.toThrow();await expect(t.store.complete({...claimed.claim},'unknown',{code:'provider_outcome_unknown'})).rejects.toThrow();
   await expect(t.store.get({...t.scope,organizationId:'other'},op.id)).rejects.toThrow();await expect(t.store.get({...t.scope,actorUserId:'other'},op.id)).rejects.toThrow();
  });
  it('retains unknown outcome recording after current session revocation and never stores raw result fields',async()=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
-  await expect(t.store.complete(claimed.claim,'unknown',{code:'provider_outcome_unknown',token:'PRIVATE_FIXTURE'})).rejects.toThrow();
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
+  const leakedOutcome={code:'provider_outcome_unknown' as const,token:'PRIVATE_FIXTURE'};await expect(t.store.complete(claimed.claim,'unknown',leakedOutcome)).rejects.toThrow();
   await f.db.desktopSessionRecord.update({where:{id:t.scope.sessionId},data:{revokedAt:new Date()}});
   await t.store.complete(claimed.claim,'unknown',{code:'provider_outcome_unknown'});
   const row=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}});expect(row).toMatchObject({attemptCount:1,currentStep:'unknown'});expect(JSON.stringify(row)).not.toContain('PRIVATE_FIXTURE');
@@ -98,14 +104,14 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   expect(await t.store.cancel(t.scope,op.id)).toMatchObject({state:'cancelled',attemptCount:0,version:1});
  });
  it('refuses newly enrolled scope before dispatch and retains the already consumed attempt',async()=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   await f.db.durableAgentWorkflow.create({data:{id:'governance_active_'+randomUUID(),organizationId:t.org,workflowKind:'conflicting_fixture',objective:'Fixture only',autonomyLevel:'observe',inputJson:{},stateJson:{},requestedByUserId:'reviewer'}});
   await expect(t.store.beforeDispatch(t.scope,claimed.claim)).rejects.toThrow();await t.store.complete(claimed.claim,'refused',{code:'pre_dispatch_refused'});
   expect(await t.store.get(t.scope,op.id)).toMatchObject({state:'refused',attemptCount:1});
  });
 
  it('classifies a lost process after the real lease elapses without resetting or rewriting history',async()=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   await f.db.$queryRawUnsafe('SELECT 1 FROM pg_sleep(30.1)');
   const restarted=createAgentActionExecutionStore(f.db,{assertCurrent:async()=>{}}),before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}});
   expect(await restarted.get(t.scope,op.id)).toMatchObject({state:'dispatching',recoveryState:'lease_elapsed_unconfirmed',attemptCount:1});
@@ -117,7 +123,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  },40000);
 
  it.each(['requester','reviewer','policy'])('refuses %s authority removal after claim without allowing another attempt',async target=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   if(target==='policy')await f.db.workspaceAgentIdentity.update({where:{organizationId:t.org},data:{enabled:false}});
   else await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:target}},data:{role:'read_only'}});
   await expect(t.store.beforeDispatch(t.scope,claimed.claim)).rejects.toThrow();await t.store.complete(claimed.claim,'refused',{code:'pre_dispatch_refused'});
@@ -174,8 +180,9 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  it('inspects exact prepared execution authority without claiming or exposing mutable stored source',async()=>{
   const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}});
   const source=await t.store.inspectForExecution(t.scope,op.id);expect(source).toMatchObject({toolName:'open_github_pull_request',args:{repositoryFullName:'fixture/repository'}});
+  if(!source.args||typeof source.args!=='object'||!('repositoryFullName' in source.args))throw Error('expected_repository_args');
   source.args.repositoryFullName='mutated/local';
-  expect((await t.store.inspectForExecution(t.scope,op.id)).args.repositoryFullName).toBe('fixture/repository');
+  expect((await t.store.inspectForExecution(t.scope,op.id)).args).toMatchObject({repositoryFullName:'fixture/repository'});
   expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
   await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:'reviewer'}},data:{role:'read_only'}});
   await expect(t.store.inspectForExecution(t.scope,op.id)).rejects.toThrow();
@@ -191,7 +198,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
 
  it('atomically applies a fixed database mutation and records its only outcome',async()=>{
   const t=await fixture(60000,'create_environment');await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'admin'}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);let calls=0;
+  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);let calls=0;
   const outcome=await t.store.applyDatabase(claimed.claim,async(tx:any,source:any)=>{
    calls++;expect(source.toolName).toBe('create_environment');
    await tx.$queryRaw`UPDATE "AgentConversation" SET "title"='fixture mutation committed' WHERE "id"=${t.proposal.conversationId} RETURNING "id"`;
@@ -203,7 +210,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  });
  it('rolls back database mutation and keeps consumed uncertainty if final authority is lost',async()=>{
   const t=await fixture(60000,'create_environment');await f.db.orgMembership.update({where:{organizationId_userId:{organizationId:t.org,userId:t.scope.actorUserId}},data:{role:'admin'}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);const guarded=createAgentActionExecutionStore(f.db,{assertCurrent:async()=>{}});
+  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);const guarded=createAgentActionExecutionStore(f.db,{assertCurrent:async()=>{}});
   // Private proof cannot be adopted by a different store, even for the same ID.
   await expect(guarded.applyDatabase(claimed.claim,async()=>({code:'action_completed'}))).rejects.toThrow();
   await expect(t.store.applyDatabase(claimed.claim,async(tx:any)=>{
@@ -216,13 +223,13 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   expect(await t.store.get(t.scope,op.id)).toMatchObject({state:'dispatching',attemptCount:1});
  });
  it('refuses external tools at the database mutation boundary before invoking the callback',async()=>{
-  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);const write=vi.fn();await expect(t.store.applyDatabase(claimed.claim,write)).rejects.toThrow();expect(write).not.toHaveBeenCalled();
+  const t=await fixture(),op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);const write=vi.fn();await expect(t.store.applyDatabase(claimed.claim,write)).rejects.toThrow();expect(write).not.toHaveBeenCalled();
  });
 
  it('binds the final GitHub check to current exact installation and source authority together',async()=>{
   const t=await fixture(),revision=new Date();const connection={id:t.org+'-installation',githubInstallationId:'123',updatedAt:revision};
   await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   expect(await t.store.beforeGithubDispatch(t.scope,claimed.claim,connection)).toMatchObject({toolName:'open_github_pull_request'});
   await f.db.gitHubInstallation.update({where:{id:connection.id},data:{updatedAt:new Date(revision.getTime()+1)}});
   await expect(t.store.beforeGithubDispatch(t.scope,claimed.claim,connection)).rejects.toThrow();
@@ -233,14 +240,14 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  it('refuses a replaced installation even if its old row remains active',async()=>{
   const t=await fixture(),revision=new Date(),connection={id:t.org+'-old',githubInstallationId:'123',updatedAt:revision};
   await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   await f.db.gitHubInstallation.create({data:{id:t.org+'-new',organizationId:t.org,status:'active',accountLogin:'fixture',githubInstallationId:'456',updatedAt:revision,installedAt:new Date(revision.getTime()+1)}});
   await expect(t.store.beforeGithubDispatch(t.scope,claimed.claim,connection)).rejects.toThrow();
  });
 
  it('binds deployment to the reviewed target, actual reservation and unchanged policy snapshot',async()=>{
   const revision=new Date(),sha='a'.repeat(40);
-  const buildArgs=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'main',sourceKind:'branch',_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'dev',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/fixture',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const buildArgs=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'main',sourceKind:'branch',_review:{kind:'ecs_restart_target' as const,organizationId:org,environmentId:org+'-env',environmentTier:'dev',targetId:org+'-target',provider:'aws' as const,targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/fixture',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
   const t=await fixture(60000,'trigger_aws_deploy',buildArgs),args=buildArgs(t.org),target=args._review,connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:revision};
   let insertLate=false;
   const hooked={$transaction:(fn:any,options:any)=>f.db.$transaction(async(tx:any)=>fn(new Proxy(tx,{get(object,key){
@@ -251,7 +258,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
   await f.db.environment.create({data:{id:args.environmentId,organizationId:t.org,tier:'dev'}});
   await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:args.environmentId,organizationId:t.org,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});
   await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await t.store.claim(t.scope,op.id);
+  const op=await t.store.prepare(t.scope,t.proposal.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id);
   const policySnapshotDigest=await readAgentDeploymentAuthoritySnapshot(f.db,t.org,args.environmentId);
   const input={target,policySnapshotDigest,sourceCommitSha:sha};
   await expect(t.store.beforeDeploymentDispatch(t.scope,claimed.claim,connection,input)).rejects.toThrow();
@@ -400,7 +407,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  it.each(['confirmed','workflow_changed','legacy','reviewer_revoked'])('composes immutable restart requester HTTP source binding: %s',async mode=>{
   const revision=new Date(),workflow=Buffer.from(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE),blob=createHash('sha1').update(`blob ${workflow.length}\0`).update(workflow).digest('hex');
   const source={kind:'github_immutable_restart_source_v1',repositoryFullName:'fixture/repository',repositoryId:'1',tagName:'v1',ref:'refs/tags/v1',tagObjectSha:'a'.repeat(40),tagObjectType:'commit',sourceCommitSha:'a'.repeat(40),releaseId:'2',publishedAt:'2026-10-01T00:00:00.000Z',workflowFile:'axiom-deploy-aws-ecs.yml',workflowBlobSha:blob,workflowContentSha256:createHash('sha256').update(workflow).digest('hex')};
-  const args=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',...(mode==='legacy'?{}:{_restartSource:source}),_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/deploy',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const args=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',...(mode==='legacy'?{}:{_restartSource:source}),_review:{kind:'ecs_restart_target' as const,organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws' as const,targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/deploy',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
   const t=await fixture(60000,'trigger_aws_deploy',args),input=args(t.org),target=input._review,original=await f.db.agentActionProposal.findUnique({where:{id:t.proposal.id}});
   await f.db.environment.create({data:{id:input.environmentId,organizationId:t.org,tier:'qa',slug:'qa',name:'QA'}});
   await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:input.environmentId,organizationId:t.org,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});
@@ -473,10 +480,10 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  it('[outbound] binds the real private claim/source/installation/target and retains original query-time deadline',async()=>{
   const revision=new Date(),workflow=Buffer.from(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE),blob=createHash('sha1').update(`blob ${workflow.length}\0`).update(workflow).digest('hex');
   const reviewed={kind:'github_immutable_restart_source_v1',repositoryFullName:'fixture/repository',repositoryId:'1',tagName:'v1',ref:'refs/tags/v1',tagObjectSha:'a'.repeat(40),tagObjectType:'commit',sourceCommitSha:'a'.repeat(40),releaseId:'2',publishedAt:'2026-10-01T00:00:00.000Z',workflowFile:'axiom-deploy-aws-ecs.yml',workflowBlobSha:blob,workflowContentSha256:createHash('sha256').update(workflow).digest('hex')};
-  const buildArgs=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',_restartSource:reviewed,_review:{kind:'ecs_restart_target',organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws',targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/fixture',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
+  const buildArgs=(org:string)=>({repositoryFullName:'fixture/repository',environmentId:org+'-env',sourceRef:'v1',sourceKind:'tag',_restartSource:reviewed,_review:{kind:'ecs_restart_target' as const,organizationId:org,environmentId:org+'-env',environmentTier:'qa',targetId:org+'-target',provider:'aws' as const,targetUpdatedAt:revision.toISOString(),roleArn:'arn:aws:iam::123456789012:role/fixture',region:'us-east-1',ecsCluster:'cluster',ecsService:'service'}});
   const t=await fixture(60000,'trigger_aws_deploy',buildArgs),args=buildArgs(t.org),target=args._review,connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:revision};
   await f.db.environment.create({data:{id:args.environmentId,organizationId:t.org,tier:'qa'}});await f.db.deploymentTarget.create({data:{id:target.targetId,environmentId:args.environmentId,organizationId:t.org,provider:'aws',updatedAt:revision,roleArn:target.roleArn,region:target.region,ecsCluster:target.ecsCluster,ecsService:target.ecsService}});await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),source=await t.store.inspectForExecution(t.scope,op.id),claimed=await t.store.claim(t.scope,op.id),input={source,connection,target};
+  const op=await t.store.prepare(t.scope,t.proposal.id),source=await t.store.inspectForExecution(t.scope,op.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id),input={source,connection,target};
   const read=(proof:any=claimed.claim,override:any=input)=>f.db.$transaction((tx:any)=>t.store.readClaimedDeploymentOutboundLocked(tx,t.scope,proof,override));
   const before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}}),verified=await read();expect(verified.attemptId).toMatch(/^agent_execution_attempt_[a-f0-9]{64}$/);expect(verified.connectionId).toBe(connection.id);expect(verified.fresh()).toBeUndefined();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
   await expect(read({operationId:op.id})).rejects.toThrow();await expect(read(claimed.claim,{...input,source:{...source,proposalDigest:'f'.repeat(64)}})).rejects.toThrow();await expect(read(claimed.claim,{...input,connection:{...connection,id:'other'}})).rejects.toThrow();
@@ -491,7 +498,7 @@ describe.skipIf(!socket)('actual new-review requester execution store; no provid
  it.each(['create_github_branch','open_github_pull_request'])('[github-outbound] actual private %s claim binds original review/connection and query-time deadline',async tool=>{
   const build=()=>tool==='create_github_branch'?{repositoryFullName:'fixture/repository',baseBranch:'main',newBranchName:'work',_review:{kind:'github_branch',baseBranch:'main',newBranchName:'work',baseSha:'a'.repeat(40)}}:{repositoryFullName:'fixture/repository',head:'work',base:'main',title:'One reviewed PR',_review:{kind:'github_pull_request',head:'work',base:'main',headSha:'a'.repeat(40),baseSha:'b'.repeat(40)}};
   const t=await fixture(60000,tool,build),revision=new Date(),connection={id:t.org+'-gh',githubInstallationId:'123',updatedAt:revision};await f.db.gitHubInstallation.create({data:{...connection,organizationId:t.org,status:'active',accountLogin:'fixture',installedAt:revision}});
-  const op=await t.store.prepare(t.scope,t.proposal.id),source=await t.store.inspectForExecution(t.scope,op.id),claimed=await t.store.claim(t.scope,op.id),input={source,connection};
+  const op=await t.store.prepare(t.scope,t.proposal.id),source=await t.store.inspectForExecution(t.scope,op.id),claimed=await requireExecutionClaim(t.store,t.scope,op.id),input={source,connection};
   const read=(proof:any=claimed.claim,override:any=input)=>f.db.$transaction((tx:any)=>t.store.readClaimedGithubOutboundLocked(tx,t.scope,proof,override));
   const before=await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}}),metadata=await read();expect(metadata.profile).toBe(tool==='create_github_branch'?'agent.github_create_branch.v1':'agent.github_open_pull_request.v1');expect(metadata.fresh()).toBeUndefined();expect(await f.db.durableAgentWorkflow.findUnique({where:{id:op.id}})).toEqual(before);
   await expect(read({operationId:op.id})).rejects.toThrow();await expect(read(claimed.claim,{...input,source:{...source,reviewId:'other'}})).rejects.toThrow();await expect(read(claimed.claim,{...input,connection:{...connection,id:'other'}})).rejects.toThrow();

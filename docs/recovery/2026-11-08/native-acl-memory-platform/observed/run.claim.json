@@ -1,0 +1,71 @@
+{
+ "argv": [
+  "/usr/bin/sandbox-exec",
+  "-f",
+  "/Users/sahme209/visionxixlabs/docs/recovery/2026-11-08/native-acl-memory-platform/platform.sb",
+  "/Users/sahme209/Library/Application Support/Vision XIX Labs/Axiom Qualification Lab/2026-11-06-native-acl-memory-platform-1/bin/acl-memory-platform"
+ ],
+ "claimedAtUnix": 1794143523.872828,
+ "limits": {
+  "bytes": 65536,
+  "cleanupSeconds": 5,
+  "seconds": 10
+ },
+ "preexecBinaryGuard": {
+  "aclImports": [
+   "_acl_add_perm",
+   "_acl_clear_flags_np",
+   "_acl_clear_perms",
+   "_acl_copy_ext",
+   "_acl_create_entry",
+   "_acl_dup",
+   "_acl_free",
+   "_acl_get_flagset_np",
+   "_acl_get_perm_np",
+   "_acl_get_permset",
+   "_acl_get_tag_type",
+   "_acl_init",
+   "_acl_set_flagset_np",
+   "_acl_set_permset",
+   "_acl_set_qualifier",
+   "_acl_set_tag_type",
+   "_acl_size"
+  ],
+  "imports": [
+   "___stack_chk_fail",
+   "___stack_chk_guard",
+   "_acl_add_perm",
+   "_acl_clear_flags_np",
+   "_acl_clear_perms",
+   "_acl_copy_ext",
+   "_acl_create_entry",
+   "_acl_dup",
+   "_acl_free",
+   "_acl_get_flagset_np",
+   "_acl_get_perm_np",
+   "_acl_get_permset",
+   "_acl_get_tag_type",
+   "_acl_init",
+   "_acl_set_flagset_np",
+   "_acl_set_permset",
+   "_acl_set_qualifier",
+   "_acl_set_tag_type",
+   "_acl_size",
+   "_free",
+   "_malloc",
+   "_memcmp",
+   "_memset",
+   "_printf",
+   "_puts"
+  ],
+  "libraries": [
+   "/usr/lib/libSystem.B.dylib"
+  ],
+  "rpath": false,
+  "sha256": "2b7413c77e84980529e9b20ee7f3220f03df576aca982bb3c6bdde943ec6ceaf",
+  "size": 34896
+ },
+ "proposalSha256": "09139ec5566c8cd9220ffc852ef197ff07fadb93e67d24a56458b3c1e0a0b460",
+ "retryAuthorized": false,
+ "step": "run"
+}

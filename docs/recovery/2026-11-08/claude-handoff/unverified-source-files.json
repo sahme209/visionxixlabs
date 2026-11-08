@@ -1,0 +1,182 @@
+[
+  {
+    "path": "lib/axiom/agentRuntime/__tests__/agentActionDeploymentExecution.test.ts",
+    "sha256": "2657d54c7e3dd9be1387088c607c928039a156079237eee8475fb7e228c793b1",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/axiom/agentRuntime/__tests__/agentActionExecutionCoordinator.pg.test.ts",
+    "sha256": "86e462346de25b93555a40701df81044ab2d0b41e60641e4667ff471ba497007",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/axiom/agentRuntime/__tests__/agentActionExecutionStore.pg.test.ts",
+    "sha256": "83a7134ccfed15b64908277df4e34aea448932804f1a5f6e6f987594449ef59d",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/axiom/agentRuntime/__tests__/proposalReview.test.ts",
+    "sha256": "84dbbc739ecbbeb5aa20faa5f4879803996d71ad8000bc4ef71139b3852c2b53",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/agentActionExecutionHttp.test.ts",
+    "sha256": "6bf912e4ca0de4bf009100876547b39b85b61b1788b964f33d7b6e2bdfaf229d",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/associatedTicketJourney.pg.test.ts",
+    "sha256": "70601dc11bbd29c8086facd071dc538ae06906c699da393e8c6b006705fc008a",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/governanceEvidenceView.test.ts",
+    "sha256": "f96cfeff22779c2b86091c70e1d79860df48e6e836ffa5e3b429c77cb6d9f2d3",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/governanceIntelligenceClient.test.ts",
+    "sha256": "e5ccba0852d87aec9c3774d5cdc6b183bdc7f535eceaf9d905cfb56bc073acee",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/outlookDraftDisclosure.test.ts",
+    "sha256": "c8b58710380da626fe72ac2b29fbc8742bbbc5ab3160bc6eae5962974fd2a25e",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/releaseProviderMergeApprovalClient.test.ts",
+    "sha256": "5576d1447b7bc91eacdfbcc7e621e0028310e4b53ed63eb2881c5ac72f2ac9cf",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/serviceNowWrittenObservationComposition.test.ts",
+    "sha256": "5a610ab1b26c0707e431fdd4335bc268f92113fb8a9bec15db377a66da1c4db5",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/ticketGovernanceClient.test.ts",
+    "sha256": "5625cf5a67ea75934a178cd0b6c364bc67b03324d54318d579a554c00649f669",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/ticketGovernancePanel.test.ts",
+    "sha256": "91db8ac441e06bfe41e9db3df9fe26c4ab8c5087bdaf1717444564f215c65bb2",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/desktop/__tests__/workspaceChrome.test.ts",
+    "sha256": "a1f50fa8afc4e77dd7a04d28f2ef72465d445b90b3ab2be4f9a6178655bf348c",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/baselineService.test.ts",
+    "sha256": "24c8608801b2e222a97c4796d69e217b0df036baf58884aedc7067d2cf3212eb",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/collectHttp.test.ts",
+    "sha256": "f4c5b1a442d52d7f747f0623eb5a47361e53fde6f34964fa392bcbb3fc7bcd61",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/deploymentRequestAdmission.test.ts",
+    "sha256": "f31d4123ad83ccfcbc6126249f99cfcaba60f5e84b5be6d4a0c195fe2a590bed",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/discovery.test.ts",
+    "sha256": "d81e508a0fe19168791a25c207d4cc43a92b334e7f616970a76046ab2e2133ee",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/executionPolicyHttp.test.ts",
+    "sha256": "571c80cce72729a32a8530f0ad5d4e04e23357c177c8b592138890ab725fb1a0",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/fixtures/reviewedDeployment.ts",
+    "sha256": "8482bfda7e45748343d02795bd8c17cfa09e0e0e5a5bfb426928f2736b17c535",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/githubDiscovery.test.ts",
+    "sha256": "99f243ebd3f2f2ed9e2e4eb0c07017b1d2875f876fd9bffb98ef1fada773b727",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/governedProviderMerge.test.ts",
+    "sha256": "eb230432c3b0a1a879eb041e9d9bcf67adaaeff0294255ec1b2d422a4de10500",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/governedReleaseDeployment.test.ts",
+    "sha256": "71bcd2e6c0494185d16a420e419c8542f07e308762cc6e6474f1d53db93a2775",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/kernel.test.ts",
+    "sha256": "cfb11167bcb412a0184bacbf5b0e5f57456c482a82740c8bd74893624c910dbe",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/linearChangeOutboundDrain.test.ts",
+    "sha256": "0e23ae6fa338ee02e9362de7e6caa63b4669aca19c1af9aa5088b851cc36f8e1",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/linearCreateOutboundDrain.test.ts",
+    "sha256": "6b412bb3df5c8c75fa9d293f8d85f5b112a65e269af1169c10f78ab5172c22e2",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/mergeRequestAdmission.pg.test.ts",
+    "sha256": "24b2fabf521c2c7535f619f0a5ede83fe048a2e2df0b30b7583d66aa00a84744",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/mergeRequestAdmission.test.ts",
+    "sha256": "86fed649c825dd845ad43a3ba546638d6debff241ce3bbe11666458c773fbbfe",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/mergeRequestAdmissionV2.test.ts",
+    "sha256": "1b221a4df53c8fb716f0a46001d8fd7940ec0eed441b27b8b58379f1f89a1810",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/nativeGitCredentialLeaseStore.test.ts",
+    "sha256": "6c7e5e81d5a735e0939a9a5a57d9ea3b522244b8ede30ffac983f18fe058e3f3",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/reviewHttp.test.ts",
+    "sha256": "5f95f47634ab939b01d4d151138c45e3e72441fb8f1d5fc7cf5d206f0c5b64d5",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/scopeAwareAdmission.test.ts",
+    "sha256": "b74288d822cfd8440139d0f5131d1451cbdd2305172fc940deacf424a18c683d",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/slackOutboundDrain.test.ts",
+    "sha256": "f99e6aefad8a8b6aade431d84bfe29ce9aef1da814cd3080b1a1a257132f8fe7",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/governance/intelligence/__tests__/uncoveredProviderMerge.test.ts",
+    "sha256": "2f7e44d05968646993a0f2722c2caea42784152bdf7e0107e75ef5767e247bb1",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/tauri/__tests__/releaseProviderMergeTransport.test.ts",
+    "sha256": "1c2e74433e65ce6c0f785d7e515ba542cabf1938ddf803973ec91e99519363d4",
+    "status": "edited, not typechecked or tested"
+  },
+  {
+    "path": "lib/workforce/pipelines/__tests__/codingRequestQuote.pg.test.ts",
+    "sha256": "de979c30c72267eb82d60e3627750f959acaf63ad86cde1d6df05b99a43748c5",
+    "status": "edited, not typechecked or tested"
+  }
+]

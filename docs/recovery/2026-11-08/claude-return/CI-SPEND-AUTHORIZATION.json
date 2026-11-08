@@ -1,0 +1,72 @@
+{
+ "format": "axiom.ci-spend-authorization.v1",
+ "date": "2026-11-08",
+ "userApproval": "Approve $3 cap (Claude session chat, 2026-11-08)",
+ "capUSD": 3,
+ "scope": "one draft PR from claude/axiom-ci-test-repairs-2026-11-08 into main; one run each of Test, Website visual, Desktop CI",
+ "forbidden": [
+  "re-runs",
+  "additional pushes without fresh approval",
+  "merge",
+  "deployment",
+  "workflow_dispatch of any other workflow"
+ ],
+ "estimateWorstCaseUSD": 2.96,
+ "estimateIsNotInvoice": true,
+ "pr": "https://github.com/sahme209/visionxixlabs/pull/202",
+ "headSha": "4b38cc94",
+ "runs": {
+  "Test": 42485996318,
+  "Desktop CI": 42485996303,
+  "Isolated website acceptance": 42485996268
+ },
+ "status": "in_progress (2026-11-08T13:39Z); repo public, so standard-runner minutes expected free",
+ "additionalRuns": {
+  "approved": 3,
+  "userApproval": "Approve 3 runs (chat, 2026-11-08)",
+  "expectedUSD": 0,
+  "reason": "public repo, standard runners",
+  "forbidden": [
+   "merge",
+   "deploy",
+   "more than 3 pushes"
+  ],
+  "used": 3
+ },
+ "run2": {
+  "Test": "failure (2 TS errors)",
+  "Isolated website acceptance": "success",
+  "Desktop CI": "success"
+ },
+ "run3": {
+  "Test": "typecheck pass; vitest 73 failed (pre-existing)",
+  "Desktop CI": "success",
+  "Isolated website acceptance": "success"
+ },
+ "additionalRuns2": {
+  "approved": 3,
+  "userApproval": "Approve 3 more runs (chat, 2026-11-08)",
+  "expectedUSD": 0,
+  "used": 3
+ },
+ "runResults": {
+  "d06f5105": "types/desktop/website PASS; Vitest 4 failing (decision tests); PG fail (expired Oct period)"
+ },
+ "additionalRuns3": {
+  "approved": 1,
+  "userApproval": "Approve one run (chat, 2026-11-08)",
+  "expectedUSD": 0,
+  "used": 1,
+  "note": "push after in-flight e3339fde run completes"
+ },
+ "final": {
+  "commit": "e9cd5f80",
+  "result": "all green incl. production build",
+  "runs": [
+   42492564156,
+   42492564160,
+   42492564159,
+   42492564188
+  ]
+ }
+}

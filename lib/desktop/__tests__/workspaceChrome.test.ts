@@ -5,7 +5,7 @@ import {cleanup,fireEvent,render,screen} from '@testing-library/react';
 import {TopBar} from '../../../desktop/src/components/TopBar';
 import type {VerifiedDesktopIdentity} from '../../../desktop/src/lib/desktopClient';
 afterEach(cleanup);
-const identity={kind:'desktop_session',organizationId:'workspace-exact-id',capabilities:[],access:{allowed:true}} as VerifiedDesktopIdentity;
+const identity:VerifiedDesktopIdentity={kind:'desktop_session',organizationId:'workspace-exact-id',capabilities:[],access:{allowed:true,code:'active',title:'Active',message:'Workspace access is active.',planTier:'pro',billingStatus:'active',accessRequestPath:'/access',pricingPath:'/pricing'}};
 it('keeps the exact verified workspace available without placing its technical ID in the main toolbar',()=>{
  const view=render(h(TopBar,{activeView:'agent',identity}));
  const summary=screen.getByLabelText('Workspace access: active');

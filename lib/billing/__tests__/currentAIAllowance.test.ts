@@ -24,7 +24,7 @@ describe("read-only current AI allowance authority", () => {
     expect(read.tx.aIUsageReservation.aggregate).toHaveBeenCalledWith(expect.objectContaining({ where: { organizationId: "tenant", OR: [
       { status: "reserved", usageEventId: null, expiresAt: { gt: now } },
       { status: "reserved", usageEventId: { not: null } }, { status: "pending_settlement" },
-      { status: "dispatch_unknown" },
+      { status: "reserved", pipelineCall: { isNot: null } }, { status: "dispatch_unknown" },
     ] } }));
     expect(read.tx.aIUsageReservation.updateMany).not.toHaveBeenCalled();
     expect(read.tx.aIUsageReservation.create).not.toHaveBeenCalled();

@@ -7,7 +7,7 @@ const mocks = vi.hoisted(() => ({
 }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.currentContext }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: mocks.status, generateTextWithAdmission: mocks.generateAdmitted }) }));
-vi.mock("@/lib/ai/workspaceProviderPolicy", () => ({ loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, resolveWorkspaceAIProviderPolicy: mocks.resolvePolicy }));
+vi.mock("@/lib/ai/workspaceProviderPolicy", async original => ({ ...await original<typeof import("@/lib/ai/workspaceProviderPolicy")>(), loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, resolveWorkspaceAIProviderPolicy: mocks.resolvePolicy }));
 vi.mock("@/lib/billing/checkWorkspaceAICredits", () => ({ checkWorkspaceAICredits: mocks.checkCredits }));
 vi.mock("@/lib/billing/aiCreditReservation", () => ({ reserveAICredits: mocks.reserve, releaseAICreditReservation: mocks.release, claimLegacyAICreditDispatch: mocks.legacyClaim }));
 vi.mock("@/lib/billing/recordAIUsageEvent", () => ({ recordAIUsageEvent: mocks.recordUsage, recordReservedAIUsageEventV2: mocks.recordReserved }));
@@ -58,11 +58,18 @@ describe("POST /api/ai/generate reservation boundary", () => {
     expect(res.status).toBe(422); expect((await res.json()).error.code).toBe("ai.output_bound_unverified");
     expect(mocks.reserve).not.toHaveBeenCalled(); expect(mocks.generateAdmitted).not.toHaveBeenCalled();
   });
-  it.each(["vendor/approved", "vmc/private"])("preserves concrete selection %s over an unsupported default", async model => {
+  it.each(["vendor/approved"])("preserves concrete selection %s over an unsupported default", async model => {
     mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]);
     mocks.resolvePolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: model }, fallbackOrder: [] });
     const { POST } = await import("../route"); expect((await POST(request())).status).toBe(200);
     expect(mocks.generateAdmitted.mock.calls[0][1].model).toBe(model);
+  });
+  // Approved Nov 5 policy repair: managed/virtual identifiers cannot be the admitted model; refuse before any hold or provider entry.
+  it("refuses a managed/virtual workspace selection before reservation or provider entry", async () => {
+    mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]);
+    mocks.resolvePolicy.mockReturnValue({ enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: "vmc/private" }, fallbackOrder: [] });
+    const { POST } = await import("../route"); expect((await POST(request())).status).not.toBe(200);
+    expect(mocks.reserve).not.toHaveBeenCalled(); expect(mocks.generateAdmitted).not.toHaveBeenCalled();
   });
   it("pins the checked default across reservation instead of resolving a changed default", async () => {
     mocks.reserve.mockImplementation(async () => { mocks.status.mockReturnValue([{ provider: "vercel_gateway", configured: true, defaultModel: "xai/grok-4.20-multi-agent" }]); return { ok: true, reused: false, reservation: { id: "hold-1" } }; });

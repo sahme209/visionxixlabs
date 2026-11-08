@@ -6,8 +6,9 @@ import { consumeGovernedTextAdmission, consumeGovernedExtractAdmission } from "@
 import type { GovernedAIAdmission } from "@/lib/billing/governedExtractAdmission";
 
 vi.mock("@/lib/billing/governedExtractAdmission", () => ({
-  consumeGovernedTextAdmission: vi.fn(() => ({ record: vi.fn() })),
-  consumeGovernedExtractAdmission: vi.fn(() => ({ record: vi.fn() })),
+  consumeGovernedTextAdmission: vi.fn(() => ({ record: vi.fn(), assertCurrentPolicy: async () => {} })),
+  consumeGovernedExtractAdmission: vi.fn(() => ({ record: vi.fn(), assertCurrentPolicy: async () => {} })),
+  discardGovernedAIAdmission: vi.fn(),
 }));
 const blocked = "spacexai/grok-4.20-multi-agent";
 const response = { text: '{"action":"respond"}', provider: "vercel_gateway" as const, model: "vendor/safe", latencyMs: 0 };
@@ -59,7 +60,7 @@ describe("manager aggregate output boundary", () => {
       vi.clearAllMocks();
       const options = { model, organizationId: "org", correlationId: "exact-request" };
       await run(new AIProviderManager(), options);
-      expect(consumeGovernedTextAdmission).toHaveBeenCalledExactlyOnceWith(admission, options);
+      expect(consumeGovernedTextAdmission).toHaveBeenCalledExactlyOnceWith(admission, options, ...(run === paths.admittedGenerate ? [{ prompt: "p" }] : []));
       expect(calls).toHaveBeenCalledTimes(1);
       expect(vi.mocked(consumeGovernedTextAdmission).mock.invocationCallOrder[0]).toBeLessThan(calls.mock.invocationCallOrder[0]);
     }

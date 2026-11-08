@@ -1,0 +1,13 @@
+{
+ "activeSeconds": 0.383,
+ "cleanup": "reaped_original_child",
+ "descendantQuiescence": "unavailable",
+ "exit": 0,
+ "matchedExpectedOutcome": true,
+ "outputs": null,
+ "retryAuthorized": false,
+ "state": "completed",
+ "stdout": "PASS real in-memory ACL E0/E1/ED empty=1, explicit allow/deny=0, repeats and cleanup\n",
+ "step": "run",
+ "unknown": false
+}

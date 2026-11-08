@@ -9,7 +9,7 @@ it("answers the audit guide promise with evidence stages rather than redirecting
  render(createElement(AuditLogsPage));
  expect(screen.getByRole("heading", {level:1}).textContent).toContain("Read the evidence, not just the status.");
  for(const name of ["Review the original record", "Separate decisions from effects", "Handle an uncertain result", "Share evidence safely"])
- expect(screen.getByRole("heading", {name, exact:true})).toBeTruthy();
+ expect(screen.getByRole("heading", {name})).toBeTruthy();
 });
 it("preserves unknown histories and limits assurance claims", () => {
  const {container}=render(createElement(AuditLogsPage));

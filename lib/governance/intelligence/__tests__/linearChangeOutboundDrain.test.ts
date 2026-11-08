@@ -8,7 +8,7 @@ import {createLinearUpdateOutboundDrain,createLinearTransitionOutboundDrain} fro
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
 describe.each(['linear_issue_update','linear_issue_close'] as const)('%s exact drain',kind=>{
 const scope={organizationId:'org',actorUserId:'executor',sessionId:'original-session'},op='connected_action_'+'a'.repeat(64);
-const uuid='11111111-1111-4111-8111-111111111111',plan={kind,provider:'linear' as const,intentId:'22222222-2222-4222-8222-222222222222',organizationId:'org',requesterUserId:'executor',executorUserId:'executor',connectionId:'connection',connectionRevision:new Date().toISOString(),workspaceId:uuid,teamId:uuid,...(kind==='linear_issue_update'?{title:'One reviewed issue'}:{stateId:uuid,stateType:'completed' as const}),issueId:uuid,targetEvidenceDigest:'a'.repeat(64),expiresAt:new Date(Date.now()+60000).toISOString()};
+const uuid='11111111-1111-4111-8111-111111111111',plan={provider:'linear' as const,intentId:'22222222-2222-4222-8222-222222222222',organizationId:'org',requesterUserId:'executor',executorUserId:'executor',connectionId:'connection',connectionRevision:new Date().toISOString(),workspaceId:uuid,teamId:uuid,...(kind==='linear_issue_update'?{kind:'linear_issue_update' as const,title:'One reviewed issue'}:{kind:'linear_issue_close' as const,stateId:uuid,stateType:'completed' as const}),issueId:uuid,targetEvidenceDigest:'a'.repeat(64),expiresAt:new Date(Date.now()+60000).toISOString()};
 beforeEach(()=>{fixtureIdentity.available=true;fixtureIdentity.digest='c'.repeat(64)});
 function fixture(){
  let rows:any[]=[],events:any[]=[],inTransaction=false,valid=true;

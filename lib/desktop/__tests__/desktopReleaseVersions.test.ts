@@ -1,5 +1,5 @@
 import { spawnSync } from "node:child_process";
-import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -44,9 +44,10 @@ describe("desktop native release version alignment", () => {
 describe("actual release-check command", () => {
   it.each(["desktop/src-tauri/Cargo.toml", "desktop/src-tauri/Cargo.lock", "desktop/package-lock.json"])("refuses a stale source fixture in %s", changedFile => {
     const directory = mkdtempSync(path.join(tmpdir(), "axiom-release-versions-"));
-    const paths = ["scripts/check-desktop-release.mjs", "scripts/desktop-release-versions.mjs", "desktop/package.json", "desktop/package-lock.json", "desktop/src-tauri/tauri.conf.json", "desktop/src-tauri/Cargo.toml", "desktop/src-tauri/Cargo.lock", ".github/workflows/desktop-release.yml", "lib/desktop/releaseManifest.ts", "desktop/src/components/ConnectionBanner.tsx", "components/Footer.tsx", "app/demo/page.tsx"];
+    const paths = ["scripts/check-desktop-release.mjs", "scripts/desktop-release-versions.mjs", "scripts/demo-download-link.mjs", "desktop/package.json", "desktop/package-lock.json", "desktop/src-tauri/tauri.conf.json", "desktop/src-tauri/Cargo.toml", "desktop/src-tauri/Cargo.lock", ".github/workflows/desktop-release.yml", "lib/desktop/releaseManifest.ts", "desktop/src/components/ConnectionBanner.tsx", "components/Footer.tsx", "app/demo/page.tsx"];
     try {
       for (const relative of paths) { const target = path.join(directory, relative); mkdirSync(path.dirname(target), { recursive: true }); copyFileSync(relative, target); }
+      symlinkSync(path.resolve("desktop/node_modules"), path.join(directory, "desktop/node_modules"), "dir");
       const baseline = spawnSync(process.execPath, [path.join(directory, "scripts/check-desktop-release.mjs")], { encoding: "utf8", timeout: 10_000 });
       expect(baseline.status).toBe(0);
       const target = path.join(directory, changedFile);

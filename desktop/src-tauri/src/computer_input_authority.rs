@@ -4,7 +4,7 @@ use std::time::Duration;
 const ORIGIN:&str="https://visionxixlabs.com";
 fn task(s:&str)->bool{s.len()==68&&s.starts_with("bot_")&&s[4..].bytes().all(|b|b.is_ascii_digit()||(b'a'..=b'f').contains(&b))}
 fn token(s:&str)->bool{s.len()<=4096&&s.starts_with("axm.desk.")&&s.split('.').count()==4&&s.split('.').skip(2).all(|v|!v.is_empty()&&v.bytes().all(|b|b.is_ascii_alphanumeric()||b==b'-'||b==b'_'))}
-fn valid_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value)->bool{valid_action_binding(v,nonce,task_id,version,meta,"textedit_set_text")}
+#[cfg(test)]fn valid_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value)->bool{valid_action_binding(v,nonce,task_id,version,meta,"textedit_set_text")}
 fn valid_action_binding(v:&Value,nonce:&str,task_id:&str,version:u32,meta:&Value,action:&str)->bool{
  let Some(o)=v.as_object()else{return false};let keys=["kind","organizationId","userId","sessionId","taskId","taskVersion","action","nonce","expiresAt"];
  o.len()==keys.len()&&keys.iter().all(|k|o.contains_key(*k))&&v["kind"]=="bot_computer_owner_v1"&&v["action"]==action&&v["nonce"]==nonce&&v["taskId"]==task_id&&v["taskVersion"]==version&&v["sessionId"]==meta["id"]&&["organizationId","userId","sessionId"].iter().all(|k|v[*k].as_str().map(|s|!s.is_empty()&&s.len()<=240&&s.trim()==s&&!s.chars().any(char::is_control)).unwrap_or(false))&&["organizationId","userId"].iter().all(|k|meta.get(*k).map(|m|m==&v[*k]).unwrap_or(true))
