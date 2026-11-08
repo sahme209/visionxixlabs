@@ -375,6 +375,25 @@ Visualizations must explain Axiom **from A to Z**: deployment intake → AI anal
 
 **Acceptance rule:** No major page is visually complete until its visualization clearly answers: *What does this feature do? How does it work? What systems does it interact with? How is it secured and governed? What happens when something fails?* Avoid unnecessary 3D, misleading demonstrations, performance-heavy effects, and copied designs. Preserve Axiom's original premium design system and existing security, licensing, and deployment approval requirements.
 
+#### User directive (2026-11-08): one 3D model per major page; Docs = full documentation with real recorded demos
+
+**Every major public page gets its own original, realistic 3D model that fully explains that page's subject.** Each model must answer the acceptance questions above (what it does, how it works, which systems it touches, how it is secured and governed, what happens on failure), be verified against the codebase, label illustrative vs. working vs. planned, and keep a full 2D/static fallback plus keyboard, touch, screen-reader, reduced-motion and no-WebGL support. Proposed mapping, to be confirmed page by page:
+
+| Page | Model subject |
+|---|---|
+| Home (`/`) | The whole governed deployment flow A to Z across three trust zones (flagship; concept v2 previewed 2026-11-08) |
+| Product (`/product`) | Inside the Axiom control plane: AI analysis, policy, approval, orchestration, audit |
+| Integrations (`/integrations`) | Connection topology: GitHub, AWS/Azure/GCP read-only, ECS, ServiceNow/Jira, Slack/Teams, AI Gateway, with data flows and scopes |
+| Security / Cloud security (`/security`, `/cloud-security`) | Trust boundaries, credentials staying in the customer account, approval separation, audit trail |
+| Pricing (`/pricing`) | AI usage metering: quote, credit hold, dispatch, settle, limits (only what billing actually implements) |
+| Download (`/download`) | Desktop app pairing and update/signing chain |
+| Enterprise readiness (`/enterprise-readiness`) | Governance, roles, audit and recovery at organization scale |
+| Status (`/status`) | Health signals and incident/recovery flow (real data only) |
+
+**Docs (`/docs`) is the exception:** no decorative 3D. It must be complete documentation of every supported screen and control (B4) with **real recorded demos** from the actual product (B3): authentic captures, redaction, captions/transcripts, posters and version/source binding. No staged success, ever.
+
+Realism stack candidates (reviewed licenses, not yet installed): three.js, React Three Fiber, drei, react-postprocessing (MIT; core postprocessing Zlib), three-gpu-pathtracer, GSAP (free standard license), Poly Haven CC0 HDRIs/textures (self-hosted), glTF-Transform, CloudAI-X/threejs-skills; Spline and Theatre.js rejected. Source review is required before adding any dependency.
+
 #### Restrained premium animation
 
 Use purposeful, restrained animation to make Axiom’s marketing site feel premium. Every effect must support product understanding, navigation or a clear interaction outcome and fit the original Axiom visual system. Keep the actual dashboard calm and fast, with product workflows predictable.
