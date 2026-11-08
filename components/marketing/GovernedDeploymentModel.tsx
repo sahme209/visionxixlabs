@@ -115,7 +115,7 @@ export function GovernedDeploymentModel() {
   const canAnimate = mode === "3d" && !reducedMotion;
 
   return (
-    <section aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-6xl scroll-mt-24 px-4 py-16 sm:px-6">
+    <section aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6" style={{ scrollMarginTop: 96 }}>
       <p className="text-xs uppercase tracking-[0.18em] text-sky-300/80">Illustrative model · not a live deployment</p>
       <h2 id={`${id}-title`} className="mt-2 text-3xl font-semibold tracking-tight text-white sm:text-4xl">How a governed deployment moves through Axiom</h2>
       <p className="mt-3 max-w-3xl text-zinc-300">

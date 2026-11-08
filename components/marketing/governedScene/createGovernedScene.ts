@@ -40,7 +40,7 @@ const STATE_COLOR: Record<FlowStationState, number> = {
 const STATION_POS: readonly (readonly [number, number])[] = [
   [-11, -1.2], [-4, -1.6], [-0.8, -1.6], [2.6, -1.6], [9, -1.8], [11.9, -1.8], [13.9, 1.5], [2.6, 2.3],
 ];
-const OVERVIEW = { target: new THREE.Vector3(1, 1, 0), camera: new THREE.Vector3(2, 12, 25) };
+const OVERVIEW = { target: new THREE.Vector3(1.5, 1, 0), camera: new THREE.Vector3(2, 9.5, 19.5) };
 
 function label(text: string, height: number, color: string, font: string): THREE.Sprite {
   const canvas = document.createElement("canvas");
@@ -80,7 +80,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
 
   const disposables: { dispose(): void }[] = [renderer, pmrem, envTexture, controls];
   const track = <T extends { dispose(): void }>(item: T): T => { disposables.push(item); return item; };
-  const glass = () => track(new THREE.MeshPhysicalMaterial({ color: 0xffffff, roughness: 0.2, transmission: 1, thickness: 1.2, ior: 1.4, transparent: true, opacity: 0.85, clearcoat: 1 }));
+  const glass = () => track(new THREE.MeshPhysicalMaterial({ color: 0xbfd9f2, roughness: 0.25, transmission: 0.9, thickness: 1.2, ior: 1.4, transparent: true, opacity: 0.9, clearcoat: 1, emissive: 0x0b2238, emissiveIntensity: 0.6 }));
   const lineMat = (color: number, opacity = 0.95) => track(new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
   const edged = (geometry: THREE.BufferGeometry, color = ACCENT) => {
     track(geometry);
@@ -96,14 +96,14 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
   const gridMaterial = track(new THREE.ShaderMaterial({
     transparent: true, depthWrite: false, uniforms: { t: { value: 0 } },
     vertexShader: "varying vec2 v;void main(){v=position.xz;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}",
-    fragmentShader: "varying vec2 v;uniform float t;void main(){vec2 g=abs(fract(v)-.5);float l=step(.485,max(g.x,g.y));float r=length(v);float w=smoothstep(.0,.6,1.-abs(fract(r*.12-t*.15)-.5)*2.)*.35;float f=exp(-r*.06);gl_FragColor=vec4(vec3(.25,.55,.9),(l*.18+l*w)*f);}",
+    fragmentShader: "varying vec2 v;uniform float t;void main(){vec2 g=abs(fract(v)-.5);float l=step(.485,max(g.x,g.y));float r=length(v);float w=smoothstep(.0,.6,1.-abs(fract(r*.12-t*.15)-.5)*2.)*.35;float f=exp(-r*.06);gl_FragColor=vec4(vec3(.25,.55,.9),(l*.08+l*w*.6)*f);}",
   }));
   const grid = new THREE.Mesh(track(new THREE.PlaneGeometry(88, 88).rotateX(-Math.PI / 2)), gridMaterial);
   grid.position.y = 0.02; scene.add(grid);
 
   ([[-11, 6.5, "YOUR SOURCE"], [0, 12.5, "AXIOM CONTROL PLANE"], [11.6, 7.6, "YOUR CLOUD"]] as const).forEach(([x, w, text], i) => {
     const zone = edged(new RoundedBoxGeometry(w, 0.08, 7.6, 2, 0.04), i === 1 ? ACCENT : 0x4c6585);
-    zone.group.position.set(x, 0.05, 0); (zone.group.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshPhysicalMaterial>).material.opacity = 0.3;
+    zone.group.position.set(x, 0.05, 0); (zone.group.children[0] as THREE.Mesh<THREE.BufferGeometry, THREE.MeshPhysicalMaterial>).material.opacity = 0.12;
     scene.add(zone.group);
     const tag = label(text, 0.4, "#6f8bab", "400 52px monospace"); tag.position.set(x, 0.2, 4.3); scene.add(tag);
   });
@@ -129,7 +129,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
     ring.rotation.x = -Math.PI / 2; ring.position.y = 0.03; root.add(ring);
     const orbit = new THREE.LineSegments(track(new THREE.EdgesGeometry(track(new THREE.RingGeometry(1.25, 1.25, 48, 1, 0, Math.PI * 1.4)))), lineMat(ACCENT, 0.5));
     orbit.rotation.x = -Math.PI / 2; orbit.position.y = 0.04; root.add(orbit);
-    const tag = label(station.name, 0.34, "#cfe0f2", "300 60px sans-serif"); tag.position.set(0, 2.5, 0); root.add(tag);
+    const tag = label(station.name, 0.5, "#e3edf8", "400 60px sans-serif"); tag.position.set(0, 2.6, 0); root.add(tag);
     scene.add(root);
     return { root, body, ring, orbit };
   });
@@ -182,7 +182,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
 
   const composer = new EffectComposer(renderer);
   composer.addPass(new RenderPass(scene, camera));
-  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.75, 0.5, 0.6); composer.addPass(bloom);
+  const bloom = new UnrealBloomPass(new THREE.Vector2(1, 1), 0.9, 0.5, 0.32); composer.addPass(bloom);
   composer.addPass(new OutputPass());
   disposables.push(composer, bloom);
 
