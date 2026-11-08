@@ -60,7 +60,7 @@ describe("manager aggregate output boundary", () => {
       vi.clearAllMocks();
       const options = { model, organizationId: "org", correlationId: "exact-request" };
       await run(new AIProviderManager(), options);
-      expect(consumeGovernedTextAdmission).toHaveBeenCalledExactlyOnceWith(admission, options);
+      expect(consumeGovernedTextAdmission).toHaveBeenCalledExactlyOnceWith(admission, options, ...(run === paths.admittedGenerate ? [{ prompt: "p" }] : []));
       expect(calls).toHaveBeenCalledTimes(1);
       expect(vi.mocked(consumeGovernedTextAdmission).mock.invocationCallOrder[0]).toBeLessThan(calls.mock.invocationCallOrder[0]);
     }
