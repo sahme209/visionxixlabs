@@ -103,11 +103,18 @@ export function findAddOn(sku: string): AddOnPackageDef | null {
 }
 
 /**
- * Returns the catalog filtered to add-ons the given plan can purchase.
- * Enterprise sees the full catalog (custom contracts may use these
- * skus as discount-pricing references).
+ * AI is the only paid part (user decision 2026-11-08). Seat and connector
+ * add-ons stay in ADD_ON_CATALOG only so historical purchases remain
+ * readable (findAddOn, applyAddOnsToEntitlements); they are never offered or
+ * sold again.
  */
+export function isOfferedAddOn(addOn: AddOnPackageDef): boolean {
+  return addOn.category === "ai_credits";
+}
+
+/** Add-ons the given plan can purchase today: AI credit packs only. */
 export function findAddOnsForPlan(plan: PricingPlan): ReadonlyArray<AddOnPackageDef> {
-  if (plan.tier === "enterprise") return ADD_ON_CATALOG;
-  return ADD_ON_CATALOG.filter((a) => a.allowedTiers.includes(plan.tier));
+  const offered = ADD_ON_CATALOG.filter(isOfferedAddOn);
+  if (plan.tier === "enterprise") return offered;
+  return offered.filter((a) => a.allowedTiers.includes(plan.tier));
 }

@@ -4,7 +4,7 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { prisma } from "@/lib/db";
-import { findAddOn } from "@/lib/billing/addOnCatalog";
+import { findAddOn, isOfferedAddOn } from "@/lib/billing/addOnCatalog";
 import { isAllowedTopUpCents } from "@/lib/billing/aiRateCard";
 import { createAddOnCheckoutSession } from "@/lib/billing/stripeHelper";
 import { isSelfServiceBillingEnabled } from "@/lib/billing/publicPlanCatalog";
@@ -41,6 +41,9 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ ok: false, error: "workspace_changed" }, { status: 409 });
   }
   const addOn = typeof body?.sku === "string" ? findAddOn(body.sku) : null;
+  if (addOn && !isOfferedAddOn(addOn)) {
+    return NextResponse.json({ ok: false, error: "add_on_not_offered", reason: "Only prepaid AI credits can be purchased. Seat and connector add-ons are no longer offered." }, { status: 400 });
+  }
   if (!addOn || addOn.category !== "ai_credits" || !isAllowedTopUpCents(addOn.priceCents)) {
     return NextResponse.json({ ok: false, error: "ai_credit_sku_invalid" }, { status: 400 });
   }

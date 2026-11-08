@@ -3,6 +3,7 @@ import {
   ADD_ON_CATALOG,
   findAddOn,
   findAddOnsForPlan,
+  isOfferedAddOn,
 } from "../addOnCatalog";
 import { AI_RATE_CARD } from "../aiRateCard";
 import { applyAddOnsToEntitlements, type AddOnPurchaseRow } from "../applyAddOnsToEntitlements";
@@ -46,25 +47,18 @@ describe("ADD_ON_CATALOG — invariants", () => {
   });
 });
 
-describe("findAddOnsForPlan", () => {
-  it("Starter can buy every AI credit pack (every organization may prepay any size)", () => {
-    const r = findAddOnsForPlan(STARTER);
-    const skus = r.map((a) => a.sku).sort();
-    expect(skus).toEqual([
-      "ai_credits_large", "ai_credits_medium", "ai_credits_small", "connector_addon", "seat_addon",
-    ]);
+describe("findAddOnsForPlan — AI credits are the only paid part", () => {
+  const credits = ["ai_credits_large", "ai_credits_medium", "ai_credits_small"];
+  it.each([["starter", STARTER], ["growth", GROWTH], ["business", BUSINESS], ["enterprise", ENTERPRISE]] as const)("%s is offered every AI credit pack and nothing else", (_tier, plan) => {
+    expect(findAddOnsForPlan(plan).map((a) => a.sku).sort()).toEqual(credits);
   });
 
-  it("Growth sees all 5 add-ons (including large)", () => {
-    expect(findAddOnsForPlan(GROWTH).length).toBe(5);
-  });
-
-  it("Business sees all 5 add-ons", () => {
-    expect(findAddOnsForPlan(BUSINESS).length).toBe(5);
-  });
-
-  it("Enterprise sees the full catalog (reference pricing for custom contracts)", () => {
-    expect(findAddOnsForPlan(ENTERPRISE).length).toBe(ADD_ON_CATALOG.length);
+  it("keeps seat and connector SKUs readable for historical purchases but never offered", () => {
+    for (const sku of ["seat_addon", "connector_addon"]) {
+      const addOn = findAddOn(sku);
+      expect(addOn).not.toBeNull();
+      expect(isOfferedAddOn(addOn!)).toBe(false);
+    }
   });
 });
 

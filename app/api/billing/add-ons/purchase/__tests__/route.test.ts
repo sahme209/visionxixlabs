@@ -62,6 +62,14 @@ describe("AI credit checkout", () => {
     expect(mocks.create).not.toHaveBeenCalled();
   });
 
+  it.each(["seat_addon", "connector_addon"])("refuses a %s purchase: AI credits are the only paid part", async (sku) => {
+    const response = await POST(request({ sku }) as never);
+    expect(response.status).toBe(400);
+    await expect(response.json()).resolves.toMatchObject({ ok: false, error: "add_on_not_offered", reason: expect.stringMatching(/Only prepaid AI credits/) });
+    expect(mocks.create).not.toHaveBeenCalled();
+    expect(mocks.createCheckout).not.toHaveBeenCalled();
+  });
+
   it("creates a server-priced pending purchase and returns the real Stripe URL", async () => {
     const response = await POST(request() as never);
     expect(response.status).toBe(200);
