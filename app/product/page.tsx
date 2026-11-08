@@ -4,6 +4,7 @@ import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
 import { WorkflowEvidenceMap } from "@/components/marketing/WorkflowEvidenceMap";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
+import { ControlPlaneModel } from "@/components/marketing/ControlPlaneModel";
 
 export const metadata: Metadata = {
   title: "Axiom Agent product",
@@ -48,6 +49,8 @@ export default function ProductPage() {
             </div>
           </div>
         </section>
+
+        <ControlPlaneModel />
 
         <section aria-labelledby="scripted-preview" className="mx-auto max-w-[1280px] px-5 pt-12 sm:px-8 lg:px-10">
           <h2 id="scripted-preview" className="text-xl font-medium tracking-[-0.03em] text-zinc-100">Scripted interactive preview</h2>
