@@ -12,6 +12,8 @@ import {
 } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
+import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
+import { DESKTOP_SETUP_STAGES } from "@/lib/marketing/desktopSetupFlowModel";
 import {formatDesktopInstallerSize} from "@/lib/desktop/downloadSize";
 
 type PlatformId = "mac-arm" | "mac-intel" | "windows" | "linux";
@@ -233,6 +235,13 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
             </div>
           </div>
         </section>
+        {!cockpit && (
+          <section aria-labelledby="desktop-setup-flow" className="mx-auto max-w-[1180px] px-5 py-16 sm:px-8 lg:px-10">
+            <h2 id="desktop-setup-flow" className="text-2xl font-medium tracking-[-0.03em] text-white sm:text-3xl">From download to your first governed action</h2>
+            <p className="mt-3 max-w-3xl text-[15px] leading-7 text-zinc-400">Five steps, each handing something specific to the next. Installing connects nothing; sign-in happens in your browser.</p>
+            <div className="mt-8"><PipeFlow stages={DESKTOP_SETUP_STAGES} label="From download to your first governed action" /></div>
+          </section>
+        )}
       </main>
 
       {!cockpit && <Footer />}
