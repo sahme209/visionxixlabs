@@ -50,11 +50,9 @@ export function preflightAICreditCheck(input: PreflightInput): PreflightDecision
   else if (projectedRatio >= 0.7) threshold = "warn_70";
   else                            threshold = "below_70";
 
-  const overagePolicy = input.plan.entitlements.overagePolicy;
-
-  // hard_stop is the only policy that blocks. soft_warn warns but allows.
-  // metered_billing + custom_contract always allow — the overage flows downstream.
-  if (threshold === "exhausted" && overagePolicy === "hard_stop") {
+  // Never beyond prepaid (2026-11-08): an exhausted pool blocks for every
+  // overage policy. No overage flows downstream to post-use billing.
+  if (threshold === "exhausted") {
     return { kind: "block", reason: "credit_pool_exhausted", threshold, remainingCents, projectedRatio };
   }
 

@@ -52,18 +52,15 @@ describe("preflightAICreditCheck — Starter (hard_stop)", () => {
   });
 });
 
-describe("preflightAICreditCheck — Growth (metered_billing)", () => {
-  it("100% reached → allow (overage bills downstream)", () => {
+describe("preflightAICreditCheck — Growth (legacy metered_billing): never beyond prepaid", () => {
+  it("100% reached → block", () => {
     const r = preflightAICreditCheck({ plan: GROWTH, currentAICostCents: 20_000 });
-    expect(r.kind).toBe("allow");
-    expect(r.threshold).toBe("exhausted");
-    expect(r.reason).toBeNull();
+    expect(r).toMatchObject({ kind: "block", reason: "credit_pool_exhausted", threshold: "exhausted" });
   });
 
-  it("over 100% → still allow", () => {
+  it("over 100% → block", () => {
     const r = preflightAICreditCheck({ plan: GROWTH, currentAICostCents: 50_000 });
-    expect(r.kind).toBe("allow");
-    expect(r.threshold).toBe("exhausted");
+    expect(r.kind).toBe("block");
     expect(r.projectedRatio).toBeCloseTo(2.5, 5);
   });
 
@@ -74,20 +71,17 @@ describe("preflightAICreditCheck — Growth (metered_billing)", () => {
   });
 });
 
-describe("preflightAICreditCheck — Business (metered_billing)", () => {
-  it("at 100% → allow (overage bills downstream)", () => {
+describe("preflightAICreditCheck — Business (legacy metered_billing)", () => {
+  it("at 100% → block", () => {
     const r = preflightAICreditCheck({ plan: BUSINESS, currentAICostCents: 75_000 });
-    expect(r.kind).toBe("allow");
-    expect(r.threshold).toBe("exhausted");
+    expect(r).toMatchObject({ kind: "block", threshold: "exhausted" });
   });
 });
 
 describe("preflightAICreditCheck — Enterprise (custom_contract)", () => {
-  it("massively over baseline → still allow (custom contract)", () => {
+  it("over the agreed pool → block (an evaluation grant is capped)", () => {
     const r = preflightAICreditCheck({ plan: ENTERPRISE, currentAICostCents: 10_000_000 });
-    expect(r.kind).toBe("allow");
-    expect(r.threshold).toBe("exhausted");
-    expect(r.reason).toBeNull();
+    expect(r).toMatchObject({ kind: "block", reason: "credit_pool_exhausted", threshold: "exhausted" });
   });
 });
 

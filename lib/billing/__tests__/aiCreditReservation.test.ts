@@ -105,8 +105,15 @@ describe("AI credit reservations", () => {
     await expect(reserveAICredits(repo, { ...input, reservedCents: 101 })).resolves.toEqual({ ok: false, error: "idempotency_key_conflict" });
   });
 
-  it("allows an overage-plan request after included credits are consumed", async () => {
-    const { repo, aIUsageReservation } = reservationRepo({ tier: "growth", used: 20_000 });
+  it.each(["growth", "business", "enterprise"])("refuses a legacy %s workspace whose prepaid balance cannot cover the hold, before any hold or provider call", async (tier) => {
+    const pool = tier === "growth" ? 20_000 : tier === "business" ? 75_000 : 500_000;
+    const { repo, aIUsageReservation } = reservationRepo({ tier, used: pool - input.reservedCents + 1 });
+    await expect(reserveAICredits(repo, input)).resolves.toEqual({ ok: false, error: "ai_credit_pool_exhausted" });
+    expect(aIUsageReservation.create).not.toHaveBeenCalled();
+  });
+
+  it("still admits a legacy growth request the balance covers", async () => {
+    const { repo, aIUsageReservation } = reservationRepo({ tier: "growth", used: 20_000 - input.reservedCents });
     await expect(reserveAICredits(repo, input)).resolves.toMatchObject({ ok: true, reused: false });
     expect(aIUsageReservation.create).toHaveBeenCalled();
   });
