@@ -41,7 +41,7 @@ jobs:
             'columns', (SELECT json_object_agg(table_name, cols) FROM (
                 SELECT table_name, json_object_agg(column_name, udt_name || CASE WHEN is_nullable='NO' THEN ' NOT NULL' ELSE '' END || coalesce(' DEFAULT ' || column_default, '')) AS cols
                 FROM information_schema.columns WHERE table_schema='public' GROUP BY table_name) t),
-            'indexes', (SELECT json_agg(indexname ORDER BY indexname) FROM pg_indexes WHERE schemaname='public'),
+            'indexes', (SELECT json_object_agg(indexname, regexp_replace(indexdef, '^CREATE (UNIQUE )?INDEX \S+ ON ', 'CREATE \1INDEX ON ')) FROM pg_indexes WHERE schemaname='public'),
             'enums', (SELECT json_object_agg(t.typname, (SELECT json_agg(e.enumlabel ORDER BY e.enumsortorder) FROM pg_enum e WHERE e.enumtypid=t.oid))
                       FROM pg_type t JOIN pg_namespace n ON n.oid=t.typnamespace WHERE n.nspname='public' AND t.typtype='e'))" > expected.json
           wc -c expected.json
