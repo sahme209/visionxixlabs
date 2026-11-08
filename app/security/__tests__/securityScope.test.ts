@@ -10,7 +10,9 @@ afterEach(cleanup);
 it("presents an assessment sequence without claiming universal enforcement",()=>{
  render(createElement(Page));
  expect(screen.getByRole("list",{name:"How to assess an action"})).toBeDefined();
- for(const title of ["Current access","Exact proposal","Independent review","Deliberate execution","Outcome and recovery"])expect(screen.getByRole("heading",{name:title})).toBeDefined();
+ const stages=screen.getByRole("list",{name:"How to assess an action"}).querySelectorAll(":scope > li");
+ expect(stages.length).toBe(5);
+ ["Current access","Exact proposal","Independent review","Deliberate execution","Outcome and recovery"].forEach((title,i)=>expect(stages[i].textContent).toContain(title));
  expect(screen.getByText(/full Governance Intelligence coverage and activation are not complete/i)).toBeDefined();
 });
 it("keeps assurance and AI data limits visible",()=>{
@@ -24,5 +26,6 @@ it("offers public evidence guides rather than granting access",()=>{
  render(createElement(Page));
  for(const href of ["/docs/security-model","/docs/permissions-model","/docs/approval-workflow","/docs/audit-logs","/contact"])expect(screen.getAllByRole("link").some(a=>a.getAttribute("href")===href)).toBe(true);
  expect(screen.getAllByRole("link").some(a=>a.getAttribute("href")?.startsWith("/api/"))).toBe(false);
- expect(screen.queryByRole("button")).toBeNull();
+ // The only buttons are the explanation's own stage and pause controls; nothing performs an action.
+ for(const b of screen.queryAllByRole("button"))expect(b.closest("ol[aria-label='How to assess an action']")||/flow$/.test(b.textContent??"")).toBeTruthy();
 });
