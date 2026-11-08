@@ -154,6 +154,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           <h3 className="mt-10 text-sm font-medium text-zinc-100">Expected cost per action, by AI level</h3>
           <div className="mt-3 overflow-x-auto">
             <table className="w-full min-w-[520px] text-left text-sm text-zinc-300">
+              <caption className="sr-only">Estimated cost per action by AI level, in USD</caption>
               <thead className="text-xs text-zinc-500"><tr><th scope="col" className="pb-2 pr-4 font-normal">Level</th><th scope="col" className="pb-2 pr-4 font-normal">Up to</th><th scope="col" className="pb-2 pr-4 font-normal">Typical use</th><th scope="col" className="pb-2 font-normal">Estimated range</th></tr></thead>
               <tbody>
                 {EFFORT_LEVEL_ESTIMATE.levels.map((level) => {
