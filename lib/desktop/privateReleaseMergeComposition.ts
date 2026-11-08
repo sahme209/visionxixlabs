@@ -101,7 +101,7 @@ export function createPrivateReleaseMergeComposition(resources:PrivateReleaseMer
  * provider fallback; scenario/private resources never enter canonical exports. */
 export function createPrivateFixtureReleaseMergeComposition(resources:PrivateReleaseMergeResources,schedule:Readonly<{inputs:FixedFixtureScenarioInputs;providerPublicKey:string}>){
  let captured:ReturnType<typeof createPrivateFixtureScenario>|undefined;
- const simulated=createPrivateFixtureProvider(schedule.inputs.groups.map(g=>g.plan),schedule.providerPublicKey,{beforeProviderRead:async(...args)=>{if(!captured)throw Error('fixed_fixture_scenario_unavailable');await captured.beforeProviderRead(...args)}});
- const {graph,scenario}=composePrivateReleaseMerge({...resources,fetch:simulated},schedule.inputs);if(!scenario)throw Error('fixed_fixture_scenario_unavailable');captured=scenario;
+ const simulated=createPrivateFixtureProvider(schedule.inputs.groups.map(g=>g.plan),schedule.providerPublicKey,{beforeProviderRead:async(...args)=>{if(!captured)throw Error('fixed_fixture_scenario_unavailable:c01');await captured.beforeProviderRead(...args)}});
+ const {graph,scenario}=composePrivateReleaseMerge({...resources,fetch:simulated},schedule.inputs);if(!scenario)throw Error('fixed_fixture_scenario_unavailable:c02');captured=scenario;
  return Object.freeze({...graph,initializeFixtureScenario:scenario.initialize,afterFixtureRequestSettled:scenario.afterSettled});
 }
