@@ -25,6 +25,8 @@ import { registerLegacyAgentAdmissionAcceptance } from "./fixtures/legacyAgentAd
 import { prepareAnniversaryHttp, exerciseAnniversaryHttp } from "./fixtures/newTestAnniversaryHttp";
 import { ownedCheckoutLaunchPolicy } from "./fixtures/ownedCheckoutLaunchPolicy";
 import { reverseAICreditRefund } from "../aiCreditFulfillment";
+// Paid coverage is checked against the real DB clock, so the synthetic billing period must be the current UTC month (fixed Oct 2026 dates expired on Nov 1).
+const PERIOD_NOW = new Date(), PERIOD_START = new Date(Date.UTC(PERIOD_NOW.getUTCFullYear(), PERIOD_NOW.getUTCMonth(), 1)).toISOString(), PERIOD_END = new Date(Date.UTC(PERIOD_NOW.getUTCFullYear(), PERIOD_NOW.getUTCMonth() + 1, 1)).toISOString(), PERIOD_MONTH = PERIOD_START.slice(0, 7);
 
 // File-isolated Vitest binding. The production refund writer is unchanged; its
 // actual transaction/queries execute only on this explicitly owned client.
@@ -56,10 +58,10 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
   const provider: ProviderBoundary = {
     mode: () => ({ livemode: false, accountId: providerAccount }), price: async () => price(),
     create: async (request, key) => { creates++; currentKey = key; currentDigest = createHash("sha256").update(request).digest("hex"); const parsed = JSON.parse(request); currentIntent = parsed.metadata.intentId; currentOrg = parsed.metadata.organizationId; if (loseResponse) throw new Error("response lost after provider commit"); return { id: "cs-test", url: "https://checkout.stripe.com/test", accountId: providerAccount, livemode: false, originalCreateProof: { runtimeId: runtime, accountId: providerAccount, sessionId: "cs-test", outboundRequestKey: key, outboundRequestDigest: currentDigest, requestId: "req-generic-synthetic", statusCode: 200 } }; },
-    verifyAndRetrieve: async (_, signature) => { if (signature !== "synthetic-verified-signature") throw new Error("invalid_signature"); return { providerRequestKey: currentKey, providerRequestDigest: currentDigest, eventId, accountId: providerAccount, livemode: false, organizationId: currentOrg, intentId: currentIntent, catalogVersion: "axiom_public_test_v1", sessionId: "cs-test", sessionStatus: "complete", paymentStatus: "paid", customerId: "cus-test", subscriptionId: "sub-test", status, seatQuantity: seats, price: price(), currentPeriodEndsAt: "2026-11-01T00:00:00.000Z", cancelAtPeriodEnd: false, coverage: syntheticCoverage(currentOrg, currentIntent, eventId) }; },
+    verifyAndRetrieve: async (_, signature) => { if (signature !== "synthetic-verified-signature") throw new Error("invalid_signature"); return { providerRequestKey: currentKey, providerRequestDigest: currentDigest, eventId, accountId: providerAccount, livemode: false, organizationId: currentOrg, intentId: currentIntent, catalogVersion: "axiom_public_test_v1", sessionId: "cs-test", sessionStatus: "complete", paymentStatus: "paid", customerId: "cus-test", subscriptionId: "sub-test", status, seatQuantity: seats, price: price(), currentPeriodEndsAt: PERIOD_END, cancelAtPeriodEnd: false, coverage: syntheticCoverage(currentOrg, currentIntent, eventId) }; },
   };
   const syntheticCoverage = (org: string, intent: string, token: string, session = "cs-test", customer = "cus-test", subscription = "sub-test"): CoverageObservation => {
-    const evidence = collectedEvidence({ runtimeId: runtime, accountId: "acct-test", organizationId: org, originatingIntentId: intent, sessionId: session, customerId: customer, subscriptionId: subscription, planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price-test", unitAmountCents: 2900, invoiceId: `in-${org}`, lineId: `il-${org}`, subscriptionItemId: `si-${org}`, paymentId: `inpay-${org}`, paymentIntentId: `pi-${org}`, chargeId: `ch-${org}`, paymentMethodType: "card", currency: "usd", amountCents: 8700, collectedAt: "2026-10-01T00:00:00.000Z", serviceStart: "2026-10-01T00:00:00.000Z", serviceEnd: "2026-11-01T00:00:00.000Z" });
+    const evidence = collectedEvidence({ runtimeId: runtime, accountId: "acct-test", organizationId: org, originatingIntentId: intent, sessionId: session, customerId: customer, subscriptionId: subscription, planId: "pro", interval: "monthly", seatQuantity: 3, priceId: "price-test", unitAmountCents: 2900, invoiceId: `in-${org}`, lineId: `il-${org}`, subscriptionItemId: `si-${org}`, paymentId: `inpay-${org}`, paymentIntentId: `pi-${org}`, chargeId: `ch-${org}`, paymentMethodType: "card", currency: "usd", amountCents: 8700, collectedAt: PERIOD_START, serviceStart: PERIOD_START, serviceEnd: PERIOD_END });
     return { eventToken: token, latestInvoiceId: evidence.invoiceId, currentPeriodStart: evidence.serviceStart, currentPeriodEnd: evidence.serviceEnd, collection: { kind: "collected", evidence } };
   };
   const request = { clientIntentKey: "intent_key_12345678", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, email: "synthetic@example.invalid", successUrl: "https://isolated.invalid/success", cancelUrl: "https://isolated.invalid/cancel" };
@@ -131,7 +133,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (const userId of ["owner", "member-2", "member-3"]) await db.orgMembership.create({ data: { userId, organizationId: scope.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date(now) } });
     await db.usageEvent.create({ data: { organizationId: scope.organizationId, eventKind: "ai_invocation", billedCents: 100, createdAt: new Date(now) } });
     await db.aIUsageReservation.create({ data: { organizationId: scope.organizationId, idempotencyKey: "synthetic_pending_hold", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(now - 1000) } });
-    await db.addOnPurchase.create({ data: { organizationId: scope.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: "2026-10", status: "paid", idempotencyKey: "synthetic_topup", purchasedBy: "owner", correlationId: "fixture" } });
+    await db.addOnPurchase.create({ data: { organizationId: scope.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: PERIOD_MONTH, status: "paid", idempotencyKey: "synthetic_topup", purchasedBy: "owner", correlationId: "fixture" } });
 
   }, 30000);
   afterAll(async () => {
@@ -161,7 +163,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     currentKey = originalKey;
     expect(await service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).toBe("applied");
     expect(await service.reconcile("synthetic", "synthetic-verified-signature", scope.organizationId)).toBe("replay");
-    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 3150, operationalPermit: false, invoiceSubmissionEnabled: false, month: "2026-10" });
+    expect(await service.previewRemaining(scope)).toMatchObject({ remainingCents: 3150, operationalPermit: false, invoiceSubmissionEnabled: false, month: PERIOD_MONTH });
     const hold = await stores[0].reserveCredits(scope, { idempotencyKey: "actual_app_hold_123456", reservedCents: 3000 }, new Date(now));
     expect(hold.ok).toBe(true);
     expect(await stores[0].reserveCredits(scope, { idempotencyKey: "actual_app_over_cap_123", reservedCents: 151 }, new Date(now))).toMatchObject({ ok: false, error: "ai_credit_pool_exhausted" });
@@ -257,7 +259,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     expect(await deliver("evt-sdk-bound", "checkout.session.completed")).toBe("applied");
     await db.usageEvent.create({ data: { organizationId: actor.organizationId, eventKind: "ai_invocation", billedCents: 700, createdAt: new Date(now) } });
     await db.aIUsageReservation.create({ data: { organizationId: actor.organizationId, idempotencyKey: "lifecycle_unresolved_hold", reservedCents: 250, status: "pending_settlement", expiresAt: new Date(0) } });
-    await db.addOnPurchase.create({ data: { organizationId: actor.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: "2026-10", status: "paid", idempotencyKey: "lifecycle_existing_topup", purchasedBy: "owner", correlationId: "fixture" } });
+    await db.addOnPurchase.create({ data: { organizationId: actor.organizationId, sku: "ai_credits_small", pricePaidCents: 500, deliveredAICreditsCents: 500, validFor: "current_month", periodMonth: PERIOD_MONTH, status: "paid", idempotencyKey: "lifecycle_existing_topup", purchasedBy: "owner", correlationId: "fixture" } });
     const financial = async () => ({ usage: await db.usageEvent.findMany({ where: { organizationId: actor.organizationId } }), holds: await db.aIUsageReservation.findMany({ where: { organizationId: actor.organizationId } }), credits: await db.addOnPurchase.findMany({ where: { organizationId: actor.organizationId } }) });
     const before = await financial();
     cancel = true;
