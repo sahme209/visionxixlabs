@@ -1,0 +1,51 @@
+name: Schema drift check (one-off)
+# One-off, user-approved 2026-11-08: compare the migration chain with prisma/schema.prisma on a
+# disposable Postgres inside this job. No secrets, no production, no deployment. Throwaway branch only.
+on:
+  push:
+    branches: ["ci-check/schema-drift"]
+permissions:
+  contents: read
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U postgres" --health-interval 5s --health-timeout 5s --health-retries 20
+    env:
+      FRESH: postgresql://postgres:postgres@localhost:5432/fresh
+      SHADOW: postgresql://postgres:postgres@localhost:5432/shadow
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Create disposable databases
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -c 'CREATE DATABASE fresh' -c 'CREATE DATABASE shadow'
+      - name: Replay the migration chain on an empty database
+        continue-on-error: true
+        run: DATABASE_URL="$FRESH" npx prisma migrate deploy 2>&1 | tee replay.log
+      - name: Diff migrations vs schema.prisma
+        continue-on-error: true
+        run: |
+          npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma \
+            --shadow-database-url "$SHADOW" --script > drift.sql 2> drift.err || true
+          wc -l drift.sql drift.err
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: schema-drift
+          path: |
+            replay.log
+            drift.sql
+            drift.err
+          retention-days: 3
