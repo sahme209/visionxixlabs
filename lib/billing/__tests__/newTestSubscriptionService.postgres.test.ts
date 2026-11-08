@@ -52,7 +52,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
   const stores: ReturnType<typeof postgresFixtureStore>[] = [];
   const runtime = "synthetic-runtime-1";
   const scope = { organizationId: "synthetic-org", userId: "owner" };
-  const now = Date.UTC(2026, 9, 16);
+  const now = Math.max(Date.parse(PERIOD_START) + 1000, PERIOD_NOW.getTime() - 60_000); // inside the current month, not after the DB clock
   let creates = 0; let loseResponse = false; let eventId = "evt-1"; let seats = 3; let status = "active"; let priceAmount = 2900; let currentIntent = ""; let currentKey = ""; let currentDigest = ""; let currentOrg = scope.organizationId; let providerAccount = "acct-test";
   const price = () => ({ id: "price-test", livemode: false, active: true, currency: "usd", type: "recurring", billing_scheme: "per_unit", unit_amount: priceAmount, recurring: { interval: "month", interval_count: 1, usage_type: "licensed" } });
   const provider: ProviderBoundary = {
@@ -240,8 +240,8 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     for (const userId of ["owner", "lifecycle-member-2", "lifecycle-member-3"]) await db.orgMembership.create({ data: { userId, organizationId: actor.organizationId, role: userId === "owner" ? "owner" : "read_only", acceptedAt: new Date(now) } });
     const sdk = new Stripe("sk_test_synthetic");
     const canonicalPrice = { ...price(), product: { id: "prod-test", livemode: false, active: true } };
-    let metadata: Record<string, string> = {}; let quantity = 3; let lifecycleStatus = "active"; let cancel = false; const period = Date.UTC(2026, 10, 1) / 1000; let created = 0;
-    const paid = paidFixture({ runtimeId: runtime, accountId: "acct-test", organizationId: actor.organizationId, sessionId: "cs-sdk-lifecycle", customerId: "cus-sdk-lifecycle", subscriptionId: "sub-sdk-lifecycle", priceId: "price-test" }); paid.line.pricing.price_details.product = "prod-test";
+    let metadata: Record<string, string> = {}; let quantity = 3; let lifecycleStatus = "active"; let cancel = false; const period = Date.parse(PERIOD_END) / 1000; let created = 0;
+    const paid = paidFixture({ periodStartUtcSeconds: Date.parse(PERIOD_START) / 1000, runtimeId: runtime, accountId: "acct-test", organizationId: actor.organizationId, sessionId: "cs-sdk-lifecycle", customerId: "cus-sdk-lifecycle", subscriptionId: "sub-sdk-lifecycle", priceId: "price-test" }); paid.line.pricing.price_details.product = "prod-test";
     const session = () => ({ invoice: paid.invoice.id, id: "cs-sdk-lifecycle", livemode: false, mode: "subscription", status: "complete", payment_status: "paid", customer: "cus-sdk-lifecycle", subscription: "sub-sdk-lifecycle", metadata, line_items: { has_more: false, data: [{ quantity: 3, price: canonicalPrice }] } });
     const subscription = () => ({ latest_invoice: paid.invoice.id, id: "sub-sdk-lifecycle", livemode: false, customer: "cus-sdk-lifecycle", metadata, status: lifecycleStatus, cancel_at_period_end: cancel, items: { has_more: false, data: [{ id: "si_test", quantity, price: canonicalPrice, current_period_start: paid.line.period.start, current_period_end: period }] } });
     const client = { ...paid.client, accounts: { retrieve: async () => ({ id: "acct-test" }) }, prices: { retrieve: async () => canonicalPrice },

@@ -56,7 +56,7 @@
   "approved": 1,
   "userApproval": "Approve one run (chat, 2026-11-08)",
   "expectedUSD": 0,
-  "used": 0,
+  "used": 1,
   "note": "push after in-flight e3339fde run completes"
  }
 }
