@@ -27,23 +27,20 @@ Inspector with: summary, numbered internal steps, data in → out, systems, guar
 ## Implementation stack (pending source review before adding)
 three.js, React Three Fiber, drei, react-postprocessing, GSAP for camera choreography, glTF-Transform for any modeled assets, self-hosted Poly Haven CC0 HDRI if needed. The in-chat concept used three.js r160 with built-in RoomEnvironment, UnrealBloom and OrbitControls.
 
-## Shared visual kit (calm v4), 2026-11-08
-Every new page model is built on `components/marketing/visualKit/`. The homepage model predates the kit and keeps its locked engine; it shares only `webglSupport.ts`.
+## Pipe-flow kit (calm v4, 2D), 2026-11-08 — replaces the 3D page kit
+**User decision (2026-11-08):** 3D page models looked flashy and were hard to read ("cant even read"). Pages explain the product as **data moving through pipes** in clean 2D. The homepage keeps its 3D model as the one showpiece.
 
-- `theme.ts` (pure, tested): every colour, the type, bloom, exposure, glass recipe, motion speeds and the frame-guard decision. **Change the look here once, not per page.**
-- `stage.ts`: renderer, void, studio sheen, floor, grid, low bloom, resize, visibility pause, frame guard, click-to-pick, `glass()`, titled `label()` and full disposal. A model only adds its own objects and an `update(dt)`.
-- `useLazyScene.ts`: the client lifecycle. 2D unless WebGL runs on a real GPU; loads only near view; pauses off-screen; falls back to 2D on import failure or a slow frame budget.
+`components/marketing/pipeKit/PipeFlow.tsx` + `pipeFlow.module.css`, fed by a tested data file in `lib/marketing/`:
+- Stages stacked top to bottom. Each stage has a number, title and one-line summary, plus **titled steps with a one-line explanation each**.
+- Data bits flow through a pipe behind each stage's steps. A **labelled packet** travels down the pipe to the next stage, and the text says what is passed on and why.
+- Clicking a stage opens a detail panel with its guarantee, what happens if it fails, and what it passes on.
+- One calm, muted tone per stage (sky, teal, violet, amber, emerald), used only for the left edge, the numbers and the moving data. Text stays the brightest thing on screen.
+- Readable: 14–18 px Inter at regular weight, soft off-white, monospace only for numbers and packet names.
+- Calm: 3–4 s per pass, no flashing, a Pause control, and reduced motion shows the packets standing still. Plain HTML and CSS: no GPU, sharp on every screen, keyboard and screen-reader friendly, stacks on phones.
 
-**Rules the kit enforces (user, 2026-11-08):**
-- Inter at regular weight in soft off-white (`#dde6f0`), never pure white on black. Monospace only for short numbers and codes.
-- **Every element has a visible title** (`label()`), and the same titles appear in the 2D fallback and the inspector.
-- Calm: one full pulse pass takes ≥ 8 s, bloom strength ≤ 0.6, one accent colour, no flashing.
-- Honest: each model is labelled illustrative, and its text comes from one tested data file in `lib/marketing/`.
+**Adding a page:**
+1. Write `lib/marketing/<page>Model.ts` with tests: title, summary, titled and explained parts, guarantee, onFailure, passesOn, tone.
+2. Render `<PipeFlow stages={…} label="…" />` inside the page section.
+3. Add a jsdom test.
 
-**Adding a page model:**
-1. Write `lib/marketing/<page>Model.ts` and its tests (titles, parts, guarantees).
-2. Write `components/marketing/<page>Scene/create<Page>Scene.ts` on `createStage`.
-3. Write the section component with `useLazyScene`, a 2D list fallback and an inspector.
-4. Add a jsdom test for the 2D fallback.
-
-The Product page `ControlPlaneModel` is the reference implementation.
+The Product page `ControlPlaneModel` is the reference.
