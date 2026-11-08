@@ -38,7 +38,7 @@ const STATE_COLOR: Record<FlowStationState, number> = {
   passed: 0x6ff2c0, current: 0xffffff, pending: ACCENT, blocked: 0xff5468, warning: 0xffb347, unreached: 0x26303e,
 };
 const STATION_POS: readonly (readonly [number, number])[] = [
-  [-11, -1.2], [-4, -1.6], [-0.8, -1.6], [2.6, -1.6], [9, -1.8], [11.9, -1.8], [13.9, 1.5], [2.6, 2.3],
+  [-11, -1.2], [-4, -1.6], [-0.8, -1.6], [2.6, -1.6], [9, -1.8], [11.9, -1.8], [13.9, 1.5], [5, 2.4],
 ];
 const OVERVIEW = { target: new THREE.Vector3(1.5, 1, 0), camera: new THREE.Vector3(2, 9.5, 19.5) };
 
@@ -80,7 +80,8 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
 
   const disposables: { dispose(): void }[] = [renderer, pmrem, envTexture, controls];
   const track = <T extends { dispose(): void }>(item: T): T => { disposables.push(item); return item; };
-  const glass = () => track(new THREE.MeshPhysicalMaterial({ color: 0xbfd9f2, roughness: 0.25, transmission: 0.9, thickness: 1.2, ior: 1.4, transparent: true, opacity: 0.9, clearcoat: 1, emissive: 0x0b2238, emissiveIntensity: 0.6 }));
+  // Translucent glass without transmission: reads as glass on every GPU and avoids an extra render pass.
+  const glass = () => track(new THREE.MeshPhysicalMaterial({ color: 0x9cc6ec, roughness: 0.15, metalness: 0.1, transparent: true, opacity: 0.22, clearcoat: 1, clearcoatRoughness: 0.1, emissive: 0x1d4f7c, emissiveIntensity: 0.55, depthWrite: false }));
   const lineMat = (color: number, opacity = 0.95) => track(new THREE.LineBasicMaterial({ color, transparent: true, opacity }));
   const edged = (geometry: THREE.BufferGeometry, color = ACCENT) => {
     track(geometry);
@@ -170,7 +171,7 @@ export function createGovernedScene(canvas: HTMLCanvasElement, options: Governed
     holoTexture.needsUpdate = true;
   };
 
-  const railPoints = [[-11, 1, -0.1], [-4, 1, -0.5], [-0.8, 1.1, -0.5], [2.6, 1, -0.5], [9, 1, -0.7], [11.9, 1, -0.6], [13.9, 1, 0.4], [2.6, 1, 1.3]].map(([x, y, z]) => new THREE.Vector3(x, y, z));
+  const railPoints = [[-11, 1, -0.1], [-4, 1, -0.5], [-0.8, 1.1, -0.5], [2.6, 1, -0.5], [9, 1, -0.7], [11.9, 1, -0.6], [13.9, 1, 0.4], [5, 1, 1.4]].map(([x, y, z]) => new THREE.Vector3(x, y, z));
   const path = new THREE.CatmullRomCurve3(railPoints);
   scene.add(new THREE.Mesh(track(new THREE.TubeGeometry(path, 260, 0.012, 6, false)), track(new THREE.MeshBasicMaterial({ color: 0x2b4d72 }))));
   const pulseMaterial = track(new THREE.MeshBasicMaterial({ color: 0xffffff }));
