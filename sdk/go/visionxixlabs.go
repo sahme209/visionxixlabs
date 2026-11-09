@@ -41,6 +41,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -252,6 +253,85 @@ func (c *Client) StartCodingRun(ctx context.Context, in StartCodingRunInput) (*S
 	}
 	var out StartRunResponse
 	if err := c.do(ctx, "POST", "/api/v1/pipelines/runs", body, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// ===================== Agent governance gateway (A10) =====================
+
+// AgentActionInput describes one action an AI agent wants to take.
+type AgentActionInput struct {
+	ActionKind  string `json:"actionKind"`
+	Environment string `json:"environment,omitempty"`
+	Target      string `json:"target"`
+	Summary     string `json:"summary"`
+	AgentName   string `json:"agentName,omitempty"`
+}
+
+// AgentPolicyResponse is returned by CheckAgentAction.
+type AgentPolicyResponse struct {
+	OK     bool   `json:"ok"`
+	Error  string `json:"error,omitempty"`
+	Policy *struct {
+		Decision  string   `json:"decision"`
+		RiskLevel string   `json:"riskLevel"`
+		Reasons   []string `json:"reasons"`
+	} `json:"policy,omitempty"`
+}
+
+// AgentRequestResponse is returned by the request, get and outcome calls.
+type AgentRequestResponse struct {
+	OK      bool   `json:"ok"`
+	Error   string `json:"error,omitempty"`
+	Request *struct {
+		ID             string  `json:"id"`
+		Status         string  `json:"status"`
+		MayProceed     bool    `json:"mayProceed"`
+		Reason         string  `json:"reason"`
+		PolicyDecision string  `json:"policyDecision"`
+		RiskLevel      string  `json:"riskLevel"`
+		ActionDigest   string  `json:"actionDigest"`
+		ExpiresAt      string  `json:"expiresAt"`
+		Outcome        *string `json:"outcome"`
+	} `json:"request,omitempty"`
+}
+
+// CheckAgentAction — POST /api/v1/governance/check. Stores nothing. Scope: governance:read.
+func (c *Client) CheckAgentAction(ctx context.Context, in AgentActionInput) (*AgentPolicyResponse, error) {
+	var out AgentPolicyResponse
+	if err := c.do(ctx, "POST", "/api/v1/governance/check", in, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// RequestAgentApproval — POST /api/v1/governance/requests. Scope: governance:request.
+func (c *Client) RequestAgentApproval(ctx context.Context, in AgentActionInput) (*AgentRequestResponse, error) {
+	var out AgentRequestResponse
+	if err := c.do(ctx, "POST", "/api/v1/governance/requests", in, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// GetAgentApproval — GET /api/v1/governance/requests/{id}. Proceed only when MayProceed. Scope: governance:read.
+func (c *Client) GetAgentApproval(ctx context.Context, id string) (*AgentRequestResponse, error) {
+	var out AgentRequestResponse
+	if err := c.do(ctx, "GET", "/api/v1/governance/requests/"+url.PathEscape(id), nil, &out); err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+// RecordAgentOutcome — POST /api/v1/governance/requests/{id}/outcome. outcome: succeeded|failed|abandoned.
+func (c *Client) RecordAgentOutcome(ctx context.Context, id, outcome, detail string) (*AgentRequestResponse, error) {
+	body := map[string]any{"outcome": outcome}
+	if detail != "" {
+		body["detail"] = detail
+	}
+	var out AgentRequestResponse
+	if err := c.do(ctx, "POST", "/api/v1/governance/requests/"+url.PathEscape(id)+"/outcome", body, &out); err != nil {
 		return nil, err
 	}
 	return &out, nil

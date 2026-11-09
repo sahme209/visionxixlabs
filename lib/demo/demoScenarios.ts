@@ -34,7 +34,8 @@ export type DemoScenarioId =
   | "automation_dry_run"
   | "ai_workforce_overview"
   | "pricing_and_usage"
-  | "internal_growth_automation";
+  | "internal_growth_automation"
+  | "agent_governance_gateway";
 
 /** Audience visibility — controls which surfaces can show each scenario. */
 export type DemoAudience = "public" | "client" | "internal_only";
@@ -142,6 +143,23 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "3", title: "Detect failed build",        description: "DevOps Engineer parses the failure log.", approval: "none", relatedAgent: "DevOps Engineer", expectedResult: "Root cause hypothesis with line refs." },
       { id: "4", title: "Suggest fix",                description: "Specific diff + rationale generated.", approval: "none", relatedAgent: "DevOps Engineer", expectedResult: "Proposed PR diff ready for review." },
       { id: "5", title: "Approval required to apply", description: "Modifying CI requires explicit human approval.", route: "/dashboard/approvals", approval: "two_person", expectedResult: "PR opens only after approval." },
+    ],
+  },
+  agent_governance_gateway: {
+    id: "agent_governance_gateway",
+    title: "Govern Any AI Agent",
+    pitch: "Cursor, Claude Code or any MCP agent asks Axiom before a risky action, a person approves, and the outcome is recorded.",
+    description: "Axiom as the governance layer for every agent your team uses. Agents call the Axiom MCP server or REST API. Low-risk work proceeds; consequential actions wait for a workspace admin who did not mint the agent's key; production secret reads and deletes are refused. Agents self-report actions, so this is a cooperative control point, not a sandbox.",
+    estimatedMinutes: 5,
+    audience: "public",
+    lastReviewed: "2026-11-09",
+    sourceFeatureVersion: "A10 agent governance gateway",
+    steps: [
+      { id: "1", title: "Mint a governance key", description: "Create an API key with governance:read and governance:request scopes.", route: "/dashboard/api-keys", approval: "none", expectedResult: "A vxlk_ key the agent can use; the minter is recorded." },
+      { id: "2", title: "Add Axiom to the agent", description: "Register https://visionxixlabs.com/api/v1/mcp as a remote MCP server with the key as a Bearer token.", approval: "none", expectedResult: "The agent lists axiom_check_policy, axiom_request_approval, axiom_get_approval and axiom_record_outcome." },
+      { id: "3", title: "Agent asks before deploying", description: "The agent calls axiom_request_approval for a production deploy.", approval: "none", relatedAgent: "External agent", expectedResult: "Policy: require_approval, high risk. The agent waits; mayProceed is false." },
+      { id: "4", title: "A different admin approves", description: "A workspace admin who did not mint the key approves the exact action, bound by its digest.", route: "/dashboard/agent-gateway", approval: "two_person", expectedResult: "mayProceed becomes true; approval expires after 24 hours." },
+      { id: "5", title: "Outcome recorded", description: "The agent reports succeeded, failed or abandoned.", approval: "none", expectedResult: "Request completes, with an audit event for each step." },
     ],
   },
   security_finding: {

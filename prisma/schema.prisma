@@ -5086,3 +5086,45 @@ model PipelineAICallReservation {
  @@unique([organizationId, idempotencyKey])
  @@index([runId, status])
 }
+
+/// Agent governance gateway (Phase A10): an external or internal AI agent
+/// (Cursor, Claude Code, Codex, Axiom's own agents) asks Axiom for a policy
+/// decision or a human approval before a consequential action, then reports
+/// the outcome. Authenticated by a workspace API key; decided by a workspace
+/// admin who did not mint that key. Status: pending | approved | rejected |
+/// expired | completed | failed. Approval binds the exact actionDigest.
+model AgentGatewayRequest {
+  id                String    @id @default(cuid())
+  organizationId    String
+  apiKeyId          String
+  /// Self-reported agent name (e.g. "cursor", "claude-code"). Untrusted label.
+  agentName         String
+  /// Closed union, see lib/agentGateway/policyKernel.ts.
+  actionKind        String
+  /// development | staging | production | unknown
+  environment       String
+  /// Free-form target label (repo, service, resource). Untrusted.
+  target            String
+  summary           String    @db.Text
+  /// low | medium | high
+  riskLevel         String
+  /// allow | require_approval | deny (the kernel's decision at request time)
+  policyDecision    String
+  policyReasons     Json
+  /// SHA-256 over org, key, actionKind, environment, target and summary.
+  actionDigest      String
+  status            String    @default("pending")
+  decidedByUserId   String?
+  decidedAt         DateTime?
+  decisionNote      String?   @db.Text
+  /// Reported by the agent after acting: succeeded | failed | abandoned
+  outcome           String?
+  outcomeDetail     String?   @db.Text
+  outcomeAt         DateTime?
+  expiresAt         DateTime
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  @@index([organizationId, status, createdAt])
+  @@index([apiKeyId, createdAt])
+}
