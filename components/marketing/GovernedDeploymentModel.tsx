@@ -91,10 +91,10 @@ export function GovernedDeploymentModel() {
   };
 
   return (
-    <section aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-7xl px-4 py-24 sm:px-6" style={{ scrollMarginTop: 96 }}>
-      <div className="mx-auto max-w-3xl text-center">
+    <section aria-labelledby={`${id}-title`} className="mx-auto w-full max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10" style={{ scrollMarginTop: 96 }}>
+      <div className="mx-auto max-w-4xl text-center">
         <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-sky-300/80">Illustrative model · not a live deployment</p>
-        <h2 id={`${id}-title`} className="mt-4 text-4xl font-medium tracking-[-0.04em] text-white sm:text-6xl">How a governed deployment moves through Axiom</h2>
+        <h2 id={`${id}-title`} className="mt-4 text-3xl font-medium tracking-[-0.04em] text-white sm:text-[44px] sm:leading-[1.1]">How a governed deployment moves through Axiom</h2>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg">
           One release, from request to recorded outcome, including the paths where a check fails, a reviewer says no or the result is unknown.
         </p>
