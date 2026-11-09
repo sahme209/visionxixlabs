@@ -10,6 +10,15 @@ updates:
     groups:
       web-minor-patch: { update-types: ["minor", "patch"] }
       web-major: { update-types: ["major"] }
+    # Platform migrations get their own planned PR (see docs/product/remaining-work.md),
+    # so they do not block the weekly major batch.
+    ignore:
+      - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
+      - { dependency-name: "tailwindcss", update-types: ["version-update:semver-major"] }
+      - { dependency-name: "prisma", update-types: ["version-update:semver-major"] }
+      - { dependency-name: "@prisma/client", update-types: ["version-update:semver-major"] }
+      - { dependency-name: "eslint", update-types: ["version-update:semver-major"] }
+      - { dependency-name: "vitest", update-types: ["version-update:semver-major"] }
   - package-ecosystem: npm
     directory: "/desktop"
     schedule: { interval: weekly, day: monday }
@@ -17,6 +26,9 @@ updates:
     groups:
       desktop-minor-patch: { update-types: ["minor", "patch"] }
       desktop-major: { update-types: ["major"] }
+    ignore:
+      - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
+      - { dependency-name: "tailwindcss", update-types: ["version-update:semver-major"] }
   - package-ecosystem: cargo
     directory: "/desktop/src-tauri"
     schedule: { interval: weekly, day: monday }

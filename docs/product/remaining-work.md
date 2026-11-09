@@ -30,6 +30,15 @@ Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); rea
 **Code still open (next candidates)**
 Support agent governed actions (roadmap step 4); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations; B4 coverage of the remaining screens; C1–C6 (not authorized yet).
 
+## Platform migrations (held out of Dependabot major batches)
+
+Each needs its own planned PR; Dependabot ignores their major versions until then.
+
+- TypeScript 7 (web + desktop): new native compiler and package layout; tooling that loads `node_modules/typescript` breaks.
+- Tailwind 4 (web + desktop): CSS-first config replaces `tailwind.config`.
+- Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
+- ESLint 10 and Vitest 5 (web): config and API changes.
+
 ## Current completion work
 
 1. **ServiceNow:** the exact deployment-evidence note exists in CHG0030002 and matches the reviewed payload. Preserve its one consumed, unknown Axiom attempt; narrow OAuth proof-reader presence was verified; complete independently reviewed read-only outcome reconciliation, then follow the native approval lifecycle and exact closure approval. Never resend the note.

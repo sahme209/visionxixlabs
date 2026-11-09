@@ -10,7 +10,7 @@ import {
   resolveOperatorTier,
 } from "@/lib/cloudOperator/pricing";
 import type { OperatorTier } from "@/lib/cloudOperator/types";
-import Archiver from "archiver";
+import { ZipArchive } from "archiver";
 import { PassThrough } from "stream";
 
 export type BuildExportPackResult =
@@ -61,7 +61,7 @@ export async function buildExportPack(leadId: string): Promise<BuildExportPackRe
   ].join("\n");
 
   const chunks: Buffer[] = [];
-  const archive = Archiver("zip", { zlib: { level: 9 } });
+  const archive = new ZipArchive({ zlib: { level: 9 } });
   const collector = new PassThrough();
   collector.on("data", (chunk: Buffer) => chunks.push(chunk));
   archive.pipe(collector);
