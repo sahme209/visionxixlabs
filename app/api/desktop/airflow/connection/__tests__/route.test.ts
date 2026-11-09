@@ -5,7 +5,7 @@ vi.mock('@/lib/desktop/resolveRequestDesktopSession',()=>({resolveRequestDesktop
 vi.mock('@/lib/security/credentialVault',()=>({encryptScopedCredential:()=> 'new-cipher',decryptScopedCredential:m.decrypt}));
 vi.mock('@/lib/releaseops/auditEventResponder',()=>({appendAuditEvent:m.audit}));
 vi.mock('@/lib/integrations/airflow/airflowClient',()=>({validateAirflowBaseUrl:m.url,AirflowClient:class {validate=m.validate}}));
-vi.mock('@/lib/db',()=>{const model={findUnique:m.find,upsert:m.upsert,update:m.update,updateMany:m.cas,create:m.create};return{prisma:{tenantIntegrationConnection:model,airflowAutomation:{updateMany:m.automations},$transaction:async(fn:any)=>typeof fn==='function'?fn({tenantIntegrationConnection:model,airflowAutomation:{updateMany:m.automations}}):Promise.all(fn)}}});
+vi.mock('@/lib/db',()=>{const model={findUnique:m.find,upsert:m.upsert,update:m.update,updateMany:m.cas,create:m.create};return{prisma:{tenantIntegrationConnection:model,durableAgentWorkflow:{findMany:async()=>[]},airflowAutomation:{updateMany:m.automations},$transaction:async(fn:any)=>typeof fn==='function'?fn({tenantIntegrationConnection:model,airflowAutomation:{updateMany:m.automations}}):Promise.all(fn)}}});
 import {GET,PUT,DELETE} from '../route';
 import {loadAirflowClient} from '@/lib/integrations/airflow/connection';
 const actor={id:'session',userId:'owner',organizationId:'tenant',credentialKind:'desktop_session',capabilities:['connections:manage']};
