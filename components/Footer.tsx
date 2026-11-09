@@ -37,7 +37,7 @@ const columns = [
 export function Footer() {
   return (
     <footer className="site-footer border-t border-white/[0.07] bg-[#090a08] px-5 pb-8 sm:px-8 lg:px-10">
-      <div className="mx-auto max-w-[1280px]">
+      <div className="mx-auto max-w-[1200px]">
         <section className="flex flex-col gap-8 border-b border-white/[0.07] py-12 md:flex-row md:items-end md:justify-between lg:py-16" aria-labelledby="footer-cta-heading">
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">Axiom Agent</p>

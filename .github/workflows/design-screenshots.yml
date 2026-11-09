@@ -1,0 +1,44 @@
+name: Design screenshots
+
+# Full-page layout screenshots of public pages for design review.
+# Runs only on design/* pull requests. No secrets, no database, never deploys.
+on:
+  pull_request:
+    paths: ["app/**", "components/**", "lib/marketing/**", "scripts/design/**", ".github/workflows/design-screenshots.yml"]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: design-shots-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  shots:
+    if: startsWith(github.head_ref, 'design/')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+          cache: npm
+      - run: npm ci
+      - name: Build (no deployment)
+        env:
+          NODE_OPTIONS: --max-old-space-size=6144
+        run: npm run build
+      - name: Start server and capture pages
+        env:
+          CHROMIUM: google-chrome
+        run: |
+          npx next start -p 3000 > /tmp/next.log 2>&1 &
+          for i in $(seq 1 60); do curl -sf http://127.0.0.1:3000/ >/dev/null && break; sleep 2; done
+          node scripts/design/capture-pages.mjs http://127.0.0.1:3000 design-shots
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: design-shots-${{ github.event.pull_request.head.sha }}
+          path: design-shots
+          retention-days: 7

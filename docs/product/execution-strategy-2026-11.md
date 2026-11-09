@@ -67,6 +67,7 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-08 | A8: Prefect read-only inventory client (first new Batches provider). Observation only, public-HTTPS base validation, bounded and filter-verified pages. Wiring and live acceptance still open | Claude; PR feat/prefect-readonly-client |
 
 \n| 2026-11-08 | B2: balanced layout. Pipe flows become a compact rail plus a sticky detail panel; one width, padding and section rhythm across marketing pages | user; PR design/balanced-layout |\n\n
+| 2026-11-08 | B2: premium balance pass. Centred home hero, shared PageHero, one 1200px content width, steady rhythm; checked with new full-page CI screenshots | user; PR #232 |
 | 2026-11-08 | A8: Argo Workflows read-only client, scoped to one namespace, GET only. All three new Batches providers now have read-only clients; next is shared connection storage and wiring | Claude; PR feat/argo-workflows-readonly-client |
 | 2026-11-08 | CI: Test split into parallel jobs (typecheck, 3 Vitest shards, build) behind the same required check; wall time ~9.5 → ~6 min | user; PR #229 |
 | 2026-11-08 | A8: Dagster read-only inventory client (fixed GraphQL queries only, no caller-supplied GraphQL, no mutations). Wiring and live acceptance open | Claude; PR feat/dagster-readonly-client |

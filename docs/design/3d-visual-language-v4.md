@@ -52,3 +52,12 @@ The Product page `ControlPlaneModel` is the reference.
 - One section rhythm: `py-16` between sections; hero top offset `pt-24`, `lg:pt-28`.
 - Pipe flows fit one screen: on desktop the pipe is a compact left rail (number, title, part names, moving packet), and the chosen stage opens in a sticky right panel (summary, 3 parts, guarantee, failure, passes on). Mobile stacks the rail over the panel.
 - Pattern source: tabs and switchers instead of long stacks (Claude role tabs, Harness agent layout); short leads and at most 2-sentence paragraphs. Cursor.com refused automated fetch (403), so its DNA comes from general knowledge, not a fresh read.
+
+## Premium balance pass (2026-11-08, user: "no empty space, balanced, minimal, powerful, every page")
+
+- Verified visually with full-page CI screenshots (`.github/workflows/design-screenshots.yml`, design/* PRs), desktop 1440 and mobile 390.
+- **One content width:** 1200px content (a 1280px box with 40px padding), the same as the navigation bar. Inner boxes never add a second width.
+- **Home hero:** one centred column (eyebrow, headline, lead, two actions, scope note), then the product showcase full width. The deployment assembly moved to its own section with a centred heading.
+- **Interior heroes (`PageHero`):** title on the left, lead, actions and scope note on the right, bottom-aligned, with a hairline below. Used by Integrations, Security, Demo and Download; Product, Plans and Support already followed it.
+- **Rhythm:** sections `py-16`; hero top `pt-24` / `lg:pt-28`; closing CTA reduced to about 4.25rem; section H2s about 34–44px.
+- **Pipe flow:** the stage rail and the detail panel are the same height; panel content is spread evenly.

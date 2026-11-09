@@ -118,13 +118,16 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
       {!cockpit && <Navigation />}
 
       <main className={cockpit ? "max-w-5xl" : undefined}>
-        <section className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-10 pt-28 sm:px-8 sm:pb-14 lg:pt-36 lg:px-10"}>
-          <div className="max-w-3xl">
+        <section className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-10 pt-24 sm:px-8 sm:pb-14 lg:pt-28 lg:px-10"}>
+          <div className={cockpit ? "max-w-3xl" : "grid gap-6 border-b border-white/[0.07] pb-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:gap-16"}>
+            <div>
             {!cockpit && <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>}
             <h1 className={cockpit ? "text-white" : "mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-white"}>
               {cockpit ? "Desktop & provider setup" : <>Work where<br />engineering happens.</>}
             </h1>
-            <p className={cockpit ? "mt-3 max-w-2xl text-sm leading-6 text-zinc-400" : "mt-5 max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg"}>
+            </div>
+            <div className={cockpit ? undefined : "lg:pb-2"}>
+            <p className={cockpit ? "mt-3 max-w-2xl text-sm leading-6 text-zinc-400" : "max-w-2xl text-base leading-7 text-zinc-400 sm:text-lg"}>
               A focused desktop workspace for governed engineering operations, approvals, execution, and evidence.
             </p>
             <div className={cockpit ? "mt-4 flex flex-wrap items-center gap-2" : "mt-7 flex flex-col gap-3 sm:flex-row sm:items-center"}>
@@ -141,6 +144,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
               </Link>
             </div>
             <p className="mt-4 text-xs text-zinc-400">{releaseStatus}{detectedAsset ? ` · ${(formatDesktopInstallerSize(detectedAsset.sizeBytes)??"Size unavailable")}` : ""}</p>
+            </div>
           </div>
         </section>
 
