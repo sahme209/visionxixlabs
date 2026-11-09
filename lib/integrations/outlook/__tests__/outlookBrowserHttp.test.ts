@@ -2,7 +2,7 @@ import {it,expect,vi} from 'vitest';
 import {NextRequest} from 'next/server';
 const mocks=vi.hoisted(()=>({context:{isAuthenticated:true,organizationId:'org',sessionUserId:'owner',userId:'owner',roles:['owner'],email:'owner@example.com'},start:vi.fn(async()=>({authorizationUrl:'https://login.microsoftonline.com/common/oauth2/v2.0/authorize',expiresAt:'2030-01-01T00:00:00Z',purpose:'read'}))}));
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:async()=>mocks.context}));
-vi.mock('../outlookRuntime',()=>({outlookConfigured:()=>true,createOutlookRuntime:()=>({start:mocks.start})}));
+vi.mock('@/lib/governance/intelligence/enrolledRefusal',()=>({refuseNewConnectionWhenEnrolled:async()=>false,workspaceUnenrolled:async()=>true}));vi.mock('../outlookRuntime',()=>({outlookConfigured:()=>true,createOutlookRuntime:()=>({start:mocks.start})}));
 import {startOutlookBrowser,outlookSafeError} from '../outlookBrowserHttp';
 const request=(expected:unknown)=>new NextRequest('https://visionxixlabs.com/api/account/integrations/outlook/start',{method:'POST',headers:{Origin:'https://visionxixlabs.com','Content-Type':'application/json'},body:JSON.stringify(expected)});
 it('binds the OAuth start to the exact account and workspace displayed by the page',async()=>{mocks.start.mockClear();const result=await startOutlookBrowser(request({expectedOrganizationId:'org',expectedUserId:'owner'}),'read');expect(result.status).toBe(200);expect(mocks.start).toHaveBeenCalledWith(expect.objectContaining({organizationId:'org',actorUserId:'owner'}),'read',expect.any(AbortSignal))});

@@ -9,6 +9,8 @@ const mocks = vi.hoisted(() => ({
   isGithubAppInstallationReady: vi.fn(),
 }));
 
+vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ refuseNewConnectionWhenEnrolled: (...a: unknown[]) => governanceRefusal(...a) }));
+const governanceRefusal = vi.hoisted(() => vi.fn(async (..._a: unknown[]) => false));
 vi.mock("@/lib/db", () => ({ prisma: {} }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolveRequestDesktopSession }));
 vi.mock("@/lib/integrations/tenantConnectionRepo", () => ({ startTenantIntegrationAuthorization: mocks.startTenantIntegrationAuthorization }));
