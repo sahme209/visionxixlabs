@@ -10,9 +10,9 @@ User request: "go very deeply through site and app logic; fix what doesn't make 
 | Support | FAQ claimed authenticated `/dashboard` redirects to download (wrong in two ways) | The FAQ now names `/control` for signed-in web pages and the desktop app for operations |
 | Website | "Company" (nav) and "About" (footer) went to `/axiom`, which redirects to Product | Nav shows "Contact" (the open help path for signed-out visitors); footer About removed; the duplicate footer Security link removed |
 | Website | Changelog links bounced to Product | Status links to GitHub release notes; Capabilities links to current releases; the unreachable changelog client was deleted |
-| Website | Two FAQs with opposite pricing answers | `/faq` redirects to `/docs/faq`, the single FAQ shared with Ask Axiom |
-| Website | `/how-it-works` (stale "council" funnel) and `/platforms` (claims mobile apps that are not offered) | Redirected to `/product` and `/download` |
-| Website | `/products` took two redirect hops | Points straight to `/plans` |
+| Website | Two FAQs with opposite pricing answers | `/faq` redirects (in the page) to `/docs/faq`, the single FAQ shared with Ask Axiom |
+| Website | `/platforms` claims mobile apps that are not offered | Redirects (in the page) to `/download`. `/how-it-works` is kept: its claims are covered by the truthfulness test, and it has no inbound links |
+
 | Website | Compare page claimed a "single fixed contract" and linked `/disciplines` (which redirects) | Reworded to the real model; reference removed |
 | Website | The Plans "Buy prepaid credits" button went to `/dashboard/billing/add-ons` (redirects to download) | Goes through sign-in to `/control/usage-billing` |
 | Website | Product "Get started" went to a guide, while "Get started" elsewhere means /plans | Relabelled "Read the setup guide" |
@@ -32,3 +32,6 @@ User request: "go very deeply through site and app logic; fix what doesn't make 
 6. **Desktop shortcut order and "Log in" vs "Sign in" wording.** Low priority.
 7. **Orphan marketing pages** `/capabilities` and `/trust` are reachable only indirectly. Link or retire them.
 8. **Support vs Supporters naming.** `/support` is Founding Supporters while help is `/account/help`. Consider `/supporters` plus a public help hub.
+
+9. `next.config.ts` is pinned by the owned-website build checks, so redirects there need that review. The `/products` double hop is left for it.
+10. Desktop dormant views: about 40 tests import them directly, so they are kept as tested modules rather than moved.

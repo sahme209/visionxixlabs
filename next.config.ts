@@ -99,11 +99,7 @@ const nextConfig: NextConfig = {
       // /platform-demo was a duplicate marketing surface; consolidated
       // into /demo so there's a single URL to share.
       { source: "/platform-demo", destination: "/demo", permanent: true },
-      // Logic audit 2026-11-09: one FAQ, no stale funnel pages, no mobile-app claim.
-      { source: "/faq", destination: "/docs/faq", permanent: false },
-      { source: "/how-it-works", destination: "/product", permanent: false },
-      { source: "/platforms", destination: "/download", permanent: false },
-      { source: "/products", destination: "/plans", permanent: true },
+      { source: "/products", destination: "/operator/pricing", permanent: true },
       { source: "/free-review", destination: "/", permanent: true },
       { source: "/cloud-review", destination: "/", permanent: true },
       { source: "/internal/:path*", destination: "/", permanent: true },
