@@ -54,7 +54,7 @@ export default function Home() {
             <p className="mx-auto mt-6 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
               A governed workspace for deployments and connected operational changes. Bring repository context, AI assistance, human review, and recorded outcomes into one clear flow.
             </p>
-            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Link href="/product" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] hover:bg-white">
                 Explore Axiom <ArrowRightIcon className="h-4 w-4" />
               </Link>
