@@ -36,7 +36,7 @@ function ProviderCard({ provider }: { provider: (typeof PROVIDERS)[number] }) {
 
   useEffect(() => {
     let cancelled = false;
-    void desktopClient.batchConnection(provider.id).then((r) => {
+    void Promise.resolve().then(() => desktopClient.batchConnection(provider.id)).then((r) => {
       if (cancelled) return;
       if (r.ok) { setState(r.data); if (r.data.baseUrl) setBaseUrl(r.data.baseUrl); if (r.data.namespace) setNamespace(r.data.namespace); }
     }).catch(() => { /* shown as not connected */ });
@@ -75,7 +75,7 @@ function ProviderCard({ provider }: { provider: (typeof PROVIDERS)[number] }) {
       <label htmlFor={`${id}-token`} className="mt-3 block text-xs text-zinc-400">{provider.tokenLabel}</label>
       <input id={`${id}-token`} type="password" value={token} onChange={(e) => setToken(e.target.value)} autoComplete="off" className="mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm" />
       <div className="mt-4 flex flex-wrap gap-2">
-        <button type="button" disabled={busy || !canConnect} onClick={() => void connect()} className="btn-primary">{busy ? "Validating…" : state?.connected ? "Replace" : "Validate & connect"}</button>
+        <button type="button" disabled={busy || !canConnect} onClick={() => void connect()} className="btn-primary">{busy ? "Validating…" : state?.connected ? "Replace" : "Connect read-only"}</button>
         {state?.connected && <button type="button" disabled={busy} onClick={() => void disconnect()} className="btn-secondary">Disconnect</button>}
       </div>
       {notice && <p role="status" className="mt-3 text-xs text-zinc-400">{notice}</p>}

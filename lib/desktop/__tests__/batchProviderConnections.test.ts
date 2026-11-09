@@ -26,7 +26,7 @@ describe("Batch provider connections", () => {
     m.save.mockResolvedValue({ ok: true, data: { provider: "prefect", connected: true, status: "active", inventoryCount: 4, authority: "observation_only" } });
     render(createElement(BatchProviderConnections));
     const c = within(card("Prefect"));
-    const button = c.getByRole("button", { name: "Validate & connect" }) as HTMLButtonElement;
+    const button = c.getByRole("button", { name: "Connect read-only" }) as HTMLButtonElement;
     fireEvent.change(c.getByLabelText("API URL"), { target: { value: "http://insecure.example" } });
     fireEvent.change(c.getByLabelText("API key"), { target: { value: "pk_secret" } });
     expect(button.disabled).toBe(true);
@@ -44,7 +44,7 @@ describe("Batch provider connections", () => {
     const c = within(card("Argo Workflows"));
     fireEvent.change(c.getByLabelText("API URL"), { target: { value: "https://argo.example.com" } });
     fireEvent.change(c.getByLabelText("Bearer token"), { target: { value: "t" } });
-    const button = c.getByRole("button", { name: "Validate & connect" }) as HTMLButtonElement;
+    const button = c.getByRole("button", { name: "Connect read-only" }) as HTMLButtonElement;
     fireEvent.change(c.getByLabelText("Namespace"), { target: { value: "Bad_NS" } });
     expect(button.disabled).toBe(true);
     fireEvent.change(c.getByLabelText("Namespace"), { target: { value: "batch" } });
@@ -57,7 +57,7 @@ describe("Batch provider connections", () => {
     const c = within(card("Dagster"));
     fireEvent.change(c.getByLabelText("API URL"), { target: { value: "https://acme.dagster.cloud/prod" } });
     fireEvent.change(c.getByLabelText("User token"), { target: { value: "t" } });
-    fireEvent.click(c.getByRole("button", { name: "Validate & connect" }));
+    fireEvent.click(c.getByRole("button", { name: "Connect read-only" }));
     await c.findByText("Could not connect (dagster_api_failed).");
     expect(c.getByText("Not connected")).toBeTruthy();
   });
