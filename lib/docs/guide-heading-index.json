@@ -6,10 +6,10 @@
     {
       "href": "/docs",
       "source": "app/docs/page.tsx",
-      "sourceSha256": "472b6bac265b709506f769d48455222764a6cbfd63cf974b9f4ebb7b096429de",
+      "sourceSha256": "51b08bd313ca2faebedea3fa240e02375b61250ddf0b06bfaf706dca3479831d",
       "fields": [
         "Find your next step.",
-        "Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you.",
+        "Set up, follow a task, check a control or investigate an outcome. Pick the guide for the work in front of you.",
         "Version and scope",
         "When an outcome is unknown"
       ]

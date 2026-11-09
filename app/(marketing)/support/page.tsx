@@ -55,7 +55,7 @@ export default function SupportPage() {
               </h1>
             </div>
             <div className="pb-2">
-              <p className="text-base leading-7 text-zinc-300">We’re building Axiom Agent to make complex engineering operations more autonomous, secure, and accessible—without sacrificing human control.</p>
+              <p className="text-base leading-7 text-zinc-300">We’re building Axiom Agent to make complex engineering work more autonomous, secure and accessible, with people always in control.</p>
               <a href="#vision" className="mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-medium text-zinc-200 underline decoration-white/25 underline-offset-4 transition hover:decoration-white/60">Explore the vision <ArrowDownIcon className="h-4 w-4" /></a>
             </div>
           </div>
@@ -69,13 +69,13 @@ export default function SupportPage() {
         <article className="border-t border-white/10 pt-5">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">For individual supporters</p>
           <h2 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">Support the work.</h2>
-          <p className="mt-3 max-w-lg text-sm leading-6 text-zinc-400">Help fund independent development through a one-time digital supporter purchase. Participation is voluntary; public recognition is your choice.</p>
+          <p className="mt-3 max-w-lg text-sm leading-6 text-zinc-400">Fund independent development with a one-time supporter purchase. Voluntary, and public recognition is your choice.</p>
           <a href="#join" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-zinc-200 underline decoration-white/25 underline-offset-4 hover:decoration-white/60">Become a Founding Supporter <ArrowRightIcon className="h-4 w-4" /></a>
         </article>
         <article className="border-t border-white/10 pt-5">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">For AI &amp; technology partners</p>
           <h2 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">Build with us.</h2>
-          <p className="mt-3 max-w-lg text-sm leading-6 text-zinc-400">Discuss sponsorship, infrastructure credits, research collaboration, or technical support. Start with a scoped conversation about mutual fit.</p>
+          <p className="mt-3 max-w-lg text-sm leading-6 text-zinc-400">Sponsorship, infrastructure credits, research or technical support. Start with a short conversation about fit.</p>
           <a href="#sponsorship" className="mt-4 inline-flex min-h-11 items-center gap-2 text-sm font-medium text-zinc-200 underline decoration-white/25 underline-offset-4 hover:decoration-white/60">Discuss a partnership <ArrowRightIcon className="h-4 w-4" /></a>
         </article>
         <p className="border-t border-white/[0.07] pt-4 text-xs leading-6 text-zinc-400 md:col-span-2">Vision XIX Labs LLC is a for-profit technology company. Supporter purchases are not tax-deductible charitable gifts.</p>
