@@ -69,12 +69,15 @@ function faqEntries(): KnowledgeEntry[] {
 
 function guideEntries(): KnowledgeEntry[] {
   const guides = (headingIndex as { guides: { href: string; fields: string[] }[] }).guides;
-  return guides.filter((g) => g.fields.length >= 2).map((g) => ({ id: `guide-${g.href.replace(/[^a-z0-9]+/gi, "-")}`, kind: "guide" as const, topic: "Documentation", title: g.fields[0], body: g.fields[1], href: g.href, keywords: g.fields.slice(2) }));
+  return guides.filter((g) => g.fields.length >= 2).map((g) => ({ id: `guide-${g.href.replace(/[^a-z0-9]+/gi, "-")}`, kind: "guide" as const, topic: "Documentation", title: g.fields[0], body: g.fields[1], href: g.href, keywords: [...g.fields.slice(2), ...slugWords(g.href)] }));
 }
+
+/** The page address is a strong topic signal ("/docs/azure-setup" → azure, setup). */
+const slugWords = (href: string) => (href.split("#")[0].split("/").pop() ?? "").split("-").filter((w) => w.length > 1 && w !== "docs");
 
 function sectionEntries(): KnowledgeEntry[] {
   const sections = (docsCorpus as { sections: { href: string; title: string; text: string }[] }).sections;
-  return sections.map((sec) => ({ id: `doc-${sec.href.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "")}`, kind: "guide" as const, topic: "Documentation", title: sec.title, body: sec.text, href: sec.href }));
+  return sections.map((sec) => ({ id: `doc-${sec.href.replace(/[^a-z0-9]+/gi, "-").replace(/^-|-$/g, "")}`, kind: "guide" as const, topic: "Documentation", title: sec.title, body: sec.text, href: sec.href, keywords: slugWords(sec.href) }));
 }
 
 let cache: readonly KnowledgeEntry[] | null = null;

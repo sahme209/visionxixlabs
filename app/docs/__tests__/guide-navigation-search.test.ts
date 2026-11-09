@@ -42,8 +42,8 @@ it("reports an empty title match, then clears the filter and returns focus to it
   clear.focus(); fireEvent.click(clear);
   expect((field as HTMLInputElement).value).toBe("");
   expect(document.activeElement).toBe(field);
-  expect(screen.getAllByRole("link")).toHaveLength(23);
-  expect(screen.getByRole("status").textContent).toBe("23 guides shown");
+  expect(screen.getAllByRole("link")).toHaveLength(26);
+  expect(screen.getByRole("status").textContent).toBe("26 guides shown");
   expect(screen.queryByRole("button", { name: "Clear guide filter" })).toBeNull();
 });
 it("retains mobile Escape and route-change close behavior while filtering", () => {
