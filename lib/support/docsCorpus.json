@@ -83,28 +83,28 @@
    "title": "Answers from the docs",
    "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask Axiom is not confident, it shows the closest guides and offers to send your question to support.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "57937cfebf37a405bd1c0bf3f180c99fb7219dd3bd66f9693443ae729adbdf70"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "57937cfebf37a405bd1c0bf3f180c99fb7219dd3bd66f9693443ae729adbdf70"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask Axiom can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "57937cfebf37a405bd1c0bf3f180c99fb7219dd3bd66f9693443ae729adbdf70"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
-   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide. It can also run two fixed audit actions, governed like any other agent: seal the audit log (owners and admins) and verify the audit log (any member). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; verifying is read-only.",
+   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "57937cfebf37a405bd1c0bf3f180c99fb7219dd3bd66f9693443ae729adbdf70"
   },
   {
    "href": "/docs/audit-logs#record",

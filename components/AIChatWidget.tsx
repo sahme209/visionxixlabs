@@ -373,7 +373,7 @@ function SupportActionCard({ action }: { action: SupportAction }) {
     setResult(r?.ok ? { ok: true, text: String(r.message) } : { ok: false, text: ACTION_ERRORS[r?.error] ?? "Could not run this action." });
     setBusy(false); setConfirming(false);
   }
-  if (result) return <p role={result.ok ? "status" : "alert"} className={`mt-2 text-[11px] ${result.ok ? "text-emerald-300" : "text-rose-300"}`}>{result.text}{result.ok && <> <Link href="/control/trust-tools" className="underline">Trust tools</Link></>}</p>;
+  if (result) return <p role={result.ok ? "status" : "alert"} className={`mt-2 text-[11px] ${result.ok ? "text-emerald-300" : "text-rose-300"}`}>{result.text}{result.ok && <> <Link href={action === "list_expiring_keys" ? "/control/api-keys" : "/control/trust-tools"} className="underline">{action === "list_expiring_keys" ? "API keys" : "Trust tools"}</Link></>}</p>;
   return (
     <div className="mt-2 space-y-1.5 border-t border-white/[0.06] pt-2 text-[11px]">
       {!confirming ? (

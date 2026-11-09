@@ -37,6 +37,18 @@ export async function POST(req: NextRequest) {
       result = r.sealed
         ? { ok: true, message: `Sealed ${r.sealed.eventCount} audit events as seal #${r.sealed.sequence}.`, detail: { sequence: r.sealed.sequence, eventCount: r.sealed.eventCount } }
         : { ok: true, message: "Nothing new to seal. Events from the last few minutes are sealed on the next run.", detail: { sequence: null } };
+    } else if (d.action === "list_expiring_keys") {
+      const now = new Date();
+      const keys = await prisma.apiKey.findMany({
+        where: { organizationId, revokedAt: null, expiresAt: { gt: now, lte: new Date(now.getTime() + 30 * 86_400_000) } },
+        // Never select keyHash or anything secret-derived beyond the display prefix.
+        select: { name: true, prefix: true, expiresAt: true, lastUsedAt: true },
+        orderBy: { expiresAt: "asc" }, take: 20,
+      });
+      const day = (x: Date) => x.toISOString().slice(0, 10);
+      result = keys.length === 0
+        ? { ok: true, message: "No active API keys expire in the next 30 days.", detail: { count: 0 } }
+        : { ok: true, message: `${keys.length} key${keys.length === 1 ? "" : "s"} expire within 30 days: ${keys.map((k) => `${k.name.slice(0, 60)} (${k.prefix}…, expires ${day(k.expiresAt!)}${k.lastUsedAt ? `, last used ${day(k.lastUsedAt)}` : ", never used"})`).join("; ")}. Rotate them on API keys.`, detail: { count: keys.length } };
     } else {
       const r = await verifyOrganizationAudit(organizationId);
       const broken = r.verdicts.filter((v) => v.status !== "intact").length;
@@ -53,5 +65,5 @@ export async function POST(req: NextRequest) {
   try {
     await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId, kind: "support.action_run", subjectKind: "support_action", subjectId: d.action, summary: `${ctx.email ?? "A member"} asked Ask Axiom to ${d.info.label.toLowerCase()}`, actorUserId: userId, detailJson: { action: d.action, role: me.role, ...result.detail } });
   } catch { /* best-effort */ }
-  return NextResponse.json({ ok: true, action: d.action, message: result.message, href: "/control/trust-tools" }, { headers: NO_STORE });
+  return NextResponse.json({ ok: true, action: d.action, message: result.message, href: d.action === "list_expiring_keys" ? "/control/api-keys" : "/control/trust-tools" }, { headers: NO_STORE });
 }

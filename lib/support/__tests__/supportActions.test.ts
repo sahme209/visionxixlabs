@@ -8,6 +8,8 @@ describe("Ask Axiom governed actions", () => {
     expect(classifySupportAction("are my seals intact?")).toBe("verify_audit_log");
     expect(classifySupportAction("how much does it cost")).toBeNull();
     expect(classifySupportAction("delete the audit log")).toBeNull();
+    expect(classifySupportAction("which api keys expire soon?")).toBe("list_expiring_keys");
+    expect(classifySupportAction("do I need to rotate any keys")).toBe("list_expiring_keys");
   });
 
   it("requires an allowed role", () => {
@@ -37,5 +39,7 @@ describe("Ask Axiom governed actions", () => {
     expect(mayOffer("seal_audit_log", "admin")).toBe(true);
     expect(mayOffer("seal_audit_log", "operator")).toBe(false);
     expect(SUPPORT_ACTION_INFO.seal_audit_log.roles).toEqual(["owner", "admin"]);
+    expect(SUPPORT_ACTION_INFO.list_expiring_keys.roles).toEqual(["owner", "admin"]);
+    expect(mayOffer("list_expiring_keys", "finance_viewer")).toBe(false);
   });
 });
