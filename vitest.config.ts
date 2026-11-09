@@ -28,6 +28,10 @@ export default defineConfig({
       { find: "@tauri-apps/api/core", replacement: path.resolve(__dirname, "./test/tauriApiCoreStub.ts") },
       { find: "@tauri-apps/plugin-shell", replacement: path.resolve(__dirname, "./test/tauriPluginShellStub.ts") },
       { find: "@tauri-apps/plugin-store", replacement: path.resolve(__dirname, "./test/tauriPluginStoreStub.ts") },
+      // lucide-react 1 reads React context. Desktop tests render with the root
+      // react-dom, so load the root lucide-react (which imports root React);
+      // desktop/node_modules/lucide-react would bind to a second React copy.
+      { find: /^lucide-react$/, replacement: path.resolve(__dirname, "./node_modules/lucide-react") },
       { find: /^@\/(.*)$/, replacement: path.resolve(__dirname, "./$1") },
     ],
   },
