@@ -28,28 +28,10 @@ export function verifyStarterToken(token: string): VerifyResult {
   if (!SECRET || !token) return { error: "invalid" };
   const parts = token.split(SEP);
 
-  // Legacy format: base64url(leadId).base64url(hmac)
-  if (parts.length === 2) {
-    const [leadEncoded, sigEncoded] = parts;
-    try {
-      const leadBuf = Buffer.from(leadEncoded, "base64url");
-      const leadId = leadBuf.toString("utf8");
-      const expectedHmac = createHmac("sha256", SECRET).update(leadId).digest();
-      const providedBuf = Buffer.from(sigEncoded, "base64url");
-
-      if (
-        expectedHmac.length !== providedBuf.length ||
-        !timingSafeEqual(expectedHmac, providedBuf)
-      ) {
-        return { error: "invalid" };
-      }
-
-      // Legacy tokens had no explicit expiry; accept as-is for backward compatibility.
-      return { leadId };
-    } catch {
-      return { error: "invalid" };
-    }
-  }
+  // Legacy two-part format (base64url(leadId).hmac) carried no expiry. It was
+  // replaced on 2026-02-25, so every such token is far past the 7-day limit.
+  // Reject it as expired rather than honour a permanent bearer capability.
+  if (parts.length === 2) return { error: "expired" };
 
   // Current format: base64url(leadId).timestamp.signature
   if (parts.length < 3) return { error: "invalid" };
