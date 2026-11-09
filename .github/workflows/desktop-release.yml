@@ -158,7 +158,7 @@ jobs:
           upload-release-assets: false
 
       - name: Upload exact SBOM candidate bytes
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-sbom
@@ -185,7 +185,7 @@ jobs:
           fs.writeFileSync('candidate-sbom.json', JSON.stringify({ schema: 1, sourceSha: SOURCE_SHA, releaseTag: RELEASE_TAG, version: VERSION, runId: CANDIDATE_RUN_ID, platform: 'sbom', target: 'source', assets: [{ fileName: 'axiom-agent.sbom.cdx.json', sizeBytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex') }] }, null, 2));
           NODE
 
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-sbom-provenance
@@ -362,7 +362,7 @@ jobs:
           NODE
 
       - name: Upload artefact
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-${{ matrix.label }}
@@ -468,7 +468,7 @@ jobs:
 
       - name: Upload verified candidate for review
         id: review
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-verified-candidate
@@ -641,7 +641,7 @@ jobs:
 
       - name: Preserve sanitized uploaded digest evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-draft-export-verification
@@ -813,7 +813,7 @@ jobs:
 
       - name: Preserve sanitized uploaded digest evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-publication-verification
@@ -1005,7 +1005,7 @@ jobs:
 
       - name: Preserve sanitized uploaded digest evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-draft-export-verification
@@ -1042,7 +1042,7 @@ jobs:
           node scripts/repair-fixed-publication-draft.mjs
       - name: Preserve private recovery evidence
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@v4
         with:
           retention-days: 3
           name: axiom-v121-draft-name-recovery
