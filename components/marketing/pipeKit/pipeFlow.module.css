@@ -16,16 +16,16 @@
 @keyframes across { from { left: -16px; } to { left: 100%; } }
 
 /* Vertical pipe between stages, carrying a labelled packet. */
-.link { position: relative; height: 88px; }
-.vtube { position: absolute; left: 32px; top: 0; bottom: 0; width: 10px; margin-left: -5px; border-radius: 5px;
+.link { position: relative; height: 26px; }
+.vtube { position: absolute; left: 24px; top: 0; bottom: 0; width: 6px; margin-left: -3px; border-radius: 3px;
   background: rgb(255 255 255 / 0.03); border: 1px solid rgb(255 255 255 / 0.08); }
-.packet { position: absolute; left: 32px; width: 8px; height: 14px; margin-left: -4px; border-radius: 3px;
+.packet { position: absolute; left: 24px; width: 4px; height: 8px; margin-left: -2px; border-radius: 3px;
   background: rgb(var(--c) / 0.9); animation: down 3.2s ease-in-out infinite; }
-@keyframes down { 0% { top: 0; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: calc(100% - 14px); opacity: 0; } }
+@keyframes down { 0% { top: 0; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: calc(100% - 8px); opacity: 0; } }
 
 .paused .bit, .paused .packet { animation-play-state: paused; }
 @media (prefers-reduced-motion: reduce) {
   .bit, .packet { animation: none; }
   .bit { left: 45%; }
-  .packet { top: calc(50% - 7px); }
+  .packet { top: calc(50% - 4px); }
 }
