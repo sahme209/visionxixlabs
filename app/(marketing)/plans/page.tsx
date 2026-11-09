@@ -155,7 +155,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
 
           <section aria-labelledby="prepaid-flow" className="mt-12">
             <h3 id="prepaid-flow" className="text-lg font-medium text-zinc-100">How prepaid AI works</h3>
-            <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">From top-up to final debit, your credit moves through five steps. You see the cost first, and you are never charged beyond what you prepaid.</p>
+            <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">Five steps from top-up to final debit. You see the cost first and are never charged beyond what you prepaid.</p>
             <div className="mt-6"><PipeFlow stages={PREPAID_FLOW_STAGES} label="How prepaid AI works" /></div>
           </section>
 
@@ -195,7 +195,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
               <ul className="mt-3 space-y-2 text-sm leading-6 text-zinc-400">
                 <li>{AI_RATE_CARD.freeMonthlyDeployments} counted deployments per organization each month. Design partners may receive a higher agreed limit.</li>
                 <li>{COUNTED_DEPLOYMENT_DEFINITION} Retries, polling and automatic rollback of the same dispatch do not count again.</li>
-                <li>Before an action runs, a conservative hold larger than the expected price is placed on your balance. You pay only the final price; the rest of the hold is released.</li>
+                <li>Before an action runs, a hold slightly above the expected price is placed on your balance. You pay only the final price; the rest is released.</li>
               </ul>
             </div>
             <div>

@@ -38,7 +38,7 @@ const PATHS = [
 export default function DocsIndexPage() {
   return <>
     <DocHeader number="01" kicker="Axiom documentation" title="Find your next step."
-      summary="Start with setup, follow a task, understand a control or investigate an outcome. Choose the guide that matches the work in front of you." />
+      summary="Set up, follow a task, check a control or investigate an outcome. Pick the guide for the work in front of you." />
     <Callout variant="info" title="Version and scope">
       Guides describe different surfaces and stages of availability. Check the installed version, current access and each guide’s preview or supported-scope notes. A guide’s presence does not establish that every operation is available or production-activated.
     </Callout>
