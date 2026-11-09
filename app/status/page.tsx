@@ -120,7 +120,7 @@ export default async function StatusPage() {
           <div className="flex items-center gap-4">
             <Link href="/docs/surfaces" className="hover:text-brand-coral transition-colors">Docs</Link>
             <Link href="/plans" className="hover:text-brand-coral transition-colors">Pricing</Link>
-            <Link href="/changelog" className="hover:text-brand-coral transition-colors">Changelog</Link>
+            <a href="https://github.com/sahme209/visionxixlabs/releases" className="hover:text-brand-coral transition-colors">Release notes</a>
           </div>
         </div>
       </main>

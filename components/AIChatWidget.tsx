@@ -276,7 +276,7 @@ export default function AIChatWidget() {
               </button>
             </div>
             <Link
-              href="/axiom"
+              href="/product"
               className="mt-2 block text-center text-[10px] text-slate-500 hover:text-zinc-600"
             >
               Learn about Axiom Agent

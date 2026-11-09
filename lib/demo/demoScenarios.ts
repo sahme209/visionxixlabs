@@ -156,10 +156,10 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     lastReviewed: "2026-11-09",
     sourceFeatureVersion: "A10 agent governance gateway",
     steps: [
-      { id: "1", title: "Mint a governance key", description: "Create an API key with governance:read and governance:request scopes.", route: "/dashboard/api-keys", approval: "none", expectedResult: "A vxlk_ key the agent can use; the minter is recorded." },
+      { id: "1", title: "Get a governance key", description: "An API key with governance:read and governance:request scopes. Today keys are issued by Vision XIX Labs on request; self-service key management is planned.", route: "/contact", approval: "none", expectedResult: "A vxlk_ key the agent can use; the minter is recorded and cannot approve that key's requests." },
       { id: "2", title: "Add Axiom to the agent", description: "Register https://visionxixlabs.com/api/v1/mcp as a remote MCP server with the key as a Bearer token.", approval: "none", expectedResult: "The agent lists axiom_check_policy, axiom_request_approval, axiom_get_approval and axiom_record_outcome." },
       { id: "3", title: "Agent asks before deploying", description: "The agent calls axiom_request_approval for a production deploy.", approval: "none", relatedAgent: "External agent", expectedResult: "Policy: require_approval, high risk. The agent waits; mayProceed is false." },
-      { id: "4", title: "A different admin approves", description: "A workspace admin who did not mint the key approves the exact action, bound by its digest.", route: "/dashboard/agent-gateway", approval: "two_person", expectedResult: "mayProceed becomes true; approval expires after 24 hours." },
+      { id: "4", title: "A different admin approves", description: "A workspace admin who did not mint the key approves the exact action, bound by its digest.", route: "/control/agent-gateway", approval: "two_person", expectedResult: "mayProceed becomes true; approval expires after 24 hours." },
       { id: "5", title: "Outcome recorded", description: "The agent reports succeeded, failed or abandoned.", approval: "none", expectedResult: "Request completes, with an audit event for each step." },
     ],
   },
@@ -173,9 +173,9 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     lastReviewed: "2026-11-09",
     sourceFeatureVersion: "A11-A13 trust tools",
     steps: [
-      { id: "1", title: "Seal and verify the audit log", description: "An admin seals recent audit events; anyone in the workspace verifies the chain.", route: "/dashboard/trust-tools", approval: "self_approve", expectedResult: "Intact, with N seals verified, or the exact seal that changed." },
-      { id: "2", title: "Replay a draft rule", description: "Pick \"Block every high-risk action\" and replay it over 30 days.", route: "/dashboard/trust-tools", approval: "none", expectedResult: "Counts of actions newly blocked or auto-approved, with each changed action listed. Nothing is enabled." },
-      { id: "3", title: "Preview a change", description: "Paste a PR's changed files.", route: "/dashboard/trust-tools", approval: "none", expectedResult: "Areas touched, blast radius, rollback outlook and reviewer checks, labelled path-based." },
+      { id: "1", title: "Seal and verify the audit log", description: "An admin seals recent audit events; anyone in the workspace verifies the chain.", route: "/control/trust-tools", approval: "self_approve", expectedResult: "Intact, with N seals verified, or the exact seal that changed." },
+      { id: "2", title: "Replay a draft rule", description: "Pick \"Block every high-risk action\" and replay it over 30 days.", route: "/control/trust-tools", approval: "none", expectedResult: "Counts of actions newly blocked or auto-approved, with each changed action listed. Nothing is enabled." },
+      { id: "3", title: "Preview a change", description: "Paste a PR's changed files.", route: "/control/trust-tools", approval: "none", expectedResult: "Areas touched, blast radius, rollback outlook and reviewer checks, labelled path-based." },
     ],
   },
   security_finding: {

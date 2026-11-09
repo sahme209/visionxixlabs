@@ -13,7 +13,7 @@ const width=window.innerWidth;
 beforeEach(()=>{route.pathname='/';Object.defineProperty(window,'innerWidth',{configurable:true,value:1400});vi.stubGlobal('requestAnimationFrame',(fn:FrameRequestCallback)=>{fn(0);return 0;});});
 afterEach(()=>{cleanup();vi.unstubAllGlobals();Object.defineProperty(window,'innerWidth',{configurable:true,value:width});});
 const primary=[['Product','/product'],['Integrations','/integrations'],['Security','/security'],['Docs','/docs'],['Demo','/demo']];
-const secondary=[['Get started','/plans'],['Support (account required)','/account/help'],['Status','/status'],['Company','/axiom']];
+const secondary=[['Get started','/plans'],['Support (account required)','/account/help'],['Status','/status'],['Contact','/contact']];
 it('keeps the five approved primary destinations and quiet account/download links visible',()=>{
  render(createElement(Navigation));
  for(const[label,href]of [...primary,['Sign in','/auth/signin'],['Download','/download']])expect(screen.getByRole('link',{name:label}).getAttribute('href')).toBe(href);

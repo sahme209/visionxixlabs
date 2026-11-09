@@ -190,11 +190,9 @@ const GROUPS: NavGroup[] = [
     label: "Automation",
     kind: "automation",
     items: [
-      // Core automation surfaces, plus agent governance (A10–A14).
+      // Four core automation surfaces. Agent gateway and Trust tools live under /control.
       { href: "/dashboard/workflows",            label: "Workflows",   icon: ChartBarIcon },
       { href: "/dashboard/approvals",            label: "Approvals",   icon: LockClosedIcon },
-      { href: "/dashboard/agent-gateway",        label: "Agent gateway", icon: CpuChipIcon },
-      { href: "/dashboard/trust-tools",          label: "Trust tools",   icon: ShieldCheckIcon },
       { href: "/dashboard/runbooks",             label: "Runbooks",    icon: WrenchScrewdriverIcon },
       { href: "/dashboard/audit",                label: "Audit log",   icon: DocumentTextIcon },
       // Power — internal pipeline plumbing.

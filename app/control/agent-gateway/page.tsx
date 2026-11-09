@@ -1,10 +1,11 @@
 /**
- * /dashboard/agent-gateway — Agent governance gateway (A10).
+ * /control/agent-gateway — Agent governance gateway (A10).
  * Workspace members see what AI agents asked to do; owners and admins
  * approve or reject pending requests. Agents use /api/v1/mcp or the
  * /api/v1/governance REST endpoints with a governance-scoped API key.
  */
 import type { Metadata } from "next";
+import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { listAgentScorecards, listGatewayRequests } from "@/lib/agentGateway/gatewayService";
 import { ModuleIntro } from "@/components/portal/ModuleIntro";
@@ -22,7 +23,7 @@ const TRUST_LABEL: Record<string, string> = { new: "New", building: "Building a 
 
 export default async function AgentGatewayPage() {
   const ctx = await currentContext();
-  if (!ctx.isAuthenticated || !ctx.organizationId) return <div className="p-8 text-sm text-zinc-300">Sign in required.</div>;
+  if (!ctx.isAuthenticated || !ctx.organizationId) redirect("/auth/signin?callbackUrl=%2Fcontrol%2Fagent-gateway");
   const organizationId = String(ctx.organizationId);
   const [requests, scorecards] = await Promise.all([listGatewayRequests(organizationId).catch(() => null), listAgentScorecards(organizationId).catch(() => [])]);
   return (
