@@ -291,6 +291,15 @@ export const SCENARIO_DIAGRAMS: Record<DemoScenarioId, string> = {
                                           │
                                   scheduled post
   `.trimEnd(),
+
+  agent_governance_gateway: `
+   any MCP agent        Axiom gateway          workspace admin
+        │                     │                      │
+        ├─request_approval───▶│ policy kernel        │
+        │                     ├─pending─────────────▶│ (not the key's minter)
+        │◀──mayProceed=true───┤◀──approve (digest)───┤
+        ├─acts, then──────────▶│ record_outcome → audit
+  `.trimEnd(),
 };
 
 /**
@@ -338,4 +347,7 @@ export const SCENARIO_CLOSERS: Record<DemoScenarioId, string> = {
 
   internal_growth_automation:
     "Internal-only. Drafts always require explicit human approval before any post fires. The audience='internal_only' tag on the scenario is enforced by listScenarios() — a real workspace can NEVER see this surface.",
+
+  agent_governance_gateway:
+    "Axiom does not have to be the only agent. Any MCP agent can ask before it acts, and the decision is the same pure policy kernel, bound to an exact action digest and decided by someone other than the key's minter. Agents self-report, so this is a cooperative control point, not a sandbox."
 };

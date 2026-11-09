@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { MCP_TOOLS, dispatchMcp, parseRpc, requiredScope } from "../mcpServer";
 
 const ops = () => ({ check: vi.fn().mockReturnValue({ ok: true, policy: { decision: "allow" } }), request: vi.fn().mockResolvedValue({ ok: true, request: { id: "r1" } }), get: vi.fn().mockResolvedValue({ ok: true, request: { id: "r1", mayProceed: false } }), outcome: vi.fn().mockResolvedValue({ ok: true }) });
-const rpc = (method: string, params?: Record<string, unknown>, id: number | undefined = 1) => parseRpc({ jsonrpc: "2.0", ...(id === undefined ? {} : { id }), method, ...(params ? { params } : {}) })!;
+const rpc = (method: string, params?: Record<string, unknown>, id: number | null = 1) => parseRpc({ jsonrpc: "2.0", ...(id === null ? {} : { id }), method, ...(params ? { params } : {}) })!;
 
 describe("Axiom MCP governance server", () => {
   it("rejects malformed JSON-RPC", () => {
@@ -21,7 +21,7 @@ describe("Axiom MCP governance server", () => {
   });
 
   it("acknowledges notifications with 202 and no body", async () => {
-    expect(await dispatchMcp(rpc("notifications/initialized", undefined, undefined), ops())).toEqual({ status: 202, body: null });
+    expect(await dispatchMcp(rpc("notifications/initialized", undefined, null), ops())).toEqual({ status: 202, body: null });
   });
 
   it("maps each tool to the least scope it needs", () => {
