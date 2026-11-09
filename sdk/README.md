@@ -217,6 +217,28 @@ Every subcommand supports `--json` for piping into `jq`.
 | `POST /api/v1/pipelines/runs/{id}/decide` | `pipeline:trigger` | `decideApproval(id, ...)` |
 | `GET  /api/v1/connectors/health`  | `pipeline:read`       | `connectorsHealth()`  |
 | `GET  /api/v1/events/stream`      | `pipeline:read`       | SSE — use `fetch + ReadableStream` (EventSource doesn't support Bearer auth) |
+| `POST /api/v1/governance/check`   | `governance:read`     | `checkAgentAction()` / `check_agent_action()` / `CheckAgentAction()` |
+| `POST /api/v1/governance/requests`| `governance:request`  | `requestAgentApproval()` / `request_agent_approval()` / `RequestAgentApproval()` |
+| `GET  /api/v1/governance/requests/{id}` | `governance:read` | `getAgentApproval(id)` / `get_agent_approval()` / `GetAgentApproval()` |
+| `POST /api/v1/governance/requests/{id}/outcome` | `governance:request` | `recordAgentOutcome()` / `record_agent_outcome()` / `RecordAgentOutcome()` |
+| `POST /api/v1/mcp`                | per tool (see below)  | MCP server: use your agent's MCP client, not the SDK |
+
+### Agent governance gateway (MCP)
+
+Let any AI agent (Cursor, Claude Code, Codex, your own) ask Axiom before it acts. Add a remote MCP server:
+
+```json
+{ "mcpServers": { "axiom": { "url": "https://visionxixlabs.com/api/v1/mcp", "headers": { "Authorization": "Bearer vxlk_live_..." } } } }
+```
+
+| Tool | Scope | Use |
+|---|---|---|
+| `axiom_check_policy` | `governance:read` | allow / require_approval / deny, with reasons. Stores nothing. |
+| `axiom_request_approval` | `governance:request` | Low risk is allowed at once; consequential actions wait for an admin. |
+| `axiom_get_approval` | `governance:read` | Proceed only when `mayProceed` is `true`. Approvals expire after 24h. |
+| `axiom_record_outcome` | `governance:request` | `succeeded` / `failed` / `abandoned`, once. |
+
+Production secret reads and production deletes are always denied. The admin who minted the key cannot approve its requests. Agents self-report their actions, so this is a cooperative control point, not a sandbox.
 
 ### Approval decide — quorum semantics
 

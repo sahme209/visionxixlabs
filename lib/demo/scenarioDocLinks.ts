@@ -60,6 +60,8 @@ export const SCENARIO_PRIMARY_DOCS: Record<DemoScenarioId, DocRef> = {
   ai_workforce_overview:      DOCS.architecture,
   pricing_and_usage:          DOCS.faq,
   internal_growth_automation: DOCS.faq,
+  agent_governance_gateway:   DOCS.approvalWorkflow,
+  trust_tools:                DOCS.approvalWorkflow,
 };
 
 /**

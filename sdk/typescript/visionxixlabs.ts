@@ -241,6 +241,28 @@ export class VisionXIXLabs {
     );
   }
 
+  // ------------------------------------------- Agent governance gateway (A10)
+
+  /** POST /api/v1/governance/check — may an agent do this? Stores nothing. Scope: governance:read. */
+  checkAgentAction(input: AgentActionInput): Promise<AgentPolicyResponse> {
+    return this.post<AgentPolicyResponse>("/api/v1/governance/check", { ...input });
+  }
+
+  /** POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request. */
+  requestAgentApproval(input: AgentActionInput): Promise<AgentRequestResponse> {
+    return this.post<AgentRequestResponse>("/api/v1/governance/requests", { ...input });
+  }
+
+  /** GET /api/v1/governance/requests/{id} — proceed only when request.mayProceed is true. Scope: governance:read. */
+  getAgentApproval(id: string): Promise<AgentRequestResponse> {
+    return this.get<AgentRequestResponse>(`/api/v1/governance/requests/${encodeURIComponent(id)}`);
+  }
+
+  /** POST /api/v1/governance/requests/{id}/outcome — report what happened. Scope: governance:request. */
+  recordAgentOutcome(id: string, outcome: "succeeded" | "failed" | "abandoned", detail?: string): Promise<AgentRequestResponse> {
+    return this.post<AgentRequestResponse>(`/api/v1/governance/requests/${encodeURIComponent(id)}/outcome`, { outcome, ...(detail ? { detail } : {}) });
+  }
+
   // ---------------------------------------------------------------- HTTP
 
   private async get<T>(path: string): Promise<T> {
@@ -359,3 +381,13 @@ function constantTimeEqual(a: string, b: string): boolean {
   }
   return diff === 0;
 }
+
+
+// ------------------------------------------- Agent governance gateway types
+
+export type AgentActionKind = "read" | "code_change" | "open_pull_request" | "merge" | "dependency_change" | "infra_change" | "deploy" | "data_migration" | "secret_access" | "delete_resource" | "run_command";
+export interface AgentActionInput { actionKind: AgentActionKind; environment?: "development" | "staging" | "production" | "unknown"; target: string; summary: string; agentName?: string }
+export interface AgentPolicy { decision: "allow" | "require_approval" | "deny"; riskLevel: "low" | "medium" | "high"; reasons: string[] }
+export interface AgentPolicyResponse { ok: boolean; policy?: AgentPolicy; error?: string }
+export interface AgentRequest { id: string; status: string; mayProceed: boolean; reason: string; policyDecision: string; riskLevel: string; actionDigest: string; expiresAt: string; outcome: string | null }
+export interface AgentRequestResponse { ok: boolean; request?: AgentRequest; error?: string }

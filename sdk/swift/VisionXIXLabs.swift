@@ -121,6 +121,36 @@ public struct VisionXIXLabs {
         return try await post("/api/v1/pipelines/runs", body: body, extraHeaders: extra)
     }
 
+    // MARK: - Agent governance gateway (A10)
+
+    /// POST /api/v1/governance/check — may an agent do this? Stores nothing. Scope: governance:read.
+    public func checkAgentAction(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil) async throws -> AgentPolicyResponse {
+        try await post("/api/v1/governance/check", body: Self.agentAction(actionKind, target, summary, environment, agentName))
+    }
+
+    /// POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request.
+    public func requestAgentApproval(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil) async throws -> AgentRequestResponse {
+        try await post("/api/v1/governance/requests", body: Self.agentAction(actionKind, target, summary, environment, agentName))
+    }
+
+    /// GET /api/v1/governance/requests/{id} — proceed only when `request.mayProceed` is true. Scope: governance:read.
+    public func getAgentApproval(id: String) async throws -> AgentRequestResponse {
+        try await get("/api/v1/governance/requests/\(id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id)")
+    }
+
+    /// POST /api/v1/governance/requests/{id}/outcome — outcome: succeeded | failed | abandoned. Scope: governance:request.
+    public func recordAgentOutcome(id: String, outcome: String, detail: String? = nil) async throws -> AgentRequestResponse {
+        var body: [String: Any] = ["outcome": outcome]
+        if let detail { body["detail"] = detail }
+        return try await post("/api/v1/governance/requests/\(id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id)/outcome", body: body)
+    }
+
+    private static func agentAction(_ kind: String, _ target: String, _ summary: String, _ env: String, _ agentName: String?) -> [String: Any] {
+        var body: [String: Any] = ["actionKind": kind, "target": target, "summary": summary, "environment": env]
+        if let agentName { body["agentName"] = agentName }
+        return body
+    }
+
     // MARK: - Webhook signature verification
 
     /// Verify an inbound webhook delivery's HMAC-SHA256 signature.
@@ -342,3 +372,14 @@ public enum VXLError: Error, CustomStringConvertible {
         }
     }
 }
+
+
+// MARK: - Agent governance gateway types
+
+public struct AgentPolicy: Decodable { public let decision: String; public let riskLevel: String; public let reasons: [String] }
+public struct AgentPolicyResponse: Decodable { public let ok: Bool; public let policy: AgentPolicy?; public let error: String? }
+public struct AgentRequest: Decodable {
+    public let id: String; public let status: String; public let mayProceed: Bool; public let reason: String
+    public let policyDecision: String; public let riskLevel: String; public let actionDigest: String; public let expiresAt: String; public let outcome: String?
+}
+public struct AgentRequestResponse: Decodable { public let ok: Bool; public let request: AgentRequest?; public let error: String? }
