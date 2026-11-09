@@ -103,3 +103,22 @@ export function answerQuestion(index: AnswerIndex, question: string, opts: { k1?
   if (confidence < 0.45) return { status: "suggestions", answer: "I'm not sure which of these you mean. Here are the closest answers.", sources, confidence };
   return { status: "answered", answer: top.d.entry.body, sources, confidence };
 }
+
+
+/** Top-k entries for a question (BM25 with title weighting), for grounding an AI answer. Pure. */
+export function retrieve(index: AnswerIndex, question: string, k = 5): KnowledgeEntry[] {
+  const terms = [...new Set(tokenize(question.slice(0, 1000)))];
+  if (terms.length === 0) return [];
+  const N = index.docs.length;
+  return index.docs.map((d) => {
+    let score = 0;
+    for (const t of terms) {
+      const tf = d.terms.get(t); if (!tf) continue;
+      const df = index.df.get(t) ?? 0;
+      score += Math.log(1 + (N - df + 0.5) / (df + 0.5)) * ((tf * 2.2) / (tf + 1.2 * (0.25 + (0.75 * d.length) / index.avgLength)));
+    }
+    const hits = d.titleTerms.filter((t) => terms.includes(t)).length;
+    if (hits > 0) score *= 1 + hits / d.titleTerms.length;
+    return { entry: d.entry, score };
+  }).filter((x) => x.score > 0).sort((a, b) => b.score - a.score || (a.entry.id < b.entry.id ? -1 : 1)).slice(0, k).map((x) => x.entry);
+}
