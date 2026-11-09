@@ -1,0 +1,6 @@
+/* Calm horizontal pipe between columns; dots drift left to right. */
+.pipe { position: relative; width: 56px; align-self: center; height: 6px; border-radius: 3px; background: rgb(255 255 255 / 0.04); border: 1px solid rgb(255 255 255 / 0.08); overflow: hidden; }
+.dot { position: absolute; top: 1px; left: -10px; width: 10px; height: 2px; border-radius: 1px; background: rgb(125 196 245 / 0.85); animation: drift 2.8s linear infinite; }
+.d2 { animation-delay: -1.4s; }
+@keyframes drift { from { left: -10px; } to { left: 100%; } }
+@media (prefers-reduced-motion: reduce) { .dot { animation: none; left: 45%; } .d2 { display: none; } }
