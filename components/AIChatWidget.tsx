@@ -23,6 +23,8 @@ interface Message {
   /** The question this answer responds to (lets the person ask for an AI answer). */
   question?: string;
   mode?: "grounded" | "ai";
+  /** No confident docs answer: offer a hand-off to support. */
+  unsure?: boolean;
 }
 
 const MSG_KEY = "visionxix-ai-widget-messages";
@@ -125,6 +127,7 @@ export default function AIChatWidget() {
         sources: Array.isArray(data.sources) ? data.sources.slice(0, 3).map((x: { title: string; href: string }) => ({ title: String(x.title), href: String(x.href) })) : [],
         question: data.guard ? undefined : text,
         mode: "grounded",
+        unsure: data.status === "suggestions",
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch {
@@ -249,6 +252,9 @@ export default function AIChatWidget() {
                         </div>
                       )}
                       <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                      {m.role === "assistant" && m.mode === "grounded" && m.question && m.unsure && (
+                        <a href={`/contact?topic=ask-axiom&question=${encodeURIComponent(m.question.slice(0, 500))}`} className="mt-2 mr-3 inline-block text-[11px] text-zinc-300 underline underline-offset-2 hover:text-white">Send this question to support</a>
+                      )}
                       {m.role === "assistant" && m.mode === "grounded" && m.question && (
                         <button type="button" onClick={() => void askAi(m.question!)} disabled={loading} className="mt-2 text-[11px] text-zinc-400 underline underline-offset-2 hover:text-white disabled:opacity-50">Get a fuller AI answer (signed-in workspaces; uses prepaid credits)</button>
                       )}

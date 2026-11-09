@@ -30,14 +30,17 @@ interface FormState {
   website: string;
 }
 
-function initialForm(intent?: "production-access"): FormState {
+type ContactIntent = "production-access" | "ask-axiom";
+function initialForm(intent?: ContactIntent, prefill?: string): FormState {
   return {
     name: "",
     email: "",
     topic: "product",
     message: intent === "production-access"
       ? "I need help with production access for our Axiom Agent workspace."
-      : "",
+      : intent === "ask-axiom" && prefill
+        ? `Ask Axiom couldn't answer this:\n\n${prefill}\n\n`
+        : "",
     website: "",
   };
 }
@@ -48,8 +51,8 @@ type SubmitState =
   | { kind: "ok"; referenceId: string; delivery: "sent" | "failed" | "not_configured" }
   | { kind: "error"; message: string };
 
-export function ContactClient({ intent }: { intent?: "production-access" }) {
-  const [form, setForm] = useState<FormState>(() => initialForm(intent));
+export function ContactClient({ intent, prefill }: { intent?: ContactIntent; prefill?: string }) {
+  const [form, setForm] = useState<FormState>(() => initialForm(intent, prefill));
   const [state, setState] = useState<SubmitState>({ kind: "idle" });
 
   function update<K extends keyof FormState>(key: K, value: FormState[K]) {
@@ -67,7 +70,7 @@ export function ContactClient({ intent }: { intent?: "production-access" }) {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...form, source: intent === "production-access" ? "axiom-production-access" : "marketing-contact" }),
+        body: JSON.stringify({ ...form, source: intent === "production-access" ? "axiom-production-access" : intent === "ask-axiom" ? "ask-axiom" : "marketing-contact" }),
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
