@@ -15,7 +15,7 @@ import {createInviteToken,validateInviteToken} from '@/lib/workforce/domains/inv
 function fixture(acceptedAt:Date|null,used=2){
  const member={id:'membership',acceptedAt,role:'read_only',invitedBy:'original-inviter',providerScopes:['aws']};
  const tx={ $queryRawUnsafe:async()=>[],tenantBillingPlan:{findUnique:vi.fn(async()=>null)},orgMembership:{findUnique:vi.fn(async()=>member),count:vi.fn(async()=>used+(acceptedAt===null&&member.acceptedAt!==null?1:0)),update:vi.fn(async({data}:any)=>Object.assign(member,data)),create:vi.fn(async()=>{throw Error('unexpected create')})}};
- m.repo={$transaction:async(fn:any)=>fn(tx),orgMembership:tx.orgMembership};return {tx,member};
+ m.repo={$transaction:async(fn:any)=>fn(tx),orgMembership:tx.orgMembership,auditEvent:{findMany:async()=>[]}};return {tx,member};
 }
 beforeEach(()=>{vi.clearAllMocks();m.publicPolicy=false;m.snapshot.mockResolvedValue({usable:true,seatQuantity:2});vi.stubEnv('INVITE_LINK_SECRET','SIMULATED_local_test_key_not_a_credential');});
 afterEach(()=>vi.unstubAllEnvs());

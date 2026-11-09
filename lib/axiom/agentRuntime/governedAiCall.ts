@@ -1,6 +1,7 @@
 import { SMALL_SONNET_55_MODEL, SMALL_SONNET_55_OUTPUT_TOKENS } from "@/lib/billing/smallSonnet55Request";
 import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
 import { boundedStructuredAIInput } from "@/lib/ai/inputByteBound";
+import { redactSecrets } from "@/lib/ai/contextRedaction";
 /**
  * The one place the agent decision loop is allowed to call an LLM.
  * Mirrors the exact fail-closed sequence lib/releaseops/instrumentedAiFetcher.ts
@@ -96,8 +97,10 @@ export async function resolveGovernedAiCall(organizationId: string, preferredPro
   if (!initial.ok) return initial;
   return {
     ok: true,
-    extract: async <T>(text: string, schemaHint: string, correlationId: string) => {
+    extract: async <T>(rawText: string, schemaHint: string, correlationId: string) => {
       streaming?.abortSignal.throwIfAborted();
+      // A7.16 context minimization: credentials never reach a model through the governed path.
+      const text = redactSecrets(rawText).text;
       // A loop's initial opt-in is not lasting authority: reread before EACH
       // actual extract, including repair, and before creating its budget hold.
       const current = await currentDispatch(organizationId, preferredProvider, preferredModel);
