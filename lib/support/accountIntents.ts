@@ -37,24 +37,24 @@ export function composeAccountAnswer(intent: AccountIntent, f: AccountFacts): { 
   switch (intent) {
     case "agent_requests": {
       const n = f.pendingAgentRequests ?? 0;
-      return { answer: n === 0 ? "No AI agent is waiting for approval in this workspace." : `${n} AI agent request${n === 1 ? " is" : "s are"} waiting for a decision. Approvers must not be the person who created the agent's key.`, href: "/dashboard/agent-gateway", title: "Agent gateway" };
+      return { answer: n === 0 ? "No AI agent is waiting for approval in this workspace." : `${n} AI agent request${n === 1 ? " is" : "s are"} waiting for a decision. Approvers must not be the person who created the agent's key.`, href: "/control/agent-gateway", title: "Agent gateway" };
     }
     case "pending_approvals": {
       const total = (f.pendingProposals ?? 0) + (f.pendingCloudItems ?? 0) + (f.pendingAgentRequests ?? 0);
-      return { answer: total === 0 ? "Nothing is waiting for approval in this workspace." : `Waiting for a decision: ${f.pendingProposals ?? 0} Agent proposals, ${f.pendingCloudItems ?? 0} cloud actions and ${f.pendingAgentRequests ?? 0} external agent requests.`, href: "/dashboard/approvals", title: "Approvals" };
+      return { answer: total === 0 ? "Nothing is waiting for approval in this workspace." : `Waiting for a decision: ${f.pendingProposals ?? 0} Agent proposals, ${f.pendingCloudItems ?? 0} cloud actions and ${f.pendingAgentRequests ?? 0} external agent requests.`, href: "/control/governance", title: "Approvals" };
     }
     case "connections": {
       const list = f.connections ?? [];
       if (list.length === 0) return { answer: "This workspace has no saved integration connections yet.", href: "/integrations", title: "Integrations" };
       const active = list.filter((c) => c.status === "active").map((c) => c.provider);
       const other = list.filter((c) => c.status !== "active").map((c) => `${c.provider} (${c.status})`);
-      return { answer: `Active: ${active.join(", ") || "none"}.${other.length ? ` Not active: ${other.join(", ")}.` : ""} Active means the saved connection last validated; it does not prove every operation works.`, href: "/dashboard/integrations", title: "Integrations" };
+      return { answer: `Active: ${active.join(", ") || "none"}.${other.length ? ` Not active: ${other.join(", ")}.` : ""} Active means the saved connection last validated; it does not prove every operation works.`, href: "/control/integrations", title: "Integrations" };
     }
     case "audit_integrity":
-      return { answer: f.latestSeal ? `The latest audit seal is #${f.latestSeal.sequence} from ${f.latestSeal.at}. Run Verify on Trust tools to check the whole chain now; a seal is evidence, not prevention.` : "The audit log has not been sealed yet. An owner or admin can seal it on Trust tools.", href: "/dashboard/trust-tools", title: "Trust tools" };
+      return { answer: f.latestSeal ? `The latest audit seal is #${f.latestSeal.sequence} from ${f.latestSeal.at}. Run Verify on Trust tools to check the whole chain now; a seal is evidence, not prevention.` : "The audit log has not been sealed yet. An owner or admin can seal it on Trust tools.", href: "/control/trust-tools", title: "Trust tools" };
     case "recent_activity": {
       const ev = f.recentEvents ?? [];
-      return { answer: ev.length === 0 ? "No recorded activity yet." : `Most recent: ${ev.slice(0, 5).map((e) => `${e.summary} (${e.at})`).join("; ")}.`, href: "/dashboard/audit", title: "Audit log" };
+      return { answer: ev.length === 0 ? "No recorded activity yet." : `Most recent: ${ev.slice(0, 5).map((e) => `${e.summary} (${e.at})`).join("; ")}.`, href: "/control/audit-security", title: "Audit log" };
     }
   }
 }

@@ -18,7 +18,7 @@ describe("Ask Axiom account intents", () => {
 
   it("composes honest, bounded answers with a place to act", () => {
     expect(composeAccountAnswer("agent_requests", { pendingAgentRequests: 0 }).answer).toMatch(/No AI agent/);
-    expect(composeAccountAnswer("agent_requests", { pendingAgentRequests: 2 })).toMatchObject({ href: "/dashboard/agent-gateway", answer: expect.stringMatching(/2 AI agent requests are waiting/) });
+    expect(composeAccountAnswer("agent_requests", { pendingAgentRequests: 2 })).toMatchObject({ href: "/control/agent-gateway", answer: expect.stringMatching(/2 AI agent requests are waiting/) });
     expect(composeAccountAnswer("pending_approvals", { pendingProposals: 1, pendingCloudItems: 2, pendingAgentRequests: 0 }).answer).toMatch(/1 Agent proposals, 2 cloud actions/);
     expect(composeAccountAnswer("connections", { connections: [{ provider: "github", status: "active" }, { provider: "prefect", status: "revoked" }] }).answer).toMatch(/does not prove every operation works/);
     expect(composeAccountAnswer("audit_integrity", { latestSeal: null }).answer).toMatch(/not been sealed/);
