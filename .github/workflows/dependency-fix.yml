@@ -10,6 +10,12 @@ on:
         description: "Optional exact upgrades, e.g. '@azure/msal-node@7.2.1' (space-separated). Empty = non-breaking audit fix only."
         required: false
         default: ""
+      directory:
+        description: "Where to apply the exact upgrades: root or desktop."
+        required: false
+        default: "root"
+        type: choice
+        options: [root, desktop]
 
 permissions:
   contents: write
@@ -31,7 +37,7 @@ jobs:
         run: |
           # Only package specs of the form name@version are accepted.
           for p in $PACKAGES; do echo "$p" | grep -Eq '^(@[a-z0-9._-]+/)?[a-z0-9._-]+@[0-9][0-9A-Za-z.+-]*$' || { echo "refused: $p"; exit 1; }; done
-          npm install --ignore-scripts --save-exact $PACKAGES
+          if [ "${{ inputs.directory }}" = "desktop" ]; then (cd desktop && npm install --ignore-scripts --save-exact $PACKAGES); else npm install --ignore-scripts --save-exact $PACKAGES; fi
       - name: Apply non-breaking fixes
         run: |
           npm audit fix --omit=dev --ignore-scripts || true
