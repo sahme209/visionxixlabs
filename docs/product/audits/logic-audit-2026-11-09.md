@@ -25,7 +25,7 @@ User request: "go very deeply through site and app logic; fix what doesn't make 
 ## Still open (recorded, not fixed here)
 
 1. **Legal pages need a rewrite for Axiom** (owner and legal review). Privacy and Terms still describe VisaNova, RecallEase, consulting SOWs, retainers and late fees, and omit Axiom, prepaid AI credits, credit refunds and Founding Supporter purchases. Not rewritten automatically because these are legal terms.
-2. **Self-service API keys.** Keys are minted only by platform admins (`/api/admin/api-keys`), so customers cannot get a governance key on their own. Planned: a `/control` page for workspace owners and admins to mint scoped keys.
+2. ~~**Self-service API keys.**~~ Done in #248: `/control/api-keys`.
 3. **The `/dashboard` tree is unreachable in the browser** (about 100 pages). Decide: delete it, or port the useful pages to `/control`. There are also duplicate approval surfaces (approvals, approval-packets, remediation-proposals, policy-proposals, agent-proposals); the canonical one should be `/control/governance`.
 4. **Desktop dormant views.** About 50 view files in `desktop/src/views` are never rendered; move them out so nothing deep-links to them by mistake. The tray approval hooks are not mounted in the live app.
 5. **Desktop focus re-verify.** A brief network drop on window focus can lock the workspace. Kept as is (fail-closed) pending a decision.
