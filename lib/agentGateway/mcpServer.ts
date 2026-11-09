@@ -18,6 +18,7 @@ const actionSchema = {
     target: { type: "string", description: "Repository, service or resource, e.g. acme/web or prod-db." },
     summary: { type: "string", description: "One or two sentences describing the exact change." },
     agentName: { type: "string", description: "Your agent's name, e.g. cursor or claude-code." },
+    changedFiles: { type: "array", items: { type: "string" }, description: "Optional: file paths the change touches. Sensitive or wide changes always need approval." },
   },
   required: ["actionKind", "target", "summary"],
 } as const;

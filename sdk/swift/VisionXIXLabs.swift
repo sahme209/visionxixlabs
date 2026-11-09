@@ -124,13 +124,13 @@ public struct VisionXIXLabs {
     // MARK: - Agent governance gateway (A10)
 
     /// POST /api/v1/governance/check — may an agent do this? Stores nothing. Scope: governance:read.
-    public func checkAgentAction(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil) async throws -> AgentPolicyResponse {
-        try await post("/api/v1/governance/check", body: Self.agentAction(actionKind, target, summary, environment, agentName))
+    public func checkAgentAction(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil, changedFiles: [String] = []) async throws -> AgentPolicyResponse {
+        try await post("/api/v1/governance/check", body: Self.agentAction(actionKind, target, summary, environment, agentName, changedFiles))
     }
 
     /// POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request.
-    public func requestAgentApproval(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil) async throws -> AgentRequestResponse {
-        try await post("/api/v1/governance/requests", body: Self.agentAction(actionKind, target, summary, environment, agentName))
+    public func requestAgentApproval(actionKind: String, target: String, summary: String, environment: String = "unknown", agentName: String? = nil, changedFiles: [String] = []) async throws -> AgentRequestResponse {
+        try await post("/api/v1/governance/requests", body: Self.agentAction(actionKind, target, summary, environment, agentName, changedFiles))
     }
 
     /// GET /api/v1/governance/requests/{id} — proceed only when `request.mayProceed` is true. Scope: governance:read.
@@ -145,9 +145,10 @@ public struct VisionXIXLabs {
         return try await post("/api/v1/governance/requests/\(id.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) ?? id)/outcome", body: body)
     }
 
-    private static func agentAction(_ kind: String, _ target: String, _ summary: String, _ env: String, _ agentName: String?) -> [String: Any] {
+    private static func agentAction(_ kind: String, _ target: String, _ summary: String, _ env: String, _ agentName: String?, _ changedFiles: [String]) -> [String: Any] {
         var body: [String: Any] = ["actionKind": kind, "target": target, "summary": summary, "environment": env]
         if let agentName { body["agentName"] = agentName }
+        if !changedFiles.isEmpty { body["changedFiles"] = changedFiles }
         return body
     }
 

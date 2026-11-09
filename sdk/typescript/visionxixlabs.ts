@@ -386,7 +386,7 @@ function constantTimeEqual(a: string, b: string): boolean {
 // ------------------------------------------- Agent governance gateway types
 
 export type AgentActionKind = "read" | "code_change" | "open_pull_request" | "merge" | "dependency_change" | "infra_change" | "deploy" | "data_migration" | "secret_access" | "delete_resource" | "run_command";
-export interface AgentActionInput { actionKind: AgentActionKind; environment?: "development" | "staging" | "production" | "unknown"; target: string; summary: string; agentName?: string }
+export interface AgentActionInput { actionKind: AgentActionKind; environment?: "development" | "staging" | "production" | "unknown"; target: string; summary: string; agentName?: string; changedFiles?: string[] }
 export interface AgentPolicy { decision: "allow" | "require_approval" | "deny"; riskLevel: "low" | "medium" | "high"; reasons: string[] }
 export interface AgentPolicyResponse { ok: boolean; policy?: AgentPolicy; error?: string }
 export interface AgentRequest { id: string; status: string; mayProceed: boolean; reason: string; policyDecision: string; riskLevel: string; actionDigest: string; expiresAt: string; outcome: string | null }

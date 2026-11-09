@@ -9,6 +9,7 @@
  * point, not a sandbox: it cannot stop an agent that ignores it.
  */
 import { createHash } from "node:crypto";
+import { previewImpact, type ImpactPreview } from "@/lib/impact/impactKernel";
 
 export const ACTION_KINDS = [
   "read",              // inspect code, logs, configs
@@ -29,7 +30,7 @@ export type GatewayEnvironment = (typeof ENVIRONMENTS)[number];
 export type RiskLevel = "low" | "medium" | "high";
 export type PolicyDecision = "allow" | "require_approval" | "deny";
 
-export interface GatewayActionInput { actionKind: ActionKind; environment: GatewayEnvironment; target: string; summary: string }
+export interface GatewayActionInput { actionKind: ActionKind; environment: GatewayEnvironment; target: string; summary: string; changedFiles?: readonly string[] }
 export interface PolicyResult { decision: PolicyDecision; riskLevel: RiskLevel; reasons: string[] }
 
 export const isActionKind = (v: unknown): v is ActionKind => typeof v === "string" && (ACTION_KINDS as readonly string[]).includes(v);
@@ -41,6 +42,27 @@ const BASE_RISK: Readonly<Record<ActionKind, RiskLevel>> = {
   infra_change: "high", deploy: "high", data_migration: "high", secret_access: "high", delete_resource: "high",
 };
 const bump = (r: RiskLevel): RiskLevel => (r === "low" ? "medium" : "high");
+
+const SENSITIVE_AREAS = new Set(["database_migration", "ci_cd", "auth_security", "secrets_config", "infrastructure"]);
+
+/**
+ * Combines the action policy with a change impact preview (A13). Impact can only
+ * make a decision stricter (allow -> require_approval, risk raised); it never
+ * loosens or overrides a deny.
+ */
+export function evaluateGatewayPolicyWithImpact(input: GatewayActionInput): PolicyResult & { impact: ImpactPreview | null } {
+  const base = evaluateGatewayPolicy(input);
+  if (!input.changedFiles || input.changedFiles.length === 0) return { ...base, impact: null };
+  const impact = previewImpact(input.changedFiles);
+  const sensitive = impact.areas.filter((a) => SENSITIVE_AREAS.has(a.area)).map((a) => a.area.replace("_", " "));
+  const reasons = [...base.reasons, `Impact preview: ${impact.blastRadius} blast radius across ${impact.files} files${sensitive.length ? `; touches ${sensitive.join(", ")}` : ""}.`];
+  if (base.decision === "deny") return { ...base, reasons, impact };
+  const escalate = impact.blastRadius === "wide" || sensitive.length > 0;
+  if (!escalate) return { ...base, reasons, impact };
+  const riskLevel: RiskLevel = impact.blastRadius === "wide" || base.riskLevel !== "low" ? "high" : "medium";
+  return { decision: "require_approval", riskLevel: rank(riskLevel) > rank(base.riskLevel) ? riskLevel : base.riskLevel, reasons: [...reasons, "Sensitive or wide impact, so a workspace admin must approve this exact change."], impact };
+}
+const rank = (r: RiskLevel) => (r === "low" ? 0 : r === "medium" ? 1 : 2);
 
 export function evaluateGatewayPolicy(input: GatewayActionInput): PolicyResult {
   const reasons: string[] = [];
@@ -64,7 +86,7 @@ export function evaluateGatewayPolicy(input: GatewayActionInput): PolicyResult {
 
 /** Binds an approval to one exact action; any change to it needs a new approval. */
 export function gatewayActionDigest(organizationId: string, apiKeyId: string, input: GatewayActionInput): string {
-  return createHash("sha256").update(JSON.stringify(["agent-gateway-v1", organizationId, apiKeyId, input.actionKind, input.environment, input.target, input.summary])).digest("hex");
+  return createHash("sha256").update(JSON.stringify(["agent-gateway-v1", organizationId, apiKeyId, input.actionKind, input.environment, input.target, input.summary, ...(input.changedFiles?.length ? [[...input.changedFiles].sort()] : [])])).digest("hex");
 }
 
 /** Validates untrusted agent input into a GatewayActionInput, or returns an error code. */
@@ -79,7 +101,12 @@ export function parseGatewayAction(raw: unknown): { ok: true; value: GatewayActi
   if (!target) return { ok: false, error: "invalid_target" };
   if (!summary) return { ok: false, error: "invalid_summary" };
   if (!agentName) return { ok: false, error: "invalid_agent_name" };
-  return { ok: true, value: { actionKind: r.actionKind, environment, target, summary, agentName } };
+  let changedFiles: string[] | undefined;
+  if (r.changedFiles !== undefined) {
+    if (!Array.isArray(r.changedFiles) || r.changedFiles.length > 2000 || !r.changedFiles.every((f) => typeof f === "string" && f.length > 0 && f.length <= 400)) return { ok: false, error: "invalid_changed_files" };
+    changedFiles = r.changedFiles as string[];
+  }
+  return { ok: true, value: { actionKind: r.actionKind, environment, target, summary, agentName, ...(changedFiles ? { changedFiles } : {}) } };
 }
 
 export const APPROVAL_TTL_MS = 24 * 60 * 60 * 1000;
