@@ -4,6 +4,32 @@ Master execution plan: [application + website action plan](axiom-master-action-p
 
 Status pointer corrected November 4, 2026; ecosystem entries retain their recorded planning scope. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
 
+## Status snapshot — 2026-11-09 (what changed this session, and what is left)
+
+This snapshot complements the detailed index (master-plan-requirements-index.md, not re-scored item by item). Everything below is merged on main unless marked otherwise. None of it is in production until build 3.
+
+**Done in code (merged)**
+- **A7 security:** workspace-authority fixes on /api/axiom/*; starter-token expiry; consolidated threat model; tamper-evident audit seals; AI context secret redaction in the governed AI path; invite revocation; self-service API keys (scoped, expiring); Dependabot (grouped) plus a weekly dependency audit; the non-breaking vulnerability fix (13 → 6, one high left: @azure/msal-node needs a major upgrade).
+- **A10–A14 agent governance (new):** MCP and REST gateway for any agent; policy replay; change impact preview (also inside gateway decisions); agent scorecards; `vxl ask` / `vxl outcome`; webhook events.
+- **A8 Batches:** read-only Prefect, Dagster and Argo clients, connection route, Agent tools, desktop connect form.
+- **B2 website:** balanced layout, wording pass, full-page design screenshots in CI, logic-audit fixes (dead links, duplicate FAQ, stale pages, legal dates).
+- **B4 docs:** Agent gateway, Trust tools and API keys guides.
+- **B5/C2 Ask Axiom:** grounded cited answers (FAQ, docs headings, 86 docs sections), guardrails, account-aware read-only help, AI answers through the governed path, a 38-case eval in CI (95%).
+- **CI:** parallel jobs (~6 min); build memory fixed by retiring 41 unreachable dashboard pages.
+
+**Waiting on the owner (decisions or clicks)**
+1. Apply the two additive production migrations (AgentGatewayRequest, AuditSeal) — docs/recovery/2026-11-08/production-db-check/BUILD-3-DB-STEP.md.
+2. Production build 3.
+3. Review and merge the legal additions (#271).
+4. Major upgrades: @azure/msal-node, and aws-actions/configure-aws-credentials v6 (#251).
+5. Earlier holds: Vercel secret fallbacks, Neon preview integration, Agent seed, Lead.phone, admin MFA, API key expiry policy for admin-minted keys, coding-run budget design (A7.18).
+
+**Needs real-world steps (not code)**
+Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); real-app walkthroughs (A4); Store/Windows (A5, deferred); independent security assessment (A7.14); live provider acceptance (A8); recorded demos (B3).
+
+**Code still open (next candidates)**
+Support agent governed actions (roadmap step 4); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations; B4 coverage of the remaining screens; C1–C6 (not authorized yet).
+
 ## Current completion work
 
 1. **ServiceNow:** the exact deployment-evidence note exists in CHG0030002 and matches the reviewed payload. Preserve its one consumed, unknown Axiom attempt; narrow OAuth proof-reader presence was verified; complete independently reviewed read-only outcome reconciliation, then follow the native approval lifecycle and exact closure approval. Never resend the note.
