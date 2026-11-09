@@ -117,10 +117,23 @@ export default async function TeamPage({
 
   if (navigation && !parseBrowserNavigationIntent(navigation, Date.now())) return blocked;
   const canManage = !membersUnavailable && isAdminRole(currentRole);
+  // Ask Axiom access requests (last 30 days). Requests are notifications; admins change roles below.
+  const accessRequests = canManage ? await Promise.resolve().then(() => prisma.auditEvent.findMany({ where: { organizationId: String(ctx.organizationId), kind: "access.requested", createdAt: { gte: new Date(Date.now() - 30 * 86_400_000) } }, orderBy: { createdAt: "desc" }, take: 20, select: { id: true, summary: true, detailJson: true, createdAt: true } })).catch(() => []) : [];
 
   return (
     <div className="w-full min-w-0">
       <header className="mb-7"><h1>Members</h1><p className="mt-3 text-sm leading-6 text-zinc-400">Invite teammates and manage roles in your workspace.</p></header>
+
+      {accessRequests.length > 0 && (
+        <section aria-label="Access requests" className="mb-6 rounded-md border border-sky-400/20 bg-sky-400/[0.04] p-4">
+          <h2 className="text-sm font-medium text-zinc-100">Access requests</h2>
+          <p className="mt-1 text-xs text-zinc-400">Members asked through Ask Axiom. Nothing has changed; adjust a role below if you agree.</p>
+          <ul className="mt-3 space-y-2">{accessRequests.map((r) => {
+            const reason = (r.detailJson as { reason?: unknown } | null)?.reason;
+            return <li key={r.id} className="text-sm text-zinc-300">{r.summary} <span className="text-xs text-zinc-500">· {r.createdAt.toISOString().slice(0, 10)}</span>{typeof reason === "string" && <p className="text-xs text-zinc-500">“{reason}”</p>}</li>;
+          })}</ul>
+        </section>
+      )}
 
       {/* Notices */}
       {noticeRaw === "invite_sent" && (

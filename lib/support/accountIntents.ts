@@ -7,10 +7,11 @@
  * no cross-workspace read. Unknown questions return null and fall back to the
  * public docs answer.
  */
-export const ACCOUNT_INTENTS = ["pending_approvals", "agent_requests", "connections", "audit_integrity", "recent_activity"] as const;
+export const ACCOUNT_INTENTS = ["access_request", "pending_approvals", "agent_requests", "connections", "audit_integrity", "recent_activity"] as const;
 export type AccountIntent = (typeof ACCOUNT_INTENTS)[number];
 
 const RULES: ReadonlyArray<{ intent: AccountIntent; test: RegExp }> = [
+  { intent: "access_request", test: /\b(need|want|request|get|give me|grant|upgrade)\b.*\b(access|permission|permissions|role|admin|operator)\b|\bwhy can'?t i\b|\bnot allowed\b|\bpermission denied\b/i },
   { intent: "agent_requests", test: /\b(agent|cursor|claude|codex|copilot|mcp|gateway)\b.*\b(request|waiting|pending|approv)|\b(request|waiting|pending)\b.*\bagents?\b/i },
   { intent: "pending_approvals", test: /\b(pending|waiting|need|needs|awaiting|open)\b.*\b(approv|review|decision)|\bapprovals?\b.*\b(pending|waiting|open|queue)\b|what('s| is)? waiting for me/i },
   { intent: "audit_integrity", test: /\b(audit|seal|tamper|integrity)\b/i },
@@ -35,6 +36,8 @@ export interface AccountFacts {
 /** Turns bounded facts into a short answer with a link to where the person can act. */
 export function composeAccountAnswer(intent: AccountIntent, f: AccountFacts): { answer: string; href: string; title: string } {
   switch (intent) {
+    case "access_request":
+      return { answer: "I can't change roles, but I can send your request to this workspace's admins. Choose the role you need and say why; an admin decides on the Members page.", href: "/control/members", title: "Members" };
     case "agent_requests": {
       const n = f.pendingAgentRequests ?? 0;
       return { answer: n === 0 ? "No AI agent is waiting for approval in this workspace." : `${n} AI agent request${n === 1 ? " is" : "s are"} waiting for a decision. Approvers must not be the person who created the agent's key.`, href: "/control/agent-gateway", title: "Agent gateway" };

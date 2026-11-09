@@ -25,6 +25,8 @@ interface Message {
   mode?: "grounded" | "ai";
   /** No confident docs answer: offer a hand-off to support. */
   unsure?: boolean;
+  /** Signed-in member asked for more access: show the request form. */
+  accessForm?: boolean;
 }
 
 const MSG_KEY = "visionxix-ai-widget-messages";
@@ -116,7 +118,7 @@ export default function AIChatWidget() {
       // Anonymous visitors get 401 before any data is read; secrets never go further.
       if (data.guard !== "secret_pasted") {
         const acct = await fetch("/api/support/account-answer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
-        if (acct?.ok && acct.answered) { data.answer = acct.answer; data.sources = acct.sources; }
+        if (acct?.ok && acct.answered) { data.answer = acct.answer; data.sources = acct.sources; data.accessForm = acct.intent === "access_request"; }
       }
 
       const assistantMsg: Message = {
@@ -127,7 +129,8 @@ export default function AIChatWidget() {
         sources: Array.isArray(data.sources) ? data.sources.slice(0, 3).map((x: { title: string; href: string }) => ({ title: String(x.title), href: String(x.href) })) : [],
         question: data.guard ? undefined : text,
         mode: "grounded",
-        unsure: data.status === "suggestions",
+        unsure: data.status === "suggestions" && !data.accessForm,
+        accessForm: Boolean(data.accessForm),
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch {
@@ -252,6 +255,7 @@ export default function AIChatWidget() {
                         </div>
                       )}
                       <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                      {m.role === "assistant" && m.accessForm && <AccessRequestForm />}
                       {m.role === "assistant" && m.mode === "grounded" && m.question && m.unsure && (
                         <a href={`/contact?topic=ask-axiom&question=${encodeURIComponent(m.question.slice(0, 500))}`} className="mt-2 mr-3 inline-block text-[11px] text-zinc-300 underline underline-offset-2 hover:text-white">Send this question to support</a>
                       )}
@@ -320,5 +324,27 @@ export default function AIChatWidget() {
         </div>
       )}
     </>
+  );
+}
+
+/** Sends a role request to workspace admins. It never grants anything; admins decide on Members. */
+function AccessRequestForm() {
+  const [role, setRole] = useState("operator"); const [reason, setReason] = useState(""); const [state, setState] = useState<string | null>(null); const [busy, setBusy] = useState(false);
+  async function send() {
+    setBusy(true);
+    const r = await fetch("/api/support/access-request", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ requestedRole: role, reason }) }).then((x) => x.json()).catch(() => null);
+    setState(r?.ok ? r.message : r?.error === "already_has_role" ? "You already have that role or a higher one." : r?.error === "reason_required" ? "Add a short reason." : "Could not send the request.");
+    setBusy(false);
+  }
+  if (state && state.startsWith("Sent")) return <p role="status" className="mt-2 text-[11px] text-emerald-300">{state}</p>;
+  return (
+    <div className="mt-2 space-y-1.5 border-t border-white/[0.06] pt-2 text-[11px]">
+      <label className="block text-zinc-400" htmlFor="ask-axiom-role">Role you need</label>
+      <select id="ask-axiom-role" value={role} onChange={(e) => setRole(e.target.value)} className="w-full rounded border border-white/10 bg-black/30 px-2 py-1">{["operator", "security_reviewer", "finance_viewer", "admin"].map((r) => <option key={r} value={r}>{r.replace("_", " ")}</option>)}</select>
+      <label className="block text-zinc-400" htmlFor="ask-axiom-reason">Why</label>
+      <input id="ask-axiom-reason" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} className="w-full rounded border border-white/10 bg-black/30 px-2 py-1" placeholder="e.g. I approve staging releases for the web team" />
+      <button type="button" disabled={busy} onClick={() => void send()} className="rounded bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Ask an admin</button>
+      {state && <p role="alert" className="text-rose-300">{state}</p>}
+    </div>
   );
 }

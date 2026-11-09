@@ -19,6 +19,8 @@ const iso = (d: Date) => d.toISOString().slice(0, 16).replace("T", " ") + " UTC"
 
 async function facts(intent: AccountIntent, organizationId: string): Promise<AccountFacts> {
   switch (intent) {
+    case "access_request":
+      return {};
     case "agent_requests":
       return { pendingAgentRequests: await prisma.agentGatewayRequest.count({ where: { organizationId, status: "pending", expiresAt: { gt: new Date() } } }) };
     case "pending_approvals": {
