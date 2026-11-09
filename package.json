@@ -14,7 +14,7 @@
     "test": "node scripts/run-vitest.mjs"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.78.0",
+    "@anthropic-ai/sdk": "^1.6.0",
     "@aws-sdk/client-acm": "^3.1001.0",
     "@aws-sdk/client-backup": "^3.1001.0",
     "@aws-sdk/client-cloudtrail": "^3.1001.0",
