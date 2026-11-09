@@ -229,7 +229,7 @@ Every subcommand supports `--json` for piping into `jq`.
 
 ### Agent governance gateway (MCP)
 
-Let any AI agent (Cursor, Claude Code, Codex, your own) ask Axiom before it acts. Add a remote MCP server:
+Let any AI agent (Cursor, Claude Code, Codex, your own) ask Axiom before it acts. A workspace owner or admin creates a key on **Control → API keys** (governance and read scopes only, expiring in at most 90 days). Then add a remote MCP server:
 
 ```json
 { "mcpServers": { "axiom": { "url": "https://visionxixlabs.com/api/v1/mcp", "headers": { "Authorization": "Bearer vxlk_live_..." } } } }
