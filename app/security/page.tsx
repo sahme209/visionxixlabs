@@ -13,16 +13,16 @@ export const metadata: Metadata = {
   alternates: { canonical: "/security" },
 };
 const AREAS = [
-  {title:"Identity and current permissions",detail:"The desktop uses a browser handoff and scoped session. Role and action checks belong in the service; interface visibility does not grant authority.",href:"/docs/permissions-model",label:"Read the permissions model"},
-  {title:"Credentials and stored content",detail:"Credential custody differs by connector. Native session-vault and server redaction code exist, but packaged persistence, provider scopes, revocation and recovery need their own verification.",href:"/docs/security-model",label:"Read the security model"},
-  {title:"Review and execution boundaries",detail:"Exact review, requester execution and platform checks depend on the operation and installed version. Full Governance Intelligence coverage and activation are not complete.",href:"/docs/approval-workflow",label:"Understand the approval workflow"},
-  {title:"Recorded outcomes and audit context",detail:"Supported paths record actors, decisions and outcomes. A saved record, green workflow or rollback instruction does not by itself prove application health or successful recovery.",href:"/docs/audit-logs",label:"Understand recorded activity"},
+  {title:"Identity and current permissions",detail:"Sign-in hands off from the browser to a scoped desktop session. The service checks roles and actions; seeing a button never grants authority.",href:"/docs/permissions-model",label:"Read the permissions model"},
+  {title:"Credentials and stored content",detail:"Custody differs by connector. Session-vault and redaction code exist; packaged storage, scopes, revocation and recovery are verified separately.",href:"/docs/security-model",label:"Read the security model"},
+  {title:"Review and execution boundaries",detail:"Review, execution and platform checks depend on the operation and version. Full Governance Intelligence coverage and activation are not complete.",href:"/docs/approval-workflow",label:"Understand the approval workflow"},
+  {title:"Recorded outcomes and audit context",detail:"Supported paths record who acted, what was decided and what happened. A record or a green workflow alone does not prove health or recovery.",href:"/docs/audit-logs",label:"Understand recorded activity"},
 ] as const;
 const LIMITS = [
-  "Signing, installation, saved sessions and update trust are release- and platform-specific. Check the actual download and installation facts.",
-  "AWS validation needs the configured broker and customer IAM setup; inventory/security analysis remains preview-grade. Azure and GCP provider-specific live paths have their own unfinished verification.",
-  "Local Terraform apply remains disabled. A generated artifact is for review, not evidence that a change ran.",
-  "Tenant isolation, retention, backup/restore, incident response and every relevant permission path need deployment-specific security assessment.",
+  "Signing, installation, sessions and update trust vary by release and platform. Check the download facts.",
+  "AWS validation needs the broker and your IAM setup; analysis is preview-grade. Azure and GCP live paths are still being verified.",
+  "Local Terraform apply is disabled. A generated plan is for review, not proof a change ran.",
+  "Tenant isolation, retention, backup, incident response and permission paths need a deployment-specific assessment.",
 ];
 export default function SecurityPage(){
  return <div className="axiom-canvas min-h-screen text-zinc-100"><Navigation/>
