@@ -90,6 +90,14 @@ export const DOC_SECTIONS: DocSection[] = [
     ],
   },
   {
+    title: "Workspace",
+    items: [
+      { href: "/docs/members", label: "Members and roles", icon: BookOpenIcon },
+      { href: "/docs/governance-approvals", label: "Governance approvals", icon: BookOpenIcon },
+      { href: "/docs/usage-billing", label: "Usage and billing", icon: BookOpenIcon },
+    ],
+  },
+  {
     title: "Reference",
     items: [
       { href: "/docs/troubleshooting", label: "Troubleshooting", icon: WrenchScrewdriverIcon },
