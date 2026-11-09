@@ -312,7 +312,7 @@
     {
       "href": "/docs/faq",
       "source": "app/docs/faq/page.tsx",
-      "sourceSha256": "333d6185edf68082966fe41f71b89a60cfdc0ff43854e6459a5ca1b57524b999",
+      "sourceSha256": "fedf1b7339905ef9adbc6e9e683c572043d86e00886d160b24943ef1f650a878",
       "fields": [
         "Frequently asked questions.",
         "The questions we see most often, grouped by topic. If something isn't answered here, the troubleshooting guide or product documentation usually has the answer.",
