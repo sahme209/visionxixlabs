@@ -300,6 +300,12 @@ export const SCENARIO_DIAGRAMS: Record<DemoScenarioId, string> = {
         │◀──mayProceed=true───┤◀──approve (digest)───┤
         ├─acts, then──────────▶│ record_outcome → audit
   `.trimEnd(),
+
+  trust_tools: `
+   audit events ──seal──▶ seal #n ──links──▶ seal #n-1 … genesis
+   draft rule ──replay over 30 days──▶ newly blocked / auto-approved
+   changed files ──classify──▶ areas · blast radius · rollback
+  `.trimEnd(),
 };
 
 /**
@@ -349,5 +355,8 @@ export const SCENARIO_CLOSERS: Record<DemoScenarioId, string> = {
     "Internal-only. Drafts always require explicit human approval before any post fires. The audience='internal_only' tag on the scenario is enforced by listScenarios() — a real workspace can NEVER see this surface.",
 
   agent_governance_gateway:
-    "Axiom does not have to be the only agent. Any MCP agent can ask before it acts, and the decision is the same pure policy kernel, bound to an exact action digest and decided by someone other than the key's minter. Agents self-report, so this is a cooperative control point, not a sandbox."
+    "Axiom does not have to be the only agent. Any MCP agent can ask before it acts, and the decision is the same pure policy kernel, bound to an exact action digest and decided by someone other than the key's minter. Agents self-report, so this is a cooperative control point, not a sandbox.",
+
+  trust_tools:
+    "Trust is shown, not claimed. A seal chain makes edits visible, a replay shows a rule's effect before it ships, and an impact preview names what a change touches. Each states its limits."
 };

@@ -7,8 +7,8 @@ import {
 } from "../demoScenarios";
 
 describe("DEMO_SCENARIOS — Phase 405 contract", () => {
-  it("has exactly 14 scenarios (matches the spec)", () => {
-    expect(Object.keys(DEMO_SCENARIOS).length).toBe(14);
+  it("has exactly 15 scenarios (matches the spec)", () => {
+    expect(Object.keys(DEMO_SCENARIOS).length).toBe(15);
   });
 
   it("each id matches its key", () => {
@@ -69,7 +69,7 @@ describe("listScenarios — audience filtering", () => {
 
   it("internal sees everything (incl. internal_growth_automation)", () => {
     const result = listScenarios("internal_only");
-    expect(result.length).toBe(14);
+    expect(result.length).toBe(15);
     expect(result.some((s) => s.id === "internal_growth_automation")).toBe(true);
   });
 

@@ -35,7 +35,8 @@ export type DemoScenarioId =
   | "ai_workforce_overview"
   | "pricing_and_usage"
   | "internal_growth_automation"
-  | "agent_governance_gateway";
+  | "agent_governance_gateway"
+  | "trust_tools";
 
 /** Audience visibility — controls which surfaces can show each scenario. */
 export type DemoAudience = "public" | "client" | "internal_only";
@@ -160,6 +161,21 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
       { id: "3", title: "Agent asks before deploying", description: "The agent calls axiom_request_approval for a production deploy.", approval: "none", relatedAgent: "External agent", expectedResult: "Policy: require_approval, high risk. The agent waits; mayProceed is false." },
       { id: "4", title: "A different admin approves", description: "A workspace admin who did not mint the key approves the exact action, bound by its digest.", route: "/dashboard/agent-gateway", approval: "two_person", expectedResult: "mayProceed becomes true; approval expires after 24 hours." },
       { id: "5", title: "Outcome recorded", description: "The agent reports succeeded, failed or abandoned.", approval: "none", expectedResult: "Request completes, with an audit event for each step." },
+    ],
+  },
+  trust_tools: {
+    id: "trust_tools",
+    title: "Prove, Replay, Preview",
+    pitch: "Prove the audit log is untouched, test a rule on real history, and see a change's blast radius before approving.",
+    description: "Three read-only trust tools on one page. Audit seals are tamper evidence, not prevention. Replay never enables a rule. Impact preview reads file paths only.",
+    estimatedMinutes: 4,
+    audience: "public",
+    lastReviewed: "2026-11-09",
+    sourceFeatureVersion: "A11-A13 trust tools",
+    steps: [
+      { id: "1", title: "Seal and verify the audit log", description: "An admin seals recent audit events; anyone in the workspace verifies the chain.", route: "/dashboard/trust-tools", approval: "self_approve", expectedResult: "Intact, with N seals verified, or the exact seal that changed." },
+      { id: "2", title: "Replay a draft rule", description: "Pick \"Block every high-risk action\" and replay it over 30 days.", route: "/dashboard/trust-tools", approval: "none", expectedResult: "Counts of actions newly blocked or auto-approved, with each changed action listed. Nothing is enabled." },
+      { id: "3", title: "Preview a change", description: "Paste a PR's changed files.", route: "/dashboard/trust-tools", approval: "none", expectedResult: "Areas touched, blast radius, rollback outlook and reviewer checks, labelled path-based." },
     ],
   },
   security_finding: {

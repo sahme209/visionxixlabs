@@ -5087,6 +5087,29 @@ model PipelineAICallReservation {
  @@index([runId, status])
 }
 
+/// Tamper-evident audit seals (A11). Each seal fingerprints a window of the
+/// organization's AuditEvent rows and links to the previous seal, forming a
+/// hash chain. Re-verification detects edited, deleted or inserted events in a
+/// sealed window and any broken link. Appends are untouched (no hot-path lock).
+model AuditSeal {
+  id             String   @id @default(cuid())
+  organizationId String
+  /// 1, 2, 3, ... per organization; unique, so concurrent sealers cannot fork the chain.
+  sequence       Int
+  /// Exclusive lower bound and inclusive upper bound on AuditEvent.createdAt.
+  fromCreatedAt  DateTime
+  toCreatedAt    DateTime
+  eventCount     Int
+  /// SHA-256 rolling root over canonical event digests, ordered by (createdAt, id).
+  eventsRoot     String
+  prevSealHash   String
+  sealHash       String
+  createdAt      DateTime @default(now())
+
+  @@unique([organizationId, sequence])
+  @@index([organizationId, toCreatedAt])
+}
+
 /// Agent governance gateway (Phase A10): an external or internal AI agent
 /// (Cursor, Claude Code, Codex, Axiom's own agents) asks Axiom for a policy
 /// decision or a human approval before a consequential action, then reports
