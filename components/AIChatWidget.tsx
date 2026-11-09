@@ -18,6 +18,8 @@ interface Message {
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+  /** Cited public sources for grounded answers. */
+  sources?: { title: string; href: string }[];
 }
 
 const MSG_KEY = "visionxix-ai-widget-messages";
@@ -27,7 +29,7 @@ function loadMessages(): Message[] {
   try {
     const raw = localStorage.getItem(MSG_KEY);
     if (!raw) return [];
-    const parsed = JSON.parse(raw) as { id: string; role: "user" | "assistant"; content: string; timestamp: string }[];
+    const parsed = JSON.parse(raw) as { id: string; role: "user" | "assistant"; content: string; timestamp: string; sources?: { title: string; href: string }[] }[];
     return parsed.slice(-30).map((m) => ({ ...m, timestamp: new Date(m.timestamp) }));
   } catch {
     return [];
@@ -43,10 +45,10 @@ function saveMessages(msgs: Message[]) {
 }
 
 const SUGGESTIONS = [
-  "How does a GitHub change become an approved deployment?",
+  "Can Axiom govern Cursor or Claude Code?",
   "What happens before Axiom can deploy to production?",
-  "How does the AWS ECS rollback path work?",
-  "Which integrations are released today?",
+  "How does AI pricing work?",
+  "Are credentials stored?",
 ];
 
 export default function AIChatWidget() {
@@ -90,29 +92,28 @@ export default function AIChatWidget() {
     setMessages((prev) => [...prev, userMsg]);
     setLoading(true);
 
-    const history = [...messages, userMsg].map((m) => ({
-      role: m.role as "user" | "assistant",
-      content: m.content,
-    }));
-
     try {
-      const res = await fetch("/api/visionxix-ai-chat", {
+      // Grounded support answers: public docs only, always cited, no AI model call.
+      const res = await fetch("/api/support/answer", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history }),
+        body: JSON.stringify({ question: text }),
       });
       const data = await res.json();
 
-      if (!res.ok) {
-        setError(data?.error || "Something went wrong. Please try again.");
+      if (!res.ok || !data?.ok) {
+        setError(data?.error === "rate_limited" ? "Too many questions. Please wait a minute." : "Something went wrong. Please try again.");
         return;
       }
+      // Never keep a message that looked like a secret, not even in this browser.
+      if (data.guard === "secret_pasted") setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, content: "[removed: looked like a secret]" } : m)));
 
       const assistantMsg: Message = {
         id: crypto.randomUUID(),
         role: "assistant",
-        content: data.message ?? "",
+        content: data.answer ?? "",
         timestamp: new Date(),
+        sources: Array.isArray(data.sources) ? data.sources.slice(0, 3).map((x: { title: string; href: string }) => ({ title: String(x.title), href: String(x.href) })) : [],
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch {
@@ -151,7 +152,7 @@ export default function AIChatWidget() {
         <div
           className="fixed right-6 left-auto w-[420px] z-[9999] hidden md:flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-6 max-h-[calc(100vh-8rem)]"
           role="dialog"
-          aria-label="Vision XIX Labs AI chat"
+          aria-label="Ask Axiom support chat"
         >
           <div className="flex items-center justify-between border-b border-white/[0.06] bg-zinc-600 px-4 py-3">
             <div className="flex items-center gap-2">
@@ -181,8 +182,8 @@ export default function AIChatWidget() {
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.06]">
                   <ChatBubbleLeftRightIcon className="h-6 w-6 text-zinc-600" />
                 </div>
-                <p className="text-sm font-medium text-white">Hi, I&apos;m Vision XIX Labs AI</p>
-                <p className="mt-1 text-xs text-zinc-400">Ask about the released product and workflows.</p>
+                <p className="text-sm font-medium text-white">Ask Axiom</p>
+                <p className="mt-1 text-xs text-zinc-400">Answers from Axiom&apos;s public docs, with sources. Never share passwords or keys here.</p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {SUGGESTIONS.slice(0, 4).map((s) => (
                     <button
@@ -211,7 +212,7 @@ export default function AIChatWidget() {
                     >
                       {m.role === "assistant" && (
                         <div className="mb-1 flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-medium text-slate-500">Vision XIX Labs AI</span>
+                          <span className="text-[10px] font-medium text-slate-500">Ask Axiom · from the docs</span>
                           <button
                             onClick={() => copyResponse(m.content)}
                             aria-label="Copy"
@@ -222,6 +223,11 @@ export default function AIChatWidget() {
                         </div>
                       )}
                       <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                      {m.role === "assistant" && m.sources && m.sources.length > 0 && (
+                        <ul aria-label="Sources" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-white/[0.06] pt-2 text-[11px]">
+                          {m.sources.map((src) => src.href.startsWith("/") ? <li key={src.href + src.title}><Link href={src.href} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
+                        </ul>
+                      )}
                     </div>
                   </div>
                 ))}
@@ -256,7 +262,7 @@ export default function AIChatWidget() {
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
-                placeholder="Ask about cloud, AI..."
+                placeholder="Ask about setup, security, pricing…"
                 disabled={loading}
                 className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300 disabled:opacity-60"
               />

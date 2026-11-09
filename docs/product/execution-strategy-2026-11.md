@@ -79,6 +79,18 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-09 | Agent features made discoverable: sidebar entries for Agent gateway and Trust tools (Automation group), plus a 'Govern any AI agent' section on /product with honest limits | Claude; PR feat/agents-discoverability |
 | 2026-11-09 | **A14 agent scorecards**: per-API-key evidence over 90 days (approved, rejected, denied, reported success, unreported outcomes) with a plain trust level (new, building, reliable, needs review). Never changes policy. No migration | Claude; PR feat/agent-scorecards |
 | 2026-11-09 | `vxl ask` and `vxl outcome`: CI and scripts gate a deploy on the agent gateway (exit 0 only when allowed or approved; waits with polling). 6 new CLI tests | Claude; PR feat/vxl-gateway-cli |
+| 2026-11-09 | **Ask Axiom support agent** (user: the website chat becomes the customer support agent bot; DNA from ChatGPT, Claude, Grok, Cursor, Harness; security first). Phase 1 shipped here: grounded answers from a versioned public knowledge base (FAQ, docs headings, reviewed facts), always cited, no AI model call (no cost, nothing invented), refuses pasted secrets and never stores them, routes workspace-specific and action requests to the signed-in app. The legacy chat (old services and VisaNova copy, intentionally disabled for anonymous use) is replaced in the widget. Retired per-user pricing removed from the FAQ | user; Claude; PR feat/ask-axiom-support-agent |
+
+## Ask Axiom support agent roadmap (user request 2026-11-09)
+
+Goal: one support agent that can help with everything about the website and the app, and later act through governed tools.
+
+1. **Grounded answers (done, phase 1).** Public, versioned knowledge with citations. No model, no cost, no hallucination. The bar is security first.
+2. **AI-written answers over retrieved passages (gated).** Only for signed-in workspaces that opted in to AI, paid from prepaid credits with a quote shown first. The model must cite the retrieved passages; answers without a citation are refused. Prompt-injection defence: retrieved text is data, never instructions. Needs the B5 runner approval and a cloud-AI data review.
+3. **Account-aware help (gated).** Read-only tools for the signed-in user's own workspace (connection health, deployment status, approvals waiting), scoped to their membership.
+4. **Governed actions (gated).** Open a ticket, request access, start a diagnostic. Every action goes through the agent governance gateway (A10) with human approval for anything consequential.
+5. **Evaluation and improvement.** A fixed question set with expected sources runs in CI; unanswered questions are reviewed weekly (no customer data in the eval set).
+6. **Knowledge growth.** Add release notes, changelog and every docs page body (not just headings) with review dates; the living-docs rule applies to support answers too.
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.

@@ -1,0 +1,75 @@
+/**
+ * Ask Axiom support knowledge base (B5 / C2). Versioned, public, reviewed.
+ *
+ * Built from three public sources only:
+ *   1. the public FAQ (lib/support/faqData.ts, the same text /docs/faq renders),
+ *   2. the public docs heading index (lib/docs/guide-heading-index.json),
+ *   3. a short list of reviewed product facts below.
+ * No private workspace data, no customer data and no secrets ever enter it.
+ * Every entry carries a public href so answers can always cite their source.
+ */
+import headingIndex from "@/lib/docs/guide-heading-index.json";
+import { FAQ_GROUPS } from "./faqData";
+
+export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-09";
+
+export interface KnowledgeEntry {
+  id: string;
+  kind: "faq" | "guide" | "fact";
+  title: string;
+  /** Plain-text answer or summary shown to the visitor. */
+  body: string;
+  href: string;
+  topic: string;
+  /** Extra search words; never shown. */
+  keywords?: readonly string[];
+}
+
+const FACTS: readonly KnowledgeEntry[] = [
+  { id: "fact-agent-gateway", kind: "fact", topic: "Agents", href: "/product#govern-any-agent", title: "Can Axiom govern Cursor, Claude Code or other AI agents?",
+    body: "Yes. Add Axiom as an MCP server (/api/v1/mcp) with an API key that has governance scopes. Before a consequential action the agent asks Axiom; deploys, merges, infrastructure, migrations and secrets wait for a workspace admin who did not create the key; production secret reads and deletes are refused. Agents report their own actions, so this is a cooperative control point, not a sandbox.",
+    keywords: ["mcp", "cursor", "claude", "codex", "copilot", "agent", "agents", "gateway", "govern", "approval"] },
+  { id: "fact-ci-gate", kind: "fact", topic: "Agents", href: "/docs/approval-workflow", title: "How do I gate a CI deploy on an approval?",
+    body: "Use the vxl CLI: `vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh`. It exits 0 only when policy allows the action or a person approves it, and exits 1 when it is denied, rejected or still waiting at the timeout.",
+    keywords: ["ci", "pipeline", "github actions", "deploy", "cli", "vxl", "gate"] },
+  { id: "fact-trust-tools", kind: "fact", topic: "Security", href: "/security", title: "Can I prove the audit log was not edited?",
+    body: "Owners and admins can seal the audit log on Trust tools. Each seal fingerprints a window of events and links to the previous seal; verifying shows any edited, deleted or inserted event or a broken link. This is tamper evidence, not prevention, so keep the latest fingerprint outside Axiom.",
+    keywords: ["audit", "tamper", "seal", "integrity", "evidence", "compliance", "soc2"] },
+  { id: "fact-policy-replay", kind: "fact", topic: "Governance", href: "/docs/approval-workflow", title: "Can I test an approval rule before turning it on?",
+    body: "Yes. Policy replay on Trust tools runs a draft rule over the last 30 days of real actions with the same rule engine production uses, and shows what would have been blocked or auto-approved. Nothing is enabled by a replay.",
+    keywords: ["policy", "rule", "replay", "simulate", "what if", "dry run"] },
+  { id: "fact-prepaid-ai", kind: "fact", topic: "Pricing", href: "/plans", title: "How does AI pricing work?",
+    body: "Axiom is free to explore. AI usage is the only paid part and is prepaid: you see the estimated cost before each action, a hold is placed, and you pay only the final price, never more than you prepaid. Credit purchases are not open yet.",
+    keywords: ["price", "pricing", "cost", "credits", "billing", "pay", "money", "plan", "plans", "free"] },
+  { id: "fact-support-contact", kind: "fact", topic: "Support", href: "/contact", title: "How do I reach a person?",
+    body: "Use the contact page for questions about downloads, accounts, integrations or security. Signed-in customers can open account help from their workspace. Never paste passwords, API keys or tokens into chat or email.",
+    keywords: ["contact", "human", "person", "email", "help", "support", "talk"] },
+  { id: "fact-model-training", kind: "fact", topic: "Security", href: "/security", title: "Is my data used to train AI models?",
+    body: "Axiom sends context to an AI provider only when you make an explicit AI request in a workspace that has turned AI on. The site makes no guarantee about the provider's retention or model training; check the selected provider's policy before sharing context.",
+    keywords: ["train", "training", "model", "data", "privacy", "retention", "provider", "openai", "anthropic"] },
+  { id: "fact-batches", kind: "fact", topic: "Integrations", href: "/integrations", title: "Does Axiom work with Prefect, Dagster or Argo Workflows?",
+    body: "Read-only connections exist for Prefect, Dagster and Argo Workflows: the Agent can inspect flows, jobs and runs but cannot start, retry or cancel them. Live acceptance with real accounts is still pending. Airflow is the existing batch provider.",
+    keywords: ["prefect", "dagster", "argo", "batch", "batches", "airflow", "workflow", "orchestration"] },
+];
+
+/** Extra search words for FAQ entries that overview questions should reach. Keyed by the exact question. */
+const FAQ_KEYWORDS: Readonly<Record<string, readonly string[]>> = {
+  "What is Axiom Agent?": ["axiom", "axiom", "overview", "about", "product", "explain"],
+  "Is there a desktop app?": ["desktop", "app", "mac", "windows", "linux"],
+  "How is Axiom priced?": ["pricing", "credits"],
+};
+
+function faqEntries(): KnowledgeEntry[] {
+  return FAQ_GROUPS.flatMap((g, gi) => g.items.map((item, ii) => ({ id: `faq-${gi}-${ii}`, kind: "faq" as const, topic: g.title, title: item.q, body: item.a, href: "/docs/faq", ...(FAQ_KEYWORDS[item.q] ? { keywords: FAQ_KEYWORDS[item.q] } : {}) })));
+}
+
+function guideEntries(): KnowledgeEntry[] {
+  const guides = (headingIndex as { guides: { href: string; fields: string[] }[] }).guides;
+  return guides.filter((g) => g.fields.length >= 2).map((g) => ({ id: `guide-${g.href.replace(/[^a-z0-9]+/gi, "-")}`, kind: "guide" as const, topic: "Documentation", title: g.fields[0], body: g.fields[1], href: g.href, keywords: g.fields.slice(2) }));
+}
+
+let cache: readonly KnowledgeEntry[] | null = null;
+export function knowledgeEntries(): readonly KnowledgeEntry[] {
+  if (!cache) cache = Object.freeze([...FACTS, ...faqEntries(), ...guideEntries()]);
+  return cache;
+}
