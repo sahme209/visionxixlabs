@@ -43,5 +43,8 @@ export default defineConfig({
       "components/**/__tests__/**/*.test.ts",
     ],
     globals: false,
+    // lucide-react 1 reads React context; inline it so its React import is
+    // deduped to the root copy instead of desktop/node_modules/react.
+    server: { deps: { inline: [/lucide-react/] } },
   },
 });
