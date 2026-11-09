@@ -146,7 +146,7 @@ Owner decision (2026-11-09): enrolled workspaces refuse these families until eac
 
 - **M01 (acceptance):** an invitation minted before enrollment cannot be accepted while enrolled (`/accept-invite/[token]`).
 - **M04:** new API keys (`/api/control/api-keys`, `/api/admin/api-keys`) and new webhook endpoints (`/api/admin/webhook-endpoints`) are refused while enrolled. Revocation still works.
-- **M03 (partial):** brand-new Airflow and batch-provider connections are refused while enrolled, before any provider I/O; reconnecting or disconnecting an existing connection still works. The OAuth callbacks (Slack, Teams, Linear), Outlook, ServiceNow and cloud-account enrollment are not yet covered: their refusal belongs before the provider consent step and needs its own reviewed change.
+- **M03 (partial):** brand-new Airflow and batch-provider connections are refused while enrolled, before any provider I/O; reconnecting or disconnecting an existing connection still works. Since then (same day): new Slack, Teams and Linear connections are refused at the start of authorization (web and desktop), before any consent state or provider redirect; Outlook refuses a new mailbox connection and any added send access before Microsoft consent; AWS and Azure cloud-account enrollment is refused (each enrollment adds an account). Re-authorizing an existing connection and disconnecting still work. GitHub installations are excluded here because their writes already refuse when enrolled (F03). **Still uncovered:** ServiceNow connection and guided Azure/GCP cloud setup.
 
 This is refusal only. It grants nothing, and it does not register these families as covered for activation.
 
