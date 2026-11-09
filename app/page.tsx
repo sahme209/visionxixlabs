@@ -15,7 +15,6 @@ import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowc
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
-import assemblyStyles from "@/components/marketing/GovernanceAssembly.module.css";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
@@ -45,19 +44,17 @@ export default function Home() {
     <div className="axiom-canvas min-h-screen text-[#ecece8]">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-[1280px] px-5 pb-16 pt-28 sm:px-8 lg:px-10 lg:pb-20 lg:pt-36">
-          <div className={assemblyStyles.homeHero}>
-          <div className={assemblyStyles.homeHeading}>
-            <span className="inline-flex items-center gap-2 text-[10px] font-medium uppercase tracking-[0.2em] text-zinc-400">
-              Axiom Agent · the governed engineering workspace
-            </span>
-            <h1 className="mt-7 text-[clamp(2.8rem,5.8vw,5rem)] font-medium leading-[1.02] tracking-[-0.052em] text-[#f1f1ed]">
+        {/* Hero: one centred column (headline, lead, two actions), then the product itself full width. */}
+        <section className="mx-auto max-w-[1280px] px-5 pb-16 pt-28 sm:px-8 lg:px-10 lg:pt-32">
+          <div className="mx-auto max-w-[880px] text-center">
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Axiom Agent · the governed engineering workspace</p>
+            <h1 className="mt-6 text-[clamp(2.6rem,6vw,4.75rem)] font-medium leading-[1.02] tracking-[-0.045em] text-[#f1f1ed]">
               Engineering work.<br /><span className="text-zinc-400">With you in control.</span>
             </h1>
-            <p className="mt-6 max-w-[650px] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
+            <p className="mx-auto mt-6 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
               A governed workspace for deployments and connected operational changes. Bring repository context, AI assistance, human review, and recorded outcomes into one clear flow.
             </p>
-            <div className="mt-7 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+            <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
               <Link href="/product" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] hover:bg-white">
                 Explore Axiom <ArrowRightIcon className="h-4 w-4" />
               </Link>
@@ -65,17 +62,17 @@ export default function Home() {
                 Explore the scripted tour <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
-          <p className={`${assemblyStyles.homeScope} mt-6 max-w-3xl text-sm leading-6 text-zinc-400`}>
-            Actual actions depend on the installed version, current permissions, and enabled workflow. Complete Governance enforcement and activation are not established.{" "}
-            <Link href="/security" className="text-zinc-200 underline underline-offset-4">Assess security boundaries</Link>{" · "}
-            <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4">Read the approval workflow</Link>.
-          </p>
+            <p className="mx-auto mt-6 max-w-[620px] text-[13px] leading-6 text-zinc-500">
+              Actual actions depend on the installed version, current permissions, and enabled workflow. Complete Governance enforcement and activation are not established.{" "}
+              <Link href="/security" className="text-zinc-300 underline underline-offset-4">Assess security boundaries</Link>{" · "}
+              <Link href="/docs/approval-workflow" className="text-zinc-300 underline underline-offset-4">Read the approval workflow</Link>.
+            </p>
           </div>
+          <div className="mt-14"><HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} /></div>
+        </section>
 
-          <div className={assemblyStyles.homeArt}><GovernanceAssembly compact /></div>
-
-          </div>
-          <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
+        <section aria-label="Inside a deployment decision" className="border-t border-white/[0.06] px-5 py-16 sm:px-8 lg:px-10">
+          <div className="mx-auto max-w-[1280px]"><GovernanceAssembly /></div>
         </section>
 
         <GovernedDeploymentModel />

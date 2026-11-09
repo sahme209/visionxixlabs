@@ -43,15 +43,16 @@ it('shows all three possible outcomes and has no network, timer or storage opera
  expect(screen.getByText(/no actions are performed/)).toBeTruthy();expect(request).not.toHaveBeenCalled();expect(interval).not.toHaveBeenCalled();interval.mockRestore();
 });
 
-it('mounts the actual shared assembly in Home first screen without losing its primary route or availability limits',()=>{
+it('keeps Home balanced: a centred hero with route, limits and product, then the shared assembly in its own section',()=>{
  render(createElement(Home));
- const first=screen.getByRole('main').querySelector('section')!;
- expect(within(first).getByRole('list',{name:'Conceptual workflow'})).toBeTruthy();
+ const [first,second]=Array.from(screen.getByRole('main').querySelectorAll(':scope > section'));
  expect(within(first).getByRole('link',{name:'Explore Axiom'}).getAttribute('href')).toBe('/product');
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();
  expect(within(first).getByText('Existing media fixture')).toBeTruthy();
- const purpose=within(first).getByText(/^A governed workspace for deployments and connected operational changes/);
- expect(purpose.compareDocumentPosition(within(first).getByRole('img',{name:/Deployment constellation/}))&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ expect(within(first).getByText(/^A governed workspace for deployments and connected operational changes/)).toBeTruthy();
+ expect(within(first).queryByRole('list',{name:'Conceptual workflow'})).toBeNull();
+ expect(within(second).getByRole('list',{name:'Conceptual workflow'})).toBeTruthy();
+ expect(within(second).getByRole('img',{name:/Deployment constellation/})).toBeTruthy();
 });
 
 it('server renders a complete ordered no-JavaScript reading of every record and boundary',()=>{

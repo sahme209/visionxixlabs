@@ -8,6 +8,7 @@ const [base = "http://127.0.0.1:3000", out = "design-shots"] = process.argv.slic
 const ROUTES = ["/", "/product", "/integrations", "/security", "/docs", "/demo", "/download", "/plans", "/status", "/support", "/contact", "/axiom", "/docs/approval-workflow", "/docs/permissions-model", "/privacy", "/terms"];
 const VIEWPORTS = [{ name: "desktop", width: 1440, height: 900, mobile: false }, { name: "mobile", width: 390, height: 844, mobile: true }];
 const MAX_HEIGHT = 12000;
+const TILE = 1800;
 mkdirSync(out, { recursive: true });
 
 const chrome = spawn(process.env.CHROMIUM ?? "chromium", ["--headless=new", "--no-sandbox", "--disable-gpu", "--hide-scrollbars", "--remote-debugging-port=9333", "about:blank"], { stdio: "ignore" });
@@ -36,8 +37,11 @@ for (const vp of VIEWPORTS) {
       await sleep(3500);
       const { cssContentSize } = await send("Page.getLayoutMetrics");
       const height = Math.min(MAX_HEIGHT, Math.ceil(cssContentSize.height));
-      const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 70, captureBeyondViewport: true, clip: { x: 0, y: 0, width: vp.width, height, scale: 1 } });
-      writeFileSync(`${out}/${name}.jpg`, Buffer.from(data, "base64"));
+      // Save readable sections of TILE px each (name-00.jpg, name-01.jpg, ...).
+      for (let y = 0, i = 0; y < height; y += TILE, i++) {
+        const { data } = await send("Page.captureScreenshot", { format: "jpeg", quality: 72, captureBeyondViewport: true, clip: { x: 0, y, width: vp.width, height: Math.min(TILE, height - y), scale: 1 } });
+        writeFileSync(`${out}/${name}-${String(i).padStart(2, "0")}.jpg`, Buffer.from(data, "base64"));
+      }
       summary.push({ name, height });
     } catch (e) { summary.push({ name, error: String(e.message).slice(0, 200) }); }
   }
