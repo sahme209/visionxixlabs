@@ -29,7 +29,7 @@ export default function EnterpriseReadinessPage() {
     <div className="min-h-screen bg-[#141414] text-zinc-100">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-[1400px] px-5 pb-20 pt-28 sm:px-8 lg:px-12 lg:pb-28 lg:pt-36">
+        <section className="mx-auto max-w-[1400px] px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pb-28 lg:pt-36">
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">
             Enterprise readiness
           </p>
@@ -53,7 +53,7 @@ export default function EnterpriseReadinessPage() {
         </section>
 
         <section className="border-y border-white/[0.08] bg-[#181818]">
-          <div className="mx-auto grid max-w-[1400px] gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:px-12 lg:py-28">
+          <div className="mx-auto grid max-w-[1400px] gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:px-10 lg:py-28">
             <div>
               <ShieldCheckIcon className="h-7 w-7 text-[#ff783d]" aria-hidden />
               <h2 className="mt-5 text-3xl font-medium tracking-[-0.04em] sm:text-4xl">
@@ -75,7 +75,7 @@ export default function EnterpriseReadinessPage() {
           </div>
         </section>
 
-        <section className="mx-auto grid max-w-[1400px] gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:px-12 lg:py-28">
+        <section className="mx-auto grid max-w-[1400px] gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:px-10 lg:py-28">
           <div>
             <ClockIcon className="h-7 w-7 text-zinc-500" aria-hidden />
             <h2 className="mt-5 text-3xl font-medium tracking-[-0.04em] sm:text-4xl">
@@ -97,7 +97,7 @@ export default function EnterpriseReadinessPage() {
         </section>
 
         <section className="border-t border-white/[0.08]">
-          <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+          <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">Self-service path</p>
             <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] md:grid-cols-4">
               {[

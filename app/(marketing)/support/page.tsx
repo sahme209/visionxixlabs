@@ -46,7 +46,7 @@ export default function SupportPage() {
   return (
     <div className="public-support-page overflow-hidden">
       <section className="relative isolate border-b border-white/[0.07]">
-        <div className="mx-auto max-w-[1280px] px-5 pb-8 pt-16 sm:px-8 sm:pt-24 lg:px-12 lg:pb-10">
+        <div className="mx-auto max-w-[1280px] px-5 pb-8 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-10">
           <div className="grid items-end gap-8 lg:grid-cols-[1fr_0.72fr] lg:gap-20">
             <div className="max-w-5xl">
               <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400">Axiom Founding Supporters · Vision XIX Labs</p>
@@ -65,7 +65,7 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section aria-label="Ways to support Axiom" className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-2 md:gap-12 lg:px-12 lg:py-16">
+      <section aria-label="Ways to support Axiom" className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-2 md:gap-12 lg:px-10 lg:py-16">
         <article className="border-t border-white/10 pt-5">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">For individual supporters</p>
           <h2 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">Support the work.</h2>
@@ -81,7 +81,7 @@ export default function SupportPage() {
         <p className="border-t border-white/[0.07] pt-4 text-xs leading-6 text-zinc-400 md:col-span-2">Vision XIX Labs LLC is a for-profit technology company. Supporter purchases are not tax-deductible charitable gifts.</p>
       </section>
 
-      <section id="vision" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section id="vision" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
         <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">The thesis</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Autonomy should increase capability—not remove accountability.</h2></div>
           <div className="grid gap-5 lg:border-l lg:border-white/[0.08] lg:pl-10">
@@ -91,7 +91,7 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section aria-labelledby="founder-inspiration" className="mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-12 lg:pb-20">
+      <section aria-labelledby="founder-inspiration" className="mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10 lg:pb-20">
         <div className="grid gap-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-9 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
           <div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">A founder’s inspiration</p>
@@ -111,7 +111,7 @@ export default function SupportPage() {
         <CinematicAxiomDemo />
       </div>
 
-      <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
         <div className="grid gap-12 lg:grid-cols-2">
           <CapabilityList eyebrow="Implemented today" title="What the demonstration represents" items={implemented} tone="implemented" />
           <CapabilityList eyebrow="Development direction" title="What support helps us advance" items={planned} tone="planned" />
@@ -120,7 +120,7 @@ export default function SupportPage() {
       </section>
 
       <section className="border-y border-white/[0.07] bg-white/[0.015]">
-        <div className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+        <div className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
           <div className="max-w-3xl"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Why support matters</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Fund the difficult work behind trustworthy autonomy.</h2><p className="mt-6 text-base leading-7 text-zinc-400">Supporter purchases help Vision XIX Labs invest in the engineering foundations required to make Axiom useful, governed, and durable.</p></div>
           <div className="mt-9 divide-y divide-white/[0.08] border-y border-white/[0.08]">
             {fundingAreas.map(({ icon: Icon, title, copy }) => <article key={title} className="grid gap-4 py-6 sm:grid-cols-[40px_220px_1fr] sm:items-center"><Icon className="h-5 w-5 text-zinc-400" /><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="max-w-2xl text-sm leading-6 text-zinc-500">{copy}</p></article>)}
@@ -128,7 +128,7 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section id="join" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section id="join" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
             <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Founding Supporters</p>
@@ -145,13 +145,13 @@ export default function SupportPage() {
       </section>
 
       <section id="sponsorship" className="border-y border-white/[0.08] bg-white/[0.015]">
-        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-12 lg:py-28">
+        <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Strategic sponsorship</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Partner with us to advance autonomous engineering.</h2><p className="mt-6 max-w-xl text-base leading-7 text-zinc-400">For individuals, foundations, and organizations considering a substantial commitment, begin with a private, professional conversation about fit, scope, and appropriate payment arrangements. AI companies and technology partners can also discuss infrastructure credits, research collaboration, or a defined technical partnership.</p><div className="mt-8 flex items-center gap-3 text-sm text-zinc-400"><ScaleIcon className="h-5 w-5 text-zinc-400" /> Sponsorship is not equity, an investment, or a charitable contribution.</div><p className="mt-4 max-w-xl text-sm leading-6 text-zinc-400">For infrastructure credits or other non-financial proposals, select “Prefer to discuss” in the inquiry form.</p></div>
           <div className="rounded-xl border border-white/[0.08] bg-[#151517] p-5 sm:p-7"><SponsorInquiryForm /></div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+      <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Trust & transparency</p><h2 className="mt-5 text-3xl font-medium tracking-[-0.04em] text-zinc-100">Know what participation means.</h2></div>
           <div className="grid border-y border-white/[0.08] sm:grid-cols-2 sm:divide-x sm:divide-white/[0.08]">

@@ -88,7 +88,7 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
   }
 
   return (
-    <section className="mx-auto max-w-[1400px] px-5 pb-20 sm:px-8 lg:px-12 lg:pb-28">
+    <section className="mx-auto max-w-[1400px] px-5 pb-20 sm:px-8 lg:px-10 lg:pb-28">
       <div className="mb-8 flex flex-col items-center gap-4">
         <div className="inline-flex rounded-full border border-white/[0.1] bg-[#1a1a1a] p-1" aria-label="Billing interval">
           {(["monthly", "annual"] as const).map((value) => (
