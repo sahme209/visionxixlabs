@@ -8,7 +8,6 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { currentContext } from "@/lib/auth/currentContext";
 import { listAgentScorecards, listGatewayRequests } from "@/lib/agentGateway/gatewayService";
-import { ModuleIntro } from "@/components/portal/ModuleIntro";
 import { AgentGatewayDecision } from "@/components/agentGateway/AgentGatewayDecision";
 
 export const metadata: Metadata = { title: "Agent gateway · Axiom" };
@@ -28,16 +27,8 @@ export default async function AgentGatewayPage() {
   const [requests, scorecards] = await Promise.all([listGatewayRequests(organizationId).catch(() => null), listAgentScorecards(organizationId).catch(() => [])]);
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
-      <ModuleIntro
-        title="Agent gateway"
-        explanation="AI agents such as Cursor, Claude Code or your own ask Axiom before consequential actions. Review and decide them here."
-        helpsYouDo={["See every action an agent asked to take", "Approve or reject consequential actions", "Check reported outcomes against approvals"]}
-        connectFirst={["An API key with governance:read and governance:request scopes", "The Axiom MCP server (/api/v1/mcp) added to your agent"]}
-        aiEngineers={[]}
-        approval={{ severity: "human_required", note: "Deploys, merges, infrastructure, data migrations, secrets and deletes need an owner or admin who did not mint the agent's key. Production secret reads and deletes are always refused. Agents self-report actions; this is a cooperative control point, not a sandbox." }}
-        storageKey="agent-gateway"
-        lastReviewed="2026-11-09"
-      />
+      <h1>Agent gateway</h1>
+      <p className="mt-1 max-w-2xl text-[13px] leading-5 text-zinc-400">AI agents such as Cursor, Claude Code or your own ask Axiom before consequential actions. Review and decide them here.</p>
       {scorecards.length > 0 && <section aria-label="Agent scorecards" className="mt-6">
         <h2 className="text-base font-medium text-zinc-100">Agents</h2>
         <p className="mt-1 text-sm text-zinc-400">Last 90 days. Trust is a summary of evidence and never changes what policy allows.</p>
