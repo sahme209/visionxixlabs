@@ -79,6 +79,7 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-09 | Agent features made discoverable: sidebar entries for Agent gateway and Trust tools (Automation group), plus a 'Govern any AI agent' section on /product with honest limits | Claude; PR feat/agents-discoverability |
 | 2026-11-09 | **A14 agent scorecards**: per-API-key evidence over 90 days (approved, rejected, denied, reported success, unreported outcomes) with a plain trust level (new, building, reliable, needs review). Never changes policy. No migration | Claude; PR feat/agent-scorecards |
 | 2026-11-09 | `vxl ask` and `vxl outcome`: CI and scripts gate a deploy on the agent gateway (exit 0 only when allowed or approved; waits with polling). 6 new CLI tests | Claude; PR feat/vxl-gateway-cli |
+| 2026-11-09 | Webhook events for agent governance and audit integrity: agent_gateway.request_pending, .request_decided, .outcome_recorded and audit.integrity_failed, with producers wired (best-effort) and the README event list updated | Claude; PR feat/gateway-webhooks |
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.

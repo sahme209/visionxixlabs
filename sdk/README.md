@@ -297,8 +297,19 @@ release_gate.blocked               pipeline.run_completed      api_key.revoked
 eval.regression_detected           pipeline.run_failed         billing.threshold_crossed
 eval.run_completed                 pipeline.stage_failed       billing.quota_exhausted
 pipeline.stage_decision_recorded   coding.pr_opened            connector.health_changed
-coding.lint_failed                 coding.test_failed
+coding.lint_failed                 coding.test_failed          airflow.action_proposed
+airflow.automation_succeeded       airflow.automation_failed
+agent_gateway.request_pending      agent_gateway.request_decided
+agent_gateway.outcome_recorded     audit.integrity_failed
 ```
+
+`agent_gateway.request_pending` fires when an agent's action needs a human
+decision. Payload: `{ requestId, agentName, actionKind, environment, target,
+riskLevel, expiresAt, reviewUrl }`. Route it to Slack or a pager so approvers
+see it. `agent_gateway.request_decided` carries `{ decision, decidedByUserId }`,
+and `agent_gateway.outcome_recorded` carries the agent's self-reported outcome.
+`audit.integrity_failed` fires when audit verification finds an edited,
+deleted or inserted event or a broken seal chain. It lists the failed seals.
 
 `pipeline.stage_decision_recorded` fires once per vote on a paused
 awaiting_approval stage — terminal or partial. Payload includes
