@@ -106,9 +106,9 @@ jobs:
       release_tag: ${{ steps.identity.outputs.release_tag }}
       version: ${{ steps.identity.outputs.version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
           node-version: '20'
 
@@ -141,7 +141,7 @@ jobs:
     needs: validate-release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       # Keep the bill of materials tied to the same immutable source revision
       # as the release artefacts. It is published with the installers below;
@@ -216,10 +216,10 @@ jobs:
     timeout-minutes: ${{ startsWith(matrix.platform, 'macos-') && 10 || 20 }}
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: '20'
 
@@ -1022,7 +1022,7 @@ jobs:
       contents: read
       actions: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Verify original successful candidate

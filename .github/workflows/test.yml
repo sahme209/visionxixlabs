@@ -28,10 +28,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Match the existing Vercel production runtime and current cloud SDK support.
           node-version: "24"
@@ -60,10 +60,10 @@ jobs:
         shard: [1, 2, 3]
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Match the existing Vercel production runtime and current cloud SDK support.
           node-version: "24"
@@ -85,10 +85,10 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Check out source
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           # Match the existing Vercel production runtime and current cloud SDK support.
           node-version: "24"
@@ -106,7 +106,7 @@ jobs:
 
       # Next.js incremental cache: speeds the build, never changes its output checks.
       - name: Restore Next.js build cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: .next/cache
           key: nextjs-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
