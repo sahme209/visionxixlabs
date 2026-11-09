@@ -11,6 +11,9 @@ import { NextResponse, type NextRequest } from "next/server";
 import { checkRateLimit } from "@/lib/rateLimit";
 import { answerQuestion, buildIndex, type AnswerIndex } from "@/lib/support/answerKernel";
 import { KNOWLEDGE_VERSION, knowledgeEntries } from "@/lib/support/knowledgeBase";
+import { randomUUID } from "node:crypto";
+import { prisma } from "@/lib/db";
+import { redactSecrets } from "@/lib/ai/contextRedaction";
 
 export const runtime = "nodejs";
 let index: AnswerIndex | null = null;
@@ -23,5 +26,10 @@ export async function POST(req: NextRequest): Promise<Response> {
   if (!question || question.length > 1000) return NextResponse.json({ ok: false, error: "question_required" }, { status: 400 });
   index ??= buildIndex(knowledgeEntries());
   const answer = answerQuestion(index, question);
+  // Knowledge growth (roadmap step 5): record questions we could not answer for weekly review.
+  // Guarded questions (secrets, account, actions) are never recorded; text is redacted and bounded.
+  if (answer.status === "suggestions") {
+    try { await prisma.helpQueryRecord.create({ data: { id: randomUUID(), organizationId: null, query: redactSecrets(question).text.slice(0, 300), totalTokens: 0, verdict: "ask_axiom_unanswered", topHitScore: answer.confidence } }); } catch { /* best-effort */ }
+  }
   return NextResponse.json({ ok: true, mode: "grounded", knowledgeVersion: KNOWLEDGE_VERSION, ...answer }, { headers: { "Cache-Control": "no-store" } });
 }
