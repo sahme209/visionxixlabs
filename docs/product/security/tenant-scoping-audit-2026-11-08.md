@@ -13,6 +13,8 @@ Follows: `consolidated-threat-model-2026-11-08.md` (finding: tenant scoping is a
 
 ## SUSPECT findings
 
+**Status 2026-11-08:** all ten findings below are fixed in PR #222 (`authorizedForOrganization` membership re-check, admin for mutations).
+
 All findings are in `app/api/axiom/*`. That route family authenticates the user with `getServerSession` and a plan/entitlement check, and **trusts the `organizationId`, run id or account id that the client sends**. The newer siblings (`axiom/scheduler`, `axiom/autopilot`, `axiom/approvals`) were already hardened with `authorizedForOrganization` / `acceptedMembership` / `ctx.organizationId`. The ones below were not.
 
 | # | Risk | File:line | Model | Op | Id source | Why suspect | Suggested fix |
@@ -33,8 +35,8 @@ Notes on likelihood: ids look like cuids, so exploiting these needs a leaked or 
 ## Observations (not IDOR, flagged for follow-up)
 
 - `app/api/axiom/execution/apply/route.ts:370` sets `organizationId: userId`. This is a legacy user-as-org convention. The value is session-derived, so it does not leak, but it is inconsistent with the real workspace model.
-- `lib/starterToken.ts:31-32` accepts a "legacy" two-part `leadId.hmac` token that appears to have no expiry. Every `leads/[id]/*`, `terraform/*`, `cloud-operator/*` and `connectors/*` route that uses a token relies on it as a bearer capability. They do correctly compare `result.leadId` with the route id or the `job.leadId`.
-- `app/api/axiom/cloud/snapshot/route.ts:42` and `cloud/validate/route.ts:40` pass a body `connectedAccountId` to the provider adapter together with the session `userId` (`awsAdapter.ts:64`, `azureAdapter.ts:99-103`). Whether the credential provider scopes the lookup to that user was not verified. See "Could not assess".
+- `lib/starterToken.ts:31-32` accepts a "legacy" two-part `leadId.hmac` token that appears to have no expiry. Every `leads/[id]/*`, `terraform/*`, `cloud-operator/*` and `connectors/*` route that uses a token relies on it as a bearer capability. They do correctly compare `result.leadId` with the route id or the `job.leadId`. **Resolved 2026-11-08:** legacy two-part tokens are now rejected as `expired` (the format was replaced 2026-02-25, so none is within the 7-day limit).
+- `app/api/axiom/cloud/snapshot/route.ts:42` and `cloud/validate/route.ts:40` pass a body `connectedAccountId` to the provider adapter together with the session `userId` (`awsAdapter.ts:64`, `azureAdapter.ts:99-103`). **Checked 2026-11-08: safe.** `getOwnedConnector` (`lib/plugins/credentials.ts:42-43`) loads the record and returns null unless its `userId` matches the session user.
 
 ## SAFE patterns observed
 
