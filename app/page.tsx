@@ -77,7 +77,7 @@ export default function Home() {
 
         <GovernedDeploymentModel />
 
-        <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
+        <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
           <div className="mx-auto max-w-[1280px]">
             <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Built around the engineering workflow</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">More context. Clearer decisions.</h2>
@@ -94,7 +94,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] space-y-8 px-5 py-20 sm:px-8 lg:px-12 lg:py-28">
+        <section className="mx-auto max-w-[1280px] space-y-8 px-5 py-16 sm:px-8 lg:px-10">
           <p className="max-w-3xl text-sm leading-6 text-zinc-400">These boards are conceptual examples. Support depends on the installed version and enabled workflow. A saved request, approval, or workflow is not a verified provider result, application health, or rollback proof.</p>
           <EditorialPanel
             eyebrow="01 · Structured intake"
@@ -117,28 +117,28 @@ export default function Home() {
           />
         </section>
 
-        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-20 sm:px-8 lg:px-12">
+        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-16 sm:px-8 lg:px-10">
           <h2 className="mx-auto max-w-[1280px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
-          <div className="mx-auto mt-9 grid max-w-[1280px] gap-3 md:grid-cols-3 px-5 sm:px-8 lg:px-12">
+          <div className="mx-auto mt-9 grid max-w-[1280px] gap-3 md:grid-cols-3">
             <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
             <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
             <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
           </div>
         </section>
 
-        <section className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-12 lg:py-20">
-          <div className="mx-auto flex max-w-[1280px] flex-col gap-8 md:flex-row md:items-end md:justify-between">
+        <section className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-10">
+          <div className="mx-auto flex max-w-[1280px] flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-3xl">
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-orange-300">Founding Supporters</p>
-              <h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">Help advance autonomous engineering with human control at its core.</h2>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Help advance autonomous engineering with human control at its core.</h2>
             </div>
             <Link href="/support" className="inline-flex min-h-12 shrink-0 items-center gap-2 self-start rounded-full border border-white/[0.14] px-6 text-sm font-medium text-zinc-200 transition hover:border-orange-300/35 hover:bg-white/[0.04]">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
           </div>
         </section>
 
-        <section className="px-5 py-28 text-center sm:px-8 lg:py-40">
-          <h2 className="text-[clamp(3.5rem,8vw,7.8rem)] font-medium leading-none tracking-[-0.065em]">Start with a verified request.</h2>
-          <Link href="/download" className="mt-10 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-8 py-3 text-sm font-semibold text-[#151513] hover:bg-white">Download Axiom Agent <ArrowRightIcon className="h-4 w-4" /></Link>
+        <section className="px-5 py-20 text-center sm:px-8 lg:py-24">
+          <h2 className="text-[clamp(2.5rem,5vw,4.25rem)] font-medium leading-[1.05] tracking-[-0.045em]">Start with a verified request.</h2>
+          <Link href="/download" className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-8 py-3 text-sm font-semibold text-[#151513] hover:bg-white">Download Axiom Agent <ArrowRightIcon className="h-4 w-4" /></Link>
         </section>
       </main>
       <Footer />
@@ -148,7 +148,7 @@ export default function Home() {
 
 function EditorialPanel({ eyebrow, title, copy, visual, reverse = false }: { eyebrow: string; title: string; copy: string; visual: ReactNode; reverse?: boolean }) {
   return <article className="grid gap-8 border-t border-white/[0.08] py-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-    <div className={`max-w-lg ${reverse ? "lg:order-2" : ""}`}><p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">{eyebrow}</p><h2 className="mt-4 text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-4xl">{title}</h2><p className="mt-4 text-base leading-7 text-zinc-400">{copy}</p></div>
+    <div className={`max-w-lg ${reverse ? "lg:order-2" : ""}`}><p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">{eyebrow}</p><h2 className="mt-4 text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-[34px]">{title}</h2><p className="mt-4 text-base leading-7 text-zinc-400">{copy}</p></div>
     <div className={`min-w-0 rounded-lg border border-white/[0.08] bg-[#141414] p-5 sm:p-7 ${reverse ? "lg:order-1" : ""}`}><p className="mb-4 text-[10px] uppercase tracking-widest text-zinc-400">Illustrated record · sample data</p>{visual}</div>
   </article>;
 }
