@@ -2,6 +2,55 @@
  "format": "axiom.support-docs-corpus/1",
  "sections": [
   {
+   "href": "/docs/agent-gateway#connect",
+   "title": "Connect an agent",
+   "text": "A workspace owner or admin creates a key on Control → API keys with governance:read and governance:request . Add https://visionxixlabs.com/api/v1/mcp to the agent as a remote MCP server with the header Authorization: Bearer vxlk_live_… . The agent then sees four tools: axiom_check_policy , axiom_request_approval , axiom_get_approval and axiom_record_outcome . The same operations exist as REST endpoints under /api/v1/governance and in the SDKs.",
+   "source": "app/docs/agent-gateway/page.tsx",
+   "sourceSha256": "3c23da889436ad84149146e5ff9ac6c18d620e4a5cd08cebb9cfb732506b5c91"
+  },
+  {
+   "href": "/docs/agent-gateway#decisions",
+   "title": "How requests are decided",
+   "text": "Allowed Low-risk work such as reading code, editing a branch or opening a pull request in development or staging. Needs approval Merges, dependency changes, infrastructure, deploys, data migrations, commands and anything in production or an unknown environment. A change whose files touch migrations, CI, auth, infrastructure or secrets also needs approval. Denied Reading production secrets and deleting production resources. These are never approvable through the gateway.",
+   "source": "app/docs/agent-gateway/page.tsx",
+   "sourceSha256": "3c23da889436ad84149146e5ff9ac6c18d620e4a5cd08cebb9cfb732506b5c91"
+  },
+  {
+   "href": "/docs/agent-gateway#approve",
+   "title": "Approve or reject",
+   "text": "Pending requests appear on Control → Agent gateway , with optional webhook alerts ( agent_gateway.request_pending ). An owner or admin who did not create the agent's key decides. Approval covers the exact action and file list, and expires after 24 hours. The agent proceeds only when mayProceed is true, then reports succeeded , failed or abandoned . Each agent gets a scorecard; its trust level is evidence only and never changes what policy allows.",
+   "source": "app/docs/agent-gateway/page.tsx",
+   "sourceSha256": "3c23da889436ad84149146e5ff9ac6c18d620e4a5cd08cebb9cfb732506b5c91"
+  },
+  {
+   "href": "/docs/agent-gateway#ci",
+   "title": "Gate a CI deploy",
+   "text": "Without MCP, use the CLI: vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh . It exits 0 only when the action is allowed or approved.",
+   "source": "app/docs/agent-gateway/page.tsx",
+   "sourceSha256": "3c23da889436ad84149146e5ff9ac6c18d620e4a5cd08cebb9cfb732506b5c91"
+  },
+  {
+   "href": "/docs/api-keys#create",
+   "title": "Create a key",
+   "text": "Name the key, choose its permissions and choose when it expires (7 to 90 days). Available permissions: request approvals and report outcomes, check policy and read approval status, read pipeline runs, read the release gate, read webhook endpoints. Wildcard, trigger and admin permissions are not available here. The full key is shown once. Axiom stores only a hash and a short prefix, so it cannot show the key again.",
+   "source": "app/docs/api-keys/page.tsx",
+   "sourceSha256": "4bd68441f5af2e763136a316757403a5b63ee9b1ecbfae9471999fa268361b44"
+  },
+  {
+   "href": "/docs/api-keys#duties",
+   "title": "Separation of duties",
+   "text": "The person who creates a key is recorded and cannot approve agent gateway requests made with that key. Another owner or admin must decide them.",
+   "source": "app/docs/api-keys/page.tsx",
+   "sourceSha256": "4bd68441f5af2e763136a316757403a5b63ee9b1ecbfae9471999fa268361b44"
+  },
+  {
+   "href": "/docs/api-keys#revoke",
+   "title": "Revoke a key",
+   "text": "Revoke a key from the list as soon as it may have been exposed or is no longer needed. Revocation takes effect immediately and is recorded in the audit log. A workspace can hold up to 20 active keys.",
+   "source": "app/docs/api-keys/page.tsx",
+   "sourceSha256": "4bd68441f5af2e763136a316757403a5b63ee9b1ecbfae9471999fa268361b44"
+  },
+  {
    "href": "/docs/approval-workflow#risk",
    "title": "Risk classification",
    "text": "Low risk: read-only checks can execute inline and are still recorded. Medium risk: reversible configuration or repository changes require approval. High risk: deployments and sensitive configuration require approval. Production context: risk can only escalate; it is never reduced for convenience.",
@@ -532,6 +581,27 @@
    "text": "Account help (sign-in required) · Service status · Contact Share your app version, operating system, affected task, approximate time, visible status, and a sanitized error summary. Omit passwords, tokens, client secrets, authorization codes, callback state, tenant secrets, and sensitive repository or customer content. Keep original operation IDs private and share them only through an approved support channel; do not put them in public posts or URLs. Review what you share yourself; this guide does not promise automatic redaction or a response time. Founding Supporters funds development; it is separate from technical support.",
    "source": "app/docs/troubleshooting/page.tsx",
    "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+  },
+  {
+   "href": "/docs/trust-tools#seal",
+   "title": "Seal and verify the audit log",
+   "text": "Owners and admins seal recent audit events. Each seal fingerprints a window of events and links to the previous seal, forming a chain. Anyone in the workspace can verify: the result is intact, or names the seal whose events changed or whose link broke. Sealing does not stop someone from changing data; it makes the change visible. Store the latest seal fingerprint outside Axiom so a rewritten chain is also detectable.",
+   "source": "app/docs/trust-tools/page.tsx",
+   "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc"
+  },
+  {
+   "href": "/docs/trust-tools#replay",
+   "title": "Replay a draft rule",
+   "text": "Pick a draft rule and replay it over up to 90 days of real approval history, through the same rule engine production uses. You see how many actions it would newly block or auto-approve, and each changed action. Nothing is enabled or saved. History does not store a finding category, so rules that match on category are skipped and named rather than guessed.",
+   "source": "app/docs/trust-tools/page.tsx",
+   "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc"
+  },
+  {
+   "href": "/docs/trust-tools#impact",
+   "title": "Preview a change",
+   "text": "Paste the changed file paths. The preview lists the areas touched (migrations, CI, auth, infrastructure, dependencies, secrets, API, frontend, tests, docs), the blast radius, whether a rollback plan is needed, and what a reviewer should check. It reads file names only, never contents.",
+   "source": "app/docs/trust-tools/page.tsx",
+   "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc"
   }
  ]
 }

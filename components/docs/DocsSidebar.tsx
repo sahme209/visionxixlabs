@@ -80,6 +80,14 @@ export const DOC_SECTIONS: DocSection[] = [
     ],
   },
   {
+    title: "Agents & trust",
+    items: [
+      { href: "/docs/agent-gateway", label: "Agent gateway", icon: BookOpenIcon },
+      { href: "/docs/trust-tools", label: "Trust tools", icon: BookOpenIcon },
+      { href: "/docs/api-keys", label: "API keys", icon: BookOpenIcon },
+    ],
+  },
+  {
     title: "Reference",
     items: [
       { href: "/docs/troubleshooting", label: "Troubleshooting", icon: WrenchScrewdriverIcon },

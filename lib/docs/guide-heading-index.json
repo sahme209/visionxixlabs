@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "b21e9ab28f934edda30dfce53355d257b63727b68b7bd9f7537281caf480e6b2",
+  "navigationSha256": "2e1d0c31972163e8f30d5f2c5c618403312ed75e225452d4f80f8557466eb389",
   "guides": [
     {
       "href": "/docs",
@@ -277,6 +277,46 @@
         "3. GitHub sign-in",
         "4. Verify it works",
         "Troubleshooting"
+      ]
+    },
+    {
+      "href": "/docs/agent-gateway",
+      "source": "app/docs/agent-gateway/page.tsx",
+      "sourceSha256": "3c23da889436ad84149146e5ff9ac6c18d620e4a5cd08cebb9cfb732506b5c91",
+      "fields": [
+        "Govern any AI agent.",
+        "Agents ask Axiom before a consequential action. A person approves the exact change, and the outcome is recorded.",
+        "Cooperative control point",
+        "Connect an agent",
+        "How requests are decided",
+        "Approve or reject",
+        "Gate a CI deploy"
+      ]
+    },
+    {
+      "href": "/docs/trust-tools",
+      "source": "app/docs/trust-tools/page.tsx",
+      "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc",
+      "fields": [
+        "Prove, replay, preview.",
+        "Three read-only tools on Control → Trust tools. Each states its limits.",
+        "Seal and verify the audit log",
+        "Evidence, not prevention",
+        "Replay a draft rule",
+        "Preview a change"
+      ]
+    },
+    {
+      "href": "/docs/api-keys",
+      "source": "app/docs/api-keys/page.tsx",
+      "sourceSha256": "4bd68441f5af2e763136a316757403a5b63ee9b1ecbfae9471999fa268361b44",
+      "fields": [
+        "Create a scoped, expiring key.",
+        "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
+        "Create a key",
+        "Copy it once",
+        "Separation of duties",
+        "Revoke a key"
       ]
     },
     {
