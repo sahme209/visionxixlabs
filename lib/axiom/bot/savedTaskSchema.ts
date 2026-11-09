@@ -16,11 +16,14 @@ const text = (max: number) => z.string().max(max).refine(validUnicode, "Invalid 
 const contentShape = {
   title: text(200).transform(value => value.trim()).refine(value => value.length > 0, "A task title is required"),
   instruction: text(4000).refine(value => value.trim().length > 0, "A task instruction is required"),
-  context: text(4000).default(""),
+  // Not .default(): newer zod skips the inner max/Unicode checks on a defaulted field.
+  context: text(4000).optional().transform(value => value ?? ""),
 };
 const contentSchema = z.object(contentShape).strict();
 export type SavedBotTaskContent = z.infer<typeof contentSchema>;
 function bounded(value: SavedBotTaskContent): boolean {
+  // Defence in depth: re-check every field here, independent of schema-library behaviour.
+  if (![value.title, value.instruction, value.context].every((v) => typeof v === "string" && v.length <= 4000 && validUnicode(v))) return false;
   return Buffer.byteLength(JSON.stringify({title:value.title,instruction:value.instruction,context:value.context}), "utf8") <= SAVED_BOT_TASK_MAX_BYTES;
 }
 const createSchema = z.object({...contentShape,clientRequestId:z.string().uuid()}).strict().refine(bounded, "Saved task exceeds 16 KiB");
