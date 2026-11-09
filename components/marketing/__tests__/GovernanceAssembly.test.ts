@@ -45,7 +45,7 @@ it('shows all three possible outcomes and has no network, timer or storage opera
 
 it('keeps Home balanced: a centred hero with route, limits and product, then the shared assembly in its own section',()=>{
  render(createElement(Home));
- const [first,second]=Array.from(screen.getByRole('main').querySelectorAll(':scope > section'));
+ const [first,second]=Array.from(screen.getByRole('main').querySelectorAll<HTMLElement>(':scope > section'));
  expect(within(first).getByRole('link',{name:'Explore Axiom'}).getAttribute('href')).toBe('/product');
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();
  expect(within(first).getByText('Existing media fixture')).toBeTruthy();
