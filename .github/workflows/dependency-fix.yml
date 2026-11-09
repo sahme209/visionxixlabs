@@ -36,6 +36,11 @@ jobs:
         run: |
           npm audit fix --omit=dev --ignore-scripts || true
           (cd desktop && npm audit fix --omit=dev --ignore-scripts || true)
+      - name: Re-pin the reviewed lockfile for the owned website checks
+        run: |
+          new=$(sha256sum package-lock.json | cut -d' ' -f1)
+          sed -i -E "s/('package-lock.json': ')[0-9a-f]{64}(')/\1${new}\2/" scripts/fixtures/ownedWebsiteFramework.cjs
+          grep -n "'package-lock.json'" scripts/fixtures/ownedWebsiteFramework.cjs
       - name: Open PR if anything changed
         env:
           GH_TOKEN: ${{ github.token }}
