@@ -6,7 +6,7 @@
 
 import fs from "fs";
 import path from "path";
-import archiver from "archiver";
+import { ZipArchive } from "archiver";
 import type { AiStarterPackage } from "@/lib/websiteStarter/engine";
 
 const SCAFFOLDS_DIR = path.join(process.cwd(), "data", "scaffolds");
@@ -243,7 +243,7 @@ module.exports = {
 
   const zipPath = path.join(SCAFFOLDS_DIR, `${leadId}.zip`);
   const output = fs.createWriteStream(zipPath);
-  const archive = archiver("zip", { zlib: { level: 9 } });
+  const archive = new ZipArchive({ zlib: { level: 9 } });
 
   return new Promise<string>((resolve, reject) => {
     output.on("close", () => resolve(zipPath));
