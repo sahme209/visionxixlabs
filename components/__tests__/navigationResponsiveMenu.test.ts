@@ -36,7 +36,7 @@ it("keeps the viewport menu outside the header blur containing block", () => {
   const dialog = screen.getByRole("dialog", { name: "Site navigation" });
   expect(dialog.parentElement).toBe(navigation);
   expect(dialog.className).toContain("overflow-y-auto");
-  expect(screen.getByRole("link", { name: "Company" })).toBeDefined();
+  expect(screen.getByRole("link", { name: "Contact" })).toBeDefined();
   fireEvent.keyDown(document, { key: "Escape" });
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(document.activeElement).toBe(screen.getByRole("button", { name: "Open navigation menu" }));

@@ -104,7 +104,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           <div className="mt-auto flex flex-col gap-3 pt-8">
             <a href="#ai-rates" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.04]">See AI rates</a>
             {creditPurchasesOpen
-              ? <Link href="/dashboard/billing/add-ons" className="flex min-h-11 items-center justify-center rounded-lg bg-[#f54e00] px-5 text-sm font-semibold text-white transition hover:bg-[#ff641f]">Buy prepaid credits</Link>
+              ? <Link href="/auth/signin?callbackUrl=%2Fcontrol%2Fusage-billing" className="flex min-h-11 items-center justify-center rounded-lg bg-[#f54e00] px-5 text-sm font-semibold text-white transition hover:bg-[#ff641f]">Buy prepaid credits</Link>
               : <p className="text-xs leading-5 text-zinc-500">Credit purchases are not open yet. No charge can be started from this page.</p>}
           </div>
         </article>

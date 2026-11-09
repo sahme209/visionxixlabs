@@ -275,15 +275,21 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
 
           {/* Per-step deep-links */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {step.route && (
+            {step.route && (step.route.startsWith("/dashboard") ? (
+              // /dashboard/* is desktop-app territory in the browser; show where it lives instead of a link that bounces.
+              <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3">
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">in the desktop app</p>
+                <p className="text-[12px] text-zinc-400">This step happens in Axiom Agent. <Link href="/download" className="text-orange-200/90 underline underline-offset-2">Download</Link></p>
+              </div>
+            ) : (
               <Link
-                href={step.route}
+                href={step.route.startsWith("/control") ? `/auth/signin?callbackUrl=${encodeURIComponent(step.route)}` : step.route}
                 className="block rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-orange-500/25 hover:bg-orange-500/[0.04] p-3 transition-colors group"
               >
-                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">platform route</p>
+                <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">{step.route.startsWith("/control") ? "in your workspace · sign-in required" : "platform route"}</p>
                 <p className="text-[12px] font-mono text-orange-200/90 group-hover:text-orange-100 transition-colors break-all">{step.route} →</p>
               </Link>
-            )}
+            ))}
             {stepDocs.length > 0 && (
               <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3">
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1.5">read more</p>

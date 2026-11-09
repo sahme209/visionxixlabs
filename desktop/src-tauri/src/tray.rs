@@ -102,7 +102,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
                 // Plain "Open in window" item — jump to the Approvals view
                 // and emit a hint event so the row is scrolled + highlighted.
                 focus_main_window(app);
-                let _ = app.emit("menu://action", "view:approvals".to_string());
+                let _ = app.emit("menu://action", "view:deployment-requests".to_string());
                 let _ = app.emit("tray://pending-selected", run_id.to_string());
             }
         })

@@ -36,7 +36,7 @@ describe("mobile website contract", () => {
     expect(navigation).toContain("...secondaryLinks");
     expect(navigation).toContain('{ href: "/docs", label: "Docs" }');
     expect(navigation).toContain('{ href: "/account/help", label: "Support (account required)" }');
-    expect(navigation).toContain('{ href: "/axiom", label: "Company" }');
+    expect(navigation).toContain('{ href: "/contact", label: "Contact" }');
     expect(navigation).toContain('{ href: "/status", label: "Status" }');
     expect(navigation).toContain('{ href: "/plans", label: "Get started" }');
     expect(navigation).toContain('{ href: "/support", label: "Founding Supporters" }');

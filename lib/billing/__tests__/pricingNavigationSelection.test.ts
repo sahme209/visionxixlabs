@@ -122,7 +122,7 @@ it.each([true, false])("keeps prepaid-credit purchase copy consistent with the e
   vi.stubEnv("AXIOM_SELF_SERVICE_BILLING_ENABLED", String(enabled));
   render(await PlansPage({}));
   if (enabled) {
-    expect(screen.getByRole("link", {name: "Buy prepaid credits"}).getAttribute("href")).toBe("/dashboard/billing/add-ons");
+    expect(screen.getByRole("link", {name: "Buy prepaid credits"}).getAttribute("href")).toBe("/auth/signin?callbackUrl=%2Fcontrol%2Fusage-billing");
     expect(screen.queryByText(/Credit purchases are not open yet/)).toBeNull();
   } else {
     expect(screen.getByText(/Credit purchases are not open yet. No charge can be started from this page./)).toBeTruthy();

@@ -17,7 +17,6 @@ const columns = [
   {
     title: "Company",
     links: [
-      ["About", "/axiom"],
       ["Founding Supporters", "/support"],
       ["Support (account required)", "/account/help"],
       ["Contact", "/contact"],
@@ -29,7 +28,6 @@ const columns = [
     links: [
       ["Privacy", "/privacy"],
       ["Terms", "/terms"],
-      ["Security", "/security"],
     ],
   },
 ] as const;

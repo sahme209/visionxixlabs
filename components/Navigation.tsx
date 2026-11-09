@@ -17,7 +17,7 @@ const secondaryLinks = [
   { href: "/plans", label: "Get started" },
   { href: "/account/help", label: "Support (account required)" },
   { href: "/status", label: "Status" },
-  { href: "/axiom", label: "Company" },
+  { href: "/contact", label: "Contact" },
 ];
 const mobileLinks = [
   ...primaryLinks,

@@ -13,7 +13,7 @@ it("requests the intended destinations from the deployment-centered help journey
   for (const title of stages) expect(screen.getByRole("heading", { name: title })).toBeTruthy();
   for (const [label, target] of [
     ["Open repository", "repository-workspace"], ["Open Agent", "agent"],
-    ["Open deployment requests", "deployment-requests"], ["Open Airflow", "airflow-automation"],
+    ["Open Releases", "deployment-requests"], ["Open Batches", "airflow-automation"],
     ["Review deployment evidence", "deployment-requests"],
   ]) {
     fireEvent.click(screen.getByRole("button", { name: label }));
