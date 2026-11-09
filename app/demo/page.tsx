@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { PageHero } from "@/components/marketing/PageHero";
 import { ArrowRightIcon, ShieldCheckIcon } from "@heroicons/react/24/outline";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { Footer } from "@/components/Footer";
@@ -32,24 +33,20 @@ export default function DemoLanding() {
     <div className="min-h-screen bg-[#101010] text-zinc-100">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-[1280px] px-5 pb-6 pt-28 sm:px-8 lg:px-10 lg:pt-36">
-          <div className="max-w-4xl">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Scripted interactive tour</p>
-            <h1 className="mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-zinc-50">
-              Explore the workflow. Know what is simulated.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 sm:text-lg text-zinc-400">
-              Explore illustrative context, review and outcome steps using scripted data. This is an interactive simulation, not a recording of a live execution. No account or cloud access is required.
-            </p>
-          </div>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <a href="#product-tour" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">
-              Start the scripted tour <ArrowRightIcon className="h-4 w-4" />
-            </a>
-            <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/10 px-6 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.04] hover:text-white">
-              Check available downloads
-            </Link>
-          </div>
+        <section className="mx-auto max-w-[1280px] px-5 pb-6 pt-24 sm:px-8 lg:px-10 lg:pt-28">
+          <PageHero
+            eyebrow="Scripted interactive tour"
+            title="Explore the workflow. Know what is simulated."
+            lead="Explore illustrative context, review and outcome steps using scripted data. This is an interactive simulation, not a recording of a live execution. No account or cloud access is required."
+            actions={<>
+              <a href="#product-tour" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">
+                Start the scripted tour <ArrowRightIcon className="h-4 w-4" />
+              </a>
+              <Link href="/download" className="inline-flex min-h-12 items-center justify-center rounded-lg border border-white/10 px-6 text-sm font-medium text-zinc-300 transition hover:bg-white/[0.04] hover:text-white">
+                Check available downloads
+              </Link>
+            </>}
+          />
         </section>
 
         <p className="mx-auto max-w-[1280px] px-5 pt-4 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-10">Recorded product walkthroughs are not available on this page. Authentic recordings need their own version, source and availability context; the controls below operate the scripted tour only.</p>
