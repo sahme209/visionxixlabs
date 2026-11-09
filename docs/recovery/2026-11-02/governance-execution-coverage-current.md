@@ -144,6 +144,10 @@ Owner decision (2026-11-09): enrolled workspaces refuse these families until eac
 - **M01 membership:** promotions (`/api/team/role`, `PATCH /api/desktop/workspace-members`) and new invitations (`/api/team/invite`) are refused while enrolled. Demotion, removal and revocation still work. Invitations minted before enrollment are not yet re-checked at acceptance.
 - **M02 (partial):** autonomy loosening (a looser mode or higher per-cycle limit) is refused while enrolled; tightening works. Provider policy and branch policy are not classified yet and remain uncovered.
 
+- **M01 (acceptance):** an invitation minted before enrollment cannot be accepted while enrolled (`/accept-invite/[token]`).
+- **M04:** new API keys (`/api/control/api-keys`, `/api/admin/api-keys`) and new webhook endpoints (`/api/admin/webhook-endpoints`) are refused while enrolled. Revocation still works.
+- **M03 (partial):** brand-new Airflow and batch-provider connections are refused while enrolled, before any provider I/O; reconnecting or disconnecting an existing connection still works. The OAuth callbacks (Slack, Teams, Linear), Outlook, ServiceNow and cloud-account enrollment are not yet covered: their refusal belongs before the provider consent step and needs its own reviewed change.
+
 This is refusal only. It grants nothing, and it does not register these families as covered for activation.
 
 ## Source fingerprint appendix

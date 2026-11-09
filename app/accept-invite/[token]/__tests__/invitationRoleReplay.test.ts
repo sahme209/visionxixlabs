@@ -1,7 +1,7 @@
 /** SIMULATED database/auth/entitlement fixtures; actual signed token, acceptance
  * page and seat-claim implementation. Approved invitation-specific invariants. No messages/provider/production database. */
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
-const m=vi.hoisted(()=>({publicPolicy:false,snapshot:vi.fn(),repo:undefined as any}));
+const m=vi.hoisted(()=>({publicPolicy:false,snapshot:vi.fn(),repo:undefined as any,enrolled:false}));
 vi.mock('@/lib/db',()=>({prisma:new Proxy({}, {get:(_,key)=>m.repo[key]})}));
 vi.mock('@/lib/auth/currentContext',()=>({currentContext:async()=>({isAuthenticated:true,userId:'invitee',sessionUserId:'invitee',email:'invitee@example.test',organizationId:'other-selected-org',roles:['read_only']})}));
 vi.mock('@/lib/audit/secureAudit',()=>({record:async()=>{}}));
@@ -15,10 +15,15 @@ import {createInviteToken,validateInviteToken} from '@/lib/workforce/domains/inv
 function fixture(acceptedAt:Date|null,used=2){
  const member={id:'membership',acceptedAt,role:'read_only',invitedBy:'original-inviter',providerScopes:['aws']};
  const tx={ $queryRawUnsafe:async()=>[],tenantBillingPlan:{findUnique:vi.fn(async()=>null)},orgMembership:{findUnique:vi.fn(async()=>member),count:vi.fn(async()=>used+(acceptedAt===null&&member.acceptedAt!==null?1:0)),update:vi.fn(async({data}:any)=>Object.assign(member,data)),create:vi.fn(async()=>{throw Error('unexpected create')})}};
- m.repo={$transaction:async(fn:any)=>fn(tx),orgMembership:tx.orgMembership,auditEvent:{findMany:async()=>[]}};return {tx,member};
+ m.repo={$transaction:async(fn:any)=>fn(tx),orgMembership:tx.orgMembership,auditEvent:{findMany:async()=>[]},durableAgentWorkflow:{findMany:async()=>m.enrolled?[{id:"governance_active_fixture",organizationId:"invited-org",workflowKind:"governance_baseline_active_v1"}]:[]}};return {tx,member};
 }
-beforeEach(()=>{vi.clearAllMocks();m.publicPolicy=false;m.snapshot.mockResolvedValue({usable:true,seatQuantity:2});vi.stubEnv('INVITE_LINK_SECRET','SIMULATED_local_test_key_not_a_credential');});
+beforeEach(()=>{vi.clearAllMocks();m.publicPolicy=false;m.enrolled=false;m.snapshot.mockResolvedValue({usable:true,seatQuantity:2});vi.stubEnv('INVITE_LINK_SECRET','SIMULATED_local_test_key_not_a_credential');});
 afterEach(()=>vi.unstubAllEnvs());
+it('an invitation cannot be accepted while the workspace is enrolled in Governance',async()=>{
+ m.enrolled=true;const {tx}=fixture(null);
+ await AcceptInvitePage({params:Promise.resolve({token:createInviteToken('invited-org','invitee@example.test','operator','former-admin')})});
+ expect(tx.orgMembership.update).not.toHaveBeenCalled();
+});
 it('actual legacy acceptance must not restore admin role on accepted downgraded member',async()=>{
  const {tx,member}=fixture(new Date());
  const token=createInviteToken('invited-org','invitee@example.test','admin','former-admin');

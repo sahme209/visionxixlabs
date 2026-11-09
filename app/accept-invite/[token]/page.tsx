@@ -21,6 +21,7 @@ import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
 import { claimInvitedOrganizationSeat, type OrganizationSeatClaimRepo } from "@/lib/billing/organizationSeatClaim";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 
@@ -89,6 +90,19 @@ export default async function AcceptInvitePage({
           <Link href="/api/auth/signout" className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-white/30 text-zinc-200 hover:text-white hover:border-white/60 hover:bg-white/10 transition-colors">
             sign out →
           </Link>
+        </div>
+      </div>
+    );
+  }
+
+  // Governance M01: joining adds privilege, so an invitation minted before
+  // enrollment cannot be used while the workspace is enrolled.
+  if (!await workspaceUnenrolled(organizationId)) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16">
+        <div className="rounded-md border border-amber-500/20 bg-amber-500/[0.04] p-6 text-center">
+          <p className="text-sm text-zinc-200">This workspace is enrolled in Governance, so new members are paused until membership changes have reviewed Governance coverage.</p>
+          <p className="mt-2 text-xs text-zinc-400">Nothing was changed. Ask a workspace admin when invitations reopen.</p>
         </div>
       </div>
     );

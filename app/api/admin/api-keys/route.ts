@@ -19,6 +19,7 @@ import { isAdminEmail } from "@/lib/admin/auth";
 import { prisma } from "@/lib/db";
 import { mintApiKeyRecord } from "@/lib/security/mintApiKeyRecord";
 import { normalizeScopes } from "@/lib/security/apiKeyScope";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +58,11 @@ export async function POST(req: NextRequest) {
   if (typeof body.expiresAt === "string" && body.expiresAt.length > 0) {
     const d = new Date(body.expiresAt);
     if (Number.isFinite(d.getTime())) expiresAt = d;
+  }
+
+  // Governance M04: platform admins also cannot add a credential to an enrolled workspace.
+  if (!await workspaceUnenrolled(body.organizationId)) {
+    return NextResponse.json({ ok: false, reason: "governance_enrolled_credential_increase" }, { status: 409 });
   }
 
   const correlationId = `apikey_mint_${Date.now().toString(36)}`;
