@@ -32,7 +32,7 @@ export interface AirflowTaskInstance {
 }
 export interface AirflowTaskPage { tasks: AirflowTaskInstance[]; totalEntries: number; offset: number }
 
-function unsafeAddress(address: string): boolean {
+export function unsafeAddress(address: string): boolean {
   if (address === "::" || address === "::1") return true;
   const normalized = address.toLowerCase();
   if (normalized.startsWith("fe80:") || normalized.startsWith("fc") || normalized.startsWith("fd")) return true;
