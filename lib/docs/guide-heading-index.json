@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "2e1d0c31972163e8f30d5f2c5c618403312ed75e225452d4f80f8557466eb389",
+  "navigationSha256": "741f43400a7df3e9865baccf128e3c66cbe33581155c175c763a049486035c1b",
   "guides": [
     {
       "href": "/docs",
@@ -317,6 +317,33 @@
         "Copy it once",
         "Separation of duties",
         "Revoke a key"
+      ]
+    },
+    {
+      "href": "/docs/batch-providers",
+      "source": "app/docs/batch-providers/page.tsx",
+      "sourceSha256": "0a99c5707a233a9a1f7a49e5860304be91d66b60c85741bc0ff779041ad4577e",
+      "fields": [
+        "Prefect, Dagster and Argo, read-only.",
+        "Connect a batch orchestrator so the Agent can explain flows, jobs and runs. It cannot start, retry or cancel anything.",
+        "Availability",
+        "Connect a provider",
+        "Accepted addresses",
+        "What the Agent can read"
+      ]
+    },
+    {
+      "href": "/docs/ask-axiom",
+      "source": "app/docs/ask-axiom/page.tsx",
+      "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1",
+      "fields": [
+        "Ask Axiom.",
+        "The support chat answers from Axiom's public docs with sources, and can help with your own workspace when you are signed in.",
+        "Never share secrets",
+        "Answers from the docs",
+        "Fuller AI answers",
+        "Help with your workspace",
+        "What it can do for you"
       ]
     },
     {

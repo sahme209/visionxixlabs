@@ -79,6 +79,34 @@
    "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a"
   },
   {
+   "href": "/docs/ask-axiom#answers",
+   "title": "Answers from the docs",
+   "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask Axiom is not confident, it shows the closest guides and offers to send your question to support.",
+   "source": "app/docs/ask-axiom/page.tsx",
+   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+  },
+  {
+   "href": "/docs/ask-axiom#ai",
+   "title": "Fuller AI answers",
+   "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
+   "source": "app/docs/ask-axiom/page.tsx",
+   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+  },
+  {
+   "href": "/docs/ask-axiom#workspace",
+   "title": "Help with your workspace",
+   "text": "When you are signed in, Ask Axiom can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
+   "source": "app/docs/ask-axiom/page.tsx",
+   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+  },
+  {
+   "href": "/docs/ask-axiom#actions",
+   "title": "What it can do for you",
+   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles, approves actions or runs anything; admins and approvers decide.",
+   "source": "app/docs/ask-axiom/page.tsx",
+   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+  },
+  {
    "href": "/docs/audit-logs#record",
    "title": "Review the original record",
    "text": "Open the saved request or task using the history and details controls available in that workflow. Keep its original identifier and version. Compare the displayed source, target, proposed change, actor, review decision and timestamps where those fields are available. Saved metadata is bounded product evidence, not complete provider history. A familiar target name, screenshot or status label alone cannot establish which exact change occurred. Understand execution plans before interpreting their records.",
@@ -161,6 +189,27 @@
    "text": "Register an application in the organization's Microsoft Entra tenant. Create a service principal and prefer workload identity federation over a long-lived client secret. Grant only the read permissions needed at subscription or resource-group scope. Enter the Tenant ID, Subscription ID, and Application ID in the installed application. Run a connector test in a dedicated non-production subscription and require an actual ARM response before reporting connected. Download Axiom Agent from the release page . Do not create Azure credentials solely for the preview path unless your administrator has supplied an approved evaluation plan.",
    "source": "app/docs/azure-setup/page.tsx",
    "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01"
+  },
+  {
+   "href": "/docs/batch-providers#connect",
+   "title": "Connect a provider",
+   "text": "In the desktop app open Batches → Connection . Under More batch providers , enter the API URL and a token. Argo Workflows also needs the one namespace to read. Choose Connect read-only . Axiom validates the token with one small read, then stores it encrypted for your workspace. The token is never shown again or sent back to the app.",
+   "source": "app/docs/batch-providers/page.tsx",
+   "sourceSha256": "0a99c5707a233a9a1f7a49e5860304be91d66b60c85741bc0ff779041ad4577e"
+  },
+  {
+   "href": "/docs/batch-providers#urls",
+   "title": "Accepted addresses",
+   "text": "Prefect Prefect Cloud https://api.prefect.cloud/api/accounts/…/workspaces/… , or a self-hosted https://…/api . Dagster Dagster+ https://your-org.dagster.cloud/deployment , or a self-hosted root. Argo Workflows The Argo Server address (HTTPS) and one namespace. In-cluster and private addresses are refused.",
+   "source": "app/docs/batch-providers/page.tsx",
+   "sourceSha256": "0a99c5707a233a9a1f7a49e5860304be91d66b60c85741bc0ff779041ad4577e"
+  },
+  {
+   "href": "/docs/batch-providers#agent",
+   "title": "What the Agent can read",
+   "text": "The Automation Agent and the Batches diagnostics skill can list flows, jobs and templates and read recent runs and task runs, up to 20 entries from the first page. Results are observation only and labelled as incomplete coverage. Logs, parameters, artifacts and secrets are never read.",
+   "source": "app/docs/batch-providers/page.tsx",
+   "sourceSha256": "0a99c5707a233a9a1f7a49e5860304be91d66b60c85741bc0ff779041ad4577e"
   },
   {
    "href": "/docs/desktop-install#current-state",

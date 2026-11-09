@@ -82,25 +82,31 @@ export function answerQuestion(index: AnswerIndex, question: string, opts: { k1?
   const terms = [...new Set(tokenize(q))];
   if (terms.length === 0) return { status: "suggestions", answer: "Ask about setup, pricing, security, approvals, integrations or agents.", sources: [], confidence: 0 };
   const k1 = opts.k1 ?? 1.2, b = opts.b ?? 0.75, N = index.docs.length;
+  const queryIdf = terms.reduce((sum, t) => { const df = index.df.get(t) ?? 0; return sum + Math.log(1 + (N - df + 0.5) / (df + 0.5)); }, 0) || 1;
   const scored = index.docs.map((d) => {
     let score = 0, matched = 0;
     for (const t of terms) {
-      const tf = d.terms.get(t); if (!tf) continue; matched++;
+      const tf = d.terms.get(t); if (!tf) continue;
       const df = index.df.get(t) ?? 0;
       const idf = Math.log(1 + (N - df + 0.5) / (df + 0.5));
+      matched += idf;
       score += idf * ((tf * (k1 + 1)) / (tf + k1 * (1 - b + (b * d.length) / index.avgLength)));
     }
     // Prefer entries whose title is mostly about the question ("What is Axiom Agent?" over "What permissions does Axiom need?").
     const titleHits = d.titleTerms.filter((t) => terms.includes(t)).length;
     if (titleHits > 0) score *= 1 + titleHits / d.titleTerms.length;
-    return { d, score, coverage: matched / terms.length };
+    // Coverage weighted by rarity: a common word ("support", "setup") counts less than a specific one ("prefect").
+    return { d, score, coverage: matched / queryIdf };
   }).filter((s) => s.score > 0).sort((a, b2) => b2.score - a.score || (a.d.entry.id < b2.d.entry.id ? -1 : 1));
   if (scored.length === 0) return { status: "suggestions", answer: "I couldn't find that in the Axiom docs. Try different words, browse the documentation, or contact us.", sources: [{ title: "Documentation", href: "/docs", kind: "guide" }, { title: "Contact", href: "/contact", kind: "fact" }], confidence: 0 };
   const top = scored[0];
-  const margin = scored[1] ? top.score / scored[1].score : 2;
+  // Near-ties from the same page (a guide and its own sections) agree, so they must not lower confidence.
+  const page = (h: string) => h.split("#")[0];
+  const rival = scored.find((x) => page(x.d.entry.href) !== page(top.d.entry.href));
+  const margin = rival ? top.score / rival.score : 2;
   const confidence = Math.max(0, Math.min(1, top.coverage * 0.8 + Math.min(1, (margin - 1)) * 0.2));
   const sources = scored.slice(0, 3).map((s) => ({ title: s.d.entry.title, href: s.d.entry.href, kind: s.d.entry.kind }));
-  if (confidence < 0.45) return { status: "suggestions", answer: "I'm not sure which of these you mean. Here are the closest answers.", sources, confidence };
+  if (confidence < 0.4) return { status: "suggestions", answer: "I'm not sure which of these you mean. Here are the closest answers.", sources, confidence };
   return { status: "answered", answer: top.d.entry.body, sources, confidence };
 }
 
