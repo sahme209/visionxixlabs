@@ -234,6 +234,50 @@ def cmd_trigger(args: argparse.Namespace) -> None:
     print(f"  idempotencyKey:  {color(idempotency_key, ANSI_DIM)}")
 
 
+def cmd_ask(args: argparse.Namespace) -> None:
+    """Ask Axiom's agent gateway before acting. Exit 0 only when the action may proceed.
+
+    Designed for CI and scripts: `vxl ask deploy --target acme/web --env production
+    --summary "Ship v2" --wait 900 && ./deploy.sh`. Exit 1 when denied, rejected or
+    still waiting at the timeout.
+    """
+    if not args.target or not args.summary:
+        die("--target and --summary are required.")
+    client = make_client(args.api_key, args.base_url)
+    data = handle_api_call(lambda: client.request_agent_approval(
+        action_kind=args.action_kind, target=args.target, summary=args.summary,
+        environment=args.env, agent_name=args.agent, changed_files=args.file or None,
+    ))
+    request = data.get("request") or {}
+    deadline = time.monotonic() + max(0, args.wait)
+    while (not request.get("mayProceed")) and request.get("reason") == "awaiting_approval" and time.monotonic() < deadline:
+        if not args.json:
+            print(color(f"… waiting for approval of {request.get('id', '?')}", ANSI_DIM))
+        time.sleep(max(1, args.poll))
+        polled = handle_api_call(lambda: client.get_agent_approval(str(request.get("id"))))
+        request = polled.get("request") or request
+    if args.json:
+        emit_json({**data, "request": request})
+    else:
+        ok = bool(request.get("mayProceed"))
+        badge = color("PROCEED", ANSI_GREEN) if ok else color("HOLD", ANSI_RED)
+        print(f"{badge}  {request.get('id', '?')}  {request.get('reason', '?')}  ({request.get('riskLevel', '?')} risk)")
+        for reason in (request.get("policyReasons") or [])[:6]:
+            print(color(f"  · {reason}", ANSI_DIM))
+    sys.exit(EXIT_OK if request.get("mayProceed") else EXIT_COMMAND_FAILED)
+
+
+def cmd_outcome(args: argparse.Namespace) -> None:
+    """Report what happened after an allowed or approved action."""
+    client = make_client(args.api_key, args.base_url)
+    data = handle_api_call(lambda: client.record_agent_outcome(args.request_id, args.outcome, args.detail))
+    if args.json:
+        emit_json(data)
+    else:
+        print(color("✓ Outcome recorded", ANSI_GREEN) if data.get("ok") else color(f"✗ {data.get('error', 'not recorded')}", ANSI_RED))
+    sys.exit(EXIT_OK if data.get("ok") else EXIT_COMMAND_FAILED)
+
+
 def cmd_runs_list(args: argparse.Namespace) -> None:
     client = make_client(args.api_key, args.base_url)
     data = handle_api_call(lambda: client.list_pipeline_runs(
@@ -582,6 +626,21 @@ def build_parser() -> argparse.ArgumentParser:
         help="Comma-separated StreamEventKind filter, e.g. 'approvals.snapshot,heartbeat'.",
     )
 
+    p_ask = sub.add_parser("ask", help="Ask the agent gateway before acting. Exits 0 only when allowed or approved.")
+    p_ask.add_argument("action_kind", choices=["read", "code_change", "open_pull_request", "merge", "dependency_change", "infra_change", "deploy", "data_migration", "secret_access", "delete_resource", "run_command"])
+    p_ask.add_argument("--target", required=True, help="Repository, service or resource.")
+    p_ask.add_argument("--summary", required=True, help="One or two sentences describing the exact change.")
+    p_ask.add_argument("--env", default="unknown", choices=["development", "staging", "production", "unknown"])
+    p_ask.add_argument("--agent", default="vxl-cli", help="Agent name shown to approvers.")
+    p_ask.add_argument("--file", action="append", help="Changed file path (repeatable); sensitive or wide changes need approval.")
+    p_ask.add_argument("--wait", type=int, default=0, help="Seconds to wait for a human approval (default 0).")
+    p_ask.add_argument("--poll", type=int, default=5, help="Seconds between status checks while waiting.")
+
+    p_outcome = sub.add_parser("outcome", help="Report the outcome of an approved action.")
+    p_outcome.add_argument("request_id")
+    p_outcome.add_argument("outcome", choices=["succeeded", "failed", "abandoned"])
+    p_outcome.add_argument("--detail", default=None)
+
     p_listen = sub.add_parser(
         "listen",
         help="Run a local HTTP server that verifies inbound webhook signatures.",
@@ -612,6 +671,10 @@ def dispatch(args: argparse.Namespace) -> None:
             return cmd_events_tail(args)
     if args.cmd == "listen":
         return cmd_listen(args)
+    if args.cmd == "ask":
+        return cmd_ask(args)
+    if args.cmd == "outcome":
+        return cmd_outcome(args)
     die(f"unknown command: {args.cmd}")
 
 

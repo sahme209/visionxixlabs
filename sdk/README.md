@@ -166,7 +166,11 @@ vxl trigger --repo acme/example "Add /healthz route"
 vxl runs list --status running --limit 5
 vxl runs get <runId>
 vxl listen --port 8080 --secret <endpoint-secret>
+vxl ask deploy --target acme/web --env production --summary "Ship v2" --wait 900   # exit 0 only when approved
+vxl outcome <requestId> succeeded --detail "deployed v2"
 ```
+
+CI recipe: `vxl ask deploy --target acme/web --env production --summary "Ship $GIT_SHA" --file $(git diff --name-only origin/main) --wait 1800 && ./deploy.sh` waits for a workspace admin (not the key's creator) to approve. It exits 1 if the request is denied, rejected or still pending at the timeout.
 
 ### Stable exit codes (for CI scripts)
 

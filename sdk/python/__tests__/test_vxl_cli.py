@@ -258,3 +258,66 @@ class HandleApiCallTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+# ============================ agent gateway: vxl ask / outcome ============================
+
+
+class _FakeGatewayClient:
+    def __init__(self, first: Dict[str, Any], polls: list) -> None:
+        self.first = first
+        self.polls = list(polls)
+        self.requested: Dict[str, Any] = {}
+        self.outcomes: list = []
+
+    def request_agent_approval(self, **kwargs: Any) -> Dict[str, Any]:
+        self.requested = kwargs
+        return self.first
+
+    def get_agent_approval(self, request_id: str) -> Dict[str, Any]:
+        return self.polls.pop(0) if self.polls else self.first
+
+    def record_agent_outcome(self, request_id: str, outcome: str, detail: Any = None) -> Dict[str, Any]:
+        self.outcomes.append((request_id, outcome, detail))
+        return {"ok": True}
+
+
+def _req(reason: str, may: bool) -> Dict[str, Any]:
+    return {"ok": True, "request": {"id": "r1", "reason": reason, "mayProceed": may, "riskLevel": "high", "policyReasons": ["x"]}}
+
+
+class GatewayCliTests(unittest.TestCase):
+    def _run(self, argv: list, client: _FakeGatewayClient) -> int:
+        args = vxl_cli.build_parser().parse_args(argv)
+        with patch.object(vxl_cli, "make_client", return_value=client), patch.object(vxl_cli.time, "sleep"), patch("sys.stdout", new_callable=StringIO):
+            with self.assertRaises(SystemExit) as cm:
+                vxl_cli.dispatch(args)
+        return int(cm.exception.code or 0)
+
+    def test_allowed_action_exits_zero_and_sends_fields(self) -> None:
+        client = _FakeGatewayClient(_req("allowed_by_policy", True), [])
+        code = self._run(["ask", "code_change", "--target", "acme/web", "--summary", "Edit", "--env", "development", "--file", "a.ts", "--file", "b.ts"], client)
+        self.assertEqual(code, vxl_cli.EXIT_OK)
+        self.assertEqual(client.requested["changed_files"], ["a.ts", "b.ts"])
+        self.assertEqual(client.requested["environment"], "development")
+
+    def test_pending_without_wait_holds(self) -> None:
+        client = _FakeGatewayClient(_req("awaiting_approval", False), [])
+        self.assertEqual(self._run(["ask", "deploy", "--target", "acme/web", "--summary", "Ship"], client), vxl_cli.EXIT_COMMAND_FAILED)
+
+    def test_waits_until_a_person_approves(self) -> None:
+        client = _FakeGatewayClient(_req("awaiting_approval", False), [_req("awaiting_approval", False), _req("approved", True)])
+        self.assertEqual(self._run(["ask", "deploy", "--target", "acme/web", "--summary", "Ship", "--wait", "600"], client), vxl_cli.EXIT_OK)
+
+    def test_denied_never_proceeds_even_when_waiting(self) -> None:
+        client = _FakeGatewayClient(_req("denied_by_policy", False), [])
+        self.assertEqual(self._run(["ask", "secret_access", "--target", "vault", "--summary", "Read", "--env", "production", "--wait", "600"], client), vxl_cli.EXIT_COMMAND_FAILED)
+
+    def test_rejects_unknown_action_kind(self) -> None:
+        with patch("sys.stderr", new_callable=StringIO), self.assertRaises(SystemExit):
+            vxl_cli.build_parser().parse_args(["ask", "nuke", "--target", "x", "--summary", "y"])
+
+    def test_outcome_reports(self) -> None:
+        client = _FakeGatewayClient(_req("approved", True), [])
+        self.assertEqual(self._run(["outcome", "r1", "succeeded", "--detail", "ok"], client), vxl_cli.EXIT_OK)
+        self.assertEqual(client.outcomes, [("r1", "succeeded", "ok")])
