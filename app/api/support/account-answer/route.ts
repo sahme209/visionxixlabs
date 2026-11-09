@@ -12,13 +12,25 @@ import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { checkRateLimit } from "@/lib/rateLimit";
-import { classifyAccountIntent, composeAccountAnswer, type AccountFacts, type AccountIntent } from "@/lib/support/accountIntents";
+import { classifyAccountIntent, composeAccountAnswer, diagnose, type AccountFacts, type AccountIntent } from "@/lib/support/accountIntents";
 
 export const dynamic = "force-dynamic";
 const iso = (d: Date) => d.toISOString().slice(0, 16).replace("T", " ") + " UTC";
 
 async function facts(intent: AccountIntent, organizationId: string): Promise<AccountFacts> {
   switch (intent) {
+    case "diagnostic": {
+      const now = new Date(); const day = 86_400_000;
+      const safe = <T,>(p: () => Promise<T>, fallback: T) => Promise.resolve().then(p).catch(() => fallback);
+      const [connections, keysExpiringSoon, expiredAgentRequests, oldPendingProposals, seal] = await Promise.all([
+        safe(() => prisma.tenantIntegrationConnection.findMany({ where: { organizationId }, select: { provider: true, status: true, revokedAt: true }, take: 50 }), []),
+        safe(() => prisma.apiKey.count({ where: { organizationId, revokedAt: null, expiresAt: { gt: now, lte: new Date(now.getTime() + 7 * day) } } }), 0),
+        safe(() => prisma.agentGatewayRequest.count({ where: { organizationId, status: "pending", expiresAt: { lte: now, gte: new Date(now.getTime() - 7 * day) } } }), 0),
+        safe(() => prisma.agentActionProposal.count({ where: { organizationId, status: "proposed", createdAt: { lte: new Date(now.getTime() - day) } } }), 0),
+        safe(() => prisma.auditSeal.findFirst({ where: { organizationId }, orderBy: { sequence: "desc" }, select: { createdAt: true } }), null),
+      ]);
+      return { findings: diagnose({ connections: connections.map((c) => ({ provider: c.provider, status: c.revokedAt ? "revoked" : c.status })), keysExpiringSoon, expiredAgentRequests, oldPendingProposals, latestSealAt: seal?.createdAt ?? null, now }) };
+    }
     case "access_request":
       return {};
     case "agent_requests":

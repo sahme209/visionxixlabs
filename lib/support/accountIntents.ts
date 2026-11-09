@@ -7,10 +7,11 @@
  * no cross-workspace read. Unknown questions return null and fall back to the
  * public docs answer.
  */
-export const ACCOUNT_INTENTS = ["access_request", "pending_approvals", "agent_requests", "connections", "audit_integrity", "recent_activity"] as const;
+export const ACCOUNT_INTENTS = ["diagnostic", "access_request", "pending_approvals", "agent_requests", "connections", "audit_integrity", "recent_activity"] as const;
 export type AccountIntent = (typeof ACCOUNT_INTENTS)[number];
 
 const RULES: ReadonlyArray<{ intent: AccountIntent; test: RegExp }> = [
+  { intent: "diagnostic", test: /\b(diagnos\w*|health ?check|run a check|check (my|our) (workspace|setup)|what'?s wrong|is (anything|something) (wrong|broken)|not working|broken)\b/i },
   { intent: "access_request", test: /\b(need|want|request|get|give me|grant|upgrade)\b.*\b(access|permission|permissions|role|admin|operator)\b|\bwhy can'?t i\b|\bnot allowed\b|\bpermission denied\b/i },
   { intent: "agent_requests", test: /\b(agent|cursor|claude|codex|copilot|mcp|gateway)\b.*\b(request|waiting|pending|approv)|\b(request|waiting|pending)\b.*\bagents?\b/i },
   { intent: "pending_approvals", test: /\b(pending|waiting|need|needs|awaiting|open)\b.*\b(approv|review|decision)|\bapprovals?\b.*\b(pending|waiting|open|queue)\b|what('s| is)? waiting for me/i },
@@ -24,6 +25,30 @@ export function classifyAccountIntent(question: string): AccountIntent | null {
   return RULES.find((r) => r.test.test(q))?.intent ?? null;
 }
 
+export interface DiagnosticFacts {
+  connections: { provider: string; status: string }[];
+  keysExpiringSoon: number;
+  expiredAgentRequests: number;
+  oldPendingProposals: number;
+  latestSealAt: Date | null;
+  now: Date;
+}
+export interface DiagnosticFinding { severity: "attention" | "info"; text: string; href: string }
+
+/** Pure: turns bounded read-only facts into a short, ordered list of findings. */
+export function diagnose(f: DiagnosticFacts): DiagnosticFinding[] {
+  const out: DiagnosticFinding[] = [];
+  const broken = f.connections.filter((c) => c.status === "revoked" || c.status === "needs_attention" || c.status === "suspended");
+  if (broken.length) out.push({ severity: "attention", text: `Connections need attention: ${broken.map((c) => `${c.provider} (${c.status.replace("_", " ")})`).join(", ")}.`, href: "/control/integrations" });
+  if (f.keysExpiringSoon > 0) out.push({ severity: "attention", text: `${f.keysExpiringSoon} API key${f.keysExpiringSoon === 1 ? "" : "s"} expire within 7 days. Agents or CI using them will stop.`, href: "/control/api-keys" });
+  if (f.expiredAgentRequests > 0) out.push({ severity: "info", text: `${f.expiredAgentRequests} agent request${f.expiredAgentRequests === 1 ? "" : "s"} expired without a decision in the last 7 days.`, href: "/control/agent-gateway" });
+  if (f.oldPendingProposals > 0) out.push({ severity: "info", text: `${f.oldPendingProposals} Agent proposal${f.oldPendingProposals === 1 ? " has" : "s have"} waited more than 24 hours for approval.`, href: "/control/governance" });
+  const sealAgeDays = f.latestSealAt ? (f.now.getTime() - f.latestSealAt.getTime()) / 86_400_000 : null;
+  if (sealAgeDays === null) out.push({ severity: "info", text: "The audit log has never been sealed.", href: "/control/trust-tools" });
+  else if (sealAgeDays > 30) out.push({ severity: "info", text: `The audit log was last sealed ${Math.floor(sealAgeDays)} days ago.`, href: "/control/trust-tools" });
+  return out.sort((a, b) => (a.severity === b.severity ? 0 : a.severity === "attention" ? -1 : 1));
+}
+
 export interface AccountFacts {
   pendingAgentRequests?: number;
   pendingProposals?: number;
@@ -31,11 +56,17 @@ export interface AccountFacts {
   connections?: { provider: string; status: string }[];
   latestSeal?: { sequence: number; at: string } | null;
   recentEvents?: { summary: string; at: string }[];
+  findings?: DiagnosticFinding[];
 }
 
 /** Turns bounded facts into a short answer with a link to where the person can act. */
 export function composeAccountAnswer(intent: AccountIntent, f: AccountFacts): { answer: string; href: string; title: string } {
   switch (intent) {
+    case "diagnostic": {
+      const list = f.findings ?? [];
+      if (list.length === 0) return { answer: "I checked connections, API keys, agent requests, waiting approvals and the audit seal. Nothing needs attention right now. This is a read-only check of saved state, not a live test of each provider.", href: "/control", title: "Control overview" };
+      return { answer: `I checked your workspace (read-only, saved state). ${list.slice(0, 5).map((x) => `${x.severity === "attention" ? "⚠ " : ""}${x.text}`).join(" ")}`, href: list[0].href, title: "Fix the first item" };
+    }
     case "access_request":
       return { answer: "I can't change roles, but I can send your request to this workspace's admins. Choose the role you need and say why; an admin decides on the Members page.", href: "/control/members", title: "Members" };
     case "agent_requests": {
