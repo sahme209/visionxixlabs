@@ -46,6 +46,23 @@ export function isAutonomyLoosening(current: { mode: string; perCycleActionLimit
   return toRank > fromRank || next.perCycleActionLimit > from.perCycleActionLimit;
 }
 
+/**
+ * M02: true when an AI provider policy change gives AI more reach: turning AI on,
+ * allowing a provider, or approving a gateway model that was not allowed before.
+ * Removing providers/models or turning AI off is tightening. No stored policy is
+ * treated as the strictest (AI off, nothing allowed), so enabling anything counts.
+ */
+export function isProviderPolicyLoosening(
+  current: { enabled: boolean; allowedProviders: readonly string[]; approvedModels: readonly string[] } | null,
+  next: { enabled: boolean; allowedProviders: readonly string[]; approvedModels: readonly string[] },
+): boolean {
+  const from = current ?? { enabled: false, allowedProviders: [], approvedModels: [] };
+  if (!next.enabled) return false;
+  if (!from.enabled) return true;
+  const newly = (a: readonly string[], b: readonly string[]) => a.some((x) => !b.includes(x));
+  return newly(next.allowedProviders, from.allowedProviders) || newly(next.approvedModels, from.approvedModels);
+}
+
 /** Lower number means more privilege. Unknown roles are treated as the most privileged (fail closed). */
 const ROLE_RANK: Readonly<Record<string, number>> = { owner: 0, admin: 1, operator: 2, security_reviewer: 3, finance_viewer: 4, read_only: 5 };
 const rank = (role: string | null | undefined) => (role && role in ROLE_RANK ? ROLE_RANK[role] : -1);

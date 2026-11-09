@@ -1,6 +1,7 @@
 import {beforeEach,it,expect,vi} from 'vitest';
 import {NextRequest} from 'next/server';
 const m=vi.hoisted(()=>({principal:vi.fn(),start:vi.fn(),status:vi.fn(),complete:vi.fn(),cancel:vi.fn(),refresh:vi.fn()}));
+vi.mock('@/lib/governance/intelligence/enrolledRefusal',()=>({workspaceUnenrolled:async()=>true}));
 vi.mock('../runtime',async()=>{const {NextResponse}=await import('next/server'),{azureGuidedStatusSchema}=await import('../contract');return{azureGuidedPrincipal:m.principal,azureGuided:{start:m.start,status:m.status,complete:m.complete,cancel:m.cancel},azureGuidedRefresh:{refresh:m.refresh},parseAzureStatus:(x:unknown)=>azureGuidedStatusSchema.parse(x),azureGuidedReply:(data:unknown)=>NextResponse.json({ok:true,data}),azureGuidedFailure:()=>NextResponse.json({ok:false,retryAllowed:false},{status:409})}});
 import {azureGuidedHttp} from '../http';
 beforeEach(()=>{vi.clearAllMocks();m.principal.mockResolvedValue({organizationId:'org',userId:'user',sessionId:'paired'});m.status.mockResolvedValue({available:false,status:'not_connected'})});

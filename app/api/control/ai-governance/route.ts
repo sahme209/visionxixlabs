@@ -22,7 +22,7 @@ import {
 } from "@/lib/axiom/agentRuntime/agentIdentityPolicy";
 import { readTenantCharter, upsertTenantCharter } from "@/lib/autonomy/tenantCharterStore";
 import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
-import { isAutonomyLoosening } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
+import { isAutonomyLoosening, isProviderPolicyLoosening } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
 import type { AutonomyMode } from "@/lib/autonomy/autonomousLoopModel";
 import { loadBudgetConfig, upsertBudgetConfig } from "@/lib/workforce/pipelines/budgetConfigStore";
 
@@ -119,6 +119,12 @@ export async function PATCH(request: NextRequest) {
       if (gatewayPolicyModelIds(policy).some(id => !models.some(model => model.id === id))) {
         return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
       }
+    }
+    // Governance M02: while enrolled, AI reach can be reduced but not widened.
+    const stored = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId).catch(() => ({ policy: null }));
+    const shape = (p: typeof policy) => ({ enabled: p.enabled, allowedProviders: p.allowedProviders, approvedModels: gatewayPolicyModelIds(p) });
+    if (isProviderPolicyLoosening(stored.policy ? shape(stored.policy) : null, shape(policy)) && !await workspaceUnenrolled(ctx.organizationId)) {
+      return NextResponse.json({ ok: false, error: "governance_enrolled_policy_loosening" }, { status: 409 });
     }
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
     try {
