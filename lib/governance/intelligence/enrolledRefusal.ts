@@ -19,3 +19,17 @@ export async function mayDeliverTenantWebhook(organizationId:string,eventKind:st
  if(isSafetyWebhook(eventKind))return true;
  return workspaceUnenrolled(organizationId);
 }
+
+/**
+ * M03: true when starting this connection must be refused: the workspace has no
+ * connection for the provider yet (so this would add one) and it is enrolled or
+ * enrollment cannot be read. Re-authorizing an existing connection is allowed.
+ * Call it before any provider consent redirect, so nobody grants access that
+ * Axiom would then have to discard.
+ */
+export async function refuseNewConnectionWhenEnrolled(organizationId:string,provider:string):Promise<boolean>{
+ let existing:unknown;
+ try{existing=await prisma.tenantIntegrationConnection.findUnique({where:{organizationId_provider:{organizationId,provider}},select:{id:true}})}catch{return true}
+ if(existing)return false;
+ return !await workspaceUnenrolled(organizationId);
+}

@@ -14,6 +14,8 @@ vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwne
 vi.mock("@/lib/auth/requestOrigin", () => ({ isSameOriginRequest: mocks.isSameOriginRequest }));
 vi.mock("@/lib/integrations/trustedCallbackUrl", () => ({ trustedIntegrationCallbackUrl: mocks.trustedIntegrationCallbackUrl }));
 vi.mock("@/lib/integrations/tenantConnectionRepo", () => ({ startTenantIntegrationAuthorization: mocks.startTenantIntegrationAuthorization }));
+vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ refuseNewConnectionWhenEnrolled: (...a: unknown[]) => governanceRefusal(...a) }));
+const governanceRefusal = vi.hoisted(() => vi.fn(async (..._a: unknown[]) => false));
 vi.mock("@/lib/db", () => ({ prisma: {} }));
 
 const originalClientId = process.env.LINEAR_CLIENT_ID;
@@ -48,5 +50,15 @@ describe("POST /api/account/integrations/linear/start", () => {
     expect(consent.searchParams.get("scope")).toBe("read,issues:create");
     expect(consent.searchParams.get("code_challenge_method")).toBe("S256");
     expect(mocks.startTenantIntegrationAuthorization).toHaveBeenCalledWith(expect.anything(), expect.objectContaining({ provider: "linear", organizationId: "org-1" }));
+  });
+
+  it("refuses a brand-new connection while enrolled, before any consent state or redirect", async () => {
+    governanceRefusal.mockResolvedValueOnce(true);
+    const { POST } = await import("../route");
+    const response = await POST(new NextRequest("https://visionxixlabs.com/api/account/integrations/linear/start", { method: "POST" }));
+    expect(response.status).toBe(409);
+    expect((await response.json()).error).toBe("governance_enrolled_connection_increase");
+    expect(governanceRefusal).toHaveBeenCalledWith("org-1", "linear");
+    expect(mocks.startTenantIntegrationAuthorization).not.toHaveBeenCalled();
   });
 });

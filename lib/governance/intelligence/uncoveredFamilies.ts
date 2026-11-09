@@ -10,8 +10,8 @@
 export const UNCOVERED_FAMILIES = [
   // Autonomy loosening is refused while enrolled; provider and branch policy are not yet classified.
   { id: "M02", name: "AI provider policy and branch policy", scope: "scope_decision_pending" },
-  // New Airflow and batch connections are refused while enrolled; these connection paths are not yet.
-  { id: "M03", name: "OAuth connections (Slack, Teams, Linear), Outlook, ServiceNow and cloud accounts", scope: "scope_decision_pending" },
+  // New OAuth (Slack, Teams, Linear), Outlook, Airflow, batch, AWS and Azure connections are refused while enrolled.
+  { id: "M03", name: "ServiceNow connection and guided Azure/GCP cloud setup", scope: "scope_decision_pending" },
   { id: "P01", name: "Platform deploy, template hosting and growth publishing", scope: "platform_scope_question" },
 ] as const;
 

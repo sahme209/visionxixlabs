@@ -3,6 +3,8 @@ import { NextRequest } from "next/server";
 import { fixture, input, principal } from "@/lib/cloud/azure/enrollment/__tests__/fixture";
 const mocks = vi.hoisted(() => ({ repo: {} as Record<string, unknown>, resolve: vi.fn(), validate: vi.fn(), read: vi.fn(), audit: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: mocks.repo }));
+// Not enrolled in Governance (enrolled refusal is tested with the policy kernel and team/connection routes).
+vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: async () => true }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolve }));
 vi.mock("@/lib/cloud/azure/enrollment/providerClient", () => ({ validateAzureEnrollment: mocks.validate, readAzureResourceGroups: mocks.read }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: mocks.audit }));

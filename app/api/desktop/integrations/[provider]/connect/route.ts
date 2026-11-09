@@ -6,6 +6,7 @@ import { getGithubConfig, isGithubAppInstallationReady } from "@/lib/connectors/
 import { buildSlackInstallUrl } from "@/lib/integrations/slack/slackOauth";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
 import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbackUrl";
+import { refuseNewConnectionWhenEnrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -37,6 +38,9 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const redirectUri = trustedIntegrationCallbackUrl(callbackPath);
   if (!redirectUri) return NextResponse.json({ ok: false, error: `${provider}_not_configured` }, { status: 503 });
 
+  // Governance M03: a brand-new connection waits while enrolled; re-authorizing an existing one still works.
+  // GitHub installs live in GitHubInstallation and their writes already refuse when enrolled (F03).
+  if (provider !== "github" && await refuseNewConnectionWhenEnrolled(String(session.organizationId), provider)) return NextResponse.json({ ok: false, error: "governance_enrolled_connection_increase" }, { status: 409 });
   let verifier: string | undefined;
   let consentUrl: URL;
   if (provider === "github") {

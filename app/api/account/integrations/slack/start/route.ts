@@ -6,6 +6,7 @@ import { trustedIntegrationCallbackUrl } from "@/lib/integrations/trustedCallbac
 import { prisma } from "@/lib/db";
 import { buildSlackInstallUrl } from "@/lib/integrations/slack/slackOauth";
 import { startTenantIntegrationAuthorization, type TenantConnectionRepo } from "@/lib/integrations/tenantConnectionRepo";
+import { refuseNewConnectionWhenEnrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -31,6 +32,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 
   const redirectUri = trustedIntegrationCallbackUrl("/api/integrations/slack/callback");
   if (!redirectUri) return NextResponse.json({ ok: false, error: "slack_not_configured" }, { status: 503 });
+  // Governance M03: a brand-new connection waits while enrolled; re-authorizing an existing one still works.
+  if (await refuseNewConnectionWhenEnrolled(String(context.organizationId), "slack")) return NextResponse.json({ ok: false, error: "governance_enrolled_connection_increase" }, { status: 409 });
   try {
     const authorization = await startTenantIntegrationAuthorization(
       prisma as unknown as TenantConnectionRepo,

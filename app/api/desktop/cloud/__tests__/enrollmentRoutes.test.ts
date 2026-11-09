@@ -2,6 +2,8 @@ import { beforeEach, afterEach, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({ repo: {} as Record<string, unknown>, resolve: vi.fn(), validate: vi.fn(), configured: vi.fn(), read: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: new Proxy({}, { get: (_target, key) => mocks.repo[String(key)] }) }));
+// Not enrolled in Governance (enrolled refusal is tested with the policy kernel and team/connection routes).
+vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: async () => true }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: mocks.resolve }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: vi.fn(async () => true) }));
 vi.mock("@/lib/cloud/aws/enrollment/stsValidation", () => ({ assertAwsEnrollmentConfigured: mocks.configured, validateEnrollmentRole: mocks.validate, readEnrollmentInventory: mocks.read }));
