@@ -38,6 +38,8 @@ Each needs its own planned PR; Dependabot ignores their major versions until the
 - Tailwind 4 (web + desktop): CSS-first config replaces `tailwind.config`.
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
 - ESLint 10 and Vitest 5 (web): config and API changes.
+- Next.js (beyond 16.4.2) and the AWS SDK (beyond 3.1049): re-review the owned-website framework source pins and the pinned ECS/S3 SDK behaviour tests, then bump.
+- Vitest (beyond 4.1.11): re-review the `suppress-warnings.cjs` preload hash in `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts`.
 
 ## Current completion work
 

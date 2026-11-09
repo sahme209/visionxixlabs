@@ -10,15 +10,22 @@ updates:
     groups:
       web-minor-patch: { update-types: ["minor", "patch"] }
       web-major: { update-types: ["major"] }
+    # Next.js and the AWS SDK are pinned by reviewed-source checks (owned website
+    # framework pins, pinned ECS/S3 SDK behaviour). Upgrade them in a planned PR
+    # that re-reviews those pins, not in the weekly batch.
     # Platform migrations get their own planned PR (see docs/product/remaining-work.md),
     # so they do not block the weekly major batch.
     ignore:
+      - { dependency-name: "next" }
+      - { dependency-name: "eslint-config-next" }
+      - { dependency-name: "@aws-sdk/*" }
+      # Vitest: test-child fixture pins the reviewed 4.1.11 build and preload hash.
+      - { dependency-name: "vitest" }
       - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
       - { dependency-name: "tailwindcss", update-types: ["version-update:semver-major"] }
       - { dependency-name: "prisma", update-types: ["version-update:semver-major"] }
       - { dependency-name: "@prisma/client", update-types: ["version-update:semver-major"] }
       - { dependency-name: "eslint", update-types: ["version-update:semver-major"] }
-      - { dependency-name: "vitest", update-types: ["version-update:semver-major"] }
   - package-ecosystem: npm
     directory: "/desktop"
     schedule: { interval: weekly, day: monday }
