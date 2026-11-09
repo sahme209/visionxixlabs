@@ -13,7 +13,7 @@ const CASES: readonly Case[] = [
   ["What is Axiom?", "faq-0-0"],
   ["what does axiom agent do", "faq-0-0"],
   ["Can Axiom govern Cursor or Claude Code?", "fact-agent-gateway"],
-  ["does it support MCP agents", "fact-agent-gateway"],
+  ["does it support MCP agents", "page:/docs/agent-gateway"],
   ["how do I block a github actions deploy until someone approves", "fact-ci-gate"],
   ["how much does it cost?", "fact-prepaid-ai"],
   ["is there a free plan", "fact-prepaid-ai"],
