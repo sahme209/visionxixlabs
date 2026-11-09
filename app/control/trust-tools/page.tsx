@@ -23,10 +23,10 @@ export default async function TrustToolsPage() {
       <ModuleIntro
         title="Trust tools"
         explanation="Prove the audit log is untouched, test a rule against real history before enabling it, and see what a change touches before approving it."
-        helpsYouDo={["Verify the audit log has not been edited", "Replay a draft rule over the last 30 days", "Preview a change's blast radius and rollback"]}
+        helpsYouDo={["Verify the audit log has not been edited", "Download an anchor to keep outside Axiom, and check it later", "Replay a draft rule over the last 30 days", "Preview a change's blast radius and rollback"]}
         connectFirst={["Audit activity in this workspace", "Approval history for replay (cloud actions)"]}
         aiEngineers={[]}
-        approval={{ severity: "read_only", note: "Verify, replay and preview are read-only. Sealing is limited to owners and admins and only adds a seal; it never changes events. Nothing here enables a policy." }}
+        approval={{ severity: "read_only", note: "Verify, anchors, replay and preview are read-only. Sealing is limited to owners and admins and only adds a seal; it never changes events. Nothing here enables a policy." }}
         storageKey="trust-tools"
         lastReviewed="2026-11-09"
       />

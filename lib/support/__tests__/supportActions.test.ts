@@ -13,7 +13,9 @@ describe("Ask Axiom governed actions", () => {
   it("requires an allowed role", () => {
     expect(decideSupportAction({ action: "seal_audit_log", role: "operator", confirmed: "seal_audit_log" })).toEqual({ ok: false, error: "role_not_allowed" });
     expect(decideSupportAction({ action: "seal_audit_log", role: null, confirmed: "seal_audit_log" })).toEqual({ ok: false, error: "role_not_allowed" });
-    expect(decideSupportAction({ action: "verify_audit_log", role: "security_reviewer", confirmed: "verify_audit_log" }).ok).toBe(true);
+    // Verifying is read-only and open to every accepted member, as on Trust tools.
+    expect(decideSupportAction({ action: "verify_audit_log", role: "finance_viewer", confirmed: "verify_audit_log" }).ok).toBe(true);
+    expect(decideSupportAction({ action: "verify_audit_log", role: null, confirmed: "verify_audit_log" })).toEqual({ ok: false, error: "role_not_allowed" });
     expect(decideSupportAction({ action: "seal_audit_log", role: "security_reviewer", confirmed: "seal_audit_log" }).ok).toBe(false);
   });
 
@@ -31,9 +33,9 @@ describe("Ask Axiom governed actions", () => {
     for (const a of SUPPORT_ACTIONS) {
       expect(["read_only", "append"]).toContain(SUPPORT_ACTION_INFO[a].effect);
       expect(SUPPORT_ACTION_INFO[a].confirmText.length).toBeGreaterThan(40);
-      expect(SUPPORT_ACTION_INFO[a].roles).not.toContain("finance_viewer");
     }
     expect(mayOffer("seal_audit_log", "admin")).toBe(true);
     expect(mayOffer("seal_audit_log", "operator")).toBe(false);
+    expect(SUPPORT_ACTION_INFO.seal_audit_log.roles).toEqual(["owner", "admin"]);
   });
 });

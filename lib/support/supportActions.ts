@@ -16,7 +16,8 @@ export interface SupportActionInfo {
   confirmText: string;
   /** Read-only actions change nothing; "append" adds a record and never edits or deletes one. */
   effect: "read_only" | "append";
-  roles: readonly string[];
+  /** Roles allowed to run it, or any accepted member (matches the Trust tools screen). */
+  roles: readonly string[] | "any_member";
 }
 
 export const SUPPORT_ACTION_INFO: Readonly<Record<SupportAction, SupportActionInfo>> = {
@@ -30,7 +31,7 @@ export const SUPPORT_ACTION_INFO: Readonly<Record<SupportAction, SupportActionIn
     label: "Verify the audit log",
     confirmText: "Recomputes every seal and reports whether the sealed events are intact. Read-only. If tampering is found, your integrity webhook is notified.",
     effect: "read_only",
-    roles: ["owner", "admin", "security_reviewer"],
+    roles: "any_member",
   },
 };
 
@@ -58,12 +59,18 @@ export type SupportActionDecision =
 export function decideSupportAction(input: { action: unknown; role: string | null | undefined; confirmed: unknown }): SupportActionDecision {
   if (!isSupportAction(input.action)) return { ok: false, error: "unknown_action" };
   const info = SUPPORT_ACTION_INFO[input.action];
-  if (!input.role || !info.roles.includes(input.role)) return { ok: false, error: "role_not_allowed" };
+  if (!roleAllowed(info, input.role)) return { ok: false, error: "role_not_allowed" };
   if (input.confirmed !== input.action) return { ok: false, error: "confirmation_required" };
   return { ok: true, action: input.action, info };
 }
 
 /** Whether to show the action button at all for this role (UI only). */
 export function mayOffer(action: SupportAction, role: string | null | undefined): boolean {
-  return Boolean(role && SUPPORT_ACTION_INFO[action].roles.includes(role));
+  return roleAllowed(SUPPORT_ACTION_INFO[action], role);
+}
+
+/** Callers pass the role of an accepted membership only; no role means not a member. */
+function roleAllowed(info: SupportActionInfo, role: string | null | undefined): boolean {
+  if (!role) return false;
+  return info.roles === "any_member" || info.roles.includes(role);
 }

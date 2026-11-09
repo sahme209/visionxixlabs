@@ -171,9 +171,11 @@ export const DEMO_SCENARIOS: Readonly<Record<DemoScenarioId, DemoScenario>> = {
     estimatedMinutes: 4,
     audience: "public",
     lastReviewed: "2026-11-09",
-    sourceFeatureVersion: "A11-A13 trust tools",
+    sourceFeatureVersion: "A11-A13 trust tools + A9.8 seal anchors + Ask Axiom governed actions",
     steps: [
       { id: "1", title: "Seal and verify the audit log", description: "An admin seals recent audit events; anyone in the workspace verifies the chain.", route: "/control/trust-tools", approval: "self_approve", expectedResult: "Intact, with N seals verified, or the exact seal that changed." },
+      { id: "1b", title: "Keep an anchor outside Axiom", description: "Download the anchor after sealing, then use Check a kept anchor to compare it with the live chain.", route: "/control/trust-tools", approval: "none", expectedResult: "Anchor matches seal #N (or names the seal that is missing or was rewritten). An edited anchor file is refused." },
+      { id: "1c", title: "Ask Axiom to seal or verify", description: "In Ask Axiom, type \"seal the audit log\" or \"verify the audit log\" and confirm the exact action.", route: "/control/trust-tools", approval: "self_approve", expectedResult: "The action runs only after confirmation, the server re-checks the role, and the run appears in the audit log." },
       { id: "2", title: "Replay a draft rule", description: "Pick \"Block every high-risk action\" and replay it over 30 days.", route: "/control/trust-tools", approval: "none", expectedResult: "Counts of actions newly blocked or auto-approved, with each changed action listed. Nothing is enabled." },
       { id: "3", title: "Preview a change", description: "Paste a PR's changed files.", route: "/control/trust-tools", approval: "none", expectedResult: "Areas touched, blast radius, rollback outlook and reviewer checks, labelled path-based." },
     ],
