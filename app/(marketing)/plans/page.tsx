@@ -59,9 +59,9 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
 
   return (
     <main className="public-pricing-page relative isolate overflow-hidden">
-      {cancellationReturnContext && <p role="status" className="mx-auto mt-6 max-w-[1280px] px-5 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-12">Back from checkout. This page makes no billing changes and the URL does not confirm a payment outcome. <Link href="/control/usage-billing" className="text-orange-300 underline underline-offset-4">Review workspace billing</Link>.</p>}
+      {cancellationReturnContext && <p role="status" className="mx-auto mt-6 max-w-[1280px] px-5 text-sm leading-6 text-zinc-400 sm:px-8 lg:px-10">Back from checkout. This page makes no billing changes and the URL does not confirm a payment outcome. <Link href="/control/usage-billing" className="text-orange-300 underline underline-offset-4">Review workspace billing</Link>.</p>}
 
-      <section className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 sm:px-8 sm:pt-24 lg:px-12 lg:pb-16">
+      <section className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-16">
         <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Get started</p>
         <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16">
           <h1 className="max-w-2xl text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.04] tracking-[-0.05em] text-zinc-100">
@@ -73,7 +73,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
         </div>
       </section>
 
-      <section aria-label="How Axiom is offered" className="mx-auto grid max-w-[1280px] gap-4 px-5 pb-12 sm:px-8 lg:grid-cols-3 lg:px-12 lg:pb-16">
+      <section aria-label="How Axiom is offered" className="mx-auto grid max-w-[1280px] gap-4 px-5 pb-12 sm:px-8 lg:grid-cols-3 lg:px-10 lg:pb-16">
         <article className="flex flex-col rounded-xl border border-white/[0.09] bg-[#181818] p-6">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Axiom</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Free to explore</h2>
@@ -123,7 +123,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
         </article>
       </section>
 
-      <section id="ai-rates" aria-labelledby="ai-rates-heading" className="border-y border-white/[0.07] px-5 py-12 sm:px-8 lg:px-12 lg:py-16">
+      <section id="ai-rates" aria-labelledby="ai-rates-heading" className="border-y border-white/[0.07] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
         <div className="mx-auto max-w-[1184px]">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Before any charge</p>
           <h2 id="ai-rates-heading" className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">AI rates, limits and refunds</h2>
@@ -216,13 +216,13 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
       </section>
 
       {ownedBinding && (
-        <section aria-label="Owned TEST checkout rehearsal" className="mx-auto max-w-[1280px] px-5 py-12 sm:px-8 lg:px-12">
+        <section aria-label="Owned TEST checkout rehearsal" className="mx-auto max-w-[1280px] px-5 py-12 sm:px-8 lg:px-10">
           <p className="border-l-2 border-orange-400/70 pl-3 text-xs leading-5 text-zinc-400">Owned TEST checkout rehearsal · synthetic test runtime only · no live billing</p>
           <PublicPlansCatalog ownedIntentState={ownedIntentState} ownedTestCheckout checkoutEnabled initialSelection={parsePublicPlanSelection(params)} workspace={workspace} />
         </section>
       )}
 
-      <section className="mx-auto flex max-w-[1280px] flex-col gap-6 px-5 py-14 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-12 lg:py-20">
+      <section className="mx-auto flex max-w-[1280px] flex-col gap-6 px-5 py-16 sm:px-8 lg:flex-row lg:items-center lg:justify-between lg:px-10">
         <div>
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">No billing decision required</p>
           <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">See the workflow before you prepay anything.</h2>

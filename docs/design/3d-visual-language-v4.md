@@ -44,3 +44,11 @@ three.js, React Three Fiber, drei, react-postprocessing, GSAP for camera choreog
 3. Add a jsdom test.
 
 The Product page `ControlPlaneModel` is the reference.
+
+
+## Balanced layout (2026-11-08, user: "take DNA from Cursor, Harness, ChatGPT, Claude")
+
+- One content width (1280px) and one side padding (20 / 32 / 40px) on every marketing page.
+- One section rhythm: `py-16` between sections; hero top offset `pt-24`, `lg:pt-28`.
+- Pipe flows fit one screen: on desktop the pipe is a compact left rail (number, title, part names, moving packet), and the chosen stage opens in a sticky right panel (summary, 3 parts, guarantee, failure, passes on). Mobile stacks the rail over the panel.
+- Pattern source: tabs and switchers instead of long stacks (Claude role tabs, Harness agent layout); short leads and at most 2-sentence paragraphs. Cursor.com refused automated fetch (403), so its DNA comes from general knowledge, not a fresh read.

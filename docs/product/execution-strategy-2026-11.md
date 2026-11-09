@@ -65,7 +65,7 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-08 | Side notes from the audit (not changed): legacy starter token format may never expire (`lib/starterToken.ts`); legacy starter flow scopes to `organizationId: userId` (personal scope, self-contained). Both on the cleanup list | claude |
 | 2026-11-08 | A7: legacy no-expiry starter tokens rejected as expired; cloud snapshot/validate credential ownership verified safe; tenant audit marked resolved | Claude, PR fix/starter-token-legacy-expiry |
 
-## Open decisions (owner: user)
+\n| 2026-11-08 | B2: balanced layout. Pipe flows become a compact rail plus a sticky detail panel; one width, padding and section rhythm across marketing pages | user; PR design/balanced-layout |\n\n## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.
 
 ## Competitive-edge proposals (not yet in scope; need approval)

@@ -8,7 +8,7 @@ import { INTEGRATION_FLOW_STAGES } from "@/lib/marketing/integrationFlowModel";
 export const dynamic = "force-dynamic";
 export default function IntegrationsCatalog(){
  const entries=publicCatalogEntries();
- return <div className="min-h-screen bg-[#101010] text-zinc-100"><Navigation/><main className="mx-auto max-w-[1280px] space-y-10 px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pt-36">
+ return <div className="min-h-screen bg-[#101010] text-zinc-100"><Navigation/><main className="mx-auto max-w-[1280px] space-y-10 px-5 pb-20 pt-24 sm:px-8 lg:px-10 lg:pt-28">
   <header className="max-w-3xl space-y-5"><p className="text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-500">Axiom · Integrations</p><h1 className="text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-zinc-50">Find the right connection for the job.</h1><p className="text-base leading-7 text-zinc-400 sm:text-lg">Explore supported workflows, preview work and planned connections. Check the operation and its limits before configuring anything.</p><p className="text-sm leading-6 text-zinc-500">This public catalog starts no connection, grants no permission and performs no provider action.</p></header>
   <section aria-labelledby="integration-flow"><h2 id="integration-flow" className="text-xl font-medium tracking-tight">How a connection is used</h2><p className="mt-3 max-w-3xl text-[15px] leading-7 text-zinc-400">From choosing a workflow to a recorded outcome, data moves through five separate checks. Browsing this page runs none of them.</p><div className="mt-6"><PipeFlow stages={INTEGRATION_FLOW_STAGES} label="How a connection is used" /></div></section>
   <IntegrationCatalogBrowser entries={entries}/>
