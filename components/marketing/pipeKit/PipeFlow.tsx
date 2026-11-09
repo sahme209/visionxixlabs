@@ -66,7 +66,7 @@ export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly
       <section id={`${id}-detail`} aria-label={stage.title} aria-live="polite" className={`flex flex-col rounded-xl border border-white/[0.08] bg-[#07090d] p-5 ${styles[stage.tone]}`}>
         <h3 className="text-lg text-zinc-100"><span className={`mr-2 font-mono text-sm ${styles.number}`}>{num(selected)}</span>{stage.title}</h3>
         <p className="mt-1 text-[15px] leading-7 text-zinc-300">{stage.summary}</p>
-        <div className="relative mt-4 grid gap-2 sm:grid-cols-3 sm:gap-4">
+        <div className="relative mb-4 mt-4 grid gap-2 sm:grid-cols-3 sm:gap-4">
           <span aria-hidden="true" className={`hidden sm:block ${styles.tube} ${paused ? styles.paused : ""}`}>
             {[0, 1, 2].map((k) => <span key={k} className={styles.bit} style={{ animationDelay: `${-k * 1.2}s` }} />)}
           </span>
