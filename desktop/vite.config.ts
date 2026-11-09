@@ -5,7 +5,8 @@ const host = process.env.TAURI_DEV_HOST;
 
 export default defineConfig(async () => ({
   plugins: [react()],
-  resolve: { dedupe: ["zod"] },
+  // Shared components outside desktop/ must use desktop's one React (Rolldown resolves per importer).
+  resolve: { dedupe: ["zod", "react", "react-dom"] },
   clearScreen: false,
   server: {
     port: 5173,
