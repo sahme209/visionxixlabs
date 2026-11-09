@@ -12,15 +12,15 @@ export const metadata: Metadata = {
 };
 
 const BOUNDARIES = [
-  ["GitHub", "Repository-scoped, read-only release evidence is the first source of truth."],
-  ["Axiom Agent", "The installed workspace validates provider access and holds consequential deployment operations."],
-  ["Web companion", "A lighter signed-in space where approved provider consent, profile, help, and connection context begin."],
+  ["GitHub", "Read-only, repository-scoped release evidence. The first source of truth."],
+  ["Axiom Agent", "The installed workspace. Validates provider access and holds every consequential operation."],
+  ["Web companion", "A lighter signed-in space for consent, profile, help and connection context."],
 ];
 
 const PILLARS = [
-  ["AI", "Use selected repository context to ask questions and inspect proposed actions. Available tools and permissions depend on the installed version and enabled workflow."],
-  ["Governance", "Keep the exact proposal, independent review, separate requester execution, and recorded outcome in view where supported. Full Governance Intelligence coverage and activation are not complete."],
-  ["Integrations", "GitHub, Airflow, and AWS workflows keep repository scope, dependency evidence, and approval context explicit. Available operations depend on the connected account and validated provider permissions; a preview is not proof of a completed deployment."],
+  ["AI", "Ask about a selected repository and inspect proposed actions. Tools and permissions depend on your version and workflow."],
+  ["Governance", "The exact proposal, an independent review, separate execution and the recorded outcome, kept in view. Full Governance Intelligence coverage and activation are not complete."],
+  ["Integrations", "GitHub, Airflow and AWS keep scope, dependency evidence and approval context explicit. Operations depend on validated permissions; a preview is not proof of a deployment."],
 ];
 
 export default function ProductPage() {
@@ -68,10 +68,10 @@ export default function ProductPage() {
         </section>
 
         <section className="relative isolate overflow-hidden border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser handles identity, lightweight account context, and approved provider consent. The installed Agent performs validation and keeps deployment operations deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-xl border border-white/[0.12] bg-white/[0.025] p-5"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
+          <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser handles identity and consent. The installed Agent validates access and keeps operations deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-xl border border-white/[0.12] bg-white/[0.025] p-5"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10"><div className="rounded-xl border border-white/[0.1] bg-white/[0.025] p-7 sm:p-10"><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Choose your next step</p><div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">Prove the workflow before you depend on it.</h2><p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Local previews are not evidence of a shipped release. Check available downloads and their release information for what is offered; confirm version-specific support before depending on an operation.</p></div><Link href="/docs/getting-started" className="shrink-0 rounded-lg bg-zinc-100 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-white">Get started</Link></div><div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-zinc-300"><Link href="/docs/approval-workflow" className="underline underline-offset-4">Read the approval guide</Link><Link href="/integrations" className="underline underline-offset-4">Explore integrations</Link><Link href="/demo" className="underline underline-offset-4">Explore the scripted demo</Link></div></div></section>
+        <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10"><div className="rounded-xl border border-white/[0.1] bg-white/[0.025] p-7 sm:p-10"><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Choose your next step</p><div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">Prove it before you depend on it.</h2><p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Local previews are not evidence of a shipped release. Check the downloads and release notes, then confirm support for your version.</p></div><Link href="/docs/getting-started" className="shrink-0 rounded-lg bg-zinc-100 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-white">Get started</Link></div><div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-zinc-300"><Link href="/docs/approval-workflow" className="underline underline-offset-4">Read the approval guide</Link><Link href="/integrations" className="underline underline-offset-4">Explore integrations</Link><Link href="/demo" className="underline underline-offset-4">Explore the scripted demo</Link></div></div></section>
       </main>
       <Footer />
     </div>
