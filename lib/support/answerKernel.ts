@@ -9,9 +9,9 @@
  */
 import type { KnowledgeEntry } from "./knowledgeBase";
 
-const STOP = new Set("a an and are as at be but by can do does for from how i if in is it me my of on or our so that the this to was we what when where which who why will with you your much many any some there get".split(" "));
+const STOP = new Set("a an and are as at be but by can do does for from how i if in is it me my of on or our so that the this to was we what when where which who why will with you your much many any some there get say says tell about".split(" "));
 const SYNONYMS: Record<string, string> = {
-  price: "pricing", cost: "pricing", costs: "pricing", pay: "pricing", paid: "pricing", charge: "pricing", billing: "pricing", plan: "pricing", plans: "pricing", credit: "credits",
+  price: "pricing", cost: "pricing", costs: "pricing", pay: "pricing", paid: "pricing", charge: "pricing", billing: "pricing", credit: "credits",
   install: "download", installer: "download", setup: "download", mac: "macos", windows: "windows", linux: "linux",
   revoke: "revoke", disconnect: "revoke", remove: "revoke",
   approve: "approval", approvals: "approval", approver: "approval",
@@ -23,7 +23,7 @@ const SYNONYMS: Record<string, string> = {
 };
 
 export function tokenize(text: string): string[] {
-  return text.toLowerCase().replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
+  return text.toLowerCase().replace(/\broll(ing|ed)?\s+back\b/g, "rollback").replace(/\bsign(ing|ed)?\s+in\b/g, "signin").replace(/\blog(ging|ged)?\s+in\b/g, "signin").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
     .map((t) => SYNONYMS[t] ?? t)
     .map((t) => (t.length > 4 && t.endsWith("ing") ? t.slice(0, -3) : t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t));
 }

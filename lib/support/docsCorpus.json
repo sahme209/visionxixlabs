@@ -1,0 +1,537 @@
+{
+ "format": "axiom.support-docs-corpus/1",
+ "sections": [
+  {
+   "href": "/docs/approval-workflow#risk",
+   "title": "Risk classification",
+   "text": "Low risk: read-only checks can execute inline and are still recorded. Medium risk: reversible configuration or repository changes require approval. High risk: deployments and sensitive configuration require approval. Production context: risk can only escalate; it is never reduced for convenience.",
+   "source": "app/docs/approval-workflow/page.tsx",
+   "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a"
+  },
+  {
+   "href": "/docs/approval-workflow#decision",
+   "title": "Approve or reject",
+   "text": "The proposal shows the requested tool, arguments, risk, workspace, and status. Approval and rejection use separate authenticated endpoints. The Agent cannot approve its own request.",
+   "source": "app/docs/approval-workflow/page.tsx",
+   "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a"
+  },
+  {
+   "href": "/docs/approval-workflow#execution",
+   "title": "Execution and recovery",
+   "text": "In the separate-execution preview, approval records review only. The original requester must use a separate execution step for a supported action; current authorization, exact proposal and target checks still apply. An AWS ECS request depends on a separately configured tenant-owned workflow. Approval or dispatch acceptance does not verify ECS execution, service health or rollback; each requires independent outcome evidence. The website preview grants no execution authority.",
+   "source": "app/docs/approval-workflow/page.tsx",
+   "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a"
+  },
+  {
+   "href": "/docs/approval-workflow#audit",
+   "title": "Audit evidence",
+   "text": "Every tool call receives an action record, including low-risk reads. The record distinguishes proposed, approved, rejected, executed, and failed states so observation is as reviewable as mutation.",
+   "source": "app/docs/approval-workflow/page.tsx",
+   "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a"
+  },
+  {
+   "href": "/docs/audit-logs#record",
+   "title": "Review the original record",
+   "text": "Open the saved request or task using the history and details controls available in that workflow. Keep its original identifier and version. Compare the displayed source, target, proposed change, actor, review decision and timestamps where those fields are available. Saved metadata is bounded product evidence, not complete provider history. A familiar target name, screenshot or status label alone cannot establish which exact change occurred. Understand execution plans before interpreting their records.",
+   "source": "app/docs/audit-logs/page.tsx",
+   "sourceSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945"
+  },
+  {
+   "href": "/docs/audit-logs#effects",
+   "title": "Separate decisions from effects",
+   "text": "Review evidence Who reviewed which exact saved proposal. Approval is not proof that execution was attempted or succeeded. Attempt evidence Whether the supported path recorded a claim or submission and its known result. A completed HTTP request is not by itself an external outcome. Outcome evidence The actual provider observation or readback, its target and observation time. A deployment dispatch does not prove rollback, service health or later availability. Record which evidence is missing. An audit entry is not an independent attestation that an organization is compliant. Hash or export utilities, where available, do not establish complete coverage or independent verification.",
+   "source": "app/docs/audit-logs/page.tsx",
+   "sourceSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945"
+  },
+  {
+   "href": "/docs/audit-logs#uncertain",
+   "title": "Handle an uncertain result",
+   "text": "A timeout does not prove that nothing happened. Do not resend an uncertain or consumed action, edit its history or treat an expired review as current permission. Use supported read-only history or recovery controls first. Keep the difference between refusal before a write, known failure, confirmed result and unknown outcome. Do not infer absence from a blank field or missing response. Recovery is workflow-specific. A readback may establish an external fact without restoring execution authority. Further consequential actions still need the supported current checks and genuine approvals. Troubleshoot an uncertain operation for the next safe inspection step.",
+   "source": "app/docs/audit-logs/page.tsx",
+   "sourceSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945"
+  },
+  {
+   "href": "/docs/audit-logs#share",
+   "title": "Share evidence safely",
+   "text": "Use only the approved support or export path available to your organization. Do not publish tokens, credentials, customer source, private operation identifiers or unredacted screenshots in public URLs or issue comments. Check the target audience and access before sharing. Account help (sign-in required) and the security model and limitations explain adjacent boundaries; neither grants an exception to a consumed attempt.",
+   "source": "app/docs/audit-logs/page.tsx",
+   "sourceSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945"
+  },
+  {
+   "href": "/docs/aws-setup#prepare",
+   "title": "Prepare the repository",
+   "text": "Add the supported .github/workflows/axiom-deploy-aws-ecs.yml workflow to the repository selected in Axiom. Limit workflow_dispatch inputs and GitHub environment access to the values your team intends to permit.",
+   "source": "app/docs/aws-setup/page.tsx",
+   "sourceSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be"
+  },
+  {
+   "href": "/docs/aws-setup#role",
+   "title": "Create the OIDC trust boundary",
+   "text": "Create an AWS role whose trust policy accepts the intended GitHub organization, repository, branch or environment. Grant only the ECS and task-definition permissions required by the workflow. Do not use a wildcard repository subject for convenience.",
+   "source": "app/docs/aws-setup/page.tsx",
+   "sourceSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be"
+  },
+  {
+   "href": "/docs/aws-setup#target",
+   "title": "Map an Axiom environment",
+   "text": "In the desktop app, create or select an environment and configure its AWS region, ECS cluster, ECS service, and role ARN. The selected environment becomes the deployment target; production context is treated as high risk.",
+   "source": "app/docs/aws-setup/page.tsx",
+   "sourceSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be"
+  },
+  {
+   "href": "/docs/aws-setup#validate",
+   "title": "Validate before production",
+   "text": "Run the workflow against a non-production ECS service first. Confirm repository scope, role trust, task-definition capture, steady-state validation, rollback behavior, and the resulting action record before enabling the production target.",
+   "source": "app/docs/aws-setup/page.tsx",
+   "sourceSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be"
+  },
+  {
+   "href": "/docs/azure-setup#desktop-candidate",
+   "title": "Desktop source candidate",
+   "text": "The source candidate adds paired-desktop enrollment for an existing service principal in Settings → Integrations. An accepted workspace owner/admin enters the tenant, subscription, client UUID and secret. The backend verifies the exact tenant/subscription read identity and stores the credential in the canonical tenant-bound encrypted vault. The secret clears after submission and is not persisted in desktop settings. Inventory is an explicit read of at most 100 resource groups from one first page, always labeled incomplete. Validation does not establish Reader-only permissions or VM, storage, security or cost coverage. Disconnect zeroizes Axiom's stored credential and advances its version; Azure service-principal grants and previously issued tokens are not revoked. Reconnect requires fresh provider validation. This implemented source candidate is not proof of live Azure authorization, production deployment or verified native release availability. Missing storage, configuration or current authority produces an unavailable state. Provider mutation and generic Agent scans remain disabled.",
+   "source": "app/docs/azure-setup/page.tsx",
+   "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01"
+  },
+  {
+   "href": "/docs/azure-setup#available",
+   "title": "What is available",
+   "text": "Azure credential and configuration-shape validation Runtime mode and credential-presence reporting without exposing secrets Preview snapshots, findings, and recommendations that remain labeled preview An audited scan API that reports whether its source is preview or live Desktop UI states for unavailable, disconnected, and failed connectors",
+   "source": "app/docs/azure-setup/page.tsx",
+   "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01"
+  },
+  {
+   "href": "/docs/azure-setup#not-available",
+   "title": "What is not verified",
+   "text": "Live VM, Storage, VNet, NSG, SQL, IAM, or cost inventory Production topology and drift claims derived from live Azure responses Azure action dispatch, retries, validation, or rollback Provider-side evidence proving a real operation occurred",
+   "source": "app/docs/azure-setup/page.tsx",
+   "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01"
+  },
+  {
+   "href": "/docs/azure-setup#planned-setup",
+   "title": "Configuration required for a future live path",
+   "text": "Register an application in the organization's Microsoft Entra tenant. Create a service principal and prefer workload identity federation over a long-lived client secret. Grant only the read permissions needed at subscription or resource-group scope. Enter the Tenant ID, Subscription ID, and Application ID in the installed application. Run a connector test in a dedicated non-production subscription and require an actual ARM response before reporting connected. Download Axiom Agent from the release page . Do not create Azure credentials solely for the preview path unless your administrator has supplied an approved evaluation plan.",
+   "source": "app/docs/azure-setup/page.tsx",
+   "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01"
+  },
+  {
+   "href": "/docs/desktop-install#current-state",
+   "title": "What the current desktop build delivers",
+   "text": "Installed workspace — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views Desktop authentication — browser-approved pairing returns control to the installed application Repository workspace — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access Native shell — tray and notification integrations are available for supported application events Explicit connection state — unavailable APIs, missing credentials, and connector failures remain visible Persisted app state — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.",
+   "source": "app/docs/desktop-install/page.tsx",
+   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+  },
+  {
+   "href": "/docs/desktop-install#requirements",
+   "title": "System requirements",
+   "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Network — HTTPS access to the configured Axiom API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
+   "source": "app/docs/desktop-install/page.tsx",
+   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+  },
+  {
+   "href": "/docs/desktop-install#install-macos",
+   "title": "Install — macOS (Apple Silicon + Intel)",
+   "text": "Visit /download . Choose Apple Silicon or Intel. The enabled button points directly to the matching asset from the current desktop-v* release. Check the download page for the selected installer's verification details. If a matching detached .asc signature and a release public key are published, download both and run gpg --verify installer.dmg.asc installer.dmg using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it. Mount the disk image, drag Axiom Agent to /Applications , and eject the image. Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose Open , and review the warning. Organizations that forbid unsigned software should not install that asset. Choose browser sign-in in the app. Your browser approves the pairing request and the installed application polls for the scoped desktop session. A browser redirect is part of desktop authentication, not a separate web product.",
+   "source": "app/docs/desktop-install/page.tsx",
+   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+  },
+  {
+   "href": "/docs/desktop-install#install-windows",
+   "title": "Install — Windows x64",
+   "text": "The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS .exe . If the selected installer has a matching .asc signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page's attestation state and your organization's installation policy. Unsigned builds can trigger SmartScreen. Review the publisher state and your organization's policy before choosing More info → Run anyway . Complete the installer, launch Axiom Agent, and approve the desktop pairing flow in your browser.",
+   "source": "app/docs/desktop-install/page.tsx",
+   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+  },
+  {
+   "href": "/docs/desktop-install#install-linux",
+   "title": "Install — Linux x64",
+   "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. chmod +x ./Axiom.Agent_*_amd64.AppImage ./Axiom.Agent_*_amd64.AppImage sudo dpkg -i Axiom.Agent_*_amd64.deb sudo rpm -i Axiom.Agent-*-1.x86_64.rpm Open Axiom Agent from the desktop menu or AppImage and approve the pairing flow in your browser.",
+   "source": "app/docs/desktop-install/page.tsx",
+   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+  },
+  {
+   "href": "/docs/desktop-install#updates",
+   "title": "Updates and release notes",
+   "text": "Automatic update delivery is not configured in the current Tauri bundle. Check the download page for a newer verified tag and install it manually. Review the public Axiom Agent release notes before upgrading.",
+   "source": "app/docs/desktop-install/page.tsx",
+   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+  },
+  {
+   "href": "/docs/execution-plans#read",
+   "title": "Read the proposed change",
+   "text": "Before reviewing a plan, identify what it proposes and where its effects would occur. Field names vary by workflow; inspect the exact record rather than assuming every plan contains the same fields. Source The repository, branch, tag, commit or other source evidence shown for this request. Check which revision the review actually covers. Target The account, environment, service, ticket or connected-app destination. A familiar name alone is not proof that it is the intended target. Change The exact action and content proposed. Read the displayed payload and limitations before making a decision. Review and window Who must act, the saved revision, and any displayed expiry or execution window. A recorded date is not permission to extend it. Review and execution guidance explains the registered Agent workflow. Release readiness explains why a recorded request is not enough to establish readiness.",
+   "source": "app/docs/execution-plans/page.tsx",
+   "sourceSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a"
+  },
+  {
+   "href": "/docs/execution-plans#states",
+   "title": "Keep four different states separate",
+   "text": "These are concepts for reading a workflow, not a promise that every installed surface uses the same status names or controls. Saved plan The intended work is recorded. Saving does not grant permissions, record an independent decision or prove that a provider was contacted. Independent review An authorized reviewer records a decision about the exact version shown. That decision is not an execution receipt. Who may execute, and whether execution is separate, depends on the supported workflow and installed version. Execution attempt The supported execution path checks current authority and the exact action. An attempt may be refused, fail or remain uncertain. An acknowledgment or completed HTTP request is not proof of the intended external result. Verified outcome Use the workflow’s actual provider observation or readback. A deployment dispatch does not prove application health or rollback; those need their own evidence.",
+   "source": "app/docs/execution-plans/page.tsx",
+   "sourceSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a"
+  },
+  {
+   "href": "/docs/execution-plans#changes",
+   "title": "When the plan or access changes",
+   "text": "Compare the current source, target, proposed content and saved revision with the exact review. Do not reuse an expired review or assume an old approval covers changed work. Follow the workflow’s supported refresh or new-review path when it is available. Do not edit old history, extend a deadline yourself or assume a consumed attempt can be renewed. Renewal and recovery rules are workflow-specific; this guide grants no exception.",
+   "source": "app/docs/execution-plans/page.tsx",
+   "sourceSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a"
+  },
+  {
+   "href": "/docs/execution-plans#unknown",
+   "title": "When the outcome is unknown",
+   "text": "Do not resend an uncertain or consumed action. A timeout does not prove that no write occurred. Keep the original request and inspect its supported read-only history or recovery state. Inspect an uncertain operation before preparing any replacement. If further review is needed, involve the authorized requester and independent reviewer. Do not post private operation identifiers, tokens, source contents or customer data in public URLs. Account help (sign-in required) is separate from reading this public reference.",
+   "source": "app/docs/execution-plans/page.tsx",
+   "sourceSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a"
+  },
+  {
+   "href": "/docs/faq#more",
+   "title": "Need a specific answer?",
+   "text": "See troubleshooting for connection errors, review the plan proposal , or open the in-product documentation from the desktop app.",
+   "source": "app/docs/faq/page.tsx",
+   "sourceSha256": "fedf1b7339905ef9adbc6e9e683c572043d86e00886d160b24943ef1f650a878"
+  },
+  {
+   "href": "/docs/gcp-setup#available",
+   "title": "What is available",
+   "text": "Project ID and service-account JSON shape validation Runtime mode and credential-format reporting without exposing secret values Preview snapshots, findings, and recommendations that remain labeled preview An audited scan API that reports whether its source is preview or live Desktop UI states for unavailable, disconnected, and failed connectors",
+   "source": "app/docs/gcp-setup/page.tsx",
+   "sourceSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba"
+  },
+  {
+   "href": "/docs/gcp-setup#not-available",
+   "title": "What is not verified",
+   "text": "Live Compute Engine, Cloud Storage, VPC, firewall, IAM, or billing inventory Production topology and drift claims derived from live GCP responses GCP action dispatch, retries, validation, or rollback Provider-side evidence proving a real operation occurred",
+   "source": "app/docs/gcp-setup/page.tsx",
+   "sourceSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba"
+  },
+  {
+   "href": "/docs/gcp-setup#planned-setup",
+   "title": "Configuration required for a future live path",
+   "text": "Create or select a dedicated non-production Google Cloud project. Create a service account or workload-identity binding with only the required viewer roles. Enable only the APIs needed by the implemented inventory path. Enter the project and approved credential reference in the installed application. Run a connector test and require actual Google Cloud API responses before reporting connected. Download Axiom Agent from the release page . Do not provision credentials solely for preview output unless your administrator has supplied an approved evaluation plan.",
+   "source": "app/docs/gcp-setup/page.tsx",
+   "sourceSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba"
+  },
+  {
+   "href": "/docs/getting-started#prereqs",
+   "title": "Prerequisites",
+   "text": "A supported macOS, Windows, or Linux system listed on the download page Permission to install software on the workstation HTTPS access to the configured Axiom API and any integrations you enable An organization identity and connector accounts supplied by your administrator",
+   "source": "app/docs/getting-started/page.tsx",
+   "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+  },
+  {
+   "href": "/docs/getting-started#install",
+   "title": "Step 1 — Download and install",
+   "text": "Open Download Axiom Agent . An operating-system button is enabled only when the current public release contains a matching installer. Select the architecture that matches your device. Confirm the displayed version and read the platform-specific signing or notarization status. Detached GPG signatures verify release origin, but they do not replace operating-system code signing. Follow your organization's software-installation policy. Follow the desktop installation guide for macOS, Windows, or Linux. If the release is marked unsigned, expect the operating system to warn you; do not bypass that warning where policy forbids unsigned software.",
+   "source": "app/docs/getting-started/page.tsx",
+   "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+  },
+  {
+   "href": "/docs/getting-started#authenticate",
+   "title": "Step 2 — Authenticate the desktop",
+   "text": "The app opens a short-lived pairing flow in your browser. Sign in with the organization identity your administrator configured, review the request, and approve it. Axiom Agent polls the pairing status and receives a scoped desktop session after approval. A failed, expired, or rejected request remains visible and must not be reported as connected.",
+   "source": "app/docs/getting-started/page.tsx",
+   "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+  },
+  {
+   "href": "/docs/getting-started#configure",
+   "title": "Step 3 — Configure integrations",
+   "text": "A fresh installation should show useful empty states. Add only the repositories, applications, environments, clients, and connectors required for the deployment workflow you intend to run. Begin with the GitHub App and select only the repositories required for your workflow. AWS ECS delivery additionally requires a configured environment target and OIDC role. Other integrations remain unavailable until their server registration and live validation succeed. First check whether desktop enrollment is enabled for that provider and workspace. If the app labels setup blocked, it will not request provider secrets; an administrator must complete the scoped connector-management setup. A successful status must come from a real configured integration response—sample connectors and the website sandbox are never presented as live.",
+   "source": "app/docs/getting-started/page.tsx",
+   "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+  },
+  {
+   "href": "/docs/getting-started#workflow",
+   "title": "Step 4 — Complete a deployment workflow",
+   "text": "{GOVERNED_JOURNEY.map((stage, index) => ( ))} In desktop builds containing this guide, Documentation provides buttons to open each of these screens. Missing credentials, policy approval or provider validation remain blockers. Capture deployment intake and required operational context. Resolve readiness checks, missing permissions, and dependencies. Generate or select the versioned playbook. Collect required approvals and separation-of-duties decisions. Follow guided execution; unavailable or failed adapters remain explicit. Run validation or schedule deferred validation with an owner. Collect evidence, review audit history, and close only when exit criteria pass. For the released AWS ECS path, approval dispatches the tenant-owned GitHub Actions workflow. Treat any unavailable adapter as a blocker rather than a synthetic success.",
+   "source": "app/docs/getting-started/page.tsx",
+   "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+  },
+  {
+   "href": "/docs/getting-started#next",
+   "title": "Next steps",
+   "text": "→ Desktop installation details → AWS setup and permissions → Explore the isolated product sandbox",
+   "source": "app/docs/getting-started/page.tsx",
+   "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
+  },
+  {
+   "href": "/docs/integration-setup#shared",
+   "title": "Before connecting a provider",
+   "text": "Set the production Axiom origin as NEXTAUTH_URL ; callback construction fails closed when the origin is not trusted. Register the exact HTTPS callback shown below. Wildcard callback domains are not supported. Store client secrets only in the hosting platform's encrypted secret manager—never in NEXT_PUBLIC_* , the desktop app, logs, or Git. Redeploy the service after adding credentials, then use Apps & skills or Settings → Integrations to start consent. Run the harmless validation step. Axiom does not label a connection active from consent alone.",
+   "source": "app/docs/integration-setup/page.tsx",
+   "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/integration-setup#github",
+   "title": "GitHub App",
+   "text": "{`$ /api/integrations/github/install-callback`} Set the App slug, App ID, installation-token signing key, and webhook secret using the deployment secret manager. Grant only the repository permissions required by the enabled Axiom workflows. A workspace admin reviews GitHub's installation screen and selects repositories. Axiom records the installation, then verifies scoped read access before showing it as validated.",
+   "source": "app/docs/integration-setup/page.tsx",
+   "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/integration-setup#slack",
+   "title": "Slack",
+   "text": "{`$ /api/integrations/slack/callback`} SLACK_CLIENT_ID= SLACK_CLIENT_SECRET= The current workflow requests channels:read and chat:write . It does not request direct messages, private-channel history, commands, or broad message history.",
+   "source": "app/docs/integration-setup/page.tsx",
+   "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/integration-setup#teams",
+   "title": "Microsoft tenant / Teams",
+   "text": "{`$ /api/integrations/teams/callback`} MICROSOFT_CLIENT_ID= MICROSOFT_CLIENT_SECRET= MICROSOFT_TENANT_ID= The authorization-code flow uses PKCE and currently requests openid , offline_access , and User.Read . This verifies tenant identity; it does not grant Teams messaging authority.",
+   "source": "app/docs/integration-setup/page.tsx",
+   "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/integration-setup#linear",
+   "title": "Linear",
+   "text": "{`$ /api/integrations/linear/callback`} LINEAR_CLIENT_ID= LINEAR_CLIENT_SECRET= Consent requests read and issues:create . Mutating Agent actions remain separately approval-gated and auditable after the connection is active.",
+   "source": "app/docs/integration-setup/page.tsx",
+   "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/integration-setup#states",
+   "title": "Understand connection states",
+   "text": "Setup required: the service is missing an OAuth registration, trusted callback origin, or production secret. A workspace user cannot fix this in the desktop app. Awaiting validation: provider consent returned successfully, but Axiom has not yet completed a live server-side check. Active / validated read-only: the scoped provider token or GitHub installation passed live validation. Needs attention / validation overdue: validation failed or is stale. Revalidate before relying on the connection for release evidence. Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the Axiom audit trail before reconnecting.",
+   "source": "app/docs/integration-setup/page.tsx",
+   "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/oauth-setup#overview",
+   "title": "Overview",
+   "text": "Create an OAuth application with the provider (Google Cloud Console / GitHub OAuth Apps). Register the callback URL pointing at your Axiom host. Set the resulting Client ID + Client Secret on your host as environment variables. The sign-in page polls /api/auth/providers on load and disables the button + shows a Not set badge for any provider whose env vars are missing — no silent failures.",
+   "source": "app/docs/oauth-setup/page.tsx",
+   "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+  },
+  {
+   "href": "/docs/oauth-setup#host-base",
+   "title": "1. Base NextAuth env",
+   "text": "# Required for every deployment NEXTAUTH_URL=https://your-domain.example.com NEXTAUTH_SECRET= NEXTAUTH_URL must exactly match the public origin (no trailing slash). On Vercel set it under Project → Settings → Environment Variables for Production + Preview environments.",
+   "source": "app/docs/oauth-setup/page.tsx",
+   "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+  },
+  {
+   "href": "/docs/oauth-setup#google",
+   "title": "2. Google sign-in",
+   "text": "Open the Google Cloud Console → APIs & Services → Credentials . Click Create Credentials → OAuth client ID → Web application . Under Authorized redirect URIs , add: https://your-domain.example.com/api/auth/callback/google For local development add http://localhost:3000/api/auth/callback/google as well. Google shows a Client ID + Client Secret. Treat the secret as you would an API key. GOOGLE_CLIENT_ID=1234567890-abc.apps.googleusercontent.com GOOGLE_CLIENT_SECRET=GOCSPX-xxxxxxxxxxxxxxxxx Google's OAuth consent screen needs at least one scope ( openid email profile is the NextAuth default). For external apps you'll need to publish the consent screen to leave test mode and accept non-test users.",
+   "source": "app/docs/oauth-setup/page.tsx",
+   "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+  },
+  {
+   "href": "/docs/oauth-setup#github",
+   "title": "3. GitHub sign-in",
+   "text": "Open GitHub → Settings → Developer settings → OAuth Apps and click New OAuth App . Homepage URL: https://your-domain.example.com Authorization callback URL: https://your-domain.example.com/api/auth/callback/github After saving, click Generate a new client secret . GitHub shows the secret once — copy it immediately. GITHUB_CLIENT_ID=Iv1.xxxxxxxxxxxxxxxx GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx For an organization-restricted app, create the OAuth app under the org's settings and enable the SSO requirement so only org members can sign in.",
+   "source": "app/docs/oauth-setup/page.tsx",
+   "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+  },
+  {
+   "href": "/docs/oauth-setup#verify",
+   "title": "4. Verify it works",
+   "text": "Redeploy after setting the env vars (env changes don't auto-rebuild on most hosts). Open the sign-in page in an incognito window. Both buttons should activate (no Not set badge). Click → OAuth consent → the secure callback returns you to the installed Axiom Agent application. If you see error=Configuration after the OAuth round-trip, the env var is set but doesn't match what the provider was registered with. Double-check the callback URL.",
+   "source": "app/docs/oauth-setup/page.tsx",
+   "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+  },
+  {
+   "href": "/docs/oauth-setup#troubleshooting",
+   "title": "Troubleshooting",
+   "text": "Button shows Not set Env vars not present on the host. Re-check Vercel → Settings → Environment Variables. Remember to redeploy. Redirect URI mismatch The exact callback URL registered with the provider must match the one NextAuth requests. For Vercel previews, you'll either need a wildcard preview domain on Google (not supported — use a single preview URL) or limit OAuth to production. Works locally but not in production NEXTAUTH_URL not set or doesn't match the production origin. NextAuth uses this to construct callback URLs.",
+   "source": "app/docs/oauth-setup/page.tsx",
+   "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
+  },
+  {
+   "href": "/docs/permissions-model#roles",
+   "title": "Workspace roles",
+   "text": "Workspace membership establishes the tenant boundary. Each supported action checks its required capability at the server; approval authority is distinct from permission to execute.",
+   "source": "app/docs/permissions-model/page.tsx",
+   "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc"
+  },
+  {
+   "href": "/docs/permissions-model#github",
+   "title": "GitHub repository scope",
+   "text": "The GitHub App installation determines which repositories are available. For a repository action, the service mints a short-lived token scoped to the selected repository rather than reusing a broad user token.",
+   "source": "app/docs/permissions-model/page.tsx",
+   "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc"
+  },
+  {
+   "href": "/docs/permissions-model#agent",
+   "title": "Agent authority",
+   "text": "The decision loop may execute registered low-risk reads. Medium- and high-risk tools create proposals. In the separate-execution preview, an authorized independent reviewer records the decision, then the original requester uses Execute when the action is supported and current checks pass. An approval record is not evidence that a provider action ran.",
+   "source": "app/docs/permissions-model/page.tsx",
+   "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc"
+  },
+  {
+   "href": "/docs/permissions-model#aws",
+   "title": "AWS ECS authority",
+   "text": "Axiom dispatches the tenant workflow; GitHub Actions OIDC assumes the environment's configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.",
+   "source": "app/docs/permissions-model/page.tsx",
+   "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc"
+  },
+  {
+   "href": "/docs/releaseops#lifecycle",
+   "title": "The deployment lifecycle",
+   "text": "Capture deployment intake, ownership, scope, dependencies, and timing. Run readiness checks and surface missing permissions or evidence. Create or select a versioned playbook with validation and rollback expectations. Collect approval gates and enforce separation of duties. Guide execution through an available adapter or an explicitly manual step. Validate the observed result or assign deferred validation with an owner and deadline. Collect evidence, update audit history, communicate status, and close only when exit criteria pass.",
+   "source": "app/docs/releaseops/page.tsx",
+   "sourceSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38"
+  },
+  {
+   "href": "/docs/releaseops#catalogs",
+   "title": "What users manage",
+   "text": "Deployment requests and their version history Repositories, applications, clients, environments, and dependencies Playbooks, approval policies, schedules, retries, and rollback expectations Change records, knowledge-transfer sessions, and extracted evidence Validation results, deferred follow-ups, audit history, reports, and exports Connector configuration and actual availability state",
+   "source": "app/docs/releaseops/page.tsx",
+   "sourceSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38"
+  },
+  {
+   "href": "/docs/releaseops#availability",
+   "title": "Availability rules",
+   "text": "GitHub and AWS live paths require configured, scoped credentials and safe test accounts. Azure and GCP analysis remain preview until live inventory is implemented and verified. Terraform and CLI artifacts can be reviewed; local Terraform apply remains disabled by the desktop safety contract. Communication actions require configured adapters and must surface delivery failures. Every external operation needs resulting evidence before it is marked successful. Use the download page for the current installer and release status.",
+   "source": "app/docs/releaseops/page.tsx",
+   "sourceSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38"
+  },
+  {
+   "href": "/docs/rollback#sequence",
+   "title": "The recovery sequence",
+   "text": "Resolve and record the task definition currently serving the target. Register or select the requested task definition and update the ECS service. Use ECS's own steady-state waiter as the deployment health boundary. On stabilization failure, restore the captured task definition. Wait for the restored service and preserve the workflow result as evidence.",
+   "source": "app/docs/rollback/page.tsx",
+   "sourceSha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140"
+  },
+  {
+   "href": "/docs/rollback#limits",
+   "title": "Limits",
+   "text": "This path restores the ECS task definition. It does not undo database migrations, external side effects, incompatible data changes, or changes made outside the workflow. Teams must keep application-level recovery steps in their own release procedure.",
+   "source": "app/docs/rollback/page.tsx",
+   "sourceSha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140"
+  },
+  {
+   "href": "/docs/security-model#authentication",
+   "title": "Desktop authentication",
+   "text": "The installed application uses a browser approval handoff and scoped application session. The website is not a customer sign-in product. A packaged PKCE, expiry, logout, replay, recovery, and OS-keychain journey still requires exact-build verification.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/security-model#connectors",
+   "title": "Connector permissions",
+   "text": "A connector's code status is not its live availability status. GitHub access is installation- and repository-scoped. AWS ECS deployment requires a configured environment target, tenant workflow, and OIDC role. Azure and GCP production deployment paths are not released. Repository visibility, pull-request approval, merge authority, workflow dispatch, environment approval, release publication, and change management are distinct permissions. Each server-side action must enforce its own authorization.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/security-model#secrets",
+   "title": "Secret handling",
+   "text": "Secret-redaction utilities protect supported contact, logging, and operational paths. They do not prove that every field, connector, backup, export, or third-party system is safe for confidential data. Operators must use tenant policy and provider-specific credential guidance.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/security-model#tenants",
+   "title": "Tenant boundaries",
+   "text": "Organization identifiers and tenant checks exist across core repositories and services. “Tenant isolated” is not treated as globally verified until every query, cache, background job, export, backup, restore, and administrator path has been exercised against a configured deployment.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/security-model#audit",
+   "title": "Audit and evidence",
+   "text": "Supported workflows can record actor, action, rationale, timestamp, and outcome data. Hash and export utilities exist, but coverage varies by workflow. An audit record is product evidence; it is not an independent auditor's attestation or proof that a customer is compliant.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/security-model#retention",
+   "title": "Retention, deletion, and recovery",
+   "text": "Consistent customer-configurable retention, deletion, backup, and restore behavior is not yet verified across every store. Do not rely on an informal retention period or deletion promise; confirm the configured deployment and record the result in the verification report.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/security-model#compliance",
+   "title": "Compliance posture",
+   "text": "No SOC 2, ISO 27001, HIPAA, or other independent certification is currently claimed. Control-mapping code is a product feature, not a certification or active audit. No BAA, DPA, data-residency, SSO entitlement, or commercial tier is promised without approved documentation. Customers remain responsible for their own legal, risk, and compliance decisions.",
+   "source": "app/docs/security-model/page.tsx",
+   "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/source-modes#local-files",
+   "title": "Local files on your computer",
+   "text": "In Repositories, the Local strip identifies the selected checkout and its branch. Open Clone or refresh repositories to inspect the source controls. The Local repositories folder lists the local checkouts Axiom can discover there; choose the intended repository before opening a file. The editor can contain unsaved changes. A local selection is not a verified GitHub snapshot, and a saved folder selection is navigation metadata, not permission to access a different repository or execute a command. Check the folder, checkout, branch and changed-file count. Use Refresh after changing the folder. If the expected checkout is missing, inspect the folder rather than assuming the selected remote repository is already cloned. Review an edit before Save. Saving a local file does not commit, push, open a pull request or deploy. A check receipt describes that check's recorded result; changed files can make it stale. Inspect the current file and result before relying on it.",
+   "source": "app/docs/source-modes/page.tsx",
+   "sourceSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456"
+  },
+  {
+   "href": "/docs/source-modes#connected-github",
+   "title": "Connected GitHub repository",
+   "text": "Clone source · GitHub selects a repository from the workspace's GitHub App access. Refresh connected repositories updates that catalog. Entering another owner/repository does not grant access to it; the provider and server still decide whether that repository is authorized. Local repositories folder is the destination parent folder for Clone. Clone requests a local checkout; selecting a connected repository does not synchronize an existing checkout automatically. Check the local branch and working tree separately before editing or publishing. A connected installation or a repository name is not proof that the current branch, file bytes, pull request or deployment evidence has been verified. Supported actions perform their own checks. Repository reads and provider changes have separate authority boundaries. If the app reports GitHub access is unavailable, Existing local files remain usable. Open Settings → Integrations to review the recorded connection and supported validation controls before cloning or syncing. See integration setup and the permissions model .",
+   "source": "app/docs/source-modes/page.tsx",
+   "sourceSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456"
+  },
+  {
+   "href": "/docs/source-modes#ai-context",
+   "title": "Preparing context is not sending it",
+   "text": "Ask Agent prepares an explicitly confirmed selection as an unsent Agent draft. Preparing that draft does not save a file, run a check or send code to a model. Choosing Send later shares the prompt with the approved provider; review it for credentials and private data first. The local selection control limits excerpts and refuses recognized sensitive paths. These controls do not guarantee that an otherwise permitted excerpt contains no secrets. Confirm what is in the draft, which provider is selected and whether sending is enabled for the workspace. AI context does not approve a repository change.",
+   "source": "app/docs/source-modes/page.tsx",
+   "sourceSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456"
+  },
+  {
+   "href": "/docs/source-modes#evidence-labels",
+   "title": "Preview, live and recorded evidence",
+   "text": "Preview can be illustrative data. It is not evidence that a provider action ran. Live or connected describes the data or connection state shown by that view. It does not certify every integration, the current repository revision or deployment success. Recorded results describe an observation at its recorded time and scope. Local files, remote branches and permissions may have changed since then. Do not resend an uncertain or consumed action. Inspect the saved operation and use its supported read-only recovery path. A refresh, old check or previously successful connection cannot supply missing execution evidence. Once the source and intended target are clear, follow the approval workflow . Approval, execution and verified outcome remain separate steps.",
+   "source": "app/docs/source-modes/page.tsx",
+   "sourceSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456"
+  },
+  {
+   "href": "/docs/surfaces#desktop",
+   "title": "Choose a desktop destination",
+   "text": "Open the installed app and use its sidebar. A destination organizes work; it does not authorize a provider action. Read-only inspection, proposing a change, independent review and execution are separate concerns. {DESTINATIONS.map(item=> Next: )}",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f"
+  },
+  {
+   "href": "/docs/surfaces#website",
+   "title": "Use the website for guidance",
+   "text": "Download the desktop app — inspect the current manifest-backed installer and platform-specific verification information. Public documentation — read setup, workflow and recovery references without starting an action. Illustrative demo — explore the explanation of a workflow. Demo content is not a live workspace or evidence that an action ran. Account help (sign-in required) — use the authenticated help surface when available; this public guide grants no account access. Browser sign-in and provider-consent pages support specific authentication or connection steps. Returning from a browser does not by itself prove that desktop pairing, connection validation or an operation succeeded.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f"
+  },
+  {
+   "href": "/docs/surfaces#next-owner",
+   "title": "Know who acts next",
+   "text": "The person preparing work checks its exact source, target and content. An authorized independent reviewer makes the required decision personally. Who executes next, and whether execution is a separate control, depends on the supported workflow and installed version. See Review and execution guidance . If a connection or permission is missing, use its supported setup path or ask the authorized administrator. A different screen, a catalogue entry or an old approval does not remove that requirement. Do not resend an uncertain or consumed action. Inspect the original saved record using the supported read-only history or recovery controls. A different destination is not a retry permission. Troubleshoot the current state before preparing another action.",
+   "source": "app/docs/surfaces/page.tsx",
+   "sourceSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f"
+  },
+  {
+   "href": "/docs/troubleshooting#installation",
+   "title": "Install or sign in",
+   "text": "Check the selected release and installer on the download page. Choose the package for your operating system and architecture, then follow the installation guide. Desktop sign-in uses browser-approved pairing; return to the installed app to continue. Availability and verification depend on the selected release. This guide does not establish signing, platform acceptance, or a successful clean installation. Follow your organization’s software policy and platform protections. Check downloads · Install and sign in",
+   "source": "app/docs/troubleshooting/page.tsx",
+   "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+  },
+  {
+   "href": "/docs/troubleshooting#connections",
+   "title": "A connection is not ready",
+   "text": "Start from Connect in the installed app’s Integrations area, not a callback URL. Setup required needs the service operator; awaiting validation means consent alone is incomplete. Revalidate a failed or stale connection before relying on it for evidence, where that control is available in your installed version and surface. Validated read access does not establish authority for every write. Installing the app does not make a connection ready, and workspace users cannot supply missing production registration or secrets in the desktop app. Understand connection states · Operator setup",
+   "source": "app/docs/troubleshooting/page.tsx",
+   "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+  },
+  {
+   "href": "/docs/troubleshooting#reviews",
+   "title": "A review is stale, expired, or unavailable",
+   "text": "Check the current proposal, target, permissions, and installed-version guidance. Approval is a review record; it does not prove execution or success. An expired or changed review cannot be treated as current authority. Use the normal proposal and independent-review process for current details only after checking whether an original operation already exists. Do not reuse expired approval or work around disabled controls, missing authority, baseline restrictions, or unavailable evidence. For the registered Agent proposal workflow described in the approval guide, separate requester execution remains a local preview and is not production-activated. Your installed version may not include an Execute control. Recovery controls depend on the installed version and surface; this article does not enable them or grant execution authority. Approval permission and execution permission remain separate. Approval and execution boundaries · Readiness guidance",
+   "source": "app/docs/troubleshooting/page.tsx",
+   "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+  },
+  {
+   "href": "/docs/troubleshooting#original-operation",
+   "title": "The original operation is uncertain or consumed",
+   "text": "Read the original saved operation and available outcome evidence using the controls supported by your installed version. Saved metadata is bounded evidence, not complete provider history. A consumed operation cannot be repeated through a replacement request, and waiting for a lease does not restore permission. Any provider reconciliation must be read-only and authorized; no automatic reconciliation service is implied. If the result remains uncertain, seek help with a sanitized summary. Execution and recovery · Audit evidence guide",
+   "source": "app/docs/troubleshooting/page.tsx",
+   "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+  },
+  {
+   "href": "/docs/troubleshooting#safe-help",
+   "title": "Get help safely",
+   "text": "Account help (sign-in required) · Service status · Contact Share your app version, operating system, affected task, approximate time, visible status, and a sanitized error summary. Omit passwords, tokens, client secrets, authorization codes, callback state, tenant secrets, and sensitive repository or customer content. Keep original operation IDs private and share them only through an approved support channel; do not put them in public posts or URLs. Review what you share yourself; this guide does not promise automatic redaction or a response time. Founding Supporters funds development; it is separate from technical support.",
+   "source": "app/docs/troubleshooting/page.tsx",
+   "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0"
+  }
+ ]
+}

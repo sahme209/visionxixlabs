@@ -25,7 +25,7 @@ const CASES: readonly Case[] = [
   ["does it work with dagster", "fact-batches"],
   ["prefect support?", "fact-batches"],
   ["Is my data used to train models?", "fact-model-training"],
-  ["How do I install on Windows?", "guide--docs-desktop-install"],
+  ["How do I install on Windows?", "page:/docs/desktop-install"],
   ["Is there a desktop app?", "faq-"],
   ["Can the Agent change a repository by itself?", "faq-"],
   ["what is recorded in the audit log", "faq-"],
@@ -40,6 +40,15 @@ const CASES: readonly Case[] = [
   ["approve the pending request", "guard:action_request"],
   ["How does environment selection work?", "faq-"],
   ["How does Airflow participate?", "faq-"],
+  // Answerable only from full docs section text (corpus).
+  ["what counts as low risk", "page:/docs/approval-workflow"],
+  ["what is a medium risk change", "page:/docs/approval-workflow"],
+  ["how do I set up GCP", "page:/docs/gcp-setup"],
+  ["how do I connect Azure", "page:/docs/azure-setup"],
+  ["how do I roll back a deployment", "page:/docs/rollback"],
+  ["what does the glossary say about evidence", "page:/docs/glossary"],
+  ["troubleshooting sign in problems", "page:/docs/troubleshooting"],
+  ["how do execution plans work", "page:/docs/execution-plans"],
 ];
 const BAR = 0.9;
 
@@ -51,7 +60,9 @@ describe("Ask Axiom evaluation set", () => {
     for (const [q, expected] of CASES) {
       const a = answerQuestion(index, q);
       const got = a.status === "guarded" ? `guard:${a.guard}` : a.status === "answered" ? entries.find((e) => e.body === a.answer)?.id ?? "?" : "suggestions";
-      if (!(got === expected || (expected.endsWith("-") && got.startsWith(expected)))) misses.push(`${q} → ${got} (expected ${expected})`);
+      const page = a.status === "answered" ? a.sources[0]?.href.split("#")[0] : undefined;
+      const ok = expected.startsWith("page:") ? page === expected.slice(5) : got === expected || (expected.endsWith("-") && got.startsWith(expected));
+      if (!ok) misses.push(`${q} → ${got} ${page ?? ""} (expected ${expected})`);
     }
     const accuracy = 1 - misses.length / CASES.length;
     expect(accuracy, misses.join("\n")).toBeGreaterThanOrEqual(BAR);
