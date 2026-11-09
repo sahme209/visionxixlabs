@@ -69,6 +69,7 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 \n| 2026-11-08 | B2: balanced layout. Pipe flows become a compact rail plus a sticky detail panel; one width, padding and section rhythm across marketing pages | user; PR design/balanced-layout |\n\n
 | 2026-11-08 | A8: Argo Workflows read-only client, scoped to one namespace, GET only. All three new Batches providers now have read-only clients; next is shared connection storage and wiring | Claude; PR feat/argo-workflows-readonly-client |
 | 2026-11-08 | CI: Test split into parallel jobs (typecheck, 3 Vitest shards, build) behind the same required check; wall time ~9.5 → ~6 min | user; PR #229 |
+| 2026-11-08 | A8: Dagster read-only inventory client (fixed GraphQL queries only, no caller-supplied GraphQL, no mutations). Wiring and live acceptance open | Claude; PR feat/dagster-readonly-client |
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.
