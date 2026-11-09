@@ -76,7 +76,7 @@ export function resolveAgentEffortProfile(mode: AgentOperationMode | undefined):
   return { label: "Engineer", maxDecisionIterations: 4 };
 }
 
-const RECHECK_OBSERVATION_TOOLS = new Set(["list_cloud_accounts", "read_aws_inventory", "list_airflow_dags", "read_airflow_runs", "read_airflow_tasks"]);
+const RECHECK_OBSERVATION_TOOLS = new Set(["list_cloud_accounts", "read_aws_inventory", "list_airflow_dags", "read_airflow_runs", "read_airflow_tasks", "list_prefect_flows", "read_prefect_flow_runs", "read_prefect_task_runs", "list_dagster_jobs", "read_dagster_runs", "list_argo_templates", "list_argo_workflows"]);
 
 const ENGINEERING_WRITE_TOOLS = new Set([
   "create_github_branch",
