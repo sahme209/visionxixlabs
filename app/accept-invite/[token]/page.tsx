@@ -16,7 +16,7 @@ import Link from "next/link";
 import { ShieldCheckIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
 import { currentContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
-import { validateInviteToken, ROLE_LABEL, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
+import { inviteRevokedBy, validateInviteToken, ROLE_LABEL, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
 import { record as auditRecord } from "@/lib/audit/secureAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
@@ -51,6 +51,22 @@ export default async function AcceptInvitePage({
   }
 
   const { organizationId, email, role, invitedByUserId } = validation.payload;
+
+  // Revocation (A7.21): a removal of this email or a revoked invite after issue voids the link. Fail closed if unreadable.
+  const revocation = await prisma.auditEvent.findMany({ where: { organizationId, kind: { in: ["member.removed", "invite.revoked"] }, subjectId: { in: [email.toLowerCase(), validation.payload.nonce] } }, select: { kind: true, subjectId: true, createdAt: true }, take: 50 })
+    .then((events) => inviteRevokedBy(validation.payload!, events)).catch(() => "unverifiable" as const);
+  if (revocation) {
+    return (
+      <div className="max-w-xl mx-auto px-4 py-16">
+        <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-6 text-center">
+          <ExclamationTriangleIcon className="h-8 w-8 text-rose-300 mx-auto mb-3" />
+          <p className="text-[14px] text-zinc-100 font-mono mb-2">{revocation === "unverifiable" ? "this invite could not be verified right now" : "this invite is no longer valid"}</p>
+          <p className="text-[12px] text-zinc-400">Ask the workspace admin to send a new invitation.</p>
+        </div>
+      </div>
+    );
+  }
+
   const ctx = await currentContext();
 
   // Not signed in? Send them through auth and bring them back here.

@@ -12,6 +12,8 @@ const groups = [
     { href: "/control", label: "Overview", icon: Home },
     { href: "/control/governance", label: "Governance", icon: ShieldCheck },
     { href: "/control/ai-agents", label: "AI & Agents", icon: Bot },
+    { href: "/control/agent-gateway", label: "Agent gateway", icon: Bot },
+    { href: "/control/trust-tools", label: "Trust tools", icon: ShieldCheck },
     { href: "/control/airflow", label: "Airflow", icon: Workflow },
     { href: "/control/integrations", label: "Integrations", icon: Plug },
     { href: "/control/plugins", label: "Apps & skills", icon: LayoutGrid },
@@ -22,6 +24,7 @@ const groups = [
     { href: "/control/audit-security", label: "Audit & Security", icon: ScrollText },
   ] },
   { label: "Account", items: [
+    { href: "/control/api-keys", label: "API keys", icon: Settings },
     { href: "/control/settings", label: "Settings & sessions", icon: Settings },
     { href: "/account/help", label: "Help", icon: BookOpen },
   ] },

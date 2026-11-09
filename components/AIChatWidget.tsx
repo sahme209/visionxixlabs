@@ -20,6 +20,9 @@ interface Message {
   timestamp: Date;
   /** Cited public sources for grounded answers. */
   sources?: { title: string; href: string }[];
+  /** The question this answer responds to (lets the person ask for an AI answer). */
+  question?: string;
+  mode?: "grounded" | "ai";
 }
 
 const MSG_KEY = "visionxix-ai-widget-messages";
@@ -120,6 +123,8 @@ export default function AIChatWidget() {
         content: data.answer ?? "",
         timestamp: new Date(),
         sources: Array.isArray(data.sources) ? data.sources.slice(0, 3).map((x: { title: string; href: string }) => ({ title: String(x.title), href: String(x.href) })) : [],
+        question: data.guard ? undefined : text,
+        mode: "grounded",
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch {
@@ -127,6 +132,21 @@ export default function AIChatWidget() {
     } finally {
       setLoading(false);
     }
+  };
+
+  /** Explicit, per-click AI answer from the cited docs (signed-in, prepaid credits). */
+  const askAi = async (question: string) => {
+    if (loading) return;
+    setLoading(true); setError(null);
+    try {
+      const res = await fetch("/api/support/ai-answer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question }) });
+      if (res.status === 401) { setError("Sign in to your workspace to use AI answers."); return; }
+      const data = await res.json().catch(() => null);
+      if (!data?.ok && data?.error === "workspace_ai_disabled") { setError("AI is turned off for this workspace. An admin can turn it on in settings."); return; }
+      if (!data?.ok && data?.error === "workspace_ai_credit_pool_exhausted") { setError("No prepaid AI credit is available for this workspace."); return; }
+      if (!data?.answer) { setError("Could not get an AI answer. The docs answer above still applies."); return; }
+      setMessages((prev) => [...prev, { id: crypto.randomUUID(), role: "assistant", content: data.answer, timestamp: new Date(), sources: Array.isArray(data.sources) ? data.sources.slice(0, 3) : [], mode: data.mode === "ai" ? "ai" : "grounded" }]);
+    } catch { setError("Network error. Please check your connection."); } finally { setLoading(false); }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -218,7 +238,7 @@ export default function AIChatWidget() {
                     >
                       {m.role === "assistant" && (
                         <div className="mb-1 flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-medium text-slate-500">Ask Axiom · from the docs</span>
+                          <span className="text-[10px] font-medium text-slate-500">{m.mode === "ai" ? "Ask Axiom · AI answer from the cited docs" : "Ask Axiom · from the docs"}</span>
                           <button
                             onClick={() => copyResponse(m.content)}
                             aria-label="Copy"
@@ -229,6 +249,9 @@ export default function AIChatWidget() {
                         </div>
                       )}
                       <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
+                      {m.role === "assistant" && m.mode === "grounded" && m.question && (
+                        <button type="button" onClick={() => void askAi(m.question!)} disabled={loading} className="mt-2 text-[11px] text-zinc-400 underline underline-offset-2 hover:text-white disabled:opacity-50">Get a fuller AI answer (signed-in workspaces; uses prepaid credits)</button>
+                      )}
                       {m.role === "assistant" && m.sources && m.sources.length > 0 && (
                         <ul aria-label="Sources" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-white/[0.06] pt-2 text-[11px]">
                           {m.sources.map((src) => src.href.startsWith("/") ? <li key={src.href + src.title}><Link href={src.href} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
@@ -282,7 +305,7 @@ export default function AIChatWidget() {
               </button>
             </div>
             <Link
-              href="/axiom"
+              href="/product"
               className="mt-2 block text-center text-[10px] text-slate-500 hover:text-zinc-600"
             >
               Learn about Axiom Agent

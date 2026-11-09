@@ -9,8 +9,8 @@ afterEach(() => { cleanup(); vi.resetAllMocks(); });
 const journeys = [
   ['Open repository', 'documentation.journey.scope', 'repository-workspace'],
   ['Open Agent', 'documentation.journey.code', 'agent'],
-  ['Open deployment requests', 'documentation.journey.govern', 'deployment-requests'],
-  ['Open Airflow', 'documentation.journey.schedule', 'airflow-automation'],
+  ['Open Releases', 'documentation.journey.govern', 'deployment-requests'],
+  ['Open Batches', 'documentation.journey.schedule', 'airflow-automation'],
   ['Review deployment evidence', 'documentation.journey.recover', 'deployment-requests'],
 ] as const;
 const guides = [

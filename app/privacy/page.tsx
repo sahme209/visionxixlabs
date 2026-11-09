@@ -20,11 +20,7 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-lg text-zinc-400 mb-2">
-              Last Updated: {new Date().toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
+              Last Updated: October 13, 2026
             </p>
             <p className="text-sm text-zinc-500">
               For enterprise clients, a Data Processing Agreement (DPA) may be executed separately.

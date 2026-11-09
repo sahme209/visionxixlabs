@@ -105,7 +105,7 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
       },
       {
         q: "What does the desktop app do that the web doesn't?",
-        a: "The public website explains and demonstrates the product. Authenticated /dashboard and /operator browser routes redirect to download; operational work happens in the desktop app using desktop-session authentication.",
+        a: "The public website explains and demonstrates the product. Signed-in workspace pages in the browser live under /control (members, governance, agent gateway, trust tools, usage and settings). Operational work such as deployments happens in the desktop app with desktop-session authentication.",
       },
       {
         q: "Where do I download?",

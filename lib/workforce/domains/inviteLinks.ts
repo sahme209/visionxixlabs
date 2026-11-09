@@ -33,6 +33,8 @@ export interface InviteTokenPayload {
   invitedByUserId: string;
   expiresAt: number;
   nonce: string;
+  /** Issue time (ms). Absent on tokens minted before 2026-11-09. */
+  issuedAt?: number;
 }
 
 export type InviteTokenError = "malformed" | "bad_signature" | "expired";
@@ -83,6 +85,7 @@ export function createInviteToken(
     invitedByUserId,
     expiresAt,
     nonce,
+    issuedAt: Date.now(),
   };
   const payloadB64 = b64UrlEncode(Buffer.from(JSON.stringify(payload), "utf8"));
   const signature = sign(payloadB64, getSecret());
@@ -167,3 +170,23 @@ export const ROLE_LABEL: Record<InviteRole, { label: string; description: string
     description: "Reads dashboards. No vote, no run, no manage.",
   },
 };
+
+
+/** Longest TTL a token can carry; used as a conservative issue time for legacy tokens without issuedAt. */
+export const MAX_INVITE_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+/**
+ * Pure revocation check (A7.21). An invite is void if, after it was issued,
+ * the invited email was removed from the workspace or that exact invite
+ * (nonce) was revoked. Events come from the workspace audit log.
+ */
+export function inviteRevokedBy(payload: InviteTokenPayload, events: ReadonlyArray<{ kind: string; subjectId: string; createdAt: Date }>): "member_removed" | "invite_revoked" | null {
+  const issuedAt = typeof payload.issuedAt === "number" ? payload.issuedAt : payload.expiresAt - MAX_INVITE_TTL_MS;
+  const email = payload.email.toLowerCase().trim();
+  for (const e of events) {
+    if (e.createdAt.getTime() < issuedAt) continue;
+    if (e.kind === "invite.revoked" && e.subjectId === payload.nonce) return "invite_revoked";
+    if (e.kind === "member.removed" && e.subjectId.toLowerCase() === email) return "member_removed";
+  }
+  return null;
+}

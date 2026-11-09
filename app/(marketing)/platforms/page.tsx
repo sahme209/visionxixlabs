@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import { PlatformsClient } from "./PlatformsClient";
+import { redirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "Platforms — Axiom",
-  description: "Web, mobile (iOS + Android), and desktop (macOS + Windows + Linux). Same safety contract on every surface.",
-};
-
+/** No mobile apps are offered; the desktop download is the authority on platforms. Logic audit 2026-11-09. */
 export default function PlatformsPage() {
-  return <PlatformsClient />;
+  redirect("/download");
 }

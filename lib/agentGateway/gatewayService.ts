@@ -57,7 +57,7 @@ export async function createGatewayRequest(caller: GatewayCaller, raw: unknown, 
     status, expiresAt: new Date(now.getTime() + APPROVAL_TTL_MS),
   } });
   await audit(caller.organizationId, "agent_gateway.request", row.id, `${agentName} requested ${action.actionKind} on ${action.target.slice(0, 80)} (${policy.decision})`, null);
-  if (row.status === "pending") await notify(caller.organizationId, "agent_gateway.request_pending", { requestId: row.id, agentName, actionKind: action.actionKind, environment: action.environment, target: action.target.slice(0, 200), riskLevel: policy.riskLevel, expiresAt: row.expiresAt.toISOString(), reviewUrl: "/dashboard/agent-gateway" });
+  if (row.status === "pending") await notify(caller.organizationId, "agent_gateway.request_pending", { requestId: row.id, agentName, actionKind: action.actionKind, environment: action.environment, target: action.target.slice(0, 200), riskLevel: policy.riskLevel, expiresAt: row.expiresAt.toISOString(), reviewUrl: "/control/agent-gateway" });
   return { ok: true as const, request: publicRequest(row, now), impact };
 }
 

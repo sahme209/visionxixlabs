@@ -14,12 +14,12 @@ export const GOVERNED_JOURNEY = [
   },
   {
     id: "govern", title: "Review deployment authority", destination: "deployment-requests",
-    cta: "Open deployment requests",
+    cta: "Open Releases",
     detail: "Review the exact environment, artifact, readiness evidence and recovery plan. Obtain the required human approvals before execution. Model output, a local test pass and a GitHub connection do not grant deployment authority.",
   },
   {
     id: "schedule", title: "Schedule with Airflow", destination: "airflow-automation",
-    cta: "Open Airflow",
+    cta: "Open Batches",
     detail: "Use an authorized Airflow connection to inspect DAGs, dependencies and run state. Review the target and permitted operation before triggering work. A schedule is not deployment approval and does not guarantee successful execution.",
   },
   {

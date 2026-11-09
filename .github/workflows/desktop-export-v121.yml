@@ -36,7 +36,7 @@ jobs:
           if(run.id!==40948306389||run.head_sha!==process.env.SOURCE_SHA||run.status!=='completed'||run.conclusion!=='success'||run.path!=='.github/workflows/desktop-release.yml'||run.event!=='workflow_dispatch'||tag.object.type!=='commit'||tag.object.sha!==process.env.SOURCE_SHA)throw Error('Fixed candidate source/run/tag not accepted');
           const found=graph.artifacts.filter(a=>a.name==='axiom-verified-candidate'&&a.expired===false&&a.workflow_run?.id===run.id&&a.workflow_run?.head_sha===run.head_sha&&/^sha256:[a-f0-9]{64}$/.test(a.digest));if(found.length!==1)throw Error('Missing or ambiguous verified candidate');fs.appendFileSync(process.env.GITHUB_OUTPUT,`artifact_id=${found[0].id}\n`);
           NODE
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ steps.accepted.outputs.artifact_id }}
           github-token: ${{ github.token }}

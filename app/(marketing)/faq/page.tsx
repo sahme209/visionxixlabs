@@ -1,11 +1,6 @@
-import type { Metadata } from "next";
-import { FaqClient } from "./FaqClient";
+import { permanentRedirect } from "next/navigation";
 
-export const metadata: Metadata = {
-  title: "FAQ — Axiom",
-  description: "Honest answers to the questions a serious buyer asks first: kill switch, lock-in, accountability, data residency, cost predictability.",
-};
-
+/** One FAQ: /docs/faq (shared with the Ask Axiom support agent). Logic audit 2026-11-09. */
 export default function FaqPage() {
-  return <FaqClient />;
+  permanentRedirect("/docs/faq");
 }

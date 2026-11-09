@@ -304,10 +304,10 @@ export function CapabilitiesClient() {
         </p>
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
-            href="/changelog"
+            href="/download"
             className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
           >
-            See the changelog
+            See current releases
           </Link>
           <Link
             href="/download"

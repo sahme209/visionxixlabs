@@ -38,9 +38,9 @@ const TABS: readonly CompareTab[] = [
     label: "vs hiring the team",
     rivalLabel: "26-person team",
     tagline:
-      "Hiring the disciplines on /disciplines yourself, fully loaded with benefits and equity.",
+      "Hiring the equivalent disciplines yourself, fully loaded with benefits and equity.",
     rows: [
-      { capability: "Annual fully-loaded cost",          axiom: "full", rival: "none",    note: "~$2.96M/year for the team, single fixed contract for Axiom." },
+      { capability: "Annual fully-loaded cost",          axiom: "full", rival: "none",    note: "An illustrative ~$2.96M/year for the team. Axiom is free to explore; prepaid AI credits are the only paid part." },
       { capability: "Time to first proposal",            axiom: "full", rival: "none",    note: "Hours after wiring credentials vs. months of hiring + ramp." },
       { capability: "Attrition risk on critical paths",  axiom: "full", rival: "none" },
       { capability: "24/7 coverage across surfaces",     axiom: "full", rival: "partial" },

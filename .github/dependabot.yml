@@ -1,0 +1,32 @@
+# Supply-chain integrity (A7.15). One grouped PR per ecosystem per week (not one
+# PR per package), so updates arrive as reviewable batches. Each batch must pass
+# the full Test check. Major updates are grouped separately for careful review.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: "/"
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 2
+    groups:
+      web-minor-patch: { update-types: ["minor", "patch"] }
+      web-major: { update-types: ["major"] }
+  - package-ecosystem: npm
+    directory: "/desktop"
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 2
+    groups:
+      desktop-minor-patch: { update-types: ["minor", "patch"] }
+      desktop-major: { update-types: ["major"] }
+  - package-ecosystem: cargo
+    directory: "/desktop/src-tauri"
+    schedule: { interval: weekly, day: monday }
+    open-pull-requests-limit: 2
+    groups:
+      cargo-minor-patch: { update-types: ["minor", "patch"] }
+      cargo-major: { update-types: ["major"] }
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule: { interval: monthly }
+    open-pull-requests-limit: 1
+    groups:
+      actions-all: { patterns: ["*"] }

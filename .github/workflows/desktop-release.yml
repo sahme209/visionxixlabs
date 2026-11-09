@@ -247,7 +247,7 @@ jobs:
       # tauri-action builds + signs but does NOT publish here. We capture the
       # artefacts and let the publish job upload them to the public repo.
       - name: Build Tauri bundle
-        uses: tauri-apps/tauri-action@v0
+        uses: tauri-apps/tauri-action@v1
         env:
           GITHUB_TOKEN:                ${{ secrets.GITHUB_TOKEN }}
           APPLE_CERTIFICATE:           ${{ secrets.APPLE_CERTIFICATE }}
@@ -393,7 +393,7 @@ jobs:
         run: |
           gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/artifacts?per_page=100" > candidate-artifacts.json
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           path: ./artifacts
 
@@ -489,7 +489,7 @@ jobs:
       SOURCE_SHA: ${{ github.sha }}
       CANDIDATE_RUN_ID: ${{ github.run_id }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ needs.verify-candidate.outputs.artifact_id }}
           path: flat
@@ -662,7 +662,7 @@ jobs:
       SOURCE_SHA: ${{ github.sha }}
       CANDIDATE_RUN_ID: ${{ github.run_id }}
     steps:
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ needs.verify-candidate.outputs.artifact_id }}
           path: flat
@@ -850,7 +850,7 @@ jobs:
           if(run.id!==40948306389||run.head_sha!==process.env.SOURCE_SHA||run.status!=='completed'||run.conclusion!=='success'||run.path!=='.github/workflows/desktop-release.yml'||run.event!=='workflow_dispatch'||tag.object.type!=='commit'||tag.object.sha!==process.env.SOURCE_SHA)throw Error('Fixed candidate source/run/tag not accepted');
           const found=graph.artifacts.filter(a=>a.name==='axiom-verified-candidate'&&a.expired===false&&a.workflow_run?.id===run.id&&a.workflow_run?.head_sha===run.head_sha&&/^sha256:[a-f0-9]{64}$/.test(a.digest));if(found.length!==1)throw Error('Missing or ambiguous verified candidate');fs.appendFileSync(process.env.GITHUB_OUTPUT,`artifact_id=${found[0].id}\n`);
           NODE
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           artifact-ids: ${{ steps.accepted.outputs.artifact_id }}
           github-token: ${{ github.token }}
