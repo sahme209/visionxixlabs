@@ -22,6 +22,7 @@ import {
 import { recordRequiredAudit as auditRecord } from "@/lib/audit/requiredAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -72,6 +73,11 @@ export async function POST(req: Request) {
   }
   if (!canInvite) {
     return NextResponse.redirect(new URL("/dashboard/team?error=insufficient_permission", req.url), 303);
+  }
+
+  // Governance M01: a new invitation adds privilege, so it waits while enrolled.
+  if (!await workspaceUnenrolled(org)) {
+    return NextResponse.redirect(new URL("/dashboard/team?error=governance_enrolled_privilege_increase", req.url), 303);
   }
 
   let token: string;

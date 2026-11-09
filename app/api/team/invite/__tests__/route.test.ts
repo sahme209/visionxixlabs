@@ -12,10 +12,11 @@ const mocks = vi.hoisted(() => ({
   findMembership: vi.fn(),
   createInviteToken: vi.fn(),
   recordAudit: vi.fn(),
+  enrollment: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/currentContext", () => ({ requireContext: mocks.requireContext }));
-vi.mock("@/lib/db", () => ({ prisma: { orgMembership: { findUnique: mocks.findMembership } } }));
+vi.mock("@/lib/db", () => ({ prisma: { orgMembership: { findUnique: mocks.findMembership }, durableAgentWorkflow: { findMany: mocks.enrollment } } }));
 vi.mock("@/lib/workforce/domains/inviteLinks", () => ({
   createInviteToken: mocks.createInviteToken,
   ASSIGNABLE_ROLES: ["admin", "operator", "security_reviewer", "finance_viewer", "read_only"],
@@ -40,6 +41,17 @@ describe("POST /api/team/invite — organization membership lifecycle", () => {
     vi.clearAllMocks();
     mocks.requireContext.mockResolvedValue({ userId: "user-1", organizationId: "org-1", email: "owner@acme.test" });
     mocks.createInviteToken.mockReturnValue("fake-invite-token");
+    mocks.enrollment.mockResolvedValue([]);
+  });
+
+  it("refuses a new invitation while the workspace is enrolled in Governance — never mints a token", async () => {
+    mocks.findMembership.mockResolvedValue({ role: "owner", acceptedAt: new Date() });
+    mocks.enrollment.mockResolvedValue([{ id: "governance_active_fixture", organizationId: "org-1", workflowKind: "governance_baseline_active_v1" }]);
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ email: "new@acme.test", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("governance_enrolled_privilege_increase");
+    expect(mocks.createInviteToken).not.toHaveBeenCalled();
+    expect(mocks.recordAudit).not.toHaveBeenCalled();
   });
 
   it("rejects an invalid email before checking permission or minting a token", async () => {

@@ -349,7 +349,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "1d733d4b4b6f7c2aeeea1f94afc13e0702326c63eaddd756917f956534627170",
+      "sourceSha256": "e4d3d027763be8e7a66db40a3ca8205aeb545420fb7b597a8a215e984d47be71",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",

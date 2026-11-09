@@ -21,6 +21,8 @@ import {
   saveWorkspaceAgentIdentity,
 } from "@/lib/axiom/agentRuntime/agentIdentityPolicy";
 import { readTenantCharter, upsertTenantCharter } from "@/lib/autonomy/tenantCharterStore";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
+import { isAutonomyLoosening } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
 import type { AutonomyMode } from "@/lib/autonomy/autonomousLoopModel";
 import { loadBudgetConfig, upsertBudgetConfig } from "@/lib/workforce/pipelines/budgetConfigStore";
 
@@ -159,6 +161,12 @@ export async function PATCH(request: NextRequest) {
     const rationale = typeof body.rationale === "string" ? body.rationale.trim().slice(0, 1000) : "";
     if (typeof mode !== "string" || !AUTONOMY_MODES.has(mode as AutonomyMode) || !Number.isInteger(perCycleActionLimit) || Number(perCycleActionLimit) < 1 || Number(perCycleActionLimit) > 50) {
       return NextResponse.json({ ok: false, error: "invalid_autonomy_policy" }, { status: 422 });
+    }
+    // Governance M02: while enrolled, the Agent's autonomy can be tightened but not loosened.
+    const current = await readTenantCharter(ctx.organizationId).catch(() => null);
+    const currentLimit = current ? Number(current.perCycleActionLimit ?? current.resolved?.perCycleActionLimit ?? 1) : 1;
+    if (isAutonomyLoosening(current ? { mode: current.mode, perCycleActionLimit: currentLimit } : null, { mode, perCycleActionLimit: Number(perCycleActionLimit) }) && !await workspaceUnenrolled(ctx.organizationId)) {
+      return NextResponse.json({ ok: false, error: "governance_enrolled_policy_loosening" }, { status: 409 });
     }
     const autonomy = await upsertTenantCharter({ organizationId: ctx.organizationId, mode: mode as AutonomyMode, perCycleActionLimit: Number(perCycleActionLimit), rationale, updatedBy: ctx.userId });
     try {

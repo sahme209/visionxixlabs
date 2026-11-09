@@ -1,15 +1,14 @@
 /**
  * Execution families with no Governance admission or enrollment refusal yet
  * (docs/recovery/2026-11-02/governance-execution-coverage-current.md; F15 and
- * F16 have since gained refusal). Pure and static: this list can only make the
+ * F16 have since gained refusal; F17, F18 and M01 gained enrolled refusal on
+ * 2026-11-09, see enrolledRefusalPolicy.ts). Pure and static: this list can only make the
  * readiness report stricter. It is never a coverage receipt, and removing an
  * entry requires the reviewed coverage work, not an edit here.
  */
 export const UNCOVERED_FAMILIES = [
-  { id: "F17", name: "Background notifications (Slack, outbound lane, scan-complete)", scope: "scope_decision_pending" },
-  { id: "F18", name: "Tenant webhook delivery", scope: "scope_decision_pending" },
-  { id: "M01", name: "Membership, roles and invitations", scope: "scope_decision_pending" },
-  { id: "M02", name: "AI policy, autonomy charter and branch policy", scope: "scope_decision_pending" },
+  // Autonomy loosening is refused while enrolled; provider and branch policy are not yet classified.
+  { id: "M02", name: "AI provider policy and branch policy", scope: "scope_decision_pending" },
   { id: "M03", name: "Consent and OAuth connections", scope: "scope_decision_pending" },
   { id: "M04", name: "API keys and webhook configuration", scope: "scope_decision_pending" },
   { id: "P01", name: "Platform deploy, template hosting and growth publishing", scope: "platform_scope_question" },

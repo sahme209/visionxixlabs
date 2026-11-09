@@ -16,6 +16,8 @@ import { ASSIGNABLE_ROLES, type InviteRole } from "@/lib/workforce/domains/invit
 import { recordRequiredAudit as auditRecord } from "@/lib/audit/requiredAudit";
 import { id as ids } from "@/lib/domain/ids";
 import type { CorrelationId } from "@/lib/domain/ids";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
+import { isPrivilegeIncrease } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -139,6 +141,10 @@ export async function POST(req: Request) {
   const role = parseRole(s(f.get("role")));
   if (!role) {
     return teamResponse("/dashboard/team?error=invalid_role");
+  }
+  // Governance M01: while enrolled, promotions wait for reviewed admission; demotions still work.
+  if (isPrivilegeIncrease(target.role, role) && !await workspaceUnenrolled(org)) {
+    return teamResponse("/dashboard/team?error=governance_enrolled_privilege_increase");
   }
   try {
     if (intent) {
