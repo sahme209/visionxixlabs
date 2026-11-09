@@ -28,7 +28,7 @@ This snapshot complements the detailed index (master-plan-requirements-index.md,
 Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); real-app walkthroughs (A4); Store/Windows (A5, deferred); independent security assessment (A7.14); live provider acceptance (A8); recorded demos (B3).
 
 **Code still open (next candidates)**
-Support agent governed actions (roadmap step 4); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations; B4 coverage of the remaining screens; C1–C6 (not authorized yet).
+Support agent governed actions (roadmap step 4: four actions done, including governed seal/verify; next would be key rotation reminders); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations; B4 coverage of the remaining screens; C1–C6 (not authorized yet).
 
 ## Platform migrations (held out of Dependabot major batches)
 
