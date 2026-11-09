@@ -5108,6 +5108,7 @@ model AuditSeal {
 
   @@unique([organizationId, sequence])
   @@index([organizationId, toCreatedAt])
+}
 
 /// Agent governance gateway (Phase A10): an external or internal AI agent
 /// (Cursor, Claude Code, Codex, Axiom's own agents) asks Axiom for a policy
