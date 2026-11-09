@@ -36,4 +36,4 @@ keyring = { version = "3", default-features = false, features = ["sync-secret-se
 
 # Descriptor-relative no-symlink, no-overwrite source creation on macOS/Linux.
 [target.'cfg(unix)'.dependencies]
-libc = "=0.2.189"
+libc = "=0.2.191"
