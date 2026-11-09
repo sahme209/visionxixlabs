@@ -1,14 +1,28 @@
 import { expect, it, vi } from "vitest";
-import { ResourceManagementClient } from "@azure/arm-resources";
+import type { ResourceManagementClient } from "@azure/arm-resources";
 import { logPolicyName } from "@azure/core-rest-pipeline";
 import { createAzureProviderClient } from "../providerClient";
 import { input } from "./fixture";
 import type { AzureRawResponse, AzureRawSend } from "../boundedHttp";
+// Capture each real ARM client the provider builds (behaviour unchanged) so the
+// test can inspect its pipeline at the moment the HTTP request leaves.
+const arm = vi.hoisted(() => ({ clients: [] as unknown[], checks: [] as boolean[] }));
+vi.mock("@azure/arm-resources", async (importOriginal) => {
+    const m = await importOriginal<typeof import("@azure/arm-resources")>();
+    class Captured extends m.ResourceManagementClient {
+        constructor(...args: ConstructorParameters<typeof m.ResourceManagementClient>) { super(...args); arm.clients.push(this); }
+    }
+    return { ...m, ResourceManagementClient: Captured };
+});
 function setup(mode = "ok") {
     const urls: string[] = [];
     const send: AzureRawSend = vi.fn(async (request) => {
         const url = new URL(request.url);
         urls.push(request.url);
+        if (url.hostname === "management.azure.com" && arm.clients.length) {
+            const latest = arm.clients[arm.clients.length - 1] as ResourceManagementClient;
+            arm.checks.push(latest.pipeline.getOrderedPolicies().some(policy => policy.name === logPolicyName));
+        }
         let body: unknown;
         if (url.hostname === "login.microsoftonline.com") {
             body = { access_token: "synthetic-token-not-real", token_type: "Bearer", expires_in: 3600 };
@@ -40,11 +54,9 @@ it("does not let SDK missing-value fallback fabricate an observed empty page", a
 it("ignores ambient endpoint and credential variables",async()=>{vi.stubEnv("AZURE_AUTHORITY_HOST","https://evil.invalid");vi.stubEnv("AZURE_CLIENT_ID","other");vi.stubEnv("AZURE_CLIENT_SECRET","other");try{const f=setup();await f.client.validate(input);expect(f.urls.every(value=>["login.microsoftonline.com","management.azure.com"].includes(new URL(value).hostname))).toBe(true);}finally{vi.unstubAllEnvs();}});
 
 it("removes only the actual ARM client's logging policy before its first SDK request", async () => {
-    const original = ResourceManagementClient.prototype.sendRequest;
-    const requestSpy = vi.spyOn(ResourceManagementClient.prototype, "sendRequest").mockImplementation(function (this: ResourceManagementClient, request) {
-        expect(this.pipeline.getOrderedPolicies().some(policy => policy.name === logPolicyName)).toBe(false);
-        return original.call(this, request);
-    });
-    try { await setup().client.read(input); expect(requestSpy).toHaveBeenCalledTimes(1); }
-    finally { requestSpy.mockRestore(); }
+    arm.clients.length = 0; arm.checks.length = 0;
+    await setup().client.read(input);
+    expect(arm.clients).toHaveLength(1);
+    // Exactly one ARM request left, and the log policy was already gone when it did.
+    expect(arm.checks).toEqual([false]);
 });
