@@ -21,6 +21,8 @@ vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.isAdminOrOwne
 vi.mock("@/lib/audit/requiredAudit", () => ({ recordRequiredAudit: mocks.recordAudit }));
 vi.mock("@/lib/ai/AIProviderManager", () => ({ getAIProviderManager: () => ({ status: () => [{ provider: "vercel_gateway", configured: true }] }) }));
 vi.mock("@/lib/ai/gatewayModelCatalog", async (original) => ({ ...await original<typeof import("@/lib/ai/gatewayModelCatalog")>(), loadGatewayModelCatalog: mocks.loadModels }));
+// Not enrolled in Governance (enrolled refusal is covered by the policy kernel tests).
+vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: async () => true }));
 vi.mock("@/lib/ai/workspaceProviderPolicy", async (original) => {
   const actual = await original<typeof import("@/lib/ai/workspaceProviderPolicy")>();
   return { ...actual, loadWorkspaceAIProviderPolicyWithState: mocks.loadPolicy, saveWorkspaceAIProviderPolicy: mocks.savePolicy };

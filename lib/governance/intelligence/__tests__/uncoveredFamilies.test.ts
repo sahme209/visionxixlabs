@@ -7,10 +7,10 @@ describe("Governance readiness blockers", () => {
     expect(r.status).toBe("blocked");
     expect(r.executionAuthorized).toBe(false);
     expect(new Set(UNCOVERED_FAMILIES.map((f) => f.id)).size).toBe(UNCOVERED_FAMILIES.length);
-    expect(UNCOVERED_FAMILIES.map((f) => f.id)).toEqual(["M02", "M03", "P01"]);
+    expect(UNCOVERED_FAMILIES.map((f) => f.id)).toEqual(["P01"]);
   });
 
   it("does not list families that already refuse when enrolled", () => {
-    for (const covered of ["F01", "F02", "F15", "F16", "F17", "F18", "M01", "M04"]) expect(UNCOVERED_FAMILIES.some((f) => f.id === covered)).toBe(false);
+    for (const covered of ["F01", "F02", "F15", "F16", "F17", "F18", "M01", "M02", "M03", "M04"]) expect(UNCOVERED_FAMILIES.some((f) => f.id === covered)).toBe(false);
   });
 });

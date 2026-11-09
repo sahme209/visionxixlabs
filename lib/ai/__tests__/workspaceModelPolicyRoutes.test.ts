@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 const mocks = vi.hoisted(() => ({ admin: vi.fn(), context: vi.fn(), session: vi.fn(), catalog: vi.fn(), save: vi.fn(), audit: vi.fn() }));
+vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: async () => true }));
 vi.mock("@/lib/db", () => ({ prisma: {} }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.context }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.admin }));

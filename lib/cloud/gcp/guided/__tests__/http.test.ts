@@ -1,6 +1,7 @@
 import {beforeEach,it,expect,vi} from 'vitest';
 import {NextRequest,NextResponse} from 'next/server';
 const m=vi.hoisted(()=>({principal:vi.fn(),start:vi.fn(),status:vi.fn(),complete:vi.fn(),cancel:vi.fn()}));
+vi.mock('@/lib/governance/intelligence/enrolledRefusal',()=>({workspaceUnenrolled:async()=>true}));
 vi.mock('../runtime',()=>({guidedPrincipal:m.principal,gcpGuided:m,guidedReply:(data:unknown)=>NextResponse.json({ok:true,data}),guidedFailure:()=>NextResponse.json({ok:false,error:'gcp_guided_unavailable'},{status:503})}));
 import {guidedHttp} from '../http';
 const id='11111111-1111-4111-8111-111111111111',p={organizationId:'org',userId:'user',sessionId:'session'};

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { isAutonomyLoosening, isPrivilegeIncrease, isSafetyNotification, isSafetyWebhook } from "../enrolledRefusalPolicy";
+import { isProviderPolicyLoosening, isAutonomyLoosening, isPrivilegeIncrease, isSafetyNotification, isSafetyWebhook } from "../enrolledRefusalPolicy";
 
 describe("enrolled refusal policy", () => {
   it("always delivers safety alerts", () => {
@@ -37,6 +37,17 @@ describe("enrolled refusal policy", () => {
     expect(isAutonomyLoosening(null, { mode: "observer", perCycleActionLimit: 1 })).toBe(false);
     expect(isAutonomyLoosening(null, { mode: "review", perCycleActionLimit: 1 })).toBe(true);
     expect(isAutonomyLoosening(cur, { mode: "unknown_mode", perCycleActionLimit: 1 })).toBe(true);
+  });
+
+  it("refuses only AI provider policy loosening", () => {
+    const cur = { enabled: true, allowedProviders: ["vercel_gateway"], approvedModels: ["a"] };
+    expect(isProviderPolicyLoosening(cur, { ...cur, allowedProviders: ["vercel_gateway", "openai"] })).toBe(true);
+    expect(isProviderPolicyLoosening(cur, { ...cur, approvedModels: ["a", "b"] })).toBe(true);
+    expect(isProviderPolicyLoosening({ ...cur, enabled: false }, cur)).toBe(true);
+    expect(isProviderPolicyLoosening(null, cur)).toBe(true);
+    expect(isProviderPolicyLoosening(cur, { ...cur, enabled: false })).toBe(false);
+    expect(isProviderPolicyLoosening(cur, { ...cur, approvedModels: [] })).toBe(false);
+    expect(isProviderPolicyLoosening(cur, cur)).toBe(false);
   });
 
   it("fails closed on unknown roles", () => {

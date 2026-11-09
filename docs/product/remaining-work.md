@@ -26,7 +26,7 @@ This snapshot complements the detailed index (master-plan-requirements-index.md,
 Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); real-app walkthroughs (A4); Store/Windows (A5, deferred); independent security assessment (A7.14); live provider acceptance (A8); recorded demos (B3).
 
 **Code still open (next candidates)**
-Support agent governed actions (roadmap step 4: five actions done — support hand-off, access request, diagnostic, governed seal/verify, expiring-key list); remaining A2 enforcement composition (readiness read done; enrolled refusal done for notifications, webhooks, membership increases (incl. invite acceptance), new API keys/webhook endpoints, new Airflow/batch connections and autonomy loosening; still open: provider/branch policy, ServiceNow and guided Azure/GCP setup, platform families); A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed path needs its own reviewed design); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
+Support agent governed actions (roadmap step 4: five actions done — support hand-off, access request, diagnostic, governed seal/verify, expiring-key list); remaining A2 enforcement composition (readiness read done; enrolled refusal done for notifications, webhooks, membership increases (incl. invite acceptance), new API keys/webhook endpoints, new Airflow/batch connections and autonomy loosening; M02 and M03 complete; only P01 platform families remain, pending an owner scope decision); A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed path designed in ADR 2026-11-09-a9-offline-governed-local-models, awaiting review and owner decisions); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
 
 ## Platform migrations (held out of Dependabot major batches)
 
@@ -36,10 +36,11 @@ Each needs its own planned PR; Dependabot ignores their major versions until the
 - Tailwind 4 (web + desktop): CSS-first config replaces `tailwind.config`.
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
 - ESLint 10 and Vitest 5 (web): config and API changes.
-- Next.js (beyond 16.4.2) and the AWS SDK (beyond 3.1049): re-review the owned-website framework source pins and the pinned ECS/S3 SDK behaviour tests, then bump.
+- Next.js 16.4.5 checked 2026-11-09: the three reviewed internals (`config-shared.js`, `load-jsconfig.js`, `runTypeScriptCli.js`) are byte-identical to 16.4.2; only `package.json` changes. Re-pinning touches `scripts/fixtures/ownedWebsiteFramework.cjs`, `scripts/fixture-producer-runtime-closure.json`, `scripts/build-local-issuer-package-source.py`, two owned-website tests and `public/fonts/provenance.json`, so it is one reviewed release-machinery PR.
+- Next.js and the AWS SDK (beyond 3.1049): re-review the owned-website framework source pins and the pinned ECS/S3 SDK behaviour tests, then bump.
 - Stripe (any bump; 20.4.1 already moves the pinned API version to `2026-02-25.clover`). Stripe 23: new API version (`2026-10-28.endive`) and non-generic `HttpClient` types; re-review the owned Stripe TEST transport and settlement code.
 - ai 7: AI Gateway endpoint moves from v3 to v4; re-review the pinned dispatch URL in the installed-SDK composition tests.
-- Vitest (beyond 4.1.11): re-review the `suppress-warnings.cjs` preload hash in `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts`.
+- Vitest: 4.1.12 done (preload `suppress-warnings.cjs` byte-identical, sha256 a5012da3…); each later bump repeats that check and updates the version pin.
 
 ## Current completion work
 
