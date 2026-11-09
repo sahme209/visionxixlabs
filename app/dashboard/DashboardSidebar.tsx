@@ -106,10 +106,7 @@ const GROUPS: NavGroup[] = [
       // help routes are all reachable via the ⌘K command palette or
       // the 'show more' fold.
       { href: "/dashboard/command-center", label: "Command Center", icon: Squares2X2Icon   },
-      { href: "/dashboard/briefing",       label: "Daily briefing", icon: SparklesIcon     },
-      { href: "/dashboard/start-here",     label: "Setup Guide",    icon: RocketLaunchIcon },
       // Power.
-      { href: "/dashboard/mission",        label: "Mission Control",          icon: BoltIcon,           power: true },
       { href: "/dashboard/onboarding",     label: "First-run checklist",      icon: SparklesIcon,       power: true },
       { href: "/dashboard/setup",          label: "Setup wizard (advanced)",  icon: RocketLaunchIcon,   power: true },
       { href: "/dashboard/readiness",      label: "Readiness checks",         icon: RocketLaunchIcon,   power: true },
@@ -125,18 +122,11 @@ const GROUPS: NavGroup[] = [
       // Most-clicked operating surfaces only.
       { href: "/dashboard/tauri",            label: "Axiom Deployments", icon: RocketLaunchIcon },
       { href: "/dashboard/multi-cloud",      label: "Cloud overview",    icon: ServerStackIcon },
-      { href: "/dashboard/cloud-accounts",   label: "Cloud accounts",    icon: CloudIcon       },
       { href: "/dashboard/findings",         label: "Findings",         icon: EyeIcon         },
-      { href: "/dashboard/scans",            label: "Scans",            icon: ClockIcon       },
       { href: "/dashboard/scheduled-scans",  label: "Scheduled scans",  icon: ClockIcon       },
-      { href: "/dashboard/resources",        label: "Resources",        icon: ServerStackIcon },
       { href: "/dashboard/security",         label: "Security posture", icon: ShieldCheckIcon },
       // Demoted (still reachable via 'show more') — these duplicate
       // signal already on the surfaces above, or are power-user paths.
-      { href: "/dashboard/observability",    label: "Monitoring",       icon: ChartBarIcon,      power: true },
-      { href: "/dashboard/incidents",        label: "Incidents",        icon: BellAlertIcon,     power: true },
-      { href: "/dashboard/alerts",           label: "Alerts",           icon: BellAlertIcon,     power: true },
-      { href: "/dashboard/services",         label: "Services",         icon: ServerStackIcon,   power: true },
       // Per-provider drill-downs — power-user.
       { href: "/dashboard/aws",              label: "AWS",              icon: CloudIcon,           power: true },
       { href: "/dashboard/aws-services",     label: "AWS services",     icon: ServerStackIcon,     power: true },
@@ -160,19 +150,11 @@ const GROUPS: NavGroup[] = [
     kind: "ai_workforce",
     items: [
       // The four most-used workforce surfaces.
-      { href: "/dashboard/workforce",            label: "AI engineers",      icon: CpuChipIcon  },
-      { href: "/dashboard/workforce/health",     label: "Workforce health",  icon: ChartBarIcon },
-      { href: "/dashboard/workforce/ask-all",    label: "Ask the workforce", icon: SparklesIcon },
       { href: "/dashboard/agi-memory",           label: "AGI memory",        icon: SparklesIcon },
       { href: "/dashboard/agent-activity",       label: "Activity feed",     icon: ChartBarIcon },
       // Power — internal agent + AGI plumbing.
-      { href: "/dashboard/workforce/compare",    label: "Compare engineers", icon: ChartBarIcon,           power: true },
-      { href: "/dashboard/agents",               label: "Agent registry",    icon: CpuChipIcon,            power: true },
-      { href: "/dashboard/agent-tools",          label: "Tool access",       icon: ShieldCheckIcon,        power: true },
       { href: "/dashboard/agi-suggestions",      label: "AGI suggestions",   icon: SparklesIcon,           power: true },
       { href: "/dashboard/ai-call-log",          label: "AI call log",       icon: ChartBarIcon,           power: true },
-      { href: "/dashboard/learning",             label: "Learning",          icon: BeakerIcon,             power: true },
-      { href: "/dashboard/gaps",                 label: "Gaps",              icon: BellAlertIcon,          power: true },
       { href: "/dashboard/agi",                  label: "AGI Cockpit",       icon: CpuChipIcon,            power: true },
       { href: "/dashboard/autonomy",             label: "Autonomy Cockpit",  icon: CpuChipIcon,            power: true },
       { href: "/dashboard/charter",              label: "Autonomy Charter",  icon: CpuChipIcon,            power: true },
@@ -180,7 +162,6 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/decision-heatmap",     label: "Decision heatmap",  icon: ChartBarIcon,           power: true },
       { href: "/dashboard/agent-bus",            label: "Agent bus",         icon: CpuChipIcon,            power: true },
       { href: "/dashboard/agent-proposals",      label: "Method proposals",  icon: CpuChipIcon,            power: true },
-      { href: "/dashboard/engineer-workspace",   label: "Engineer workspace",icon: CpuChipIcon,            power: true },
       { href: "/dashboard/tenant-insights",      label: "Tenant insights",   icon: SparklesIcon,           power: true },
       { href: "/dashboard/workflow-translator",  label: "Workflow translator", icon: SparklesIcon,         power: true },
       { href: "/dashboard/slack-notifications",  label: "Slack notifications", icon: BellAlertIcon,        power: true },
@@ -191,24 +172,18 @@ const GROUPS: NavGroup[] = [
     kind: "automation",
     items: [
       // Core automation surfaces, plus agent governance (A10–A14).
-      { href: "/dashboard/workflows",            label: "Workflows",   icon: ChartBarIcon },
       { href: "/dashboard/approvals",            label: "Approvals",   icon: LockClosedIcon },
-      { href: "/dashboard/agent-gateway",        label: "Agent gateway", icon: CpuChipIcon },
-      { href: "/dashboard/trust-tools",          label: "Trust tools",   icon: ShieldCheckIcon },
       { href: "/dashboard/runbooks",             label: "Runbooks",    icon: WrenchScrewdriverIcon },
       { href: "/dashboard/audit",                label: "Audit log",   icon: DocumentTextIcon },
       // Power — internal pipeline plumbing.
-      { href: "/dashboard/automation",           label: "Automations",         icon: BoltIcon,                  power: true },
       { href: "/dashboard/remediation",          label: "Remediation",         icon: WrenchScrewdriverIcon,     power: true },
       { href: "/dashboard/runbooks/queue",       label: "Runbook queue",       icon: WrenchScrewdriverIcon,     power: true },
       { href: "/dashboard/orchestration",        label: "Orchestration",       icon: ArrowsRightLeftIcon,       power: true },
       { href: "/dashboard/autonomous-ops",       label: "Autonomous ops",      icon: CpuChipIcon,               power: true },
-      { href: "/dashboard/autonomous-ticks",     label: "Autonomous ticks",    icon: CpuChipIcon,               power: true },
       { href: "/dashboard/simulations",          label: "Simulations",         icon: BeakerIcon,                power: true },
       { href: "/dashboard/scp-simulator",        label: "SCP simulator",       icon: BeakerIcon,                power: true },
       { href: "/dashboard/policy-previews",      label: "Policy previews",     icon: LockClosedIcon,            power: true },
       { href: "/dashboard/approval-packets",     label: "Approval packets",    icon: LockClosedIcon,            power: true },
-      { href: "/dashboard/traces",               label: "Traces",              icon: EyeIcon,                   power: true },
       { href: "/dashboard/memory",               label: "Memory",              icon: CpuChipIcon,               power: true },
     ],
   },
@@ -217,16 +192,10 @@ const GROUPS: NavGroup[] = [
     kind: "integrations",
     items: [
       // Four primary integration surfaces.
-      { href: "/dashboard/connectors",           label: "Connectors",       icon: PuzzlePieceIcon },
-      { href: "/dashboard/connector-store",      label: "Connector store",  icon: PuzzlePieceIcon },
-      { href: "/dashboard/developer-tools",      label: "Developer tools",  icon: CodeBracketIcon },
       // Power.
       { href: "/dashboard/integrations",         label: "All integrations",     icon: PuzzlePieceIcon,        power: true },
-      { href: "/dashboard/models",               label: "Model registry",       icon: SparklesIcon,           power: true },
       { href: "/dashboard/integrations/health",  label: "Integration health",   icon: ServerStackIcon,        power: true },
       { href: "/dashboard/integrations/github",  label: "GitHub setup",         icon: CodeBracketIcon,        power: true },
-      { href: "/dashboard/modules",              label: "Modules",              icon: Squares2X2Icon,         power: true },
-      { href: "/dashboard/sub-tools",            label: "Sub-tools",            icon: Squares2X2Icon,         power: true },
       { href: "/dashboard/sources",              label: "Sources",              icon: CloudIcon,              power: true },
       { href: "/dashboard/surfaces",             label: "Product surfaces",     icon: PuzzlePieceIcon,        power: true },
       { href: "/dashboard/graph",                label: "Operating graph",      icon: ArrowsRightLeftIcon,    power: true },
@@ -255,9 +224,7 @@ const GROUPS: NavGroup[] = [
     items: [
       // Five admin essentials.
       { href: "/dashboard/billing",                  label: "Billing & usage",      icon: BoltIcon },
-      { href: "/dashboard/cost-analysis",            label: "Cost analysis",        icon: ChartBarIcon },
       { href: "/dashboard/settings/workspace",       label: "Users & roles",        icon: ShieldCheckIcon },
-      { href: "/dashboard/compliance",               label: "Compliance",           icon: DocumentMagnifyingGlassIcon },
       { href: "/dashboard/trust",                    label: "Trust center",         icon: ShieldCheckIcon },
       // Power.
       { href: "/dashboard/settings/notifications",   label: "Workspace notifications", icon: BellAlertIcon,    power: true },
@@ -275,7 +242,6 @@ const GROUPS: NavGroup[] = [
       { href: "/dashboard/compliance-packet",        label: "Compliance packet",    icon: DocumentTextIcon,     power: true },
       // Phase 676: platform introspection surfaces (Phase 650-675 work)
       { href: "/dashboard/capabilities",             label: "Action surface",       icon: BoltIcon                                    },
-      { href: "/dashboard/validation",               label: "Validation matrix",    icon: DocumentMagnifyingGlassIcon                 },
       { href: "/dashboard/self-diagnostic",          label: "Self-diagnostic",      icon: BeakerIcon,           power: true            },
       { href: "/dashboard/flags",                    label: "Feature flags",        icon: PuzzlePieceIcon,      power: true            },
       { href: "/dashboard/cron-health",              label: "Cron health",          icon: ClockIcon,            power: true            },
