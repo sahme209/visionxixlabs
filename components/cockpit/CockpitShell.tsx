@@ -24,6 +24,7 @@ const groups = [
     { href: "/control/audit-security", label: "Audit & Security", icon: ScrollText },
   ] },
   { label: "Account", items: [
+    { href: "/control/api-keys", label: "API keys", icon: Settings },
     { href: "/control/settings", label: "Settings & sessions", icon: Settings },
     { href: "/account/help", label: "Help", icon: BookOpen },
   ] },

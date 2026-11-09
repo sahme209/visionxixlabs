@@ -107,6 +107,12 @@ export default function AIChatWidget() {
       }
       // Never keep a message that looked like a secret, not even in this browser.
       if (data.guard === "secret_pasted") setMessages((prev) => prev.map((m) => (m.id === userMsg.id ? { ...m, content: "[removed: looked like a secret]" } : m)));
+      // Signed in? Questions about this workspace get a read-only answer from it.
+      // Anonymous visitors get 401 before any data is read; secrets never go further.
+      if (data.guard !== "secret_pasted") {
+        const acct = await fetch("/api/support/account-answer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+        if (acct?.ok && acct.answered) { data.answer = acct.answer; data.sources = acct.sources; }
+      }
 
       const assistantMsg: Message = {
         id: crypto.randomUUID(),
