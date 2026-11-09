@@ -1216,6 +1216,10 @@ export class DesktopClient {
   }
 
   disconnectAirflow(): Promise<ApiResult<{ disconnected: boolean }>> { return this.delete("/api/desktop/airflow/connection"); }
+  /** Read-only Batches providers. Connecting grants observation only. */
+  batchConnection(provider: BatchProviderId): Promise<ApiResult<BatchConnectionState>> { return this.get(`/api/desktop/batch/${provider}/connection`); }
+  saveBatchConnection(provider: BatchProviderId, input: { baseUrl: string; token: string; namespace?: string }): Promise<ApiResult<BatchConnectionState>> { return this.put(`/api/desktop/batch/${provider}/connection`, input); }
+  disconnectBatchConnection(provider: BatchProviderId): Promise<ApiResult<{ provider: BatchProviderId; disconnected: boolean }>> { return this.delete(`/api/desktop/batch/${provider}/connection`); }
   listAirflowDags(): Promise<ApiResult<{ dags: AirflowDag[] }>> { return this.get("/api/desktop/airflow/dags"); }
   listAirflowTaskInstances(dagId: string, dagRunId: string, offset = 0): Promise<ApiResult<AirflowTaskPage>> {
     return this.get(`/api/desktop/airflow/dags/${encodeURIComponent(dagId)}/runs/${encodeURIComponent(dagRunId)}/tasks?offset=${offset}`);
@@ -2198,3 +2202,7 @@ function validOperationVersion(value:number){return Number.isSafeInteger(value)&
 function validOperationRelease(id:string,version:number){return typeof id==='string'&&/^[A-Za-z0-9_-]{1,200}$/.test(id)&&validOperationVersion(version)&&version>0}
 function validOperationToken(value:string){return typeof value==='string'&&/^\S{1,256}$/.test(value)}
 function validOperationUuid(value:string){return typeof value==='string'&&/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/.test(value)}
+
+
+export type BatchProviderId = "prefect" | "dagster" | "argo_workflows";
+export interface BatchConnectionState { provider: BatchProviderId; label?: string; connected?: boolean; status: string; baseUrl?: string | null; namespace?: string | null; inventoryCount?: number | null; lastValidatedAt?: string | null; authority: "observation_only" }
