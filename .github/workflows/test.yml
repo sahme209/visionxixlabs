@@ -20,8 +20,10 @@ permissions:
   contents: read
 
 jobs:
-  test:
-    name: Typecheck + Vitest
+  # The three checks run in parallel (and Vitest in 3 shards) instead of one
+  # after another. Same commands and coverage; only wall-clock time changes.
+  typecheck:
+    name: Type check
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -45,19 +47,87 @@ jobs:
       - name: Type check
         env:
           # The generated Prisma/application graph exceeds Node's default heap.
-          # Match the existing build allowance; this step does not deploy.
           NODE_OPTIONS: --max-old-space-size=6144
         run: npx tsc --noEmit
 
-      - name: Run Vitest suite
-        run: npx vitest run --reporter=dot
+  vitest:
+    name: Vitest (${{ matrix.shard }}/3)
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3]
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
 
-      # Validate production compilation in GitHub without deploying or loading
-      # Vercel production credentials. Git-triggered Vercel builds are disabled.
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Match the existing Vercel production runtime and current cloud SDK support.
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Root acceptance tests import desktop code; install its locked dependency graph too.
+      - name: Install desktop acceptance dependencies
+        run: npm ci --prefix desktop
+
+      - name: Run Vitest shard
+        run: npx vitest run --reporter=dot --shard=${{ matrix.shard }}/3
+
+  build:
+    name: Build and offline checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Match the existing Vercel production runtime and current cloud SDK support.
+          node-version: "24"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Root acceptance tests import desktop code; install its locked dependency graph too.
+      - name: Install desktop acceptance dependencies
+        run: npm ci --prefix desktop
+
       - name: Run offline auth recovery evidence tests
         run: python3 -m unittest discover -s scripts/tests -p 'test_auth_recovery_evidence.py' -v
 
+      # Next.js incremental cache: speeds the build, never changes its output checks.
+      - name: Restore Next.js build cache
+        uses: actions/cache@v4
+        with:
+          path: .next/cache
+          key: nextjs-${{ hashFiles('package-lock.json') }}-${{ github.sha }}
+          restore-keys: nextjs-${{ hashFiles('package-lock.json') }}-
+
+      # Validate production compilation in GitHub without deploying or loading
+      # Vercel production credentials. Git-triggered Vercel builds are disabled.
       - name: Build production website (no deployment)
         env:
           NODE_OPTIONS: --max-old-space-size=6144
         run: npm run build
+
+  # Keeps the required status check name stable: passes only if every job passed.
+  test:
+    name: Typecheck + Vitest
+    runs-on: ubuntu-latest
+    if: always()
+    needs: [typecheck, vitest, build]
+    steps:
+      - name: All checks passed
+        run: |
+          test "${{ needs.typecheck.result }}" = success
+          test "${{ needs.vitest.result }}" = success
+          test "${{ needs.build.result }}" = success
