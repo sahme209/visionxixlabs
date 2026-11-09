@@ -23,19 +23,19 @@ const pillars = [
     icon: CpuChipIcon,
     eyebrow: "AI",
     title: "Context before action.",
-    copy: "Select repository context and ask in everyday language. Repository assistance helps inspect the selected context and explain evidence; available tools and actions depend on the installed version and current access.",
+    copy: "Pick a repository and ask in plain language. The agent reads that context and explains the evidence. Tools depend on your version and access.",
   },
   {
     icon: ShieldCheckIcon,
     eyebrow: "Governance",
     title: "Authority stays explicit.",
-    copy: "Keep the proposed change, required human review, requester execution, and recorded outcome distinct. Available actions depend on current permissions and the enabled workflow.",
+    copy: "Proposal, human review, execution and outcome stay separate steps. What you can do depends on your permissions and workflow.",
   },
   {
     icon: LinkIcon,
     eyebrow: "Integrations",
     title: "Evidence after execution.",
-    copy: "Connect repository context, dependency checks, and release workflows. Connector availability and recorded evidence determine what is ready for your environment.",
+    copy: "Connect repositories, dependency checks and release workflows. Recorded evidence, not a green light, decides what is ready.",
   },
 ];
 
@@ -79,8 +79,8 @@ export default function Home() {
 
         <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
           <div className="mx-auto max-w-[1200px]">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Built around the engineering workflow</p>
-            <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">More context. Clearer decisions.</h2>
+            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Built for engineering teams</p>
+            <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-[44px] sm:leading-[1.1]">More context. Clearer decisions.</h2>
             <div className="mt-12 grid border-y border-white/[0.08] md:grid-cols-3 md:divide-x md:divide-white/[0.08]">
               {pillars.map((pillar) => (
                 <article key={pillar.eyebrow} className="border-b border-white/[0.08] py-8 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0">
@@ -97,32 +97,32 @@ export default function Home() {
         <section className="mx-auto max-w-[1280px] space-y-8 px-5 py-16 sm:px-8 lg:px-10">
           <p className="max-w-3xl text-sm leading-6 text-zinc-400">These boards are conceptual examples. Support depends on the installed version and enabled workflow. A saved request, approval, or workflow is not a verified provider result, application health, or rollback proof.</p>
           <EditorialPanel
-            eyebrow="01 · Structured intake"
-            title="Five stages to frame a request."
-            copy="The illustrated request separates the deployment window, affected scope, execution, production validation, and recovery path for review. Recorded fields alone do not establish readiness."
+            eyebrow="01 · Intake"
+            title="Every request, fully framed."
+            copy="Window, scope, execution, validation and recovery are captured before review. Recorded fields alone do not make a change ready."
             visual={<StageBoard />}
           />
           <EditorialPanel
             reverse
-            eyebrow="02 · Revision integrity"
-            title="Keep revisions in view."
-            copy="The illustrated history keeps authorship and revisions visible for comparison. Revision and conflict handling depend on the supported surface and installed version."
+            eyebrow="02 · History"
+            title="Every revision, kept."
+            copy="Authorship and earlier revisions stay visible for comparison. Conflict handling depends on your surface and installed version."
             visual={<HistoryBoard />}
           />
           <EditorialPanel
-            eyebrow="03 · Operational truth"
-            title="A green workflow is not production validation."
-            copy="Assess trigger state, execution results, technical and functional validation, rollback readiness, and closure evidence separately. A workflow acceptance or recorded recovery instruction alone does not verify the outcome."
+            eyebrow="03 · Validation"
+            title="Green is not the same as validated."
+            copy="Trigger, execution, technical and functional checks, rollback and closure are judged separately. A passing workflow alone does not verify the outcome."
             visual={<ValidationBoard />}
           />
         </section>
 
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-16 sm:px-8 lg:px-10">
-          <h2 className="mx-auto max-w-[1200px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
+          <h2 className="mx-auto max-w-[1200px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Built for production reality.</h2>
           <div className="mx-auto mt-9 grid max-w-[1200px] gap-3 md:grid-cols-3">
-            <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
-            <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
-            <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
+            <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy stays in charge" detail="Local preferences cannot weaken your organization's approvals, permissions or production gates." />
+            <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Sign in through your browser" detail="Desktop sessions start in the system browser with an expiring, one-time, device-bound challenge." />
+            <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="History survives reconnects" detail="Last-known records stay visible, clearly marked stale with the time of the last good response." />
           </div>
         </section>
 
@@ -130,7 +130,7 @@ export default function Home() {
           <div className="mx-auto flex max-w-[1200px] flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-3xl">
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-orange-300">Founding Supporters</p>
-              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Help advance autonomous engineering with human control at its core.</h2>
+              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Help build autonomous engineering with people in control.</h2>
             </div>
             <Link href="/support" className="inline-flex min-h-12 shrink-0 items-center gap-2 self-start rounded-full border border-white/[0.14] px-6 text-sm font-medium text-zinc-200 transition hover:border-orange-300/35 hover:bg-white/[0.04]">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
           </div>
