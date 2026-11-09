@@ -55,7 +55,7 @@ Inspect and reuse existing adapters, identity, approvals, policy and audit syste
 | 11 | Backstage | Service ownership and developer catalog | Planned catalog/ownership source; reuse discovered ownership in governance workflows |
 | 12 | Apache Airflow | Workflow orchestration and pipeline governance | Extend existing integration. Hosted trial execution passed; broader pipeline governance, scheduling/recovery and customer-hosted acceptance remain distinct |
 | 13 | GitLab | Source-control/CI integration plus a separate GitLab sign-in option | Newly requested; design and provider setup pending, not enabled |
-| 14 | Prefect | Python workflow scheduling, run monitoring and governed recovery | Planned Batches extension; first priority among the new batch providers; read-only inventory before reviewed execution |
+| 14 | Prefect | Python workflow scheduling, run monitoring and governed recovery | Planned Batches extension; first priority. **2026-11-08:** read-only inventory client implemented and unit-tested (`lib/integrations/prefect/prefectClient.ts`: flows, flow runs, task runs; no mutation methods). Not yet wired to connection storage, UI or the Agent; no live acceptance |
 | 15 | Dagster | Data-pipeline orchestration, asset checks and freshness monitoring | Planned Batches extension; second priority; distinguish data-quality evidence from execution authority |
 | 16 | Argo Workflows | Kubernetes-native container batch workflows | Planned Batches extension; third priority; tenant/namespace-scoped discovery before governed execution |
 
