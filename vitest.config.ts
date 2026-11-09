@@ -28,6 +28,8 @@ export default defineConfig({
       { find: "@tauri-apps/api/core", replacement: path.resolve(__dirname, "./test/tauriApiCoreStub.ts") },
       { find: "@tauri-apps/plugin-shell", replacement: path.resolve(__dirname, "./test/tauriPluginShellStub.ts") },
       { find: "@tauri-apps/plugin-store", replacement: path.resolve(__dirname, "./test/tauriPluginStoreStub.ts") },
+      // One React for every importer, including desktop/node_modules packages (lucide-react 1 reads context).
+      { find: /^react(-dom)?(\/.*)?$/, replacement: path.resolve(__dirname, "./node_modules/react$1$2") },
       { find: /^@\/(.*)$/, replacement: path.resolve(__dirname, "./$1") },
     ],
   },
@@ -43,5 +45,7 @@ export default defineConfig({
       "components/**/__tests__/**/*.test.ts",
     ],
     globals: false,
+    // Inline lucide-react so the React alias above applies to it.
+    server: { deps: { inline: [/lucide-react/] } },
   },
 });
