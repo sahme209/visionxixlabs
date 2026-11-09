@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 const db = vi.hoisted(() => ({ create: vi.fn(), findFirst: vi.fn(), findMany: vi.fn(), updateMany: vi.fn(), keyFind: vi.fn(), audit: vi.fn() }));
 vi.mock("@/lib/db", () => ({ prisma: { agentGatewayRequest: { create: db.create, findFirst: db.findFirst, findMany: db.findMany, updateMany: db.updateMany }, apiKey: { findFirst: db.keyFind } } }));
 vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: db.audit }));
+const hooks = vi.hoisted(() => ({ dispatch: vi.fn() }));
+vi.mock("@/lib/webhooks/dispatchWebhookEvent", () => ({ dispatchWebhookEvent: hooks.dispatch }));
 import { createGatewayRequest, decideGatewayRequest, getGatewayRequest, recordGatewayOutcome } from "../gatewayService";
 
 const caller = { organizationId: "org", apiKeyId: "key" };
@@ -58,5 +60,18 @@ describe("agent gateway service", () => {
     db.findFirst.mockResolvedValueOnce(row({ status: "approved" }));
     expect(await decideGatewayRequest({ organizationId: "org", userId: "u2", userEmail: "r@acme.com", id: "r1", decision: "approve" }, NOW)).toMatchObject({ error: "not_pending" });
     expect(await decideGatewayRequest({ organizationId: "org", userId: "u2", userEmail: "r@acme.com", id: "r1", decision: "maybe" }, NOW)).toMatchObject({ error: "invalid_decision" });
+  });
+});
+
+
+describe("agent gateway webhooks", () => {
+  it("notifies approvers only for pending requests, and a webhook failure never blocks the request", async () => {
+    hooks.dispatch.mockRejectedValue(new Error("endpoint down"));
+    const pending = await createGatewayRequest(caller, { actionKind: "deploy", environment: "production", target: "acme/web", summary: "Ship" }, NOW);
+    expect(pending.ok).toBe(true);
+    expect(hooks.dispatch).toHaveBeenCalledWith(expect.objectContaining({ eventKind: "agent_gateway.request_pending", organizationId: "org" }));
+    hooks.dispatch.mockClear();
+    await createGatewayRequest(caller, { actionKind: "read", environment: "development", target: "acme/web", summary: "Look" }, NOW);
+    expect(hooks.dispatch).not.toHaveBeenCalled();
   });
 });

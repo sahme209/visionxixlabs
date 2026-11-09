@@ -40,7 +40,12 @@ export type WebhookEventKind =
   | "api_key.revoked"
   // Billing + entitlements
   | "billing.threshold_crossed"
-  | "billing.quota_exhausted";
+  | "billing.quota_exhausted"
+  // Agent governance gateway (A10) + tamper-evident audit (A11)
+  | "agent_gateway.request_pending"
+  | "agent_gateway.request_decided"
+  | "agent_gateway.outcome_recorded"
+  | "audit.integrity_failed";
 
 const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "release_gate.passed",
@@ -63,6 +68,10 @@ const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "api_key.revoked",
   "billing.threshold_crossed",
   "billing.quota_exhausted",
+  "agent_gateway.request_pending",
+  "agent_gateway.request_decided",
+  "agent_gateway.outcome_recorded",
+  "audit.integrity_failed",
 ]);
 
 /** True when `s` is a recognized event kind. */

@@ -1,6 +1,7 @@
 import "server-only";
 import { prisma } from "@/lib/db";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import { buildSeal, SEAL_GRACE_MS, verifySeals, type SealableEvent, type SealRecord } from "./sealKernel";
 
 /** IO boundary for audit seals (A11). Composes the pure seal kernel with Prisma. */
@@ -45,5 +46,9 @@ export async function verifyOrganizationAudit(organizationId: string) {
   const windows = new Map<number, SealableEvent[]>();
   for (const s of seals) windows.set(s.sequence, await eventsIn(organizationId, s.fromCreatedAt, s.toCreatedAt));
   const result = verifySeals(seals, (s) => windows.get(s.sequence) ?? []);
+  if (!result.intact) {
+    // Tampering evidence must reach people outside Axiom too. Best-effort.
+    try { await dispatchWebhookEvent({ organizationId, eventKind: "audit.integrity_failed", data: { failedSeals: result.verdicts.filter((v) => v.status !== "intact").slice(0, 20), sealCount: seals.length }, fireImmediately: true }); } catch { /* best-effort */ }
+  }
   return { ...result, sealCount: seals.length, checkedAt: new Date().toISOString() };
 }
