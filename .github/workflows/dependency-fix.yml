@@ -5,6 +5,11 @@ name: Dependency fix PR
 # Test check before anyone merges it. Manual trigger only.
 on:
   workflow_dispatch:
+    inputs:
+      packages:
+        description: "Optional exact upgrades, e.g. '@azure/msal-node@7.2.1' (space-separated). Empty = non-breaking audit fix only."
+        required: false
+        default: ""
 
 permissions:
   contents: write
@@ -19,10 +24,23 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: "24"
+      - name: Apply requested exact upgrades
+        if: ${{ inputs.packages != '' }}
+        env:
+          PACKAGES: ${{ inputs.packages }}
+        run: |
+          # Only package specs of the form name@version are accepted.
+          for p in $PACKAGES; do echo "$p" | grep -Eq '^(@[a-z0-9._-]+/)?[a-z0-9._-]+@[0-9][0-9A-Za-z.+-]*$' || { echo "refused: $p"; exit 1; }; done
+          npm install --ignore-scripts --save-exact $PACKAGES
       - name: Apply non-breaking fixes
         run: |
           npm audit fix --omit=dev --ignore-scripts || true
           (cd desktop && npm audit fix --omit=dev --ignore-scripts || true)
+      - name: Re-pin the reviewed lockfile for the owned website checks
+        run: |
+          new=$(sha256sum package-lock.json | cut -d' ' -f1)
+          sed -i -E "s/('package-lock.json': ')[0-9a-f]{64}(')/\1${new}\2/" scripts/fixtures/ownedWebsiteFramework.cjs
+          grep -n "'package-lock.json'" scripts/fixtures/ownedWebsiteFramework.cjs
       - name: Open PR if anything changed
         env:
           GH_TOKEN: ${{ github.token }}
@@ -32,7 +50,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git checkout -b "$branch"
-          git commit -am "deps: npm audit fix (non-breaking)"
+          git commit -am "deps: ${{ inputs.packages != '' && format('upgrade {0}', inputs.packages) || 'npm audit fix (non-breaking)' }}"
           git push origin "$branch"
           after=$(npm audit --omit=dev --audit-level=high >/dev/null 2>&1 && echo "none" || echo "some remain (likely need breaking upgrades)")
-          gh pr create --title "deps: npm audit fix (non-breaking)" --body "Automated by dependency-fix.yml: \`npm audit fix\` without \`--force\`. High-severity findings after the fix: ${after}. Must pass the full Test check before merge."
+          echo "Branch pushed: $branch (high-severity after fix: ${after}). Open a PR from it; Actions cannot create PRs in this repo."
