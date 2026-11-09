@@ -101,3 +101,10 @@ export async function listGatewayRequests(organizationId: string, status?: strin
   const now = new Date();
   return rows.map((r) => publicRequest(r, now));
 }
+
+/** Per-agent scorecards over the last 90 days (A14). Read-only evidence; never changes policy. */
+export async function listAgentScorecards(organizationId: string, now = new Date()) {
+  const { buildScorecards } = await import("./scorecardKernel");
+  const rows = await prisma.agentGatewayRequest.findMany({ where: { organizationId, createdAt: { gte: new Date(now.getTime() - 90 * 86_400_000) } }, select: { apiKeyId: true, agentName: true, status: true, policyDecision: true, riskLevel: true, outcome: true, createdAt: true }, take: 20_000 });
+  return buildScorecards(rows);
+}
