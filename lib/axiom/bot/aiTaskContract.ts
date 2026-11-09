@@ -25,6 +25,8 @@ export function parseAiTaskSnapshot(v:unknown):AiTaskSnapshot{return snapshotSch
 export function aiTaskSnapshot(scope:SavedBotTaskScope,raw:AiTaskInput,content:SavedBotTaskContent,authorityDigest:string,evidenceContext?:AiTaskEvidenceContext):Readonly<AiTaskSnapshot>{
  const input=parseAiTaskInput(raw),ids=scopeIds(scope),parsed=parseSavedBotTaskCreate({...content,clientRequestId:input.clientRequestId});
  const copy=Object.freeze({title:parsed.title,instruction:parsed.instruction,context:parsed.context});
+ // Enforce the content bound directly (throws on malformed Unicode or oversize) rather than relying on a schema refine.
+ savedBotTaskContentHash(copy);
  const legacy={format:1 as const,organizationId:ids[0],userId:ids[1],taskId:input.taskId,taskVersion:input.expectedVersion,kind:input.kind,clientRequestId:input.clientRequestId,modelId:input.modelId,authorityDigest:z.string().regex(/^[a-f0-9]{64}$/).parse(authorityDigest),content:copy,contentHash:savedBotTaskContentHash(copy)};
  if(!input.evidenceContext){if(evidenceContext)throw new Error('unselected_ai_task_evidence');return Object.freeze(legacy)}
  const selected=aiTaskEvidenceContextSchema.parse(evidenceContext);
