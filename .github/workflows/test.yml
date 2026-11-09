@@ -47,7 +47,7 @@ jobs:
       - name: Type check
         env:
           # The generated Prisma/application graph exceeds Node's default heap.
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_OPTIONS: --max-old-space-size=8192
         run: npx tsc --noEmit
 
   vitest:
@@ -116,7 +116,7 @@ jobs:
       # Vercel production credentials. Git-triggered Vercel builds are disabled.
       - name: Build production website (no deployment)
         env:
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_OPTIONS: --max-old-space-size=8192
         run: npm run build
 
   # Keeps the required status check name stable: passes only if every job passed.

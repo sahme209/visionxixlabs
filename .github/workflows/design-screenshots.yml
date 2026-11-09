@@ -27,7 +27,7 @@ jobs:
       - run: npm ci
       - name: Build (no deployment)
         env:
-          NODE_OPTIONS: --max-old-space-size=6144
+          NODE_OPTIONS: --max-old-space-size=8192
         run: npm run build
       - name: Start server and capture pages
         env:
