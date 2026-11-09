@@ -36,7 +36,7 @@ jobs:
       - name: Checkout SDK
         # We pull the CLI directly from this repo (sparse checkout to
         # keep it tiny — only the sdk/python tree).
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: sahme209/visionxixlabs
           ref: main
@@ -45,7 +45,7 @@ jobs:
           path: vxl-cli-checkout
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.11"
 

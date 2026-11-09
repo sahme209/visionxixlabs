@@ -191,7 +191,7 @@ jobs:
 
       - name: Preserve sanitized uploaded digest evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: axiom-draft-export-verification
           path: ${{ runner.temp }}/publication-verification.json
