@@ -37,7 +37,7 @@ export default function DemoLanding() {
           <PageHero
             eyebrow="Scripted interactive tour"
             title="Explore the workflow. Know what is simulated."
-            lead="Explore illustrative context, review and outcome steps using scripted data. This is an interactive simulation, not a recording of a live execution. No account or cloud access is required."
+            lead="Step through context, review and outcome with scripted data. An interactive simulation, not a recording of a live run. No account or cloud access needed."
             actions={<>
               <a href="#product-tour" className="inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 transition hover:bg-white">
                 Start the scripted tour <ArrowRightIcon className="h-4 w-4" />
@@ -58,7 +58,7 @@ export default function DemoLanding() {
             <div>
               <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Guides behind the stories</p>
               <h2 className="mt-4 text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">Check the real workflow and its limits.</h2>
-              <p className="mt-4 max-w-md text-sm leading-6 text-zinc-400">These links explain version- and operation-specific behavior. A scripted scene is not evidence of a released feature, provider confirmation or complete Governance coverage.</p>
+              <p className="mt-4 max-w-md text-sm leading-6 text-zinc-400">These guides cover behavior by version and operation. A scripted scene is not evidence of a released feature, provider confirmation or complete Governance coverage.</p>
             </div>
             <div className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
               {workflowGuides.map((outcome, index) => (

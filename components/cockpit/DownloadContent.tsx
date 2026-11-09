@@ -160,7 +160,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         <section id="downloads" className={cockpit ? "mb-6 scroll-mt-6" : "mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10"}>
           <div className={cockpit ? "mb-3" : "mb-6 border-t border-white/[0.08] pt-8"}>
             <h2 className={cockpit ? "text-sm font-medium text-zinc-100" : "text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl"}>{cockpit ? "Desktop installers" : "Use Axiom on your workstation."}</h2>
-            <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace across macOS, Windows, and Linux. Sizes are per-platform installer downloads; installed size may differ.</p>
+            <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace on macOS, Windows and Linux. Sizes are download sizes; installed size may differ.</p>
           </div>
 
           <div className="grid gap-3 lg:grid-cols-3">
@@ -211,7 +211,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         {manifest?.previousReleases?.length ? (
           <section aria-labelledby="previous-releases" className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10"}>
             <h2 id="previous-releases" className={cockpit ? "text-sm font-medium text-zinc-100" : "text-xl font-medium text-zinc-100"}>Previous desktop releases</h2>
-            <p className="mt-2 text-sm leading-6 text-zinc-400">The newest published installer appears above. Older releases remain available with their original checksums and signing details; local development builds are not published downloads.</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">The newest installer is above. Older releases keep their original checksums and signing details. Local development builds are never published.</p>
             <ul className="mt-5 divide-y divide-white/[0.08] border-y border-white/[0.08]">
               {manifest.previousReleases.map(release => (
                 <li key={release.tag}>
@@ -230,7 +230,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
             <div>
               <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Release integrity</p>
               <h2 className={cockpit ? "mt-2 text-sm font-medium text-zinc-100" : "mt-4 text-2xl font-medium tracking-[-0.035em] text-white sm:text-3xl"}>Every download resolves from the live release manifest.</h2>
-              <p className={cockpit ? "mt-2 max-w-2xl text-xs leading-5 text-zinc-500" : "mt-4 max-w-2xl leading-7 text-zinc-400"}>Review checksums and detached signatures in the release record where provided. Installer signing and notarization labels report the current manifest; they do not replace local verification.</p>
+              <p className={cockpit ? "mt-2 max-w-2xl text-xs leading-5 text-zinc-500" : "mt-4 max-w-2xl leading-7 text-zinc-400"}>Check checksums and signatures in the release record where provided. Signing labels report the manifest; they do not replace verifying locally.</p>
             </div>
             <div className="space-y-3 text-sm text-zinc-400">
               <p className="flex items-center gap-3"><ShieldCheckIcon className="h-5 w-5 text-zinc-400" /> Review signing and notarization per installer</p>
