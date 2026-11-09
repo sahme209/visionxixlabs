@@ -25,6 +25,7 @@ import { persistOutboundNotificationRecord } from "./outboundNotificationStore";
 import { readTenantCharter } from "@/lib/autonomy/tenantCharterStore";
 import { enqueueRetry } from "./outboundRetryQueue";
 import { gateAndConsume } from "@/lib/billing/tierGate";
+import { mayDeliverTenantNotification } from "@/lib/governance/intelligence/enrolledRefusal";
 
 // ---------------------------------------------------------------------------
 // Typed contract
@@ -162,9 +163,13 @@ export async function sendOutboundNotification(n: OutboundNotification, beforeSe
   let slackSource: "tenant_override" | "global_env" = "global_env";
   try {
     const tenantRow = await readTenantCharter(n.tenantId);
-    if (tenantRow?.slackWebhookOverride) {
+    // Governance F17: an enrolled workspace's own Slack URL receives safety alerts only.
+    if (tenantRow?.slackWebhookOverride && await mayDeliverTenantNotification(n.tenantId, { kind: n.kind, severity: n.severity })) {
       slackUrl = tenantRow.slackWebhookOverride;
       slackSource = "tenant_override";
+    } else if (tenantRow?.slackWebhookOverride) {
+      // Do not fall back to the platform URL with tenant content either.
+      slackUrl = undefined;
     }
   } catch {
     // Fall through to env URL.

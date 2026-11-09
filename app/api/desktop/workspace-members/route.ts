@@ -3,6 +3,8 @@ import type { OrgRole } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
+import { isPrivilegeIncrease } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +75,11 @@ export async function PATCH(request: NextRequest): Promise<Response> {
   if (!existing?.acceptedAt) return NextResponse.json({ ok: false, error: "member_not_found" }, { status: 404 });
   if (existing.role === "owner") {
     return NextResponse.json({ ok: false, error: "owner_role_is_protected" }, { status: 409 });
+  }
+
+  // Governance M01: while enrolled, promotions wait for reviewed admission; demotions still work.
+  if (isPrivilegeIncrease(existing.role, role) && !await workspaceUnenrolled(principal.organizationId)) {
+    return NextResponse.json({ ok: false, error: "governance_enrolled_privilege_increase" }, { status: 409 });
   }
 
   const updated = await prisma.orgMembership.update({

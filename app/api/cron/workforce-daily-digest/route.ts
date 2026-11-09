@@ -13,6 +13,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
 import { buildDailyDigest, persistDailyDigest, readDailyDigest } from "@/lib/workforce/domains/dailyDigest";
 import { readSlackConfig, postSlackMessage } from "@/lib/workforce/domains/slackNotify";
+import { mayDeliverTenantNotification } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -77,7 +78,8 @@ export async function GET(req: NextRequest) {
               slackConfig.minOutcome === "active"
                 ? digest.outcome === "active" || digest.outcome === "critical"
                 : digest.outcome === "critical";
-            if (shouldNotify) {
+            // Governance F17: while enrolled, only a critical digest is sent.
+            if (shouldNotify && await mayDeliverTenantNotification(org.organizationId, { outcome: digest.outcome })) {
               const title = digest.outcome === "critical"
                 ? "🚨 Workforce digest · critical"
                 : "ℹ️ Workforce digest · active";

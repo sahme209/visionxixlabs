@@ -24,6 +24,7 @@ import { computeWebhookRetry } from "./computeWebhookRetry";
 import { buildWebhookHeaders, serializeEnvelope, type WebhookEnvelope } from "./buildWebhookPayload";
 import { validateWebhookUrl } from "./selectDeliveriesForEvent";
 import { isWebhookEventKind } from "./webhookEventKinds";
+import { mayDeliverTenantWebhook } from "@/lib/governance/intelligence/enrolledRefusal";
 
 const DELIVERY_TIMEOUT_MS = 10_000;
 const RESPONSE_BODY_MAX_BYTES = 2_048;
@@ -111,6 +112,19 @@ export async function deliverWebhookDelivery(deliveryId: string): Promise<Delive
       retryable: false,
       nextAttemptAt: null,
       finalDeadletter: true,
+    };
+  }
+
+  // Governance F18: while the workspace is enrolled, only security webhooks
+  // leave. Others stay queued untouched (never marked delivered or failed),
+  // so they go out once the family is covered or the workspace unenrolls.
+  if (!await mayDeliverTenantWebhook(endpoint.organizationId, envelope.type)) {
+    return {
+      deliveryId,
+      outcomeKind: "governance_coverage_unavailable",
+      retryable: true,
+      nextAttemptAt: delivery.nextAttemptAt ?? null,
+      finalDeadletter: false,
     };
   }
 

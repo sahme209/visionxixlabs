@@ -26,6 +26,7 @@ import {
   type OutboundSeverity,
 } from "./outboundNotificationLane";
 import { prisma } from "@/lib/db";
+import { mayDeliverTenantNotification } from "@/lib/governance/intelligence/enrolledRefusal";
 
 type Severity = "info" | "low" | "medium" | "high" | "critical";
 
@@ -201,7 +202,8 @@ export async function notifyScanComplete(input: ScanCompleteNotificationInput): 
     if (prefs) {
       const passesFloor =
         SEVERITY_ORDER[severity as Severity] >= SEVERITY_ORDER[prefs.severityFloor];
-      if (passesFloor) {
+      // Governance F17: while enrolled, only safety alerts reach tenant channels.
+      if (passesFloor && await mayDeliverTenantNotification(input.tenantId, { kind, severity })) {
         const text = `${headline}\n${lines.join("\n")}\nReview at https://visionxixlabs.com/dashboard/findings`;
         if (prefs.slackWebhookUrl) {
           void postSlack(prefs.slackWebhookUrl, { text });

@@ -18,6 +18,7 @@ export default function MembersDocsPage() {
   </DocSection>
   <DocSection id="change" kicker="03" title="Change a role or remove someone">
    <p>Use <em>Update</em> or <em>Remove</em> on a member&apos;s row. You cannot change your own role or the owner&apos;s. If Axiom cannot confirm the audit record for a change, it says so; check the member list before trying again, because the change may already have happened.</p>
+   <p>If your workspace is enrolled in Governance, promotions and new invitations wait until membership changes have reviewed Governance coverage. Demoting and removing members always work, so you can reduce access at any time.</p>
   </DocSection>
   <DocSection id="requests" kicker="04" title="Access requests">
    <p>Members can ask for a higher role through Ask Axiom. Owners and admins see requests from the last 30 days under <em>Access requests</em>, with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.</p>

@@ -26,7 +26,7 @@ This snapshot complements the detailed index (master-plan-requirements-index.md,
 Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); real-app walkthroughs (A4); Store/Windows (A5, deferred); independent security assessment (A7.14); live provider acceptance (A8); recorded demos (B3).
 
 **Code still open (next candidates)**
-Support agent governed actions (roadmap step 4: five actions done — support hand-off, access request, diagnostic, governed seal/verify, expiring-key list); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed path needs its own reviewed design); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
+Support agent governed actions (roadmap step 4: five actions done — support hand-off, access request, diagnostic, governed seal/verify, expiring-key list); remaining A2 enforcement composition (readiness read done; enrolled refusal done for notifications, webhooks, membership increases and autonomy loosening; provider/branch policy, consent/OAuth, API key/webhook config and platform families still open); A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed path needs its own reviewed design); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
 
 ## Platform migrations (held out of Dependabot major batches)
 

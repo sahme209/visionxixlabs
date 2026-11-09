@@ -13,6 +13,8 @@ vi.mock("@/lib/releaseops/auditEventResponder", () => ({ appendAuditEvent: m.aud
 vi.mock("@/lib/db", () => ({ prisma: {
   orgMembership: { findUnique: m.membership, update: m.memberUpdate }, user: { findUnique: async () => null },
   airflowAutomation: { findFirst: m.automationFind, update: m.automationUpdate },
+  // Not enrolled in Governance: promotions stay allowed (enrolled refusal is covered in team role tests).
+  durableAgentWorkflow: { findMany: async () => [] },
 } }));
 import { PATCH as members } from "../../../app/api/desktop/workspace-members/route";
 import { PATCH as automation } from "../../../app/api/desktop/airflow/automations/[id]/route";

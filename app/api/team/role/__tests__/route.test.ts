@@ -17,6 +17,7 @@ const mocks = vi.hoisted(() => ({
   updateManyMembership: vi.fn(),
   deleteManyMembership: vi.fn(),
   recordAudit: vi.fn(),
+  enrollment: vi.fn(),
 }));
 
 vi.mock("@/lib/auth/currentContext", () => ({ requireContext: mocks.requireContext }));
@@ -29,6 +30,7 @@ vi.mock("@/lib/db", () => ({
       updateMany: mocks.updateManyMembership,
       deleteMany: mocks.deleteManyMembership,
     },
+    durableAgentWorkflow: { findMany: mocks.enrollment },
   },
 }));
 vi.mock("@/lib/workforce/domains/inviteLinks", () => ({
@@ -65,6 +67,36 @@ describe("POST /api/team/role — role change and revocation", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.requireContext.mockResolvedValue({ userId: "user-1", organizationId: "org-1", email: "owner@acme.test" });
+    mocks.enrollment.mockResolvedValue([]);
+  });
+
+  it("refuses a promotion while the workspace is enrolled in Governance, before any update", async () => {
+    mockMembershipLookups("owner", { id: "mem-2", role: "operator", organizationId: "org-1", userId: "user-2" });
+    mocks.enrollment.mockResolvedValue([{ id: "governance_active_fixture", organizationId: "org-1", workflowKind: "governance_baseline_active_v1" }]);
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ membershipId: "mem-2", action: "change_role", role: "admin" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("governance_enrolled_privilege_increase");
+    expect(mocks.updateMembership).not.toHaveBeenCalled();
+    expect(mocks.updateManyMembership).not.toHaveBeenCalled();
+  });
+
+  it("refuses a promotion when enrollment cannot be read (fail closed)", async () => {
+    mockMembershipLookups("owner", { id: "mem-2", role: "read_only", organizationId: "org-1", userId: "user-2" });
+    mocks.enrollment.mockRejectedValue(new Error("SIMULATED outage"));
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ membershipId: "mem-2", action: "change_role", role: "operator" }));
+    expect(locationOf(res).searchParams.get("error")).toBe("governance_enrolled_privilege_increase");
+    expect(mocks.updateMembership).not.toHaveBeenCalled();
+  });
+
+  it("still allows a demotion and removal while enrolled", async () => {
+    mocks.enrollment.mockResolvedValue([{ id: "governance_active_fixture", organizationId: "org-1", workflowKind: "governance_baseline_active_v1" }]);
+    mockMembershipLookups("owner", { id: "mem-2", role: "admin", organizationId: "org-1", userId: "user-2" });
+    mocks.updateMembership.mockResolvedValue({});
+    const { POST } = await import("../route");
+    const res = await POST(formRequest({ membershipId: "mem-2", action: "change_role", role: "read_only" }));
+    expect(locationOf(res).searchParams.get("notice")).toBe("role_updated");
+    expect(mocks.updateMembership).toHaveBeenCalledWith({ where: { id: "mem-2" }, data: { role: "read_only" } });
   });
 
   it("rejects a request with no membershipId", async () => {

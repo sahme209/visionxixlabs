@@ -135,6 +135,17 @@ The historical AST JSON is **not refreshed or rewritten**: `docs/recovery/2026-1
 
 A later activation design must independently reconstruct and verify the source-qualified closed manifest, exact scope mappings, current participants, source proof and all lifetime blockers inside the real activation transaction, using the same organization lock. It must not consume the readiness DTO as a permission receipt. Actual positive and negative owned-store/HTTP/concurrency journeys, independent review and separately authorized live acceptance are required before production enrollment can be enabled.
 
+## Delta 2026-11-09: enrolled refusal for F17, F18, M01 and part of M02
+
+Owner decision (2026-11-09): enrolled workspaces refuse these families until each has reviewed admission. Classification is the pure kernel `lib/governance/intelligence/enrolledRefusalPolicy.ts`; IO uses `assertNoGovernanceEnrollmentForMutation` through `lib/governance/intelligence/enrolledRefusal.ts`, which also refuses when enrollment cannot be read.
+
+- **F17 notifications:** discretionary tenant sends are refused while enrolled (scan-complete tenant Slack/Teams, workforce daily digest, the outbound lane's tenant Slack override, which does not fall back to the platform URL). Safety alerts always deliver: autonomy halts, critical incidents/signals and any critical severity or critical digest. Platform-owned environment channels are unchanged.
+- **F18 webhooks:** `deliverWebhookDelivery` leaves non-security deliveries queued and untouched while enrolled (`governance_coverage_unavailable`, retryable). `audit.integrity_failed`, `api_key.created` and `api_key.revoked` always deliver.
+- **M01 membership:** promotions (`/api/team/role`, `PATCH /api/desktop/workspace-members`) and new invitations (`/api/team/invite`) are refused while enrolled. Demotion, removal and revocation still work. Invitations minted before enrollment are not yet re-checked at acceptance.
+- **M02 (partial):** autonomy loosening (a looser mode or higher per-cycle limit) is refused while enrolled; tightening works. Provider policy and branch policy are not classified yet and remain uncovered.
+
+This is refusal only. It grants nothing, and it does not register these families as covered for activation.
+
 ## Source fingerprint appendix
 
 The following selected byte hashes bind the principal reviewed boundary/gap sources to this audit. They do not certify unlisted transitive code, runtime deployment, provider credentials or coverage. A changed source invalidates its source classification until reviewed again.
