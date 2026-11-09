@@ -11,6 +11,7 @@ import { type BrowserNavigationIntent, BROWSER_NAVIGATION_FIELDS, browserNavigat
 import { NextResponse } from "next/server";
 import { requireContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
+import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { ASSIGNABLE_ROLES, type InviteRole } from "@/lib/workforce/domains/inviteLinks";
 import { recordRequiredAudit as auditRecord } from "@/lib/audit/requiredAudit";
 import { id as ids } from "@/lib/domain/ids";
@@ -127,6 +128,11 @@ export async function POST(req: Request) {
     } catch {
       return teamResponse("/dashboard/team?error=audit_unconfirmed");
     }
+    // Invite revocation (A7.21): any invite for this email issued before now is void.
+    try {
+      const removed = await prisma.user.findUnique({ where: { id: String(target.userId) }, select: { email: true } });
+      if (removed?.email) await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId: org, kind: "member.removed", subjectKind: "membership", subjectId: removed.email.toLowerCase().trim(), summary: "Member removed; earlier invites for this email are void", actorUserId: ctx.userId ? String(ctx.userId) : null });
+    } catch { /* best-effort; the membership is already removed */ }
     return teamResponse("/dashboard/team?notice=removed");
   }
 
