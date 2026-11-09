@@ -71,6 +71,25 @@ export default function ProductPage() {
           <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser handles identity and consent. The installed Agent validates access and keeps operations deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-xl border border-white/[0.12] bg-white/[0.025] p-5"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
         </section>
 
+        <section aria-labelledby="govern-any-agent" className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-10">
+          <div className="mx-auto grid max-w-[1200px] gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Agent governance gateway</p>
+              <h2 id="govern-any-agent" className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">Govern any AI agent, not just ours.</h2>
+              <p className="mt-5 max-w-md text-base leading-7 text-zinc-300">Add Axiom to Cursor, Claude Code, Codex or your own agent as an MCP server. Before a consequential action, the agent asks; a person approves the exact change; the outcome is recorded.</p>
+              <p className="mt-4 max-w-md text-sm leading-6 text-zinc-500">Agents report their own actions, so this is a cooperative control point, not a sandbox. Requires an API key with governance scopes.</p>
+            </div>
+            <ol aria-label="How an agent asks Axiom" className="grid gap-3 sm:grid-cols-2">
+              {[
+                ["Check", "The agent describes the action. Axiom answers allow, needs approval or deny, with reasons."],
+                ["Request", "Deploys, merges, infrastructure, migrations and secrets wait for a workspace admin."],
+                ["Approve", "Someone other than the key's creator approves the exact change. It expires in 24 hours."],
+                ["Record", "The agent reports what happened. Each step lands in the audit log."],
+              ].map(([title, detail], i) => <li key={title} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-5"><p className="font-mono text-xs text-zinc-500">{String(i + 1).padStart(2, "0")}</p><h3 className="mt-2 text-base font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></li>)}
+            </ol>
+          </div>
+        </section>
+
         <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10"><div className="rounded-xl border border-white/[0.1] bg-white/[0.025] p-7 sm:p-10"><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Choose your next step</p><div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">Prove it before you depend on it.</h2><p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Local previews are not evidence of a shipped release. Check the downloads and release notes, then confirm support for your version.</p></div><Link href="/docs/getting-started" className="shrink-0 rounded-lg bg-zinc-100 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-white">Get started</Link></div><div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-zinc-300"><Link href="/docs/approval-workflow" className="underline underline-offset-4">Read the approval guide</Link><Link href="/integrations" className="underline underline-offset-4">Explore integrations</Link><Link href="/demo" className="underline underline-offset-4">Explore the scripted demo</Link></div></div></section>
       </main>
       <Footer />
