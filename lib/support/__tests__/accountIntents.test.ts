@@ -10,6 +10,8 @@ describe("Ask Axiom account intents", () => {
     ["is our audit log intact", "audit_integrity"],
     ["which integrations are connected", "connections"],
     ["what happened recently", "recent_activity"],
+    ["I need admin access", "access_request"],
+    ["why can't I approve this deployment", "access_request"],
   ])("classifies %s", (q, intent) => expect(classifyAccountIntent(q)).toBe(intent));
 
   it("returns null for non-account questions so the docs answer stands", () => {

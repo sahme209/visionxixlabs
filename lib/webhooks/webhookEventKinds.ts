@@ -45,7 +45,9 @@ export type WebhookEventKind =
   | "agent_gateway.request_pending"
   | "agent_gateway.request_decided"
   | "agent_gateway.outcome_recorded"
-  | "audit.integrity_failed";
+  | "audit.integrity_failed"
+  // Ask Axiom access requests (admins decide on Members)
+  | "workspace.access_requested";
 
 const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "release_gate.passed",
@@ -72,6 +74,7 @@ const ALL_KINDS: ReadonlySet<string> = new Set<WebhookEventKind>([
   "agent_gateway.request_decided",
   "agent_gateway.outcome_recorded",
   "audit.integrity_failed",
+  "workspace.access_requested",
 ]);
 
 /** True when `s` is a recognized event kind. */

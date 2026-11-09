@@ -301,6 +301,7 @@ coding.lint_failed                 coding.test_failed          airflow.action_pr
 airflow.automation_succeeded       airflow.automation_failed
 agent_gateway.request_pending      agent_gateway.request_decided
 agent_gateway.outcome_recorded     audit.integrity_failed
+workspace.access_requested
 ```
 
 `agent_gateway.request_pending` fires when an agent's action needs a human
@@ -310,6 +311,9 @@ see it. `agent_gateway.request_decided` carries `{ decision, decidedByUserId }`,
 and `agent_gateway.outcome_recorded` carries the agent's self-reported outcome.
 `audit.integrity_failed` fires when audit verification finds an edited,
 deleted or inserted event or a broken seal chain. It lists the failed seals.
+`workspace.access_requested` fires when a member asks Ask Axiom for a higher role.
+Payload: `{ requestedRole, currentRole, reviewUrl }`. Admins decide on Members, and
+nothing changes automatically.
 
 `pipeline.stage_decision_recorded` fires once per vote on a paused
 awaiting_approval stage — terminal or partial. Payload includes
