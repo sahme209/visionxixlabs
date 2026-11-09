@@ -29,7 +29,7 @@ export default function ProductPage() {
       <Navigation />
       <main className="overflow-hidden pt-16">
         <section className="border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20">
-          <div className="mx-auto max-w-[1280px]">
+          <div className="mx-auto max-w-[1200px]">
             <div className="grid gap-7 lg:grid-cols-[1.1fr_0.9fr] lg:items-end lg:gap-16">
               <div>
                 <p className="text-xs uppercase tracking-[0.18em] text-zinc-400">Axiom Agent · deployment governance</p>
@@ -60,7 +60,7 @@ export default function ProductPage() {
 
 
         <section className="border-y border-white/[0.07] bg-[#141414] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto max-w-[1280px]">
+          <div className="mx-auto max-w-[1200px]">
             <p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">AI · Governance · Integrations</p>
             <h2 className="mt-4 max-w-2xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">Context for the agent. Control for your team.</h2>
             <div className="mt-10 grid gap-3 md:grid-cols-3">{PILLARS.map(([title, detail]) => <article key={title} className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-6 sm:p-7"><h3 className="text-lg font-medium tracking-[-0.02em] text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-400">{detail}</p></article>)}</div>
@@ -68,7 +68,7 @@ export default function ProductPage() {
         </section>
 
         <section className="relative isolate overflow-hidden border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto grid max-w-[1280px] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser handles identity, lightweight account context, and approved provider consent. The installed Agent performs validation and keeps deployment operations deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-xl border border-white/[0.12] bg-white/[0.025] p-5"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
+          <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[0.85fr_1.15fr] lg:items-center"><div><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Intentional boundaries</p><h2 className="mt-4 text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">The right surface for each job.</h2><p className="mt-5 max-w-md text-base leading-7 text-zinc-300">The browser handles identity, lightweight account context, and approved provider consent. The installed Agent performs validation and keeps deployment operations deliberate.</p></div><div className="grid gap-3">{BOUNDARIES.map(([title, detail]) => <div key={title} className="rounded-xl border border-white/[0.12] bg-white/[0.025] p-5"><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="mt-2 text-sm leading-6 text-zinc-400">{detail}</p></div>)}</div></div>
         </section>
 
         <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10"><div className="rounded-xl border border-white/[0.1] bg-white/[0.025] p-7 sm:p-10"><p className="text-[10px] uppercase tracking-[0.22em] text-zinc-400">Choose your next step</p><div className="mt-5 flex flex-col gap-6 lg:flex-row lg:items-end lg:justify-between"><div><h2 className="text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-4xl">Prove the workflow before you depend on it.</h2><p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Local previews are not evidence of a shipped release. Check available downloads and their release information for what is offered; confirm version-specific support before depending on an operation.</p></div><Link href="/docs/getting-started" className="shrink-0 rounded-lg bg-zinc-100 px-5 py-3 text-center text-sm font-semibold text-zinc-950 transition hover:bg-white">Get started</Link></div><div className="mt-7 flex flex-wrap gap-x-6 gap-y-3 text-sm text-zinc-300"><Link href="/docs/approval-workflow" className="underline underline-offset-4">Read the approval guide</Link><Link href="/integrations" className="underline underline-offset-4">Explore integrations</Link><Link href="/demo" className="underline underline-offset-4">Explore the scripted demo</Link></div></div></section>

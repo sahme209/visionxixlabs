@@ -72,13 +72,13 @@ export default function Home() {
         </section>
 
         <section aria-label="Inside a deployment decision" className="border-t border-white/[0.06] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto max-w-[1280px]"><GovernanceAssembly /></div>
+          <div className="mx-auto max-w-[1200px]"><GovernanceAssembly /></div>
         </section>
 
         <GovernedDeploymentModel />
 
         <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-          <div className="mx-auto max-w-[1280px]">
+          <div className="mx-auto max-w-[1200px]">
             <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Built around the engineering workflow</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-5xl">More context. Clearer decisions.</h2>
             <div className="mt-12 grid border-y border-white/[0.08] md:grid-cols-3 md:divide-x md:divide-white/[0.08]">
@@ -118,8 +118,8 @@ export default function Home() {
         </section>
 
         <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-16 sm:px-8 lg:px-10">
-          <h2 className="mx-auto max-w-[1280px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
-          <div className="mx-auto mt-9 grid max-w-[1280px] gap-3 md:grid-cols-3">
+          <h2 className="mx-auto max-w-[1200px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Designed around production reality.</h2>
+          <div className="mx-auto mt-9 grid max-w-[1200px] gap-3 md:grid-cols-3">
             <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy remains authoritative" detail="Desktop preferences cannot weaken organization approvals, permission boundaries, or production gates." />
             <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Browser-authorized desktop sessions" detail="Sign-in and account creation happen in the system browser through an expiring, one-time device-bound challenge." />
             <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="Reconnect without rewriting history" detail="Last-known records remain visible and are explicitly marked stale with the last successful service-response time." />
@@ -127,7 +127,7 @@ export default function Home() {
         </section>
 
         <section className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto flex max-w-[1280px] flex-col gap-8 md:flex-row md:items-center md:justify-between">
+          <div className="mx-auto flex max-w-[1200px] flex-col gap-8 md:flex-row md:items-center md:justify-between">
             <div className="max-w-3xl">
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-orange-300">Founding Supporters</p>
               <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Help advance autonomous engineering with human control at its core.</h2>
