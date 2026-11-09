@@ -15,6 +15,7 @@ import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowc
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
+import { WorksWithStrip } from "@/components/marketing/WorksWithStrip";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
 
@@ -70,6 +71,8 @@ export default function Home() {
           </div>
           <div className="mt-14"><HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} /></div>
         </section>
+
+        <WorksWithStrip />
 
         <section aria-label="Inside a deployment decision" className="border-t border-white/[0.06] px-5 py-16 sm:px-8 lg:px-10">
           <div className="mx-auto max-w-[1200px]"><GovernanceAssembly /></div>
