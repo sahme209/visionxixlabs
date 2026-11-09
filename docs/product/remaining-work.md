@@ -39,6 +39,8 @@ Each needs its own planned PR; Dependabot ignores their major versions until the
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
 - ESLint 10 and Vitest 5 (web): config and API changes.
 - Next.js (beyond 16.4.2) and the AWS SDK (beyond 3.1049): re-review the owned-website framework source pins and the pinned ECS/S3 SDK behaviour tests, then bump.
+- Stripe 23: new API version (`2026-10-28.endive`) and non-generic `HttpClient` types; re-review the owned Stripe TEST transport and settlement code.
+- ai 7: AI Gateway endpoint moves from v3 to v4; re-review the pinned dispatch URL in the installed-SDK composition tests.
 - Vitest (beyond 4.1.11): re-review the `suppress-warnings.cjs` preload hash in `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts`.
 
 ## Current completion work

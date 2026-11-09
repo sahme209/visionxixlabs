@@ -14,7 +14,7 @@ export async function generateText(
 
   const model = process.env.ANTHROPIC_MODEL || "claude-sonnet-4-6";
   const maxTokens = opts.maxTokens ?? 4096;
-  const temperature = opts.temperature ?? 0.4;
+  // Anthropic SDK 1 no longer accepts `temperature` on messages.create; opts.temperature is ignored here.
 
   const Anthropic = (await import("@anthropic-ai/sdk")).default;
   const client = new Anthropic({ apiKey });
@@ -31,7 +31,6 @@ export async function generateText(
   const response = await client.messages.create({
     model,
     max_tokens: maxTokens,
-    temperature,
     system,
     messages: messageList,
   });
