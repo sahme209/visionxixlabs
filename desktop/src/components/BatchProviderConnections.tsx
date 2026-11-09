@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Eye } from "lucide-react";
 import { desktopClient, type BatchConnectionState, type BatchProviderId } from "../lib/desktopClient";
 
@@ -33,11 +33,13 @@ function ProviderCard({ provider }: { provider: (typeof PROVIDERS)[number] }) {
   const [state, setState] = useState<BatchConnectionState | null>(null);
   const [baseUrl, setBaseUrl] = useState(""); const [token, setToken] = useState(""); const [namespace, setNamespace] = useState("");
   const [busy, setBusy] = useState(false); const [notice, setNotice] = useState<string | null>(null);
+  // Once the user connects or disconnects, a slower initial status read must not overwrite the newer state.
+  const acted = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
     void Promise.resolve().then(() => desktopClient.batchConnection(provider.id)).then((r) => {
-      if (cancelled) return;
+      if (cancelled || acted.current) return;
       if (r.ok) { setState(r.data); if (r.data.baseUrl) setBaseUrl(r.data.baseUrl); if (r.data.namespace) setNamespace(r.data.namespace); }
     }).catch(() => { /* shown as not connected */ });
     return () => { cancelled = true; };
@@ -45,6 +47,7 @@ function ProviderCard({ provider }: { provider: (typeof PROVIDERS)[number] }) {
 
   const canConnect = baseUrl.startsWith("https://") && token.trim().length > 0 && (!provider.namespace || /^[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?$/.test(namespace));
   async function connect() {
+    acted.current = true;
     setBusy(true); setNotice(null);
     try {
       const r = await desktopClient.saveBatchConnection(provider.id, { baseUrl: baseUrl.trim(), token: token.trim(), ...(provider.namespace ? { namespace } : {}) });
@@ -52,6 +55,7 @@ function ProviderCard({ provider }: { provider: (typeof PROVIDERS)[number] }) {
     } finally { setToken(""); setBusy(false); }
   }
   async function disconnect() {
+    acted.current = true;
     setBusy(true); setNotice(null);
     try {
       const r = await desktopClient.disconnectBatchConnection(provider.id);
