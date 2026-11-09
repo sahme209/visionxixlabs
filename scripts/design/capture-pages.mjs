@@ -26,6 +26,8 @@ ws.addEventListener("message", (e) => { const m = JSON.parse(e.data); if (m.id &
 const send = (method, params = {}) => new Promise((resolve, reject) => { const id = ++seq; pending.set(id, (m) => (m.error ? reject(new Error(`${method}: ${m.error.message}`)) : resolve(m.result))); ws.send(JSON.stringify({ id, method, params })); });
 
 await send("Page.enable");
+// Pre-set the essential-only privacy choice so the consent banner does not cover the layout.
+await send("Page.addScriptToEvaluateOnNewDocument", { source: "try{localStorage.setItem('axiom_privacy_consent_v1','essential')}catch{}" });
 await send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "reduce" }] });
 const summary = [];
 for (const vp of VIEWPORTS) {
