@@ -11,7 +11,7 @@ import { desktopClient, type BatchConnectionState, type BatchProviderId } from "
 const PROVIDERS: ReadonlyArray<{ id: BatchProviderId; label: string; urlHint: string; tokenLabel: string; namespace?: boolean }> = [
   { id: "prefect", label: "Prefect", urlHint: "https://api.prefect.cloud/api/accounts/…/workspaces/…", tokenLabel: "API key" },
   { id: "dagster", label: "Dagster", urlHint: "https://your-org.dagster.cloud/prod", tokenLabel: "User token" },
-  { id: "argo_workflows", label: "Argo Workflows", urlHint: "https://argo.example.com", tokenLabel: "Bearer token", namespace: true },
+  { id: "argo_workflows", label: "Argo Workflows", urlHint: "https://argo.example.com", tokenLabel: "Argo token", namespace: true },
 ];
 
 export function BatchProviderConnections() {

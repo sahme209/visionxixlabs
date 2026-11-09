@@ -36,14 +36,14 @@ describe("Batch provider connections", () => {
     await c.findByText(/Connected\. 4 found/);
     expect(m.save).toHaveBeenCalledWith("prefect", { baseUrl: "https://api.prefect.cloud/api", token: "pk_secret" });
     expect((c.getByLabelText("API key") as HTMLInputElement).value).toBe("");
-    expect(c.getByText("Connected · read-only")).toBeTruthy();
+    expect(await c.findByText("Connected · read-only")).toBeTruthy();
   });
 
   it("requires a valid namespace for Argo Workflows", async () => {
     render(createElement(BatchProviderConnections));
     const c = within(card("Argo Workflows"));
     fireEvent.change(c.getByLabelText("API URL"), { target: { value: "https://argo.example.com" } });
-    fireEvent.change(c.getByLabelText("Bearer token"), { target: { value: "t" } });
+    fireEvent.change(c.getByLabelText("Argo token"), { target: { value: "t" } });
     const button = c.getByRole("button", { name: "Connect read-only" }) as HTMLButtonElement;
     fireEvent.change(c.getByLabelText("Namespace"), { target: { value: "Bad_NS" } });
     expect(button.disabled).toBe(true);
