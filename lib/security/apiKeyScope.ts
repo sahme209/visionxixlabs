@@ -8,7 +8,7 @@
  * Scope grammar
  *   <resource>:<verb>
  *
- *   resource: pipeline | eval | release_gate | webhook
+ *   resource: pipeline | eval | release_gate | webhook | governance
  *   verb:     read | write | trigger | admin
  *
  * Wildcards (closed-union — explicitly listed, not parsed):
@@ -38,6 +38,10 @@ export type ApiKeyScope =
   | "webhook:write"
   | "webhook:admin"
   | "webhook:*"
+  // Agent governance gateway (A10): read decisions, or request approvals and report outcomes
+  | "governance:read"
+  | "governance:request"
+  | "governance:*"
   // Catch-all (Enterprise only — admin route must verify before granting)
   | "*";
 
@@ -48,6 +52,7 @@ const VALID_SCOPES: ReadonlySet<string> = new Set<ApiKeyScope>([
   "eval:read", "eval:write", "eval:*",
   "release_gate:read", "release_gate:*",
   "webhook:read", "webhook:write", "webhook:admin", "webhook:*",
+  "governance:read", "governance:request", "governance:*",
   "*",
 ]);
 

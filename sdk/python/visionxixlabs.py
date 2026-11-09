@@ -45,6 +45,7 @@ import json
 import time
 import urllib.error
 import urllib.request
+from urllib.parse import quote
 from typing import Any, Dict, Optional
 
 
@@ -169,6 +170,27 @@ class VisionXIXLabs:
             body["metadata"] = metadata
         return self._post("/api/v1/pipelines/runs", body)
 
+    # ------------------------------- agent governance gateway (A10)
+
+    def check_agent_action(self, action_kind: str, target: str, summary: str, environment: str = "unknown", agent_name: Optional[str] = None) -> Dict[str, Any]:
+        """POST /api/v1/governance/check — may an agent do this? Stores nothing. Scope: governance:read."""
+        return self._post("/api/v1/governance/check", _agent_action(action_kind, target, summary, environment, agent_name))
+
+    def request_agent_approval(self, action_kind: str, target: str, summary: str, environment: str = "unknown", agent_name: Optional[str] = None) -> Dict[str, Any]:
+        """POST /api/v1/governance/requests — request approval for one exact action. Scope: governance:request."""
+        return self._post("/api/v1/governance/requests", _agent_action(action_kind, target, summary, environment, agent_name))
+
+    def get_agent_approval(self, request_id: str) -> Dict[str, Any]:
+        """GET /api/v1/governance/requests/{id} — proceed only when request.mayProceed is true. Scope: governance:read."""
+        return self._get(f"/api/v1/governance/requests/{quote(request_id, safe='')}")
+
+    def record_agent_outcome(self, request_id: str, outcome: str, detail: Optional[str] = None) -> Dict[str, Any]:
+        """POST /api/v1/governance/requests/{id}/outcome — outcome: succeeded | failed | abandoned. Scope: governance:request."""
+        body: Dict[str, Any] = {"outcome": outcome}
+        if detail:
+            body["detail"] = detail
+        return self._post(f"/api/v1/governance/requests/{quote(request_id, safe='')}/outcome", body)
+
     # ------------------------------- internals
 
     def _get(self, path: str) -> Dict[str, Any]:
@@ -243,3 +265,10 @@ def verify_webhook_signature(
     payload = f"{timestamp_sec}.{raw_body}".encode("utf-8")
     expected = hmac.new(secret.encode("utf-8"), payload, hashlib.sha256).hexdigest()
     return hmac.compare_digest(expected, signature_hex.lower())
+
+
+def _agent_action(action_kind: str, target: str, summary: str, environment: str, agent_name: Optional[str]) -> Dict[str, Any]:
+    body: Dict[str, Any] = {"actionKind": action_kind, "target": target, "summary": summary, "environment": environment}
+    if agent_name:
+        body["agentName"] = agent_name
+    return body
