@@ -25,7 +25,8 @@ const SYNONYMS: Record<string, string> = {
 export function tokenize(text: string): string[] {
   return text.toLowerCase().replace(/\broll(ing|ed)?\s+back\b/g, "rollback").replace(/\bsign(ing|ed)?\s+in\b/g, "signin").replace(/\blog(ging|ged)?\s+in\b/g, "signin").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
     .map((t) => SYNONYMS[t] ?? t)
-    .map((t) => (t.length > 4 && t.endsWith("ing") ? t.slice(0, -3) : t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t));
+    .map((t) => (t.length > 4 && t.endsWith("ing") ? t.slice(0, -3) : t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t))
+    .map((t) => SYNONYMS[t] ?? t);
 }
 
 interface Indexed { entry: KnowledgeEntry; terms: Map<string, number>; length: number; titleTerms: string[] }
