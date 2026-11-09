@@ -22,8 +22,8 @@ export default function AskAxiomDocsPage() {
   </DocSection>
   <DocSection id="actions" kicker="04" title="What it can do for you">
    <p>It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide.</p>
-   <p>It can also run two fixed audit actions, governed like any other agent: <em>seal the audit log</em> (owners and admins) and <em>verify the audit log</em> (any member). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; verifying is read-only.</p>
+   <p>It can also run three fixed actions, governed like any other agent: <em>seal the audit log</em> (owners and admins), <em>verify the audit log</em> (any member) and <em>list API keys expiring soon</em> (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.</p>
   </DocSection>
-  <DocFooterNav prev={{href:"/docs/batch-providers",label:"Batch providers"}} next={{href:"/docs/troubleshooting",label:"Troubleshooting"}} />
+  <DocFooterNav prev={{href:"/docs/batch-providers",label:"Batch providers"}} next={{href:"/docs/members",label:"Members and roles"}} />
  </>;
 }

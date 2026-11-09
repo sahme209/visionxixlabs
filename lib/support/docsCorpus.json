@@ -83,28 +83,28 @@
    "title": "Answers from the docs",
    "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask Axiom is not confident, it shows the closest guides and offers to send your question to support.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask Axiom can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
-   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide. It can also run two fixed audit actions, governed like any other agent: seal the audit log (owners and admins) and verify the audit log (any member). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; verifying is read-only.",
+   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
+   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
   },
   {
    "href": "/docs/audit-logs#record",
@@ -352,6 +352,34 @@
    "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4"
   },
   {
+   "href": "/docs/governance-approvals#who",
+   "title": "Who can decide",
+   "text": "Owners, admins, operators and security reviewers can record an approval. Nobody can approve their own proposal: another authorized reviewer must. The person who proposed an action can always cancel it.",
+   "source": "app/docs/governance-approvals/page.tsx",
+   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+  },
+  {
+   "href": "/docs/governance-approvals#review",
+   "title": "Review an action",
+   "text": "Each pending action shows its tool, risk level and when it was created. Branch, file-commit and pull-request proposals include their exact changes, for example Review file changes or Review pull request . Read them before deciding. For branch, file and pull-request proposals, approving records your decision only. The requester runs the action separately, and the page says so.",
+   "source": "app/docs/governance-approvals/page.tsx",
+   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+  },
+  {
+   "href": "/docs/governance-approvals#rules",
+   "title": "Approval rules",
+   "text": "An approval is bound to the exact action, expires after 24 hours and is used once before the action runs. An expired proposal, or one without an integrity binding, cannot be approved: ask for a fresh proposal, because an old approval cannot restore it. Reject means nothing was executed.",
+   "source": "app/docs/governance-approvals/page.tsx",
+   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+  },
+  {
+   "href": "/docs/governance-approvals#limits",
+   "title": "What this page shows",
+   "text": "The inbox shows up to 20 pending actions. It is not a complete approval or outcome history; use the audit log for that.",
+   "source": "app/docs/governance-approvals/page.tsx",
+   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+  },
+  {
    "href": "/docs/integration-setup#shared",
    "title": "Before connecting a provider",
    "text": "Set the production Axiom origin as NEXTAUTH_URL ; callback construction fails closed when the origin is not trusted. Register the exact HTTPS callback shown below. Wildcard callback domains are not supported. Store client secrets only in the hosting platform's encrypted secret manager—never in NEXT_PUBLIC_* , the desktop app, logs, or Git. Redeploy the service after adding credentials, then use Apps & skills or Settings → Integrations to start consent. Run the harmless validation step. Axiom does not label a connection active from consent alone.",
@@ -392,6 +420,34 @@
    "text": "Setup required: the service is missing an OAuth registration, trusted callback origin, or production secret. A workspace user cannot fix this in the desktop app. Awaiting validation: provider consent returned successfully, but Axiom has not yet completed a live server-side check. Active / validated read-only: the scoped provider token or GitHub installation passed live validation. Needs attention / validation overdue: validation failed or is stale. Revalidate before relying on the connection for release evidence. Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the Axiom audit trail before reconnecting.",
    "source": "app/docs/integration-setup/page.tsx",
    "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
+  },
+  {
+   "href": "/docs/members#roles",
+   "title": "Roles",
+   "text": "Owner : full control, one per workspace; ownership moves only through an explicit handoff. Admin : manages members, billing, integrations and every engineer setting. Operator : runs scans, approves engineer actions and configures the workforce, but cannot manage billing or members. Security reviewer : reads findings, approvals and the audit trail, and can vote on approvals but not start engineer actions. Finance viewer : reads cost recommendations and panels, with no write access. Read-only : reads dashboards; no vote, run or manage.",
+   "source": "app/docs/members/page.tsx",
+   "sourceSha256": "1d733d4b4b6f7c2aeeea1f94afc13e0702326c63eaddd756917f956534627170"
+  },
+  {
+   "href": "/docs/members#invite",
+   "title": "Invite a teammate",
+   "text": "Enter an email address, choose a role (Operator by default) and choose Create invitation link . Axiom does not email the link: copy it and send it yourself. The owner role cannot be given by invitation. Invitation links expire after 7 days. Removing a member also voids every earlier invitation for that email.",
+   "source": "app/docs/members/page.tsx",
+   "sourceSha256": "1d733d4b4b6f7c2aeeea1f94afc13e0702326c63eaddd756917f956534627170"
+  },
+  {
+   "href": "/docs/members#change",
+   "title": "Change a role or remove someone",
+   "text": "Use Update or Remove on a member's row. You cannot change your own role or the owner's. If Axiom cannot confirm the audit record for a change, it says so; check the member list before trying again, because the change may already have happened.",
+   "source": "app/docs/members/page.tsx",
+   "sourceSha256": "1d733d4b4b6f7c2aeeea1f94afc13e0702326c63eaddd756917f956534627170"
+  },
+  {
+   "href": "/docs/members#requests",
+   "title": "Access requests",
+   "text": "Members can ask for a higher role through Ask Axiom. Owners and admins see requests from the last 30 days under Access requests , with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.",
+   "source": "app/docs/members/page.tsx",
+   "sourceSha256": "1d733d4b4b6f7c2aeeea1f94afc13e0702326c63eaddd756917f956534627170"
   },
   {
    "href": "/docs/oauth-setup#overview",
@@ -651,6 +707,27 @@
    "text": "Paste the changed file paths. The preview lists the areas touched (migrations, CI, auth, infrastructure, dependencies, secrets, API, frontend, tests, docs), the blast radius, whether a rollback plan is needed, and what a reviewer should check. It reads file names only, never contents.",
    "source": "app/docs/trust-tools/page.tsx",
    "sourceSha256": "e22251b2b612c4c91d737cb14b01ba4e8e6a6bcdd0ea10515e7a547ca93b42ec"
+  },
+  {
+   "href": "/docs/usage-billing#overview",
+   "title": "Overview",
+   "text": "Shows your plan, the AI allowance remaining, seats, counted deployments and gateway calls, plus AI usage for the current UTC month. AI cost is settled from the gateway's generation cost; calls still awaiting settlement are counted as pending, never as free. Credits increase only from payment records verified by Stripe. Buying AI credit top-ups is currently unavailable while one-time payment fulfillment, refunds and replay handling are verified. The page states this; no charge can start while it is off.",
+   "source": "app/docs/usage-billing/page.tsx",
+   "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc"
+  },
+  {
+   "href": "/docs/usage-billing#usage",
+   "title": "Usage records",
+   "text": "Every member can browse AI usage records for the last 12 months, 50 per page, filter by settled or pending, and export the current page. Times are in UTC.",
+   "source": "app/docs/usage-billing/page.tsx",
+   "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc"
+  },
+  {
+   "href": "/docs/usage-billing#invoices",
+   "title": "Invoices and payment details",
+   "text": "Owners and admins see invoices and can open the secure Stripe billing portal with Manage billing when billing is enabled for the workspace. Other members see who manages billing instead.",
+   "source": "app/docs/usage-billing/page.tsx",
+   "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc"
   }
  ]
 }

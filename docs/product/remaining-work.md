@@ -17,18 +17,16 @@ This snapshot complements the detailed index (master-plan-requirements-index.md,
 - **B5/C2 Ask Axiom:** grounded cited answers (FAQ, docs headings, 86 docs sections), guardrails, account-aware read-only help, AI answers through the governed path, a 38-case eval in CI (95%).
 - **CI:** parallel jobs (~6 min); build memory fixed by retiring 41 unreachable dashboard pages.
 
-**Waiting on the owner (decisions or clicks)**
-1. Apply the two additive production migrations (AgentGatewayRequest, AuditSeal) — docs/recovery/2026-11-08/production-db-check/BUILD-3-DB-STEP.md.
-2. Production build 3.
-3. Review and merge the legal additions (#271).
-4. Major upgrades: @azure/msal-node, and aws-actions/configure-aws-credentials v6 (#251).
-5. Earlier holds: Vercel secret fallbacks, Neon preview integration, Agent seed, Lead.phone, admin MFA, API key expiry policy for admin-minted keys, coding-run budget design (A7.18).
+**Waiting on the owner (decisions or clicks)** — updated 2026-11-09
+1. A production build to ship what merged after build 3 (dependency updates, Ask Axiom governed actions, audit seal anchors). Builds 1–3 and both production migrations are done; #271 legal additions and the msal-node major upgrade are merged.
+2. A9 on-prem decisions (ADR 2026-11-09): KMS/HSM key custody (8), offline sign-in (9), offline licence (11), audit retention default (7, suggested 400 days).
+3. Earlier holds: Vercel secret fallbacks, Neon preview integration, Agent seed, Lead.phone, admin MFA, API key expiry policy for admin-minted keys, coding-run budget design (A7.18).
 
 **Needs real-world steps (not code)**
 Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); real-app walkthroughs (A4); Store/Windows (A5, deferred); independent security assessment (A7.14); live provider acceptance (A8); recorded demos (B3).
 
 **Code still open (next candidates)**
-Support agent governed actions (roadmap step 4: four actions done, including governed seal/verify; next would be key rotation reminders); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed path needs its own reviewed design); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
+Support agent governed actions (roadmap step 4: five actions done — support hand-off, access request, diagnostic, governed seal/verify, expiring-key list); remaining A2 enforcement composition; A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed path needs its own reviewed design); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
 
 ## Platform migrations (held out of Dependabot major batches)
 

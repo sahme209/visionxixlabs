@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "741f43400a7df3e9865baccf128e3c66cbe33581155c175c763a049486035c1b",
+  "navigationSha256": "25c8fecc4cd4afddad5d439df1be92fb32bfd231298b7da677fca34be02fd0e9",
   "guides": [
     {
       "href": "/docs",
@@ -335,7 +335,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9",
+      "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28",
       "fields": [
         "Ask Axiom.",
         "The support chat answers from Axiom's public docs with sources, and can help with your own workspace when you are signed in.",
@@ -344,6 +344,47 @@
         "Fuller AI answers",
         "Help with your workspace",
         "What it can do for you"
+      ]
+    },
+    {
+      "href": "/docs/members",
+      "source": "app/docs/members/page.tsx",
+      "sourceSha256": "1d733d4b4b6f7c2aeeea1f94afc13e0702326c63eaddd756917f956534627170",
+      "fields": [
+        "Invite people and manage roles.",
+        "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
+        "Roles",
+        "Invite a teammate",
+        "Links expire",
+        "Change a role or remove someone",
+        "Access requests"
+      ]
+    },
+    {
+      "href": "/docs/governance-approvals",
+      "source": "app/docs/governance-approvals/page.tsx",
+      "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5",
+      "fields": [
+        "Decide pending Agent actions.",
+        "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
+        "Who can decide",
+        "Review an action",
+        "Approval is not execution",
+        "Approval rules",
+        "What this page shows"
+      ]
+    },
+    {
+      "href": "/docs/usage-billing",
+      "source": "app/docs/usage-billing/page.tsx",
+      "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc",
+      "fields": [
+        "See what you used and what it cost.",
+        "Control → Usage & billing has three tabs: Overview, Usage and Invoices. Missing records are shown as unavailable, never estimated.",
+        "Overview",
+        "Top-ups are paused",
+        "Usage records",
+        "Invoices and payment details"
       ]
     },
     {

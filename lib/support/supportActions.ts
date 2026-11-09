@@ -7,7 +7,7 @@
  * server re-checks all of this (the client copy only decides what to offer).
  * Nothing here is free-form: no arbitrary targets, no parameters, no chaining.
  */
-export const SUPPORT_ACTIONS = ["seal_audit_log", "verify_audit_log"] as const;
+export const SUPPORT_ACTIONS = ["seal_audit_log", "verify_audit_log", "list_expiring_keys"] as const;
 export type SupportAction = (typeof SUPPORT_ACTIONS)[number];
 
 export interface SupportActionInfo {
@@ -33,12 +33,19 @@ export const SUPPORT_ACTION_INFO: Readonly<Record<SupportAction, SupportActionIn
     effect: "read_only",
     roles: "any_member",
   },
+  list_expiring_keys: {
+    label: "List API keys expiring soon",
+    confirmText: "Lists up to 20 active API keys that expire within 30 days: name, prefix, expiry and last use. Read-only; secrets are never shown. Rotate them on API keys.",
+    effect: "read_only",
+    roles: ["owner", "admin"],
+  },
 };
 
 export const isSupportAction = (v: unknown): v is SupportAction => typeof v === "string" && (SUPPORT_ACTIONS as readonly string[]).includes(v);
 
 const RULES: ReadonlyArray<{ action: SupportAction; test: RegExp }> = [
   { action: "verify_audit_log", test: /\b(verify|check|prove|test)\b.*\b(audit|seals?|tamper\w*|integrity)\b|\b(audit|seals?)\b.*\b(intact|tamper\w*|verified?|integrity)\b/i },
+  { action: "list_expiring_keys", test: /\b(api )?keys?\b.*\b(expir\w*|rotat\w*|renew\w*)\b|\b(expir\w*|rotat\w*)\b.*\b(api )?keys?\b/i },
   { action: "seal_audit_log", test: /\bseal\b.*\b(audit|log|events?)\b|\b(audit log)\b.*\bseal\b/i },
 ];
 
