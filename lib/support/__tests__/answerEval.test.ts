@@ -68,6 +68,11 @@ describe("Ask Axiom evaluation set", () => {
     expect(accuracy, misses.join("\n")).toBeGreaterThanOrEqual(BAR);
   });
 
+  it("declines off-topic questions instead of guessing", () => {
+    const index = buildIndex(knowledgeEntries());
+    for (const q of ["what color is the sky", "tell me a joke", "who won the election", "asdf qwer", "weather tomorrow"]) expect(answerQuestion(index, q).status).toBe("suggestions");
+  });
+
   it("never answers a guarded case with product text", () => {
     const index = buildIndex(knowledgeEntries());
     for (const [q, expected] of CASES.filter(([, e]) => e.startsWith("guard:"))) expect(answerQuestion(index, q).status).toBe("guarded");

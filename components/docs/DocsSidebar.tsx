@@ -85,6 +85,8 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs/agent-gateway", label: "Agent gateway", icon: BookOpenIcon },
       { href: "/docs/trust-tools", label: "Trust tools", icon: BookOpenIcon },
       { href: "/docs/api-keys", label: "API keys", icon: BookOpenIcon },
+      { href: "/docs/batch-providers", label: "Batch providers", icon: BookOpenIcon },
+      { href: "/docs/ask-axiom", label: "Ask Axiom", icon: BookOpenIcon },
     ],
   },
   {
