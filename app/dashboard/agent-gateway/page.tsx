@@ -6,7 +6,7 @@
  */
 import type { Metadata } from "next";
 import { currentContext } from "@/lib/auth/currentContext";
-import { listGatewayRequests } from "@/lib/agentGateway/gatewayService";
+import { listAgentScorecards, listGatewayRequests } from "@/lib/agentGateway/gatewayService";
 import { ModuleIntro } from "@/components/portal/ModuleIntro";
 import { AgentGatewayDecision } from "@/components/agentGateway/AgentGatewayDecision";
 
@@ -18,11 +18,13 @@ const STATUS_TONE: Record<string, string> = {
   completed: "text-zinc-300 border-white/15", failed: "text-rose-300 border-rose-400/30", expired: "text-zinc-500 border-white/10",
 };
 
+const TRUST_LABEL: Record<string, string> = { new: "New", building: "Building a record", reliable: "Reliable", needs_review: "Needs review" };
+
 export default async function AgentGatewayPage() {
   const ctx = await currentContext();
   if (!ctx.isAuthenticated || !ctx.organizationId) return <div className="p-8 text-sm text-zinc-300">Sign in required.</div>;
   const organizationId = String(ctx.organizationId);
-  const requests = await listGatewayRequests(organizationId).catch(() => null);
+  const [requests, scorecards] = await Promise.all([listGatewayRequests(organizationId).catch(() => null), listAgentScorecards(organizationId).catch(() => [])]);
   return (
     <div className="mx-auto max-w-6xl px-6 py-8">
       <ModuleIntro
@@ -35,6 +37,16 @@ export default async function AgentGatewayPage() {
         storageKey="agent-gateway"
         lastReviewed="2026-11-09"
       />
+      {scorecards.length > 0 && <section aria-label="Agent scorecards" className="mt-6">
+        <h2 className="text-base font-medium text-zinc-100">Agents</h2>
+        <p className="mt-1 text-sm text-zinc-400">Last 90 days. Trust is a summary of evidence and never changes what policy allows.</p>
+        <ul className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">{scorecards.map((c) => (
+          <li key={c.apiKeyId} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+            <div className="flex items-baseline justify-between gap-2"><p className="font-mono text-sm text-zinc-200">{c.agentNames.join(", ")}</p><span className={`text-xs ${c.trust === "reliable" ? "text-emerald-300" : c.trust === "needs_review" ? "text-rose-300" : "text-zinc-400"}`}>{TRUST_LABEL[c.trust]}</span></div>
+            <p className="mt-2 text-xs leading-5 text-zinc-400">{c.requests} requests · {c.approved} approved · {c.rejected} rejected · {c.denied} denied{c.successRate !== null ? ` · ${Math.round(c.successRate * 100)}% reported success` : ""}</p>
+            <p className="mt-1 text-xs leading-5 text-zinc-500">{c.trustReasons[0]}</p>
+          </li>))}</ul>
+      </section>}
       {requests === null ? <p className="mt-6 text-sm text-zinc-400">Agent requests are unavailable right now.</p>
         : requests.length === 0 ? <p className="mt-6 text-sm text-zinc-400">No agent has asked for anything yet. Add the Axiom MCP server to an agent to begin.</p>
         : <ul aria-label="Agent requests" className="mt-6 space-y-3">{requests.map((r) => (
