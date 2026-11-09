@@ -91,6 +91,7 @@ Goal: one support agent that can help with everything about the website and the 
 4. **Governed actions (gated).** Open a ticket, request access, start a diagnostic. Every action goes through the agent governance gateway (A10) with human approval for anything consequential.
 5. **Evaluation and improvement.** A fixed question set with expected sources runs in CI; unanswered questions are reviewed weekly (no customer data in the eval set).
 6. **Knowledge growth.** Add release notes, changelog and every docs page body (not just headings) with review dates; the living-docs rule applies to support answers too.
+| 2026-11-09 | Webhook events for agent governance and audit integrity: agent_gateway.request_pending, .request_decided, .outcome_recorded and audit.integrity_failed, with producers wired (best-effort) and the README event list updated | Claude; PR feat/gateway-webhooks |
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.

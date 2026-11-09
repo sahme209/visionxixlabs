@@ -2,6 +2,7 @@ import "server-only";
 
 import { prisma } from "@/lib/db";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { dispatchWebhookEvent } from "@/lib/webhooks/dispatchWebhookEvent";
 import {
   APPROVAL_TTL_MS, evaluateGatewayPolicyWithImpact, gatewayActionDigest, isOutcome, mayProceed, parseGatewayAction,
   type GatewayOutcome, type PolicyResult,
@@ -24,6 +25,11 @@ export function publicRequest(row: NonNullable<Row>, now = new Date()) {
     status: gate.reason === "expired" ? "expired" : row.status, mayProceed: gate.proceed, reason: gate.reason,
     decidedAt: row.decidedAt, decisionNote: row.decisionNote, outcome: row.outcome, expiresAt: row.expiresAt, createdAt: row.createdAt,
   };
+}
+
+/** Best-effort webhook so approvers hear about agent requests (Slack, PagerDuty, email bridges). */
+async function notify(organizationId: string, eventKind: "agent_gateway.request_pending" | "agent_gateway.request_decided" | "agent_gateway.outcome_recorded", data: Record<string, unknown>) {
+  try { await dispatchWebhookEvent({ organizationId, eventKind, data, fireImmediately: true }); } catch { /* best-effort */ }
 }
 
 async function audit(organizationId: string, kind: string, subjectId: string, summary: string, actorUserId: string | null) {
@@ -51,6 +57,7 @@ export async function createGatewayRequest(caller: GatewayCaller, raw: unknown, 
     status, expiresAt: new Date(now.getTime() + APPROVAL_TTL_MS),
   } });
   await audit(caller.organizationId, "agent_gateway.request", row.id, `${agentName} requested ${action.actionKind} on ${action.target.slice(0, 80)} (${policy.decision})`, null);
+  if (row.status === "pending") await notify(caller.organizationId, "agent_gateway.request_pending", { requestId: row.id, agentName, actionKind: action.actionKind, environment: action.environment, target: action.target.slice(0, 200), riskLevel: policy.riskLevel, expiresAt: row.expiresAt.toISOString(), reviewUrl: "/dashboard/agent-gateway" });
   return { ok: true as const, request: publicRequest(row, now), impact };
 }
 
@@ -72,6 +79,7 @@ export async function recordGatewayOutcome(caller: GatewayCaller, id: string, ra
   const saved = await prisma.agentGatewayRequest.updateMany({ where: { id: row.id, status: "approved", outcome: null }, data: { outcome, outcomeDetail: detail, outcomeAt: new Date(), status: outcome === "succeeded" ? "completed" : "failed" } });
   if (saved.count !== 1) return { ok: false as const, error: "not_reportable", status: 409 };
   await audit(caller.organizationId, "agent_gateway.outcome", row.id, `${row.agentName} reported ${outcome} for ${row.actionKind}`, null);
+  await notify(caller.organizationId, "agent_gateway.outcome_recorded", { requestId: row.id, agentName: row.agentName, actionKind: row.actionKind, outcome });
   const fresh = await prisma.agentGatewayRequest.findFirst({ where: { id: row.id, organizationId: caller.organizationId } });
   return { ok: true as const, request: publicRequest(fresh!) };
 }
@@ -92,6 +100,7 @@ export async function decideGatewayRequest(input: { organizationId: string; user
   const saved = await prisma.agentGatewayRequest.updateMany({ where: { id: row.id, status: "pending", actionDigest: row.actionDigest }, data: { status, decidedByUserId: input.userId, decidedAt: now, decisionNote: note } });
   if (saved.count !== 1) return { ok: false as const, error: "not_pending", status: 409 };
   await audit(input.organizationId, `agent_gateway.${status}`, row.id, `${status} ${row.agentName} ${row.actionKind} on ${row.target.slice(0, 80)}`, input.userId);
+  await notify(input.organizationId, "agent_gateway.request_decided", { requestId: row.id, agentName: row.agentName, actionKind: row.actionKind, decision: status, decidedByUserId: input.userId });
   const fresh = await prisma.agentGatewayRequest.findFirst({ where: { id: row.id, organizationId: input.organizationId } });
   return { ok: true as const, request: publicRequest(fresh!, now) };
 }
