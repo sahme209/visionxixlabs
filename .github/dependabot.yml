@@ -19,7 +19,8 @@ updates:
       - { dependency-name: "next" }
       - { dependency-name: "eslint-config-next" }
       - { dependency-name: "@aws-sdk/*" }
-      # Vitest: test-child fixture pins the reviewed 4.1.11 build and preload hash.
+      # Vitest minors/patches: the test-child fixture pins the version and preload hash, so
+      # each bump re-checks suppress-warnings.cjs (unchanged 4.1.11 -> 4.1.12) and updates the pin.
       - { dependency-name: "vitest" }
       # Stripe 23 also changes HttpClient types;
       # ai 7 moves the AI Gateway endpoint pinned by the dispatch tests.
