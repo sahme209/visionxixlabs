@@ -296,7 +296,7 @@
     {
       "href": "/docs/trust-tools",
       "source": "app/docs/trust-tools/page.tsx",
-      "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc",
+      "sourceSha256": "e22251b2b612c4c91d737cb14b01ba4e8e6a6bcdd0ea10515e7a547ca93b42ec",
       "fields": [
         "Prove, replay, preview.",
         "Three read-only tools on Control → Trust tools. Each states its limits.",
@@ -335,7 +335,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1",
+      "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9",
       "fields": [
         "Ask Axiom.",
         "The support chat answers from Axiom's public docs with sources, and can help with your own workspace when you are signed in.",

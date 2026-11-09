@@ -47,17 +47,43 @@ function AuditPanel({ organizationId, canSeal }: { organizationId: string; canSe
     setOut(r.ok ? (s ? `Sealed ${s.eventCount} events as seal #${s.sequence}. Keep this fingerprint somewhere outside Axiom: ${s.sealHash}` : "Nothing new to seal.") : `Could not seal (${r.error}).`);
     setBusy(false);
   }
+  async function checkAnchor(file: File | undefined) {
+    if (!file) return;
+    if (file.size > 8_000) { setOut("That file is too large to be an anchor."); return; }
+    setBusy(true);
+    let anchor: unknown = null;
+    try { anchor = JSON.parse(await file.text()); } catch { /* reported below */ }
+    const r = anchor === null ? { ok: false, error: "not_json" } : await call("/api/audit/anchor", { method: "POST", body: JSON.stringify({ organizationId, anchor }) });
+    const res = r.result as Json | undefined;
+    setOut(!r.ok ? `Could not check the anchor (${r.error}).` : ANCHOR_MESSAGES[String(res?.status)]?.(res!) ?? "Unexpected result.");
+    setBusy(false);
+  }
   return (
     <Panel title="Tamper-evident audit" lead="Seals fingerprint the audit log in a chain. Verifying shows any edited, deleted or inserted event.">
       <div className="flex flex-wrap gap-2">
         <button type="button" disabled={busy} onClick={() => void verify()} className="rounded-lg bg-zinc-100 px-3 py-1.5 text-sm font-medium text-zinc-950 disabled:opacity-50">Verify</button>
         {canSeal && <button type="button" disabled={busy} onClick={() => void seal()} className="rounded-lg border border-white/15 px-3 py-1.5 text-sm text-zinc-200 disabled:opacity-50">Seal now</button>}
       </div>
+      <div className="mt-3 flex flex-wrap items-center gap-2 text-sm">
+        <a href={`/api/audit/anchor?organizationId=${encodeURIComponent(organizationId)}`} className="rounded-lg border border-white/15 px-3 py-1.5 text-zinc-200 hover:bg-white/5">Download anchor</a>
+        <label className={`cursor-pointer rounded-lg border border-white/15 px-3 py-1.5 text-zinc-200 hover:bg-white/5 ${busy ? "pointer-events-none opacity-50" : ""}`}>
+          Check a kept anchor
+          <input type="file" accept="application/json,.json" className="sr-only" disabled={busy} onChange={(e) => { void checkAnchor(e.target.files?.[0]); e.target.value = ""; }} />
+        </label>
+      </div>
       {out && <p role="status" className="mt-3 break-words text-sm text-zinc-300">{out}</p>}
-      <p className="mt-3 text-xs text-zinc-500">Evidence, not prevention. Store the latest fingerprint outside Axiom to detect a rewritten chain.</p>
+      <p className="mt-3 text-xs text-zinc-500">Evidence, not prevention. Keep the anchor file somewhere Axiom cannot write (a ticket, a vault, an email to auditors). Checking it later shows whether the chain up to it was rewritten. It contains no event content.</p>
     </Panel>
   );
 }
+
+const ANCHOR_MESSAGES: Record<string, (r: Json) => string> = {
+  matches: (r) => `Anchor matches seal #${r.sequence}${Number(r.laterSeals) ? `, with ${r.laterSeals} later seal${r.laterSeals === 1 ? "" : "s"}` : ""}. Run Verify to check the events under it.`,
+  hash_mismatch: (r) => `Seal #${r.sequence} no longer matches this anchor. The chain was rewritten after the anchor was saved.`,
+  seal_missing: (r) => `Seal #${r.sequence} is missing from the chain. The chain was rewritten or truncated after the anchor was saved.`,
+  other_workspace: () => "This anchor belongs to a different workspace.",
+  invalid_anchor: (r) => (r.reason === "digest" ? "This anchor file was edited, so it cannot be trusted." : r.reason === "schema" ? "This is not an Axiom audit anchor this version understands." : "This is not a valid Axiom audit anchor."),
+};
 
 function ReplayPanel({ organizationId }: { organizationId: string }) {
   const [preset, setPreset] = useState("block_high"); const [busy, setBusy] = useState(false); const [out, setOut] = useState<Json | null>(null); const [error, setError] = useState<string | null>(null);

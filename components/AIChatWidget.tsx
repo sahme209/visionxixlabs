@@ -12,6 +12,7 @@ import {
 } from "@heroicons/react/24/outline";
 import { SparklesIcon } from "@heroicons/react/24/solid";
 import { SUPPORT_EMAIL } from "@/lib/constants/company";
+import { classifySupportAction, SUPPORT_ACTION_INFO, type SupportAction } from "@/lib/support/supportActions";
 
 interface Message {
   id: string;
@@ -27,6 +28,8 @@ interface Message {
   unsure?: boolean;
   /** Signed-in member asked for more access: show the request form. */
   accessForm?: boolean;
+  /** Signed-in member asked for something Ask Axiom can do: offer that one governed action. */
+  supportAction?: SupportAction;
 }
 
 const MSG_KEY = "visionxix-ai-widget-messages";
@@ -119,6 +122,8 @@ export default function AIChatWidget() {
       if (data.guard !== "secret_pasted") {
         const acct = await fetch("/api/support/account-answer", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ question: text }) }).then((r) => (r.ok ? r.json() : null)).catch(() => null);
         if (acct?.ok && acct.answered) { data.answer = acct.answer; data.sources = acct.sources; data.accessForm = acct.intent === "access_request"; }
+        // Offering is not permission: the server re-checks role and exact confirmation.
+        if (acct?.ok) data.supportAction = classifySupportAction(text) ?? undefined;
       }
 
       const assistantMsg: Message = {
@@ -131,6 +136,7 @@ export default function AIChatWidget() {
         mode: "grounded",
         unsure: data.status === "suggestions" && !data.accessForm,
         accessForm: Boolean(data.accessForm),
+        supportAction: data.supportAction,
       };
       setMessages((prev) => [...prev, assistantMsg]);
     } catch {
@@ -256,6 +262,7 @@ export default function AIChatWidget() {
                       )}
                       <p className="whitespace-pre-wrap leading-relaxed">{m.content}</p>
                       {m.role === "assistant" && m.accessForm && <AccessRequestForm />}
+                      {m.role === "assistant" && m.supportAction && <SupportActionCard action={m.supportAction} />}
                       {m.role === "assistant" && m.mode === "grounded" && m.question && m.unsure && (
                         <a href={`/contact?topic=ask-axiom&question=${encodeURIComponent(m.question.slice(0, 500))}`} className="mt-2 mr-3 inline-block text-[11px] text-zinc-300 underline underline-offset-2 hover:text-white">Send this question to support</a>
                       )}
@@ -345,6 +352,41 @@ function AccessRequestForm() {
       <input id="ask-axiom-reason" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} className="w-full rounded border border-white/10 bg-black/30 px-2 py-1" placeholder="e.g. I approve staging releases for the web team" />
       <button type="button" disabled={busy} onClick={() => void send()} className="rounded bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Ask an admin</button>
       {state && <p role="alert" className="text-rose-300">{state}</p>}
+    </div>
+  );
+}
+
+const ACTION_ERRORS: Record<string, string> = {
+  role_not_allowed: "Your role cannot run this. Ask a workspace admin.",
+  rate_limited: "Too many requests. Please wait a minute.",
+  seal_conflict: "Another seal finished at the same moment. Try again.",
+};
+
+/** One governed action, shown with exactly what it does; runs only after the person confirms it. */
+function SupportActionCard({ action }: { action: SupportAction }) {
+  const info = SUPPORT_ACTION_INFO[action];
+  const [confirming, setConfirming] = useState(false); const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<{ ok: boolean; text: string } | null>(null);
+  async function run() {
+    setBusy(true);
+    const r = await fetch("/api/support/action", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ action, confirmed: action }) }).then((x) => x.json()).catch(() => null);
+    setResult(r?.ok ? { ok: true, text: String(r.message) } : { ok: false, text: ACTION_ERRORS[r?.error] ?? "Could not run this action." });
+    setBusy(false); setConfirming(false);
+  }
+  if (result) return <p role={result.ok ? "status" : "alert"} className={`mt-2 text-[11px] ${result.ok ? "text-emerald-300" : "text-rose-300"}`}>{result.text}{result.ok && <> <Link href="/control/trust-tools" className="underline">Trust tools</Link></>}</p>;
+  return (
+    <div className="mt-2 space-y-1.5 border-t border-white/[0.06] pt-2 text-[11px]">
+      {!confirming ? (
+        <button type="button" onClick={() => setConfirming(true)} className="rounded border border-white/15 px-2 py-1 font-medium text-zinc-100 hover:bg-white/5">{info.label}</button>
+      ) : (
+        <>
+          <p className="text-zinc-300">{info.confirmText}</p>
+          <div className="flex gap-1.5">
+            <button type="button" disabled={busy} onClick={() => void run()} className="rounded bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Confirm: {info.label.toLowerCase()}</button>
+            <button type="button" disabled={busy} onClick={() => setConfirming(false)} className="rounded px-2 py-1 text-zinc-400 hover:text-zinc-200">Cancel</button>
+          </div>
+        </>
+      )}
     </div>
   );
 }

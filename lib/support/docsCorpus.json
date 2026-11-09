@@ -83,28 +83,28 @@
    "title": "Answers from the docs",
    "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask Axiom is not confident, it shows the closest guides and offers to send your question to support.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask Axiom can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
-   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles, approves actions or runs anything; admins and approvers decide.",
+   "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide. It can also run two fixed audit actions, governed like any other agent: seal the audit log (owners and admins) and verify the audit log (any member). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; verifying is read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "ae39cd26b1d9b6de1c33437755a9411b951df27ec4e373e667410aab78001ad1"
+   "sourceSha256": "532bbeff98c2793fa5a1ee546bfb4c52fa001164616c87455edc607d9f6234d9"
   },
   {
    "href": "/docs/audit-logs#record",
@@ -634,23 +634,23 @@
   {
    "href": "/docs/trust-tools#seal",
    "title": "Seal and verify the audit log",
-   "text": "Owners and admins seal recent audit events. Each seal fingerprints a window of events and links to the previous seal, forming a chain. Anyone in the workspace can verify: the result is intact, or names the seal whose events changed or whose link broke. Sealing does not stop someone from changing data; it makes the change visible. Store the latest seal fingerprint outside Axiom so a rewritten chain is also detectable.",
+   "text": "Owners and admins seal recent audit events. Each seal fingerprints a window of events and links to the previous seal, forming a chain. Anyone in the workspace can verify: the result is intact, or names the seal whose events changed or whose link broke. Because someone who can rewrite the database could also rebuild the chain, download an anchor after sealing and keep it somewhere Axiom cannot write, such as a ticket, a vault or an email to your auditors. The anchor holds the latest seal's fingerprint and no event content. Later, choose Check a kept anchor : Axiom reports whether that seal still matches, is missing or was rewritten, and refuses an anchor file that was edited or belongs to another workspace. Sealing does not stop someone from changing data; it makes the change visible. Store the latest seal fingerprint outside Axiom so a rewritten chain is also detectable.",
    "source": "app/docs/trust-tools/page.tsx",
-   "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc"
+   "sourceSha256": "e22251b2b612c4c91d737cb14b01ba4e8e6a6bcdd0ea10515e7a547ca93b42ec"
   },
   {
    "href": "/docs/trust-tools#replay",
    "title": "Replay a draft rule",
    "text": "Pick a draft rule and replay it over up to 90 days of real approval history, through the same rule engine production uses. You see how many actions it would newly block or auto-approve, and each changed action. Nothing is enabled or saved. History does not store a finding category, so rules that match on category are skipped and named rather than guessed.",
    "source": "app/docs/trust-tools/page.tsx",
-   "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc"
+   "sourceSha256": "e22251b2b612c4c91d737cb14b01ba4e8e6a6bcdd0ea10515e7a547ca93b42ec"
   },
   {
    "href": "/docs/trust-tools#impact",
    "title": "Preview a change",
    "text": "Paste the changed file paths. The preview lists the areas touched (migrations, CI, auth, infrastructure, dependencies, secrets, API, frontend, tests, docs), the blast radius, whether a rollback plan is needed, and what a reviewer should check. It reads file names only, never contents.",
    "source": "app/docs/trust-tools/page.tsx",
-   "sourceSha256": "62d72a2e9c20877dc1566b2679017ac17a35e659b3d04e88c2fca084c73f81fc"
+   "sourceSha256": "e22251b2b612c4c91d737cb14b01ba4e8e6a6bcdd0ea10515e7a547ca93b42ec"
   }
  ]
 }
