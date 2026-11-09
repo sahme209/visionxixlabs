@@ -238,7 +238,7 @@ Let any AI agent (Cursor, Claude Code, Codex, your own) ask Axiom before it acts
 | `axiom_get_approval` | `governance:read` | Proceed only when `mayProceed` is `true`. Approvals expire after 24h. |
 | `axiom_record_outcome` | `governance:request` | `succeeded` / `failed` / `abandoned`, once. |
 
-Production secret reads and production deletes are always denied. The admin who minted the key cannot approve its requests. Agents self-report their actions, so this is a cooperative control point, not a sandbox.
+Pass optional `changedFiles` (paths) and Axiom adds a change impact preview: changes touching migrations, CI, auth, infrastructure or secrets, or with a wide blast radius, always need approval. Production secret reads and production deletes are always denied. The admin who minted the key cannot approve its requests. Agents self-report their actions, so this is a cooperative control point, not a sandbox.
 
 ### Approval decide — quorum semantics
 

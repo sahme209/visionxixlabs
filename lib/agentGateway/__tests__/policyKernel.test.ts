@@ -60,3 +60,33 @@ describe("agent gateway policy kernel", () => {
     expect(mayProceed({ status: "completed", policyDecision: "allow", expiresAt: later }, now).proceed).toBe(true);
   });
 });
+
+import { evaluateGatewayPolicyWithImpact } from "../policyKernel";
+describe("gateway policy with change impact (A13)", () => {
+  const base = { actionKind: "code_change" as const, environment: "development" as const, target: "acme/web", summary: "Edit" };
+  it("leaves a contained change allowed and reports the impact", () => {
+    const r = evaluateGatewayPolicyWithImpact({ ...base, changedFiles: ["lib/x.ts", "lib/__tests__/x.test.ts"] });
+    expect(r.decision).toBe("allow");
+    expect(r.impact?.blastRadius).toBe("contained");
+  });
+  it("escalates a code change that touches a migration or CI to approval", () => {
+    for (const f of ["prisma/migrations/1/migration.sql", ".github/workflows/deploy.yml", ".env.production"]) {
+      const r = evaluateGatewayPolicyWithImpact({ ...base, changedFiles: [f] });
+      expect(r.decision).toBe("require_approval");
+      expect(r.reasons.join(" ")).toMatch(/Impact preview/);
+    }
+  });
+  it("never loosens a deny or lowers risk", () => {
+    expect(evaluateGatewayPolicyWithImpact({ ...base, actionKind: "secret_access", environment: "production", changedFiles: ["README.md"] }).decision).toBe("deny");
+    expect(evaluateGatewayPolicyWithImpact({ ...base, actionKind: "deploy", environment: "production", changedFiles: ["README.md"] }).riskLevel).toBe("high");
+  });
+  it("binds the digest to the changed files", () => {
+    const a = gatewayActionDigest("o", "k", { ...base, changedFiles: ["a.ts", "b.ts"] });
+    expect(gatewayActionDigest("o", "k", { ...base, changedFiles: ["b.ts", "a.ts"] })).toBe(a);
+    expect(gatewayActionDigest("o", "k", { ...base, changedFiles: ["a.ts"] })).not.toBe(a);
+  });
+  it("rejects malformed changed files", () => {
+    expect(parseGatewayAction({ ...base, changedFiles: "x" })).toEqual({ ok: false, error: "invalid_changed_files" });
+    expect(parseGatewayAction({ ...base, changedFiles: [""] })).toEqual({ ok: false, error: "invalid_changed_files" });
+  });
+});

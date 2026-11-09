@@ -267,6 +267,8 @@ type AgentActionInput struct {
 	Target      string `json:"target"`
 	Summary     string `json:"summary"`
 	AgentName   string `json:"agentName,omitempty"`
+	// ChangedFiles lists touched paths; sensitive or wide changes always need approval.
+	ChangedFiles []string `json:"changedFiles,omitempty"`
 }
 
 // AgentPolicyResponse is returned by CheckAgentAction.

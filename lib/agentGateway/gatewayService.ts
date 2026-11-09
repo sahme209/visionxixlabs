@@ -3,7 +3,7 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import {
-  APPROVAL_TTL_MS, evaluateGatewayPolicy, gatewayActionDigest, isOutcome, mayProceed, parseGatewayAction,
+  APPROVAL_TTL_MS, evaluateGatewayPolicyWithImpact, gatewayActionDigest, isOutcome, mayProceed, parseGatewayAction,
   type GatewayOutcome, type PolicyResult,
 } from "./policyKernel";
 
@@ -31,25 +31,27 @@ async function audit(organizationId: string, kind: string, subjectId: string, su
 }
 
 /** Policy check only: nothing is stored. */
-export function checkPolicy(raw: unknown): { ok: true; policy: PolicyResult } | { ok: false; error: string } {
+export function checkPolicy(raw: unknown): { ok: true; policy: PolicyResult; impact: unknown } | { ok: false; error: string } {
   const parsed = parseGatewayAction(raw);
-  return parsed.ok ? { ok: true, policy: evaluateGatewayPolicy(parsed.value) } : parsed;
+  if (!parsed.ok) return parsed;
+  const { impact, ...policy } = evaluateGatewayPolicyWithImpact(parsed.value);
+  return { ok: true, policy, impact };
 }
 
 export async function createGatewayRequest(caller: GatewayCaller, raw: unknown, now = new Date()) {
   const parsed = parseGatewayAction(raw);
   if (!parsed.ok) return parsed;
-  const { agentName, ...action } = parsed.value;
-  const policy = evaluateGatewayPolicy(action);
+  const { agentName, changedFiles, ...action } = parsed.value;
+  const { impact, ...policy } = evaluateGatewayPolicyWithImpact({ ...action, changedFiles });
   const status = policy.decision === "deny" ? "rejected" : policy.decision === "allow" ? "approved" : "pending";
   const row = await prisma.agentGatewayRequest.create({ data: {
     organizationId: caller.organizationId, apiKeyId: caller.apiKeyId, agentName, ...action,
     riskLevel: policy.riskLevel, policyDecision: policy.decision, policyReasons: policy.reasons,
-    actionDigest: gatewayActionDigest(caller.organizationId, caller.apiKeyId, action),
+    actionDigest: gatewayActionDigest(caller.organizationId, caller.apiKeyId, { ...action, changedFiles }),
     status, expiresAt: new Date(now.getTime() + APPROVAL_TTL_MS),
   } });
   await audit(caller.organizationId, "agent_gateway.request", row.id, `${agentName} requested ${action.actionKind} on ${action.target.slice(0, 80)} (${policy.decision})`, null);
-  return { ok: true as const, request: publicRequest(row, now) };
+  return { ok: true as const, request: publicRequest(row, now), impact };
 }
 
 export async function getGatewayRequest(caller: GatewayCaller, id: string) {
