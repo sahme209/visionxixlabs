@@ -1,9 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
 
-const io = vi.hoisted(() => ({ session: vi.fn(), find: vi.fn(), updateMany: vi.fn(), create: vi.fn(), audit: vi.fn(), probe: vi.fn(), parse: vi.fn() }));
+const io = vi.hoisted(() => ({ session: vi.fn(), find: vi.fn(), updateMany: vi.fn(), create: vi.fn(), audit: vi.fn(), probe: vi.fn(), parse: vi.fn(), enrollment: vi.fn(async () => [] as unknown[]) }));
 vi.mock("@/lib/db", () => ({ prisma: {
   tenantIntegrationConnection: { findUnique: io.find },
+  durableAgentWorkflow: { findMany: io.enrollment },
   $transaction: async (fn: (tx: unknown) => unknown) => fn({ tenantIntegrationConnection: { updateMany: io.updateMany, create: io.create } }),
 } }));
 vi.mock("@/lib/desktop/resolveRequestDesktopSession", () => ({ resolveRequestDesktopSession: io.session }));
@@ -62,6 +63,16 @@ describe("batch connection route", () => {
     expect(JSON.stringify(saved)).not.toContain("pk_live_secret");
     expect(saved.scopesJson).toEqual({ baseUrl: "https://api.prefect.cloud/api", inventoryCount: 4 });
     expect(JSON.stringify(body)).not.toContain("pk_live_secret");
+  });
+
+  it("PUT refuses a brand-new connection while the workspace is enrolled, before any provider I/O", async () => {
+    io.find.mockResolvedValue(null);
+    io.enrollment.mockResolvedValueOnce([{ id: "governance_active_fixture", organizationId: "org", workflowKind: "governance_baseline_active_v1" }]);
+    const res = await PUT(req("PUT", { baseUrl: "https://api.prefect.cloud/api", token: "pk_live_secret" }), ctx());
+    expect(res.status).toBe(409);
+    expect((await res.json()).error).toBe("governance_enrolled_connection_increase");
+    expect(io.probe).not.toHaveBeenCalled();
+    expect(io.create).not.toHaveBeenCalled();
   });
 
   it("PUT refuses when the manager session changed during provider I/O", async () => {

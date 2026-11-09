@@ -6,6 +6,7 @@ import { encryptScopedCredential } from "@/lib/security/credentialVault";
 import { connectionCredentialContext } from "@/lib/integrations/tenantAuthorization";
 import { BATCH_DESCRIPTORS, isBatchProvider, publicBatchError, type BatchMetadata, type BatchProvider } from "@/lib/integrations/batch/batchProviders";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
@@ -66,6 +67,8 @@ export async function PUT(request: NextRequest, ctx: Ctx): Promise<Response> {
     // Captured before provider I/O, so an older validation cannot undo a later disconnect.
     const existing = await prisma.tenantIntegrationConnection.findUnique({ where: { organizationId_provider: { organizationId, provider } }, select: mutationSelect });
     const expected = existing ? observedWhere(existing) : null;
+    // Governance M03: a brand-new connection waits while enrolled; reconnecting or disconnecting an existing one still works.
+    if (!existing && !await workspaceUnenrolled(organizationId)) return NextResponse.json({ ok: false, error: "governance_enrolled_connection_increase" }, { status: 409 });
     const inventoryCount = await descriptor.probe(descriptor.client(input.baseUrl, input.token, input.namespace));
     await assertSameManager(request, "PUT", provider, session);
     const connectionId = existing?.id ?? randomUUID();

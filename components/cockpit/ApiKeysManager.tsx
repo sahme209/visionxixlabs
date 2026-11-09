@@ -24,7 +24,7 @@ export function ApiKeysManager() {
   async function create() {
     setBusy(true); setError(null); setSecret(null);
     const r = await fetch("/api/control/api-keys", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ name, scopes, expiresInDays: days }) }).then((x) => x.json()).catch(() => null);
-    if (r?.ok) { setSecret(r.apiKey.plaintext); setName(""); await load(); } else setError(r?.error === "too_many_keys" ? "This workspace already has 20 active keys. Revoke one first." : `Could not create the key (${r?.error ?? "error"}).`);
+    if (r?.ok) { setSecret(r.apiKey.plaintext); setName(""); await load(); } else setError(r?.error === "too_many_keys" ? "This workspace already has 20 active keys. Revoke one first." : r?.error === "governance_enrolled_credential_increase" ? "This workspace is enrolled in Governance, so new keys wait until key creation has reviewed Governance coverage. Revoking keys still works." : `Could not create the key (${r?.error ?? "error"}).`);
     setBusy(false);
   }
   async function revoke(id: string) {

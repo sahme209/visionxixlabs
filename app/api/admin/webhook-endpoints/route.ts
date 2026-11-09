@@ -26,6 +26,7 @@ import {
   normalizeEventKinds,
 } from "@/lib/webhooks/webhookEventKinds";
 import { validateWebhookUrl } from "@/lib/webhooks/selectDeliveriesForEvent";
+import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
 
 export const dynamic = "force-dynamic";
 
@@ -78,6 +79,10 @@ export async function POST(req: NextRequest) {
 
   // HMAC secret: 32 random bytes hex-encoded. Operator stores this
   // verbatim in their integrator's signature verifier.
+  // Governance M04: a new outbound destination waits while the workspace is enrolled.
+  if (!await workspaceUnenrolled(body.organizationId)) {
+    return NextResponse.json({ ok: false, reason: "governance_enrolled_destination_increase" }, { status: 409 });
+  }
   const secret = randomBytes(32).toString("hex");
 
   const row = await prisma.webhookEndpoint.create({
