@@ -1,0 +1,38 @@
+name: Dependency fix PR
+
+# Runs `npm audit fix` (no --force: no breaking upgrades) on GitHub's runners,
+# because local installs are blocked, and opens a PR. The PR must pass the full
+# Test check before anyone merges it. Manual trigger only.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+      - name: Apply non-breaking fixes
+        run: |
+          npm audit fix --omit=dev --ignore-scripts || true
+          (cd desktop && npm audit fix --omit=dev --ignore-scripts || true)
+      - name: Open PR if anything changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then echo "No changes"; exit 0; fi
+          branch="deps/audit-fix-${{ github.run_id }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$branch"
+          git commit -am "deps: npm audit fix (non-breaking)"
+          git push origin "$branch"
+          after=$(npm audit --omit=dev --audit-level=high >/dev/null 2>&1 && echo "none" || echo "some remain (likely need breaking upgrades)")
+          gh pr create --title "deps: npm audit fix (non-breaking)" --body "Automated by dependency-fix.yml: \`npm audit fix\` without \`--force\`. High-severity findings after the fix: ${after}. Must pass the full Test check before merge."
