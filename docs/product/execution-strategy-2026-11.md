@@ -72,6 +72,7 @@ Deadline risk: the plan rates full scope by Nov 23 as high-risk. Risk is reporte
 | 2026-11-08 | CI: Test split into parallel jobs (typecheck, 3 Vitest shards, build) behind the same required check; wall time ~9.5 → ~6 min | user; PR #229 |
 | 2026-11-08 | A8: Dagster read-only inventory client (fixed GraphQL queries only, no caller-supplied GraphQL, no mutations). Wiring and live acceptance open | Claude; PR feat/dagster-readonly-client |
 | 2026-11-08 | A8: Batches wiring. Shared connection route and loader plus a read-only observation executor for Prefect, Dagster and Argo, reusing TenantIntegrationConnection (no migration). Agent allowlist registration and desktop UI held for review | Claude; PR feat/batch-providers-wiring |
+| 2026-11-09 | **A11 tamper-evident audit** (seal chain over AuditEvent windows, verify detects edited/deleted/inserted events and broken links; additive AuditSeal table), **A12 policy replay** (draft rules replayed through the production resolver over 30 days of approval history; category rules skipped and named, never widened), **A13 change impact preview** (path-based areas, blast radius, rollback outlook, reviewer checks). One page: /dashboard/trust-tools | Claude; PR feat/audit-seal-chain |
 
 ## Open decisions (owner: user)
 Each reconcile write step (at execution time); a separate Preview DB; UID501 diagnostic; directory-shape decision; paid signed release run and publication; commercial model details and billing vendor; browser access for B1; any C-workstream authorization; the competitive-edge proposals below.
