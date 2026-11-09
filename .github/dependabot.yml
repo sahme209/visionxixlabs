@@ -21,9 +21,10 @@ updates:
       - { dependency-name: "@aws-sdk/*" }
       # Vitest: test-child fixture pins the reviewed 4.1.11 build and preload hash.
       - { dependency-name: "vitest" }
-      # Stripe 23 moves the API version and HttpClient types (billing behaviour);
+      # Stripe 23 also changes HttpClient types;
       # ai 7 moves the AI Gateway endpoint pinned by the dispatch tests.
-      - { dependency-name: "stripe", update-types: ["version-update:semver-major"] }
+      # Stripe: any release can move the pinned API version (billing behaviour).
+      - { dependency-name: "stripe" }
       - { dependency-name: "ai", update-types: ["version-update:semver-major"] }
       - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
       - { dependency-name: "tailwindcss", update-types: ["version-update:semver-major"] }
