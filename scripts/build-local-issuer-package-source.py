@@ -377,11 +377,11 @@ def framework_type_profile(stage):
  stage=Path(stage);config=_build_bytes(stage/'next.config.ts',1024*1024)
  if sha(config)!=NEXT_TYPES_CONFIG_SHA256:fail('unsupported_framework_type_configuration')
  package=json_data(_build_bytes(stage/'node_modules/next/package.json',1024*1024))
- if not isinstance(package,dict)or package.get('version')!='16.4.2':fail('unsupported_framework_type_version')
+ if not isinstance(package,dict)or package.get('version')!='16.4.5':fail('unsupported_framework_type_version')
  if not(stage/'app').is_dir()or(stage/'app').is_symlink()or(stage/'app').resolve()!=stage/'app':fail('unsupported_framework_app_profile')
  if any(path.exists()or path.is_symlink()for path in [stage/'pages',stage/'src/pages']):fail('unsupported_framework_pages_profile')
  writer=_build_bytes(stage/'node_modules/next/dist/lib/typescript/writeAppTypeDeclarations.js',1024*1024)
- return {'profile':'next-16.4.2-darwin-app-default-types/1','file':'next-env.d.ts','mode':0o644,
+ return {'profile':'next-16.4.5-darwin-app-default-types/1','file':'next-env.d.ts','mode':0o644,
          'expectedSha256':sha(NEXT_APP_DECLARATION),'configSha256':sha(config),'writerSha256':sha(writer)}
 def verify_framework_declaration(stage):
  stage=Path(stage);profile=framework_type_profile(stage);path=stage/'next-env.d.ts';before=path.lstat()

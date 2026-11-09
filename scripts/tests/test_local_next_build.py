@@ -57,7 +57,7 @@ class SourceInputs(unittest.TestCase):
   with tempfile.TemporaryDirectory(prefix='axiom-next-types-fixture-',dir='/private/tmp')as tmp:
    root=Path(tmp);root.chmod(0o700);stage=root/'stage';stage.mkdir(mode=0o700);(stage/'app').mkdir();(stage/'app/page.tsx').write_bytes(b'FIXTURE NEVER COMPILED')
    config=(pinned/'next.config.ts').read_bytes();(stage/'next.config.ts').write_bytes(config)
-   destination=stage/'node_modules/next/dist/lib/typescript/writeAppTypeDeclarations.js';destination.parent.mkdir(parents=True);destination.write_bytes(writer.read_bytes());(stage/'node_modules/next/package.json').write_text('{"version":"16.4.2"}')
+   destination=stage/'node_modules/next/dist/lib/typescript/writeAppTypeDeclarations.js';destination.parent.mkdir(parents=True);destination.write_bytes(writer.read_bytes());(stage/'node_modules/next/package.json').write_text('{"version":"16.4.5"}')
    code="require(process.argv[1]).writeAppTypeDeclarations({baseDir:process.argv[2],distDir:'.next',imageImportsEnabled:true,hasPagesDir:false,hasAppDir:true,strictRouteTypes:false,typedRoutes:false}).catch(()=>process.exit(1))"
    profile='(version 1)(allow default)(deny network*)(deny file-write*)(allow file-write* (subpath '+json.dumps(str(stage))+'))'
    child=subprocess.run(['/usr/bin/sandbox-exec','-p',profile,str(NODE),'-e',code,str(destination),str(stage)],env={'PATH':'/usr/bin:/bin','LANG':'C'},capture_output=True,timeout=5,preexec_fn=lambda:os.umask(0o022))

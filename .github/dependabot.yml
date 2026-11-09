@@ -16,6 +16,7 @@ updates:
     # Platform migrations get their own planned PR (see docs/product/remaining-work.md),
     # so they do not block the weekly major batch.
     ignore:
+      # Next.js: each bump re-checks the pinned framework/closure files (16.4.2 -> 16.4.5 unchanged) and re-pins.
       - { dependency-name: "next" }
       - { dependency-name: "eslint-config-next" }
       - { dependency-name: "@aws-sdk/*" }

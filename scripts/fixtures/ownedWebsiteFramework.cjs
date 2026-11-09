@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- Test-only preload must precede Next consumers. */
 'use strict';
 // Website-specific adaptation of the independently reviewed ownedNextFrameworkMode.cjs.
-// Reviewed against the locked Next16.4.2 registry archive. Exact hashes remain
+// Reviewed against the locked Next16.4.5 registry archive (reviewed internals byte-identical to 16.4.2). Exact hashes remain
 // mandatory; the sole default change is unchanged and no Agent context is accepted.
 const assert = require('node:assert/strict');
 const { createHash } = require('node:crypto');
@@ -15,7 +15,7 @@ const sourcePins = {
   'tsconfig.next.json': 'd2027302038c7fb1276839fba23a1418489a1e36faa74bbc2e520392e0191e45',
 };
 const dependencyPins = {
-  'next/package.json': 'e84ada0a68191fed192392bfb8ee35ad4ed8e7439f645a40dd48cf139588ddc5',
+  'next/package.json': '76f5b7ef447577c2855eee017ae8a47aeefc1e4c95e71387b66c2671283682c8',
   'next/dist/server/config-shared.js': 'cc8b6197fd97a12b0d9257c9d7d4288347053fc8712b021d03c3bfad7a19cdd3',
   'next/dist/build/load-jsconfig.js': 'b313de8c53ff3f060b18d199743fa48b0a59ce57b28b95d6095e6104d5163621',
   'next/dist/lib/typescript/runTypeScriptCli.js': '9462f0a83eb0c24e7cd1c33d22abade44e63664ff2897a74ddb88b70abe3c16a',
@@ -31,9 +31,9 @@ function captureOwnedWebsiteFramework(root) {
   assert.deepEqual(sourceHashes, sourcePins, 'owned_framework_source_pins');
   for (const [specifier, expected] of Object.entries(dependencyPins)) assert.equal(digest(require.resolve(specifier)), expected, 'owned_framework_dependency_pin');
   const lock = JSON.parse(readFileSync(join(rootPath, 'package-lock.json'), 'utf8'));
-  assert.equal(lock.packages['node_modules/next'].version, '16.4.2', 'owned_framework_next_version');
+  assert.equal(lock.packages['node_modules/next'].version, '16.4.5', 'owned_framework_next_version');
   assert.equal(lock.packages['node_modules/typescript'].version, '5.9.3', 'owned_framework_typescript_version');
-  assert.equal(JSON.parse(readFileSync(require.resolve('next/package.json'), 'utf8')).version, '16.4.2', 'owned_framework_next_version');
+  assert.equal(JSON.parse(readFileSync(require.resolve('next/package.json'), 'utf8')).version, '16.4.5', 'owned_framework_next_version');
   assert.equal(JSON.parse(readFileSync(require.resolve('typescript/package.json'), 'utf8')).version, '5.9.3', 'owned_framework_typescript_version');
   return { root: rootPath, runtime: { node: process.versions.node, platform: process.platform, arch: process.arch, executable: realpathSync(process.execPath), executableSha256: digest(process.execPath) }, sourceHashes };
 }
@@ -55,7 +55,7 @@ function installOwnedWebsiteFramework({ root, role, environment, identity }) {
     report() {
       assert.deepEqual(identity, captureOwnedWebsiteFramework(root), 'owned_framework_identity_changed');
       assert.deepEqual(Object.getOwnPropertyDescriptor(defaults, 'useTypeScriptCli'), modified, 'owned_framework_default_changed');
-      return { mode: 'owned-website-typescript-api', productionEquivalent: false, identity, nextVersion: '16.4.2', typescriptVersion: '5.9.3' };
+      return { mode: 'owned-website-typescript-api', productionEquivalent: false, identity, nextVersion: '16.4.5', typescriptVersion: '5.9.3' };
     },
     restore() {
       assert.ok(installed?.handle === handle, 'owned_framework_restore_lifetime');

@@ -1,7 +1,7 @@
 {
   "format": "axiom.fixture-producer-compiler-closure/1",
   "versions": {
-    "next": "16.4.2",
+    "next": "16.4.5",
     "zod": "4.3.6"
   },
   "sourceFiles": {
@@ -65,7 +65,7 @@
     "node_modules/next/dist/shared/lib/router/utils/path-has-prefix.js": "aee5631bbca1001d9b6a8765d1040f9ce9d397314f5b5cf866476762c38041c8",
     "node_modules/next/dist/shared/lib/router/utils/remove-path-prefix.js": "85d91439c977342fff1dec35302572dfdbe9d819be01b16beba86521b49fa0d4",
     "node_modules/next/dist/shared/lib/router/utils/remove-trailing-slash.js": "0bfe5011aafb5d56cece7eb5a6b7ed3e00fc451413d2bedee30c0a40a1383c2b",
-    "node_modules/next/package.json": "e84ada0a68191fed192392bfb8ee35ad4ed8e7439f645a40dd48cf139588ddc5",
+    "node_modules/next/package.json": "76f5b7ef447577c2855eee017ae8a47aeefc1e4c95e71387b66c2671283682c8",
     "node_modules/zod/index.js": "c733a1897d6b4b30dad6998597f6896b265b094a65534359ada34b08ecf8932c",
     "node_modules/zod/package.json": "1a316ad36e36c6c500bce6e9a6dcbec8efda1083f49a72185226b35573b543ba",
     "node_modules/zod/v4/classic/checks.js": "78a162d29e06001b4d919e1ed08f6e7d0d665bba0ef983201373745410d7b354",
