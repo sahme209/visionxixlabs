@@ -20,7 +20,7 @@ export default function TermsOfServicePage() {
               Terms of Service
             </h1>
             <p className="text-lg text-zinc-400 mb-2">
-              Last Updated: October 13, 2026
+              Last Updated: November 9, 2026
             </p>
             <p className="text-sm text-zinc-500">
               For enterprise clients, these Terms are supplemented by executed consulting agreements and Statements of Work (SOWs).
@@ -59,6 +59,22 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Consulting Engagements */}
+          <section className="mb-12">
+            <h2 className="text-2xl font-bold mb-4">Axiom Agent and Axiom Workspace</h2>
+            <p className="text-zinc-300 leading-relaxed mb-4">
+              These additional terms apply when you use Axiom Agent (the desktop app), the Axiom web workspace, the Axiom API, the agent governance gateway or the Ask Axiom support chat.
+            </p>
+            <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
+              <li><strong>Free to explore.</strong> Axiom can be used without charge within published limits (for example, a number of counted deployments per organization each month). Limits may change with notice.</li>
+              <li><strong>Prepaid AI credits.</strong> AI usage is the only paid part and is prepaid. The estimated cost is shown before an AI action, a hold is placed, and you are charged only the final price, never more than your prepaid balance. Unused credit is refundable on request within 30 days of purchase. Credit purchases may not yet be available.</li>
+              <li><strong>Founding Supporter purchases</strong> are voluntary one-time purchases that support development. They are not tax-deductible charitable gifts and do not change product billing, AI credits or controls.</li>
+              <li><strong>Your responsibility for actions.</strong> Axiom proposes, records and gates actions, but you and your workspace remain responsible for the changes you approve and run in your own repositories and cloud accounts. Review proposals before approving them.</li>
+              <li><strong>Agent governance gateway.</strong> External AI agents report their own actions to the gateway. It is a cooperative control point, not a sandbox, and cannot stop an agent that ignores it.</li>
+              <li><strong>API keys</strong> are confidential. Do not share them, and revoke any key that may have been exposed.</li>
+              <li><strong>Previews and labels.</strong> Scripted demonstrations, previews and &ldquo;planned&rdquo; items describe intent, not released functionality. The installed release and its release notes are the authority on what is available.</li>
+            </ul>
+          </section>
+
           <section className="mb-8">
             <h2 className="text-2xl font-bold mb-4">Consulting Engagements</h2>
             <p className="text-zinc-300 leading-relaxed mb-3">For consulting services:</p>

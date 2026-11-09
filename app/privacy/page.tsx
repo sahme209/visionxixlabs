@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
               Privacy Policy
             </h1>
             <p className="text-lg text-zinc-400 mb-2">
-              Last Updated: October 13, 2026
+              Last Updated: November 9, 2026
             </p>
             <p className="text-sm text-zinc-500">
               For enterprise clients, a Data Processing Agreement (DPA) may be executed separately.
@@ -88,6 +88,26 @@ export default function PrivacyPolicyPage() {
                   <strong>Important:</strong> All health and medication data you enter in RecallEase is stored locally on your device. We do not have access to your personal health information unless you explicitly choose to sync it to a cloud service (such as iCloud, if enabled).
                 </p>
               </div>
+            </div>
+
+            {/* Axiom Agent and Axiom web (added 2026-11-09) */}
+            <div className="mb-6">
+              <h3 className="text-xl font-semibold mb-3 text-zinc-200">
+                Axiom Agent (desktop app) and Axiom web workspace
+              </h3>
+              <p className="text-zinc-300 leading-relaxed mb-3">When you use Axiom, we may process:</p>
+              <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
+                <li>Account and workspace data: name, email, workspace membership and role, and sign-in and desktop-session records</li>
+                <li>Connection metadata for the providers you connect (for example GitHub, AWS, Airflow, Prefect, Dagster or Argo Workflows). Provider credentials are stored encrypted and bound to your workspace; they are never shown back to the browser or desktop</li>
+                <li>Operational records you create: proposals, approvals, deployment and run status, agent gateway requests and outcomes, and audit events</li>
+                <li>AI requests you explicitly make in a workspace that has AI turned on: the context you send, the model used, token counts and cost. Context is sent to the selected AI provider only for that request</li>
+                <li>Prepaid AI credit balances, holds and debits, and payment confirmations from our payment processor (we do not store card numbers)</li>
+                <li>API keys: only a hash and a short prefix are stored; the full key is shown once when created</li>
+                <li>Questions asked of the Ask Axiom support chat on our website. Answers come from our public documentation; messages that look like secrets are refused and not stored</li>
+              </ul>
+              <p className="text-zinc-300 leading-relaxed mt-3">
+                We do not sell this data or use it for advertising. We make no guarantee about an AI provider&rsquo;s own retention or model-training practices; check the selected provider&rsquo;s policy before sharing context.
+              </p>
             </div>
 
             {/* Enterprise/B2B Data */}
