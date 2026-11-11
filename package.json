@@ -4,14 +4,17 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run check:vercel-build && prisma generate && next build --webpack",
+    "build": "npm run check:vercel-build && prisma generate && npm run typecheck:production && next build --webpack",
     "check:vercel-build": "node scripts/check-vercel-build.mjs",
     "db:migrate:deploy": "node scripts/migration-deploy-preflight.mjs && prisma migrate deploy",
     "postinstall": "prisma generate",
     "migrate:resolve": "npx prisma migrate resolve --applied 20260219120000_add_lead_model",
     "start": "next start",
     "lint": "eslint .",
-    "test": "node scripts/run-vitest.mjs"
+    "test": "node scripts/run-vitest.mjs",
+    "typecheck": "node scripts/run-native-typecheck.mjs --noEmit",
+    "typecheck:production": "node scripts/run-native-typecheck.mjs --noEmit -p tsconfig.next.json",
+    "test:compiler": "node --test scripts/tests/test_dependency_package_specs.cjs scripts/tests/native-typescript-checker.cjs"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.6.0",
@@ -99,6 +102,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/three": "0.187.0",
+    "@typescript/native": "npm:typescript@7.0.2",
     "autoprefixer": "10.6.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",

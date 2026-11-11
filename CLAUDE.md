@@ -18,6 +18,7 @@ When you change ANY of the following, update the corresponding artifact in the S
 | A monitoring/security/database surface | The matching demo scenario + `<ModuleIntro>` approval note |
 | The sidebar (`DashboardSidebar.tsx`) | The Setup Guide step deep-links if any moved routes |
 | The desktop app | The Desktop App Pairing demo scenario |
+| Compiler tooling | Keep strict native TypeScript checks explicit; retain the pinned JS compiler API for AST/Next/fixture consumers until separately reviewed. No automatic historical packet renewal. |
 | Tailwind styling | CSS-first themes in `app/globals.css` and `desktop/src/styles.css`; retain explicit source globs and the intentional unlayered utilities cascade. Verify compiled shared-diff layout and browser dark/light styling. |
 | **Internal growth automation** | KEEP internal-only (`audience: "internal_only"` in the scenario) |
 
@@ -57,11 +58,11 @@ See `lib/workspace/workspaceKind.ts`.
 
 ```bash
 # Web
-npx tsc --noEmit
+npm run typecheck
 npx vitest run --reporter=dot
 
 # Desktop
-cd desktop && npx tsc --noEmit && npm run build
+cd desktop && npm run typecheck && npm run build
 
 # Python CLI
 python3 -m unittest sdk.python.__tests__.test_vxl_cli

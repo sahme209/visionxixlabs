@@ -1,0 +1,11 @@
+{
+  "version": "7.0.2",
+  "files": {
+    "package.json": "3722b30210616a13a3213ded11575ba6b2dbab10c32a5ef67afca8513e27017e",
+    "lib/tsc.js": "cbdfbf11c26ed00dfc073155e316a42d6d6d8a387be61006b82fa9aa93ac572e",
+    "lib/getExePath.js": "96c10fd3a18e165d7323de8e314ac8d755ad96811f9fbc304a5b3ba4e05285cc"
+  },
+  "review": "Official wrapper resolves its own package metadata, exactly one tsc bin and platform package; execve or execFileSync retains arguments, stdio and nonzero status. No custom provider or network behavior is added.",
+  "originalDirectUpgrade": "Compiler API exports createSourceFile and transpileModule absent; npm ls typescript reports invalid ESLint peer dependencies.",
+  "strategy": "Keep exact typescript 5.9.3 API and reviewed API pins; add exact official native 7.0.2 alias and select it explicitly for new checks. No wholesale switch to unstable compiler API."
+}

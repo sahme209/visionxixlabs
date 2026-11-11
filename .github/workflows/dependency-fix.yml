@@ -35,8 +35,9 @@ jobs:
         env:
           PACKAGES: ${{ inputs.packages }}
         run: |
-          # Only package specs of the form name@version are accepted.
-          for p in $PACKAGES; do echo "$p" | grep -Eq '^(@[a-z0-9._-]+/)?[a-z0-9._-]+@[0-9][0-9A-Za-z.+-]*$' || { echo "refused: $p"; exit 1; }; done
+          # Exact registry versions; only the fixed TypeScript native alias is allowed.
+          node --test scripts/tests/test_dependency_package_specs.cjs
+          node scripts/validate-dependency-specs.cjs
           if [ "${{ inputs.directory }}" = "desktop" ]; then (cd desktop && npm install --ignore-scripts --save-exact $PACKAGES); else npm install --ignore-scripts --save-exact $PACKAGES; fi
       - name: Apply non-breaking fixes
         run: |
