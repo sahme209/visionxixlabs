@@ -102,6 +102,7 @@
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@types/three": "0.187.0",
+    "@typescript/native": "npm:typescript@7.0.2",
     "autoprefixer": "10.6.2",
     "eslint": "^9",
     "eslint-config-next": "16.4.5",
@@ -109,8 +110,7 @@
     "postcss": "8.5.32",
     "tailwindcss": "4.3.5",
     "typescript": "5.9.3",
-    "vitest": "4.1.12",
-    "@typescript/native": "npm:typescript@7.0.2"
+    "vitest": "4.1.12"
   },
   "overrides": {
     "@aws-sdk/client-dynamodb": {
