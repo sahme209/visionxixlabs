@@ -63,7 +63,7 @@ describe.skipIf(!root)('fresh owned composed quoted admission',()=>{
   vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY','');vi.stubEnv('AXIOM_AI_MAX_REQUEST_CREDITS_CENTS','');vi.stubEnv('AXIOM_STRIPE_ACCOUNT_ID',accountId);vi.stubEnv('AXIOM_STRIPE_MODE','test');
   f.fetch.mockImplementation(async(...args:unknown[])=>{
    const [input,init]=args as [RequestInfo|URL,RequestInit];
-   const url=String(input);if(url!=='https://ai-gateway.vercel.sh/v3/ai/language-model')throw Error('unexpected_synthetic_transport_destination');
+   const url=String(input);if(url!=='https://ai-gateway.vercel.sh/v4/ai/language-model')throw Error('unexpected_synthetic_transport_destination');
    f.requests.push({url,model:new Headers(init.headers).get('ai-language-model-id'),body:JSON.parse(String(init.body))});
    return new Response(JSON.stringify({content:[{type:'text',text:'Synthetic completed coding response'}],finishReason:{unified:'stop',raw:'stop'},usage:{inputTokens:{total:5,noCache:5},outputTokens:{total:2,text:2,reasoning:0}},providerMetadata:{gateway:{generationId:f.generation}},warnings:[]}),{headers:{'content-type':'application/json'}});
   });

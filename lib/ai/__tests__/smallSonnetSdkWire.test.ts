@@ -53,6 +53,7 @@ it.each([false, true])("installed SDK/Gateway serializes the exact restricted ro
   expect(sent.headers.get("ai-language-model-streaming")).toBe(String(streaming));
   expect(sent.body).toMatchObject({ maxOutputTokens: 4096, providerOptions: { gateway: { only: ["anthropic"], user: "org" }, anthropic: { thinking: { type: "disabled" } } } });
   expect(sent.body.tools).toBeUndefined();
+  expect(sent.body.toolChoice).toEqual({ type: "none" });
   expect((sent.body.responseFormat as { type?: string } | undefined)?.type).not.toBe("json");
   expect(sent.body.prompt).toEqual([{ role: "system", content: smallSonnetPayload(request.text, request.schemaHint).system }, { role: "user", content: [{ type: "text", text: request.text }] }]);
 });

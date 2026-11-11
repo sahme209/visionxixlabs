@@ -147,3 +147,7 @@ Local call-log API privacy repair (9ad8c3fc): redact known credentials in persis
 Local tenant-isolation repair (65a794ac): customer AI call-log JSON, CSV and engine-detail paths no longer permit cross-organization global scope. Global requests refuse/redirect before log queries; default reads force the authenticated workspace and UI global controls are removed. Three previously failing boundary tests now pass;25 route/responder tests and exact production build/types pass. No live cross-tenant test or production activation performed.
 
 Narrow AI security activation candidatebf5dbd65 is prepared from recorded production3b596291, separately backed up, with56 exact-candidate tests and full production build/types passing. Reconcile live base, finish final review and obtain the specific rollout exception before activation. Unfinished Governance and newer desktop polish are excluded from this candidate.
+
+## November 11 dependency sequence
+
+AWS 3.1166.0 merged as PR #315 with every CI check green; production remains build 4. AI 7.0.170 is the next candidate: reviewed Vercel Gateway v4 and explicit text-only tool choice, preserving admission, routing, caps, redaction and one-attempt guards. Not deployed. Evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. Platform migrations remain next, each in its own green PR.

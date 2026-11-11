@@ -32,7 +32,7 @@ describe.skipIf(!root)('fresh owned generic AI adversarial composition',()=>{
   vi.stubEnv('AXIOM_AI_MAX_REQUEST_CREDITS_CENTS','');
   _resetAIProviderManagerForTests();
   f.fetcher.mockImplementation(async(input:RequestInfo|URL)=>{
-   if(String(input)!=='https://ai-gateway.vercel.sh/v3/ai/language-model')throw Error('unexpected_synthetic_destination');
+   if(String(input)!=='https://ai-gateway.vercel.sh/v4/ai/language-model')throw Error('unexpected_synthetic_destination');
    return new Response(JSON.stringify({content:[{type:'text',text:'Synthetic durable result'}],finishReason:{unified:'stop',raw:'stop'},usage:{inputTokens:{total:5,noCache:5},outputTokens:{total:2,text:2}},providerMetadata:{gateway:{generationId:f.generation}},warnings:[]}),{headers:{'content-type':'application/json'}});
   });
  });

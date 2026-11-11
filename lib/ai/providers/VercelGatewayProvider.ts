@@ -112,6 +112,8 @@ export class VercelGatewayProvider implements AIProvider {
         ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
         : undefined;
       const result = await generateText({
+        // SDK7 defaults to auto even without tools; this adapter is text-only.
+        toolChoice: "none",
         model,
         // Scrub after composing schema/label instructions, including callers
         // that reach this provider without going through the manager.
@@ -217,6 +219,7 @@ export class VercelGatewayProvider implements AIProvider {
         ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
         : undefined;
       const result = streamText({
+        toolChoice: "none",
         ...(format === "json" && !bounded ? {output: Output.json()} : {}),
         // fullStream below returns a fixed safe error. The SDK default handler
         // logs raw upstream payloads, which may contain prompts or account data.

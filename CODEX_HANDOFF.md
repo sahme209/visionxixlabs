@@ -77,7 +77,7 @@ Axiom (VisionXIXLabs) is a governed control plane for AI agents and cloud/releas
 
 **Stack:**
 - Next.js **16.4.5**, React 19.3, TypeScript 5.9, Tailwind 3.4, Prisma **5.22**, Vitest **4.1.12**.
-- Node 20+ in CI; Node 26 locally.
+- Node 24 in CI; ai 7 requires Node 22+. Node 24 is used for this upgrade’s local checks.
 - Desktop: Vite 8, Tauri 2.
 
 ---
@@ -118,7 +118,7 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 **Dependabot** (`.github/dependabot.yml`) opens grouped PRs weekly per ecosystem (web, desktop, cargo, actions).
 - Its web lockfile changes **always** fail `owned_framework_source_pins`, because Dependabot cannot re-pin the hash. Re-create the same versions via `dependency-fix.yml` and close the Dependabot PR. The owner may need to close Dependabot PRs; the agent was not allowed to.
-- **Held packages** (ignored in `dependabot.yml`, each needs a planned PR — section 10): TypeScript major, Tailwind major, Prisma major, ESLint major, Vitest major, Stripe (all versions), ai major, `next`/`eslint-config-next`. AWS updates still require the ECS/S3 contract checks.
+- **Held packages** (ignored in `dependabot.yml`, each needs a planned PR — section 10): TypeScript major, Tailwind major, Prisma major, ESLint major, Vitest major, Stripe (all versions), `next`/`eslint-config-next`. AWS updates still require the ECS/S3 contract checks.
 - When several Dependabot PRs touch the same lockfile, merging one makes the others conflict. Do them one at a time, re-locked on current `main`.
 
 ### 3.4 Delegation and research tools used
@@ -149,7 +149,7 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 Follow the table in `CLAUDE.md`. The ones that bite most often:
 
-November 11 AWS-only batch: no UI, connector workflow, API or guide changes. Documentation applicability is recorded in `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
+November 11 dependency batches: no UI, connector workflow, API or guide changes. Documentation applicability is recorded in `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
 
 | You change | You must also |
 |---|---|
@@ -195,7 +195,7 @@ November 11 AWS-only batch: no UI, connector workflow, API or guide changes. Doc
 ## 7. Production deploys and the database
 
 - **Deploy procedure (owner clicks):**
-  1. Make sure `main` CI is green on the exact commit.
+  1. Make sure `main` CI is green on the exact commit. For AI SDK 7, confirm the Vercel project uses Node >=22 (CI/local validation use Node 24); changing production runtime settings still requires owner approval.
   2. Confirm whether there are new migrations: `git diff --name-only <last-deployed> main -- prisma/`.
   3. If there are migrations, prepare `1-PRECHECK-READ-ONLY.sql`, `2-APPLY-ALL-OR-NOTHING.sql`, `3-VERIFY-READ-ONLY.sql` (see `docs/recovery/2026-11-09/build-3-db/`). The owner runs them in the Neon SQL Editor, and the code deploys only after VERIFY passes.
   4. The owner opens Vercel → project → **Deployments → Create Deployment**, picks branch `main` and checks the commit, then deploys to **Production**.
@@ -299,7 +299,7 @@ November 11 AWS-only batch: no UI, connector workflow, API or guide changes. Doc
    - **ECS:** regenerate the schema with `scripts/fixtures/generateEcsTaskSchema.mjs` (update its pinned version) and review the diff of generated fields.
    - **S3:** the plan-reader tests (`customerPlanAwsRead.test.ts`) failed on stream/tee and middleware behaviour in the newer SDK. Debug against those tests and keep the security properties: byte budget charged once, abort retained, no leaked body values, fixed version-pinned SSE-KMS objects only. Do not loosen assertions to make them pass.
    - Then remove `@aws-sdk/*` from the Dependabot ignore list.
-2. **ai 7.** Gateway URL v3 → v4. Update the pinned dispatch URL in the installed-SDK composition tests only after confirming the v4 endpoint is the reviewed Vercel AI Gateway. Run the governed-call tests.
+2. **ai 7: implementation 7.0.170 (merge requires all green CI); not deployed.** Evidence: `docs/recovery/2026-11-11/ai7-upgrade/README.md`. Gateway URL v3 → v4. Update the pinned dispatch URL in the installed-SDK composition tests only after confirming the v4 endpoint is the reviewed Vercel AI Gateway. Run the governed-call tests.
 3. **Platform migrations, one PR each, in a branch with CI as the judge:**
    - ESLint 10 (config);
    - Tailwind 4 (CSS-first config, web and desktop);

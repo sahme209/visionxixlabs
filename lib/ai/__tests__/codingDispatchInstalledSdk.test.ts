@@ -38,10 +38,10 @@ it("sends the exact quoted redacted request through the installed SDK/adapter on
   const reserved = protocol.consumeForReservation(protocol.quote(prepared, pricing, 1000, at), prepared, at);
   const dispatch = protocol.consumeManager(protocol.consumeForDispatch(reserved.handle, prepared, at), prepared, at);
   wire.consume.mockImplementation((handle, actual, now) => protocol.consumeProviderForRequest(handle, actual, now));
-  const captured: Array<{ url: string; model: string | null; body: Record<string, unknown> }> = [];
+  const captured: Array<{ url: string; model: string | null; protocol: string | null; body: Record<string, unknown> }> = [];
   wire.fetch.mockImplementation(async (...args: unknown[]) => {
     const [input, init] = args as [RequestInfo | URL, RequestInit];
-    captured.push({ url: String(input), model: new Headers(init.headers).get("ai-language-model-id"), body: JSON.parse(String(init.body)) });
+    captured.push({ url: String(input), model: new Headers(init.headers).get("ai-language-model-id"), protocol: new Headers(init.headers).get("ai-language-model-specification-version"), body: JSON.parse(String(init.body)) });
     // There is deliberately no successful synthetic provider response, usage,
     // metering receipt or billing claim in this wire-serialization check.
     throw new TypeError("synthetic-offline-stop");
@@ -52,8 +52,9 @@ it("sends the exact quoted redacted request through the installed SDK/adapter on
   expect(wire.consume).toHaveBeenCalledOnce();
   expect(wire.fetch).toHaveBeenCalledOnce();
   expect(captured).toHaveLength(1);
-  expect(captured[0].url).toBe("https://ai-gateway.vercel.sh/v3/ai/language-model");
+  expect(captured[0].url).toBe("https://ai-gateway.vercel.sh/v4/ai/language-model");
   expect(captured[0].model).toBe(model);
+  expect(captured[0].protocol).toBe("4");
   expect(captured[0].body).toMatchObject({
     maxOutputTokens: 4096, temperature: 0.2,
     prompt: [
@@ -71,7 +72,7 @@ it("sends the exact quoted redacted request through the installed SDK/adapter on
     anthropic: { thinking: { type: "disabled" } },
   });
   expect(captured[0].body.tools).toBeUndefined();
-  expect(captured[0].body.toolChoice).toBeUndefined();
+  expect(captured[0].body.toolChoice).toEqual({ type: "none" });
   expect(JSON.stringify(captured[0].body)).not.toContain(syntheticSecret);
   // The final dispatch was consumed before the failed transport. It cannot be
   // reused to obtain a second SDK/HTTP attempt, even with unchanged options.
