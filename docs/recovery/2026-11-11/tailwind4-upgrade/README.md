@@ -64,8 +64,10 @@ webhook changed. No SDK-method changes apply.
 - Shared FileDiff four-column CSS compiles through the actual PostCSS4 pipeline.
 - Desktop Vite build PASS (existing chunk/dynamic-import warnings).
 - Python CLI: 36 PASS.
-- Final full Vitest: 17,806 PASS, 893 skipped, one expected failure, two unchanged
-  macOS-only stale-schema-pin failures. See `../aws-sdk-upgrade/README.md`.
+- Final full Vitest: 17,809 PASS, 893 skipped, one expected failure; no unexpected failures.
+- The two earlier macOS schema-pin failures are resolved after exact source-delta review,
+  with a new fail-closed drift test. See `current-schema-pin-review.md`. Historical
+  qualification packet pins remain unchanged; no engine export or database run occurred.
 - Focused accessibility/scroll checks: 27 PASS, including the restored broad negative blur guard.
 - Independent final review found and resolved one narrowed negative blur guard; no important findings remain. Final CI is required.
 

@@ -3,7 +3,9 @@
 // invocation requires the separately authorized artifact-generation packet.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),child=require('node:child_process'),os=require('node:os');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-const SCHEMA='50e1fbbf50d5d28ba08e862a72789de3c5a9fdad5d7589751a86e0135c5eb031';
+// Reviewed additive main-schema delta: AuditSeal + AgentGatewayRequest.
+// Historical packet authority intentionally retains its original schema/source pins.
+const SCHEMA='4a8c274ec951f381a04a2c6e9bbf4d2d2e5f6f98c1054f4c756dac41b6bd202b';
 const ENGINE='57b090d47b947dc9284379d9480d11ffe14fe63155e3da515b359f3aa7fa408a';
 function prepareSyntheticFixtureRecipe(repo,output,ports={run:child.spawnSync}){
  const root=fs.realpathSync(repo),schema=path.join(root,'prisma/schema.prisma'),engine=ports.schemaEnginePath===undefined?path.join(root,'node_modules/@prisma/engines/schema-engine-darwin-arm64'):ports.schemaEnginePath,cli=path.join(root,'node_modules/prisma/build/index.js');

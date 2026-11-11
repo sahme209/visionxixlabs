@@ -134,7 +134,7 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 ## 4. Local environment limits and how to verify anyway
 
-- **npm is blocked.** There is no `node_modules`, so `npx vitest`, `npx tsc` and `npm run build` do not run locally. **CI is the real test.** Say so honestly in PR bodies.
+- **Machine-specific limitation:** npm was blocked on the earlier Claude Mac. On the November 11 Codex Mac, registry access and local installs from workflow-generated lockfiles work. Local tests/types and desktop build ran; CI remains a mandatory merge gate. Do not generalize either machine’s access to another host.
 - **Pure TypeScript kernels** run with Node 26 directly:
   ```bash
   node --experimental-strip-types /tmp/check.mts      # import the .ts file by absolute path, assert by hand
@@ -165,6 +165,8 @@ November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind ba
 ---
 
 ## 6. Pinned and reviewed things — do not break
+
+November 11: the synthetic recipe unit helper now binds the current schema after reviewing only the two appended models. See `docs/recovery/2026-11-11/tailwind4-upgrade/current-schema-pin-review.md`. The historical Python packet schema/hash bindings remain unchanged and unavailable for reuse; no qualification/export authority is restored.
 
 - **Owned-website framework pins:** `scripts/fixtures/ownedWebsiteFramework.cjs` pins the hashes of `package-lock.json`, `next.config.ts`, `tsconfig*.json`, `next/package.json` and three Next internals, plus the Next version.
   - So **redirects must be page-level** (not `next.config.ts`).
