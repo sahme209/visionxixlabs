@@ -132,9 +132,9 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
   const totalRuns = workflows.reduce((s, w) => s + w.runsThisMonth, 0);
 
   return (
-    <div className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`relative rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="px-6 py-4 border-b border-white/6 bg-white/1">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -153,7 +153,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
             { label: "Paused", value: paused.toString(), color: "text-zinc-400", dot: "bg-zinc-500" },
             { label: "Total this month", value: totalRuns.toString(), color: "text-orange-400", dot: "bg-orange-400" },
           ].map((m) => (
-            <div key={m.label} className="rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
+            <div key={m.label} className="rounded-lg bg-white/2 border border-white/4 px-3 py-2">
               <div className="flex items-center gap-1.5 mb-1">
                 <span className={`w-1.5 h-1.5 rounded-full ${m.dot}`} />
                 <span className="text-[9px] text-zinc-500 uppercase tracking-wider font-semibold">{m.label}</span>
@@ -175,13 +175,13 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
           return (
             <div
               key={w.id}
-              className="group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all"
+              className="group relative rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all"
             >
               {/* Running indicator stripe */}
               {w.status === "running" && (
                 <span
                   aria-hidden
-                  className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse"
+                  className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-blue-400 to-transparent animate-pulse"
                 />
               )}
 
@@ -242,7 +242,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
                     </span>
                   </div>
                   {/* Toggle */}
-                  <button className="w-7 h-7 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center hover:bg-white/[0.08] transition-colors">
+                  <button className="w-7 h-7 rounded-lg bg-white/4 border border-white/8 flex items-center justify-center hover:bg-white/8 transition-colors">
                     {w.status === "paused" ? (
                       <PlayIcon className="h-3.5 w-3.5 text-zinc-400" />
                     ) : (
@@ -254,7 +254,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
 
               {/* Live progress strip for running workflows */}
               {w.status === "running" && (
-                <div className="mt-3 rounded-lg bg-blue-500/[0.05] border border-blue-500/15 px-3 py-2 flex items-center gap-2">
+                <div className="mt-3 rounded-lg bg-blue-500/5 border border-blue-500/15 px-3 py-2 flex items-center gap-2">
                   <CpuChipIcon className="h-3 w-3 text-blue-400 animate-pulse" />
                   <span className="text-[10px] text-blue-300 font-mono">Executing now · phase {Math.floor(Math.random() * 3) + 1} of 4 · auto-refresh in 30s</span>
                 </div>
@@ -262,7 +262,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
 
               {/* Failed warning */}
               {w.status === "failed" && (
-                <div className="mt-3 rounded-lg bg-red-500/[0.05] border border-red-500/15 px-3 py-2 flex items-center gap-2">
+                <div className="mt-3 rounded-lg bg-red-500/5 border border-red-500/15 px-3 py-2 flex items-center gap-2">
                   <ExclamationTriangleIcon className="h-3 w-3 text-red-400" />
                   <span className="text-[10px] text-red-300">Last run failed · retry scheduled · open log for details</span>
                 </div>
@@ -273,7 +273,7 @@ export function WorkflowOrchestrator({ workflows = DEMO_WORKFLOWS, className = "
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between text-xs">
+      <div className="px-6 py-3 border-t border-white/6 bg-white/1 flex items-center justify-between text-xs">
         <span className="text-zinc-500">
           Workflows persist across sessions · agent runs even when you&apos;re offline
         </span>

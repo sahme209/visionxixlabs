@@ -90,7 +90,7 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
   return (
     <section className="mx-auto max-w-[1400px] px-5 pb-20 sm:px-8 lg:px-10 lg:pb-28">
       <div className="mb-8 flex flex-col items-center gap-4">
-        <div className="inline-flex rounded-full border border-white/[0.1] bg-[#1a1a1a] p-1" aria-label="Billing interval">
+        <div className="inline-flex rounded-full border border-white/10 bg-brand-ink-card p-1" aria-label="Billing interval">
           {(["monthly", "annual"] as const).map((value) => (
             <button
               key={value}
@@ -119,15 +119,15 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
           return (
             <article
               key={plan.id}
-              className={`flex min-h-[520px] flex-col rounded-3xl border p-7 sm:p-8 ${featured ? "border-[#f54e00]/40 bg-[#1a1a1a] shadow-[0_24px_80px_-42px_rgba(245,78,0,0.55)]" : "border-white/[0.09] bg-[#181818]"}`}
+              className={`flex min-h-[520px] flex-col rounded-3xl border p-7 sm:p-8 ${featured ? "border-[#f54e00]/40 bg-brand-ink-card shadow-[0_24px_80px_-42px_rgba(245,78,0,0.55)]" : "border-white/9 bg-[#181818]"}`}
             >
               <div className="flex items-center justify-between gap-4">
                 <h2 className="text-xl font-medium tracking-[-0.03em] text-zinc-100">{plan.name}</h2>
                 {featured ? <span className="rounded-full bg-[#f54e00] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-white">Recommended</span> : null}
               </div>
               <p className="mt-3 min-h-12 text-sm leading-6 text-zinc-400">{plan.description}</p>
-              <div className="mt-8 border-y border-white/[0.08] py-6">
-                <span className="text-4xl font-medium tracking-[-0.05em] text-zinc-100">{price === 0 ? "$0" : `$${(price / 100).toFixed(2).replace(".00", "")}`}</span>
+              <div className="mt-8 border-y border-white/8 py-6">
+                <span className="text-4xl font-medium tracking-tighter text-zinc-100">{price === 0 ? "$0" : `$${(price / 100).toFixed(2).replace(".00", "")}`}</span>
                 {price > 0 ? <span className="ml-2 text-sm text-zinc-500">per user / month</span> : null}
                 <p className="mt-2 min-h-4 text-xs text-zinc-500">{price > 0 && interval === "annual" ? "Billed annually" : price > 0 ? "Billed monthly" : "No card required"}</p>
               </div>
@@ -136,11 +136,11 @@ export function PublicPlansCatalog({ checkoutEnabled, initialSelection = null, w
               </ul>
               <div className="mt-auto pt-9">
                 {!paidPlanId || !checkoutEnabled ? (
-                  <Link href={plan.id === "free" ? (workspace.status === "ready" ? "/control" : `/auth/signin?callbackUrl=${encodeURIComponent(`/control?plan=free&interval=${interval}`)}`) : paidPlanId ? (workspace.status === "ready" ? publicPlanSelectionPath({planId:paidPlanId,billingInterval:interval}) : publicPlanSignInPath({planId:paidPlanId,billingInterval:interval},ownedTestCheckout)) : "/control"} className={`flex min-h-12 items-center justify-center rounded-full px-5 text-center text-sm font-semibold transition ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>
+                  <Link href={plan.id === "free" ? (workspace.status === "ready" ? "/control" : `/auth/signin?callbackUrl=${encodeURIComponent(`/control?plan=free&interval=${interval}`)}`) : paidPlanId ? (workspace.status === "ready" ? publicPlanSelectionPath({planId:paidPlanId,billingInterval:interval}) : publicPlanSignInPath({planId:paidPlanId,billingInterval:interval},ownedTestCheckout)) : "/control"} className={`flex min-h-12 items-center justify-center rounded-full px-5 text-center text-sm font-semibold transition ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/4 text-zinc-100 hover:bg-white/8"}`}>
                     {plan.id === "free" ? "Start free" : `Review ${plan.name}`}
                   </Link>
                 ) : (
-                  <button type="button" disabled={busyPlan !== null || workspace.status === "unavailable" || ownedCannotPurchase} onClick={() => void startCheckout(paidPlanId)} className={`flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/[0.04] text-zinc-100 hover:bg-white/[0.08]"}`}>
+                  <button type="button" disabled={busyPlan !== null || workspace.status === "unavailable" || ownedCannotPurchase} onClick={() => void startCheckout(paidPlanId)} className={`flex min-h-12 w-full items-center justify-center rounded-full px-5 text-sm font-semibold transition disabled:cursor-wait disabled:opacity-60 ${featured ? "bg-[#f54e00] text-white hover:bg-[#ff641f]" : "border border-white/[0.14] bg-white/4 text-zinc-100 hover:bg-white/8"}`}>
                     {busyPlan === plan.id ? "Opening secure checkout…" : `Choose ${plan.name}`}
                   </button>
                 )}

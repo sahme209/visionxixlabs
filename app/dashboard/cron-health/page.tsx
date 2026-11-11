@@ -64,7 +64,7 @@ export default async function CronHealthPage() {
           const rate = Math.round(s.health.successRate * 100);
           const rateTone = failing ? "text-rose-300" : rate >= 95 ? "text-emerald-300" : rate >= 80 ? "text-zinc-300" : "text-rose-300";
           return (
-            <li key={s.id} className={`rounded-md border ${failing ? "border-rose-500/30 bg-rose-500/[0.04]" : "border-white/[0.06] bg-white/[0.012]"} p-4`}>
+            <li key={s.id} className={`rounded-md border ${failing ? "border-rose-500/30 bg-rose-500/4" : "border-white/6 bg-white/[0.012]"} p-4`}>
               <div className="flex items-center justify-between gap-2 mb-2">
                 <p className="text-[13.5px] font-medium text-white">{s.label}</p>
                 <span className={`text-[11px] font-mono tabular-nums ${rateTone}`}>{s.health.total === 0 ? "no ticks yet" : `${rate}%`}</span>
@@ -72,15 +72,15 @@ export default async function CronHealthPage() {
               <p className="text-[11px] text-zinc-500 font-mono mb-2">{s.id} · {s.schedule}</p>
               <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">{s.description}</p>
               <div className="grid grid-cols-3 gap-2 text-center">
-                <div className="rounded border border-white/[0.06] bg-white/[0.02] px-2 py-1.5">
+                <div className="rounded-sm border border-white/6 bg-white/2 px-2 py-1.5">
                   <p className="text-[9px] font-mono uppercase text-zinc-500">Ticks</p>
                   <p className="text-[13px] font-semibold tabular-nums text-zinc-200">{s.health.total}</p>
                 </div>
-                <div className="rounded border border-white/[0.06] bg-white/[0.02] px-2 py-1.5">
+                <div className="rounded-sm border border-white/6 bg-white/2 px-2 py-1.5">
                   <p className="text-[9px] font-mono uppercase text-zinc-500">Errors</p>
                   <p className={`text-[13px] font-semibold tabular-nums ${s.health.failureCount > 0 ? "text-rose-300" : "text-zinc-200"}`}>{s.health.failureCount}</p>
                 </div>
-                <div className="rounded border border-white/[0.06] bg-white/[0.02] px-2 py-1.5">
+                <div className="rounded-sm border border-white/6 bg-white/2 px-2 py-1.5">
                   <p className="text-[9px] font-mono uppercase text-zinc-500">Streak</p>
                   <p className={`text-[13px] font-semibold tabular-nums ${failing ? "text-rose-300" : "text-zinc-200"}`}>{s.health.consecutiveFailures}</p>
                 </div>

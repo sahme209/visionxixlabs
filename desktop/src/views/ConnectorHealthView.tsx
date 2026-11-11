@@ -99,10 +99,10 @@ function Stat({
   label, value, tone,
 }: { label: string; value: number; tone: "neutral" | "emerald" | "amber" | "red" }) {
   const cls =
-    tone === "emerald" ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-100" :
-    tone === "amber"   ? "border-white/30 bg-white/[0.06] text-zinc-100" :
-    tone === "red"     ? "border-red-500/30 bg-red-500/[0.06] text-red-100" :
-                         "border-axiom-border bg-white/[0.02] text-zinc-300";
+    tone === "emerald" ? "border-emerald-500/30 bg-emerald-500/6 text-emerald-100" :
+    tone === "amber"   ? "border-white/30 bg-white/6 text-zinc-100" :
+    tone === "red"     ? "border-red-500/30 bg-red-500/6 text-red-100" :
+                         "border-axiom-border bg-white/2 text-zinc-300";
   return (
     <div className={`rounded-lg border ${cls} px-3 py-2`}>
       <div className="text-[10px] font-mono uppercase tracking-[0.16em] opacity-70">{label}</div>
@@ -119,7 +119,7 @@ function ConnectorRow({ c }: { c: ConnectorHealthEntry }) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2 flex-wrap mb-1">
           <span className="text-[13px] font-semibold text-zinc-100">{c.name}</span>
-          <span className="text-[10px] font-mono text-zinc-500 px-1.5 py-0.5 rounded border border-axiom-border bg-white/[0.02]">{c.category}</span>
+          <span className="text-[10px] font-mono text-zinc-500 px-1.5 py-0.5 rounded-sm border border-axiom-border bg-white/2">{c.category}</span>
           <Badge tone={tone.tone}>{tone.label}</Badge>
           {c.stage !== "ok" && (
             <span className="text-[10px] font-mono text-zinc-500">stage · {c.stage}</span>

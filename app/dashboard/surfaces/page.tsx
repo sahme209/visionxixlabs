@@ -62,13 +62,13 @@ interface ProductModel {
 }
 
 const STATUS_TONE: Record<string, { border: string; bg: string; text: string; pillBg: string; pillText: string; hoverBorder: string }> = {
-  launch_ready:             { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pillBg: "bg-emerald-500/15", pillText: "text-emerald-300", hoverBorder: "hover:border-emerald-500/40" },
-  pilot_ready:              { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pillBg: "bg-cyan-500/15",    pillText: "text-cyan-300",    hoverBorder: "hover:border-cyan-500/40"    },
-  usable_with_limitations:  { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pillBg: "bg-white/15",   pillText: "text-zinc-300",   hoverBorder: "hover:border-white/40"   },
-  preview:                  { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pillBg: "bg-zinc-700/40",    pillText: "text-zinc-300",    hoverBorder: "hover:border-white/20"       },
-  foundation:               { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    pillText: "text-zinc-400",    hoverBorder: "hover:border-white/20"       },
-  blocked:                  { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pillBg: "bg-rose-500/15",    pillText: "text-rose-300",    hoverBorder: "hover:border-rose-500/40"    },
-  broken:                   { border: "border-rose-500/[0.30]",    bg: "bg-rose-500/[0.07]",    text: "text-rose-200",    pillBg: "bg-rose-500/20",    pillText: "text-rose-200",    hoverBorder: "hover:border-rose-500/50"    },
+  launch_ready:             { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pillBg: "bg-emerald-500/15", pillText: "text-emerald-300", hoverBorder: "hover:border-emerald-500/40" },
+  pilot_ready:              { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pillBg: "bg-cyan-500/15",    pillText: "text-cyan-300",    hoverBorder: "hover:border-cyan-500/40"    },
+  usable_with_limitations:  { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pillBg: "bg-white/15",   pillText: "text-zinc-300",   hoverBorder: "hover:border-white/40"   },
+  preview:                  { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-300",    pillBg: "bg-zinc-700/40",    pillText: "text-zinc-300",    hoverBorder: "hover:border-white/20"       },
+  foundation:               { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    pillText: "text-zinc-400",    hoverBorder: "hover:border-white/20"       },
+  blocked:                  { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pillBg: "bg-rose-500/15",    pillText: "text-rose-300",    hoverBorder: "hover:border-rose-500/40"    },
+  broken:                   { border: "border-rose-500/30",    bg: "bg-rose-500/[0.07]",    text: "text-rose-200",    pillBg: "bg-rose-500/20",    pillText: "text-rose-200",    hoverBorder: "hover:border-rose-500/50"    },
 };
 
 const SURFACE_ICON: Record<string, typeof CloudIcon> = {
@@ -172,7 +172,7 @@ export default function SurfacesPage() {
   return (
     <div className="relative">
       {/* Hero — premium, calm depth, honest status pill, real summary ribbon */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -181,12 +181,12 @@ export default function SurfacesPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={`inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1`}>
+              <span className={`inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1`}>
                 <span className={`w-2 h-2 rounded-full ${
                   model.overallSourceMode === "live" ? "bg-emerald-400 animate-pulse" :
                   model.overallSourceMode === "partial_live" ? "bg-cyan-400 animate-pulse" :
@@ -210,13 +210,13 @@ export default function SurfacesPage() {
           </div>
 
           {/* Counts ribbon */}
-          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
             <RibbonStat label="Launch-ready" value={counts.launchReady} tone="text-emerald-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <RibbonStat label="Pilot-ready" value={counts.pilotReady} tone="text-cyan-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <RibbonStat label="Preview" value={counts.preview} tone="text-zinc-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <RibbonStat label="Blocked" value={counts.blocked} tone={counts.blocked > 0 ? "text-rose-300" : "text-zinc-500"} />
           </div>
         </div>
@@ -241,10 +241,10 @@ export default function SurfacesPage() {
               p.platform === "windows"     ? "Windows" :
                                               "Linux";
             const tw = ok
-              ? "border-emerald-500/[0.22] bg-emerald-500/[0.04] hover:border-emerald-500/40"
+              ? "border-emerald-500/22 bg-emerald-500/4 hover:border-emerald-500/40"
               : partial
-                ? "border-cyan-500/[0.22] bg-cyan-500/[0.04] hover:border-cyan-500/40"
-                : "border-zinc-700/30 bg-white/[0.02] hover:border-white/20";
+                ? "border-cyan-500/22 bg-cyan-500/4 hover:border-cyan-500/40"
+                : "border-zinc-700/30 bg-white/2 hover:border-white/20";
             return (
               <div key={p.platform} className={`group rounded-2xl border ${tw} p-4 transition-colors`}>
                 <div className="flex items-center justify-between mb-3">
@@ -260,15 +260,15 @@ export default function SurfacesPage() {
                 <p className={`text-sm font-semibold ${ok || partial ? "text-white" : "text-zinc-300"} mb-0.5 tracking-tight`}>{platformLabel}</p>
                 <p className="text-[11px] text-zinc-500 mb-3 leading-snug">{p.label}</p>
                 <div className="flex flex-wrap gap-1.5">
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.signed ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${p.signed ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
                     {p.signed ? "signed" : "unsigned"}
                   </span>
                   {p.notarized !== undefined && (
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.notarized ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${p.notarized ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
                       {p.notarized ? "notarized" : "not-notarized"}
                     </span>
                   )}
-                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>
+                  <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>
                     {p.publiclyDownloadable ? "public download" : "local build only"}
                   </span>
                 </div>
@@ -333,7 +333,7 @@ export default function SurfacesPage() {
       </div>
 
       {/* Product-level limitations + safety contract */}
-      <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 mb-8 relative overflow-hidden">
+      <div className="rounded-2xl border border-white/6 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 mb-8 relative overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-80 pointer-events-none"
           style={{
@@ -354,7 +354,7 @@ export default function SurfacesPage() {
               ))}
             </ul>
           </div>
-          <div className="rounded-xl border border-emerald-500/[0.22] bg-emerald-500/[0.04] px-4 py-3 min-w-[14rem]">
+          <div className="rounded-xl border border-emerald-500/22 bg-emerald-500/4 px-4 py-3 min-w-56">
             <p className="text-[10px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// safety contract</p>
             <p className="text-[13px] text-emerald-200 font-semibold leading-snug">
               {model.safetyContract.replace(/_/g, " ")}
@@ -385,7 +385,7 @@ function SurfaceCard({ surface }: { surface: Surface }) {
             <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-0.5">{surface.sourceMode.replace(/_/g, " ")}</p>
           </div>
         </div>
-        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${tone.pillBg} ${tone.pillText} shrink-0`}>
+        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${tone.pillBg} ${tone.pillText} shrink-0`}>
           {surface.status.replace(/_/g, " ")}
         </span>
       </div>
@@ -395,7 +395,7 @@ function SurfaceCard({ surface }: { surface: Surface }) {
       <p className="text-[11px] text-zinc-500 font-mono mb-3 leading-snug line-clamp-2">{surface.evidence}</p>
 
       {surface.limitations.length > 0 && (
-        <div className="mb-2 rounded-lg border border-white/[0.12] bg-white/[0.03] px-2.5 py-2">
+        <div className="mb-2 rounded-lg border border-white/12 bg-white/3 px-2.5 py-2">
           <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// limitations</p>
           <ul className="space-y-0.5">
             {surface.limitations.slice(0, 2).map((l, i) => (
@@ -406,7 +406,7 @@ function SurfaceCard({ surface }: { surface: Surface }) {
       )}
 
       {surface.blockers.length > 0 && (
-        <div className="mb-2 rounded-lg border border-rose-500/[0.18] bg-rose-500/[0.04] px-2.5 py-2">
+        <div className="mb-2 rounded-lg border border-rose-500/18 bg-rose-500/4 px-2.5 py-2">
           <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-wider mb-1">// blockers</p>
           <ul className="space-y-0.5">
             {surface.blockers.slice(0, 2).map((l, i) => (
@@ -431,7 +431,7 @@ function SurfaceCard({ surface }: { surface: Surface }) {
 
 function RibbonStat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4.5rem]">
+    <div className="text-right min-w-18">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

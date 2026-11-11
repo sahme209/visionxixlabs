@@ -197,14 +197,14 @@ export function MigrationStageForm() {
       </Field>
 
       {state.kind === "error" && (
-        <p className="rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[12px] text-rose-200">
+        <p className="rounded-lg border border-rose-500/30 bg-rose-500/6 px-3 py-2 text-[12px] text-rose-200">
           <ExclamationTriangleIcon className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />
           {state.message}
         </p>
       )}
 
       {state.kind === "blocked" && (
-        <div className="rounded-lg border border-white/30 bg-white/[0.06] px-3 py-2 text-[12px] text-zinc-100">
+        <div className="rounded-lg border border-white/30 bg-white/6 px-3 py-2 text-[12px] text-zinc-100">
           <p className="font-semibold mb-1">Runbook is blocked — fix these before staging:</p>
           <ul className="list-disc list-inside marker:text-white/70 space-y-0.5">
             {state.runbookErrors.map((e, i) => <li key={i}>{e}</li>)}
@@ -289,7 +289,7 @@ function ToggleRow({
         checked={checked}
         onChange={(e) => onChange(e.target.checked)}
         disabled={disabled}
-        className="mt-0.5 h-3.5 w-3.5 rounded border-white/[0.12] bg-white/[0.04] text-orange-500 focus:ring-orange-500/30"
+        className="mt-0.5 h-3.5 w-3.5 rounded-sm border-white/12 bg-white/4 text-orange-500 focus:ring-orange-500/30"
       />
       <span className="text-[12px] text-zinc-300 leading-snug">{label}</span>
     </label>

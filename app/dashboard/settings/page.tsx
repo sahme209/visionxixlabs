@@ -73,21 +73,21 @@ export default async function SettingsHubPage() {
         {SECTIONS.map((section) => (
           <section key={section.title}>
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">{section.title}</p>
-            <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
               {section.rows.map((row) => {
                 const Icon = row.icon;
                 return (
                   <li key={row.href}>
                     <Link
                       href={row.href}
-                      className="group flex items-center gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                      className="group flex items-center gap-4 px-6 py-4 hover:bg-white/1.5 transition-colors"
                     >
                       <Icon className="h-4 w-4 text-zinc-500 shrink-0" />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
                           <p className="text-[14px] font-medium text-white">{row.label}</p>
                           {row.stub && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 border border-white/[0.08] rounded-full px-1.5 py-px">
+                            <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 border border-white/8 rounded-full px-1.5 py-px">
                               preview
                             </span>
                           )}

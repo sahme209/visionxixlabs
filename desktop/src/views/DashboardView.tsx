@@ -95,7 +95,7 @@ export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void }
                 {Object.entries(p.resourceCounts).length === 0
                   ? <span className="text-[11px] text-zinc-600">none yet</span>
                   : Object.entries(p.resourceCounts).map(([k, v]) => (
-                      <span key={k} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.04]">{k}: {v}</span>
+                      <span key={k} className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-white/4 text-zinc-300 border border-white/4">{k}: {v}</span>
                     ))}
               </div>
               <div className="text-[10px] font-mono text-zinc-500 flex items-center justify-between">
@@ -112,7 +112,7 @@ export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void }
         <Card className="p-2">
           <ul className="divide-y divide-axiom-border">
             {state.nextBestActions.slice(0, 8).map((a) => (
-              <li key={a.id} className="px-4 py-3 hover:bg-white/[0.02] transition-colors">
+              <li key={a.id} className="px-4 py-3 hover:bg-white/2 transition-colors">
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -196,7 +196,7 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
   if (whoami !== "loading" && whoami !== "no_auth" && whoami !== "auth_failed") {
     const gatePass = whoami.gate?.passed === true;
     return (
-      <div className="relative rounded-2xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.08] via-cyan-500/[0.04] to-violet-500/[0.04] p-5 overflow-hidden animate-fade-in-up">
+      <div className="relative rounded-2xl border border-emerald-500/20 bg-linear-to-br from-emerald-500/8 via-cyan-500/4 to-violet-500/4 p-5 overflow-hidden animate-fade-in-up">
         <div className="relative flex items-start justify-between gap-6 flex-wrap">
           <div className="flex items-start gap-4">
             <div className={`w-10 h-10 rounded-xl ${gatePass ? "bg-emerald-500/20" : "bg-white/20"} flex items-center justify-center shrink-0`}>
@@ -244,7 +244,7 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
   // Auth failed — present a recovery path.
   if (whoami === "auth_failed") {
     return (
-      <div className="relative rounded-2xl border border-red-500/25 bg-gradient-to-br from-red-500/[0.10] via-rose-500/[0.06] to-zinc-900/0 p-6 overflow-hidden animate-fade-in-up">
+      <div className="relative rounded-2xl border border-red-500/25 bg-linear-to-br from-red-500/10 via-rose-500/6 to-zinc-900/0 p-6 overflow-hidden animate-fade-in-up">
         <div className="relative">
           <div className="flex items-center gap-2 mb-1.5">
             <span className="text-[10px] font-mono font-semibold text-red-300 uppercase tracking-[0.22em]">authentication failed</span>
@@ -263,12 +263,12 @@ function AuthStatusBanner({ previewMode }: { previewMode: boolean }) {
   // now point the user at the Settings page where they can actually
   // paste an API key).
   return (
-    <div className="relative rounded-2xl border border-violet-500/25 bg-gradient-to-br from-violet-500/[0.10] via-fuchsia-500/[0.06] to-cyan-500/[0.04] p-6 overflow-hidden animate-fade-in-up">
+    <div className="relative rounded-2xl border border-violet-500/25 bg-linear-to-br from-violet-500/10 via-fuchsia-500/6 to-cyan-500/4 p-6 overflow-hidden animate-fade-in-up">
       <div className="absolute -top-20 -right-20 w-64 h-64 rounded-full bg-violet-500/20 blur-[80px] pointer-events-none" aria-hidden />
       <div className="absolute -bottom-20 -left-20 w-48 h-48 rounded-full bg-fuchsia-500/15 blur-[60px] pointer-events-none" aria-hidden />
       <div className="relative flex items-start justify-between gap-6 flex-wrap">
         <div className="flex items-start gap-4">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-glow-violet shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-violet-500 to-fuchsia-500 flex items-center justify-center shadow-glow-violet shrink-0">
             <svg className="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="3" />
               <path d="M12 1v6m0 10v6M4.22 4.22l4.24 4.24m7.08 7.08 4.24 4.24M1 12h6m10 0h6M4.22 19.78l4.24-4.24m7.08-7.08 4.24-4.24" />

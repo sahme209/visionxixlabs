@@ -1,5 +1,37 @@
 # Axiom master action plan
 
+## November 11 — current goal and execution order
+
+This checkpoint supersedes earlier operational instructions, not historical evidence or unfinished requirements. **Read root [CODEX_HANDOFF.md](../../CODEX_HANDOFF.md) in full, then [AGENTS.md](../../AGENTS.md) and [CLAUDE.md](../../CLAUDE.md).** The handoff controls execution and permissions; this master plan retains the complete application and website scope. Do not repeat completed operations from the dated checkpoints below.
+
+**Updated goal:** Complete the authorized handoff section 10.1 sequence for Axiom, one fully green PR at a time, keeping the master requirements, remaining-work record and living documentation synchronized. Preserve security, premium visual clarity and ease of use. Ask for the owner decisions in section 10.2 and the real-world steps in section 10.3; their presence in this plan is not authorization. Completion means the required acceptance evidence exists, not merely local code or simulated tests. Continue authorized, unblocked work without routine checkpoints.
+
+### Verified position
+
+- ~~AWS SDK 3.1166.0 upgrade: PR #315 merged with green CI.~~ [Evidence](../recovery/2026-11-11/aws-sdk-upgrade/README.md). Not production-deployed.
+- ~~AI SDK 7.0.170 upgrade: PR #317 merged with green CI.~~ [Evidence](../recovery/2026-11-11/ai7-upgrade/README.md). Not production-deployed; production Node >=22 remains a deployment check.
+- **In progress — Tailwind 4.3.5, PR #319:** website and desktop source migration, reviewed cascade/source bounds and responsive browser checks. Latest local suite: 17,809 passed, 893 skipped, one expected failure, no unexpected failures. GitHub checks are queued; not merged, deployed or installer-qualified. [Evidence and limitations](../recovery/2026-11-11/tailwind4-upgrade/README.md). The reviewed current-schema unit-helper repair does not renew historical qualification packets or authorize database work.
+- **Main verified green** at `172bf5ee3363176f99911f1786b1c15836b90c44`, including Typecheck + Vitest. **Production remains build 4** at `a344f4f601375257b00d75273ed927fd7e080de4`, READY; [production receipt](../recovery/2026-11-09/build-4/RESULT.md). Source merged after that receipt is not automatically live.
+
+### Next, in order
+
+1. Finish PR #319 only when every applicable check is green. No duplicate retry loop for queued jobs.
+2. Remaining platform migrations, separate sequential PRs: TypeScript 7, Prisma 7, Vitest 5. Verify actual package availability and compatibility before choosing versions. Prisma requires an owner-approved production schema check; the owner runs the SQL. **ESLint remains on 9 by the owner's November 11 decision** until its plugins support 10; do not force peers or disable rules.
+3. Fix `privateFixtureJoined.test.ts` only if its actual failure reproduces; capture the failure site, do not guess.
+4. Offline AI only after the owner accepts the ADR and answers its three decisions. No unapproved fallback or inference.
+5. Source-grounded documentation guides: Plugins, Workspaces, MCP and Settings; update navigation, heading hashes, support corpus, guide-count tests and related living docs in the same PR.
+
+### Rules and unfinished scope
+
+- Never push main, merge red/pending checks, bypass protection or use admin merge. Work on branches through one PR at a time; keep all applicable checks green.
+- No spending: standard runners in the public repository only. Keep Vercel Git auto-deploy off; no preview deployments. Lockfiles come from `dependency-fix.yml`, never hand edits. Re-review pinned source before changing hashes.
+- Production database changes, deployments, feature flags, billing and external posts require explicit owner approval. The owner runs Neon pre-check/apply/verify SQL and clicks every production deployment. Payments stay off; never expose secrets or show demo data in real workspaces.
+- Section 10.2 decisions remain owner-controlled: P01 scope, offline/on-prem policy and custody, held identity/security/billing choices and each production build. Section 10.3 remains separate acceptance: installers, live Governance trials, genuine ServiceNow review/lifecycle/closure, real-app walkthroughs, deferred Windows/Store, independent security assessment, live batch providers and recorded demos. Never resend the already-written ServiceNow note or decide for its human reviewers.
+- All A1–A9, B1–B6 and C1–C6 requirements and the integration/plugin roadmap remain retained below and in the requirements index. Historical counts and statements describe their dated snapshots; this checkpoint does not mark parent requirements complete or authorize C1–C6.
+- **Pinned app goal:** the older goal is still paused. Its text/status could not be edited through the available goal tools; the app also refused automated access to its own controls. The updated goal text above is saved here; do not report the UI goal as updated until its actual state is verified.
+
+---
+
 ## November 8 — current handoff; read this before historical checkpoints
 
 ~~**Pricing source and economics audit (plan L274) completed read-only 2026-11-08**~~: [audit](pricing-economics-audit-2026-11-08.md). Key findings: three inconsistent markups (1.5x, 2x, about 2.25x); prepaid credits are largely built but gated by live flags; deployment quotas are plan-tied (10/100/500); retired model IDs remain in the default registry; Stripe fees cut margins on small top-ups. **All 8 recommended defaults accepted by the user 2026-11-08** (see the decision log); implementation not started; payments stay off. **Execution strategy and decision log (Claude, 2026-11-08):** [execution-strategy-2026-11.md](execution-strategy-2026-11.md): phases, two parallel tracks and every user decision in one place. The [requirements index](master-plan-requirements-index.md) is the full checklist.

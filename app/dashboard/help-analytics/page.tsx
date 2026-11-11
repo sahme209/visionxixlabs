@@ -56,7 +56,7 @@ export default function HelpAnalyticsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -65,10 +65,10 @@ export default function HelpAnalyticsPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <MagnifyingGlassIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
               Help Analytics
@@ -99,7 +99,7 @@ export default function HelpAnalyticsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -121,18 +121,18 @@ export default function HelpAnalyticsPage() {
             />
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-4 mb-8">
             <p className="text-[11px] font-mono text-cyan-300/80 uppercase tracking-wider mb-2">
               // recent queries
             </p>
-            <div className="divide-y divide-white/[0.04] border border-white/[0.06] rounded-lg overflow-hidden">
+            <div className="divide-y divide-white/4 border border-white/6 rounded-lg overflow-hidden">
               {data.recent.length === 0 ? (
                 <p className="p-4 text-[12px] text-zinc-400 italic">No queries logged yet.</p>
               ) : (
                 data.recent.map((r) => (
-                  <div key={r.id} className="px-3 py-2 hover:bg-white/[0.02]">
+                  <div key={r.id} className="px-3 py-2 hover:bg-white/2">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${VERDICT_TONE[r.verdict] ?? "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
+                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${VERDICT_TONE[r.verdict] ?? "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
                         {r.verdict}
                       </span>
                       <span className="text-[10px] font-mono text-zinc-500">{r.totalTokens} token{r.totalTokens === 1 ? "" : "s"}</span>
@@ -160,8 +160,8 @@ function Panel({
   title, subtitle, rows, tone,
 }: { title: string; subtitle: string; rows: { query: string; count: number }[]; tone: "cyan" | "rose" }) {
   const cls = tone === "rose"
-    ? "border-rose-500/15 bg-rose-500/[0.03]"
-    : "border-cyan-500/15 bg-cyan-500/[0.03]";
+    ? "border-rose-500/15 bg-rose-500/3"
+    : "border-cyan-500/15 bg-cyan-500/3";
   return (
     <div className={`rounded-2xl border ${cls} p-4`}>
       <p className={`text-[10px] font-mono uppercase tracking-wider mb-0.5 ${tone === "rose" ? "text-rose-300/80" : "text-cyan-300/80"}`}>
@@ -189,10 +189,10 @@ function Stat({
   label, value, tone, icon: Icon,
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "cyan"; icon?: typeof ChartBarIcon }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    cyan:    "border-cyan-500/18 bg-cyan-500/3 text-cyan-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

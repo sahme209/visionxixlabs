@@ -122,17 +122,17 @@ export function DriftView() {
                 <div key={f.id} className="glass-card p-3">
                   <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_CLASS[f.severity]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${SEVERITY_CLASS[f.severity]}`}>
                         {f.severity}
                       </span>
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[f.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[f.status]}`}>
                         {f.status}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">{f.displayName}</p>
                       <span className="text-[10px] font-mono text-zinc-500">{f.resourceKind}</span>
                     </div>
                     {f.environmentTier && (
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 shrink-0">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 shrink-0">
                         {f.environmentTier}
                       </span>
                     )}
@@ -249,7 +249,7 @@ function DemoDetectButton({ onCompleted }: { onCompleted: () => void }) {
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2.5 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-violet-500/40 bg-violet-500/12 font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Detecting…" : "Run sample detection"}
       </button>
@@ -305,7 +305,7 @@ function DecideControls({
   if (state.kind === "suppressing") {
     const valid = reason.trim().length >= 10;
     return (
-      <div className="mt-2 pt-2 border-t border-white/[0.04]">
+      <div className="mt-2 pt-2 border-t border-white/4">
         <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
           Suppression reason ({reason.trim().length}/10 min)
         </span>
@@ -314,21 +314,21 @@ function DecideControls({
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this drift intentional?"
           rows={2}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden"
         />
         <div className="mt-1.5 flex items-center gap-1.5">
           <button
             type="button"
             disabled={!valid}
             onClick={() => decide("suppress", reason.trim())}
-            className="px-2 py-1 rounded border border-zinc-500/40 bg-zinc-500/[0.12] text-[10px] font-semibold text-zinc-100 hover:bg-zinc-500/[0.20] disabled:opacity-50 transition-colors"
+            className="px-2 py-1 rounded-sm border border-zinc-500/40 bg-zinc-500/12 text-[10px] font-semibold text-zinc-100 hover:bg-zinc-500/20 disabled:opacity-50 transition-colors"
           >
             Confirm suppress
           </button>
           <button
             type="button"
             onClick={() => { setReason(""); setState({ kind: "idle" }); }}
-            className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+            className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
           >
             Cancel
           </button>
@@ -339,13 +339,13 @@ function DecideControls({
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+    <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
       {currentStatus === "open" && (
         <button
           type="button"
           disabled={busy}
           onClick={() => decide("acknowledge")}
-          className="px-2 py-1 rounded border border-white/30 bg-white/[0.08] text-zinc-200 hover:bg-white/[0.15] disabled:opacity-50 transition-colors"
+          className="px-2 py-1 rounded-sm border border-white/30 bg-white/8 text-zinc-200 hover:bg-white/15 disabled:opacity-50 transition-colors"
         >
           {state.kind === "submitting" && state.which === "acknowledge" ? "…" : "Acknowledge"}
         </button>
@@ -354,7 +354,7 @@ function DecideControls({
         type="button"
         disabled={busy}
         onClick={() => setState({ kind: "suppressing" })}
-        className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-600/[0.08] text-zinc-300 hover:bg-zinc-600/[0.15] disabled:opacity-50 transition-colors"
+        className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-600/8 text-zinc-300 hover:bg-zinc-600/15 disabled:opacity-50 transition-colors"
       >
         Suppress…
       </button>
@@ -362,7 +362,7 @@ function DecideControls({
         type="button"
         disabled={busy}
         onClick={() => decide("resolve")}
-        className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+        className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
       >
         {state.kind === "submitting" && state.which === "resolve" ? "…" : "Mark resolved"}
       </button>

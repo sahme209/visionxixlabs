@@ -157,7 +157,7 @@ export default function GitHubAppPage() {
       />
 
       {callbackParam === "ok" && (
-        <div className="mb-6 rounded-2xl border border-emerald-500/[0.18] bg-emerald-500/[0.04] p-5">
+        <div className="mb-6 rounded-2xl border border-emerald-500/18 bg-emerald-500/4 p-5">
           <div className="flex items-center gap-2 mb-1">
             <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
             <p className="text-[13px] font-semibold text-emerald-200">GitHub App installed</p>
@@ -167,13 +167,13 @@ export default function GitHubAppPage() {
       )}
 
       {callbackParam === "error" && (
-        <div className="mb-6 rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+        <div className="mb-6 rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
           Install failed to land. Try the install link again, or contact us if the issue persists.
         </div>
       )}
 
       {createdParam === "1" && (
-        <div className="mb-6 rounded-2xl border border-emerald-500/[0.18] bg-emerald-500/[0.04] p-5">
+        <div className="mb-6 rounded-2xl border border-emerald-500/18 bg-emerald-500/4 p-5">
           <div className="flex items-center gap-2 mb-1">
             <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
             <p className="text-[13px] font-semibold text-emerald-200">GitHub App created</p>
@@ -183,7 +183,7 @@ export default function GitHubAppPage() {
       )}
 
       {manifestError && (
-        <div className="mb-6 rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+        <div className="mb-6 rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
           {manifestError === "manifest_exchange_failed"
             ? "Creating the GitHub App didn't complete. Try again — if it keeps failing, check that this deployment's URL is reachable from GitHub."
             : "GitHub App creation failed. Try again from this page."}
@@ -191,13 +191,13 @@ export default function GitHubAppPage() {
       )}
 
       {requestParam === "1" && (
-        <div className="mb-6 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 text-[13px] text-zinc-300">
+        <div className="mb-6 rounded-2xl border border-white/18 bg-white/4 p-5 text-[13px] text-zinc-300">
           Your install request was sent to your GitHub org admin. They need to approve before the platform can connect.
         </div>
       )}
 
       {installError && (
-        <div className="mb-6 rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+        <div className="mb-6 rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
           {installError === "missing_installation_id" && "GitHub didn't send us an installation id — try the install link again."}
           {installError === "no_org_in_state" && "We couldn't associate the install with your workspace. Try again from this page."}
           {installError !== "missing_installation_id" && installError !== "no_org_in_state" && `Install error: ${installError}`}
@@ -205,19 +205,19 @@ export default function GitHubAppPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading installation status…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -227,7 +227,7 @@ export default function GitHubAppPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -235,7 +235,7 @@ export default function GitHubAppPage() {
       {data && (
         <>
           {data.installReady ? (
-            <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+            <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
               <p className="text-[13px] font-semibold text-orange-100 mb-2">
                 {data.installed ? "Re-install or extend repository selection" : "Install Axiom on your GitHub org"}
               </p>
@@ -243,13 +243,13 @@ export default function GitHubAppPage() {
                 type="button"
                 onClick={() => { void beginInstall(); }}
                 disabled={openingInstall}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[13px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[13px] font-semibold text-orange-100 hover:bg-orange-500/20 transition-colors"
               >
                 <span>{openingInstall ? "Opening GitHub…" : "Continue to GitHub"}</span>
               </button>
             </div>
           ) : (
-            <div className="mb-6 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 text-[12.5px] text-zinc-300">
+            <div className="mb-6 rounded-2xl border border-white/18 bg-white/4 p-5 text-[12.5px] text-zinc-300">
               <p className="font-semibold text-zinc-200 mb-1">GitHub connection isn&apos;t set up yet</p>
               <p>
                 {data.isAdmin
@@ -261,7 +261,7 @@ export default function GitHubAppPage() {
                   type="button"
                   onClick={() => { void createGithubApp(); }}
                   disabled={creatingApp}
-                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[13px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] transition-colors"
+                  className="mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[13px] font-semibold text-orange-100 hover:bg-orange-500/20 transition-colors"
                 >
                   <span>{creatingApp ? "Opening GitHub…" : "Create GitHub App"}</span>
                 </button>
@@ -270,9 +270,9 @@ export default function GitHubAppPage() {
           )}
 
           {data.installed && data.active && (
-            <div className="mb-6 rounded-2xl border border-emerald-500/[0.18] bg-emerald-500/[0.03] p-5">
+            <div className="mb-6 rounded-2xl border border-emerald-500/18 bg-emerald-500/3 p-5">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[data.active.status]}`}>
+                <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[data.active.status]}`}>
                   {data.active.status}
                 </span>
               <p className="text-[13px] font-semibold text-emerald-100">{installationAccountLabel(data.active)}</p>
@@ -297,9 +297,9 @@ export default function GitHubAppPage() {
               <h3 className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">History</h3>
               <div className="space-y-2 mb-8">
                 {data.history.map((h) => (
-                  <div key={h.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+                  <div key={h.id} className="rounded-xl border border-white/6 bg-white/2 p-3">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[h.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[h.status]}`}>
                         {h.status}
                       </span>
                       <span className="text-[12px] text-white">{installationAccountLabel(h)}</span>

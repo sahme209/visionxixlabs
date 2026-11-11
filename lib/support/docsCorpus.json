@@ -216,42 +216,42 @@
    "title": "What the current desktop build delivers",
    "text": "Installed workspace — desktop navigation for releases, approvals, connectors, validation, audit evidence, and related operational views Desktop authentication — browser-approved pairing returns control to the installed application Repository workspace — select, clone, inspect, edit, branch, commit, push, and open pull requests with repository-scoped access Native shell — tray and notification integrations are available for supported application events Explicit connection state — unavailable APIs, missing credentials, and connector failures remain visible Persisted app state — nonsecret preferences use the file-backed app store; session credentials use the configured native vault. Persistence, upgrade migration, and vault-denial recovery require acceptance on each supported operating system.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+   "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16"
   },
   {
    "href": "/docs/desktop-install#requirements",
    "title": "System requirements",
-   "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Network — HTTPS access to the configured Axiom API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
+   "text": "macOS — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later Windows — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available Linux — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate Browser engine for Tailwind 4 source builds — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer. Network — HTTPS access to the configured Axiom API and any integrations you enable External accounts — identity-provider and connector accounts remain your organization's responsibility; permissions vary by connector",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+   "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16"
   },
   {
    "href": "/docs/desktop-install#install-macos",
    "title": "Install — macOS (Apple Silicon + Intel)",
    "text": "Visit /download . Choose Apple Silicon or Intel. The enabled button points directly to the matching asset from the current desktop-v* release. Check the download page for the selected installer's verification details. If a matching detached .asc signature and a release public key are published, download both and run gpg --verify installer.dmg.asc installer.dmg using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it. Mount the disk image, drag Axiom Agent to /Applications , and eject the image. Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose Open , and review the warning. Organizations that forbid unsigned software should not install that asset. Choose browser sign-in in the app. Your browser approves the pairing request and the installed application polls for the scoped desktop session. A browser redirect is part of desktop authentication, not a separate web product.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+   "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16"
   },
   {
    "href": "/docs/desktop-install#install-windows",
    "title": "Install — Windows x64",
    "text": "The generic Windows download prefers the MSI when it is present in the live manifest. The release page also exposes the NSIS .exe . If the selected installer has a matching .asc signature and release public key, verify that signature before running it. Compare the published SHA-256 digest when available. A detached signature does not establish Windows Authenticode signing: use the download page's attestation state and your organization's installation policy. Unsigned builds can trigger SmartScreen. Review the publisher state and your organization's policy before choosing More info → Run anyway . Complete the installer, launch Axiom Agent, and approve the desktop pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+   "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16"
   },
   {
    "href": "/docs/desktop-install#install-linux",
    "title": "Install — Linux x64",
    "text": "The generic Linux button prefers AppImage. The release page also provides .deb and .rpm assets when available. When a matching detached .asc signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release. chmod +x ./Axiom.Agent_*_amd64.AppImage ./Axiom.Agent_*_amd64.AppImage sudo dpkg -i Axiom.Agent_*_amd64.deb sudo rpm -i Axiom.Agent-*-1.x86_64.rpm Open Axiom Agent from the desktop menu or AppImage and approve the pairing flow in your browser.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+   "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16"
   },
   {
    "href": "/docs/desktop-install#updates",
    "title": "Updates and release notes",
    "text": "Automatic update delivery is not configured in the current Tauri bundle. Check the download page for a newer verified tag and install it manually. Review the public Axiom Agent release notes before upgrading.",
    "source": "app/docs/desktop-install/page.tsx",
-   "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c"
+   "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16"
   },
   {
    "href": "/docs/execution-plans#read",
@@ -286,7 +286,7 @@
    "title": "Need a specific answer?",
    "text": "See troubleshooting for connection errors, review the plan proposal , or open the in-product documentation from the desktop app.",
    "source": "app/docs/faq/page.tsx",
-   "sourceSha256": "fedf1b7339905ef9adbc6e9e683c572043d86e00886d160b24943ef1f650a878"
+   "sourceSha256": "ee01db61222292d0f316625197fed95cb7d08d7d3f2763ae796c0e8c06f69f21"
   },
   {
    "href": "/docs/gcp-setup#available",

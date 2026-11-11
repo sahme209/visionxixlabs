@@ -95,25 +95,25 @@ export function ApplicationsView() {
                       <p className="text-[13px] font-semibold text-white truncate">{a.name}</p>
                       <span className="text-[10px] font-mono text-zinc-500">{a.slug}</span>
                       {a.ownerTeamLabel && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                           {a.ownerTeamLabel}
                         </span>
                       )}
                       {a.businessTier && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-violet-500/15 text-violet-300 border border-violet-500/25">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-violet-500/15 text-violet-300 border border-violet-500/25">
                           {a.businessTier}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                         {a.componentCount} comp
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                         {a.releaseCount} rel
                       </span>
                       {a.releasesDeployed > 0 && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
                           {a.releasesDeployed} deployed
                         </span>
                       )}
@@ -179,7 +179,7 @@ function NewApplicationPanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[11.5px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/6 text-[11.5px] font-semibold text-violet-200 hover:bg-violet-500/12 transition-colors"
         >
           + Register application
         </button>
@@ -208,7 +208,7 @@ function NewApplicationPanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !slug || !name}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[11.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/12 text-[11.5px] font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Register"}
         </button>
@@ -237,7 +237,7 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
           placeholder={placeholder}
           disabled={disabled}
           rows={2}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       ) : (
         <input
@@ -246,7 +246,7 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       )}
     </label>

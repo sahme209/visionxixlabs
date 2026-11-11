@@ -68,7 +68,7 @@ export function ContextualHelpBubble() {
   return (
     <div ref={wrapperRef} className="fixed bottom-5 right-5 z-40">
       {open && (
-        <div role="dialog" aria-label="Help" className="mb-2 w-[320px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4 text-left">
+        <div role="dialog" aria-label="Help" className="mb-2 w-[320px] rounded-2xl border border-white/8 bg-zinc-950/95 backdrop-blur-sm shadow-2xl p-4 text-left">
           <div className="flex items-start justify-between gap-2 mb-2">
             <p className="text-[10px] font-mono text-cyan-300/80 uppercase tracking-wider">// help</p>
             <button onClick={() => { setOpen(false); triggerRef.current?.focus(); }} className="text-zinc-400 hover:text-white">
@@ -117,7 +117,7 @@ export function ContextualHelpBubble() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Help"
         aria-expanded={open}
-        className="rounded-full bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 p-2 shadow-lg backdrop-blur transition"
+        className="rounded-full bg-cyan-500/20 text-cyan-200 border border-cyan-500/40 hover:bg-cyan-500/30 p-2 shadow-lg backdrop-blur-sm transition"
       >
         <QuestionMarkCircleIcon className="h-5 w-5" />
       </button>

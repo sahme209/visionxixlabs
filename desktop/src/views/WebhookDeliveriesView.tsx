@@ -96,7 +96,7 @@ export function WebhookDeliveriesView() {
             {data.deliveries.map((d) => (
               <div key={d.id} className="glass-card p-3">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[d.outcome]}`}>
+                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[d.outcome]}`}>
                     {d.outcome}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400">{d.provider}:{d.eventKind}</span>

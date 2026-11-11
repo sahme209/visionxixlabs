@@ -25,7 +25,7 @@ const principles = [
 
 export default function DesignPage() {
   return (
-    <div className="min-h-screen bg-[#141414] text-[#efefec]">
+    <div className="min-h-screen bg-brand-ink text-[#efefec]">
       <Navigation />
       <main>
         <section className="mx-auto max-w-[1200px] px-5 pb-20 pt-28 sm:px-8 lg:pb-28 lg:pt-36">
@@ -40,7 +40,7 @@ export default function DesignPage() {
           </p>
         </section>
 
-        <section className="border-y border-white/[0.08] bg-[#181818]">
+        <section className="border-y border-white/8 bg-[#181818]">
           <div className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
             <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
               <div>
@@ -51,10 +51,10 @@ export default function DesignPage() {
                   thing that needs attention.
                 </p>
               </div>
-              <div className="grid gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2">
+              <div className="grid gap-px overflow-hidden rounded-2xl border border-white/8 bg-white/8 sm:grid-cols-2">
                 {colors.map(([name, hex]) => (
-                  <div key={name} className="bg-[#141414] p-5">
-                    <div className="h-24 rounded-xl border border-white/[0.1]" style={{ backgroundColor: hex }} />
+                  <div key={name} className="bg-brand-ink p-5">
+                    <div className="h-24 rounded-xl border border-white/10" style={{ backgroundColor: hex }} />
                     <div className="mt-4 flex items-center justify-between gap-4 text-sm">
                       <span>{name}</span>
                       <code className="text-xs text-zinc-600">{hex}</code>
@@ -72,7 +72,7 @@ export default function DesignPage() {
               <p className="font-mono text-xs text-zinc-600">02</p>
               <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Type and rhythm</h2>
             </div>
-            <div className="space-y-10 border-y border-white/[0.08] py-8">
+            <div className="space-y-10 border-y border-white/8 py-8">
               <p className="text-5xl font-medium leading-none tracking-[-0.055em] sm:text-6xl">
                 Clear at a glance.
               </p>
@@ -88,11 +88,11 @@ export default function DesignPage() {
           </div>
         </section>
 
-        <section className="border-y border-white/[0.08] bg-[#181818]">
+        <section className="border-y border-white/8 bg-[#181818]">
           <div className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
             <p className="font-mono text-xs text-zinc-600">03</p>
             <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Interaction rules</h2>
-            <div className="mt-10 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+            <div className="mt-10 divide-y divide-white/8 border-y border-white/8">
               {principles.map(([title, detail]) => (
                 <div key={title} className="grid gap-3 py-6 md:grid-cols-[260px_1fr]">
                   <h3 className="font-medium">{title}</h3>
@@ -110,7 +110,7 @@ export default function DesignPage() {
               Watch the workflow explain itself.
             </h2>
           </div>
-          <Link href="/demo" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#efefec] px-6 text-sm font-semibold text-[#141414] hover:bg-white">
+          <Link href="/demo" className="inline-flex min-h-12 shrink-0 items-center justify-center rounded-full bg-[#efefec] px-6 text-sm font-semibold text-brand-ink hover:bg-white">
             Explore the interactive demo
           </Link>
         </section>

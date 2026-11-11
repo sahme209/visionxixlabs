@@ -143,7 +143,7 @@ export default async function ApprovalsPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The approval items table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to start populating this queue.
@@ -154,7 +154,7 @@ export default async function ApprovalsPage() {
       {!migrationPending && items.length === 0 && (
         <Link
           href="/dashboard/findings"
-          className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-12 text-center"
+          className="group block rounded-2xl border border-white/6 bg-white/1.5 hover:border-white/12 transition-colors px-7 py-12 text-center"
         >
           <p className="text-[15px] font-semibold text-white mb-1">Nothing to approve yet</p>
           <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto mb-5">
@@ -174,7 +174,7 @@ export default async function ApprovalsPage() {
               least one — the hourly /api/cron/expire-approvals worker
               flips items pending for 7+ days to expired so the queue
               top stays honest. */}
-          <section className={`surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid ${counts.expired > 0 ? "grid-cols-5" : "grid-cols-4"} overflow-hidden`}>
+          <section className={`surface-glass mb-10 rounded-2xl divide-x divide-white/4 grid ${counts.expired > 0 ? "grid-cols-5" : "grid-cols-4"} overflow-hidden`}>
             <CountTile label="pending"  count={counts.pending}  tone={counts.pending > 0 ? "text-zinc-300" : "text-zinc-600"} />
             <CountTile label="snoozed"  count={counts.snoozed}  tone="text-zinc-400" />
             <CountTile label="approved" count={counts.approved} tone={counts.approved > 0 ? "text-emerald-300" : "text-zinc-600"} />
@@ -202,7 +202,7 @@ export default async function ApprovalsPage() {
                   <BulkSelectAll allPendingIds={items.filter((i) => i.status === "pending").map((i) => i.id)} />
                 </div>
               </div>
-              <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
+              <ul className="surface-glass rounded-2xl divide-y divide-white/4 overflow-hidden">
                 {items.map((item) => (
                   <li key={item.id} className="px-6 py-5">
                     <div className="flex items-start justify-between gap-4">
@@ -282,7 +282,7 @@ function ApproveButton({ itemId, action }: { itemId: string; action: "approve" |
         className={`px-3 py-1 rounded-full text-[11px] font-medium border transition-colors ${
           action === "approve"
             ? "border-emerald-500/30 text-emerald-200 hover:border-emerald-500/50"
-            : "border-white/[0.08] text-zinc-400 hover:text-white hover:border-white/[0.18]"
+            : "border-white/8 text-zinc-400 hover:text-white hover:border-white/18"
         }`}
       >
         {action === "approve" ? "Approve" : "Reject"}

@@ -101,7 +101,7 @@ export default function CloudTrailPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -110,10 +110,10 @@ export default function CloudTrailPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <EyeIcon className="h-3.5 w-3.5 text-rose-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">
               CloudTrail
@@ -143,7 +143,7 @@ export default function CloudTrailPage() {
               className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition ${
                 lookback === o.value
                   ? "bg-rose-500/15 text-rose-200 border-rose-500/30"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white hover:border-white/[0.18]"
+                  : "bg-white/2 text-zinc-400 border-white/6 hover:text-white hover:border-white/18"
               }`}
             >
               {o.label}
@@ -152,7 +152,7 @@ export default function CloudTrailPage() {
           <button
             onClick={() => load(lookback)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -170,12 +170,12 @@ export default function CloudTrailPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
           // pulling CloudTrail LookupEvents…
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -190,8 +190,8 @@ export default function CloudTrailPage() {
                 onClick={() => setSeverityFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   severityFilter === s
-                    ? "bg-orange-500/15 text-white border-white/[0.12]"
-                    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                    ? "bg-orange-500/15 text-white border-white/12"
+                    : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
                 }`}
               >
                 {s}
@@ -200,29 +200,29 @@ export default function CloudTrailPage() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No CloudTrail events in the selected window matched this filter.
             </div>
           ) : (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] divide-y divide-white/[0.04] mb-8">
+            <div className="rounded-2xl border border-white/6 bg-white/2 divide-y divide-white/4 mb-8">
               {filtered.slice(0, 100).map((e) => (
-                <div key={e.eventId} className="p-3 hover:bg-white/[0.02] transition-colors">
+                <div key={e.eventId} className="p-3 hover:bg-white/2 transition-colors">
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_TONE[e.severity]}`}>
+                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_TONE[e.severity]}`}>
                           {e.severity}
                         </span>
                         <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                           {CATEGORY_LABEL[e.category]}
                         </span>
                         {e.rootUser && (
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/15 text-rose-300 border border-rose-500/30">
                             root
                           </span>
                         )}
                         {e.outcome === "failure" && (
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-300 border border-rose-500/20">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/10 text-rose-300 border border-rose-500/20">
                             failure{e.errorCode ? ` · ${e.errorCode}` : ""}
                           </span>
                         )}
@@ -242,7 +242,7 @@ export default function CloudTrailPage() {
           )}
 
           {result.limitations.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+            <div className="rounded-2xl border border-white/18 bg-white/3 p-4 mb-8">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// notes</p>
               {result.limitations.map((l, i) => (
                 <p key={i} className="text-[12px] text-zinc-300">· {l}</p>
@@ -267,10 +267,10 @@ function Stat({
   icon?: typeof ExclamationTriangleIcon;
 }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose: "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    orange: "border-white/[0.06] bg-white/[0.015] text-white",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber: "border-white/18 bg-white/3 text-zinc-200",
+    rose: "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    orange: "border-white/6 bg-white/1.5 text-white",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

@@ -52,9 +52,9 @@ const CLOUD_LABEL: Record<Section["cloud"], string> = {
 };
 
 const CLOUD_GRADIENT: Record<Section["cloud"], string> = {
-  aws: "from-white/[0.08] to-transparent",
-  azure: "from-sky-500/[0.08] to-transparent",
-  gcp: "from-emerald-500/[0.08] to-transparent",
+  aws: "from-white/8 to-transparent",
+  azure: "from-sky-500/8 to-transparent",
+  gcp: "from-emerald-500/8 to-transparent",
 };
 
 export default function CloudInventoryPage() {
@@ -78,7 +78,7 @@ export default function CloudInventoryPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -87,10 +87,10 @@ export default function CloudInventoryPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ServerStackIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Cloud Inventory
@@ -121,12 +121,12 @@ export default function CloudInventoryPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
           // building unified inventory across 3 clouds…
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -141,7 +141,7 @@ export default function CloudInventoryPage() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
             {report.sections.map((s) => (
-              <div key={s.cloud} className={`relative rounded-2xl border border-white/[0.06] bg-gradient-to-br ${CLOUD_GRADIENT[s.cloud]} p-5 overflow-hidden`}>
+              <div key={s.cloud} className={`relative rounded-2xl border border-white/6 bg-linear-to-br ${CLOUD_GRADIENT[s.cloud]} p-5 overflow-hidden`}>
                 <div className="flex items-center justify-between mb-3">
                   <div>
                     <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{s.cloud.toUpperCase()}</p>
@@ -167,7 +167,7 @@ export default function CloudInventoryPage() {
 
                 <div className="grid grid-cols-2 gap-2 mb-3">
                   {s.headline.map((h) => (
-                    <div key={h.label} className="rounded-lg border border-white/[0.04] bg-black/20 px-2.5 py-1.5">
+                    <div key={h.label} className="rounded-lg border border-white/4 bg-black/20 px-2.5 py-1.5">
                       <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">{h.label}</p>
                       <p className="text-[14px] font-semibold text-white">{h.value}</p>
                     </div>
@@ -206,7 +206,7 @@ export default function CloudInventoryPage() {
           </div>
 
           {report.limitations.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+            <div className="rounded-2xl border border-white/18 bg-white/3 p-4 mb-8">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">
                 // overall limitations
               </p>
@@ -233,10 +233,10 @@ function Stat({
   icon?: typeof ServerStackIcon;
 }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose: "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    orange: "border-white/[0.06] bg-white/[0.015] text-white",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber: "border-white/18 bg-white/3 text-zinc-200",
+    rose: "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    orange: "border-white/6 bg-white/1.5 text-white",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -251,8 +251,8 @@ function Stat({
 
 function FamilyTile({ label, value, icon: Icon }: { label: string; value: number; icon: typeof ServerStackIcon }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center gap-3">
-      <div className="rounded-lg bg-white/[0.04] p-2">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-4 flex items-center gap-3">
+      <div className="rounded-lg bg-white/4 p-2">
         <Icon className="h-5 w-5 text-orange-300" />
       </div>
       <div>

@@ -88,11 +88,11 @@ function matrixSummaryForAction(a: ActionDescriptor): { total: number; passing: 
 export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<WireStatus, { text: string; bg: string; border: string }> = {
-  live:        { text: "text-emerald-300", bg: "bg-emerald-500/[0.08]", border: "border-emerald-500/30" },
-  preview:     { text: "text-sky-300",     bg: "bg-sky-500/[0.08]",     border: "border-sky-500/30" },
-  needs_setup: { text: "text-zinc-300",   bg: "bg-white/[0.08]",   border: "border-white/30" },
-  blocked:     { text: "text-rose-300",    bg: "bg-rose-500/[0.08]",    border: "border-rose-500/30" },
-  planned:     { text: "text-zinc-400",    bg: "bg-white/[0.03]",       border: "border-white/[0.08]" },
+  live:        { text: "text-emerald-300", bg: "bg-emerald-500/8", border: "border-emerald-500/30" },
+  preview:     { text: "text-sky-300",     bg: "bg-sky-500/8",     border: "border-sky-500/30" },
+  needs_setup: { text: "text-zinc-300",   bg: "bg-white/8",   border: "border-white/30" },
+  blocked:     { text: "text-rose-300",    bg: "bg-rose-500/8",    border: "border-rose-500/30" },
+  planned:     { text: "text-zinc-400",    bg: "bg-white/3",       border: "border-white/8" },
 };
 
 const STATUS_ICON: Record<WireStatus, typeof CheckCircleIcon> = {
@@ -226,19 +226,19 @@ export default async function CapabilitiesPage() {
           <span className="text-zinc-500">what can change cloud state</span>
         </p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-          <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-4 py-3">
+          <div className="rounded-md border border-white/6 bg-white/[0.012] px-4 py-3">
             <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Read-only</p>
             <p className="text-[18px] font-semibold tabular-nums text-zinc-300">{ACTION_REGISTRY.filter((a) => a.safetyTier === "read_only").length}</p>
           </div>
-          <div className="rounded-md border border-sky-500/20 bg-sky-500/[0.04] px-4 py-3">
+          <div className="rounded-md border border-sky-500/20 bg-sky-500/4 px-4 py-3">
             <p className="font-mono text-[10px] uppercase tracking-wider text-sky-300 mb-1">Preview</p>
             <p className="text-[18px] font-semibold tabular-nums text-sky-300">{ACTION_REGISTRY.filter((a) => a.safetyTier === "preview").length}</p>
           </div>
-          <div className="rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] px-4 py-3">
+          <div className="rounded-md border border-emerald-500/20 bg-emerald-500/4 px-4 py-3">
             <p className="font-mono text-[10px] uppercase tracking-wider text-emerald-300 mb-1">Governed</p>
             <p className="text-[18px] font-semibold tabular-nums text-emerald-300">{counts.governed}</p>
           </div>
-          <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] px-4 py-3">
+          <div className="rounded-md border border-rose-500/20 bg-rose-500/4 px-4 py-3">
             <p className="font-mono text-[10px] uppercase tracking-wider text-rose-300 mb-1">Unsafe (blocked)</p>
             <p className="text-[18px] font-semibold tabular-nums text-rose-300">{counts.unsafe}</p>
           </div>
@@ -261,7 +261,7 @@ export default async function CapabilitiesPage() {
             <span className="text-zinc-700">·</span>
             <span className="text-zinc-500">what axiom actually did</span>
           </p>
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {recentDispatches.map((d) => {
               const t = dispatchTags(d);
               const Icon = t.status === "executed" ? CheckCircleIcon : t.status === "failed" ? XCircleIcon : ClockIcon;
@@ -310,7 +310,7 @@ export default async function CapabilitiesPage() {
             <span className="text-zinc-400 tabular-nums">{actions.length}</span>
           </p>
           <h2 className="text-[18px] font-semibold text-white tracking-[-0.01em] mb-4">{CATEGORY_LABEL[cat as keyof typeof CATEGORY_LABEL]}</h2>
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {actions.map((a) => {
               const tone = STATUS_TONE[a.wireStatus];
               const Icon = STATUS_ICON[a.wireStatus];
@@ -371,7 +371,7 @@ export default async function CapabilitiesPage() {
               return (
                 <li key={a.kind}>
                   {clickable && surface ? (
-                    <Link href={surface} className="block px-5 py-4 hover:bg-white/[0.02] transition-colors">
+                    <Link href={surface} className="block px-5 py-4 hover:bg-white/2 transition-colors">
                       {rowInner}
                     </Link>
                   ) : (
@@ -384,7 +384,7 @@ export default async function CapabilitiesPage() {
         </section>
       ))}
 
-      <footer className="mt-12 pt-6 border-t border-white/[0.06]">
+      <footer className="mt-12 pt-6 border-t border-white/6">
         <p className="text-[11.5px] text-zinc-500 leading-relaxed">
           <BoltIcon className="h-3.5 w-3.5 inline-block -mt-0.5 mr-1 text-emerald-300" />
           Registry is metadata-only. Each route is independently implemented. Honesty is enforced by{" "}

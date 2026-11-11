@@ -221,7 +221,7 @@ export default function DashboardPage() {
           return (
             <Link
               href={action.href}
-              className="group block border border-emerald-500/20 bg-emerald-500/[0.03] hover:border-emerald-400/40 hover:bg-emerald-500/[0.06] transition-colors px-6 py-6 rounded-md"
+              className="group block border border-emerald-500/20 bg-emerald-500/3 hover:border-emerald-400/40 hover:bg-emerald-500/6 transition-colors px-6 py-6 rounded-md"
             >
               <div className="flex items-start justify-between gap-6">
                 <div className="flex-1 min-w-0">
@@ -274,7 +274,7 @@ export default function DashboardPage() {
       {summary && (summary.findingCount > 0 || summary.pendingApprovals > 0 || summary.lastScanIso) && (
         <section className="mb-10">
           <SectionKicker label="telemetry" status="live" />
-          <div className="border border-white/[0.06] bg-white/[0.012] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/[0.04] overflow-hidden rounded-md">
+          <div className="border border-white/6 bg-white/[0.012] grid grid-cols-2 sm:grid-cols-4 divide-x sm:divide-y-0 divide-y divide-white/4 overflow-hidden rounded-md">
             <Stat label="findings"     value={summary.findingCount.toString()} href="/dashboard/findings"
                   spark={summary.findingsTrend7d} sparkTone="text-zinc-400" />
             <Stat label="pending"      value={summary.pendingApprovals.toString()} href="/dashboard/approvals"
@@ -300,10 +300,10 @@ export default function DashboardPage() {
         {connected.length === 0 ? (
           <Link
             href="/dashboard/connect-cloud"
-            className="group block border border-dashed border-emerald-500/25 bg-emerald-500/[0.02] hover:border-emerald-400/50 hover:bg-emerald-500/[0.05] transition-colors px-6 py-6 rounded-md"
+            className="group block border border-dashed border-emerald-500/25 bg-emerald-500/2 hover:border-emerald-400/50 hover:bg-emerald-500/5 transition-colors px-6 py-6 rounded-md"
           >
             <div className="flex items-center gap-4">
-              <div className="w-10 h-10 border border-emerald-500/30 bg-emerald-500/[0.06] flex items-center justify-center shrink-0 rounded-sm">
+              <div className="w-10 h-10 border border-emerald-500/30 bg-emerald-500/6 flex items-center justify-center shrink-0 rounded-xs">
                 <CloudIcon className="h-5 w-5 text-emerald-300" />
               </div>
               <div className="flex-1 min-w-0">
@@ -319,7 +319,7 @@ export default function DashboardPage() {
           </Link>
         ) : (
           <>
-            <div className="border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden rounded-md">
+            <div className="border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden rounded-md">
               {connected.map((c) => (
                 <div key={c.accountId || c.provider}>
                   <div className="px-5 py-3.5 flex items-center gap-4">
@@ -374,7 +374,7 @@ export default function DashboardPage() {
       {/* ─── Workspace ──────────────────────────────────────────────────── */}
       <section className="mb-10">
         <SectionKicker label="workspace" status="catalog" />
-        <div className="grid md:grid-cols-3 gap-x-8 gap-y-6 border border-white/[0.06] bg-white/[0.012] rounded-md p-6">
+        <div className="grid md:grid-cols-3 gap-x-8 gap-y-6 border border-white/6 bg-white/[0.012] rounded-md p-6">
           <CapabilityGroup
             title="Operate"
             items={[
@@ -407,7 +407,7 @@ export default function DashboardPage() {
 
 
       {/* ─── Robotic footer — terminal-style status line ─────────────────── */}
-      <footer className="mt-16 pt-6 border-t border-white/[0.04] font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-600 flex items-center justify-between flex-wrap gap-3">
+      <footer className="mt-16 pt-6 border-t border-white/4 font-mono text-[10px] uppercase tracking-[0.18em] text-zinc-600 flex items-center justify-between flex-wrap gap-3">
         <span>
           <span className="text-emerald-400">●</span> uptime.session :: {new Date().toISOString().slice(0, 10)}
         </span>
@@ -477,7 +477,7 @@ function ActionSurfaceChip() {
     <section className="mb-6 -mt-2">
       <Link
         href="/dashboard/capabilities"
-        className="block rounded-md border border-emerald-500/20 bg-emerald-500/[0.025] px-4 py-3 hover:border-emerald-500/40 hover:bg-emerald-500/[0.05] transition-colors group"
+        className="block rounded-md border border-emerald-500/20 bg-emerald-500/2.5 px-4 py-3 hover:border-emerald-500/40 hover:bg-emerald-500/5 transition-colors group"
       >
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-1.5 inline-flex items-center gap-2">
           <span className="text-zinc-700">{"//"}</span>
@@ -548,15 +548,15 @@ function JourneyChecklist({
         <span className="text-zinc-700">::</span>
         <span className="text-zinc-500">setup-sequence</span>
       </p>
-      <ol className="border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden rounded-md">
+      <ol className="border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden rounded-md">
         {steps.map((s, i) => (
           <li key={s.label}>
             <Link
               href={s.href}
-              className="group flex items-start gap-4 px-5 py-3.5 hover:bg-emerald-500/[0.04] transition-colors"
+              className="group flex items-start gap-4 px-5 py-3.5 hover:bg-emerald-500/4 transition-colors"
             >
-              <span className={`mt-1 w-4 h-4 border flex items-center justify-center shrink-0 rounded-sm font-mono text-[9px] ${
-                s.done ? "border-emerald-400/60 bg-emerald-400/10 text-emerald-300" : "border-white/[0.12] text-zinc-700"
+              <span className={`mt-1 w-4 h-4 border flex items-center justify-center shrink-0 rounded-xs font-mono text-[9px] ${
+                s.done ? "border-emerald-400/60 bg-emerald-400/10 text-emerald-300" : "border-white/12 text-zinc-700"
               }`}>
                 {s.done ? "✓" : (i + 1).toString().padStart(2, "0")}
               </span>
@@ -592,7 +592,7 @@ function Stat({
   return (
     <Link
       href={href}
-      className="group block px-4 py-4 hover:bg-emerald-500/[0.04] transition-colors"
+      className="group block px-4 py-4 hover:bg-emerald-500/4 transition-colors"
     >
       <div className="flex items-baseline justify-between gap-2 mb-1.5">
         <p className={`text-[22px] font-mono font-semibold tabular-nums leading-none ${tone ?? "text-white"}`}>{value}</p>

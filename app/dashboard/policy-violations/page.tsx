@@ -51,7 +51,7 @@ type RespBody =
 const STATUS_CLASS: Record<Status, string> = {
   open:               "bg-rose-500/15 text-rose-300 border-rose-500/25",
   exception_pending:  "bg-white/15 text-zinc-300 border-white/25",
-  exception_granted:  "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  exception_granted:  "bg-orange-500/15 text-orange-300 border-white/10",
   resolved:           "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   unknown:            "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
 };
@@ -103,19 +103,19 @@ export default function PolicyViolationsPage() {
       <SeedBootstrapButton />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading policy violations…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -125,7 +125,7 @@ export default function PolicyViolationsPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -140,26 +140,26 @@ export default function PolicyViolationsPage() {
           </div>
 
           {data.violations.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No policy violations on file. Clean releases all around.
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {data.violations.map((v) => (
-                <div key={v.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={v.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_CLASS[v.severity]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${SEVERITY_CLASS[v.severity]}`}>
                         {v.severity}
                       </span>
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[v.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[v.status]}`}>
                         {v.status.replace("_", " ")}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">{v.ruleLabel}</p>
                       <span className="text-[10px] font-mono text-zinc-500">{v.ruleKey}</span>
                     </div>
                     {v.blocking && (
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/25 shrink-0">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/15 text-rose-300 border border-rose-500/25 shrink-0">
                         blocking
                       </span>
                     )}
@@ -190,11 +190,11 @@ export default function PolicyViolationsPage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ShieldExclamationIcon; label: string; value: string; tone: "orange" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -253,7 +253,7 @@ function DecideControls({
   if (state.kind === "granting") {
     const valid = reason.trim().length >= 10;
     return (
-      <div className="mt-3 pt-3 border-t border-white/[0.04]">
+      <div className="mt-3 pt-3 border-t border-white/4">
         <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
           Exception rationale ({reason.trim().length}/10 min)
         </span>
@@ -263,21 +263,21 @@ function DecideControls({
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this exception justified? Include approval reference + risk acceptance."
           rows={2}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden"
         />
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
             disabled={!valid}
             onClick={() => decide("grant_exception", reason.trim())}
-            className="px-3 py-1 rounded border border-orange-500/40 bg-orange-500/[0.12] text-[11.5px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 transition-colors"
+            className="px-3 py-1 rounded-sm border border-orange-500/40 bg-orange-500/12 text-[11.5px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 transition-colors"
           >
             Confirm exception
           </button>
           <button
             type="button"
             onClick={() => { setReason(""); setState({ kind: "idle" }); }}
-            className="px-3 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[11.5px] text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="px-3 py-1 rounded-sm border border-white/8 bg-white/2 text-[11.5px] text-zinc-300 hover:bg-white/5 transition-colors"
           >
             Cancel
           </button>
@@ -288,13 +288,13 @@ function DecideControls({
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+    <div className="mt-3 pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
       {exceptionAllowed && (
         <button
           type="button"
           disabled={busy}
           onClick={() => setState({ kind: "granting" })}
-          className="px-3 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-orange-500/[0.12] disabled:opacity-50 transition-colors"
+          className="px-3 py-1 rounded-sm border border-white/12 bg-white/2.5 text-white hover:bg-orange-500/12 disabled:opacity-50 transition-colors"
         >
           Grant exception…
         </button>
@@ -303,7 +303,7 @@ function DecideControls({
         type="button"
         disabled={busy}
         onClick={() => decide("resolve")}
-        className="px-3 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+        className="px-3 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
       >
         {busy && state.kind === "submitting" && state.which === "resolve" ? "resolving…" : "Mark resolved"}
       </button>
@@ -356,13 +356,13 @@ function SeedBootstrapButton() {
 
   const busy = outcome.kind === "running";
   return (
-    <div className="mb-6 rounded-2xl border border-cyan-500/[0.18] bg-cyan-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+    <div className="mb-6 rounded-2xl border border-cyan-500/18 bg-cyan-500/3 p-4 flex items-center gap-3 flex-wrap text-[12px]">
       <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-300/70">Engine rules</span>
       <button
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/12 font-semibold text-cyan-100 hover:bg-cyan-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Seeding…" : "Seed default policy rules"}
       </button>

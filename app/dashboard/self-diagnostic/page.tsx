@@ -51,7 +51,7 @@ export default async function SelfDiagnosticPage() {
       </header>
 
       {/* Ribbon */}
-      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <div className="flex items-center gap-6 flex-wrap">
           <div>
             <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500 mb-1">Health score</p>
@@ -76,7 +76,7 @@ export default async function SelfDiagnosticPage() {
       </section>
 
       {/* Per-check rows */}
-      <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+      <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
         {report.checks.map((c) => {
           const Icon = c.verdict === "pass" ? CheckCircleIcon : XCircleIcon;
           const tone = c.verdict === "pass" ? "text-emerald-300" : "text-rose-300";

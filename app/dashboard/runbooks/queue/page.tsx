@@ -99,7 +99,7 @@ export default function RunbookQueuePage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -108,10 +108,10 @@ export default function RunbookQueuePage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <WrenchScrewdriverIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Runbook Queue · approval_only_no_execution
@@ -120,7 +120,7 @@ export default function RunbookQueuePage() {
           <button
             onClick={load}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -145,7 +145,7 @@ export default function RunbookQueuePage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -160,8 +160,8 @@ export default function RunbookQueuePage() {
                 onClick={() => setFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   filter === s
-                    ? "bg-orange-500/15 text-white border-white/[0.12]"
-                    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                    ? "bg-orange-500/15 text-white border-white/12"
+                    : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
                 }`}
               >
                 {s}
@@ -170,17 +170,17 @@ export default function RunbookQueuePage() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No runbooks {filter === "all" ? "in queue" : `with status '${filter}'`}.
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {filtered.map((r) => (
-                <div key={r.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={r.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_TONE[r.status]}`}>
+                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_TONE[r.status]}`}>
                           {r.status}
                         </span>
                         <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{r.severity}</span>
@@ -193,20 +193,20 @@ export default function RunbookQueuePage() {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                    <div className="rounded-lg border border-white/[0.06] bg-black/20 p-2.5">
+                    <div className="rounded-lg border border-white/6 bg-black/20 p-2.5">
                       <p className="text-[10px] font-mono text-emerald-300/80 uppercase tracking-wider mb-0.5">Reversal · {r.reversalRisk}</p>
                       <p className="text-[12px] text-white">{r.reversalLabel}</p>
                       {r.reversalApi && (
-                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/[0.06] rounded px-1.5 py-0.5 mt-1">
+                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/6 rounded-sm px-1.5 py-0.5 mt-1">
                           {r.reversalApi}
                         </code>
                       )}
                     </div>
-                    <div className="rounded-lg border border-white/[0.06] bg-black/20 p-2.5">
+                    <div className="rounded-lg border border-white/6 bg-black/20 p-2.5">
                       <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-wider mb-0.5">Hardening</p>
                       <p className="text-[12px] text-white">{r.hardeningLabel}</p>
                       {r.hardeningApi && (
-                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/[0.06] rounded px-1.5 py-0.5 mt-1">
+                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/6 rounded-sm px-1.5 py-0.5 mt-1">
                           {r.hardeningApi}
                         </code>
                       )}
@@ -257,10 +257,10 @@ function Stat({
   label, value, tone, icon: Icon,
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc"; icon?: typeof ClockIcon }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

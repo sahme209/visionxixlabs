@@ -137,7 +137,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6"
+              className="rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-6"
             >
               <p className="text-[12px] font-mono uppercase tracking-widest text-emerald-300">
                 request recorded
@@ -158,7 +158,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                 </Link>
                 <Link
                   href="/plans"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
                 >
                   See plans
                 </Link>
@@ -171,7 +171,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               onSubmit={handleSubmit}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-8 space-y-6"
+              className="rounded-2xl border border-white/6 bg-white/2 p-6 md:p-8 space-y-6"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Name" htmlFor="name">
@@ -214,7 +214,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                         "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                         form.topic === t.id
                           ? "bg-zinc-500/15 border-zinc-500/40 text-zinc-200"
-                          : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
+                          : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
                       ].join(" ")}
                     >
                       {t.label}
@@ -245,7 +245,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               </div>
 
               {state.kind === "error" ? (
-                <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/30 bg-red-500/[0.06] px-4 py-3 text-[13px] text-red-300">
+                <div role="alert" aria-live="assertive" className="rounded-xl border border-red-500/30 bg-red-500/6 px-4 py-3 text-[13px] text-red-300">
                   {state.message}
                 </div>
               ) : null}

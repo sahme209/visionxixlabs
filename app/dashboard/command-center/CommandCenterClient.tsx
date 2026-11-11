@@ -34,7 +34,7 @@ const PROVIDER_COLOR = {
   AWS: "text-zinc-400 bg-white/10 border-white/20",
   Azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   GCP: "text-red-400 bg-red-500/10 border-red-500/20",
-  GitHub: "text-zinc-500 bg-orange-500/10 border-white/[0.08]",
+  GitHub: "text-zinc-500 bg-orange-500/10 border-white/8",
 } as const;
 
 const APPROVAL_RISK: Record<"low" | "medium" | "high" | "critical", string> = {
@@ -199,7 +199,7 @@ export default function CommandCenterClient() {
                     <Link
                       key={action.label}
                       href={action.href}
-                      className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-white/[0.04] transition-colors group"
+                      className="flex items-center justify-between rounded-lg px-3 py-2 hover:bg-white/4 transition-colors group"
                     >
                       <div className="flex items-center gap-2.5">
                         <Icon className="h-3.5 w-3.5 text-zinc-500 group-hover:text-white transition-colors" />
@@ -245,7 +245,7 @@ export default function CommandCenterClient() {
                   <Link
                     key={doc.href}
                     href={doc.href}
-                    className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-white/[0.04] transition-colors group"
+                    className="flex items-center justify-between rounded-lg px-3 py-1.5 hover:bg-white/4 transition-colors group"
                   >
                     <span className="text-[11px] text-zinc-400 group-hover:text-white transition-colors">{doc.label}</span>
                     <ArrowRightIcon className="h-3 w-3 text-zinc-700 group-hover:text-zinc-400 group-hover:translate-x-0.5 transition-all" />
@@ -326,7 +326,7 @@ function ExecutiveSummaryBanner() {
   const recommendedHref = topAction?.route ?? "/dashboard";
 
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <CpuChipIcon className="h-4 w-4 text-zinc-500" />
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">executive summary</p>
@@ -335,7 +335,7 @@ function ExecutiveSummaryBanner() {
       {highlights.length > 0 && (
         <div className="grid sm:grid-cols-3 gap-2.5 mb-4">
           {highlights.map((h, i) => (
-            <Link key={i} href={h.link.href} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3 hover:border-white/[0.12] transition-colors group">
+            <Link key={i} href={h.link.href} className="rounded-xl border border-white/6 bg-white/1.5 p-3 hover:border-white/12 transition-colors group">
               <p className="text-xs font-semibold text-white mb-1 leading-snug">{h.headline}</p>
               <p className="text-[11px] text-zinc-500 leading-relaxed">{h.detail}</p>
               <p className="text-[10px] text-zinc-600 mt-2 group-hover:text-white transition-colors">{h.link.label} →</p>
@@ -408,7 +408,7 @@ function DemoJourneyCard() {
   return (
     <Link
       href="/dashboard/aws"
-      className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-6 hover:border-white/[0.12] transition-colors"
+      className="group block rounded-2xl border border-white/6 bg-white/1.5 p-5 mb-6 hover:border-white/12 transition-colors"
     >
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0 flex-1">
@@ -432,11 +432,11 @@ function DemoJourneyCard() {
             {Array.from({ length: 7 }).map((_, i) => (
               <span
                 key={i}
-                className={`w-2 h-2 rounded-full ${i < stepsDone ? "bg-emerald-400" : "bg-white/[0.08]"}`}
+                className={`w-2 h-2 rounded-full ${i < stepsDone ? "bg-emerald-400" : "bg-white/8"}`}
               />
             ))}
           </div>
-          <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 group-hover:text-white border border-white/[0.08] group-hover:border-white/[0.2] rounded-md px-3 py-1.5 transition-colors">
+          <span className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 group-hover:text-white border border-white/8 group-hover:border-white/20 rounded-md px-3 py-1.5 transition-colors">
             Open journey
             <ArrowRightIcon className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
           </span>
@@ -468,16 +468,16 @@ function HeroEyebrow({ currentTime }: { currentTime: string }) {
 
   const sourceMode = state?.sourceMode ?? "preview";
   const tone =
-    sourceMode === "live"           ? { dot: "bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.5)]", text: "text-emerald-300", pill: "border-emerald-500/[0.25]" } :
-    sourceMode === "partial_live"   ? { dot: "bg-cyan-400 animate-pulse",     text: "text-cyan-300",    pill: "border-cyan-500/[0.25]"    } :
-    sourceMode === "expanding"      ? { dot: "bg-zinc-400 animate-pulse",    text: "text-zinc-300",   pill: "border-white/[0.25]"   } :
-    sourceMode === "blocked"        ? { dot: "bg-rose-400",                   text: "text-rose-300",    pill: "border-rose-500/[0.25]"    } :
+    sourceMode === "live"           ? { dot: "bg-emerald-400 animate-pulse shadow-[0_0_12px_rgba(52,211,153,0.5)]", text: "text-emerald-300", pill: "border-emerald-500/25" } :
+    sourceMode === "partial_live"   ? { dot: "bg-cyan-400 animate-pulse",     text: "text-cyan-300",    pill: "border-cyan-500/25"    } :
+    sourceMode === "expanding"      ? { dot: "bg-zinc-400 animate-pulse",    text: "text-zinc-300",   pill: "border-white/25"   } :
+    sourceMode === "blocked"        ? { dot: "bg-rose-400",                   text: "text-rose-300",    pill: "border-rose-500/25"    } :
     sourceMode === "disabled"       ? { dot: "bg-zinc-600",                   text: "text-zinc-400",    pill: "border-zinc-700/40"        } :
-                                      { dot: "bg-zinc-400",                  text: "text-zinc-300",   pill: "border-white/[0.18]"   };
+                                      { dot: "bg-zinc-400",                  text: "text-zinc-300",   pill: "border-white/18"   };
 
   return (
     <div className="flex items-center gap-3 flex-wrap">
-      <span className={`inline-flex items-center gap-2 rounded-full border ${tone.pill} bg-white/[0.02] px-2.5 py-1`}>
+      <span className={`inline-flex items-center gap-2 rounded-full border ${tone.pill} bg-white/2 px-2.5 py-1`}>
         <span className={`w-2 h-2 rounded-full ${tone.dot}`} />
         <span className={`text-[10px] font-semibold uppercase tracking-widest ${tone.text}`}>
           {sourceMode === "live" ? "Live · canonical state" :
@@ -516,7 +516,7 @@ function HeroStateRibbon() {
   const trustPct = state ? Math.round(state.trustScore * 100) : null;
 
   const RibbonStat = ({ label, value, tone }: { label: string; value: string; tone: string }) => (
-    <div className="text-right min-w-[5rem]">
+    <div className="text-right min-w-20">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>
@@ -525,10 +525,10 @@ function HeroStateRibbon() {
   return (
     <div className="surface-glass hidden md:flex items-end gap-5 rounded-2xl px-5 py-4">
       <RibbonStat label="Readiness" value={readinessPct !== null ? `${readinessPct}%` : "—"} tone="text-white" />
-      <div className="w-px h-9 bg-white/[0.08]" />
+      <div className="w-px h-9 bg-white/8" />
       <RibbonStat label="Trust" value={trustPct !== null ? `${trustPct}%` : "—"} tone="text-white" />
-      <div className="w-px h-9 bg-white/[0.08]" />
-      <div className="text-right min-w-[8rem]">
+      <div className="w-px h-9 bg-white/8" />
+      <div className="text-right min-w-32">
         <p className="text-[12px] font-semibold leading-none text-emerald-300">Approval-gated</p>
         <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">Safety</p>
       </div>
@@ -577,7 +577,7 @@ function LiveKpiRow() {
       trend: nextActions > 0 ? "ready for operator" : undefined,
       icon: BoltIcon,
       iconClass: "text-zinc-500",
-      bgClass: "bg-orange-500/10 border-white/[0.08]",
+      bgClass: "bg-orange-500/10 border-white/8",
     },
     {
       label: "Critical blockers",
@@ -602,7 +602,7 @@ function LiveKpiRow() {
       {tiles.map((kpi) => {
         const Icon = kpi.icon;
         return (
-          <div key={kpi.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] transition-colors">
+          <div key={kpi.label} className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 transition-colors">
             <div className="flex items-center justify-between mb-3">
               <div className={`w-9 h-9 rounded-lg ${kpi.bgClass} border flex items-center justify-center`}>
                 <Icon className={`h-4.5 w-4.5 ${kpi.iconClass}`} />
@@ -741,7 +741,7 @@ function AxiomOSStrip() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <div className="rounded-xl border border-white/6 bg-white/2 p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom os</p>
         <p className="text-sm text-zinc-400 mt-2">Composing unified product state…</p>
       </div>
@@ -749,7 +749,7 @@ function AxiomOSStrip() {
   }
   if (error || !state) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6">
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-zinc-700/30 bg-white/2 p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// axiom os · preview</p>
         <p className="text-sm text-zinc-400 mt-2">{error ?? "Sign in to load unified state."}</p>
       </div>
@@ -764,11 +764,11 @@ function AxiomOSStrip() {
     state.overallStatus === "preview_mode"     ? "amber"   :
     state.overallStatus === "blocked"          ? "rose"    : "zinc";
   const toneClasses: Record<string, { border: string; bg: string; text: string; pill: string }> = {
-    emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.05]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
-    cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.05]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"    },
-    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.05]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
-    rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"    },
-    zinc:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300"     },
+    emerald: { border: "border-emerald-500/22", bg: "bg-emerald-500/5", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
+    cyan:    { border: "border-cyan-500/22",    bg: "bg-cyan-500/5",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"    },
+    amber:   { border: "border-white/22",   bg: "bg-white/5",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
+    rose:    { border: "border-rose-500/22",    bg: "bg-rose-500/5",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"    },
+    zinc:    { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300"     },
   };
   const t = toneClasses[tone];
   const statusLabel = state.overallStatus.replace(/_/g, " ");
@@ -786,7 +786,7 @@ function AxiomOSStrip() {
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">// axiom os</p>
           <div className="flex items-baseline gap-3 flex-wrap">
             <span className={`text-2xl font-bold tracking-tight ${t.text} capitalize`}>{statusLabel}</span>
-            <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${t.pill}`}>
+            <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${t.pill}`}>
               {state.sourceMode}
             </span>
             <span className="text-xs text-zinc-500 font-mono">
@@ -800,7 +800,7 @@ function AxiomOSStrip() {
             <p className={`text-2xl font-bold ${t.text}`}>{readinessPct}%</p>
             <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Readiness</p>
           </div>
-          <div className="w-px h-10 bg-white/[0.06]" />
+          <div className="w-px h-10 bg-white/6" />
           <div>
             <p className={`text-2xl font-bold ${t.text}`}>{trustPct}%</p>
             <p className="text-[10px] text-zinc-500 uppercase tracking-wider">Trust</p>
@@ -825,7 +825,7 @@ function AxiomOSStrip() {
 
       {/* Critical blockers */}
       {state.criticalBlockers.length > 0 && (
-        <div className="rounded-lg border border-rose-500/[0.22] bg-rose-500/[0.04] px-3 py-2 mb-3">
+        <div className="rounded-lg border border-rose-500/22 bg-rose-500/4 px-3 py-2 mb-3">
           <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-1">
             // {state.criticalBlockers.length} critical blocker{state.criticalBlockers.length === 1 ? "" : "s"}
           </p>
@@ -844,7 +844,7 @@ function AxiomOSStrip() {
               <Link
                 key={a.id}
                 href={a.route ?? "#"}
-                className="flex items-start gap-2 rounded-lg border border-white/[0.06] bg-white/[0.02] p-3 hover:bg-white/[0.04] transition"
+                className="flex items-start gap-2 rounded-lg border border-white/6 bg-white/2 p-3 hover:bg-white/4 transition"
               >
                 <ArrowRightIcon className="h-3.5 w-3.5 text-zinc-400 mt-0.5 shrink-0" />
                 <div className="min-w-0">
@@ -887,7 +887,7 @@ function ReadinessStrip() {
 
   if (loading) {
     return (
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <div className="rounded-xl border border-white/6 bg-white/2 p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// production readiness</p>
         <p className="text-sm text-zinc-400 mt-2">Composing readiness report…</p>
       </div>
@@ -895,7 +895,7 @@ function ReadinessStrip() {
   }
   if (error || !report) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+      <div role="alert" aria-live="assertive" className="rounded-xl border border-white/18 bg-white/4 p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em]">// production readiness · preview</p>
         <p className="text-sm text-zinc-200/80 mt-2">{error ?? "Readiness report not yet available — sign in to load."}</p>
       </div>
@@ -905,10 +905,10 @@ function ReadinessStrip() {
   const pct = Math.round(report.overallScore * 100);
   const tone = pct >= 80 ? "emerald" : pct >= 60 ? "cyan" : pct >= 40 ? "amber" : "rose";
   const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
-    emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.06]", text: "text-emerald-300" },
-    cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.06]",    text: "text-cyan-300"    },
-    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.06]",   text: "text-zinc-300"   },
-    rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.06]",    text: "text-rose-300"    },
+    emerald: { border: "border-emerald-500/22", bg: "bg-emerald-500/6", text: "text-emerald-300" },
+    cyan:    { border: "border-cyan-500/22",    bg: "bg-cyan-500/6",    text: "text-cyan-300"    },
+    amber:   { border: "border-white/22",   bg: "bg-white/6",   text: "text-zinc-300"   },
+    rose:    { border: "border-rose-500/22",    bg: "bg-rose-500/6",    text: "text-rose-300"    },
   };
   const t = toneClasses[tone];
 
@@ -945,7 +945,7 @@ function ReadinessStrip() {
       </div>
 
       {report.criticalFailures.length > 0 && (
-        <div className="rounded-lg border border-rose-500/[0.22] bg-rose-500/[0.04] px-3 py-2 mb-3">
+        <div className="rounded-lg border border-rose-500/22 bg-rose-500/4 px-3 py-2 mb-3">
           <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-1">
             // {report.criticalFailures.length} critical failure{report.criticalFailures.length === 1 ? "" : "s"}
           </p>
@@ -1005,9 +1005,9 @@ function SecurityPostureStrip() {
                                              "success";
 
   const tone =
-    semantic === "success" ? "border-emerald-500/15 bg-emerald-500/[0.03]" :
-    semantic === "warning" ? "border-white/15 bg-white/[0.03]"   :
-                             "border-rose-500/15 bg-rose-500/[0.03]";
+    semantic === "success" ? "border-emerald-500/15 bg-emerald-500/3" :
+    semantic === "warning" ? "border-white/15 bg-white/3"   :
+                             "border-rose-500/15 bg-rose-500/3";
 
   const headline =
     !state ? "Composing security posture…" :
@@ -1057,7 +1057,7 @@ function SecurityPostureStrip() {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="text-center min-w-[3.5rem]">
+    <div className="text-center min-w-14">
       <p className="text-base font-bold text-white tracking-tight leading-none">{value}</p>
       <p className="text-[9px] text-zinc-500 uppercase tracking-wider mt-1">{label}</p>
     </div>
@@ -1104,9 +1104,9 @@ function ReliabilityPostureStrip() {
                                                                               "success";
 
   const tone =
-    semantic === "success" ? "border-cyan-500/15 bg-cyan-500/[0.03]" :
-    semantic === "warning" ? "border-white/15 bg-white/[0.03]" :
-                             "border-rose-500/15 bg-rose-500/[0.03]";
+    semantic === "success" ? "border-cyan-500/15 bg-cyan-500/3" :
+    semantic === "warning" ? "border-white/15 bg-white/3" :
+                             "border-rose-500/15 bg-rose-500/3";
 
   const headline =
     !state ? "Composing reliability rollup…" :
@@ -1193,7 +1193,7 @@ function ObservabilityPostureStrip() {
   const tone =
     errors > 0   ? "border-rose-500/15"   :
     warnings > 0 ? "border-white/15"  :
-                   "border-white/[0.06]";
+                   "border-white/6";
   const headlineCheck =
     posture.checks.find((c) => c.semantic === "error") ??
     posture.checks.find((c) => c.semantic === "warning") ??
@@ -1203,10 +1203,10 @@ function ObservabilityPostureStrip() {
     : (headlineCheck?.label ?? "Composing observability state…");
   const labelTone = persistent ? "text-emerald-400" : "text-zinc-400";
   return (
-    <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} bg-white/[0.015] p-5 hover:border-white/[0.12] transition-colors group`}>
+    <Link href="/dashboard/traces" className={`block rounded-2xl border ${tone} bg-white/1.5 p-5 hover:border-white/12 transition-colors group`}>
       <div className="flex items-center justify-between gap-4 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0">
+          <div className="w-10 h-10 rounded-lg bg-white/4 border border-white/6 flex items-center justify-center shrink-0">
             <ChartBarSquareIcon className="h-5 w-5 text-zinc-400" />
           </div>
           <div className="min-w-0">
@@ -1334,17 +1334,17 @@ function DesktopRuntimePanel() {
 
   return (
     <div className="surface-glass rounded-2xl overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between">
+      <div className="px-5 py-3.5 border-b border-white/6 bg-white/1 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <ComputerDesktopIcon className="h-4 w-4 text-orange-300" />
           <h3 className="text-sm font-semibold text-white">Desktop runtime</h3>
-          <span className={`text-[9px] font-mono uppercase tracking-wider rounded px-1.5 py-px ${sourceTone}`}>
+          <span className={`text-[9px] font-mono uppercase tracking-wider rounded-sm px-1.5 py-px ${sourceTone}`}>
             {sourceMode.replace(/_/g, " ")}
           </span>
         </div>
         <Link href="/download" className="text-[10px] text-zinc-500 hover:text-white transition-colors">View</Link>
       </div>
-      <div className="px-4 py-3 border-b border-white/[0.04]">
+      <div className="px-4 py-3 border-b border-white/4">
         {loading && (
           <p className="text-[11px] text-zinc-500 font-mono uppercase tracking-[0.18em]">// composing desktop state…</p>
         )}
@@ -1385,11 +1385,11 @@ function DesktopRuntimePanel() {
       <div className="px-3 pb-3 pt-1 flex items-center gap-2">
         <Link
           href={state?.safeNextAction?.href ?? "/download"}
-          className="flex-1 text-center text-[11px] font-semibold text-zinc-200 hover:text-white rounded-md border border-white/[0.10] bg-white/[0.04] hover:bg-white/[0.08] hover:border-white/[0.18] px-2 py-1.5 transition-colors"
+          className="flex-1 text-center text-[11px] font-semibold text-zinc-200 hover:text-white rounded-md border border-white/10 bg-white/4 hover:bg-white/8 hover:border-white/18 px-2 py-1.5 transition-colors"
         >
           {state?.safeNextAction?.label ?? "Download desktop"}
         </Link>
-        <Link href="/dashboard/security" className="text-[11px] text-zinc-400 hover:text-white rounded-md border border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04] px-2 py-1.5 transition-colors">
+        <Link href="/dashboard/security" className="text-[11px] text-zinc-400 hover:text-white rounded-md border border-white/6 bg-white/2 hover:bg-white/4 px-2 py-1.5 transition-colors">
           Security
         </Link>
       </div>
@@ -1448,16 +1448,16 @@ function OnboardingPanel() {
     );
   }
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-white/[0.06] flex items-center justify-between">
+    <div className="rounded-2xl border border-white/6 bg-white/1.5 overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BoltIcon className="h-4 w-4 text-zinc-500" />
           <h3 className="text-sm font-semibold text-white">Getting Axiom productive</h3>
         </div>
         <span className="text-[11px] font-mono text-zinc-500">{pct}%</span>
       </div>
-      <div className="px-4 py-3 border-b border-white/[0.04]">
-        <div className="w-full h-1.5 rounded-full bg-white/[0.04] overflow-hidden mb-3">
+      <div className="px-4 py-3 border-b border-white/4">
+        <div className="w-full h-1.5 rounded-full bg-white/4 overflow-hidden mb-3">
           <div
             className="h-full bg-white/40 transition-all"
             style={{ width: `${pct}%` }}
@@ -1489,7 +1489,7 @@ function OnboardingPanel() {
         <div className="px-3 pb-3 pt-1">
           <Link
             href={progress.nextStep.href}
-            className="block w-full text-center text-[11px] font-semibold text-emerald-200 hover:text-emerald-100 rounded-md border border-emerald-500/20 bg-emerald-500/[0.06] hover:border-emerald-500/40 px-2 py-1.5 transition-colors"
+            className="block w-full text-center text-[11px] font-semibold text-emerald-200 hover:text-emerald-100 rounded-md border border-emerald-500/20 bg-emerald-500/6 hover:border-emerald-500/40 px-2 py-1.5 transition-colors"
           >
             {progress.nextStep.label} →
           </Link>
@@ -1536,7 +1536,7 @@ function LiveProvidersStrip() {
 
   return (
     <div className="surface-glass rounded-2xl overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="px-5 py-3.5 border-b border-white/6 bg-white/1">
         <div className="flex items-center justify-between">
           <h3 className="text-sm font-semibold text-white">Provider posture</h3>
           <Link href="/dashboard" className="text-[10px] text-zinc-500 hover:text-white transition-colors">View all</Link>
@@ -1579,14 +1579,14 @@ function LiveProvidersStrip() {
               p.provider === "azure"  ? "Azure"  :
               p.provider === "gcp"    ? "GCP"    :
               p.provider === "github" ? "GitHub" : null;
-            const chipClass = chipKey ? PROVIDER_COLOR[chipKey] : "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
+            const chipClass = chipKey ? PROVIDER_COLOR[chipKey] : "text-zinc-400 bg-white/4 border-white/8";
             const lastSeen = p.lastScannedAt ? new Date(p.lastScannedAt).toLocaleTimeString() : "—";
             const resources = typeof p.resourceCount === "number" ? p.resourceCount : null;
             const findings = typeof p.findingCount === "number" ? p.findingCount : null;
             const missing = p.missingRequirements?.[0];
 
             return (
-              <div key={p.provider} className="rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/[0.08] transition-colors">
+              <div key={p.provider} className="rounded-xl bg-white/2 border border-white/4 p-3 hover:border-white/8 transition-colors">
                 <div className="flex items-center gap-2.5 mb-1.5">
                   <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${chipClass}`}>
                     {chipKey ?? p.provider}
@@ -1601,7 +1601,7 @@ function LiveProvidersStrip() {
                   <span className="text-zinc-500 font-mono">last seen {lastSeen}</span>
                 </div>
                 {(resources !== null || findings !== null) && (
-                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/[0.04]">
+                  <div className="flex items-center justify-between mt-2 pt-2 border-t border-white/4">
                     <span className="text-[10px] text-zinc-500">
                       {resources !== null ? `${resources} resources` : "resources —"}
                     </span>
@@ -1618,7 +1618,7 @@ function LiveProvidersStrip() {
                 {p.safeNextAction && (
                   <Link
                     href={p.safeNextAction.href}
-                    className="mt-2 flex items-center justify-between text-[10px] text-zinc-300 hover:text-white rounded-md border border-white/[0.06] hover:border-white/[0.15] bg-white/[0.02] px-2 py-1 transition-colors"
+                    className="mt-2 flex items-center justify-between text-[10px] text-zinc-300 hover:text-white rounded-md border border-white/6 hover:border-white/15 bg-white/2 px-2 py-1 transition-colors"
                   >
                     <span className="truncate">{p.safeNextAction.label}</span>
                     <ArrowRightIcon className="h-3 w-3 shrink-0" />
@@ -1633,7 +1633,7 @@ function LiveProvidersStrip() {
       <div className="px-3 pb-3">
         <Link
           href="/dashboard/connect-cloud"
-          className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2.5 transition-colors"
+          className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/10 hover:border-white/20 rounded-xl py-2.5 transition-colors"
         >
           + Connect provider
         </Link>
@@ -1687,13 +1687,13 @@ function LivePendingApprovals() {
   const pending = (approvals ?? []).filter((a) => a.status === "pending");
 
   return (
-    <div className="rounded-2xl border border-white/15 bg-white/[0.02] overflow-hidden">
-      <div className="px-5 py-3.5 border-b border-white/15 bg-white/[0.04]">
+    <div className="rounded-2xl border border-white/15 bg-white/2 overflow-hidden">
+      <div className="px-5 py-3.5 border-b border-white/15 bg-white/4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <LockClosedIcon className="h-3.5 w-3.5 text-zinc-400" />
             <h3 className="text-sm font-semibold text-white">Pending approvals</h3>
-            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-px">
+            <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider bg-white/4 border border-white/6 rounded-sm px-1.5 py-px">
               {sourceMode.replace(/_/g, " ")}
             </span>
           </div>
@@ -1731,13 +1731,13 @@ function LivePendingApprovals() {
               a.provider === "azure"   ? "Azure" :
               a.provider === "gcp"     ? "GCP" :
               a.provider === "github"  ? "GitHub" : null;
-            const chipClass = providerKey ? PROVIDER_COLOR[providerKey] : "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
+            const chipClass = providerKey ? PROVIDER_COLOR[providerKey] : "text-zinc-400 bg-white/4 border-white/8";
             const riskClass = APPROVAL_RISK[a.riskLevel] ?? APPROVAL_RISK.medium;
             return (
               <Link
                 key={a.id}
                 href={`/dashboard/approvals?id=${encodeURIComponent(a.id)}`}
-                className="block rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/20 hover:bg-white/[0.04] transition-all group"
+                className="block rounded-xl bg-white/2 border border-white/4 p-3 hover:border-white/20 hover:bg-white/4 transition-all group"
               >
                 <div className="flex items-center gap-2 mb-1.5">
                   <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${chipClass}`}>
@@ -1765,7 +1765,7 @@ function LivePendingApprovals() {
       <div className="px-3 pb-3 pt-1">
         <Link
           href="/dashboard/approvals"
-          className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/[0.1] hover:border-white/[0.2] rounded-xl py-2 transition-colors"
+          className="flex items-center justify-center gap-1.5 w-full text-[11px] text-zinc-400 hover:text-white border border-dashed border-white/10 hover:border-white/20 rounded-xl py-2 transition-colors"
         >
           Open approval center →
         </Link>
@@ -1847,7 +1847,7 @@ function LiveAgentStatusPanel() {
                       "text-zinc-200";
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4">
+    <div className="rounded-2xl border border-white/6 bg-white/1.5 p-4">
       <div className="flex items-center gap-2 mb-3">
         <CpuChipIcon className="h-4 w-4 text-zinc-500" />
         <h3 className="text-sm font-semibold text-white">Agent status</h3>

@@ -48,7 +48,7 @@ export default async function ProofOfValuePage() {
       </header>
 
       {/* Headline narrative */}
-      <section className="mb-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2">summary</p>
         <p className="text-[14.5px] text-zinc-100 leading-relaxed">{report.narrative}</p>
       </section>
@@ -109,7 +109,7 @@ export default async function ProofOfValuePage() {
       </section>
 
       {/* Autonomy KPI */}
-      <section className="mb-8 rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5">
+      <section className="mb-8 rounded-2xl border border-orange-500/15 bg-orange-500/3 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 mb-2">autonomy · last 7d</p>
         {report.autonomy.last7dPct === null ? (
           <p className="text-[14px] text-zinc-100 leading-relaxed">No engineer output in the last 7 days — workforce idle or workspace fully suppressed.</p>
@@ -124,7 +124,7 @@ export default async function ProofOfValuePage() {
       </section>
 
       {/* Methodology note */}
-      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <section className="mb-8 rounded-2xl border border-white/6 bg-white/1.5 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">methodology</p>
         <ul className="text-[12.5px] text-zinc-300 leading-relaxed space-y-1.5">
           <li>· All counts read directly from <span className="font-mono text-zinc-400">AiRationaleEnrichment</span> rows scoped to this workspace.</li>
@@ -144,7 +144,7 @@ export default async function ProofOfValuePage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 px-4 py-3">
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className={`text-[22px] font-semibold tracking-tight tabular-nums ${tone}`}>{value}</p>
     </div>

@@ -63,8 +63,8 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
 
   return (
     <aside className={`${compact ? "w-16 shrink-0" : "w-[224px]"} flex flex-col bg-[#151719] border-r border-white/[0.07]`} data-tauri-drag-region>
-      <div className={`h-[68px] flex items-center ${compact ? "px-3" : "px-5"} border-b border-white/[0.06]`} data-tauri-drag-region>
-        <button type="button" aria-label="Axiom home" aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400">
+      <div className={`h-[68px] flex items-center ${compact ? "px-3" : "px-5"} border-b border-white/6`} data-tauri-drag-region>
+        <button type="button" aria-label="Axiom home" aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-400">
           <img src="/axiom-logo.png" alt="" className="h-7 w-7 shrink-0 object-contain" />
           <div className={compact ? "sr-only" : undefined}>
             <div className="text-sm font-semibold tracking-tight text-white">Axiom Agent</div>
@@ -108,8 +108,8 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
           </button>
         ))}
       </nav>
-      <div className={`${compact ? "px-0" : "px-3"} py-3 border-t border-white/[0.06]`}>
-        <div role="status" className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/[0.025]">
+      <div className={`${compact ? "px-0" : "px-3"} py-3 border-t border-white/6`}>
+        <div role="status" className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-white/2.5">
           <span aria-hidden className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
           <span className={compact ? "sr-only" : "text-[11px] text-zinc-400"}>Workspace connected</span>
         </div>

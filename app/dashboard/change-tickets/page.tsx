@@ -54,7 +54,7 @@ type RespBody =
 const STATUS_CLASS: Record<Status, string> = {
   pending:     "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
   in_progress: "bg-white/15 text-zinc-300 border-white/25",
-  approved:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  approved:    "bg-orange-500/15 text-orange-300 border-white/10",
   implemented: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:    "bg-rose-500/15 text-rose-300 border-rose-500/25",
   cancelled:   "bg-zinc-700/40 text-zinc-400 border-zinc-700/40",
@@ -116,19 +116,19 @@ export default function ChangeTicketsPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading change tickets…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -138,7 +138,7 @@ export default function ChangeTicketsPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -153,16 +153,16 @@ export default function ChangeTicketsPage() {
           </div>
 
           {data.tickets.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No change tickets ingested yet. Connect a tracker to populate this inbox.
             </div>
           ) : (
             <div className="space-y-2 mb-8">
               {data.tickets.map((t) => (
-                <div key={t.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3">
+                <div key={t.id} className="rounded-2xl border border-white/6 bg-white/2 p-3">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
                         {PROVIDER_LABEL[t.provider]}
                       </span>
                       <a
@@ -176,21 +176,21 @@ export default function ChangeTicketsPage() {
                       <p className="text-[13px] font-semibold text-white truncate">{t.title}</p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[t.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[t.status]}`}>
                         {t.status.replace("_", " ")}
                       </span>
                       {t.priority !== "normal" && (
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${PRIORITY_TONE[t.priority] ?? PRIORITY_TONE.normal}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${PRIORITY_TONE[t.priority] ?? PRIORITY_TONE.normal}`}>
                           {t.priority}
                         </span>
                       )}
                       {t.linkedPrCount > 0 && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                           {t.linkedPrCount} PR
                         </span>
                       )}
                       {t.linkedReleaseCount > 0 && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                           {t.linkedReleaseCount} rel
                         </span>
                       )}
@@ -240,12 +240,12 @@ function PrTicketEnrichButton({ onEnriched }: { onEnriched: () => void }) {
 
   const busy = outcome.kind === "running";
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono">
       <button
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2 py-1 rounded border border-white/[0.12] bg-white/[0.025] text-white hover:bg-orange-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2 py-1 rounded-sm border border-white/12 bg-white/2.5 text-white hover:bg-orange-500/12 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "scanning…" : "Refresh PR ↔ ticket links"}
       </button>
@@ -303,7 +303,7 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
 
   const busy = outcome.kind === "running";
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono flex-1 min-w-[300px]">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-3 flex items-center gap-2 flex-wrap text-[10px] font-mono flex-1 min-w-[300px]">
       <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from</span>
       {(["linear", "jira", "servicenow"] as const).map((p) => (
         <button
@@ -311,7 +311,7 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
           type="button"
           disabled={busy}
           onClick={() => trigger(p)}
-          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-2 py-1 rounded-sm border border-white/8 bg-white/2 text-zinc-300 hover:border-white/15 hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {outcome.kind === "running" && outcome.which === p
             ? `${p}…`
@@ -333,11 +333,11 @@ function ProviderSyncControls({ onSynced }: { onSynced: () => void }) {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof TicketIcon; label: string; value: string; tone: "orange" | "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

@@ -23,7 +23,7 @@ export function GitHubDisconnectButton({ installationRowId }: { installationRowI
 
   return (
     <div className="mt-5">
-      <button type="button" onClick={() => void disconnect()} disabled={state === "disconnecting"} className="inline-flex min-h-10 items-center rounded-xl border border-rose-300/20 bg-rose-300/[0.05] px-4 text-sm font-medium text-rose-100 transition hover:bg-rose-300/[0.1] disabled:opacity-60">
+      <button type="button" onClick={() => void disconnect()} disabled={state === "disconnecting"} className="inline-flex min-h-10 items-center rounded-xl border border-rose-300/20 bg-rose-300/5 px-4 text-sm font-medium text-rose-100 transition hover:bg-rose-300/10 disabled:opacity-60">
         {state === "disconnecting" ? "Disconnecting…" : "Stop using GitHub in Axiom"}
       </button>
       <p className="mt-3 text-xs leading-5 text-zinc-500">This revokes Axiom’s local installation record. You can also remove the GitHub App from GitHub when you no longer need it.</p>

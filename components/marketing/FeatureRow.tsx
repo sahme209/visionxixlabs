@@ -61,9 +61,9 @@ export function FeatureRow({
           {bullets.map((b, i) => (
             <li key={i} className="flex items-start gap-3.5">
               {b.icon ? (
-                <span className="mt-0.5 flex-shrink-0 text-brand-coral/80">{b.icon}</span>
+                <span className="mt-0.5 shrink-0 text-brand-coral/80">{b.icon}</span>
               ) : (
-                <span aria-hidden className="mt-[9px] w-1 h-1 rounded-full bg-brand-coral/70 flex-shrink-0" />
+                <span aria-hidden className="mt-[9px] w-1 h-1 rounded-full bg-brand-coral/70 shrink-0" />
               )}
               <div className="flex-1">
                 <p className="text-[14.5px] text-zinc-100 font-medium leading-snug tracking-tight">{b.label}</p>

@@ -60,7 +60,7 @@ export default async function MultiCloudPage() {
       {/* Provider cards */}
       <section className="grid lg:grid-cols-3 gap-3">
         {state.providers.map((p) => (
-          <div key={p.provider} className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+          <div key={p.provider} className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-base font-semibold tracking-tight text-white uppercase">{p.provider}</h2>
               <span className="text-[10px] font-mono text-zinc-500">mode · {p.mode}</span>
@@ -75,7 +75,7 @@ export default async function MultiCloudPage() {
             <p className="text-[10px] font-mono text-zinc-400 uppercase tracking-[0.18em] mb-2">resource kinds</p>
             <div className="flex flex-wrap gap-2 mb-4">
               {Object.entries(p.resourceCounts).map(([k, v]) => (
-                <span key={k} className="text-[10px] font-mono text-zinc-300 bg-white/[0.04] px-2 py-0.5 rounded border border-white/[0.05]">{k}: {v}</span>
+                <span key={k} className="text-[10px] font-mono text-zinc-300 bg-white/4 px-2 py-0.5 rounded-sm border border-white/5">{k}: {v}</span>
               ))}
               {Object.keys(p.resourceCounts).length === 0 && <span className="text-[10px] text-zinc-500">No resource counts yet.</span>}
             </div>
@@ -109,7 +109,7 @@ export default async function MultiCloudPage() {
         <p className="text-[11px] text-zinc-500 mb-4">{state.sourceMode === "live" ? "Live signals across at least one provider." : "Preview mode — connect a provider to unlock live signals."}</p>
         <div className="grid md:grid-cols-3 gap-3">
           {state.providers.map((p) => (
-            <div key={p.provider} className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4">
+            <div key={p.provider} className="rounded-xl border border-white/6 bg-white/1.5 p-4">
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{p.provider}</p>
               {p.missingCapabilities.length === 0 ? (
                 <p className="text-[11px] text-zinc-300">All canonical capabilities present.</p>
@@ -126,12 +126,12 @@ export default async function MultiCloudPage() {
       {/* Next-best actions */}
       <section>
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">next best actions</p>
-        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
           {state.nextBestActions.slice(0, 6).map((a) => (
             <li key={a.id}>
               <Link
                 href={a.route ?? "/dashboard"}
-                className="group flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-white/[0.015] transition-colors"
+                className="group flex items-center justify-between gap-4 px-5 py-3.5 hover:bg-white/1.5 transition-colors"
               >
                 <div className="min-w-0 flex-1">
                   <p className="text-[13px] font-medium text-white truncate">{a.title}</p>
@@ -145,7 +145,7 @@ export default async function MultiCloudPage() {
       </section>
 
       {/* Known limitations — quiet, not loud */}
-      <section className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <section className="rounded-xl border border-white/6 bg-white/1.5 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-2">known limitations</p>
         <ul className="space-y-1 text-[12px] text-zinc-500">
           <li>· AWS / Azure / GCP scanning runs in preview mode until broker credentials + live adapters are wired.</li>
@@ -159,7 +159,7 @@ export default async function MultiCloudPage() {
 
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 p-5">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{label}</p>
       <p className="text-3xl font-semibold text-white tracking-[-0.02em]">{value}</p>
     </div>
@@ -177,7 +177,7 @@ function Row({ label, value }: { label: string; value: string }) {
 
 function PostureTile({ title, state }: { title: string; state: { score: number; status: keyof typeof STATUS_TONE; summary: string; sourceMode: string } }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 p-5">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{title}</p>
       <div className="flex items-baseline gap-2 mb-2">
         <p className="text-2xl font-semibold text-white tracking-[-0.02em]">{state.score}</p>

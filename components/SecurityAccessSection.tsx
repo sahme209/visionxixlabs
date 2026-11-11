@@ -32,7 +32,7 @@ export function SecurityAccessSection({
 
       {/* We do NOT / We operate using */}
       <div className="grid gap-6 md:grid-cols-2 mb-10">
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-xl border border-white/6 bg-white/2 p-5">
           <div className="flex items-center gap-2 mb-3">
             <ShieldExclamationIcon className="h-5 w-5 text-zinc-500" aria-hidden />
             <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide">
@@ -48,7 +48,7 @@ export function SecurityAccessSection({
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-xl border border-white/6 bg-white/2 p-5">
           <div className="flex items-center gap-2 mb-3">
             <ShieldCheckIcon className="h-5 w-5 text-orange-400" aria-hidden />
             <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide">
@@ -73,10 +73,10 @@ export function SecurityAccessSection({
           return (
             <div
               key={block.title}
-              className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-xl border border-white/6 bg-white/2 p-5 shadow-xs hover:shadow-md transition-shadow"
             >
               <div className="flex items-center gap-2 mb-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/[0.06] text-zinc-300">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-white/6 text-zinc-300">
                   <Icon className="h-4 w-4" />
                 </span>
                 <h3 className="text-base font-semibold text-white">

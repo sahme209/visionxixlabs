@@ -38,7 +38,7 @@ describe("Release playbook sub-pages — error announcement", () => {
   it.each(PLAYBOOK_SUBPAGES)("%s announces its load error", (path) => {
     const src = source(path);
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">',
     );
   });
 });
@@ -47,18 +47,18 @@ describe("CommandCenterClient — remaining error-fallback states", () => {
   const src = source("app/dashboard/command-center/CommandCenterClient.tsx");
 
   it("announces the unified-state error", () => {
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-xl border border-zinc-700/30 bg-white/[0.02] p-5 mb-6"');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-xl border border-zinc-700/30 bg-white/2 p-5 mb-6"');
   });
 
   it("announces the production-readiness error", () => {
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6"');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-xl border border-white/18 bg-white/4 p-5 mb-6"');
   });
 });
 
 describe("/dashboard/trust and /dashboard/surfaces — error announcement", () => {
   it("trust page announces its error", () => {
     const src = source("app/dashboard/trust/page.tsx");
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-8"');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-8"');
   });
 
   it("surfaces page announces its error", () => {

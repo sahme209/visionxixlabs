@@ -33,7 +33,7 @@ export default function ReadinessScoringPage() {
             <DocSection id="dimensions" title="Readiness dimensions" kicker="01">
                 <div className="space-y-3">
                     {DIMENSIONS.map(([name, detail]) => (
-                        <div key={name} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                        <div key={name} className="rounded-xl border border-white/6 bg-white/2 p-4">
                             <p className="text-sm font-bold text-white mb-1.5">{name}</p>
                             <p className="text-xs text-zinc-400 leading-relaxed">{detail}</p>
                         </div>

@@ -202,7 +202,7 @@ export default async function AuditPacketPage({
             </p>
           )}
           {decoded.overallScore !== null && (
-            <div className="inline-flex items-center gap-3 px-4 py-2 border border-zinc-300 rounded-sm">
+            <div className="inline-flex items-center gap-3 px-4 py-2 border border-zinc-300 rounded-xs">
               <span className="font-mono text-[11px] uppercase tracking-wider text-zinc-500">overall posture</span>
               <span className={`text-[24px] font-bold tabular-nums ${
                 decoded.overallScore >= 75 ? "text-emerald-700" :
@@ -249,10 +249,10 @@ export default async function AuditPacketPage({
               {decoded.controls.map((c) => {
                 const st = STATUS_STYLE[c.status] ?? STATUS_STYLE.partial;
                 return (
-                  <div key={c.controlId} className="border border-zinc-300 rounded-sm p-4 row">
+                  <div key={c.controlId} className="border border-zinc-300 rounded-xs p-4 row">
                     <div className="flex items-baseline justify-between gap-3 mb-2 flex-wrap">
                       <p className="font-mono text-[13px] font-bold text-zinc-900">{c.controlId}</p>
-                      <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-sm ${st.bg} ${st.text}`}>
+                      <span className={`font-mono text-[10px] uppercase tracking-wider px-2 py-0.5 rounded-xs ${st.bg} ${st.text}`}>
                         {st.label}
                       </span>
                     </div>

@@ -137,7 +137,7 @@ export default function AdminLeadsPage() {
           <span className="text-gradient">Leads</span>
         </h1>
         <div className="flex flex-wrap items-center gap-4 mb-6">
-          <div className="flex rounded-lg border border-white/[0.06] bg-white/[0.02] p-1">
+          <div className="flex rounded-lg border border-white/6 bg-white/2 p-1">
             {(["website-request", "contact", "all"] as const).map((s) => (
               <button
                 key={s}
@@ -146,7 +146,7 @@ export default function AdminLeadsPage() {
                 className={`px-3 py-1.5 rounded-md text-sm font-medium transition-colors ${
                   sourceFilter === s
                     ? "bg-orange-500/10 text-orange-400"
-                    : "text-zinc-400 hover:bg-white/[0.04]"
+                    : "text-zinc-400 hover:bg-white/4"
                 }`}
               >
                 {s === "website-request" ? "Website" : s === "contact" ? "Contact" : "All"}
@@ -181,7 +181,7 @@ export default function AdminLeadsPage() {
       <div className="space-y-4">
         {leads.length === 0 ? (
           <Reveal direction="up" blur delay={0.15}>
-            <div className="glass-card rounded-2xl border-2 border-dashed border-white/[0.08] p-12 text-center">
+            <div className="glass-card rounded-2xl border-2 border-dashed border-white/8 p-12 text-center">
               <DocumentTextIcon className="h-12 w-12 text-zinc-500 mx-auto mb-4" />
               <p className="text-zinc-400">
                 {sourceFilter === "contact" ? "No contact leads yet." : sourceFilter === "all" ? "No leads yet." : "No website request leads yet."}
@@ -254,14 +254,14 @@ export default function AdminLeadsPage() {
                     <div className="flex flex-wrap gap-2">
                       {pendingDeployment && (
                         <button type="button" onClick={() => refreshDeployment(lead.id)} disabled={isActioning}
-                          className="btn-axiom rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] disabled:opacity-50">
+                          className="btn-axiom rounded-lg bg-white/6 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/10 disabled:opacity-50">
                           {isRefreshing ? "Refreshing deployment..." : "Refresh deployment"}
                         </button>
                       )}
                       <button
                         onClick={() => runAction(lead.id, "generate")}
                         disabled={isActioning || pendingDeployment}
-                        className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] disabled:opacity-50 transition-colors"
+                        className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/6 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/10 disabled:opacity-50 transition-colors"
                       >
                         <DocumentTextIcon className="h-4 w-4" />
                         Regenerate package
@@ -286,10 +286,10 @@ export default function AdminLeadsPage() {
                     )}
                   </div>
                   {lead.source !== "contact" && (
-                  <div className="mt-4 pt-4 border-t border-white/[0.06] flex flex-wrap gap-2">
+                  <div className="mt-4 pt-4 border-t border-white/6 flex flex-wrap gap-2">
                     <button
                       onClick={() => setExpandedAi(showAiOutput ? null : lead.id)}
-                      className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/[0.06] px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/[0.1] transition-colors"
+                      className="btn-axiom inline-flex items-center gap-1.5 rounded-lg bg-white/6 px-3 py-2 text-sm font-medium text-zinc-300 hover:bg-white/10 transition-colors"
                     >
                       {showAiOutput ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />}
                       View AI output
@@ -301,7 +301,7 @@ export default function AdminLeadsPage() {
                         if (v && v !== (form.tier as string)) upgradeTier(lead.id, v);
                       }}
                       disabled={upgrading === lead.id}
-                      className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm text-zinc-300"
+                      className="rounded-lg border border-white/8 bg-white/2 px-3 py-2 text-sm text-zinc-300"
                     >
                       {Object.values(WEBSITE_BUILD_TIERS).map((t) => (
                         <option key={t.id} value={t.id}>{t.name}</option>
@@ -310,18 +310,18 @@ export default function AdminLeadsPage() {
                   </div>
                   )}
                   {showAiOutput && aiPackage && (
-                    <pre className="mt-2 p-4 rounded-lg bg-[#09090b] border border-white/[0.06] text-xs text-zinc-300 overflow-auto max-h-64">
+                    <pre className="mt-2 p-4 rounded-lg bg-[#09090b] border border-white/6 text-xs text-zinc-300 overflow-auto max-h-64">
                       {JSON.stringify(aiPackage, null, 2)}
                     </pre>
                   )}
                   {typeof form.message === "string" && form.message && (
-                    <div className="mt-4 pt-4 border-t border-white/[0.06]">
+                    <div className="mt-4 pt-4 border-t border-white/6">
                       <p className="text-xs font-medium text-zinc-500 uppercase mb-1">Message</p>
                       <p className="text-sm text-zinc-400 whitespace-pre-wrap">{form.message}</p>
                     </div>
                   )}
                   {lead.source === "contact" && (
-                    <div className="mt-4 pt-4 border-t border-white/[0.06] space-y-2">
+                    <div className="mt-4 pt-4 border-t border-white/6 space-y-2">
                       <div className="flex items-center gap-2 text-xs">
                         <span className="font-medium text-zinc-500">Agent:</span>
                         <span className={`font-semibold ${

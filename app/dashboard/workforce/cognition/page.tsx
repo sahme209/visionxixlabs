@@ -208,7 +208,7 @@ export default async function CognitionPage() {
           meta-reasoner ↔ council · cross-engineer chain
         </p>
         {metaRow === null ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
             <p className="text-[13px] text-zinc-400">Meta-reasoner hasn&apos;t produced a snapshot yet.</p>
             <p className="text-[11px] text-zinc-500 mt-1">
               Needs ≥2 engineer rationales in the workspace to start finding tensions. Run more engineers.
@@ -216,7 +216,7 @@ export default async function CognitionPage() {
           </div>
         ) : (
           <>
-            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-5 mb-3">
+            <div className="rounded-2xl border border-orange-500/20 bg-orange-500/4 p-5 mb-3">
               <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300 mb-2">meta-reasoner summary</p>
               <p className="text-[13.5px] text-zinc-100 leading-relaxed">{metaRow.narrative}</p>
               <p className="text-[10px] font-mono text-zinc-500 mt-2">
@@ -226,7 +226,7 @@ export default async function CognitionPage() {
               </p>
             </div>
             {councilRow && (
-              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5 mb-3">
+              <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5 mb-3">
                 <p className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 mb-2">council summary</p>
                 <p className="text-[13.5px] text-zinc-100 leading-relaxed">{councilRow.narrative}</p>
                 <p className="text-[10px] font-mono text-zinc-500 mt-2">
@@ -237,7 +237,7 @@ export default async function CognitionPage() {
               </div>
             )}
             {metaObservations.length === 0 ? (
-              <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-6 text-center">
+              <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-6 text-center">
                 <p className="text-[12px] text-zinc-400">
                   Meta-reasoner ran but produced no observations — engineers were all aligned this sweep.
                 </p>
@@ -247,8 +247,8 @@ export default async function CognitionPage() {
                 {metaObservations.map((obs) => {
                   const verdict = councilByObs.get(obs.observationId);
                   return (
-                    <li key={obs.observationId} className="rounded-2xl border border-white/[0.06] bg-white/[0.015] overflow-hidden">
-                      <div className="px-5 py-4 border-b border-white/[0.04]">
+                    <li key={obs.observationId} className="rounded-2xl border border-white/6 bg-white/1.5 overflow-hidden">
+                      <div className="px-5 py-4 border-b border-white/4">
                         <div className="flex items-center gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                           <span className={STANCE_TONE[obs.stance] ?? "text-zinc-400"}>{obs.stance}</span>
                           <span className="text-zinc-500">·</span>
@@ -262,7 +262,7 @@ export default async function CognitionPage() {
                         )}
                       </div>
                       {verdict ? (
-                        <div className="px-5 py-4 bg-emerald-500/[0.025]">
+                        <div className="px-5 py-4 bg-emerald-500/2.5">
                           <div className="flex items-center gap-2 mb-1 text-[10px] font-mono uppercase tracking-wider">
                             <span className="text-zinc-500">council verdict</span>
                             <span className="text-zinc-500">·</span>
@@ -276,7 +276,7 @@ export default async function CognitionPage() {
                           )}
                         </div>
                       ) : (
-                        <div className="px-5 py-3 text-[11px] font-mono text-zinc-500 bg-white/[0.02]">
+                        <div className="px-5 py-3 text-[11px] font-mono text-zinc-500 bg-white/2">
                           council has not yet voted on this observation
                         </div>
                       )}
@@ -295,18 +295,18 @@ export default async function CognitionPage() {
           reasoner · recent hypotheses
         </p>
         {reasonerRows.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-8 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-8 text-center">
             <p className="text-[12px] text-zinc-400">No hypotheses yet. Paste observations on the reasoner page to form one.</p>
           </div>
         ) : (
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {reasonerRows.map((r) => {
               const confidenceRaw = extractTag(r.nextActionsJson, "confidence");
               const confidence = confidenceRaw && Number.isFinite(Number(confidenceRaw)) ? Number(confidenceRaw) : null;
               const title = extractTag(r.nextActionsJson, "title") ?? r.targetId;
               return (
                 <li key={r.targetId}>
-                  <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${REASONER_TARGET_KIND}:${r.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                  <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${REASONER_TARGET_KIND}:${r.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                     <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                       <span className="text-zinc-400">{r.outcome.replace(/_/g, " ")}</span>
                       {confidence !== null && (<><span className="text-zinc-500">·</span><span className="text-orange-300">{confidence}% confidence</span></>)}
@@ -328,18 +328,18 @@ export default async function CognitionPage() {
           simulator · recent dry-runs
         </p>
         {simulatorRows.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-8 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-8 text-center">
             <p className="text-[12px] text-zinc-400">No simulations yet. Paste an action on the simulator page to dry-run it.</p>
           </div>
         ) : (
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {simulatorRows.map((r) => {
               const verdict = extractTag(r.nextActionsJson, "verdict");
               const title = extractTag(r.nextActionsJson, "title") ?? r.targetId;
               const verdictTone = verdict === "safe" ? "text-emerald-300" : verdict === "unsafe" ? "text-rose-300" : "text-zinc-300";
               return (
                 <li key={r.targetId}>
-                  <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${SIMULATOR_TARGET_KIND}:${r.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                  <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${SIMULATOR_TARGET_KIND}:${r.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                     <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                       {verdict && (<span className={verdictTone}>{verdict}</span>)}
                       <span className="text-zinc-500">·</span>
@@ -362,11 +362,11 @@ export default async function CognitionPage() {
           improvement · platform-level proposals
         </p>
         {improvementRow === null ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-8 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-8 text-center">
             <p className="text-[12px] text-zinc-400">No improvement proposals yet. The hourly cron sweeps this engineer.</p>
           </div>
         ) : (
-          <div className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5">
+          <div className="rounded-2xl border border-orange-500/15 bg-orange-500/3 p-5">
             <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300 mb-2">summary</p>
             <p className="text-[13.5px] text-zinc-100 leading-relaxed">{improvementRow.narrative}</p>
             <p className="text-[10px] font-mono text-zinc-500 mt-2">

@@ -137,10 +137,10 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
   return (
     <div className="glass-card p-3">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[incident.severity]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[incident.severity]}`}>
           {incident.severity}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[incident.status]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[incident.status]}`}>
           {incident.status}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">release: {incident.releaseId}</span>
@@ -150,19 +150,19 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
       </div>
       <p className="text-sm font-semibold text-white">{incident.title}</p>
       {incident.summary && <p className="text-[12.5px] text-zinc-300 mt-1">{incident.summary}</p>}
-      <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
         {incident.status === "open" && (
           <>
             <button type="button" onClick={() => transition("mitigate")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-white/30 bg-white/[0.10] text-zinc-200 hover:bg-white/[0.18] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-white/30 bg-white/10 text-zinc-200 hover:bg-white/18 disabled:opacity-50 disabled:cursor-wait">
               {busy === "mitigate" ? "…" : "Mitigate"}
             </button>
             <button type="button" onClick={() => transition("resolve")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
               {busy === "resolve" ? "…" : "Resolve"}
             </button>
             <button type="button" onClick={() => transition("wont_fix")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
               {busy === "wont_fix" ? "…" : "Won't fix"}
             </button>
           </>
@@ -170,11 +170,11 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
         {incident.status === "mitigated" && (
           <>
             <button type="button" onClick={() => transition("resolve")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
               {busy === "resolve" ? "…" : "Resolve"}
             </button>
             <button type="button" onClick={() => transition("reopen")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.10] text-rose-200 hover:bg-rose-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/18 disabled:opacity-50 disabled:cursor-wait">
               {busy === "reopen" ? "…" : "Re-open"}
             </button>
           </>
@@ -256,7 +256,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/[0.08] text-[12px] font-semibold text-rose-200 hover:bg-rose-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/8 text-[12px] font-semibold text-rose-200 hover:bg-rose-500/16 transition-colors"
         >
           + Report incident
         </button>
@@ -300,7 +300,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
           rows={3}
           placeholder="Symptoms · blast radius · current mitigation."
           disabled={busy}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="mt-3 flex items-center gap-3">
@@ -308,7 +308,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !releaseId || !title.trim()}
-          className="px-3 py-1.5 rounded-md border border-rose-500/40 bg-rose-500/[0.14] text-[12px] font-semibold text-rose-100 hover:bg-rose-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-rose-500/40 bg-rose-500/[0.14] text-[12px] font-semibold text-rose-100 hover:bg-rose-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Report"}
         </button>
@@ -336,7 +336,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

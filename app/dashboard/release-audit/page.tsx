@@ -102,7 +102,7 @@ export default function ReleaseAuditPage() {
           <button
             type="button"
             onClick={() => { setKindFilter(""); loadList(""); }}
-            className={`px-2 py-1 rounded border ${kindFilter === "" ? "border-orange-500/40 bg-orange-500/[0.12] text-white" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white"} transition-colors`}
+            className={`px-2 py-1 rounded-sm border ${kindFilter === "" ? "border-orange-500/40 bg-orange-500/12 text-white" : "border-white/8 bg-white/2 text-zinc-300 hover:border-white/15 hover:text-white"} transition-colors`}
           >
             all ({data.summary.total})
           </button>
@@ -111,7 +111,7 @@ export default function ReleaseAuditPage() {
               key={k}
               type="button"
               onClick={() => { setKindFilter(k); loadList(k); }}
-              className={`px-2 py-1 rounded border ${kindFilter === k ? "border-orange-500/40 bg-orange-500/[0.12] text-white" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white"} transition-colors`}
+              className={`px-2 py-1 rounded-sm border ${kindFilter === k ? "border-orange-500/40 bg-orange-500/12 text-white" : "border-white/8 bg-white/2 text-zinc-300 hover:border-white/15 hover:text-white"} transition-colors`}
             >
               {k} ({count})
             </button>
@@ -120,19 +120,19 @@ export default function ReleaseAuditPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading audit events…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -142,24 +142,24 @@ export default function ReleaseAuditPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
 
       {data && (
         data.events.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             {kindFilter ? `No "${kindFilter}" events yet.` : "No audit events yet. State-changing actions will append here."}
           </div>
         ) : (
           <div className="space-y-2 mb-8">
             {data.events.map((e) => (
-              <div key={e.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+              <div key={e.id} className="rounded-xl border border-white/6 bg-white/2 p-3">
                 <div className="flex items-start justify-between gap-3 flex-wrap">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[e.outcome] ?? OUTCOME_CLASS.unknown}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[e.outcome] ?? OUTCOME_CLASS.unknown}`}>
                         {e.outcome}
                       </span>
                       <span className="text-[10px] font-mono text-zinc-400">{e.kind}</span>
@@ -190,10 +190,10 @@ export default function ReleaseAuditPage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ClockIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

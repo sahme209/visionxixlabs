@@ -75,23 +75,23 @@ export default async function OnPremConnectorsPage({
       </header>
 
       {notice === "registered" && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="text-[12.5px] text-emerald-200 font-mono">connector registered · scanner integration tracked in your engagement scope</p>
         </section>
       )}
       {notice === "deleted" && (
-        <section className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/6 p-4">
           <p className="text-[12.5px] text-zinc-300 font-mono">connector removed</p>
         </section>
       )}
       {error && (
-        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/6 p-4">
           <p className="text-[12.5px] text-rose-200 font-mono">error: {error}</p>
         </section>
       )}
 
       {/* Registration form */}
-      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span>register connector</span>
@@ -100,7 +100,7 @@ export default async function OnPremConnectorsPage({
           <div>
             <label htmlFor="platform" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">platform</label>
             <select id="platform" name="platform" required defaultValue="vmware_vcenter"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
               {(Object.keys(PLATFORM_LABEL) as OnPremPlatform[]).map((p) => (
                 <option key={p} value={p}>{PLATFORM_LABEL[p].label}</option>
               ))}
@@ -110,20 +110,20 @@ export default async function OnPremConnectorsPage({
             <label htmlFor="displayName" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">display name</label>
             <input id="displayName" name="displayName" required maxLength={80}
               placeholder="e.g. Production vCenter — us-east-1 datacenter"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="endpoint" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">endpoint</label>
               <input id="endpoint" name="endpoint" required maxLength={400}
                 placeholder="https://vcenter.corp.local"
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
               <p className="text-[10px] text-zinc-500 mt-1 font-mono">URL or host:port</p>
             </div>
             <div>
               <label htmlFor="environment" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">environment</label>
               <select id="environment" name="environment" required defaultValue="production"
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
                 <option value="production">production</option>
                 <option value="staging">staging</option>
                 <option value="development">development</option>
@@ -134,7 +134,7 @@ export default async function OnPremConnectorsPage({
             <label htmlFor="secretReference" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">credential reference</label>
             <input id="secretReference" name="secretReference" required maxLength={400}
               placeholder="vault://onprem/vcenter-prod"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             <p className="text-[10px] text-zinc-500 mt-1 font-mono leading-relaxed">
               vault:// · secretsmanager:// · azurekeyvault:// · gcpsecretmanager:// · env:// — we never store the credential itself
             </p>
@@ -157,12 +157,12 @@ export default async function OnPremConnectorsPage({
           <span className="text-zinc-400 tabular-nums">{connectors.length}</span>
         </p>
         {connectors.length === 0 ? (
-          <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-10 text-center">
+          <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-10 text-center">
             <p className="text-[13px] text-zinc-400">No on-prem connectors registered yet.</p>
             <p className="text-[11px] text-zinc-500 mt-1 font-mono">register your first vCenter / OpenShift / VMM endpoint above</p>
           </div>
         ) : (
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {connectors.map((c) => (
               <li key={c.slug} className="px-5 py-4">
                 <div className="flex items-start justify-between gap-3 mb-2 flex-wrap">
@@ -195,13 +195,13 @@ export default async function OnPremConnectorsPage({
                 <div className="mt-3 flex items-center gap-3 flex-wrap">
                   <Link
                     href={`/dashboard/workforce/on-prem-connectors/${encodeURIComponent(c.slug)}`}
-                    className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors"
+                    className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-sm border border-emerald-500/30 text-emerald-200 hover:text-white hover:border-emerald-500/60 hover:bg-emerald-500/10 transition-colors"
                   >
                     open · mint token →
                   </Link>
                   <form action="/api/workforce/on-prem-connectors/delete" method="POST">
                     <input type="hidden" name="slug" value={c.slug} />
-                    <button type="submit" className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border border-rose-500/30 text-rose-200 hover:text-white hover:border-rose-500/60 hover:bg-rose-500/10 transition-colors">
+                    <button type="submit" className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-sm border border-rose-500/30 text-rose-200 hover:text-white hover:border-rose-500/60 hover:bg-rose-500/10 transition-colors">
                       delete
                     </button>
                   </form>
@@ -216,7 +216,7 @@ export default async function OnPremConnectorsPage({
       </section>
 
       {/* Platform catalog */}
-      <section className="rounded-md border border-white/[0.06] bg-white/[0.012] p-5">
+      <section className="rounded-md border border-white/6 bg-white/[0.012] p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span className="text-emerald-300">platform-catalog</span>

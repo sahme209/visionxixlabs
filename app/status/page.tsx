@@ -24,10 +24,10 @@ export const metadata: Metadata = {
 };
 
 const TONE: Record<StatusVerdict, string> = {
-  operational: "border-emerald-500/30 bg-emerald-500/[0.05] text-emerald-200",
-  degraded:    "border-white/30 bg-white/[0.05] text-zinc-200",
-  down:        "border-rose-500/30 bg-rose-500/[0.06] text-rose-200",
-  unknown:     "border-zinc-500/30 bg-zinc-500/[0.04] text-zinc-300",
+  operational: "border-emerald-500/30 bg-emerald-500/5 text-emerald-200",
+  degraded:    "border-white/30 bg-white/5 text-zinc-200",
+  down:        "border-rose-500/30 bg-rose-500/6 text-rose-200",
+  unknown:     "border-zinc-500/30 bg-zinc-500/4 text-zinc-300",
 };
 
 const ICON: Record<StatusVerdict, typeof CheckCircleIcon> = {
@@ -52,12 +52,12 @@ export default async function StatusPage() {
     <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-200 relative overflow-hidden">
       {/* Restrained aurora */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-orange/[0.06] blur-[140px]" />
-        <div className="ambient-drift absolute top-[30%] right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/[0.05] blur-[130px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[360px] h-[280px] rounded-full bg-orange-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-orange/6 blur-[140px]" />
+        <div className="ambient-drift absolute top-[30%] right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/5 blur-[130px]" style={{ animationDelay: "-9s" }} />
+        <div className="ambient-drift absolute bottom-0 left-[5%] w-[360px] h-[280px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
-      <header className="relative z-20 border-b border-white/[0.06] sticky top-0 bg-[#141414]/80 backdrop-blur-xl">
+      <header className="relative z-20 border-b border-white/6 sticky top-0 bg-brand-ink/80 backdrop-blur-xl">
         <div className="max-w-6xl mx-auto px-6 md:px-10 py-3.5 flex items-center justify-between">
           <Link href="/" className="font-bold text-white tracking-[-0.04em]">Axiom</Link>
           <Link href="/download" className="text-[12px] text-zinc-300 hover:text-brand-coral transition-colors">Get desktop app →</Link>
@@ -67,7 +67,7 @@ export default async function StatusPage() {
       <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 py-16">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">ST</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           Live status
         </p>
 
@@ -77,7 +77,7 @@ export default async function StatusPage() {
           </div>
           <div className="min-w-0">
             <p className="mono-label mb-1">Overall</p>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight tracking-[-0.025em]">
+            <h1 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight">
               {LABEL[report.overall]}
             </h1>
             <p className="text-[11px] font-mono text-zinc-500 mt-2 tabular-nums">
@@ -112,7 +112,7 @@ export default async function StatusPage() {
           })}
         </div>
 
-        <div className="pt-8 border-t border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-zinc-500">
+        <div className="pt-8 border-t border-white/6 flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-zinc-500">
           <p>
             JSON probe:{" "}
             <Link href="/api/status" className="text-brand-coral/85 hover:text-brand-coral transition-colors">/api/status</Link>

@@ -6,6 +6,6 @@ export function ServiceNowWrittenObservationFacts({binding:b}:{binding:Observati
   <h6 className="font-medium text-zinc-200">Written evidence note · {b.issue.number}</h6>
   <p>The exact journal note is present. The original attempt remains unknown and consumed; this observation does not resend it, overwrite its outcome, or approve closure.</p>
   <p className="break-all">Ticket ID: {b.issue.sysId} · Original attempts: {b.originalAttemptCount}</p>
-  <dl className="space-y-1 break-words">{Object.entries(facts).map(([label,value])=><div key={label}><dt className="font-medium">{label}</dt><dd>{value}</dd></div>)}</dl>
+  <dl className="space-y-1 wrap-break-word">{Object.entries(facts).map(([label,value])=><div key={label}><dt className="font-medium">{label}</dt><dd>{value}</dd></div>)}</dl>
  </section>;
 }

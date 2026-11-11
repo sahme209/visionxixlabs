@@ -167,7 +167,7 @@ export function ConnectorSetupView({ onNavigate }: { onNavigate: (view: View) =>
       {!loading && networkError && (
         <div role="alert" className="glass-card p-4 text-sm text-rose-300 border border-rose-500/20">
           <p>{networkError}</p>
-          <button type="button" onClick={() => { setLoading(true); setNetworkError(null); void refresh().finally(() => setLoading(false)); }} className="mt-3 rounded-md bg-white/[0.06] px-3 py-1.5 text-xs text-white hover:bg-white/[0.10]">Try again</button>
+          <button type="button" onClick={() => { setLoading(true); setNetworkError(null); void refresh().finally(() => setLoading(false)); }} className="mt-3 rounded-md bg-white/6 px-3 py-1.5 text-xs text-white hover:bg-white/10">Try again</button>
         </div>
       )}
 
@@ -232,7 +232,7 @@ function ProviderCard({ p, pending, onCta }: { p: ProviderDigest; pending: boole
         </div>
         <div className="flex items-center gap-1 shrink-0">
           {p.daysConnected !== null && (
-            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
+            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
               live {p.daysConnected}d
             </span>
           )}
@@ -277,21 +277,21 @@ function ProviderCard({ p, pending, onCta }: { p: ProviderDigest; pending: boole
 function renderErrorBadge(ec: ErrorClass) {
   if (ec.kind === "sticky_error") {
     return (
-      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-200 border border-rose-500/25">
+      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/15 text-rose-200 border border-rose-500/25">
         sticky {ec.errorCode ?? "error"}{typeof ec.consecutiveCount === "number" ? ` ×${ec.consecutiveCount}` : ""}
       </span>
     );
   }
   if (ec.kind === "chronic_oscillation") {
     return (
-      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/15 text-zinc-200 border border-white/25">
+      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/15 text-zinc-200 border border-white/25">
         oscillating
       </span>
     );
   }
   if (ec.kind === "transient_failure") {
     return (
-      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/10 text-zinc-300 border border-white/20">
+      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/10 text-zinc-300 border border-white/20">
         recent failure
       </span>
     );

@@ -61,7 +61,7 @@ export function DemoModeBanner() {
   if (active !== true) return null;
 
   return (
-    <div className="mb-5 rounded-2xl border border-white/[0.06] bg-white/[0.015]">
+    <div className="mb-5 rounded-2xl border border-white/6 bg-white/1.5">
       <div className="flex items-center gap-3 flex-wrap px-4 py-3">
         <span className="inline-flex items-center gap-1.5 text-[10.5px] font-mono uppercase tracking-[0.18em] text-zinc-400">
           <SparklesIcon className="h-3.5 w-3.5" /> demo mode
@@ -73,7 +73,7 @@ export function DemoModeBanner() {
           <button
             type="button"
             onClick={toggleExplainer}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-white/[0.08] text-[12px] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-white/8 text-[12px] text-zinc-300 hover:text-white hover:border-white/18 transition-colors"
           >
             <QuestionMarkCircleIcon className="h-3.5 w-3.5" />
             {explainerOn ? "Hide explainer" : "Explain this page"}

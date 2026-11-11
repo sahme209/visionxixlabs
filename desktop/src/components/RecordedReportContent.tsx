@@ -16,5 +16,5 @@ export function RecordedReportContent({content}:{content:string}){
   const paragraph:string[]=[line];index++;while(index<lines.length&&!special(lines[index]))paragraph.push(lines[index++]);
   nodes.push(<p key={key} className="whitespace-pre-wrap">{paragraph.join('\n')}</p>);
  }
- return <div className="min-w-0 space-y-4 break-words text-xs leading-6 text-zinc-300">{nodes}</div>;
+ return <div className="min-w-0 space-y-4 wrap-break-word text-xs leading-6 text-zinc-300">{nodes}</div>;
 }

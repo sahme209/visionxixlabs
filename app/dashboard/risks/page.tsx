@@ -82,15 +82,15 @@ interface RiskQueueLite {
 }
 
 const STATUS_VISUAL: Record<RiskStatus, { border: string; bg: string; text: string; pill: string; icon: typeof CheckCircleIcon }> = {
-  open:                 { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
-  investigating:        { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
-  remediation_prepared: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: CheckCircleIcon          },
-  simulation_ready:     { border: "border-white/[0.06]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: CheckCircleIcon          },
-  approval_required:    { border: "border-white/[0.28]",   bg: "bg-white/[0.05]",   text: "text-zinc-300",   pill: "bg-white/20 text-zinc-200",     icon: LockClosedIcon           },
-  accepted_risk:        { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300",       icon: CheckCircleIcon          },
-  blocked:              { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon              },
-  resolved_simulated:   { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon          },
-  closed:               { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: CheckCircleIcon          },
+  open:                 { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
+  investigating:        { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
+  remediation_prepared: { border: "border-white/10",  bg: "bg-white/1.5",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: CheckCircleIcon          },
+  simulation_ready:     { border: "border-white/6",  bg: "bg-white/1.5",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: CheckCircleIcon          },
+  approval_required:    { border: "border-white/[0.28]",   bg: "bg-white/5",   text: "text-zinc-300",   pill: "bg-white/20 text-zinc-200",     icon: LockClosedIcon           },
+  accepted_risk:        { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300",       icon: CheckCircleIcon          },
+  blocked:              { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon              },
+  resolved_simulated:   { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon          },
+  closed:               { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: CheckCircleIcon          },
 };
 
 const STATUS_LABEL: Record<RiskStatus, string> = {
@@ -148,7 +148,7 @@ export default function RiskQueuePage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -157,12 +157,12 @@ export default function RiskQueuePage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <ShieldExclamationIcon className="h-3.5 w-3.5 text-zinc-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
                   Risk Queue · risk_review_only_no_execution
@@ -183,9 +183,9 @@ export default function RiskQueuePage() {
           {report && (
             <div className="surface-glass hidden md:flex items-end gap-4 rounded-2xl px-5 py-4">
               <Stat label="Open" value={report.summary.open} tone={report.summary.open > 0 ? "text-zinc-300" : "text-zinc-500"} />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Approval" value={report.summary.approvalRequired} tone={report.summary.approvalRequired > 0 ? "text-zinc-300" : "text-zinc-500"} />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Blocked" value={report.summary.blocked} tone={report.summary.blocked > 0 ? "text-rose-300" : "text-zinc-500"} />
             </div>
           )}
@@ -198,14 +198,14 @@ export default function RiskQueuePage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// queue unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
 
       {!loading && !error && report && report.items.length === 0 && (
-        <div className="rounded-2xl border border-emerald-500/[0.22] bg-emerald-500/[0.04] p-6 mb-6">
+        <div className="rounded-2xl border border-emerald-500/22 bg-emerald-500/4 p-6 mb-6">
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// queue clear</p>
           <p className="text-[14px] text-emerald-100 font-semibold">No actionable risks in the queue.</p>
         </div>
@@ -227,17 +227,17 @@ export default function RiskQueuePage() {
                     <div className="min-w-0">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-[10px] font-mono text-zinc-500">#{r.rank}</span>
-                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded inline-flex items-center gap-1 ${v.pill}`}>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm inline-flex items-center gap-1 ${v.pill}`}>
                           <StatusIcon className="h-3 w-3" />
                           {STATUS_LABEL[r.status]}
                         </span>
-                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${SEVERITY_PILL[r.severity]}`}>
+                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${SEVERITY_PILL[r.severity]}`}>
                           {r.severity}
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                           {r.sourceMode.replace(/_/g, " ")}
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-orange-500/15 text-orange-300">
                           owner: {r.ownerRole.replace(/_/g, " ")}
                         </span>
                       </div>
@@ -257,7 +257,7 @@ export default function RiskQueuePage() {
                   </div>
                   <Link
                     href={r.safeNextAction.href}
-                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors shrink-0"
+                    className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors shrink-0"
                   >
                     {r.safeNextAction.label}
                     <ArrowRightIcon className="h-3 w-3" />
@@ -270,12 +270,12 @@ export default function RiskQueuePage() {
       )}
 
       {!loading && !error && report && (
-        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
           <CheckCircleIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div>
             <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// queue contract</p>
             <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-              safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+              safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
             </p>
             <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
               The queue is a projection of canonical state. Statuses can only progress through the existing approval/remediation engines — not from this page.
@@ -289,7 +289,7 @@ export default function RiskQueuePage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4rem]">
+    <div className="text-right min-w-16">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

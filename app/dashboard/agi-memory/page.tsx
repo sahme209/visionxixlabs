@@ -70,7 +70,7 @@ const KIND_HREF: Record<string, string> = {
 };
 
 const OUTCOME_CLASS: Record<string, string> = {
-  ai_generated:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  ai_generated:    "bg-orange-500/15 text-orange-300 border-white/10",
   fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -149,7 +149,7 @@ export default function AgiMemoryPage() {
         <button
           type="button"
           onClick={() => load(filterKind)}
-          className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-white/[0.08] bg-white/[0.02] text-[11px] font-mono text-zinc-300 hover:bg-white/[0.06] transition-colors"
+          className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-white/8 bg-white/2 text-[11px] font-mono text-zinc-300 hover:bg-white/6 transition-colors"
         >
           <ArrowPathIcon className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           Refresh
@@ -162,14 +162,14 @@ export default function AgiMemoryPage() {
         </p>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4 text-[12px] text-zinc-400">Loading memory…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-4 text-[12px] text-zinc-400">Loading memory…</div>}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-4 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-4 text-[13px] text-zinc-300">{networkError}</div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-4">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -179,11 +179,11 @@ export default function AgiMemoryPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4 text-[12.5px] text-zinc-200">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-4 text-[12.5px] text-zinc-200">Sign in required.</div>
       )}
 
       {data && data.entries.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-10 text-center text-[13px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-10 text-center text-[13px] text-zinc-400">
           No AGI memory yet — run a council decision, a triage, or a remediation to start filling this feed.
         </div>
       )}
@@ -206,12 +206,12 @@ function MemoryRow({ entry }: { entry: Entry }) {
     : KIND_HREF[entry.targetKind];
 
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-3">
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/12 bg-white/4 text-white">
           <SparklesIcon className="h-3 w-3" /> {KIND_LABEL[entry.targetKind] ?? entry.targetKind}
         </span>
-        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
           {entry.outcome === "ai_generated" && <CheckCircleIcon className="h-3 w-3 inline mr-0.5" />}
           {entry.outcome}
         </span>
@@ -277,7 +277,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       className={`px-2.5 py-1 rounded-md border text-[11.5px] font-mono transition-colors ${
         active
           ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100"
-          : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"
+          : "border-white/8 bg-white/2 text-zinc-300 hover:bg-white/6"
       }`}
     >
       {label}
@@ -287,10 +287,10 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof SparklesIcon; label: string; value: string; tone: "orange" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -348,7 +348,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
 
   if (!summary) {
     return (
-      <div className="mb-4 rounded-2xl border border-white/[0.08] bg-white/[0.015] p-4 flex items-center justify-between gap-3">
+      <div className="mb-4 rounded-2xl border border-white/8 bg-white/1.5 p-4 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <SparklesIcon className="h-4 w-4 text-orange-300" />
           <p className="text-[12.5px] text-orange-100">
@@ -360,7 +360,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
           type="button"
           onClick={generate}
           disabled={busy}
-          className="px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Summarizing…" : "Summarize recent thinking"}
         </button>
@@ -370,12 +370,12 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
   }
 
   return (
-    <div className="mb-4 rounded-2xl border border-white/[0.10] bg-white/[0.02] p-4">
+    <div className="mb-4 rounded-2xl border border-white/10 bg-white/2 p-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/12 bg-white/4 text-white">
           <SparklesIcon className="h-3 w-3" /> AGI meta-summary
         </span>
-        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[summary.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[summary.outcome] ?? OUTCOME_CLASS.error}`}>
           {summary.outcome}
         </span>
         {summary.modelHint && <span className="text-[10px] font-mono text-zinc-500">model: {summary.modelHint}</span>}
@@ -465,7 +465,7 @@ function SummaryTimeline({ filterKind }: { filterKind: TargetKind | "all" }) {
   if (loading) return null;
   if (errorBody?.error === "migration_pending") {
     return (
-      <div role="alert" aria-live="assertive" className="mb-4 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-3 text-[12px] text-zinc-200">
+      <div role="alert" aria-live="assertive" className="mb-4 rounded-2xl border border-white/18 bg-white/4 p-3 text-[12px] text-zinc-200">
         Timeline schema migration pending — run prisma migrate deploy.
       </div>
     );
@@ -473,7 +473,7 @@ function SummaryTimeline({ filterKind }: { filterKind: TargetKind | "all" }) {
   if (!data || data.entries.length === 0) return null;
 
   return (
-    <div className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-3">
+    <div className="mb-4 rounded-2xl border border-white/6 bg-white/2 p-3">
       <div className="flex items-center gap-2 mb-2">
         <p className="text-[11.5px] font-semibold text-zinc-300">Summary timeline</p>
         <span className="text-[10px] font-mono text-zinc-500">
@@ -493,16 +493,16 @@ function TimelineRow({ entry }: { entry: TimelineSummary }) {
   const [open, setOpen] = useState(false);
   const scope = entry.targetKind ? KIND_LABEL[entry.targetKind] ?? entry.targetKind : "All";
   return (
-    <div className="rounded-lg border border-white/[0.04] bg-black/10 p-2">
+    <div className="rounded-lg border border-white/4 bg-black/10 p-2">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="w-full text-left flex items-center gap-2 flex-wrap"
       >
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1 py-0.5 rounded-sm border border-white/8 bg-white/2 text-zinc-300">
           {scope}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1 py-0.5 rounded border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1 py-0.5 rounded-sm border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
           {entry.outcome}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">{entry.windowSize}w · {entry.aiAvailabilityPct}%AI</span>
@@ -695,7 +695,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
   }
 
   return (
-    <div className="mb-4 rounded-2xl border border-white/[0.08] bg-white/[0.015] p-4">
+    <div className="mb-4 rounded-2xl border border-white/8 bg-white/1.5 p-4">
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         <SparklesIcon className="h-4 w-4 text-orange-300" />
         <p className="text-[12.5px] font-semibold text-orange-100">Ask the AGI</p>
@@ -704,14 +704,14 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
           <button
             type="button"
             onClick={() => setScope("user")}
-            className={`px-1.5 py-0.5 rounded border ${scope === "user" ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"}`}
+            className={`px-1.5 py-0.5 rounded-sm border ${scope === "user" ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100" : "border-white/8 bg-white/2 text-zinc-300 hover:bg-white/6"}`}
           >
             mine
           </button>
           <button
             type="button"
             onClick={() => setScope("org")}
-            className={`px-1.5 py-0.5 rounded border ${scope === "org" ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100" : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"}`}
+            className={`px-1.5 py-0.5 rounded-sm border ${scope === "org" ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100" : "border-white/8 bg-white/2 text-zinc-300 hover:bg-white/6"}`}
           >
             org
           </button>
@@ -728,13 +728,13 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
           placeholder="Ask anything about the AGI's recent reasoning…"
           disabled={busy}
           maxLength={500}
-          className="flex-1 rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+          className="flex-1 rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
         />
         <button
           type="button"
           onClick={() => ask(question)}
           disabled={busy || question.trim().length < 4}
-          className="px-3 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-2 rounded-lg border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Asking…" : "Ask"}
         </button>
@@ -748,7 +748,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
               type="button"
               onClick={() => ask(s)}
               disabled={busy}
-              className="px-2 py-1 rounded-md border border-white/[0.08] bg-white/[0.02] text-[11px] font-mono text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50"
+              className="px-2 py-1 rounded-md border border-white/8 bg-white/2 text-[11px] font-mono text-zinc-300 hover:bg-white/6 disabled:opacity-50"
             >
               {s}
             </button>
@@ -777,10 +777,10 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
 
 function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void }) {
   return (
-    <div className="rounded-lg border border-white/[0.06] bg-black/20 p-3">
+    <div className="rounded-lg border border-white/6 bg-black/20 p-3">
       <p className="text-[11.5px] font-mono text-zinc-400 mb-1.5">Q: {turn.question}</p>
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[turn.answer.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[turn.answer.outcome] ?? OUTCOME_CLASS.error}`}>
           {turn.answer.outcome}
         </span>
         {turn.answer.modelHint && <span className="text-[10px] font-mono text-zinc-500">model: {turn.answer.modelHint}</span>}
@@ -797,7 +797,7 @@ function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void
       </div>
       <p className="text-[12.5px] text-zinc-200 mb-2">{turn.answer.answer}</p>
       {turn.citationDetails.length > 0 && (
-        <div className="border-t border-white/[0.04] pt-2">
+        <div className="border-t border-white/4 pt-2">
           <p className="text-[9.5px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Citations</p>
           <div className="space-y-1">
             {turn.citationDetails.map((c) => {

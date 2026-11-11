@@ -1,0 +1,78 @@
+{
+  "web_v3": {
+    "cssSha256": "d4d973b78d1e736d7ebd4034223258c798b295d393cd82e268140eebc0acce12",
+    "metrics": {
+      "dark": {
+        "padding": "16px",
+        "borderRadius": "4px",
+        "background": "rgb(255, 120, 61)",
+        "color": "rgb(242, 242, 237)",
+        "borderColor": "rgb(229, 231, 235)"
+      },
+      "light": {
+        "padding": "16px",
+        "borderRadius": "4px",
+        "background": "rgb(255, 120, 61)",
+        "color": "rgb(242, 242, 237)",
+        "borderColor": "rgb(229, 231, 235)"
+      }
+    }
+  },
+  "web_v4": {
+    "cssSha256": "2a125b5016604f46b081cc8df87fb1e3908f0635e55f43ba62afa8474914a7a7",
+    "metrics": {
+      "dark": {
+        "padding": "16px",
+        "borderRadius": "4px",
+        "background": "rgb(255, 120, 61)",
+        "color": "rgb(242, 242, 237)",
+        "borderColor": "oklch(0.928 0.006 264.531)"
+      },
+      "light": {
+        "padding": "16px",
+        "borderRadius": "4px",
+        "background": "rgb(255, 120, 61)",
+        "color": "rgb(242, 242, 237)",
+        "borderColor": "oklch(0.928 0.006 264.531)"
+      }
+    }
+  },
+  "desktop_v3": {
+    "cssSha256": "772696f1e715b69970ae14d6555107ec3ffbf0fb78fd4717fb2bea2dd2c3fdfe",
+    "metrics": {
+      "dark": {
+        "padding": "16px",
+        "borderRadius": "12px",
+        "background": "rgb(15, 15, 20)",
+        "color": "rgb(146, 149, 158)",
+        "borderColor": "rgb(31, 31, 39)"
+      },
+      "light": {
+        "padding": "16px",
+        "borderRadius": "12px",
+        "background": "rgb(255, 254, 249)",
+        "color": "rgb(105, 100, 91)",
+        "borderColor": "rgb(216, 212, 201)"
+      }
+    }
+  },
+  "desktop_v4": {
+    "cssSha256": "7276aab170551084ddea74d5e768dbf1335c0e4d8875daa2e57240489d4e9005",
+    "metrics": {
+      "dark": {
+        "padding": "16px",
+        "borderRadius": "12px",
+        "background": "rgb(15, 15, 20)",
+        "color": "rgb(146, 149, 158)",
+        "borderColor": "rgb(31, 31, 39)"
+      },
+      "light": {
+        "padding": "16px",
+        "borderRadius": "12px",
+        "background": "rgb(255, 254, 249)",
+        "color": "rgb(105, 100, 91)",
+        "borderColor": "rgb(216, 212, 201)"
+      }
+    }
+  }
+}

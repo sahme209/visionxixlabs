@@ -122,7 +122,7 @@ export default function AutonomyCockpitPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -131,10 +131,10 @@ export default function AutonomyCockpitPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <CpuChipIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Closed Autonomy Loop
@@ -158,8 +158,8 @@ export default function AutonomyCockpitPage() {
                 onClick={() => setMode(m)}
                 className={`rounded-xl border p-3 text-left transition-all ${
                   active
-                    ? "border-orange-500/40 bg-white/[0.025]"
-                    : "border-white/[0.06] bg-white/[0.02] hover:border-white/[0.12]"
+                    ? "border-orange-500/40 bg-white/2.5"
+                    : "border-white/6 bg-white/2 hover:border-white/12"
                 }`}
               >
                 <p className={`text-[11px] font-mono uppercase tracking-wider ${active ? "text-white" : "text-zinc-400"}`}>{m}</p>
@@ -173,7 +173,7 @@ export default function AutonomyCockpitPage() {
           <button
             onClick={runCycle}
             disabled={running}
-            className="inline-flex items-center gap-2 rounded-md border border-emerald-500/40 hover:border-emerald-500/60 bg-emerald-500/[0.08] hover:bg-emerald-500/[0.12] text-emerald-200 font-medium text-[13px] px-4 py-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 rounded-md border border-emerald-500/40 hover:border-emerald-500/60 bg-emerald-500/8 hover:bg-emerald-500/12 text-emerald-200 font-medium text-[13px] px-4 py-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <ArrowPathIcon className={`h-4 w-4 ${running ? "animate-spin" : ""}`} />
             {running ? "Running cycle…" : `Run cycle (${mode})`}
@@ -185,7 +185,7 @@ export default function AutonomyCockpitPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// cycle failed</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -205,17 +205,17 @@ export default function AutonomyCockpitPage() {
           </div>
 
           {/* Charter summary */}
-          <div className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-4 mb-6">
+          <div className="rounded-2xl border border-orange-500/15 bg-white/1.5 p-4 mb-6">
             <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// active charter</p>
             <p className="text-[13px] text-white font-semibold">{report.charter.mode}</p>
             <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">{report.charter.rationale}</p>
             <div className="flex flex-wrap gap-1 mt-2">
               {report.charter.allowedClasses.map((c) => (
-                <span key={c} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-white">
+                <span key={c} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-orange-500/15 text-white">
                   {c.replace(/_/g, " ")}
                 </span>
               ))}
-              <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+              <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                 limit {report.charter.perCycleActionLimit}/cycle
               </span>
             </div>
@@ -223,20 +223,20 @@ export default function AutonomyCockpitPage() {
 
           {/* Per-candidate transcripts */}
           {report.candidates.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center mb-6">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-6 text-center mb-6">
               <ShieldCheckIcon className="h-6 w-6 text-emerald-300 mx-auto mb-2" />
               <p className="text-[13px] text-zinc-300">No candidates this cycle. Operating loop is idle.</p>
             </div>
           ) : (
             <div className="space-y-3 mb-10">
               {report.candidates.map((c) => (
-                <div key={c.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+                <div key={c.id} className="rounded-2xl border border-white/6 bg-white/2 p-5">
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-3">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-[10px] font-mono text-zinc-500">#{c.rank}</span>
-                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">{c.boundaryClass.replace(/_/g, " ")}</span>
-                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">{c.outcome.replace(/_/g, " ")}</span>
+                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">{c.boundaryClass.replace(/_/g, " ")}</span>
+                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-orange-500/15 text-orange-300">{c.outcome.replace(/_/g, " ")}</span>
                       </div>
                       <p className="text-[14px] font-semibold text-white tracking-tight">{c.title}</p>
                       <p className="text-[12.5px] text-zinc-300 leading-relaxed mt-0.5">{c.proposedIntent}</p>
@@ -247,12 +247,12 @@ export default function AutonomyCockpitPage() {
                       const v = STAGE_STATUS_VISUAL[s.status];
                       const Icon = v.icon;
                       return (
-                        <div key={s.stage} title={`${s.summary}${s.reason ? "\n\n" + s.reason : ""}`} className="rounded-md border border-white/[0.04] bg-white/[0.015] p-2">
+                        <div key={s.stage} title={`${s.summary}${s.reason ? "\n\n" + s.reason : ""}`} className="rounded-md border border-white/4 bg-white/1.5 p-2">
                           <div className="flex items-center gap-1 mb-1">
                             <Icon className="h-3 w-3 text-white/60 shrink-0" />
                             <span className="text-[9px] font-mono text-zinc-400 truncate">{s.stage.replace(/_/g, " ")}</span>
                           </div>
-                          <span className={`block text-[8px] font-mono uppercase tracking-wider px-1 py-0.5 rounded text-center ${v.pill}`}>{v.label}</span>
+                          <span className={`block text-[8px] font-mono uppercase tracking-wider px-1 py-0.5 rounded-sm text-center ${v.pill}`}>{v.label}</span>
                         </div>
                       );
                     })}
@@ -263,12 +263,12 @@ export default function AutonomyCockpitPage() {
           )}
 
           {/* Contract */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// autonomy contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">{report.limitations.join(" ")}</p>
               <Link href={report.safeNextAction.href} className="mt-3 inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100">
@@ -280,7 +280,7 @@ export default function AutonomyCockpitPage() {
       )}
 
       {!report && !error && !running && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-6 text-center">
           <CpuChipIcon className="h-6 w-6 text-orange-300 mx-auto mb-2" />
           <p className="text-[13px] text-zinc-300">Pick a charter mode and run a cycle. Nothing executes — the loop only declares intent.</p>
         </div>
@@ -291,11 +291,11 @@ export default function AutonomyCockpitPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: "emerald" | "cyan" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    cyan:    "border-cyan-500/18 bg-cyan-500/3 text-cyan-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

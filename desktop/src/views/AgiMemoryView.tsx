@@ -164,10 +164,10 @@ function MemoryRow({ entry }: { entry: Entry }) {
   return (
     <div className="glass-card p-3 border border-violet-500/15">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-violet-500/30 bg-violet-500/10 text-violet-200">
           ✦ {KIND_LABEL[entry.targetKind] ?? entry.targetKind}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
           {entry.outcome}
         </span>
         {entry.modelHint && <span className="text-[10px] font-mono text-zinc-500">{entry.modelHint}</span>}
@@ -296,7 +296,7 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
           type="button"
           onClick={generate}
           disabled={busy}
-          className="px-3 py-1 rounded-md border border-violet-500/40 bg-violet-500/[0.12] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait"
+          className="px-3 py-1 rounded-md border border-violet-500/40 bg-violet-500/12 text-[12px] font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 disabled:cursor-wait"
         >
           {busy ? "Summarizing…" : "Summarize recent thinking"}
         </button>
@@ -308,10 +308,10 @@ function SummaryPanel({ targetKind }: { targetKind?: string }) {
   return (
     <div className="glass-card p-3 border border-violet-500/25">
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-violet-500/30 bg-violet-500/10 text-violet-200">
           ✦ AGI meta-summary
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[summary.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[summary.outcome] ?? OUTCOME_CLASS.error}`}>
           {summary.outcome}
         </span>
         {summary.modelHint && <span className="text-[10px] font-mono text-zinc-500">{summary.modelHint}</span>}
@@ -427,16 +427,16 @@ function TimelineRow({ entry }: { entry: TimelineSummary }) {
   const [open, setOpen] = useState(false);
   const scope = entry.targetKind ? KIND_LABEL[entry.targetKind] ?? entry.targetKind : "All";
   return (
-    <div className="rounded border border-zinc-700/40 bg-zinc-900/30 p-2">
+    <div className="rounded-sm border border-zinc-700/40 bg-zinc-900/30 p-2">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
         className="w-full text-left flex items-center gap-2 flex-wrap"
       >
-        <span className="text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+        <span className="text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
           {scope}
         </span>
-        <span className={`text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded-sm border ${OUTCOME_CLASS[entry.outcome] ?? OUTCOME_CLASS.error}`}>
           {entry.outcome}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">{entry.windowSize}w · {entry.aiAvailabilityPct}%AI</span>
@@ -629,14 +629,14 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
           <button
             type="button"
             onClick={() => setScope("user")}
-            className={`px-1.5 py-0.5 rounded border ${scope === "user" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-zinc-700/40 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-800/60"}`}
+            className={`px-1.5 py-0.5 rounded-sm border ${scope === "user" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-zinc-700/40 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-800/60"}`}
           >
             mine
           </button>
           <button
             type="button"
             onClick={() => setScope("org")}
-            className={`px-1.5 py-0.5 rounded border ${scope === "org" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-zinc-700/40 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-800/60"}`}
+            className={`px-1.5 py-0.5 rounded-sm border ${scope === "org" ? "border-violet-500/40 bg-violet-500/[0.14] text-violet-100" : "border-zinc-700/40 bg-zinc-900/40 text-zinc-300 hover:bg-zinc-800/60"}`}
           >
             org
           </button>
@@ -652,13 +652,13 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
           placeholder="Ask anything about the AGI's recent reasoning…"
           disabled={busy}
           maxLength={500}
-          className="flex-1 rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="flex-1 rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
         <button
           type="button"
           onClick={() => ask(question)}
           disabled={busy || question.trim().length < 4}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait"
         >
           {busy ? "Asking…" : "Ask"}
         </button>
@@ -672,7 +672,7 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
               type="button"
               onClick={() => ask(s)}
               disabled={busy}
-              className="px-2 py-0.5 rounded border border-zinc-700/40 bg-zinc-900/30 text-[10.5px] font-mono text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50"
+              className="px-2 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-900/30 text-[10.5px] font-mono text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50"
             >
               {s}
             </button>
@@ -701,10 +701,10 @@ function ChatPanel({ targetKind }: { targetKind?: string }) {
 
 function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void }) {
   return (
-    <div className="rounded border border-zinc-700/40 bg-zinc-900/30 p-2">
+    <div className="rounded-sm border border-zinc-700/40 bg-zinc-900/30 p-2">
       <p className="text-[11px] font-mono text-zinc-400 mb-1">Q: {turn.question}</p>
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[turn.answer.outcome] ?? OUTCOME_CLASS.error}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[turn.answer.outcome] ?? OUTCOME_CLASS.error}`}>
           {turn.answer.outcome}
         </span>
         {turn.answer.modelHint && <span className="text-[10px] font-mono text-zinc-500">{turn.answer.modelHint}</span>}
@@ -721,7 +721,7 @@ function ChatTurnRow({ turn, onDelete }: { turn: ChatTurn; onDelete?: () => void
       </div>
       <p className="text-[12px] text-zinc-200 mb-1.5">{turn.answer.answer}</p>
       {turn.citationDetails.length > 0 && (
-        <div className="border-t border-white/[0.04] pt-1.5">
+        <div className="border-t border-white/4 pt-1.5">
           <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 mb-0.5">Citations</p>
           <div className="space-y-0.5">
             {turn.citationDetails.map((c) => (

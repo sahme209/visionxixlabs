@@ -58,8 +58,8 @@ export default function TopologyPage() {
                 onClick={() => setOverlay(o.id)}
                 className={`inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
-                    : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
+                    ? "bg-orange-500/15 border-white/12 text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
+                    : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:border-white/12"
                 }`}
               >
                 <Icon className="h-3.5 w-3.5" />
@@ -77,7 +77,7 @@ export default function TopologyPage() {
 
       {/* Lower analytics row */}
       <Stagger delay={0.15} interval={0.08} className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
           <div className="flex items-center gap-2 mb-3">
             <ShieldExclamationIcon className="h-4 w-4 text-zinc-400" />
             <h3 className="text-sm font-semibold text-white">Risk concentration</h3>
@@ -88,7 +88,7 @@ export default function TopologyPage() {
               { label: "westeurope · prod", level: "medium", value: "6 findings" },
               { label: "us-west1 · prod", level: "high", value: "7 findings" },
             ].map((r) => (
-              <div key={r.label} className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
+              <div key={r.label} className="flex items-center justify-between rounded-lg bg-white/2 border border-white/4 px-3 py-2">
                 <span className="text-[11px] text-zinc-300 font-mono">{r.label}</span>
                 <span className={`text-[10px] font-semibold ${r.level === "high" ? "text-red-400" : "text-zinc-400"}`}>{r.value}</span>
               </div>
@@ -96,7 +96,7 @@ export default function TopologyPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
           <div className="flex items-center gap-2 mb-3">
             <ChartBarSquareIcon className="h-4 w-4 text-emerald-400" />
             <h3 className="text-sm font-semibold text-white">Cost concentration</h3>
@@ -104,7 +104,7 @@ export default function TopologyPage() {
               Pending
             </span>
           </div>
-          <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-4">
+          <div className="rounded-lg border border-white/6 bg-white/2 px-3 py-4">
             <p className="text-[11px] text-zinc-400 leading-relaxed mb-2">
               Cost concentration requires AWS Cost Explorer + Azure Cost Management + GCP Billing connectors. None are wired today, so this view honestly shows no values rather than fabricated dollar figures.
             </p>
@@ -114,7 +114,7 @@ export default function TopologyPage() {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
           <div className="flex items-center gap-2 mb-3">
             <CpuChipIcon className="h-4 w-4 text-zinc-500" />
             <h3 className="text-sm font-semibold text-white">Operational signals</h3>
@@ -127,7 +127,7 @@ export default function TopologyPage() {
               { label: "Active scans", value: "1 running", dot: "bg-blue-400 animate-pulse" },
               { label: "Pending approvals", value: "3", dot: "bg-zinc-400 animate-pulse" },
             ].map((row) => (
-              <div key={row.label} className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
+              <div key={row.label} className="flex items-center justify-between rounded-lg bg-white/2 border border-white/4 px-3 py-2">
                 <div className="flex items-center gap-2">
                   <span className={`w-1.5 h-1.5 rounded-full ${row.dot}`} />
                   <span className="text-zinc-500">{row.label}</span>

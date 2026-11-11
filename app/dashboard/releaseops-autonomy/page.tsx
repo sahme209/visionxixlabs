@@ -101,12 +101,12 @@ export default function ReleaseOpsAutonomyPage() {
         </div>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading autonomy history…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">Loading autonomy history…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -115,11 +115,11 @@ export default function ReleaseOpsAutonomyPage() {
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && data.org.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-8 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-8 text-center">
           <p className="text-[14px] font-semibold text-orange-100 mb-2">No autonomy ticks yet.</p>
           <p className="text-[12.5px] text-zinc-400">
             The cron runs hourly. If you just deployed this phase, wait for the next top-of-the-hour tick — or trigger manually with
@@ -138,10 +138,10 @@ export default function ReleaseOpsAutonomyPage() {
           {data.global.length > 0 && (
             <>
               <h2 className="text-[13px] font-semibold text-white mb-3">Global tick overview</h2>
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+              <div className="rounded-xl border border-white/6 bg-white/2 overflow-hidden">
                 <table className="w-full text-[11.5px] font-mono">
                   <thead>
-                    <tr className="border-b border-white/[0.06]">
+                    <tr className="border-b border-white/6">
                       <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">When</th>
                       <th className="text-right px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Total</th>
                       <th className="text-right px-3 py-2 text-emerald-400 uppercase tracking-[0.18em] text-[10px]">OK</th>
@@ -151,7 +151,7 @@ export default function ReleaseOpsAutonomyPage() {
                   </thead>
                   <tbody>
                     {data.global.map((g) => (
-                      <tr key={g.id} className="border-b border-white/[0.04] last:border-0">
+                      <tr key={g.id} className="border-b border-white/4 last:border-0">
                         <td className="px-3 py-1.5 text-zinc-300">{new Date(g.generatedAtIso).toLocaleString()}</td>
                         <td className="px-3 py-1.5 text-right text-zinc-200">{g.totalRuns}</td>
                         <td className="px-3 py-1.5 text-right text-emerald-300">{g.okRuns}</td>
@@ -172,7 +172,7 @@ export default function ReleaseOpsAutonomyPage() {
 
 function TickCard({ tick }: { tick: OrgTick }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-3">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className="text-[11px] font-mono text-zinc-300">{new Date(tick.generatedAtIso).toLocaleString()}</span>
         <span className="text-[10px] font-mono text-zinc-500">total {tick.totalRuns}</span>
@@ -195,7 +195,7 @@ function EngineBreakdown({ label, runs }: { label: string; runs: { outcome: stri
   const skip = runs.filter((r) => r.outcome === "skipped").length;
   const err = runs.filter((r) => r.outcome === "error").length;
   return (
-    <div className="rounded border border-zinc-700/30 bg-black/20 p-2">
+    <div className="rounded-sm border border-zinc-700/30 bg-black/20 p-2">
       <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className="text-[11px] font-mono">
         <span className="text-emerald-300">{ok}</span>
@@ -210,10 +210,10 @@ function EngineBreakdown({ label, runs }: { label: string; runs: { outcome: stri
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ClockIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

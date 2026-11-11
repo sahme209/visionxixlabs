@@ -32,7 +32,7 @@ export function IntegrationPauseButton({ provider, label, suspended }: { provide
         type="button"
         onClick={() => void transition()}
         disabled={state === "working"}
-        className="inline-flex min-h-10 items-center rounded-xl border border-white/[0.12] bg-white/[0.03] px-4 text-sm font-medium text-zinc-100 transition hover:bg-white/[0.06] disabled:opacity-60"
+        className="inline-flex min-h-10 items-center rounded-xl border border-white/12 bg-white/3 px-4 text-sm font-medium text-zinc-100 transition hover:bg-white/6 disabled:opacity-60"
       >
         {state === "working" ? "Updating…" : suspended ? `Resume ${label}` : `Pause ${label}`}
       </button>

@@ -79,7 +79,7 @@ export default async function EngineerCostPage() {
       </section>
 
       {rollup.rows.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No AI call activity in the last 30 days.</p>
           <p className="text-[11px] text-zinc-500 mt-1">
             Either the workforce hasn&apos;t fired yet or the workspace is on a quiet window.
@@ -88,14 +88,14 @@ export default async function EngineerCostPage() {
       ) : (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">ranked · highest cost first</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {rollup.rows.map((row) => {
               const detailHref = engineerDetailHref(row.engineName);
               const Tag = detailHref ? Link : "div";
               const tagProps = detailHref ? { href: detailHref } : {};
               return (
                 <li key={row.engineName}>
-                  <Tag {...(tagProps as { href: string })} className={`block px-5 py-3.5 ${detailHref ? "hover:bg-white/[0.015]" : ""} transition-colors`}>
+                  <Tag {...(tagProps as { href: string })} className={`block px-5 py-3.5 ${detailHref ? "hover:bg-white/1.5" : ""} transition-colors`}>
                     <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                       <span className={PROVIDER_TONE[row.provider] ?? "text-zinc-400"}>{row.provider}</span>
                       <span className="text-zinc-500">·</span>
@@ -123,7 +123,7 @@ export default async function EngineerCostPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <section className="mt-8 rounded-2xl border border-white/6 bg-white/1.5 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">how cost is computed</p>
         <p className="text-[12.5px] text-zinc-300 leading-relaxed">
           Reads <span className="font-mono text-zinc-400">AiCallLog</span> rows in the window, infers provider from the
@@ -139,7 +139,7 @@ export default async function EngineerCostPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 px-4 py-3">
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className={`text-[22px] font-semibold tracking-tight ${tone}`}>{value}</p>
     </div>

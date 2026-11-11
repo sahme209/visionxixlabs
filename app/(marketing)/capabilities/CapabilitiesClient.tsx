@@ -130,12 +130,12 @@ const RELEASE_KERNELS = new Set<string>([
 const RELEASE_CAPABILITIES = CAPABILITIES.filter((capability) => RELEASE_KERNELS.has(capability.kernel));
 
 const ROLE_TONE: Record<Capability["role"], string> = {
-  perception:   "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
-  reasoning:    "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
-  planning:     "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
-  safety:       "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
-  verification: "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
-  memory:        "text-zinc-300 bg-white/[0.035] border-white/[0.1]",
+  perception:   "text-zinc-300 bg-white/[0.035] border-white/10",
+  reasoning:    "text-zinc-300 bg-white/[0.035] border-white/10",
+  planning:     "text-zinc-300 bg-white/[0.035] border-white/10",
+  safety:       "text-zinc-300 bg-white/[0.035] border-white/10",
+  verification: "text-zinc-300 bg-white/[0.035] border-white/10",
+  memory:        "text-zinc-300 bg-white/[0.035] border-white/10",
 };
 
 const PLAYBOOK_RESPONSIBILITIES = [
@@ -167,7 +167,7 @@ export function CapabilitiesClient() {
           className="mono-label inline-flex items-center gap-3"
         >
           <span className="text-orange-200 tabular-nums">AX</span>
-          <span className="h-px w-6 bg-gradient-to-r from-orange-200/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-orange-200/60 to-transparent" />
           Axiom Agent · deployment capabilities
         </motion.p>
         <motion.h1
@@ -179,7 +179,7 @@ export function CapabilitiesClient() {
           Deployment capabilities, {" "}
           <span className="relative inline-block">
             with human control.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-orange-200/80 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-orange-200/80 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -202,7 +202,7 @@ export function CapabilitiesClient() {
             <p className="max-w-sm text-sm leading-6 text-zinc-400">A capability is not a promise of autonomous execution or a live integration. It is a governed part of the workflow.</p>
           </div>
           <ol className="mt-8 grid gap-3 md:grid-cols-5">
-            {PLAYBOOK_RESPONSIBILITIES.map(([number, title, copy]) => <li key={number} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-4"><p className="font-mono text-[10px] tracking-[0.16em] text-orange-200">{number}</p><h3 className="mt-5 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-xs leading-5 text-zinc-400">{copy}</p></li>)}
+            {PLAYBOOK_RESPONSIBILITIES.map(([number, title, copy]) => <li key={number} className="rounded-xl border border-white/[0.07] bg-white/2.5 p-4"><p className="font-mono text-[10px] tracking-[0.16em] text-orange-200">{number}</p><h3 className="mt-5 text-sm font-medium text-zinc-100">{title}</h3><p className="mt-2 text-xs leading-5 text-zinc-400">{copy}</p></li>)}
           </ol>
         </div>
       </section>
@@ -212,13 +212,13 @@ export function CapabilitiesClient() {
           <summary id="operational-terms-heading" className="cursor-pointer list-none text-lg font-medium text-white marker:hidden"><span className="flex items-center justify-between gap-4">Inspect control details <span className="text-sm font-normal text-zinc-500 transition group-open:rotate-45" aria-hidden>+</span></span></summary>
           <p className="mt-3 max-w-2xl text-sm leading-6 text-zinc-400">These details are available for technical review. They do not claim live cloud mutation, a configured integration, or autonomous deployment.</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
-            <article className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
+            <article className="rounded-xl border border-white/20 bg-white/4 p-5">
               <h3 className="font-semibold text-zinc-100">Blast radius limits</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-300">
                 The operation-planning kernel batches resources to the configured maximum, rejects an invalid oversized step, and records a boundary event. Example: a 12-resource plan with a five-resource limit becomes 5 + 5 + 2 planning batches. This is kernel enforcement; live cloud mutation enforcement is not release-verified.
               </p>
             </article>
-            <article className="rounded-xl border border-orange-500/20 bg-orange-500/[0.04] p-5">
+            <article className="rounded-xl border border-orange-500/20 bg-orange-500/4 p-5">
               <h3 className="font-semibold text-orange-100">Outcome memory</h3>
               <p className="mt-2 text-sm leading-relaxed text-zinc-300">
                 The application-side module stores action outcome metadata in the audit store under an organization and cloud-account context. A previous failure can downgrade guidance for that resource to human review. Example: a failed resize recommendation makes the next resize proposal more cautious. Consistent retention/deletion controls and the released desktop journey remain unverified.
@@ -242,8 +242,8 @@ export function CapabilitiesClient() {
               className={[
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 filter === f.id
-                  ? "bg-orange-300/[0.12] border-orange-300/30 text-orange-100"
-                  : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
+                  ? "bg-orange-300/12 border-orange-300/30 text-orange-100"
+                  : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
               ].join(" ")}
             >
               {f.label}
@@ -262,11 +262,11 @@ export function CapabilitiesClient() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.45, delay: Math.min(i * 0.03, 0.3) }}
               whileHover={{ y: -3, transition: { duration: 0.18 } }}
-              className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition-all hover:border-orange-300/25 hover:bg-white/[0.045]"
+              className="rounded-2xl border border-white/8 bg-white/2.5 p-5 transition-all hover:border-orange-300/25 hover:bg-white/4.5"
             >
               <div className="flex items-start justify-between gap-3">
                 <p className="text-[13.5px] font-semibold text-white">{c.name}</p>
-                <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                <div className="flex flex-col items-end gap-1 shrink-0">
                   <span className={["text-[10px] font-mono uppercase tracking-widest px-2 py-0.5 rounded-full border", ROLE_TONE[c.role]].join(" ")}>
                     {c.role}
                   </span>
@@ -311,7 +311,7 @@ export function CapabilitiesClient() {
           </Link>
           <Link
             href="/download"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             View desktop downloads
           </Link>

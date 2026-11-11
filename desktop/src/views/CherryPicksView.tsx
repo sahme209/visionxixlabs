@@ -116,7 +116,7 @@ export function CherryPicksView() {
                 <div key={e.id} className="glass-card p-3">
                   <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[e.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[e.status]}`}>
                         {e.status}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">
@@ -124,14 +124,14 @@ export function CherryPicksView() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                         {e.approvedCount} approved
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                         {e.excludedCount} excluded
                       </span>
                       {e.hasFinalCommitValidation && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
                           final ✓
                         </span>
                       )}
@@ -199,28 +199,28 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
   if (state.kind === "denying") {
     const reasonValid = reason.trim().length >= 10;
     return (
-      <div className="mt-2 pt-2 border-t border-white/[0.04]">
+      <div className="mt-2 pt-2 border-t border-white/4">
         <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Deny reason ({reason.trim().length}/10 min)</span>
         <textarea
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this exception being denied?"
           rows={2}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-hidden"
         />
         <div className="mt-1.5 flex items-center gap-1.5">
           <button
             type="button"
             disabled={!reasonValid}
             onClick={() => decide("deny", reason.trim())}
-            className="px-2 py-1 rounded border border-rose-500/40 bg-rose-500/[0.10] text-[10px] font-semibold text-rose-200 hover:bg-rose-500/[0.18] disabled:opacity-50 transition-colors"
+            className="px-2 py-1 rounded-sm border border-rose-500/40 bg-rose-500/10 text-[10px] font-semibold text-rose-200 hover:bg-rose-500/18 disabled:opacity-50 transition-colors"
           >
             Confirm deny
           </button>
           <button
             type="button"
             onClick={() => { setReason(""); setState({ kind: "idle" }); }}
-            className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+            className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
           >
             Cancel
           </button>
@@ -231,12 +231,12 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+    <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
       <button
         type="button"
         disabled={busy}
         onClick={() => decide("approve")}
-        className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+        className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
       >
         {state.kind === "submitting" && state.which === "approve" ? "…" : "Approve"}
       </button>
@@ -244,7 +244,7 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
         type="button"
         disabled={busy}
         onClick={() => setState({ kind: "denying" })}
-        className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.06] text-rose-200 hover:bg-rose-500/[0.12] disabled:opacity-50 transition-colors"
+        className="px-2 py-1 rounded-sm border border-rose-500/30 bg-rose-500/6 text-rose-200 hover:bg-rose-500/12 disabled:opacity-50 transition-colors"
       >
         Deny…
       </button>
@@ -306,7 +306,7 @@ function NewCherryPickPanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.06] text-[11.5px] font-semibold text-violet-200 hover:bg-violet-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/6 text-[11.5px] font-semibold text-violet-200 hover:bg-violet-500/12 transition-colors"
         >
           + Request cherry-pick exception
         </button>
@@ -342,7 +342,7 @@ function NewCherryPickPanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/[0.12] text-[11.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/40 bg-violet-500/12 text-[11.5px] font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Submit request"}
         </button>
@@ -371,7 +371,7 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
           placeholder={placeholder}
           disabled={disabled}
           rows={2}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       ) : (
         <input
@@ -380,7 +380,7 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       )}
     </label>
@@ -441,14 +441,14 @@ function ValidateControls({
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+    <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
       <span className="text-zinc-500 uppercase tracking-[0.18em] text-[9px]">Final-commit validation</span>
       {currentlyValidated ? (
         <button
           type="button"
           disabled={busy}
           onClick={() => flip(false)}
-          className="px-2 py-1 rounded border border-zinc-500/40 bg-zinc-500/[0.08] text-zinc-200 hover:bg-zinc-500/[0.15] disabled:opacity-50 transition-colors"
+          className="px-2 py-1 rounded-sm border border-zinc-500/40 bg-zinc-500/8 text-zinc-200 hover:bg-zinc-500/15 disabled:opacity-50 transition-colors"
         >
           {busy && state.kind === "submitting" && !state.targetState ? "…" : "Clear validation"}
         </button>
@@ -457,7 +457,7 @@ function ValidateControls({
           type="button"
           disabled={busy}
           onClick={() => flip(true)}
-          className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+          className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
         >
           {busy && state.kind === "submitting" && state.targetState ? "…" : "Confirm final commits"}
         </button>

@@ -113,14 +113,14 @@ export function JourneyTimeline({ provider }: { provider: Provider }) {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing {PROVIDER_LABEL[provider]} journey…</p>
       </div>
     );
   }
   if (error || !state) {
     return (
-      <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+      <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
         <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// journey unavailable</p>
         <p className="text-[13px] text-zinc-300">{error ?? "Sign in to load canonical state."}</p>
       </div>
@@ -223,7 +223,7 @@ export function JourneyTimeline({ provider }: { provider: Provider }) {
   ];
 
   return (
-    <div className="rounded-3xl border border-white/[0.06] bg-gradient-to-br from-white/[0.02] via-white/[0.01] to-transparent p-6 md:p-8 relative overflow-hidden mb-8">
+    <div className="rounded-3xl border border-white/6 bg-linear-to-br from-white/2 via-white/1 to-transparent p-6 md:p-8 relative overflow-hidden mb-8">
       <div
         className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
         style={{
@@ -243,7 +243,7 @@ export function JourneyTimeline({ provider }: { provider: Provider }) {
 
       <ol className="relative space-y-3">
         {/* Vertical line */}
-        <div className="absolute left-[15px] top-3 bottom-3 w-px bg-white/[0.06]" aria-hidden />
+        <div className="absolute left-[15px] top-3 bottom-3 w-px bg-white/6" aria-hidden />
 
         {steps.map((step) => (
           <StepRow key={step.n} step={step} />
@@ -272,10 +272,10 @@ function StepRow({ step }: { step: JourneyStep }) {
   const Icon = step.done ? CheckCircleIcon : step.icon;
   return (
     <li className="relative pl-10">
-      <div className={`absolute left-0 top-2 w-8 h-8 rounded-xl flex items-center justify-center border ${step.done ? "bg-emerald-500/[0.10] border-emerald-500/[0.30]" : "bg-white/[0.04] border-white/[0.10]"}`}>
+      <div className={`absolute left-0 top-2 w-8 h-8 rounded-xl flex items-center justify-center border ${step.done ? "bg-emerald-500/10 border-emerald-500/30" : "bg-white/4 border-white/10"}`}>
         <Icon className={`h-4 w-4 ${step.done ? "text-emerald-300" : "text-zinc-300"}`} />
       </div>
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:border-white/[0.15] transition-colors p-4">
+      <div className="rounded-2xl border border-white/6 bg-white/2 hover:border-white/15 transition-colors p-4">
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 mb-1 flex-wrap">
@@ -286,7 +286,7 @@ function StepRow({ step }: { step: JourneyStep }) {
                 {step.sourceMode.replace(/_/g, " ")}
               </span>
               {step.scope === "cross-cutting" && (
-                <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 border border-white/[0.06] rounded-full px-1.5 py-px">cross-cutting</span>
+                <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500 border border-white/6 rounded-full px-1.5 py-px">cross-cutting</span>
               )}
             </div>
             <p className="text-[12.5px] text-zinc-300 leading-relaxed mb-1">{step.summary}</p>
@@ -295,7 +295,7 @@ function StepRow({ step }: { step: JourneyStep }) {
           {step.safeNextAction && (
             <Link
               href={step.safeNextAction.href}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors shrink-0"
             >
               {step.safeNextAction.label}
               <ArrowRightIcon className="h-3 w-3" />

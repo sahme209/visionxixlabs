@@ -187,7 +187,7 @@ export default async function EngineerAuditPage({
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             SecureAuditRecord table not migrated. Run <code className="font-mono text-white">prisma migrate deploy</code>.
@@ -206,12 +206,12 @@ export default async function EngineerAuditPage({
               memory feed →
             </Link>
           </div>
-          <ul className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-orange-500/15 bg-orange-500/3 divide-y divide-white/4 overflow-hidden">
             {agiEntries.map((e) => (
               <li key={`${e.targetKind}:${e.targetId}`}>
                 <Link
                   href={`/dashboard/agi-memory/${encodeURIComponent(`${e.targetKind}:${e.targetId}`)}`}
-                  className="block px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                  className="block px-5 py-3 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <div className="flex items-center gap-2">
@@ -234,7 +234,7 @@ export default async function EngineerAuditPage({
       )}
 
       {!migrationPending && records.length === 0 && topics.length > 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[15px] font-semibold text-white mb-1">No matching audit events yet</p>
           <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto">
             Nothing in this workspace has emitted a <span className="font-mono">{topics[0]}</span> event yet.
@@ -244,7 +244,7 @@ export default async function EngineerAuditPage({
       )}
 
       {records.length > 0 && (
-        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
           {records.map((r) => {
             const outcome = r.outcome as Outcome;
             const actor = r.actorKind as ActorKind;

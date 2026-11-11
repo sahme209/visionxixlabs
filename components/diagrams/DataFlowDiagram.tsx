@@ -23,7 +23,7 @@ export function DataFlowDiagram() {
         {stages.map((stage) => (
           <div
             key={stage.id}
-            className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white/[0.02] shadow-sm"
+            className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white/2 shadow-xs"
             style={{ borderColor: stage.color }}
           >
             <div
@@ -34,7 +34,7 @@ export function DataFlowDiagram() {
                 {stage.label}
               </h4>
             </div>
-            <p className="flex-1 px-4 py-3 text-xs text-zinc-300 leading-snug break-words">
+            <p className="flex-1 px-4 py-3 text-xs text-zinc-300 leading-snug wrap-break-word">
               {stage.sub}
             </p>
           </div>

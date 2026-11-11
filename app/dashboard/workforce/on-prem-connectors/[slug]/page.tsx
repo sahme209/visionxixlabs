@@ -105,7 +105,7 @@ export default async function OnPremConnectorDetailPage({
       </header>
 
       {/* Metadata */}
-      <section className="mb-8 rounded-md border border-white/[0.06] bg-white/[0.012] p-5">
+      <section className="mb-8 rounded-md border border-white/6 bg-white/[0.012] p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span className="text-emerald-300">metadata</span>
@@ -121,7 +121,7 @@ export default async function OnPremConnectorDetailPage({
 
       {/* Newly minted token banner */}
       {mintedTokenRaw && (
-        <section className="mb-8 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-5">
+        <section className="mb-8 rounded-md border border-emerald-500/30 bg-emerald-500/6 p-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-2 inline-flex items-center gap-2">
             <KeyIcon className="h-3 w-3" />
             agent-token :: minted
@@ -129,7 +129,7 @@ export default async function OnPremConnectorDetailPage({
           <p className="text-[12px] text-zinc-200 leading-relaxed mb-3 font-mono">
             <span className="text-emerald-300">copy this token now</span> — it cannot be retrieved later. Set it as the X-Agent-Token header on your agent.
           </p>
-          <div className="p-3 rounded border border-emerald-500/20 bg-black/40 break-all">
+          <div className="p-3 rounded-sm border border-emerald-500/20 bg-black/40 break-all">
             <p className="text-[11px] font-mono text-emerald-200 select-all">{mintedTokenRaw}</p>
           </div>
           <p className="text-[10.5px] text-zinc-500 mt-3 font-mono">expires in 365 days · re-key annually · audit-logged</p>
@@ -137,7 +137,7 @@ export default async function OnPremConnectorDetailPage({
       )}
 
       {/* Token mint form */}
-      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
           <KeyIcon className="h-3 w-3" />
           mint-agent-token
@@ -149,14 +149,14 @@ export default async function OnPremConnectorDetailPage({
       </section>
 
       {/* Agent shape spec */}
-      <section className="mb-8 rounded-md border border-white/[0.06] bg-white/[0.012] p-5">
+      <section className="mb-8 rounded-md border border-white/6 bg-white/[0.012] p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span className="text-emerald-300">agent-spec</span>
           <span className="text-zinc-700">::</span>
           <span className="text-zinc-500">post one batch per scan</span>
         </p>
-        <pre className="text-[11px] leading-relaxed text-zinc-200 font-mono bg-black/40 p-3 rounded border border-white/[0.06] overflow-x-auto whitespace-pre">{`POST https://visionxixlabs.com/api/agents/inbound
+        <pre className="text-[11px] leading-relaxed text-zinc-200 font-mono bg-black/40 p-3 rounded-sm border border-white/6 overflow-x-auto whitespace-pre">{`POST https://visionxixlabs.com/api/agents/inbound
 X-Agent-Token: vxl_agent_...your_token_here...
 Content-Type: application/json
 
@@ -195,17 +195,17 @@ Content-Type: application/json
           <span className="text-zinc-400 tabular-nums">{scans.length}</span>
         </p>
         {scans.length === 0 ? (
-          <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-10 text-center">
+          <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-10 text-center">
             <p className="text-[13px] text-zinc-400">No agent scans yet.</p>
             <p className="text-[11px] text-zinc-500 mt-1 font-mono">mint a token + run your agent — first scan will appear here</p>
           </div>
         ) : (
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {scans.map((sc) => (
               <li key={sc.targetId}>
                 <Link
                   href={`/dashboard/agi-memory/${encodeURIComponent(`${CONNECTOR_SCAN_TARGET_KIND}:${sc.targetId}`)}`}
-                  className="block px-5 py-3.5 hover:bg-emerald-500/[0.04] transition-colors"
+                  className="block px-5 py-3.5 hover:bg-emerald-500/4 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <span className="text-emerald-300">{sc.scanType}</span>

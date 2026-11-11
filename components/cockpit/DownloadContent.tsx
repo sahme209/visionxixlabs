@@ -122,7 +122,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           <div className={cockpit ? "max-w-3xl" : "grid gap-6 border-b border-white/[0.07] pb-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:gap-16"}>
             <div>
             {!cockpit && <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>}
-            <h1 className={cockpit ? "text-white" : "mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-[-0.05em] text-white"}>
+            <h1 className={cockpit ? "text-white" : "mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-tighter text-white"}>
               {cockpit ? "Desktop & provider setup" : <>Work where<br />engineering happens.</>}
             </h1>
             </div>
@@ -139,7 +139,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 {detectedPlatform === "choose" ? "Choose your installer" : `Download for ${platformLabel[detectedPlatform]}`}
               </a>
-              <Link href={cockpit ? "/control/integrations" : "/demo"} className={cockpit ? "inline-flex h-8 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5" : "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/[0.04]"}>
+              <Link href={cockpit ? "/control/integrations" : "/demo"} className={cockpit ? "inline-flex h-8 items-center gap-2 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5" : "inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/12 px-6 text-sm font-medium text-zinc-200 transition hover:border-white/25 hover:bg-white/4"}>
                 {cockpit ? "Back to integrations" : "Explore the web demo"} <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
@@ -148,7 +148,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           </div>
         </section>
 
-        {cockpit && <section aria-label="Provider setup requirements" className="mb-6 rounded-xl border border-white/[0.08] bg-white/[0.015] p-5">
+        {cockpit && <section aria-label="Provider setup requirements" className="mb-6 rounded-xl border border-white/8 bg-white/1.5 p-5">
           <h2 className="text-sm font-medium text-zinc-100">Connect a provider securely</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-4 text-xs leading-5 text-zinc-400">
             <li>Sign in to Axiom Agent using the same account and workspace as this cockpit.</li>
@@ -158,7 +158,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           <p className="mt-3 text-xs leading-5 text-zinc-500">Cloud enrollment is not available from this web page. Azure, AWS, and Google Cloud remain setup-required until their supported flow is configured and validated. Source-code capabilities may differ from published installers.</p>
         </section>}
         <section id="downloads" className={cockpit ? "mb-6 scroll-mt-6" : "mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10"}>
-          <div className={cockpit ? "mb-3" : "mb-6 border-t border-white/[0.08] pt-8"}>
+          <div className={cockpit ? "mb-3" : "mb-6 border-t border-white/8 pt-8"}>
             <h2 className={cockpit ? "text-sm font-medium text-zinc-100" : "text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl"}>{cockpit ? "Desktop installers" : "Use Axiom on your workstation."}</h2>
             <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace on macOS, Windows and Linux. Sizes are download sizes; installed size may differ.</p>
           </div>
@@ -195,7 +195,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         </section>
 
         {!cockpit && <section aria-labelledby="installation-help" className="mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10">
-          <div className="rounded-xl border border-white/[0.08] bg-white/[0.015] p-5 sm:p-8">
+          <div className="rounded-xl border border-white/8 bg-white/1.5 p-5 sm:p-8">
             <h2 id="installation-help" className="text-2xl font-medium tracking-[-0.035em] text-white">Installation and help</h2>
             <p className="mt-3 max-w-3xl text-sm leading-6 text-zinc-400">Downloading does not connect a provider or authorize actions. Supported capabilities and support options vary by installed version and current access. Review the installation guide, then follow the supported authorization and approval workflow for your workspace.</p>
             <div className="mt-5 flex flex-col gap-3 text-sm sm:flex-row sm:flex-wrap sm:gap-x-6">
@@ -212,7 +212,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           <section aria-labelledby="previous-releases" className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-12 sm:px-8 lg:px-10"}>
             <h2 id="previous-releases" className={cockpit ? "text-sm font-medium text-zinc-100" : "text-xl font-medium text-zinc-100"}>Previous desktop releases</h2>
             <p className="mt-2 text-sm leading-6 text-zinc-400">The newest installer is above. Older releases keep their original checksums and signing details. Local development builds are never published.</p>
-            <ul className="mt-5 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+            <ul className="mt-5 divide-y divide-white/8 border-y border-white/8">
               {manifest.previousReleases.map(release => (
                 <li key={release.tag}>
                   <a href={release.htmlUrl} target="_blank" rel="noreferrer" className="flex min-h-12 items-center justify-between gap-4 py-3 text-sm text-zinc-200 hover:text-white">
@@ -225,7 +225,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
           </section>
         ) : null}
 
-        <section className={cockpit ? "rounded-xl border border-white/[0.08] bg-white/[0.015]" : "border-y border-white/[0.07] bg-[#131313]"}>
+        <section className={cockpit ? "rounded-xl border border-white/8 bg-white/1.5" : "border-y border-white/[0.07] bg-[#131313]"}>
           <div className={cockpit ? "grid gap-4 p-5" : "mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-[1fr_auto] md:items-center lg:px-10"}>
             <div>
               <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">Release integrity</p>
@@ -269,7 +269,7 @@ function DownloadCard({
   compact?: boolean;
 }) {
   return (
-    <article className="overflow-hidden rounded-xl border border-white/[0.08] bg-[#151515]">
+    <article className="overflow-hidden rounded-xl border border-white/8 bg-[#151515]">
       <div className={compact ? "flex items-center justify-between border-b border-white/[0.07] px-4 py-3" : "flex items-center justify-between border-b border-white/[0.07] px-5 py-4"}>
         <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-zinc-400">Desktop installer</span>
         <Icon aria-hidden="true" className="h-5 w-5 text-zinc-400" />

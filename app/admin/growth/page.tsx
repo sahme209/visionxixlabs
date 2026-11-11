@@ -56,7 +56,7 @@ const WORKFLOWS: ReadonlyArray<{
 const STATUS_DISPLAY: Record<"live" | "scaffold" | "planned", string> = {
   live:     "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   scaffold: "text-cyan-300    bg-cyan-500/10    border-cyan-500/30",
-  planned:  "text-zinc-400    bg-white/[0.04]   border-white/[0.10]",
+  planned:  "text-zinc-400    bg-white/4   border-white/10",
 };
 
 export default function GrowthIndexPage() {
@@ -79,7 +79,7 @@ export default function GrowthIndexPage() {
       </div>
 
       {/* Safety rail — most visible reminder */}
-      <section className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-5 mb-8">
+      <section className="rounded-2xl border border-rose-500/20 bg-rose-500/4 p-5 mb-8">
         <header className="flex items-center gap-2 mb-2">
           <ShieldCheckIcon className="h-4 w-4 text-rose-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">Hard rules</p>
@@ -98,7 +98,7 @@ export default function GrowthIndexPage() {
         {WORKFLOWS.map((w) => {
           const Icon = w.icon;
           return (
-            <article key={w.slug} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 flex flex-col">
+            <article key={w.slug} className="rounded-2xl border border-white/6 bg-white/2 p-5 flex flex-col">
               <header className="flex items-start justify-between gap-3 mb-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <Icon className={`h-4 w-4 ${w.tone} shrink-0`} />
@@ -120,7 +120,7 @@ export default function GrowthIndexPage() {
         })}
       </section>
 
-      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5">
+      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/3 p-5">
         <header className="flex items-center gap-2 mb-3">
           <SparklesIcon className="h-4 w-4 text-orange-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Where this is going</p>

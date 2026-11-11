@@ -139,7 +139,7 @@ export function MultiCloudView({ onNavigate }: { onNavigate: (view: "connector-s
               {Object.entries(p.resourceCounts).length === 0
                 ? <span className="text-[11px] text-zinc-600">no inventory yet</span>
                 : Object.entries(p.resourceCounts).map(([k, v]) => (
-                  <span key={k} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.04]">{k}: {v}</span>
+                  <span key={k} className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-white/4 text-zinc-300 border border-white/4">{k}: {v}</span>
                 ))}
             </div>
 

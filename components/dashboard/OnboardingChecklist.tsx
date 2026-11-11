@@ -66,14 +66,14 @@ export function OnboardingChecklist({ compact = false, alwaysShow = false }: Pro
   if (c.allDone && !alwaysShow) return null;
 
   return (
-    <div className="mb-6 rounded-2xl border border-orange-500/[0.18] bg-orange-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-orange-500/18 bg-orange-500/3 p-5">
       <div className="flex items-center justify-between mb-3 gap-2 flex-wrap">
         <p className="text-[13px] font-semibold text-orange-100">
           {c.allDone ? "You're all set — zero-touch onboarding complete." : "Get started"}
         </p>
         <div className="flex items-center gap-2">
           <div className="w-32 h-1.5 rounded-full bg-zinc-800/80 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-orange-500 to-amber-500 transition-all" style={{ width: `${c.percent}%` }} />
+            <div className="h-full bg-linear-to-r from-orange-500 to-amber-500 transition-all" style={{ width: `${c.percent}%` }} />
           </div>
           <p className="text-[11px] font-mono text-zinc-300">{c.completed}/{c.total} · {c.percent}%</p>
         </div>

@@ -29,7 +29,7 @@ export function GovernanceTools({ organizationId, canSeal }: { organizationId: s
 }
 
 function Panel({ title, lead, children }: { title: string; lead: string; children: ReactNode }) {
-  return <section aria-label={title} className="flex flex-col rounded-xl border border-white/[0.08] bg-white/[0.02] p-5"><h2 className="text-base font-medium text-zinc-100">{title}</h2><p className="mt-1 text-sm leading-6 text-zinc-400">{lead}</p><div className="mt-4 flex-1">{children}</div></section>;
+  return <section aria-label={title} className="flex flex-col rounded-xl border border-white/8 bg-white/2 p-5"><h2 className="text-base font-medium text-zinc-100">{title}</h2><p className="mt-1 text-sm leading-6 text-zinc-400">{lead}</p><div className="mt-4 flex-1">{children}</div></section>;
 }
 
 function AuditPanel({ organizationId, canSeal }: { organizationId: string; canSeal: boolean }) {
@@ -71,7 +71,7 @@ function AuditPanel({ organizationId, canSeal }: { organizationId: string; canSe
           <input type="file" accept="application/json,.json" className="sr-only" disabled={busy} onChange={(e) => { void checkAnchor(e.target.files?.[0]); e.target.value = ""; }} />
         </label>
       </div>
-      {out && <p role="status" className="mt-3 break-words text-sm text-zinc-300">{out}</p>}
+      {out && <p role="status" className="mt-3 wrap-break-word text-sm text-zinc-300">{out}</p>}
       <p className="mt-3 text-xs text-zinc-500">Evidence, not prevention. Keep the anchor file somewhere Axiom cannot write (a ticket, a vault, an email to auditors). Checking it later shows whether the chain up to it was rewritten. It contains no event content.</p>
     </Panel>
   );

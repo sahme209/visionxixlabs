@@ -85,19 +85,19 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
       <div className="mx-auto max-w-6xl">
         
 
-        {integrationNotice && <div role="status" className={`mt-5 rounded-2xl border p-4 text-sm leading-6 ${integrationNotice.tone === "emerald" ? "border-emerald-400/20 bg-emerald-400/[0.05] text-emerald-100" : integrationNotice.tone === "amber" ? "border-zinc-300/20 bg-zinc-300/[0.05] text-zinc-100" : "border-rose-300/20 bg-rose-300/[0.05] text-rose-100"}`}><p className="font-medium">{integrationNotice.title}</p><p className="mt-1 text-zinc-400">{integrationNotice.detail}</p></div>}
+        {integrationNotice && <div role="status" className={`mt-5 rounded-2xl border p-4 text-sm leading-6 ${integrationNotice.tone === "emerald" ? "border-emerald-400/20 bg-emerald-400/5 text-emerald-100" : integrationNotice.tone === "amber" ? "border-zinc-300/20 bg-zinc-300/5 text-zinc-100" : "border-rose-300/20 bg-rose-300/5 text-rose-100"}`}><p className="font-medium">{integrationNotice.title}</p><p className="mt-1 text-zinc-400">{integrationNotice.detail}</p></div>}
 
         <section className="grid gap-5 py-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.72fr)] lg:py-14">
-          <div className="rounded-3xl border border-white/[0.09] bg-white/[0.035] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] sm:p-9">
+          <div className="rounded-3xl border border-white/9 bg-white/[0.035] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] sm:p-9">
             <p className="text-[10px] uppercase tracking-[0.22em] text-orange-300">Axiom Control</p>
             <h1 className="mt-4 max-w-xl text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">A clear home for your release workspace.</h1>
             <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">Review account context, connection posture, and guidance here. The installed Axiom Agent remains the focused environment for governed release records, approvals, and operations.</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link href="/control/desktop" className="inline-flex min-h-11 items-center rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white">Download Axiom Agent</Link>
-              <Link href="/account/integrations" className="inline-flex min-h-11 items-center rounded-xl border border-white/[0.1] px-4 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.06]">Review connections</Link>
+              <Link href="/account/integrations" className="inline-flex min-h-11 items-center rounded-xl border border-white/10 px-4 text-sm font-medium text-zinc-200 transition hover:bg-white/6">Review connections</Link>
             </div>
           </div>
-          <aside className="rounded-3xl border border-emerald-400/15 bg-emerald-400/[0.045] p-6 sm:p-7">
+          <aside className="rounded-3xl border border-emerald-400/15 bg-emerald-400/4.5 p-6 sm:p-7">
             <p className="text-[10px] uppercase tracking-[0.18em] text-emerald-200">Browser session</p>
             <h2 className="mt-3 text-xl font-semibold tracking-[-0.035em] text-zinc-100">You’re signed in.</h2>
             <p className="mt-3 text-sm leading-6 text-zinc-400">Your browser identity is authenticated. Workspace permissions and release approvals are checked separately for each protected action.</p>
@@ -109,13 +109,13 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
         </section>
 
         <section className="grid gap-3 pb-10 md:grid-cols-3" aria-label="Workspace destinations">
-          <Link href="/account/integrations" className="group rounded-2xl border border-white/[0.08] bg-black/10 p-5 transition hover:border-orange-300/25 hover:bg-white/[0.045]">
+          <Link href="/account/integrations" className="group rounded-2xl border border-white/8 bg-black/10 p-5 transition hover:border-orange-300/25 hover:bg-white/4.5">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">01 · Connections</p><h2 className="mt-3 text-lg font-medium text-zinc-100">Integration posture</h2><p className="mt-2 text-sm leading-6 text-zinc-500">See what is scoped, awaiting validation, or deliberately unavailable.</p><span className="mt-5 inline-block text-sm text-orange-300 transition group-hover:text-orange-200">Open integrations →</span>
           </Link>
-          <Link href="/control/settings" className="group rounded-2xl border border-white/[0.08] bg-black/10 p-5 transition hover:border-orange-300/25 hover:bg-white/[0.045]">
+          <Link href="/control/settings" className="group rounded-2xl border border-white/8 bg-black/10 p-5 transition hover:border-orange-300/25 hover:bg-white/4.5">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">02 · Account</p><h2 className="mt-3 text-lg font-medium text-zinc-100">Profile and access</h2><p className="mt-2 text-sm leading-6 text-zinc-500">Keep your display name current and review protected account boundaries.</p><span className="mt-5 inline-block text-sm text-orange-300 transition group-hover:text-orange-200">Open settings →</span>
           </Link>
-          <Link href="/account/help" className="group rounded-2xl border border-white/[0.08] bg-black/10 p-5 transition hover:border-orange-300/25 hover:bg-white/[0.045]">
+          <Link href="/account/help" className="group rounded-2xl border border-white/8 bg-black/10 p-5 transition hover:border-orange-300/25 hover:bg-white/4.5">
             <p className="text-[10px] uppercase tracking-[0.18em] text-zinc-500">03 · Guidance</p><h2 className="mt-3 text-lg font-medium text-zinc-100">Help and reference</h2><p className="mt-2 text-sm leading-6 text-zinc-500">Find release, security, and desktop guidance without losing your session.</p><span className="mt-5 inline-block text-sm text-orange-300 transition group-hover:text-orange-200">Open help →</span>
           </Link>
         </section>

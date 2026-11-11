@@ -7,7 +7,7 @@ import { INTEGRATION_LOGOS } from "@/lib/marketing/integrationLogos";
 export function WorksWithStrip() {
   const items = INTEGRATION_LOGOS.filter((i) => i.onHome);
   return (
-    <section aria-labelledby="works-with" className="border-y border-white/[0.06] px-5 py-10 sm:px-8 lg:px-10">
+    <section aria-labelledby="works-with" className="border-y border-white/6 px-5 py-10 sm:px-8 lg:px-10">
       <div className="mx-auto max-w-[1200px]">
         <p id="works-with" className="text-center text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Works with the tools you already use</p>
         <ul className="mt-6 flex flex-wrap items-center justify-center gap-x-10 gap-y-6">

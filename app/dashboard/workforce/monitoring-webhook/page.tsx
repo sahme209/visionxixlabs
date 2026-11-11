@@ -66,27 +66,27 @@ export default async function MonitoringWebhookPage({
       </header>
 
       {notice === "saved" && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="text-[12.5px] text-emerald-200 font-mono">configuration saved</p>
         </section>
       )}
       {notice === "deleted" && (
-        <section className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-zinc-500/30 bg-zinc-500/6 p-4">
           <p className="text-[12.5px] text-zinc-300 font-mono">configuration deleted · webhook ingestion off</p>
         </section>
       )}
       {error && (
-        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/6 p-4">
           <p className="text-[12.5px] text-rose-200 font-mono">error: {error}</p>
         </section>
       )}
       {justRotated && fullSecretShown && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="font-mono text-[10px] uppercase tracking-wider text-emerald-300 mb-2">webhook-secret :: minted</p>
           <p className="text-[12px] text-zinc-200 leading-relaxed mb-2 font-mono">
             <span className="text-emerald-300">copy now</span> — full secret will not be shown again. Configure it in your alerting tool as the HMAC-SHA256 signing secret.
           </p>
-          <div className="p-3 rounded border border-emerald-500/20 bg-black/40 break-all">
+          <div className="p-3 rounded-sm border border-emerald-500/20 bg-black/40 break-all">
             <p className="text-[11px] font-mono text-emerald-200 select-all">{fullSecretShown}</p>
           </div>
         </section>
@@ -94,7 +94,7 @@ export default async function MonitoringWebhookPage({
 
       {/* Current config readback */}
       {config && (
-        <section className="mb-8 rounded-md border border-white/[0.06] bg-white/[0.012] p-5">
+        <section className="mb-8 rounded-md border border-white/6 bg-white/[0.012] p-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
             <span className="text-zinc-700">//</span>
             <span className="text-emerald-300">current-config</span>
@@ -129,7 +129,7 @@ export default async function MonitoringWebhookPage({
       )}
 
       {/* Config form */}
-      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span>{config ? "update-config" : "configure"}</span>
@@ -139,7 +139,7 @@ export default async function MonitoringWebhookPage({
           <div>
             <label htmlFor="provider" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">provider</label>
             <select id="provider" name="provider" defaultValue={config?.provider ?? "generic"}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
               {(Object.keys(PROVIDER_LABEL) as WebhookProvider[]).map((p) => (
                 <option key={p} value={p}>{PROVIDER_LABEL[p].label}</option>
               ))}
@@ -149,7 +149,7 @@ export default async function MonitoringWebhookPage({
             <div>
               <label htmlFor="enabled" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">enabled</label>
               <select id="enabled" name="enabled" defaultValue={config?.enabled === false ? "false" : "true"}
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
                 <option value="true">yes · accept inbound</option>
                 <option value="false">paused · reject inbound</option>
               </select>
@@ -157,7 +157,7 @@ export default async function MonitoringWebhookPage({
             <div>
               <label htmlFor="autoAnalyze" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">auto-analyze</label>
               <select id="autoAnalyze" name="autoAnalyze" defaultValue={config?.autoAnalyze ? "true" : "false"}
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
                 <option value="false">no · persist alert only</option>
                 <option value="true">yes · auto-fire workload_performance_engineer</option>
               </select>
@@ -167,7 +167,7 @@ export default async function MonitoringWebhookPage({
             <label htmlFor="dailyCostCapCents" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-1.5 block">daily auto-analyze cap (cents · 0 = uncapped)</label>
             <input id="dailyCostCapCents" name="dailyCostCapCents" type="number" min={0} step={100}
               defaultValue={config?.dailyCostCapCents ?? 1000}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             <p className="text-[10.5px] text-zinc-500 mt-1 font-mono">protects against alert storms · ~30¢ per auto-analyze · default $10/day</p>
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap pt-1">
@@ -181,7 +181,7 @@ export default async function MonitoringWebhookPage({
 
       {/* Integration shape per provider */}
       {config && (
-        <section className="rounded-md border border-white/[0.06] bg-white/[0.012] p-5">
+        <section className="rounded-md border border-white/6 bg-white/[0.012] p-5">
           <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
             <span className="text-zinc-700">//</span>
             <span className="text-emerald-300">integration-spec</span>
@@ -189,7 +189,7 @@ export default async function MonitoringWebhookPage({
             <span className="text-zinc-500">{config.provider}</span>
           </p>
           <p className="text-[12.5px] text-zinc-300 leading-relaxed mb-2 font-mono">{PROVIDER_LABEL[config.provider].sampleNote}</p>
-          <pre className="text-[11px] leading-relaxed text-zinc-200 font-mono bg-black/40 p-3 rounded border border-white/[0.06] overflow-x-auto whitespace-pre">{`POST ${webhookUrl}
+          <pre className="text-[11px] leading-relaxed text-zinc-200 font-mono bg-black/40 p-3 rounded-sm border border-white/6 overflow-x-auto whitespace-pre">{`POST ${webhookUrl}
 ${PROVIDER_LABEL[config.provider].signatureHeader}: sha256=<HMAC-SHA256 of raw body using your secret>
 Content-Type: application/json
 

@@ -16,7 +16,7 @@ export function AgentTokenMintForm({ connectorSlug }: { connectorSlug: string })
           required
           maxLength={120}
           placeholder="e.g. vcenter-scanner-prod-01"
-          className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+          className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
         />
         <p className="text-[10px] text-zinc-500 mt-1 font-mono">used in audit logs to identify which agent instance is pushing</p>
       </div>

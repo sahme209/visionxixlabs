@@ -4,7 +4,7 @@ import type { UseCase } from "../lib/engineeringContent";
 
 export function UseCaseCard({ title, problem, approach, outcome }: UseCase) {
   return (
-    <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06] h-full flex flex-col">
+    <div className="card-hover bg-white/2 rounded-2xl p-6 shadow-xl border border-white/6 h-full flex flex-col">
       <h3 className="text-lg font-semibold text-white mb-4">
         {title}
       </h3>

@@ -133,7 +133,7 @@ function CategoryBar({ label, score, maxScore }: { label: string; score: number;
         <span className="text-sm text-zinc-200 font-medium">{label}</span>
         <span className={`text-xs font-semibold ${textColor}`}>{score}/{maxScore}</span>
       </div>
-      <div className="h-1.5 bg-white/[0.06] rounded-full overflow-hidden">
+      <div className="h-1.5 bg-white/6 rounded-full overflow-hidden">
         <div className={`h-full rounded-full ${barColor} transition-all duration-1000 ease-out`} style={{ width: `${pct}%` }} />
       </div>
     </div>
@@ -209,7 +209,7 @@ export default function ResilienceDashboard() {
         helpsYouDo={["Review provider and recovery risks", "Generate configuration for manual review", "Use the paired desktop deployment request for optional customer CI plan evidence"]}
         connectFirst={["Connect a cloud account for analysis"]} aiEngineers={["Cloud Engineer"]}
         approval={{ severity: "read_only", note: "Live Terraform planning and approval are unavailable. Apply remains disabled; a configuration draft or historical approval cannot authorize deployment. Optional customer CI evidence needs separately reviewed storage, trust and connected read access; it grants no apply permission." }}
-        demoHref="/demo/cloud_operations" docsHref="/docs/terraform-export" lastReviewed="2026-10-18" />
+        demoHref="/demo/cloud_operations" docsHref="/docs/terraform-export" lastReviewed="2026-11-11" />
 
       {/* Header */}
       <Reveal direction="up" blur delay={0.05}>
@@ -238,7 +238,7 @@ export default function ResilienceDashboard() {
                   <div key={p} className={`px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 border ${
                     linked
                       ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                      : "bg-white/[0.02] border-white/[0.06] text-zinc-500"
+                      : "bg-white/2 border-white/6 text-zinc-500"
                   }`}>
                     <span className={`w-1.5 h-1.5 rounded-full ${linked ? "bg-emerald-500" : "bg-zinc-600"}`} />
                     {p.toUpperCase()}
@@ -316,7 +316,7 @@ export default function ResilienceDashboard() {
                 className={`btn-axiom cta-glow px-7 py-3 text-[15px] font-semibold text-white rounded-xl transition-all ${
                   analyzing
                     ? "bg-zinc-700 cursor-wait"
-                    : "bg-gradient-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
+                    : "bg-linear-to-r from-orange-600 to-amber-600 hover:from-orange-500 hover:to-amber-500"
                 } ${linkedProviders.length === 0 ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {analyzing ? "Scanning your infrastructure..." : "Run Resilience Analysis"}
@@ -413,7 +413,7 @@ export default function ResilienceDashboard() {
               <div className="flex flex-col">
                 {report.risks.slice(0, 8).map((r, i) => (
                   <div key={i} className={`flex items-start gap-2.5 py-2.5 ${
-                    i < Math.min(report.risks.length, 8) - 1 ? "border-b border-white/[0.06]" : ""
+                    i < Math.min(report.risks.length, 8) - 1 ? "border-b border-white/6" : ""
                   }`}>
                     <span className={`inline-flex rounded-md border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider whitespace-nowrap ${severityColor(r.severity)}`}>
                       {severityLabel(r.severity)}
@@ -428,11 +428,11 @@ export default function ResilienceDashboard() {
             <div className="glass-card card-hover rounded-2xl p-6">
               <h2 className="text-[15px] font-semibold text-white mb-4 tracking-[-0.04em]">Recommended Next Steps</h2>
               {report.nextSteps.map((step, i) => (
-                <div key={i} className={`flex gap-3 py-2.5 ${i < report.nextSteps.length - 1 ? "border-b border-white/[0.06]" : ""}`}>
+                <div key={i} className={`flex gap-3 py-2.5 ${i < report.nextSteps.length - 1 ? "border-b border-white/6" : ""}`}>
                   <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold shrink-0 ${
                     i === 0
-                      ? "bg-orange-500/15 border border-white/[0.12] text-zinc-500"
-                      : "bg-white/[0.04] text-zinc-500"
+                      ? "bg-orange-500/15 border border-white/12 text-zinc-500"
+                      : "bg-white/4 text-zinc-500"
                   }`}>{i + 1}</span>
                   <span className="text-sm text-zinc-300">{step}</span>
                 </div>
@@ -464,7 +464,7 @@ export default function ResilienceDashboard() {
             <button
               onClick={() => { setReport(null); setTfJob(null); setTfError(null); runAnalysis(); }}
               disabled={analyzing}
-              className="btn-axiom px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/[0.06] rounded-lg hover:text-zinc-500 hover:border-white/[0.08] transition-colors"
+              className="btn-axiom px-5 py-2 text-sm font-medium text-zinc-500 bg-transparent border border-white/6 rounded-lg hover:text-zinc-500 hover:border-white/8 transition-colors"
             >
               {analyzing ? "Analyzing..." : "Re-run analysis"}
             </button>

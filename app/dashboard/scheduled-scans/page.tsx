@@ -99,7 +99,7 @@ export default async function ScheduledScansPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             AxiomScheduledRun table not migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
@@ -110,7 +110,7 @@ export default async function ScheduledScansPage() {
       {!migrationPending && schedules.length === 0 && (
         <Link
           href="/dashboard"
-          className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-10 text-center"
+          className="group block rounded-2xl border border-white/6 bg-white/1.5 hover:border-white/12 transition-colors px-7 py-10 text-center"
         >
           <p className="text-[15px] font-semibold text-white mb-1">No schedules yet</p>
           <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mx-auto mb-5">
@@ -125,7 +125,7 @@ export default async function ScheduledScansPage() {
       )}
 
       {schedules.length > 0 && (
-        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
           {schedules.map((s) => {
             const failureTone = s.consecutiveFailures >= 2 ? "text-zinc-300" : s.consecutiveFailures > 0 ? "text-zinc-400" : "text-zinc-600";
             return (
@@ -168,7 +168,7 @@ export default async function ScheduledScansPage() {
                       type="submit"
                       className={`text-[11px] font-medium px-3 py-1 rounded-full border transition-colors ${
                         s.enabled
-                          ? "border-white/[0.08] text-zinc-300 hover:text-white hover:border-white/[0.18]"
+                          ? "border-white/8 text-zinc-300 hover:text-white hover:border-white/18"
                           : "border-emerald-500/30 text-emerald-200 hover:border-emerald-500/50"
                       }`}
                     >

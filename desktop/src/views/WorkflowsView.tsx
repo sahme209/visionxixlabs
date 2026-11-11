@@ -75,8 +75,8 @@ export function WorkflowsView() {
             onClick={() => setFilter(s)}
             className={`text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-md transition-colors ${
               filter === s
-                ? "bg-violet-500/[0.10] border border-violet-500/30 text-violet-200"
-                : "border border-axiom-border text-zinc-400 hover:text-white hover:border-white/[0.18]"
+                ? "bg-violet-500/10 border border-violet-500/30 text-violet-200"
+                : "border border-axiom-border text-zinc-400 hover:text-white hover:border-white/18"
             }`}
           >
             {s}
@@ -115,7 +115,7 @@ export function WorkflowsView() {
             </thead>
             <tbody className="font-mono">
               {runs.map((r) => (
-                <tr key={r.id} className="border-t border-axiom-border hover:bg-white/[0.02] transition-colors">
+                <tr key={r.id} className="border-t border-axiom-border hover:bg-white/2 transition-colors">
                   <td className="px-4 py-2 text-zinc-200">{r.id.slice(0, 18)}…</td>
                   <td className="px-3 py-2 text-zinc-300">{r.pipelineId}</td>
                   <td className="px-3 py-2">

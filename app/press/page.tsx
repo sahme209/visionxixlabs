@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function PressPage() {
   return (
-    <div className="min-h-screen bg-[#141414] text-zinc-100">
+    <div className="min-h-screen bg-brand-ink text-zinc-100">
       <Navigation />
       <main className="mx-auto max-w-[1100px] px-5 pb-24 pt-28 sm:px-8 lg:pt-36">
         <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">Press and brand</p>
@@ -25,7 +25,7 @@ export default function PressPage() {
           follow the current download and integration pages.
         </p>
 
-        <div className="mt-16 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+        <div className="mt-16 divide-y divide-white/8 border-y border-white/8">
           <section className="grid gap-5 py-8 md:grid-cols-[220px_1fr]">
             <h2 className="text-lg font-medium">Approved description</h2>
             <p className="max-w-2xl text-sm leading-7 text-zinc-400">

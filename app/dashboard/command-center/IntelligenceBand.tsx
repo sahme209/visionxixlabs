@@ -50,7 +50,7 @@ function ActionCard({ action }: { action: NextBestAction }) {
   const blocked = !action.canRunNow;
 
   const inner = (
-    <div className={`rounded-md border ${blocked ? "border-rose-500/20 bg-rose-500/[0.03]" : "border-white/[0.08] bg-white/[0.015] hover:border-emerald-500/30 hover:bg-emerald-500/[0.04]"} p-4 transition-colors h-full`}>
+    <div className={`rounded-md border ${blocked ? "border-rose-500/20 bg-rose-500/3" : "border-white/8 bg-white/1.5 hover:border-emerald-500/30 hover:bg-emerald-500/4"} p-4 transition-colors h-full`}>
       <div className="flex items-center justify-between gap-2 mb-2 text-[10px] font-mono uppercase tracking-wider">
         <span className={tone}>{action.riskLevel}</span>
         <span className="text-zinc-500">{action.category.replace(/_/g, " ")}</span>
@@ -108,7 +108,7 @@ export function IntelligenceBand({
   const providersTotal = state?.providers?.length ?? 3;
 
   return (
-    <div className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.025] p-5 sm:p-6">
+    <div className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/2.5 p-5 sm:p-6">
       {/* Headline */}
       <div className="mb-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-2 inline-flex items-center gap-2">
@@ -173,7 +173,7 @@ export function IntelligenceBand({
           <span className="text-zinc-400">ranked by control-plane next-best-action engine</span>
         </p>
         {top3.length === 0 ? (
-          <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-6 text-center">
+          <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-6 text-center">
             <BoltIcon className="h-5 w-5 text-emerald-300 mx-auto mb-2" />
             <p className="text-[13px] text-zinc-300">
               No ranked actions right now.
@@ -206,7 +206,7 @@ export function IntelligenceBand({
             <span className="text-zinc-700">·</span>
             <span className="text-zinc-500">what is stopping axiom from doing more</span>
           </p>
-          <ul className="rounded-md border border-white/20 bg-white/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/20 bg-white/3 divide-y divide-white/4 overflow-hidden">
             {top3Blockers.map((b, i) => {
               const inner = (
                 <div className="flex items-start gap-3 px-4 py-3">
@@ -225,7 +225,7 @@ export function IntelligenceBand({
               return (
                 <li key={`${b.code}_${i}`}>
                   {b.route ? (
-                    <Link href={b.route} className="block hover:bg-white/[0.02] transition-colors">
+                    <Link href={b.route} className="block hover:bg-white/2 transition-colors">
                       {inner}
                     </Link>
                   ) : (
@@ -239,7 +239,7 @@ export function IntelligenceBand({
       )}
 
       {/* Operating-loop status strip */}
-      <div className="grid sm:grid-cols-5 gap-3 pt-5 border-t border-white/[0.06]">
+      <div className="grid sm:grid-cols-5 gap-3 pt-5 border-t border-white/6">
         <StripCell
           icon={CommandLineIcon}
           label="Providers"
@@ -278,7 +278,7 @@ export function IntelligenceBand({
 
       {/* Phase 666: operator quality-of-life footer — safe self-navigating
           refresh + Copilot + machine-readable health JSON */}
-      <div className="mt-5 pt-4 border-t border-white/[0.06] flex items-center gap-4 flex-wrap text-[11px] font-mono">
+      <div className="mt-5 pt-4 border-t border-white/6 flex items-center gap-4 flex-wrap text-[11px] font-mono">
         <Link
           href="/dashboard/command-center"
           className="inline-flex items-center gap-1.5 text-zinc-400 hover:text-white transition-colors"
@@ -321,11 +321,11 @@ export function IntelligenceBand({
 // ───────────────────────────────────────────────────────────────────
 
 const TONE_BORDER: Record<string, string> = {
-  emerald: "border-emerald-500/25 bg-emerald-500/[0.05]",
-  sky:     "border-sky-500/25 bg-sky-500/[0.05]",
-  amber:   "border-white/25 bg-white/[0.05]",
-  rose:    "border-rose-500/25 bg-rose-500/[0.05]",
-  zinc:    "border-white/[0.06] bg-white/[0.012]",
+  emerald: "border-emerald-500/25 bg-emerald-500/5",
+  sky:     "border-sky-500/25 bg-sky-500/5",
+  amber:   "border-white/25 bg-white/5",
+  rose:    "border-rose-500/25 bg-rose-500/5",
+  zinc:    "border-white/6 bg-white/[0.012]",
 };
 const TONE_TEXT: Record<string, string> = {
   emerald: "text-emerald-300",
@@ -382,7 +382,7 @@ function StripCell({
   );
   if (href) {
     return (
-      <Link href={href} className="block hover:bg-white/[0.02] rounded-md -mx-1 px-1 py-1 transition-colors">
+      <Link href={href} className="block hover:bg-white/2 rounded-md -mx-1 px-1 py-1 transition-colors">
         {inner}
       </Link>
     );
@@ -399,7 +399,7 @@ function StripCell({
 export function IntelligenceBandFallback({ reason }: { reason?: string }) {
   const counts = computeHonestyCounts();
   return (
-    <div className="mb-8 rounded-md border border-white/[0.08] bg-white/[0.012] p-5 sm:p-6">
+    <div className="mb-8 rounded-md border border-white/8 bg-white/[0.012] p-5 sm:p-6">
       <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-zinc-500 mb-3 inline-flex items-center gap-2">
         <span className="text-zinc-700">//</span>
         <span>operating-state</span>

@@ -62,7 +62,7 @@ export default function CronHealthPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -71,10 +71,10 @@ export default function CronHealthPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ClockIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
               Cron Health
@@ -83,7 +83,7 @@ export default function CronHealthPage() {
           <button
             onClick={load}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -99,7 +99,7 @@ export default function CronHealthPage() {
       </div>
 
       {error && (
-        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -114,7 +114,7 @@ export default function CronHealthPage() {
                 ? "amber"
                 : "emerald";
             return (
-              <div key={s.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={s.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-start justify-between gap-2 flex-wrap mb-2">
                   <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-white">{s.label}</p>
@@ -132,17 +132,17 @@ export default function CronHealthPage() {
                 </div>
                 <p className="text-[11px] text-zinc-400 leading-snug mb-2">{s.description}</p>
                 <div className="grid grid-cols-3 gap-1.5 text-[10px] font-mono">
-                  <div className="rounded border border-white/[0.06] bg-black/20 px-1.5 py-1">
+                  <div className="rounded-sm border border-white/6 bg-black/20 px-1.5 py-1">
                     <p className="text-zinc-500 uppercase">ticks</p>
                     <p className="text-zinc-200 font-bold">{s.health.total}</p>
                   </div>
-                  <div className="rounded border border-white/[0.06] bg-black/20 px-1.5 py-1">
+                  <div className="rounded-sm border border-white/6 bg-black/20 px-1.5 py-1">
                     <p className="text-zinc-500 uppercase">errors</p>
                     <p className={s.health.failureCount > 0 ? "text-rose-300 font-bold" : "text-zinc-200 font-bold"}>
                       {s.health.failureCount}
                     </p>
                   </div>
-                  <div className="rounded border border-white/[0.06] bg-black/20 px-1.5 py-1">
+                  <div className="rounded-sm border border-white/6 bg-black/20 px-1.5 py-1">
                     <p className="text-zinc-500 uppercase">streak</p>
                     <p className={s.health.consecutiveFailures >= 3 ? "text-rose-300 font-bold" : "text-zinc-200 font-bold"}>
                       {s.health.consecutiveFailures}

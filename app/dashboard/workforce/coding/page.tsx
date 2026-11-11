@@ -30,11 +30,11 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const TASK_STATUS_TONE: Record<string, string> = {
-  queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  queued:    "text-zinc-400 bg-white/4 border-white/8",
   running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
-  cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  cancelled: "text-zinc-400 bg-white/4 border-white/8",
 };
 
 export default async function CodingPage() {
@@ -89,14 +89,14 @@ export default async function CodingPage() {
         <Stat label="All"       value={Array.from(countByStatus.values()).reduce((a, b) => a + b, 0)}     icon={CpuChipIcon}             tone="text-orange-300" />
       </section>
 
-      <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 mb-8">
+      <section className="rounded-2xl border border-white/8 bg-white/1.5 p-5 mb-8">
         <p className="text-[10px] font-semibold text-orange-300 uppercase tracking-widest mb-3">// new coding task</p>
         <CodingTaskForm />
       </section>
 
       <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// recent tasks</p>
       {tasks.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <CodeBracketIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">No coding tasks yet.</p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
@@ -111,7 +111,7 @@ export default async function CodingPage() {
               <li key={t.id}>
                 <Link
                   href={`/dashboard/workforce/coding/${t.id}`}
-                  className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 hover:border-white/[0.10] transition-colors"
+                  className="block rounded-xl border border-white/6 bg-white/2 px-4 py-3 hover:border-white/10 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
                     <p className="text-[12px] font-semibold text-white truncate">{t.instruction.slice(0, 120)}{t.instruction.length > 120 ? "…" : ""}</p>
@@ -137,7 +137,7 @@ export default async function CodingPage() {
 
 function Stat({ label, value, icon: Icon, tone }: { label: string; value: number; icon: typeof CheckCircleIcon; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <Icon className={`h-4 w-4 ${tone} mb-2`} />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>

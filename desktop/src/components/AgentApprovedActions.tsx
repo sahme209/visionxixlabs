@@ -37,7 +37,7 @@ function ApprovedAction({action,read,eligibility,mutate}:Omit<Props,'actions'>&{
  const canExecute=Boolean(mutate&&!hold&&fresh&&readiness?.canExecute&&saved?.state==='prepared'&&saved.proposalId===action.id&&saved.id===readiness.operationId);
  const canCancel=Boolean(mutate&&!hold&&saved?.state==='prepared'&&saved.proposalId===action.id);
  const heading=saved?.state==='confirmed'?'Action completed':saved?.state==='refused'?'Action refused before dispatch':saved?.state==='cancelled'?'Saved action cancelled':uncertain?'Outcome unconfirmed':'Approval recorded';
- return <article className="rounded-xl border border-white/10 bg-white/[0.02] px-4 py-3">
+ return <article className="rounded-xl border border-white/10 bg-white/2 px-4 py-3">
   <p className="text-xs font-medium text-zinc-200">{heading}</p>
   <p className="mt-1 text-xs text-zinc-400">{(saved?.toolName??action.toolName).replaceAll('_',' ')} · proposal <span className="font-mono">{action.id}</span></p>
   {saved?.receipt?.references?.length ? <ul aria-label="Recorded action references" className="mt-2 space-y-1 break-all text-xs text-zinc-300">{saved.receipt.references.map((reference,index)=><li key={`${reference.kind}:${reference.id}:${index}`}>{REFERENCE_LABELS[reference.kind]}: {reference.id}</li>)}</ul> : null}

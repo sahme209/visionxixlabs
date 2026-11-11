@@ -17,9 +17,9 @@ export default function NotFound() {
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       {/* Aurora — coral × orange × cyan, same restraint as /manifesto */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.08] blur-[150px]" />
+        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/8 blur-[150px]" />
         <div className="ambient-drift absolute top-[30%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/[0.07] blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/[0.05] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/5 blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
       <Navigation />
@@ -30,7 +30,7 @@ export default function NotFound() {
           <div>
             <p className="mono-label inline-flex items-center gap-3 mb-6">
               <span className="text-brand-coral/90 tabular-nums">404</span>
-              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
               Page not found
             </p>
 
@@ -38,7 +38,7 @@ export default function NotFound() {
               This page didn&apos;t{" "}
               <span className="relative inline-block">
                 make the cut.
-                <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
               </span>
             </h1>
 
@@ -96,19 +96,19 @@ export default function NotFound() {
               <h2 className="font-display text-xl font-bold text-white mt-2 tracking-tight">What just happened.</h2>
             </header>
             <dl className="space-y-3 text-[12.5px]">
-              <div className="flex items-baseline justify-between gap-3 border-b border-white/[0.04] pb-3">
+              <div className="flex items-baseline justify-between gap-3 border-b border-white/4 pb-3">
                 <dt className="mono-label text-zinc-500">Status</dt>
                 <dd className="font-mono text-brand-coral tabular-nums">HTTP 404</dd>
               </div>
-              <div className="flex items-baseline justify-between gap-3 border-b border-white/[0.04] pb-3">
+              <div className="flex items-baseline justify-between gap-3 border-b border-white/4 pb-3">
                 <dt className="mono-label text-zinc-500">Reason</dt>
                 <dd className="text-zinc-300 text-right max-w-[60%]">Route not found in app/ directory</dd>
               </div>
-              <div className="flex items-baseline justify-between gap-3 border-b border-white/[0.04] pb-3">
+              <div className="flex items-baseline justify-between gap-3 border-b border-white/4 pb-3">
                 <dt className="mono-label text-zinc-500">Action</dt>
                 <dd className="text-zinc-300 text-right max-w-[60%]">No retry attempted. Static response served.</dd>
               </div>
-              <div className="flex items-baseline justify-between gap-3 border-b border-white/[0.04] pb-3">
+              <div className="flex items-baseline justify-between gap-3 border-b border-white/4 pb-3">
                 <dt className="mono-label text-zinc-500">Audit</dt>
                 <dd className="text-zinc-300 text-right">Not logged (404 = no event)</dd>
               </div>
@@ -129,7 +129,7 @@ export default function NotFound() {
         </div>
 
         {/* Bottom — quiet back link */}
-        <div className="mt-20 pt-10 border-t border-white/[0.06]">
+        <div className="mt-20 pt-10 border-t border-white/6">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-[12px] font-mono uppercase tracking-[0.22em] text-zinc-500 hover:text-brand-coral transition-colors"

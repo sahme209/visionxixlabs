@@ -32,14 +32,14 @@ export async function PlatformHealthStrip() {
   ];
 
   const toneMap = {
-    orange:  "border-orange-500/30 bg-orange-500/[0.06] hover:bg-orange-500/[0.10]",
-    cyan:    "border-cyan-500/30   bg-cyan-500/[0.06]   hover:bg-cyan-500/[0.10]",
-    emerald: "border-emerald-500/30 bg-emerald-500/[0.06] hover:bg-emerald-500/[0.10]",
-    amber:   "border-white/30  bg-white/[0.06]  hover:bg-white/[0.10]",
+    orange:  "border-orange-500/30 bg-orange-500/6 hover:bg-orange-500/10",
+    cyan:    "border-cyan-500/30   bg-cyan-500/6   hover:bg-cyan-500/10",
+    emerald: "border-emerald-500/30 bg-emerald-500/6 hover:bg-emerald-500/10",
+    amber:   "border-white/30  bg-white/6  hover:bg-white/10",
   } as const;
 
   return (
-    <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-4 md:p-5">
+    <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/3 p-4 md:p-5">
       <header className="flex items-center justify-between gap-3 mb-3">
         <h2 className="text-[12.5px] font-semibold text-emerald-100 flex items-center gap-2">
           <LiveBadge />

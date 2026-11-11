@@ -16,7 +16,7 @@ export function SolutionCard({
   href,
 }: SolutionCardProps) {
   return (
-    <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06] flex flex-col h-full">
+    <div className="card-hover bg-white/2 rounded-2xl p-6 shadow-xl border border-white/6 flex flex-col h-full">
       <div className="flex-1">
         <h3 className="text-xl font-semibold text-white mb-2">
           {title}

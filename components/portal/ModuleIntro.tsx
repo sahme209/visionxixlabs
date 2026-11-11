@@ -84,7 +84,7 @@ export function ModuleIntro(props: ModuleIntroProps) {
 
   if (collapsed) {
     return (
-      <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-white/[0.06] bg-white/[0.01] px-4 py-2">
+      <div className="mb-6 flex items-center justify-between gap-3 rounded-xl border border-white/6 bg-white/1 px-4 py-2">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em]">module</span>
           <span className="text-[13px] font-semibold text-zinc-200 truncate">{props.title}</span>
@@ -102,7 +102,7 @@ export function ModuleIntro(props: ModuleIntroProps) {
   const approvalConfig = props.approval ? APPROVAL_LABEL[props.approval.severity] : null;
 
   return (
-    <section className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.01] p-5 space-y-4">
+    <section className="mb-6 rounded-2xl border border-white/6 bg-white/1 p-5 space-y-4">
       {/* Header row */}
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="min-w-0">
@@ -139,12 +139,12 @@ export function ModuleIntro(props: ModuleIntroProps) {
       </div>
 
       {/* Footer CTAs */}
-      <div className="flex items-center justify-between gap-3 flex-wrap pt-3 border-t border-white/[0.04]">
+      <div className="flex items-center justify-between gap-3 flex-wrap pt-3 border-t border-white/4">
         <div className="flex items-center gap-2">
           {props.demoHref && (
             <Link
               href={props.demoHref}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-500/[0.10] text-orange-200 text-[11px] font-medium hover:bg-orange-500/[0.18] border border-orange-500/20 transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-orange-500/10 text-orange-200 text-[11px] font-medium hover:bg-orange-500/18 border border-orange-500/20 transition-colors"
             >
               <SparkleIcon className="h-3 w-3" />
               View demo
@@ -153,7 +153,7 @@ export function ModuleIntro(props: ModuleIntroProps) {
           {props.docsHref && (
             <Link
               href={props.docsHref}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/[0.04] text-zinc-200 text-[11px] font-medium hover:bg-white/[0.08] border border-white/[0.08] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-white/4 text-zinc-200 text-[11px] font-medium hover:bg-white/8 border border-white/8 transition-colors"
             >
               <BookIcon className="h-3 w-3" />
               Read documentation

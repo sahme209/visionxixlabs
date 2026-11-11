@@ -24,7 +24,7 @@ export default async function AccountHelpPage() {
           <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">You remain signed in while reading product guidance. Axiom Agent is still the place for deployment operations and provider configuration.</p>
         </section>
         <section className="grid gap-3 md:grid-cols-2" aria-label="Help topics">
-          {HELP_ITEMS.map((item) => <Link key={item.title} href={item.href} className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 transition hover:border-white/[0.16] hover:bg-white/[0.045]"><h2 className="text-lg font-medium text-zinc-100">{item.title}</h2><p className="mt-3 text-sm leading-6 text-zinc-500">{item.detail}</p><span className="mt-5 inline-block text-sm text-orange-300">Read guide →</span></Link>)}
+          {HELP_ITEMS.map((item) => <Link key={item.title} href={item.href} className="rounded-2xl border border-white/8 bg-white/2.5 p-5 transition hover:border-white/16 hover:bg-white/4.5"><h2 className="text-lg font-medium text-zinc-100">{item.title}</h2><p className="mt-3 text-sm leading-6 text-zinc-500">{item.detail}</p><span className="mt-5 inline-block text-sm text-orange-300">Read guide →</span></Link>)}
         </section>
       </div>
     </AuthCompanionShell>

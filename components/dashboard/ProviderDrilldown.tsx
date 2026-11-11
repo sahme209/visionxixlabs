@@ -73,13 +73,13 @@ const PROVIDER_META: Record<string, { label: string; tagline: string; docs: stri
 };
 
 const MODE_TONE: Record<string, { border: string; bg: string; text: string; pill: string; dot: string }> = {
-  live:         { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400 animate-pulse" },
-  partial_live: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       dot: "bg-cyan-400 animate-pulse"    },
-  expanding:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
-  preview:      { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
-  blocked:      { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       dot: "bg-rose-400"                  },
-  disabled:     { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
-  unknown:      { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
+  live:         { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400 animate-pulse" },
+  partial_live: { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       dot: "bg-cyan-400 animate-pulse"    },
+  expanding:    { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
+  preview:      { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
+  blocked:      { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       dot: "bg-rose-400"                  },
+  disabled:     { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
+  unknown:      { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
 };
 
 export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" | "gcp" | "github" }) {
@@ -132,12 +132,12 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing posture…</p>
         </div>
       )}
       {!loading && error && (
-        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -180,7 +180,7 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
 
           {/* Operating loop summary */}
           {loop && (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
               <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">// operating loop</p>
               <div className="grid sm:grid-cols-2 gap-4 mb-3">
                 <div>
@@ -212,7 +212,7 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
 
           {/* Blockers */}
           {blockers.length > 0 && (
-            <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6">
+            <div className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6">
               <p className="text-[11px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-2">// critical blockers</p>
               <ul className="space-y-2">
                 {blockers.map((b, i) => (
@@ -227,7 +227,7 @@ export function ProviderDrilldown({ providerId }: { providerId: "aws" | "azure" 
       )}
 
       {/* Safety footer */}
-      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8">
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8">
         <div className="flex items-start gap-3">
           <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div>
@@ -262,7 +262,7 @@ function ProviderSetupGuide({ rawRequirements }: { rawRequirements: readonly str
   const groupOrder = Object.keys(byGroup) as Array<ConnectorSetupStep["group"]>;
 
   return (
-    <div className="mt-4 rounded-xl border border-white/[0.18] bg-white/[0.04] p-4">
+    <div className="mt-4 rounded-xl border border-white/18 bg-white/4 p-4">
       <div className="flex items-start gap-2 mb-3">
         <KeyIcon className="h-4 w-4 text-zinc-300 mt-0.5 shrink-0" />
         <div>
@@ -285,7 +285,7 @@ function ProviderSetupGuide({ rawRequirements }: { rawRequirements: readonly str
             : group === "scope"      ? GlobeAltIcon
             : QuestionMarkCircleIcon;
           return (
-            <div key={group} className="rounded-lg border border-white/[0.06] bg-white/[0.02] p-3">
+            <div key={group} className="rounded-lg border border-white/6 bg-white/2 p-3">
               <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-400 mb-2 inline-flex items-center gap-1.5">
                 <GroupIcon className="h-3 w-3" />
                 {GROUP_LABEL[group]}

@@ -82,17 +82,17 @@ export default async function ComplianceFrameworkAssessmentsPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/compliance_framework_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} placeholder="e.g. Q3 SOC2 Type II readiness assessment"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="framework" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">target framework</label>
             <select id="framework" name="framework" required defaultValue="soc2"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
               {FRAMEWORK_OPTIONS.map((opt) => (
                 <option key={opt.value} value={opt.value}>{opt.label}</option>
               ))}
@@ -105,19 +105,19 @@ export default async function ComplianceFrameworkAssessmentsPage() {
             <label htmlFor="cloudPosture" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">cloud posture description</label>
             <textarea id="cloudPosture" name="cloudPosture" required rows={10} maxLength={8000}
               placeholder={"Describe your current state: cloud accounts connected, encryption posture, IAM model, logging setup, backup cadence, change-management process, employee onboarding/offboarding, etc. The richer this is, the more precise the assessment."}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="auditContext" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">audit context (optional)</label>
             <input id="auditContext" name="auditContext" maxLength={800}
               placeholder="e.g. SOC2 Type II audit with Coalfire scheduled for August 2026"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="inScopeControls" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">in-scope controls (optional, comma-separated)</label>
             <input id="inScopeControls" name="inScopeControls" maxLength={1000}
               placeholder="e.g. CC6.1, CC6.2, CC7.2 · leave blank to assess the most material controls for the framework"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <p className="text-[11px] text-zinc-500 font-mono">metered AI · billable · ~$0.40 per assessment</p>
@@ -129,7 +129,7 @@ export default async function ComplianceFrameworkAssessmentsPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-12 text-center">
+        <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No assessments yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1 font-mono">submit the form above to run the first one</p>
         </div>
@@ -141,9 +141,9 @@ export default async function ComplianceFrameworkAssessmentsPage() {
             <span className="text-zinc-700">::</span>
             <span className="text-zinc-400 tabular-nums">{decoded.length}</span>
           </p>
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
-              <li key={d.targetId} className="hover:bg-emerald-500/[0.04] transition-colors">
+              <li key={d.targetId} className="hover:bg-emerald-500/4 transition-colors">
                 <div className="px-5 py-3.5">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     {d.framework && <span className="text-emerald-300">{d.framework}</span>}

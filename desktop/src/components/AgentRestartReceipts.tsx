@@ -55,7 +55,7 @@ function RestartReceipt({ action }: { action: RestartAction }) {
     } finally { if (generation === epoch.current && context === desktopClient.config) setLoading(false); }
   }
   if (!current) return null;
-  return <section className="rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3 text-xs text-zinc-400" aria-label="ECS restart workflow receipt">
+  return <section className="rounded-xl border border-white/10 bg-white/2.5 px-4 py-3 text-xs text-zinc-400" aria-label="ECS restart workflow receipt">
     <p className="font-medium text-zinc-200">ECS restart workflow request recorded</p>
     {value ? <>
       <p className="mt-1 break-all">{value.repositoryFullName} · environment {value.environmentId}</p>

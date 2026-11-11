@@ -73,7 +73,7 @@ export function StepVisual({ step, ord }: { step: DemoStep; ord: number }) {
     );
   }
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900/60 to-zinc-950/60 backdrop-blur-sm overflow-hidden">
+    <div className="rounded-2xl border border-white/8 bg-linear-to-br from-zinc-900/60 to-zinc-950/60 backdrop-blur-sm overflow-hidden">
       <MockBrowserChrome route={step.route} />
       <div className="p-5 sm:p-6">
         {render(kind, step, ord)}
@@ -107,7 +107,7 @@ function render(kind: StepKind, step: DemoStep, ord: number) {
 
 function MockBrowserChrome({ route }: { route?: string }) {
   return (
-    <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/[0.05] bg-black/30">
+    <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-black/30">
       <div className="flex items-center gap-1.5">
         <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
         <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
@@ -170,23 +170,23 @@ const DASHBOARD_NAV: ReadonlyArray<SidebarGroup> = [
 
 function MockDashboardFrame({ route, children }: { route?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/[0.08] bg-gradient-to-br from-zinc-900/60 to-zinc-950/70 backdrop-blur-sm overflow-hidden shadow-[0_20px_60px_-30px_rgba(255, 120, 61,0.25)]">
+    <div className="rounded-2xl border border-white/8 bg-linear-to-br from-zinc-900/60 to-zinc-950/70 backdrop-blur-sm overflow-hidden shadow-[0_20px_60px_-30px_rgba(255, 120, 61,0.25)]">
       <MockBrowserChrome route={route} />
       {/* Dashboard top header */}
-      <div className="flex items-center justify-between border-b border-white/[0.05] px-4 py-2 bg-white/[0.015]">
+      <div className="flex items-center justify-between border-b border-white/5 px-4 py-2 bg-white/1.5">
         <div className="flex items-center gap-2">
-          <span className="w-5 h-5 rounded bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white">A</span>
+          <span className="w-5 h-5 rounded-sm bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white">A</span>
           <span className="text-[12px] font-semibold text-white tracking-tight">Axiom</span>
           <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">· ws_acme_prod</span>
         </div>
         <div className="flex items-center gap-3">
           <span className="text-[10px] font-mono text-zinc-500 hidden md:inline">alice@acme.com</span>
-          <span className="text-[10px] font-mono text-zinc-600 px-2 py-0.5 rounded border border-white/[0.08] bg-white/[0.02]">Sign out</span>
+          <span className="text-[10px] font-mono text-zinc-600 px-2 py-0.5 rounded-sm border border-white/8 bg-white/2">Sign out</span>
         </div>
       </div>
       <div className="flex">
         {/* Sidebar */}
-        <aside className="hidden sm:block w-44 shrink-0 border-r border-white/[0.05] bg-black/20 p-2 space-y-2">
+        <aside className="hidden sm:block w-44 shrink-0 border-r border-white/5 bg-black/20 p-2 space-y-2">
           {DASHBOARD_NAV.map((g) => (
             <div key={g.kind}>
               <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.18em] px-2 mb-0.5">{g.label}</p>
@@ -195,7 +195,7 @@ function MockDashboardFrame({ route, children }: { route?: string; children: Rea
                   const active = it.route === route;
                   return (
                     <li key={it.route}>
-                      <div className={`text-[10.5px] px-2 py-0.5 rounded ${active ? "bg-orange-500/15 text-orange-200 font-medium" : "text-zinc-400"}`}>
+                      <div className={`text-[10.5px] px-2 py-0.5 rounded-sm ${active ? "bg-orange-500/15 text-orange-200 font-medium" : "text-zinc-400"}`}>
                         {it.label}
                       </div>
                     </li>
@@ -242,9 +242,9 @@ const DESKTOP_NAV: ReadonlyArray<{ kind: string; label: string; items: ReadonlyA
 
 function MockDesktopFrame({ route: _route, children }: { route?: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/[0.10] bg-gradient-to-br from-zinc-900/70 to-zinc-950/80 overflow-hidden shadow-[0_25px_70px_-30px_rgba(255, 120, 61,0.30)]">
+    <div className="rounded-2xl border border-white/10 bg-linear-to-br from-zinc-900/70 to-zinc-950/80 overflow-hidden shadow-[0_25px_70px_-30px_rgba(255, 120, 61,0.30)]">
       {/* Tauri window title bar */}
-      <div className="relative flex items-center gap-2 px-3 py-2 border-b border-white/[0.06] bg-black/40">
+      <div className="relative flex items-center gap-2 px-3 py-2 border-b border-white/6 bg-black/40">
         <div className="flex items-center gap-1.5">
           <span className="w-2.5 h-2.5 rounded-full bg-red-500/70" />
           <span className="w-2.5 h-2.5 rounded-full bg-white/70" />
@@ -254,18 +254,18 @@ function MockDesktopFrame({ route: _route, children }: { route?: string; childre
           Axiom Agent
         </div>
         {/* Tray-badge hint at the right edge */}
-        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-white/15 text-zinc-300 border border-white/30">⌘ 3 awaiting</span>
+        <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-sm bg-white/15 text-zinc-300 border border-white/30">⌘ 3 awaiting</span>
       </div>
       <div className="flex">
         {/* Desktop sidebar */}
-        <aside className="hidden sm:block w-40 shrink-0 border-r border-white/[0.05] bg-black/30 p-2 space-y-2">
+        <aside className="hidden sm:block w-40 shrink-0 border-r border-white/5 bg-black/30 p-2 space-y-2">
           {DESKTOP_NAV.map((g) => (
             <div key={g.kind}>
               <p className="text-[9px] font-mono text-zinc-600 uppercase tracking-[0.18em] px-2 mb-0.5">{g.label}</p>
               <ul className="space-y-0.5">
                 {g.items.map((it) => (
                   <li key={it.label}>
-                    <div className={`text-[10.5px] px-2 py-0.5 rounded ${it.active ? "bg-orange-500/15 text-orange-200 font-medium" : "text-zinc-400"}`}>
+                    <div className={`text-[10.5px] px-2 py-0.5 rounded-sm ${it.active ? "bg-orange-500/15 text-orange-200 font-medium" : "text-zinc-400"}`}>
                       {it.label}
                     </div>
                   </li>
@@ -280,7 +280,7 @@ function MockDesktopFrame({ route: _route, children }: { route?: string; childre
         </div>
       </div>
       {/* Honest footer that ties back to the real Tauri app */}
-      <div className="px-3 py-1.5 border-t border-white/[0.06] bg-black/30 flex items-center justify-between text-[9px] font-mono text-zinc-600">
+      <div className="px-3 py-1.5 border-t border-white/6 bg-black/30 flex items-center justify-between text-[9px] font-mono text-zinc-600">
         <span>Tauri 2 · React 19 · ~95kB gzipped</span>
         <span>menubar · notifications · offline-vote queue · hide-to-tray</span>
       </div>
@@ -312,10 +312,10 @@ function ConnectorMock({ step }: { step: DemoStep }) {
         {providers.slice(0, 4).map((p, i) => {
           const d = details[p] ?? { auth: "—", region: "—", resources: "—" };
           return (
-            <div key={p} className={`rounded-lg border ${i === 0 ? "border-emerald-500/25 bg-emerald-500/[0.04]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
+            <div key={p} className={`rounded-lg border ${i === 0 ? "border-emerald-500/25 bg-emerald-500/4" : "border-white/6 bg-white/1.5"} p-3`}>
               <div className="flex items-center justify-between mb-2">
                 <span className="text-[12px] font-semibold text-zinc-100">{p}</span>
-                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${i === 0 ? "bg-emerald-500/20 text-emerald-100" : "bg-zinc-700/40 text-zinc-400"}`}>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${i === 0 ? "bg-emerald-500/20 text-emerald-100" : "bg-zinc-700/40 text-zinc-400"}`}>
                   {i === 0 ? "live" : "ready"}
                 </span>
               </div>
@@ -353,22 +353,22 @@ function ScanMock({ step: _step }: { step: DemoStep }) {
         <Stat label="High"      value="4"  tone="amber" />
         <Stat label="Pass"      value="128" tone="emerald" />
       </div>
-      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+      <div className="rounded-lg border border-white/6 bg-black/30 overflow-hidden">
         <table className="w-full text-[11px] font-mono">
-          <thead className="bg-white/[0.02] text-zinc-500">
+          <thead className="bg-white/2 text-zinc-500">
             <tr>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider w-14">svc</th>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">finding</th>
               <th className="text-right px-3 py-1.5 uppercase tracking-wider w-20">severity</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-white/4">
             {findings.map((f) => (
               <tr key={f.id} className="text-zinc-300">
                 <td className="px-3 py-2 text-zinc-500">{f.svc}</td>
                 <td className="px-3 py-2 truncate">{f.title}</td>
                 <td className="px-3 py-2 text-right">
-                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${f.cls}`}>{f.sev}</span>
+                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${f.cls}`}>{f.sev}</span>
                 </td>
               </tr>
             ))}
@@ -386,9 +386,9 @@ function RiskMock({ step, ord }: { step: DemoStep; ord: number }) {
   return (
     <div className="space-y-4">
       <SectionLabel>risk #{ord}</SectionLabel>
-      <div className={`rounded-lg border p-4 ${sev === "critical" ? "border-rose-500/25 bg-rose-500/[0.04]" : "border-white/25 bg-white/[0.04]"}`}>
+      <div className={`rounded-lg border p-4 ${sev === "critical" ? "border-rose-500/25 bg-rose-500/4" : "border-white/25 bg-white/4"}`}>
         <div className="flex items-center gap-2 mb-2">
-          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${sev === "critical" ? "bg-rose-500/25 text-rose-100" : "bg-white/25 text-zinc-100"}`}>{sev}</span>
+          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${sev === "critical" ? "bg-rose-500/25 text-rose-100" : "bg-white/25 text-zinc-100"}`}>{sev}</span>
           <span className="text-[10px] font-mono text-zinc-500">CVSS-style score · {score} / 10</span>
           <span className="text-[10px] font-mono text-zinc-500">·</span>
           <span className="text-[10px] font-mono text-zinc-500">rule · iam-admin-access</span>
@@ -413,7 +413,7 @@ function RecommendationMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
       <SectionLabel>recommendation · terraform diff · plan-only</SectionLabel>
-      <pre className="rounded-lg bg-black/50 border border-white/[0.06] p-3 text-[11px] font-mono leading-relaxed overflow-x-auto">
+      <pre className="rounded-lg bg-black/50 border border-white/6 p-3 text-[11px] font-mono leading-relaxed overflow-x-auto">
 {`# proposed by: Security Engineer · 30s ago
 # rule: iam-admin-access · CIS 1.16 · SOC2 CC6.1
 # blast radius: 1 IAM role · prod account
@@ -450,16 +450,16 @@ function ApprovalMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
       <SectionLabel>two-person approval packet · awaiting review</SectionLabel>
-      <div className="rounded-lg border border-orange-500/25 bg-orange-500/[0.04] p-4 space-y-3">
+      <div className="rounded-lg border border-orange-500/25 bg-orange-500/4 p-4 space-y-3">
         <div className="flex items-center justify-between flex-wrap gap-2">
           <span className="text-[11px] font-mono text-orange-200/90 uppercase tracking-wider">apr_pipe_ck98zxm…</span>
-          <span className="text-[9px] font-mono text-zinc-200 px-1.5 py-0.5 rounded bg-white/15 uppercase tracking-wider">awaiting</span>
+          <span className="text-[9px] font-mono text-zinc-200 px-1.5 py-0.5 rounded-sm bg-white/15 uppercase tracking-wider">awaiting</span>
         </div>
         <div className="grid grid-cols-2 gap-2 text-[11px]">
           <ApproverRow name="alice@acme.com" role="security-lead"     state="approved" />
           <ApproverRow name="bob@acme.com"   role="platform-on-call"  state="pending"  />
         </div>
-        <div className="rounded-md border border-white/[0.06] bg-black/30 p-2 space-y-1 text-[10px] font-mono text-zinc-500">
+        <div className="rounded-md border border-white/6 bg-black/30 p-2 space-y-1 text-[10px] font-mono text-zinc-500">
           <div><span className="text-zinc-400">scope · </span>pipeline:trigger · change-class</div>
           <div><span className="text-zinc-400">runId · </span>cm2pipe_ck98zxm9q · ai_coding</div>
           <div><span className="text-zinc-400">effective rule · </span>two_step_approval · requiredApprovers=2</div>
@@ -478,10 +478,10 @@ function ApprovalMock({ step: _step }: { step: DemoStep }) {
 
 function ApproverRow({ name, role, state }: { name: string; role: string; state: "approved" | "pending" }) {
   return (
-    <div className="rounded-md border border-white/[0.06] bg-black/30 px-2.5 py-2">
+    <div className="rounded-md border border-white/6 bg-black/30 px-2.5 py-2">
       <div className="text-[10px] font-mono text-zinc-300 truncate">{name}</div>
       <div className="text-[9px] font-mono text-zinc-500 truncate">{role}</div>
-      <span className={`text-[9px] font-mono uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded ${state === "approved" ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>{state}</span>
+      <span className={`text-[9px] font-mono uppercase tracking-wider mt-1 inline-block px-1.5 py-0.5 rounded-sm ${state === "approved" ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>{state}</span>
     </div>
   );
 }
@@ -503,10 +503,10 @@ function EngineerMock({ step }: { step: DemoStep }) {
         {engineers.map((e) => {
           const hot = focused !== "all" && e.name.toLowerCase().includes(focused.replace(" engineer", ""));
           return (
-            <div key={e.name} className={`rounded-lg border ${hot ? "border-orange-500/35 bg-orange-500/[0.05]" : "border-white/[0.06] bg-white/[0.015]"} p-3`}>
+            <div key={e.name} className={`rounded-lg border ${hot ? "border-orange-500/35 bg-orange-500/5" : "border-white/6 bg-white/1.5"} p-3`}>
               <div className="flex items-center justify-between mb-1">
                 <span className="text-[12px] font-semibold text-white">{e.name}</span>
-                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${e.state === "active" ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>{e.state}</span>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${e.state === "active" ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>{e.state}</span>
               </div>
               <p className="text-[10px] font-mono text-zinc-500 mb-1">{e.scope}</p>
               <div className="flex items-center justify-between text-[10px] font-mono text-zinc-600">
@@ -526,7 +526,7 @@ function ReportMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
       <SectionLabel>executive summary · auto-generated · sharable</SectionLabel>
-      <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
+      <div className="rounded-lg border border-white/6 bg-white/1.5 p-4 space-y-3">
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-sm font-semibold text-white">Acme Corp · cloud posture</h4>
@@ -540,7 +540,7 @@ function ReportMock({ step: _step }: { step: DemoStep }) {
           <Stat label="Findings"      value="14"      tone="amber" />
           <Stat label="Approved"      value="22"      tone="emerald" />
         </div>
-        <div className="rounded-md border border-white/[0.06] bg-black/30 p-3 space-y-2">
+        <div className="rounded-md border border-white/6 bg-black/30 p-3 space-y-2">
           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">top 3 risks</p>
           <ul className="space-y-1 text-[11px]">
             {[
@@ -549,7 +549,7 @@ function ReportMock({ step: _step }: { step: DemoStep }) {
               { sev: "high",     svc: "RDS",   txt: "prod-orders-db backup gap · 36h",            pill: "bg-red-500/15 text-red-100"   },
             ].map((r) => (
               <li key={r.txt} className="flex items-center gap-2">
-                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.sev}</span>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${r.pill}`}>{r.sev}</span>
                 <span className="text-zinc-500 w-10 font-mono">{r.svc}</span>
                 <span className="text-zinc-300 truncate">{r.txt}</span>
               </li>
@@ -557,9 +557,9 @@ function ReportMock({ step: _step }: { step: DemoStep }) {
           </ul>
         </div>
         <div className="flex items-center gap-2 text-[10px] font-mono text-zinc-500">
-          <span className="px-2 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">Export PDF</span>
-          <span className="px-2 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">Export Markdown</span>
-          <span className="px-2 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">Share link</span>
+          <span className="px-2 py-0.5 rounded-sm border border-white/6 bg-white/2">Export PDF</span>
+          <span className="px-2 py-0.5 rounded-sm border border-white/6 bg-white/2">Export Markdown</span>
+          <span className="px-2 py-0.5 rounded-sm border border-white/6 bg-white/2">Share link</span>
         </div>
       </div>
     </div>
@@ -580,9 +580,9 @@ function AuditMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-3">
       <SectionLabel>audit log · last 8 · scoped to your org</SectionLabel>
-      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+      <div className="rounded-lg border border-white/6 bg-black/30 overflow-hidden">
         <table className="w-full text-[11px] font-mono">
-          <thead className="bg-white/[0.02] text-zinc-500">
+          <thead className="bg-white/2 text-zinc-500">
             <tr>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">actor</th>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">action</th>
@@ -590,7 +590,7 @@ function AuditMock({ step: _step }: { step: DemoStep }) {
               <th className="text-right px-3 py-1.5 uppercase tracking-wider">when</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-white/4">
             {rows.map((r, i) => (
               <tr key={i} className="text-zinc-300">
                 <td className="px-3 py-2 truncate text-zinc-300">{r.actor}</td>
@@ -627,7 +627,7 @@ function IncidentMock({ step: _step }: { step: DemoStep }) {
       </div>
       <ol className="space-y-2">
         {rows.map((r) => (
-          <li key={r.t} className="flex items-center gap-3 rounded-md border border-white/[0.06] bg-white/[0.015] px-3 py-2">
+          <li key={r.t} className="flex items-center gap-3 rounded-md border border-white/6 bg-white/1.5 px-3 py-2">
             <span className="text-[10px] font-mono text-zinc-500 w-14 tabular-nums">{r.t}</span>
             <span className={`w-1.5 h-1.5 rounded-full ${r.dot}`} />
             <span className="text-[12px] text-zinc-200 flex-1 min-w-0 truncate">{r.label}</span>
@@ -650,11 +650,11 @@ function QuotaMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
       <SectionLabel>plan · pro · billing period day 23/30</SectionLabel>
-      <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4 space-y-3">
+      <div className="rounded-lg border border-white/6 bg-white/1.5 p-4 space-y-3">
         {dims.map((d) => {
           const barCls =
-            d.tone === "amber"   ? "bg-gradient-to-r from-orange-500/70 to-white/70" :
-            d.tone === "emerald" ? "bg-gradient-to-r from-orange-500/70 to-emerald-500/70" :
+            d.tone === "amber"   ? "bg-linear-to-r from-orange-500/70 to-white/70" :
+            d.tone === "emerald" ? "bg-linear-to-r from-orange-500/70 to-emerald-500/70" :
                                    "bg-orange-500/70";
           return (
             <div key={d.label} className="space-y-1">
@@ -695,9 +695,9 @@ function PipelineMock({ step: _step }: { step: DemoStep }) {
         <Stat label="Failed"     value="1"  tone="red" />
         <Stat label="Awaiting"   value="1"  tone="amber" />
       </div>
-      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+      <div className="rounded-lg border border-white/6 bg-black/30 overflow-hidden">
         <table className="w-full text-[11px] font-mono">
-          <thead className="bg-white/[0.02] text-zinc-500">
+          <thead className="bg-white/2 text-zinc-500">
             <tr>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">pipeline</th>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider hidden sm:table-cell">triggered by</th>
@@ -706,7 +706,7 @@ function PipelineMock({ step: _step }: { step: DemoStep }) {
               <th className="text-right px-3 py-1.5 uppercase tracking-wider">age</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-white/4">
             {rows.map((r) => (
               <tr key={r.id} className="text-zinc-300">
                 <td className="px-3 py-2">
@@ -718,7 +718,7 @@ function PipelineMock({ step: _step }: { step: DemoStep }) {
                 <td className="px-3 py-2 text-zinc-500 hidden sm:table-cell truncate">{r.trig}</td>
                 <td className="px-3 py-2 text-zinc-400">{r.stages}</td>
                 <td className="px-3 py-2 text-right">
-                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.st}</span>
+                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${r.pill}`}>{r.st}</span>
                 </td>
                 <td className="px-3 py-2 text-zinc-500 text-right">{r.t}</td>
               </tr>
@@ -741,7 +741,7 @@ function DatabaseMock({ step: _step }: { step: DemoStep }) {
         <Stat label="Last backup"   value="36h ago"    tone="red" />
         <Stat label="Connections"   value="48/100"     tone="emerald" />
       </div>
-      <div className="rounded-lg border border-white/[0.06] bg-black/30 p-3 space-y-2">
+      <div className="rounded-lg border border-white/6 bg-black/30 p-3 space-y-2">
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">slow query · /orders endpoint</p>
         <pre className="text-[11px] font-mono leading-relaxed overflow-x-auto text-zinc-300">
 {`SELECT id, status, total_cents, created_at
@@ -756,7 +756,7 @@ LIMIT 50;
 --     Filter: (user_id = '...'::uuid)`}
         </pre>
       </div>
-      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] p-3 space-y-2">
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/4 p-3 space-y-2">
         <p className="text-[10px] font-mono text-emerald-300/90 uppercase tracking-wider">proposed index · DDL preview</p>
         <pre className="text-[11px] font-mono leading-relaxed overflow-x-auto text-emerald-100">
 {`CREATE INDEX CONCURRENTLY idx_orders_user_created
@@ -780,23 +780,23 @@ function DesktopMock({ step: _step }: { step: DemoStep }) {
   return (
     <div className="space-y-4">
       <SectionLabel>approvals queue · live · polling every 5s</SectionLabel>
-      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] p-3 flex items-center justify-between gap-3">
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/4 p-3 flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
           <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.6)]" />
           <span className="text-[11px] font-mono text-emerald-200">paired · ws_acme_prod · alice@acme.com</span>
         </div>
         <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">scopes · pipeline:trigger, pipeline:read</span>
       </div>
-      <div className="rounded-lg border border-white/[0.06] bg-black/30 overflow-hidden">
+      <div className="rounded-lg border border-white/6 bg-black/30 overflow-hidden">
         <table className="w-full text-[11px] font-mono">
-          <thead className="bg-white/[0.02] text-zinc-500">
+          <thead className="bg-white/2 text-zinc-500">
             <tr>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider">run</th>
               <th className="text-left px-3 py-1.5 uppercase tracking-wider hidden sm:table-cell">started</th>
               <th className="text-right px-3 py-1.5 uppercase tracking-wider w-40">decide</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-white/[0.04]">
+          <tbody className="divide-y divide-white/4">
             {[
               { id: "ck98zxm9q", pid: "ai_coding",       t: "2m ago"  },
               { id: "ck98zw3py", pid: "deploy_pipeline", t: "11m ago" },
@@ -807,8 +807,8 @@ function DesktopMock({ step: _step }: { step: DemoStep }) {
                 <td className="px-3 py-2 text-zinc-500 hidden sm:table-cell">{r.t}</td>
                 <td className="px-3 py-2 text-right">
                   <div className="inline-flex items-center gap-1.5">
-                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-200 border border-emerald-500/25">✓ approve</span>
-                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded bg-red-500/15 text-red-200 border border-red-500/25">✗ reject</span>
+                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-200 border border-emerald-500/25">✓ approve</span>
+                    <span className="text-[9px] font-semibold px-2 py-0.5 rounded-sm bg-red-500/15 text-red-200 border border-red-500/25">✗ reject</span>
                   </div>
                 </td>
               </tr>
@@ -880,15 +880,15 @@ function ConnectorHealthMock() {
         <Stat label="Auth failed"  value="0" />
         <Stat label="Rate limited" value="0" />
       </div>
-      <ul className="rounded-lg border border-white/[0.06] bg-black/30 divide-y divide-white/[0.04]">
+      <ul className="rounded-lg border border-white/6 bg-black/30 divide-y divide-white/4">
         {rows.map((r) => (
           <li key={r.name} className="px-3 py-2 flex items-start gap-3">
             <span className={`w-1.5 h-1.5 rounded-full shrink-0 mt-1.5 ${r.dot}`} />
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-2 mb-0.5 flex-wrap">
                 <span className="text-[12px] font-semibold text-zinc-100">{r.name}</span>
-                <span className="text-[9px] font-mono text-zinc-500 px-1.5 py-0.5 rounded border border-white/[0.06] bg-white/[0.02]">{r.cat}</span>
-                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${r.pill}`}>{r.status}</span>
+                <span className="text-[9px] font-mono text-zinc-500 px-1.5 py-0.5 rounded-sm border border-white/6 bg-white/2">{r.cat}</span>
+                <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${r.pill}`}>{r.status}</span>
                 <span className="text-[10px] font-mono text-zinc-500">stage · {r.stage}</span>
               </div>
               <p className="text-[11px] text-zinc-300 leading-relaxed">{r.reason}</p>
@@ -909,7 +909,7 @@ function GenericMock({ step, ord }: { step: DemoStep; ord: number }) {
   return (
     <div className="space-y-3">
       <SectionLabel>step {ord} · preview</SectionLabel>
-      <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] p-4">
+      <div className="rounded-lg border border-white/6 bg-white/1.5 p-4">
         <h4 className="text-sm font-semibold text-white mb-1">{step.title}</h4>
         <p className="text-[12px] text-zinc-400 leading-relaxed">{step.description}</p>
       </div>
@@ -927,7 +927,7 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
 
 function CalloutLine({ label, body }: { label: string; body: string }) {
   return (
-    <div className="rounded-md border border-orange-500/20 bg-orange-500/[0.04] px-3 py-2">
+    <div className="rounded-md border border-orange-500/20 bg-orange-500/4 px-3 py-2">
       <span className="text-[10px] font-mono text-orange-300 uppercase tracking-wider mr-2">{label}</span>
       <span className="text-[11px] text-zinc-300">{body}</span>
     </div>
@@ -938,10 +938,10 @@ function Stat({
   label, value, tone = "neutral",
 }: { label: string; value: string; tone?: "neutral" | "amber" | "red" | "emerald" }) {
   const cls =
-    tone === "amber"   ? "border-white/30 bg-white/[0.06] text-zinc-100" :
-    tone === "red"     ? "border-red-500/30 bg-red-500/[0.06] text-red-100" :
-    tone === "emerald" ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-100" :
-                         "border-white/[0.06] bg-white/[0.02] text-zinc-300";
+    tone === "amber"   ? "border-white/30 bg-white/6 text-zinc-100" :
+    tone === "red"     ? "border-red-500/30 bg-red-500/6 text-red-100" :
+    tone === "emerald" ? "border-emerald-500/30 bg-emerald-500/6 text-emerald-100" :
+                         "border-white/6 bg-white/2 text-zinc-300";
   return (
     <div className={`rounded-md border ${cls} px-2.5 py-1.5`}>
       <div className="text-[9px] font-mono uppercase tracking-wider opacity-70">{label}</div>

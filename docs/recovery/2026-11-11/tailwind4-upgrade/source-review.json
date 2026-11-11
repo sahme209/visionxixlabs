@@ -1,0 +1,24 @@
+{
+  "baseCommit": "172bf5ee3363176f99911f1786b1c15836b90c44",
+  "officialMigrationTool": "@tailwindcss/upgrade@4.3.5",
+  "disposableCopyOnly": true,
+  "templateFiles": 533,
+  "literalChangesBeforeProseTitleRestoration": 4675,
+  "executableASTStructureChanges": [],
+  "jsxAttributeNamesChanged": [
+    "className"
+  ],
+  "jsxTextChanges": [],
+  "manualExceptions": [
+    "two prose test titles and broad negative backdrop-blur guard restored",
+    "two exact class-spelling regex updates; 23 focused tests pass",
+    "three existing ModuleIntro review dates",
+    "internal Desktop Pairing scenario metadata",
+    "install-guide engine requirements",
+    "actual PostCSS4 shared-diff compilation test"
+  ],
+  "lockfileWorkflowRuns": [
+    43092374356,
+    43092773452
+  ]
+}

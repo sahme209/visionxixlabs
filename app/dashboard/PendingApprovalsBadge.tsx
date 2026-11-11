@@ -35,7 +35,7 @@ export function PendingApprovalsBadge() {
       className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full border text-[11px] font-mono transition-colors ${
         urgent
           ? "border-white/30 text-zinc-200 hover:border-white/50"
-          : "border-white/[0.10] text-zinc-300 hover:border-white/[0.18]"
+          : "border-white/10 text-zinc-300 hover:border-white/18"
       }`}
       title={urgent ? `${highRisk} high-risk` : undefined}
     >

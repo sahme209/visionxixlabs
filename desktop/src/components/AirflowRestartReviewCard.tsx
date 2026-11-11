@@ -2,7 +2,7 @@ import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { desktopClient } from "../lib/desktopClient";
 import type { AirflowRestartReviewDto } from "../../../lib/integrations/airflow/restartReviewDto";
 
-const button = "rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-40";
+const button = "rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/6 disabled:opacity-40";
 const recovery: Record<string, string> = {
   airflow_review_required: "This historical action has no immutable destination review. Reject it and wait for a new scheduler proposal; it cannot be backfilled.",
   airflow_review_storage_unavailable: "Destination review storage is unavailable. Ask a workspace administrator to review the installation proposal. Approval remains unavailable.",

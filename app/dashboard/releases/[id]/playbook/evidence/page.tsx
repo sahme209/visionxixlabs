@@ -36,7 +36,7 @@ export default function ReleaseEvidenceDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -44,7 +44,7 @@ export default function ReleaseEvidenceDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -62,7 +62,7 @@ export default function ReleaseEvidenceDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Evidence Pack</h1>
 
         <div className="space-y-6">
@@ -74,8 +74,8 @@ export default function ReleaseEvidenceDetailPage() {
               <div
                 className={`rounded-2xl border p-4 flex items-start gap-3 ${
                   evidence.generatedAt
-                    ? "border-emerald-500/[0.25] bg-emerald-500/[0.04]"
-                    : "border-zinc-500/[0.25] bg-zinc-500/[0.04]"
+                    ? "border-emerald-500/25 bg-emerald-500/4"
+                    : "border-zinc-500/25 bg-zinc-500/4"
                 }`}
               >
                 <CheckCircleIcon
@@ -98,8 +98,8 @@ export default function ReleaseEvidenceDetailPage() {
               <div
                 className={`rounded-2xl border p-4 flex items-start gap-3 ${
                   evidence.signedAt
-                    ? "border-emerald-500/[0.25] bg-emerald-500/[0.04]"
-                    : "border-white/[0.25] bg-white/[0.04]"
+                    ? "border-emerald-500/25 bg-emerald-500/4"
+                    : "border-white/25 bg-white/4"
                 }`}
               >
                 <LockClosedIcon
@@ -126,7 +126,7 @@ export default function ReleaseEvidenceDetailPage() {
           </section>
 
           {!evidence.generatedAt && (
-            <div className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
+            <div className="rounded-2xl border border-cyan-500/15 bg-cyan-500/4 p-4">
               <p className="text-[12px] text-cyan-200">
                 💡 Evidence packs are generated after successful execution to document what was deployed.
               </p>

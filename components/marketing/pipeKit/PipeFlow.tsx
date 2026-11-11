@@ -43,7 +43,7 @@ export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly
             return (
               <li key={s.id} className={styles[s.tone]}>
                 <button type="button" aria-pressed={on} aria-controls={`${id}-detail`} onClick={() => setSelected(i)}
-                  className={`block w-full rounded-lg border border-white/[0.07] bg-white/[0.015] px-4 py-2.5 text-left transition-colors hover:bg-white/[0.035] focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-300 ${styles.stage} ${on ? styles.stageSelected : ""}`}>
+                  className={`block w-full rounded-lg border border-white/[0.07] bg-white/1.5 px-4 py-2.5 text-left transition-colors hover:bg-white/[0.035] focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-sky-300 ${styles.stage} ${on ? styles.stageSelected : ""}`}>
                   <span className="block text-[15px] text-zinc-100"><span className={`mr-2 font-mono text-xs ${styles.number}`}>{num(i)}</span>{s.title}</span>
                   <span className="mt-0.5 block truncate text-[13px] text-zinc-500">{s.parts.map((p) => p.title).join(" · ")}</span>
                 </button>
@@ -63,7 +63,7 @@ export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly
         </ol>
       </div>
 
-      <section id={`${id}-detail`} aria-label={stage.title} aria-live="polite" className={`flex flex-col justify-between gap-4 rounded-xl border border-white/[0.08] bg-[#07090d] p-5 ${styles[stage.tone]}`}>
+      <section id={`${id}-detail`} aria-label={stage.title} aria-live="polite" className={`flex flex-col justify-between gap-4 rounded-xl border border-white/8 bg-[#07090d] p-5 ${styles[stage.tone]}`}>
         <div>
         <h3 className="text-lg text-zinc-100"><span className={`mr-2 font-mono text-sm ${styles.number}`}>{num(selected)}</span>{stage.title}</h3>
         <p className="mt-1 text-[15px] leading-7 text-zinc-300">{stage.summary}</p>
@@ -73,13 +73,13 @@ export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly
             {[0, 1, 2].map((k) => <span key={k} className={styles.bit} style={{ animationDelay: `${-k * 1.2}s` }} />)}
           </span>
           {stage.parts.map((p) => (
-            <div key={p.title} className="relative z-[1] rounded-lg border border-white/[0.08] bg-[#0b0e13] px-3 py-2.5">
+            <div key={p.title} className="relative z-1 rounded-lg border border-white/8 bg-[#0b0e13] px-3 py-2.5">
               <p className="text-sm text-zinc-100">{p.title}</p>
               <p className="mt-1 text-[13px] leading-5 text-zinc-400">{p.detail}</p>
             </div>
           ))}
         </div>
-        <dl className="grid gap-4 border-t border-white/[0.06] pt-4 text-sm leading-6 sm:grid-cols-3">
+        <dl className="grid gap-4 border-t border-white/6 pt-4 text-sm leading-6 sm:grid-cols-3">
           <div><dt className="text-xs text-zinc-500">Guarantee</dt><dd className="mt-1 text-zinc-200">{stage.guarantee}</dd></div>
           <div><dt className="text-xs text-zinc-500">If something fails</dt><dd className="mt-1 text-zinc-200">{stage.onFailure}</dd></div>
           <div><dt className="text-xs text-zinc-500">Passes on</dt><dd className="mt-1 text-zinc-200">{stage.passesOn ? <><span className="font-mono">{stage.passesOn.label}</span> — {stage.passesOn.detail}</> : "A recorded outcome: the end of this request."}</dd></div>

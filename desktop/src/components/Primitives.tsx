@@ -29,7 +29,7 @@ export function Card({
   return (
     <div
       {...rest}
-      className={`glass-card-lift ${rest.onClick || rest.role === "button" ? "glass-card-interactive" : ""} edge-light relative ${glow ? "shadow-glow-violet" : ""} ${tint ? `before:content-[''] before:absolute before:-top-12 before:-right-12 before:w-32 before:h-32 before:rounded-full before:blur-[40px] before:pointer-events-none ${tintBg}` : ""} ${className}`}
+      className={`glass-card-lift ${rest.onClick || rest.role === "button" ? "glass-card-interactive" : ""} edge-light relative ${glow ? "shadow-glow-violet" : ""} ${tint ? `before:content-[''] before:absolute before:-top-12 before:-right-12 before:w-32 before:h-32 before:rounded-full before:blur-2xl before:pointer-events-none ${tintBg}` : ""} ${className}`}
     >
       <div className="relative z-10">{children}</div>
     </div>
@@ -183,7 +183,7 @@ export function EmptyState({
 }) {
   return (
     <Card className="p-10 text-center">
-      <div className="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 mx-auto mb-4 flex items-center justify-center">
+      <div className="w-12 h-12 rounded-2xl bg-white/4 border border-white/10 mx-auto mb-4 flex items-center justify-center">
         <Icon className="h-5 w-5 text-zinc-400" />
       </div>
       <h3 className="text-base font-medium text-white mb-2">{title}</h3>
@@ -223,7 +223,7 @@ export function DataSourceBanner({
 }) {
   if (mode === "live") {
     return (
-      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[11px] font-mono flex items-center gap-2">
+      <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/6 px-3 py-2 text-[11px] font-mono flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
         <span className="text-emerald-300 uppercase tracking-[0.18em]">live</span>
         <span className="text-zinc-500">· {surfaceName} populated from your authenticated workspace.</span>
@@ -232,7 +232,7 @@ export function DataSourceBanner({
   }
   if (mode === "authenticated_no_data") {
     return (
-      <div className="rounded-lg border border-white/25 bg-white/[0.06] px-3 py-2.5 text-[11px] font-mono">
+      <div className="rounded-lg border border-white/25 bg-white/6 px-3 py-2.5 text-[11px] font-mono">
         <div className="flex items-center gap-2 mb-1">
           <span className="w-1.5 h-1.5 rounded-full bg-zinc-400" />
           <span className="text-zinc-300 uppercase tracking-[0.18em]">no live data yet</span>
@@ -246,7 +246,7 @@ export function DataSourceBanner({
   }
   // "preview"
   return (
-    <div className="rounded-lg border border-violet-500/25 bg-violet-500/[0.06] px-3 py-2.5 text-[11px] font-mono">
+    <div className="rounded-lg border border-violet-500/25 bg-violet-500/6 px-3 py-2.5 text-[11px] font-mono">
       <div className="flex items-center gap-2 mb-1">
         <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
         <span className="text-violet-300 uppercase tracking-[0.18em]">sample preview · isolated</span>

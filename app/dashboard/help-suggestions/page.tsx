@@ -63,10 +63,10 @@ export default function HelpSuggestionsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <SparklesIcon className="h-3.5 w-3.5 text-amber-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-amber-300">
               Doc gaps · auto-suggested
@@ -83,14 +83,14 @@ export default function HelpSuggestionsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {report && (
         report.suggestions.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No recurring no_match queries yet. Run the help bubble more or wait for users to ask.
           </div>
         ) : (
@@ -100,16 +100,16 @@ export default function HelpSuggestionsPage() {
               const key = s.normalizedQuery;
               const confidencePct = Math.round(s.confidence * 100);
               return (
-                <div key={key} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={key} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-amber-500/15 text-amber-300 border-amber-500/30">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border bg-amber-500/15 text-amber-300 border-amber-500/30">
                       {s.suggestedCategory}
                     </span>
                     <p className="text-[14px] font-semibold text-white">{s.sampleQuery}</p>
                     <span className="text-[10px] font-mono text-zinc-500">×{s.count} queries</span>
                     <span className="text-[10px] font-mono text-zinc-400 ml-auto">confidence {confidencePct}%</span>
                   </div>
-                  <pre className="max-h-64 overflow-auto rounded-lg border border-white/[0.08] bg-black/40 p-3 text-[10px] font-mono text-zinc-100 leading-relaxed">
+                  <pre className="max-h-64 overflow-auto rounded-lg border border-white/8 bg-black/40 p-3 text-[10px] font-mono text-zinc-100 leading-relaxed">
 {snippet}
                   </pre>
                   <div className="mt-2 flex items-center justify-between gap-2">
@@ -118,7 +118,7 @@ export default function HelpSuggestionsPage() {
                     </p>
                     <button
                       onClick={() => copyOne(key, snippet)}
-                      className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded border bg-black/30 border-white/[0.08] text-zinc-300 hover:text-white"
+                      className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-sm border bg-black/30 border-white/8 text-zinc-300 hover:text-white"
                     >
                       {copied === key ? (
                         <>

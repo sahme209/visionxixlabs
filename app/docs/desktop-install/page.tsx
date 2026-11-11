@@ -36,6 +36,7 @@ export default function DesktopInstallPage() {
           <li><strong>macOS</strong> — Apple Silicon or Intel build matching your Mac; the release currently targets macOS 12 or later</li>
           <li><strong>Windows</strong> — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available</li>
           <li><strong>Linux</strong> — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate</li>
+          <li><strong>Browser engine for Tailwind 4 source builds</strong> — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer.</li>
           <li><strong>Network</strong> — HTTPS access to the configured Axiom API and any integrations you enable</li>
           <li><strong>External accounts</strong> — identity-provider and connector accounts remain your organization&apos;s responsibility; permissions vary by connector</li>
         </ul>
@@ -82,7 +83,7 @@ export default function DesktopInstallPage() {
           <p>When a matching detached <code>.asc</code> signature and release public key are published, verify the selected package before installation. Compare its published SHA-256 digest when available. Do not assume every package includes a signature; if required verification is missing, wait for an appropriate release.</p>
         </Step>
         <Step number={3} title="Install or run">
-          <pre className="rounded-lg bg-black/40 border border-white/[0.06] p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`chmod +x ./Axiom.Agent_*_amd64.AppImage
+          <pre className="rounded-lg bg-black/40 border border-white/6 p-3 text-[12px] font-mono text-zinc-300 overflow-x-auto">{`chmod +x ./Axiom.Agent_*_amd64.AppImage
 ./Axiom.Agent_*_amd64.AppImage
 
 sudo dpkg -i Axiom.Agent_*_amd64.deb

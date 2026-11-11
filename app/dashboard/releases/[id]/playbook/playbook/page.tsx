@@ -43,7 +43,7 @@ export default function ReleasePlaybookStageDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -51,7 +51,7 @@ export default function ReleasePlaybookStageDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -69,14 +69,14 @@ export default function ReleasePlaybookStageDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Playbook Details</h1>
 
         <div className="grid grid-cols-3 gap-4 mb-6">
           <div className={`rounded-xl border p-4 ${
             typeof playbook.stepCount === 'number'
-              ? 'border-white/[0.08] bg-white/[0.025]'
-              : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+              ? 'border-white/8 bg-white/2.5'
+              : 'border-zinc-500/25 bg-zinc-500/5'
           }`}>
             <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
               Deployment Steps
@@ -90,7 +90,7 @@ export default function ReleasePlaybookStageDetailPage() {
               </>
             )}
           </div>
-          <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-4">
+          <div className="rounded-xl border border-white/8 bg-white/2.5 p-4">
             <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
               Cherry-Picks
             </p>
@@ -99,8 +99,8 @@ export default function ReleasePlaybookStageDetailPage() {
           <div
             className={`rounded-xl border p-4 ${
               playbook.policyViolationCount > 0
-                ? "border-rose-500/[0.25] bg-rose-500/[0.04]"
-                : "border-white/[0.08] bg-white/[0.025]"
+                ? "border-rose-500/25 bg-rose-500/4"
+                : "border-white/8 bg-white/2.5"
             }`}
           >
             <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
@@ -118,7 +118,7 @@ export default function ReleasePlaybookStageDetailPage() {
 
         <div className="space-y-4">
           {playbook.cherryPickCount > 0 && (
-            <div className="rounded-2xl border border-white/[0.15] bg-white/[0.04] p-4">
+            <div className="rounded-2xl border border-white/15 bg-white/4 p-4">
               <p className="text-[12px] text-zinc-200">
                 ⚠️ This release includes {playbook.cherryPickCount} cherry-pick{playbook.cherryPickCount !== 1 ? "s" : ""}.
                 Verify each change is approved before proceeding.
@@ -127,7 +127,7 @@ export default function ReleasePlaybookStageDetailPage() {
           )}
 
           {playbook.policyViolationCount > 0 && (
-            <div className="rounded-2xl border border-rose-500/[0.15] bg-rose-500/[0.04] p-4">
+            <div className="rounded-2xl border border-rose-500/15 bg-rose-500/4 p-4">
               <p className="text-[12px] text-rose-200">
                 🔴 This playbook contains {playbook.policyViolationCount} policy violation
                 {playbook.policyViolationCount !== 1 ? "s" : ""}. Must be resolved before deployment.
@@ -136,7 +136,7 @@ export default function ReleasePlaybookStageDetailPage() {
           )}
 
           {playbook.policyViolationCount === 0 && playbook.cherryPickCount === 0 && (
-            <div className="rounded-2xl border border-emerald-500/[0.15] bg-emerald-500/[0.04] p-4">
+            <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-4">
               <p className="text-[12px] text-emerald-200">
                 ✓ Playbook is clean — no violations or cherry-picks.
               </p>

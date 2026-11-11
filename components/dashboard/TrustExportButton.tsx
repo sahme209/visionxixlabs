@@ -94,7 +94,7 @@ export function TrustExportButton() {
   };
 
   return (
-    <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-6">
+    <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-6">
       <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
         <div className="min-w-0">
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// audit-ready evidence export</p>
@@ -112,7 +112,7 @@ export function TrustExportButton() {
             value={kind}
             onChange={(e) => setKind(e.target.value as BundleKind)}
             disabled={phase === "running"}
-            className="w-full rounded-md border border-white/[0.08] bg-white/[0.02] text-[13px] text-zinc-200 px-3 py-2 focus:outline-none focus:border-emerald-500/40"
+            className="w-full rounded-md border border-white/8 bg-white/2 text-[13px] text-zinc-200 px-3 py-2 focus:outline-hidden focus:border-emerald-500/40"
           >
             {(Object.keys(KIND_LABEL) as BundleKind[]).map((k) => (
               <option key={k} value={k} className="bg-zinc-900">{KIND_LABEL[k]}</option>
@@ -125,7 +125,7 @@ export function TrustExportButton() {
             value={format}
             onChange={(e) => setFormat(e.target.value as BundleFormat)}
             disabled={phase === "running"}
-            className="w-full rounded-md border border-white/[0.08] bg-white/[0.02] text-[13px] text-zinc-200 px-3 py-2 focus:outline-none focus:border-emerald-500/40"
+            className="w-full rounded-md border border-white/8 bg-white/2 text-[13px] text-zinc-200 px-3 py-2 focus:outline-hidden focus:border-emerald-500/40"
           >
             <option value="json"   className="bg-zinc-900">JSON</option>
             <option value="ndjson" className="bg-zinc-900">NDJSON</option>
@@ -140,8 +140,8 @@ export function TrustExportButton() {
           disabled={phase === "running"}
           className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-[13px] font-semibold transition-all ${
             phase === "running"
-              ? "border-white/[0.08] bg-white/[0.02] text-zinc-400 cursor-wait"
-              : "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100 hover:border-emerald-500/60 hover:bg-emerald-500/[0.18]"
+              ? "border-white/8 bg-white/2 text-zinc-400 cursor-wait"
+              : "border-emerald-500/40 bg-emerald-500/12 text-emerald-100 hover:border-emerald-500/60 hover:bg-emerald-500/18"
           }`}
         >
           {phase === "running" ? (

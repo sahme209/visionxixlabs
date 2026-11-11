@@ -15,7 +15,7 @@ export function SecurityServiceCard({
   ctaLabel = "Discuss this service",
 }: SecurityServiceCardProps) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-sm flex flex-col h-full">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-6 shadow-xs flex flex-col h-full">
       <h3 className="text-lg font-semibold text-white mb-2">
         {name}
       </h3>

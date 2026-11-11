@@ -73,13 +73,13 @@ interface ReportLite {
 }
 
 const READINESS_VISUAL: Record<ApprovalReadiness, { border: string; bg: string; text: string; pill: string; icon: typeof ShieldCheckIcon }> = {
-  ready_for_review:           { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon       },
-  desktop_review_recommended: { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: ComputerDesktopIcon   },
-  simulation_required:        { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon            },
-  missing_evidence:           { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
-  policy_blocked:             { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: LockClosedIcon         },
-  blocked_by_config:          { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
-  disabled_execution:         { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon             },
+  ready_for_review:           { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon       },
+  desktop_review_recommended: { border: "border-white/10",  bg: "bg-white/1.5",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: ComputerDesktopIcon   },
+  simulation_required:        { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon            },
+  missing_evidence:           { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
+  policy_blocked:             { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: LockClosedIcon         },
+  blocked_by_config:          { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
+  disabled_execution:         { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon             },
 };
 
 const READINESS_LABEL: Record<ApprovalReadiness, string> = {
@@ -131,7 +131,7 @@ export default function ApprovalPacketsPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -140,12 +140,12 @@ export default function ApprovalPacketsPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <LockClosedIcon className="h-3.5 w-3.5 text-zinc-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
                   Approval packets · approval_only_no_execution
@@ -164,11 +164,11 @@ export default function ApprovalPacketsPage() {
           </div>
 
           {report && (
-            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
               <Stat label="Ready" value={report.summary.readyForReview} tone="text-emerald-300" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Sim needed" value={report.summary.simulationRequired} tone="text-cyan-300" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Blocked" value={report.summary.policyBlocked + report.summary.blockedByConfig + report.summary.missingEvidence} tone={(report.summary.policyBlocked + report.summary.blockedByConfig + report.summary.missingEvidence) > 0 ? "text-zinc-300" : "text-zinc-500"} />
             </div>
           )}
@@ -176,19 +176,19 @@ export default function ApprovalPacketsPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing approval packets…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// packets unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
 
       {!loading && !error && report && report.packets.length === 0 && (
-        <div className="rounded-2xl border border-emerald-500/[0.22] bg-emerald-500/[0.04] p-6 mb-6">
+        <div className="rounded-2xl border border-emerald-500/22 bg-emerald-500/4 p-6 mb-6">
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// queue empty</p>
           <p className="text-[14px] text-emerald-100 font-semibold">No approval-eligible decisions in the queue.</p>
           <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">No critical/high security findings, no pending approvals, no unsimulated remediation. Use the Operating Loop and Priority Engine to keep this true.</p>
@@ -215,17 +215,17 @@ export default function ApprovalPacketsPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-[10px] font-mono text-zinc-500">#{pkt.rank}</span>
-                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill}`}>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill}`}>
                           {READINESS_LABEL[pkt.readiness]}
                         </span>
-                        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${RISK_PILL[pkt.risk]}`}>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${RISK_PILL[pkt.risk]}`}>
                           {pkt.risk} risk
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                           {pkt.sourceMode.replace(/_/g, " ")}
                         </span>
                         {pkt.desktopReviewEligible && (
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300 inline-flex items-center gap-1">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-orange-500/15 text-orange-300 inline-flex items-center gap-1">
                             <ComputerDesktopIcon className="h-3 w-3" />
                             desktop-eligible
                           </span>
@@ -240,26 +240,26 @@ export default function ApprovalPacketsPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-white/[0.06] pt-4 space-y-3">
+                  <div className="px-5 pb-5 border-t border-white/6 pt-4 space-y-3">
                     {/* Policy decision */}
-                    <div className="rounded-md border border-rose-500/[0.18] bg-rose-500/[0.04] p-3">
+                    <div className="rounded-md border border-rose-500/18 bg-rose-500/4 p-3">
                       <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-wider mb-1">// policy decision</p>
                       <p className="text-[12px] text-zinc-200 font-semibold leading-snug">
-                        allowed: <code className="font-mono text-[11px] bg-black/30 border border-white/[0.06] rounded px-1">{String(pkt.policyDecision.allowed)}</code>
-                        {" · "}requiresApproval: <code className="font-mono text-[11px] bg-black/30 border border-white/[0.06] rounded px-1">{String(pkt.policyDecision.requiresApproval)}</code>
+                        allowed: <code className="font-mono text-[11px] bg-black/30 border border-white/6 rounded-sm px-1">{String(pkt.policyDecision.allowed)}</code>
+                        {" · "}requiresApproval: <code className="font-mono text-[11px] bg-black/30 border border-white/6 rounded-sm px-1">{String(pkt.policyDecision.requiresApproval)}</code>
                       </p>
                       <p className="text-[11px] text-zinc-400 leading-relaxed mt-1">{pkt.policyDecision.reason}</p>
                     </div>
 
                     {pkt.simulationSummary && (
-                      <div className="rounded-md border border-cyan-500/[0.18] bg-cyan-500/[0.04] p-3">
+                      <div className="rounded-md border border-cyan-500/18 bg-cyan-500/4 p-3">
                         <p className="text-[10px] font-mono text-cyan-300/80 uppercase tracking-wider mb-1">// simulation summary</p>
                         <p className="text-[12px] text-zinc-200 leading-relaxed">{pkt.simulationSummary}</p>
                       </div>
                     )}
 
                     <div className="grid sm:grid-cols-2 gap-3">
-                      <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-3">
+                      <div className="rounded-md border border-white/6 bg-white/2 p-3">
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// rollback plan</p>
                         <p className="text-[11px] text-zinc-300 leading-snug">
                           <span className={pkt.rollbackPlan.available ? "text-emerald-300" : "text-zinc-300"}>
@@ -267,7 +267,7 @@ export default function ApprovalPacketsPage() {
                           </span>{" "}· {pkt.rollbackPlan.summary}
                         </p>
                       </div>
-                      <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-3">
+                      <div className="rounded-md border border-white/6 bg-white/2 p-3">
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// verification checklist</p>
                         <p className="text-[11px] text-zinc-300 leading-snug">
                           <span className={pkt.verificationChecklist.available ? "text-emerald-300" : "text-zinc-300"}>
@@ -278,17 +278,17 @@ export default function ApprovalPacketsPage() {
                     </div>
 
                     {pkt.affectedSystems.length > 0 && (
-                      <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-3">
+                      <div className="rounded-md border border-white/6 bg-white/2 p-3">
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// affected systems</p>
                         <div className="flex flex-wrap gap-1.5">
                           {pkt.affectedSystems.map((s, i) => (
-                            <span key={i} className="text-[10px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5">{s}</span>
+                            <span key={i} className="text-[10px] font-mono text-zinc-300 bg-white/4 border border-white/6 rounded-sm px-1.5 py-0.5">{s}</span>
                           ))}
                         </div>
                       </div>
                     )}
 
-                    <div className="rounded-md border border-white/[0.06] bg-white/[0.015] p-3">
+                    <div className="rounded-md border border-white/6 bg-white/1.5 p-3">
                       <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-wider mb-1">// expected impact</p>
                       <p className="text-[12px] text-zinc-200 leading-relaxed">{pkt.expectedImpact}</p>
                     </div>
@@ -298,7 +298,7 @@ export default function ApprovalPacketsPage() {
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// evidence refs</p>
                         <div className="flex flex-wrap gap-1.5">
                           {pkt.evidence.map((e, i) => (
-                            <span key={i} className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5" title={e.ref}>
+                            <span key={i} className="text-[10px] font-mono text-zinc-400 bg-white/4 border border-white/6 rounded-sm px-1.5 py-0.5" title={e.ref}>
                               {e.label}
                             </span>
                           ))}
@@ -307,7 +307,7 @@ export default function ApprovalPacketsPage() {
                     )}
 
                     {pkt.limitations.length > 0 && (
-                      <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2.5">
+                      <div className="rounded-md border border-white/18 bg-white/4 p-2.5">
                         <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// limitations</p>
                         <ul className="space-y-0.5">
                           {pkt.limitations.slice(0, 2).map((l, i) => (
@@ -324,7 +324,7 @@ export default function ApprovalPacketsPage() {
                       </p>
                       <Link
                         href={pkt.reviewRoute.href}
-                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors"
                       >
                         {pkt.reviewRoute.label}
                         <ArrowRightIcon className="h-3 w-3" />
@@ -340,12 +340,12 @@ export default function ApprovalPacketsPage() {
 
       {/* Safety contract footer */}
       {!loading && !error && report && (
-        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
           <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div>
             <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// packet engine contract</p>
             <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-              safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+              safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
             </p>
             <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
               This view bundles canonical decision context for review only. Approval flips state in the existing audited engine; nothing here applies Terraform, executes CLI, mutates cloud, or runs on desktop.
@@ -359,7 +359,7 @@ export default function ApprovalPacketsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4rem]">
+    <div className="text-right min-w-16">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

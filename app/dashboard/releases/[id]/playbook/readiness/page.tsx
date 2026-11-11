@@ -55,7 +55,7 @@ export default function ReleaseReadinessDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -63,7 +63,7 @@ export default function ReleaseReadinessDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -83,7 +83,7 @@ export default function ReleaseReadinessDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Readiness Assessment</h1>
 
         <div className="space-y-6">
@@ -92,7 +92,7 @@ export default function ReleaseReadinessDetailPage() {
             <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-4">
               Overall Readiness Score
             </h2>
-            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-6">
+            <div className="rounded-2xl border border-white/8 bg-white/2.5 p-6">
               {hasBeenEvaluated ? (
                 <>
                   <div className="flex items-baseline gap-3 mb-4">
@@ -103,7 +103,7 @@ export default function ReleaseReadinessDetailPage() {
                   {/* Progress bar */}
                   <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden mb-4">
                     <div
-                      className="h-full bg-gradient-to-r from-rose-500 to-emerald-500 transition-all"
+                      className="h-full bg-linear-to-r from-rose-500 to-emerald-500 transition-all"
                       style={{ width: `${scorePercentage}%` }}
                     />
                   </div>
@@ -142,11 +142,11 @@ export default function ReleaseReadinessDetailPage() {
               Readiness Blockers
             </h2>
             {!hasBeenEvaluated ? (
-              <div className="rounded-2xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] p-4">
+              <div className="rounded-2xl border border-zinc-500/25 bg-zinc-500/4 p-4">
                 <p className="text-[13px] text-zinc-300">Not yet evaluated — blockers cannot be determined until a readiness snapshot runs.</p>
               </div>
             ) : readiness.blockerCount > 0 ? (
-              <div className="rounded-2xl border border-rose-500/[0.25] bg-rose-500/[0.04] p-4">
+              <div className="rounded-2xl border border-rose-500/25 bg-rose-500/4 p-4">
                 <p className="text-[13px] text-white">
                   <span className="font-bold text-rose-300">{readiness.blockerCount}</span>{" "}
                   {readiness.blockerCount === 1 ? "blocker" : "blockers"} preventing deployment
@@ -156,7 +156,7 @@ export default function ReleaseReadinessDetailPage() {
                 </p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-emerald-500/[0.25] bg-emerald-500/[0.04] p-4">
+              <div className="rounded-2xl border border-emerald-500/25 bg-emerald-500/4 p-4">
                 <p className="text-[13px] text-emerald-300">✓ No blockers detected</p>
               </div>
             )}
@@ -175,7 +175,7 @@ export default function ReleaseReadinessDetailPage() {
           </section>
 
           {/* Guidance */}
-          <section className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
+          <section className="rounded-2xl border border-cyan-500/15 bg-cyan-500/4 p-4">
             <p className="text-[12px] text-cyan-200">
               💡 Readiness assessment evaluates branch governance, change compliance, artifact traceability,
               secret handling, rollback readiness, communication, drift risk, and manual reconciliation needs.

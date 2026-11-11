@@ -22,8 +22,8 @@ export const metadata: Metadata = {
 
 export default function InsightsPage() {
   return (
-    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
-      <div className="absolute -top-40 left-1/3 h-[480px] w-[520px] rounded-full bg-orange-500/[0.06] blur-[150px] pointer-events-none" aria-hidden />
+    <div className="min-h-screen bg-brand-ink relative overflow-hidden">
+      <div className="absolute -top-40 left-1/3 h-[480px] w-[520px] rounded-full bg-orange-500/6 blur-[150px] pointer-events-none" aria-hidden />
 
       <Navigation />
       <main className="max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-16 relative">
@@ -31,14 +31,14 @@ export default function InsightsPage() {
           <header className="mb-12">
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
               <span className="text-brand-coral/90 tabular-nums">I1</span>
-              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
               Insights
             </p>
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-4">
               Field notes from{" "}
               <span className="relative inline-block">
                 production.
-                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
+                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
               </span>
             </h1>
             <p className="text-zinc-400 max-w-2xl">
@@ -53,10 +53,10 @@ export default function InsightsPage() {
               <li key={article.slug}>
                 <Link
                   href={`/insights/${article.slug}`}
-                  className="block animated-border card-inner-glow card-hover rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 shadow-sm hover:border-white/[0.12] transition-all group"
+                  className="block animated-border card-inner-glow card-hover rounded-xl border border-white/6 bg-white/2 p-6 shadow-xs hover:border-white/12 transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="flex-shrink-0 rounded-lg bg-orange-500/10 p-3">
+                    <div className="shrink-0 rounded-lg bg-orange-500/10 p-3">
                       <DocumentTextIcon className="h-6 w-6 text-orange-400" />
                     </div>
                     <div className="min-w-0 flex-1">
@@ -77,7 +77,7 @@ export default function InsightsPage() {
                         <span>{article.readTime} read</span>
                       </div>
                     </div>
-                    <ArrowRightIcon className="h-5 w-5 flex-shrink-0 text-zinc-500 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRightIcon className="h-5 w-5 shrink-0 text-zinc-500 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
                   </div>
                 </Link>
               </li>

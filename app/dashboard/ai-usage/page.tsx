@@ -50,9 +50,9 @@ export default function AIUsagePage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ChartBarIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               AI Usage · no_prompts_no_keys_logged
@@ -61,7 +61,7 @@ export default function AIUsagePage() {
           <button
             onClick={load}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -77,7 +77,7 @@ export default function AIUsagePage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -85,7 +85,7 @@ export default function AIUsagePage() {
       {data && (
         <>
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3">
                 By provider · {data.summary.totalEvents} events
               </h2>
@@ -101,7 +101,7 @@ export default function AIUsagePage() {
                   </thead>
                   <tbody>
                     {data.summary.byProvider.map((p) => (
-                      <tr key={p.provider} className="border-t border-white/[0.04]">
+                      <tr key={p.provider} className="border-t border-white/4">
                         <td className="py-1.5 font-mono text-zinc-300">{p.provider}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{p.count}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{p.errors}</td>
@@ -115,7 +115,7 @@ export default function AIUsagePage() {
               )}
             </div>
 
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3">By task kind</h2>
               {data.summary.byTask.length > 0 ? (
                 <table className="w-full text-[12px]">
@@ -128,7 +128,7 @@ export default function AIUsagePage() {
                   </thead>
                   <tbody>
                     {data.summary.byTask.map((t) => (
-                      <tr key={t.task} className="border-t border-white/[0.04]">
+                      <tr key={t.task} className="border-t border-white/4">
                         <td className="py-1.5 font-mono text-zinc-300">{t.task}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{t.count}</td>
                         <td className="py-1.5 text-right tabular-nums text-zinc-300">{t.errors}</td>
@@ -140,7 +140,7 @@ export default function AIUsagePage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
             <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3">
               Recent events · last {data.tail.length}
             </h2>

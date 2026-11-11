@@ -84,9 +84,9 @@ export default function AgentProposalsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Method Proposals · approval_only_no_execution
@@ -95,7 +95,7 @@ export default function AgentProposalsPage() {
           <button
             onClick={() => load(filter)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -118,7 +118,7 @@ export default function AgentProposalsPage() {
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                 filter === s
                   ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                  : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
               }`}
             >
               {s}
@@ -128,22 +128,22 @@ export default function AgentProposalsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {report && (
         report.proposals.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No proposals matching this filter.
           </div>
         ) : (
           <div className="space-y-3 mb-8">
             {report.proposals.map((p) => (
-              <div key={p.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={p.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
-                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_TONE[p.status]}`}>
+                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_TONE[p.status]}`}>
                     {p.status}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{p.target}</span>
@@ -158,7 +158,7 @@ export default function AgentProposalsPage() {
                   <summary className="text-[10px] font-mono text-zinc-500 cursor-pointer hover:text-zinc-300 uppercase tracking-wider">
                     Proposed diff
                   </summary>
-                  <pre className="mt-2 max-h-64 overflow-auto rounded-lg border border-white/[0.08] bg-black/40 p-3 text-[10px] font-mono text-zinc-100 leading-relaxed">
+                  <pre className="mt-2 max-h-64 overflow-auto rounded-lg border border-white/8 bg-black/40 p-3 text-[10px] font-mono text-zinc-100 leading-relaxed">
 {JSON.stringify(p.proposedDiff, null, 2)}
                   </pre>
                 </details>
@@ -170,7 +170,7 @@ export default function AgentProposalsPage() {
                       value={reason[p.id] ?? ""}
                       onChange={(e) => setReason((m) => ({ ...m, [p.id]: e.target.value }))}
                       placeholder="optional decision reason"
-                      className="flex-1 min-w-[200px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none"
+                      className="flex-1 min-w-[200px] rounded-md border border-white/8 bg-black/30 px-2 py-1 text-[11px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-hidden"
                     />
                     <button
                       onClick={() => decide(p.id, "rejected")}

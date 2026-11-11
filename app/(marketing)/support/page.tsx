@@ -59,7 +59,7 @@ export default function SupportPage() {
               <a href="#vision" className="mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-medium text-zinc-200 underline decoration-white/25 underline-offset-4 transition hover:decoration-white/60">Explore the vision <ArrowDownIcon className="h-4 w-4" /></a>
             </div>
           </div>
-          <div className="mt-10 flex flex-wrap items-center justify-between gap-5 border-t border-white/[0.09] pt-6 text-xs text-zinc-500">
+          <div className="mt-10 flex flex-wrap items-center justify-between gap-5 border-t border-white/9 pt-6 text-xs text-zinc-500">
             <span>Built by Vision XIX Labs LLC</span><span>Human authority · Governed execution · Verifiable outcomes</span>
           </div>
         </div>
@@ -84,7 +84,7 @@ export default function SupportPage() {
       <section id="vision" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
         <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">The thesis</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Autonomy should increase capability—not remove accountability.</h2></div>
-          <div className="grid gap-5 lg:border-l lg:border-white/[0.08] lg:pl-10">
+          <div className="grid gap-5 lg:border-l lg:border-white/8 lg:pl-10">
             <p className="max-w-2xl text-lg leading-8 text-zinc-300">Axiom is an engineering operations agent designed around context, authorization, approvals, execution, and evidence. The website carries governance and administration; the desktop app is the engineering workspace; the backend enforces authority and executes approved work.</p>
             <p className="max-w-2xl leading-7 text-zinc-500">That separation is deliberate. Support for this program funds development without changing product billing, AI credits, or the controls that protect operational workflows.</p>
           </div>
@@ -92,7 +92,7 @@ export default function SupportPage() {
       </section>
 
       <section aria-labelledby="founder-inspiration" className="mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10 lg:pb-20">
-        <div className="grid gap-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-6 sm:p-9 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
+        <div className="grid gap-8 rounded-2xl border border-white/8 bg-white/2 p-6 sm:p-9 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
           <div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">A founder’s inspiration</p>
             <h2 id="founder-inspiration" className="mt-4 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl">Turn inspiration into something useful.</h2>
@@ -107,7 +107,7 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <div className="border-y border-white/[0.07] bg-white/[0.015]">
+      <div className="border-y border-white/[0.07] bg-white/1.5">
         <CinematicAxiomDemo />
       </div>
 
@@ -119,10 +119,10 @@ export default function SupportPage() {
         <p className="mt-8 max-w-3xl text-sm leading-6 text-zinc-400">The interactive tour uses scripted sample data. Planned items describe development direction, not promised release dates or guaranteed outcomes.</p>
       </section>
 
-      <section className="border-y border-white/[0.07] bg-white/[0.015]">
+      <section className="border-y border-white/[0.07] bg-white/1.5">
         <div className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
           <div className="max-w-3xl"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Why support matters</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Fund the difficult work behind trustworthy autonomy.</h2><p className="mt-6 text-base leading-7 text-zinc-400">Supporter purchases help Vision XIX Labs invest in the engineering foundations required to make Axiom useful, governed, and durable.</p></div>
-          <div className="mt-9 divide-y divide-white/[0.08] border-y border-white/[0.08]">
+          <div className="mt-9 divide-y divide-white/8 border-y border-white/8">
             {fundingAreas.map(({ icon: Icon, title, copy }) => <article key={title} className="grid gap-4 py-6 sm:grid-cols-[40px_220px_1fr] sm:items-center"><Icon className="h-5 w-5 text-zinc-400" /><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="max-w-2xl text-sm leading-6 text-zinc-500">{copy}</p></article>)}
           </div>
         </div>
@@ -144,17 +144,17 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section id="sponsorship" className="border-y border-white/[0.08] bg-white/[0.015]">
+      <section id="sponsorship" className="border-y border-white/8 bg-white/1.5">
         <div className="mx-auto grid max-w-[1280px] gap-10 px-5 py-20 sm:px-8 lg:grid-cols-[0.9fr_1.1fr] lg:px-10 lg:py-28">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Strategic sponsorship</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Partner with us to advance autonomous engineering.</h2><p className="mt-6 max-w-xl text-base leading-7 text-zinc-400">For individuals, foundations, and organizations considering a substantial commitment, begin with a private, professional conversation about fit, scope, and appropriate payment arrangements. AI companies and technology partners can also discuss infrastructure credits, research collaboration, or a defined technical partnership.</p><div className="mt-8 flex items-center gap-3 text-sm text-zinc-400"><ScaleIcon className="h-5 w-5 text-zinc-400" /> Sponsorship is not equity, an investment, or a charitable contribution.</div><p className="mt-4 max-w-xl text-sm leading-6 text-zinc-400">For infrastructure credits or other non-financial proposals, select “Prefer to discuss” in the inquiry form.</p></div>
-          <div className="rounded-xl border border-white/[0.08] bg-[#151517] p-5 sm:p-7"><SponsorInquiryForm /></div>
+          <div className="rounded-xl border border-white/8 bg-[#151517] p-5 sm:p-7"><SponsorInquiryForm /></div>
         </div>
       </section>
 
       <section className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
         <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Trust & transparency</p><h2 className="mt-5 text-3xl font-medium tracking-[-0.04em] text-zinc-100">Know what participation means.</h2></div>
-          <div className="grid border-y border-white/[0.08] sm:grid-cols-2 sm:divide-x sm:divide-white/[0.08]">
+          <div className="grid border-y border-white/8 sm:grid-cols-2 sm:divide-x sm:divide-white/8">
             <TrustCard icon={CircleStackIcon} title="The company" copy="Vision XIX Labs LLC is a for-profit technology company developing Axiom Agent." />
             <TrustCard icon={ShieldCheckIcon} title="The payment boundary" copy="Stripe-hosted checkout handles card data. Vision XIX Labs does not store card numbers." />
             <TrustCard icon={ScaleIcon} title="The legal character" copy="Supporter purchases are not charitable donations, tax-deductible charitable gifts, investments, equity, or promises of returns." />
@@ -168,13 +168,13 @@ export default function SupportPage() {
 }
 
 function CapabilityList({ eyebrow, title, items, tone }: { eyebrow: string; title: string; items: readonly string[]; tone: "implemented" | "planned" }) {
-  return <article className="border-t border-white/[0.1] pt-7"><p className={`text-[11px] uppercase tracking-[0.18em] ${tone === "implemented" ? "text-emerald-300" : "text-zinc-400"}`}>{eyebrow}</p><h3 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">{title}</h3><ul className="mt-7 space-y-4">{items.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-zinc-400"><span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center ${tone === "implemented" ? "text-emerald-300" : "text-zinc-400"}`}><CheckIcon className="h-3 w-3" /></span>{item}</li>)}</ul></article>;
+  return <article className="border-t border-white/10 pt-7"><p className={`text-[11px] uppercase tracking-[0.18em] ${tone === "implemented" ? "text-emerald-300" : "text-zinc-400"}`}>{eyebrow}</p><h3 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">{title}</h3><ul className="mt-7 space-y-4">{items.map((item) => <li key={item} className="flex gap-3 text-sm leading-6 text-zinc-400"><span className={`mt-1 flex h-5 w-5 shrink-0 items-center justify-center ${tone === "implemented" ? "text-emerald-300" : "text-zinc-400"}`}><CheckIcon className="h-3 w-3" /></span>{item}</li>)}</ul></article>;
 }
 
 function Benefit({ title, copy }: { title: string; copy: string }) {
-  return <div className="flex gap-4"><span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.025] text-xs font-semibold text-zinc-300">✓</span><div><h3 className="font-medium text-zinc-200">{title}</h3><p className="mt-1 max-w-lg text-sm leading-6 text-zinc-500">{copy}</p></div></div>;
+  return <div className="flex gap-4"><span className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/2.5 text-xs font-semibold text-zinc-300">✓</span><div><h3 className="font-medium text-zinc-200">{title}</h3><p className="mt-1 max-w-lg text-sm leading-6 text-zinc-500">{copy}</p></div></div>;
 }
 
 function TrustCard({ icon: Icon, title, copy }: { icon: typeof ShieldCheckIcon; title: string; copy: string }) {
-  return <article className="border-b border-white/[0.08] py-7 sm:px-8 sm:first:pl-0"><Icon className="h-5 w-5 text-zinc-400" /><h3 className="mt-6 text-lg font-medium text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-500">{copy}</p></article>;
+  return <article className="border-b border-white/8 py-7 sm:px-8 sm:first:pl-0"><Icon className="h-5 w-5 text-zinc-400" /><h3 className="mt-6 text-lg font-medium text-zinc-100">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-500">{copy}</p></article>;
 }

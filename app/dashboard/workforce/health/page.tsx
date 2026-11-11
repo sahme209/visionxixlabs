@@ -186,7 +186,7 @@ export default async function WorkforceHealthPage() {
       {/* Tile row 1 — rationale freshness */}
       <section className="mb-4">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">specialty rationale · {totalEngineers} engineers</p>
-        <div className="grid grid-cols-3 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+        <div className="grid grid-cols-3 rounded-2xl border border-white/6 bg-white/1.5 divide-x divide-white/4 overflow-hidden">
           <Tile label="fresh · ≤7d" count={fresh}    tone={fresh > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <Tile label="stale · >7d" count={stale}    tone={stale > 0 ? "text-zinc-300" : "text-zinc-600"} />
           <Tile label="missing"     count={missing}  tone={missing > 0 ? "text-rose-300" : "text-zinc-600"} />
@@ -196,7 +196,7 @@ export default async function WorkforceHealthPage() {
       {/* Tile row 2 — 30d attempt rollup */}
       <section className="mb-4">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">gated attempts · 30d</p>
-        <div className="grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+        <div className="grid grid-cols-4 rounded-2xl border border-white/6 bg-white/1.5 divide-x divide-white/4 overflow-hidden">
           <Tile label="total"             count={totals.total}             tone="text-white" />
           <Tile label="allowed"           count={totals.allowed}           tone={totals.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <Tile label="requires approval" count={totals.requires_approval} tone={totals.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
@@ -214,7 +214,7 @@ export default async function WorkforceHealthPage() {
             {costRollup.totalCents > 0 && <> · {formatCents(costRollup.totalCents)} provider cost</>}
           </span>
         </div>
-        <div className="grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+        <div className="grid grid-cols-4 rounded-2xl border border-white/6 bg-white/1.5 divide-x divide-white/4 overflow-hidden">
           <Tile label="ok"            count={aiHealth.ok}            tone={aiHealth.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <Tile label="error"         count={aiHealth.error}         tone={aiHealth.error > 0 ? "text-rose-300" : "text-zinc-600"} />
           <Tile label="timeout"       count={aiHealth.timeout}       tone={aiHealth.timeout > 0 ? "text-zinc-300" : "text-zinc-600"} />
@@ -226,7 +226,7 @@ export default async function WorkforceHealthPage() {
           <div className="mt-3 flex flex-wrap gap-2">
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">cost by model:</span>
             {costRollup.perModel.map((m) => (
-              <span key={`${m.provider}_${m.modelId}`} className="text-[10.5px] font-mono text-zinc-300 bg-white/[0.025] border border-white/[0.06] rounded-full px-2 py-0.5">
+              <span key={`${m.provider}_${m.modelId}`} className="text-[10.5px] font-mono text-zinc-300 bg-white/2.5 border border-white/6 rounded-full px-2 py-0.5">
                 {m.provider}/{m.modelId} · {formatCents(m.cents)}
               </span>
             ))}
@@ -241,7 +241,7 @@ export default async function WorkforceHealthPage() {
 
       {/* Tile row 4 — synthesis + Q&A */}
       <section className="mb-10 grid sm:grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">workforce synthesis</p>
           <p className="text-[24px] font-semibold text-white tabular-nums">{synthRows.length}</p>
           <p className="text-[11px] text-zinc-500 mt-1">
@@ -253,7 +253,7 @@ export default async function WorkforceHealthPage() {
             ask-all surface <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </div>
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">operator Q&A · 7d</p>
           <p className="text-[24px] font-semibold text-white tabular-nums">{qaCount}</p>
           <p className="text-[11px] text-zinc-500 mt-1">
@@ -278,14 +278,14 @@ export default async function WorkforceHealthPage() {
           </span>
         </div>
         <div className="grid sm:grid-cols-3 gap-3">
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">provider cost · 24h</p>
             <p className={`text-[22px] font-semibold tabular-nums ${costRollup.totalCents > 0 ? "text-zinc-200" : "text-zinc-600"}`}>
               {formatCents(costRollup.totalCents)}
             </p>
             <p className="text-[10px] text-zinc-500 mt-1">{costRollup.attributedCallCount} call{costRollup.attributedCallCount === 1 ? "" : "s"} attributed</p>
           </div>
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">provider cost · MTD</p>
             <p className={`text-[22px] font-semibold tabular-nums ${monthSummary && monthSummary.aiCostCents > 0 ? "text-zinc-200" : "text-zinc-600"}`}>
               {monthSummary ? formatCents(monthSummary.aiCostCents) : "—"}
@@ -296,7 +296,7 @@ export default async function WorkforceHealthPage() {
                 : "Awaiting first ai-cost-rollup tick."}
             </p>
           </div>
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.03] p-5">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/3 p-5">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2">customer billed · MTD</p>
             <p className={`text-[22px] font-semibold tabular-nums ${monthSummary && monthSummary.totalCostCents > 0 ? "text-emerald-200" : "text-zinc-600"}`}>
               {monthSummary ? formatCents(monthSummary.totalCostCents) : formatCents(billedNowCents)}
@@ -310,7 +310,7 @@ export default async function WorkforceHealthPage() {
 
       {/* Rank lists */}
       <section className="grid lg:grid-cols-2 gap-3 mb-10">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">most active engineers · 30d</p>
           {topByActivity.length === 0 ? (
             <p className="text-[12px] text-zinc-500">No gated attempts in window.</p>
@@ -318,7 +318,7 @@ export default async function WorkforceHealthPage() {
             <ul className="space-y-1">
               {topByActivity.map((r) => (
                 <li key={r.id}>
-                  <Link href={`/dashboard/workforce/${r.id}`} className="group flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.02] transition-colors">
+                  <Link href={`/dashboard/workforce/${r.id}`} className="group flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg hover:bg-white/2 transition-colors">
                     <span className="text-[12.5px] text-zinc-200 truncate">{r.displayName}</span>
                     <span className="text-[11px] font-mono text-zinc-500 tabular-nums shrink-0">{r.attempts.total}</span>
                   </Link>
@@ -327,7 +327,7 @@ export default async function WorkforceHealthPage() {
             </ul>
           )}
         </div>
-        <div className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.03] p-5">
+        <div className="rounded-2xl border border-rose-500/15 bg-rose-500/3 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-3">highest block rate · 30d</p>
           {topByBlockRate.length === 0 ? (
             <p className="text-[12px] text-zinc-500">No engineers crossing the noise floor (≥5 attempts, block-rate &gt; 0).</p>
@@ -335,7 +335,7 @@ export default async function WorkforceHealthPage() {
             <ul className="space-y-1">
               {topByBlockRate.map((r) => (
                 <li key={r.id}>
-                  <Link href={`/dashboard/workforce/${r.id}`} className="group flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg hover:bg-white/[0.02] transition-colors">
+                  <Link href={`/dashboard/workforce/${r.id}`} className="group flex items-center justify-between gap-3 px-2 py-1.5 rounded-lg hover:bg-white/2 transition-colors">
                     <div className="min-w-0 flex-1">
                       <span className="text-[12.5px] text-zinc-200 truncate">{r.displayName}</span>
                     </div>

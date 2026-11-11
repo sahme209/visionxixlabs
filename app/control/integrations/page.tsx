@@ -48,7 +48,7 @@ const ICONS: Record<string, ReactNode> = Object.fromEntries(
 function StatusBadge({ value }: { value: string }) {
   const healthy = value === "active" || value === "validated_read_only" || value === "connected";
   return (
-    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.08em] ${healthy ? "border-emerald-400/20 bg-emerald-400/[0.06] text-emerald-200" : "border-white/[0.1] bg-white/[0.035] text-zinc-400"}`}>
+    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-[0.08em] ${healthy ? "border-emerald-400/20 bg-emerald-400/6 text-emerald-200" : "border-white/10 bg-white/[0.035] text-zinc-400"}`}>
       {titleCase(value)}
     </span>
   );
@@ -68,7 +68,7 @@ function IntegrationRow({ icon, name, description, status, details, action }: {
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-2 pr-6"><h2 className="text-[13px] font-medium text-zinc-100">{name}</h2>{status && status !== "not_connected" && <StatusBadge value={status} />}</div>
         <p className="mt-1 text-xs leading-5 text-zinc-500">{description}</p>
-        {details && <details className="absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"><summary aria-label={`Details & scopes for ${name}`} className="cursor-pointer list-none rounded px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden">⋯</summary><p className="absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl">{details}</p></details>}
+        {details && <details className="absolute right-3 top-3 text-[11px] leading-5 text-zinc-400"><summary aria-label={`Details & scopes for ${name}`} className="cursor-pointer list-none rounded-sm px-1 text-base text-zinc-500 hover:text-white [&::-webkit-details-marker]:hidden">⋯</summary><p className="absolute right-0 top-7 z-20 w-64 max-w-[70vw] rounded-xl border border-white/10 bg-[#202020] p-3 shadow-xl">{details}</p></details>}
       </div>
       {action && <div className="col-start-2 self-end justify-self-end">{action}</div>}
     </article>
@@ -129,7 +129,7 @@ export default async function ControlIntegrationsPage() {
         <span className="text-xs text-zinc-600">{canManage ? "Administrator controls" : "Read-only access"}</span>
       </div>
 
-      {unavailable && <div role="alert" className="mt-8 border-y border-white/[0.08] py-5 text-sm text-zinc-400">Connection records are temporarily unavailable. No cached state is being shown.</div>}
+      {unavailable && <div role="alert" className="mt-8 border-y border-white/8 py-5 text-sm text-zinc-400">Connection records are temporarily unavailable. No cached state is being shown.</div>}
 
       <section className="mt-7" aria-labelledby="source-control-heading">
         <h2 id="source-control-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Source control</h2>
@@ -160,7 +160,7 @@ export default async function ControlIntegrationsPage() {
       <section className="mt-8" aria-labelledby="automation-heading">
         <h2 id="automation-heading" className="mb-3 text-[13px] font-medium text-zinc-100">Orchestration</h2>
         <div className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
-          <IntegrationRow icon={ICONS.airflow} name="Apache Airflow" status={airflow?.status ?? "not_connected"} description="DAG monitoring, dependency checks, and approved automation." details={airflow ? `${typeof airflowMetadata.version === "string" ? `Version ${airflowMetadata.version}` : "Version unavailable"} · ${typeof airflowMetadata.dagCount === "number" ? `${airflowMetadata.dagCount} DAGs` : "DAG count unavailable"} · ${formatTime(airflow.lastValidatedAt)}` : "No validated Airflow connection recorded."} action={<Link href="/control/airflow" className="inline-flex min-h-8 items-center rounded-full border border-white/[0.1] px-3.5 text-xs font-medium text-zinc-300 hover:bg-white/[0.05]">Open Airflow →</Link>} />
+          <IntegrationRow icon={ICONS.airflow} name="Apache Airflow" status={airflow?.status ?? "not_connected"} description="DAG monitoring, dependency checks, and approved automation." details={airflow ? `${typeof airflowMetadata.version === "string" ? `Version ${airflowMetadata.version}` : "Version unavailable"} · ${typeof airflowMetadata.dagCount === "number" ? `${airflowMetadata.dagCount} DAGs` : "DAG count unavailable"} · ${formatTime(airflow.lastValidatedAt)}` : "No validated Airflow connection recorded."} action={<Link href="/control/airflow" className="inline-flex min-h-8 items-center rounded-full border border-white/10 px-3.5 text-xs font-medium text-zinc-300 hover:bg-white/5">Open Airflow →</Link>} />
         </div>
       </section>
 
@@ -174,7 +174,7 @@ export default async function ControlIntegrationsPage() {
         </div>
       </section>
 
-      <div className="mt-8 border-y border-white/[0.08] py-5 text-xs leading-5 text-zinc-500">Consent is not health. A connection becomes active only after server-side validation. Airflow configuration remains in the desktop until its credential-entry migration passes parity and revocation tests.</div>
+      <div className="mt-8 border-y border-white/8 py-5 text-xs leading-5 text-zinc-500">Consent is not health. A connection becomes active only after server-side validation. Airflow configuration remains in the desktop until its credential-entry migration passes parity and revocation tests.</div>
     </div>
   );
 }

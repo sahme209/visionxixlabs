@@ -60,8 +60,8 @@ export default function MemoryPage() {
                 onClick={() => setFilter(f.id)}
                 className={`inline-flex items-center px-3.5 py-1.5 rounded-full text-xs font-medium transition-all border ${
                   isActive
-                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
-                    : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
+                    ? "bg-orange-500/15 border-white/12 text-orange-300 shadow-[0_0_20px_rgba(255, 120, 61,0.15)]"
+                    : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:border-white/12"
                 }`}
               >
                 {f.label}
@@ -126,7 +126,7 @@ function MemoryHealthRow() {
       sub: state ? (audit?.data.persistent ? "Persistent · DATABASE_URL set" : "In-memory · enable persistence") : undefined,
       icon: ClockIcon,
       color: "text-orange-300",
-      bg: "bg-orange-500/10 border-white/[0.08]",
+      bg: "bg-orange-500/10 border-white/8",
     },
     {
       label: "Memory records",
@@ -134,7 +134,7 @@ function MemoryHealthRow() {
       sub: state ? (memory?.data.persistent ? "Persistent" : "In-memory") : undefined,
       icon: CpuChipIcon,
       color: "text-orange-300",
-      bg: "bg-orange-500/10 border-white/[0.08]",
+      bg: "bg-orange-500/10 border-white/8",
     },
     {
       label: "Evidence records",
@@ -159,7 +159,7 @@ function MemoryHealthRow() {
       {tiles.map((m) => {
         const Icon = m.icon;
         return (
-          <div key={m.label} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] transition-colors">
+          <div key={m.label} className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 transition-colors">
             <div className="flex items-center gap-2.5 mb-3">
               <div className={`w-8 h-8 rounded-lg ${m.bg} border flex items-center justify-center`}>
                 <Icon className={`h-4 w-4 ${m.color}`} />

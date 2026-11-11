@@ -33,13 +33,13 @@ Support agent governed actions (roadmap step 4: five actions done — support ha
 Each needs its own planned PR; Dependabot ignores their major versions until then.
 
 - TypeScript 7 (web + desktop): new native compiler and package layout; tooling that loads `node_modules/typescript` breaks.
-- Tailwind 4 (web + desktop): CSS-first config replaces `tailwind.config`.
+- Tailwind 4.3.5 (web + desktop): CSS-first implementation under CI review; source bounds, shared diff and browser dark/light spacing checked. Not deployed or customer-qualified. See `../recovery/2026-11-11/tailwind4-upgrade/README.md`.
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
-- ESLint 10 and Vitest 5 (web): config and API changes.
+- ESLint 10: held at 9 by owner decision November 11; three current plugins reject version 10. No forced peers or disabled rules. Vitest 5 remains planned.
 - Next.js 16.4.5: done 2026-11-09. All 20 release-closure files, the three owned-website internals and `writeAppTypeDeclarations.js` are byte-identical to 16.4.2; only `package.json` changed and was re-pinned.
-- AWS SDK: 3.1166.0 implementation in PR #315; ECS model and S3 collector behavior reviewed. Merge is gated on all CI checks; not deployed. Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
+- AWS SDK: 3.1166.0 merged green in PR #315; ECS model and S3 collector behavior reviewed. Not deployed. Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
 - Stripe (any bump; 20.4.1 already moves the pinned API version to `2026-02-25.clover`). Stripe 23: new API version (`2026-10-28.endive`) and non-generic `HttpClient` types; re-review the owned Stripe TEST transport and settlement code.
-- ai 7: AI Gateway endpoint moves from v3 to v4; re-review the pinned dispatch URL in the installed-SDK composition tests.
+- ai 7.0.170: merged green in PR #317 after Gateway v4 and explicit text-only dispatch review. Not deployed; production Node >=22 still needs confirmation.
 - Vitest: 4.1.12 done (preload `suppress-warnings.cjs` byte-identical, sha256 a5012da3…); each later bump repeats that check and updates the version pin.
 
 ## Current completion work
@@ -150,4 +150,4 @@ Narrow AI security activation candidatebf5dbd65 is prepared from recorded produc
 
 ## November 11 dependency sequence
 
-AWS 3.1166.0 merged as PR #315 with every CI check green; production remains build 4. AI 7.0.170 is the next candidate: reviewed Vercel Gateway v4 and explicit text-only tool choice, preserving admission, routing, caps, redaction and one-attempt guards. Not deployed. Evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. Platform migrations remain next, each in its own green PR.
+AWS 3.1166.0 merged as PR #315 with every CI check green; production remains build 4. AI 7.0.170 merged green in PR #317 after review of Vercel Gateway v4 and explicit text-only tool choice, preserving admission, routing, caps, redaction and one-attempt guards. Tailwind 4 PR #319 is the current candidate; checks remain queued. Not deployed. Evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. Platform migrations remain next, each in its own green PR.

@@ -236,7 +236,7 @@ export function OrchestrationView() {
                   value={triggerRepoRef}
                   onChange={(e) => setTriggerRepoRef(e.target.value)}
                   placeholder="owner/repo"
-                  className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50"
+                  className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:outline-hidden focus:border-violet-500/50"
                 />
               </div>
               <div>
@@ -246,7 +246,7 @@ export function OrchestrationView() {
                   value={triggerBranchHint}
                   onChange={(e) => setTriggerBranchHint(e.target.value)}
                   placeholder="main"
-                  className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50"
+                  className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm font-mono text-zinc-200 placeholder-zinc-600 focus:outline-hidden focus:border-violet-500/50"
                 />
               </div>
             </div>
@@ -257,12 +257,12 @@ export function OrchestrationView() {
                 value={triggerInstruction}
                 onChange={(e) => setTriggerInstruction(e.target.value)}
                 placeholder="e.g. Add a /healthz route that returns { status: 'ok' } and write a vitest test for it."
-                className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-violet-500/50 resize-none"
+                className="w-full bg-zinc-800/60 border border-zinc-700/50 rounded-lg px-3 py-2 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-hidden focus:border-violet-500/50 resize-none"
               />
             </div>
 
             {triggerResult?.kind === "ok" && (
-              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/[0.08] p-3 text-[12px] space-y-1">
+              <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/8 p-3 text-[12px] space-y-1">
                 <p className="text-emerald-300 font-mono">
                   ✓ Run started · <span className="text-zinc-200">{triggerResult.runId}</span>
                 </p>
@@ -275,7 +275,7 @@ export function OrchestrationView() {
               </div>
             )}
             {triggerResult?.kind === "err" && (
-              <div className="rounded-lg border border-red-500/25 bg-red-500/[0.08] p-3 text-[12px] text-red-300">
+              <div className="rounded-lg border border-red-500/25 bg-red-500/8 p-3 text-[12px] text-red-300">
                 ✗ Trigger failed: <span className="font-mono">{triggerResult.message}</span>
               </div>
             )}
@@ -322,7 +322,7 @@ export function OrchestrationView() {
                       key={r.id}
                       onClick={() => (isOpen ? closeDrill() : openDrill(r.id))}
                       className={`border-t border-axiom-border cursor-pointer transition-colors ${
-                        isOpen ? "bg-violet-500/[0.06]" : "hover:bg-white/[0.02]"
+                        isOpen ? "bg-violet-500/6" : "hover:bg-white/2"
                       }`}
                     >
                       <td className="px-4 py-2 text-zinc-200 flex items-center gap-2">
@@ -353,7 +353,7 @@ export function OrchestrationView() {
         </section>
       )}
       {v1RunsError && (
-        <div className="rounded-lg border border-white/30 bg-white/[0.08] p-3 text-[11px] text-zinc-200">
+        <div className="rounded-lg border border-white/30 bg-white/8 p-3 text-[11px] text-zinc-200">
           v1 pipeline runs unavailable: <span className="font-mono">{v1RunsError}</span>
         </div>
       )}
@@ -411,7 +411,7 @@ export function OrchestrationView() {
                 </div>
 
                 {drillDetail.errorSummary && (
-                  <div className="rounded-lg border border-red-500/25 bg-red-500/[0.06] p-3 text-[12px] text-red-300">
+                  <div className="rounded-lg border border-red-500/25 bg-red-500/6 p-3 text-[12px] text-red-300">
                     <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-red-400 mr-2">error</span>
                     {drillDetail.errorSummary}
                   </div>
@@ -426,7 +426,7 @@ export function OrchestrationView() {
                     {drillDetail.stages.map((s) => (
                       <li
                         key={s.id}
-                        className="flex items-start gap-3 rounded-md border border-axiom-border bg-white/[0.02] px-3 py-2"
+                        className="flex items-start gap-3 rounded-md border border-axiom-border bg-white/2 px-3 py-2"
                       >
                         <span className="text-[10px] font-mono text-zinc-600 tabular-nums w-6 mt-0.5">
                           {String(s.ordering).padStart(2, "0")}
@@ -448,7 +448,7 @@ export function OrchestrationView() {
                             )}
                           </div>
                           {s.errorMessage && (
-                            <p className="text-[11px] text-red-300 mt-1 font-mono break-words">
+                            <p className="text-[11px] text-red-300 mt-1 font-mono wrap-break-word">
                               {s.errorMessage}
                             </p>
                           )}

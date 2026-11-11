@@ -231,11 +231,11 @@ function AlertCard({
           <p className="text-sm font-semibold text-white truncate">{a.signalRef}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
             {a.statusLabel}
           </span>
           {a.minutesSinceFirstFire !== null && a.open && (
-            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-200 border border-rose-500/20">
+            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/10 text-rose-200 border border-rose-500/20">
               open {a.minutesSinceFirstFire}m
             </span>
           )}

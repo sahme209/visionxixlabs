@@ -87,12 +87,12 @@ const NODE_ICON: Record<NodeType, typeof CloudIcon> = {
 };
 
 const STATUS_TONE: Record<NodeStatus, { border: string; bg: string; text: string; pill: string; dot: string }> = {
-  healthy:     { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400 animate-pulse" },
-  in_progress: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       dot: "bg-cyan-400 animate-pulse"    },
-  preview:     { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
-  blocked:     { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       dot: "bg-rose-400"                  },
-  disabled:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
-  unknown:     { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
+  healthy:     { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", dot: "bg-emerald-400 animate-pulse" },
+  in_progress: { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       dot: "bg-cyan-400 animate-pulse"    },
+  preview:     { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     dot: "bg-zinc-400"                 },
+  blocked:     { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       dot: "bg-rose-400"                  },
+  disabled:    { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
+  unknown:     { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       dot: "bg-zinc-600"                  },
 };
 
 // The canonical chain order — for the operating spine rendering.
@@ -136,7 +136,7 @@ export default function OperatingGraphPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -145,12 +145,12 @@ export default function OperatingGraphPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <ServerStackIcon className="h-3.5 w-3.5 text-cyan-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
                   Operating Graph · {(graph?.overallSourceMode ?? "preview").replace(/_/g, " ")}
@@ -169,13 +169,13 @@ export default function OperatingGraphPage() {
           </div>
 
           {graph && (
-            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
               <Stat label="Nodes" value={graph.summary.nodeCount} tone="text-white" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Edges" value={graph.summary.edgeCount} tone="text-white" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Healthy" value={graph.summary.healthyNodes} tone="text-emerald-300" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Blocked" value={graph.summary.blockedNodes} tone={graph.summary.blockedNodes > 0 ? "text-rose-300" : "text-zinc-500"} />
             </div>
           )}
@@ -184,12 +184,12 @@ export default function OperatingGraphPage() {
 
       {/* States */}
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing operating graph…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// graph unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -212,7 +212,7 @@ export default function OperatingGraphPage() {
           </section>
 
           {/* Edges legend */}
-          <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+          <section className="mb-10 rounded-2xl border border-white/6 bg-white/2 p-5">
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-3">// canonical edges ({graph.edges.length})</p>
             <ul className="space-y-1.5">
               {graph.edges.slice(0, 12).map((e, i) => (
@@ -232,7 +232,7 @@ export default function OperatingGraphPage() {
           </section>
 
           {/* Limitations + Trust footer */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div className="flex-1">
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// graph contract</p>
@@ -255,7 +255,7 @@ function SpineRow({ type, nodes, edges }: { type: NodeType; nodes: GraphNodeLite
   return (
     <div className="grid grid-cols-1 lg:grid-cols-[14rem_1fr] gap-3 items-start">
       <div className="flex items-center gap-2.5 pt-2.5">
-        <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-white/4 border border-white/8 flex items-center justify-center shrink-0">
           <Icon className="h-4 w-4 text-zinc-300" />
         </div>
         <div className="min-w-0">
@@ -299,7 +299,7 @@ function SpineRow({ type, nodes, edges }: { type: NodeType; nodes: GraphNodeLite
 
               <div className="flex items-center gap-2 mt-2 flex-wrap">
                 {n.route && (
-                  <Link href={n.route} className="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-300 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded px-1.5 py-0.5 transition-colors">
+                  <Link href={n.route} className="inline-flex items-center gap-1 text-[10px] font-medium text-zinc-300 hover:text-white border border-white/8 hover:border-white/20 rounded-sm px-1.5 py-0.5 transition-colors">
                     Open
                     <ArrowRightIcon className="h-2.5 w-2.5" />
                   </Link>
@@ -318,7 +318,7 @@ function SpineRow({ type, nodes, edges }: { type: NodeType; nodes: GraphNodeLite
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4rem]">
+    <div className="text-right min-w-16">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

@@ -115,7 +115,7 @@ export function BulkActionBar() {
 
   if (selected.size === 0) return null;
   return (
-    <div className="mb-4 rounded-2xl border border-white/[0.06] bg-white/[0.02] px-5 py-3 flex items-center gap-3 flex-wrap">
+    <div className="mb-4 rounded-2xl border border-white/6 bg-white/2 px-5 py-3 flex items-center gap-3 flex-wrap">
       <span className="text-[12px] text-zinc-300">
         {selected.size} selected
       </span>
@@ -129,7 +129,7 @@ export function BulkActionBar() {
       <button
         onClick={() => void run("reject")}
         disabled={phase === "working"}
-        className="px-3 py-1 rounded-full text-[11px] font-medium border border-white/[0.10] text-zinc-300 hover:text-white hover:border-white/[0.18] disabled:opacity-50 transition-colors"
+        className="px-3 py-1 rounded-full text-[11px] font-medium border border-white/10 text-zinc-300 hover:text-white hover:border-white/18 disabled:opacity-50 transition-colors"
       >
         Reject selected
       </button>

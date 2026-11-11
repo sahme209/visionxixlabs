@@ -113,14 +113,14 @@ export default function CostOverviewPage() {
         </div>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading your cloud cost data…</div>}
-      {!loading && error && <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">Loading your cloud cost data…</div>}
+      {!loading && error && <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">{error}</div>}
 
       {!loading && !error && report && (
         <>
           {/* Anomalies first — highest signal */}
           {report.anomalies.length > 0 && (
-            <div className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.04] p-5 mb-6">
+            <div className="rounded-2xl border border-rose-500/15 bg-rose-500/4 p-5 mb-6">
               <div className="flex items-center gap-2 mb-3">
                 <ExclamationTriangleIcon className="h-4 w-4 text-rose-300" />
                 <p className="text-[12px] font-semibold text-rose-200">
@@ -131,7 +131,7 @@ export default function CostOverviewPage() {
               </div>
               <div className="space-y-1">
                 {report.anomalies.slice(0, 10).map((a) => (
-                  <div key={a.id} className="rounded-md border border-white/[0.04] bg-white/[0.015] p-2 text-[12px]">
+                  <div key={a.id} className="rounded-md border border-white/4 bg-white/1.5 p-2 text-[12px]">
                     <span className={`inline-block text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded mr-2 ${
                       a.severity === "critical" ? "bg-rose-500/20 text-rose-200" :
                       a.severity === "high" ? "bg-rose-500/15 text-rose-300" :
@@ -151,7 +151,7 @@ export default function CostOverviewPage() {
                 ? ((p.confirmedDollarsLast30d - p.confirmedDollarsPrev30d) / p.confirmedDollarsPrev30d) * 100
                 : null;
               return (
-                <div key={p.provider} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={p.provider} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center justify-between mb-3">
                     <p className="text-[13px] font-semibold text-white">{PROVIDER_LABEL[p.provider] ?? p.provider}</p>
                     <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
@@ -175,12 +175,12 @@ export default function CostOverviewPage() {
                       )}
                     </div>
                     {p.anomalies.length > 0 && (
-                      <div className="rounded-md border border-rose-500/[0.18] bg-rose-500/[0.04] p-2">
+                      <div className="rounded-md border border-rose-500/18 bg-rose-500/4 p-2">
                         <p className="text-[10px] text-rose-200">{p.anomalies.length} anomaly{p.anomalies.length === 1 ? "" : "ies"}</p>
                       </div>
                     )}
                     {p.missingRequirements.length > 0 && (
-                      <div className="rounded-md border border-white/[0.12] bg-white/[0.03] p-2">
+                      <div className="rounded-md border border-white/12 bg-white/3 p-2">
                         <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                         {p.missingRequirements.slice(0, 2).map((m, i) => (
                           <p key={i} className="text-[10px] text-zinc-300">{m}</p>
@@ -193,7 +193,7 @@ export default function CostOverviewPage() {
             })}
           </div>
 
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">How we calculate this</p>
@@ -221,10 +221,10 @@ function Stat({ label, value, tone, icon: Icon }: {
   icon?: typeof ArrowTrendingUpIcon;
 }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

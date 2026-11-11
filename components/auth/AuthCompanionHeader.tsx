@@ -85,17 +85,17 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
   }
 
   return (
-    <header className="rounded-2xl border border-white/[0.08] bg-black/20 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.16)] backdrop-blur-md sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4">
+    <header className="rounded-2xl border border-white/8 bg-black/20 p-3 shadow-[0_20px_80px_rgba(0,0,0,0.16)] backdrop-blur-md sm:grid sm:grid-cols-[1fr_auto_1fr] sm:items-center sm:gap-4">
       <div className="flex items-center justify-between gap-3 sm:justify-start">
         <Link href="/auth/success" className="group inline-flex items-center gap-2.5 px-2 py-1.5 text-zinc-100">
-          <span className="grid h-6 w-6 place-items-center rounded-md border border-orange-300/25 bg-orange-300/[0.08] text-[10px] font-semibold text-orange-200">A</span>
+          <span className="grid h-6 w-6 place-items-center rounded-md border border-orange-300/25 bg-orange-300/8 text-[10px] font-semibold text-orange-200">A</span>
           <span>
-            <span className="block text-sm font-semibold tracking-[-0.025em]">Axiom</span>
+            <span className="block text-sm font-semibold tracking-tight">Axiom</span>
             <span className="block text-[9px] uppercase tracking-[0.16em] text-zinc-500">Web companion</span>
           </span>
         </Link>
         <div className="flex items-center gap-1.5 sm:hidden">
-          <span className="rounded-full border border-emerald-400/15 bg-emerald-400/[0.05] px-2 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-emerald-200">Pilot</span>
+          <span className="rounded-full border border-emerald-400/15 bg-emerald-400/5 px-2 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-emerald-200">Pilot</span>
           <button
             ref={mobileMenuButton}
             type="button"
@@ -110,7 +110,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
         </div>
       </div>
 
-      <nav aria-label="Signed-in companion navigation" className="hidden min-w-0 items-center gap-1 overflow-x-auto rounded-xl border border-white/[0.06] bg-white/[0.025] p-1 sm:flex">
+      <nav aria-label="Signed-in companion navigation" className="hidden min-w-0 items-center gap-1 overflow-x-auto rounded-xl border border-white/6 bg-white/2.5 p-1 sm:flex">
         {navigation.map((item) => {
           const active = pathname === item.href || (item.href === "/account/help" && pathname.startsWith("/account/help/"));
           return (
@@ -118,7 +118,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs transition ${active ? "bg-white/[0.1] text-white shadow-sm" : "text-zinc-500 hover:bg-white/[0.05] hover:text-zinc-200"}`}
+              className={`whitespace-nowrap rounded-lg px-3 py-2 text-xs transition ${active ? "bg-white/10 text-white shadow-xs" : "text-zinc-500 hover:bg-white/5 hover:text-zinc-200"}`}
             >
               {item.label}
             </Link>
@@ -127,13 +127,13 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
       </nav>
 
       <div className="hidden min-w-0 items-center justify-between gap-3 px-1 sm:mt-0 sm:flex sm:justify-end">
-        <span className="hidden max-w-[12rem] truncate text-xs text-zinc-500 lg:block" title={email ?? undefined}>{email}</span>
-        <span className="hidden rounded-full border border-emerald-400/15 bg-emerald-400/[0.05] px-2 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-emerald-200 sm:inline">Pilot access</span>
+        <span className="hidden max-w-48 truncate text-xs text-zinc-500 lg:block" title={email ?? undefined}>{email}</span>
+        <span className="hidden rounded-full border border-emerald-400/15 bg-emerald-400/5 px-2 py-1 text-[9px] font-medium uppercase tracking-[0.12em] text-emerald-200 sm:inline">Pilot access</span>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/" })}
           title={activeDesktopSessionCount ? `Signing out only ends this browser session — ${activeDesktopSessionCount} paired desktop session${activeDesktopSessionCount === 1 ? "" : "s"} stay signed in. Revoke from Settings if needed.` : undefined}
-          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
+          className="inline-flex min-h-9 items-center gap-1.5 rounded-lg px-2.5 text-xs text-zinc-400 transition hover:bg-white/6 hover:text-white"
         >
           <ArrowRightOnRectangleIcon className="h-3.5 w-3.5" />
           Sign out
@@ -151,20 +151,20 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   onClick={closeMobileMenu}
-                  className={`rounded-xl border px-3 py-3 text-sm transition ${active ? "border-orange-300/25 bg-orange-300/[0.09] text-white" : "border-white/[0.07] bg-white/[0.025] text-zinc-400 hover:bg-white/[0.06] hover:text-zinc-200"}`}
+                  className={`rounded-xl border px-3 py-3 text-sm transition ${active ? "border-orange-300/25 bg-orange-300/9 text-white" : "border-white/[0.07] bg-white/2.5 text-zinc-400 hover:bg-white/6 hover:text-zinc-200"}`}
                 >
                   {item.label}
                 </Link>
               );
             })}
           </nav>
-          <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.02] px-3 py-2.5">
+          <div className="mt-3 rounded-xl border border-white/[0.07] bg-white/2 px-3 py-2.5">
             <div className="flex items-center justify-between gap-3">
               <span className="min-w-0 truncate text-xs text-zinc-500" title={email ?? undefined}>{email ?? "Signed-in workspace"}</span>
               <button
                 type="button"
                 onClick={() => signOut({ callbackUrl: "/" })}
-                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 transition hover:bg-white/[0.06] hover:text-white"
+                className="inline-flex shrink-0 items-center gap-1.5 rounded-lg px-2 py-1.5 text-xs text-zinc-400 transition hover:bg-white/6 hover:text-white"
               >
                 <ArrowRightOnRectangleIcon className="h-3.5 w-3.5" />
                 Sign out

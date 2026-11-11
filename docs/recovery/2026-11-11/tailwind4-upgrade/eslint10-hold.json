@@ -1,0 +1,33 @@
+{
+  "date": "2026-11-11",
+  "candidateWorkflow": 43091603874,
+  "candidateBranch": "deps/audit-fix-43091603874",
+  "candidateESLint": "10.14.0",
+  "mainESLint": "9.39.2",
+  "graphResult": "ELSPROBLEMS: incompatible published peers",
+  "plugins": [
+    {
+      "package": "eslint-plugin-react",
+      "version": "7.37.5",
+      "eslintPeer": "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9.7"
+    },
+    {
+      "package": "eslint-plugin-import",
+      "version": "2.32.0",
+      "eslintPeer": "^2 || ^3 || ^4 || ^5 || ^6 || ^7.2.0 || ^8 || ^9"
+    },
+    {
+      "package": "eslint-plugin-jsx-a11y",
+      "version": "6.10.2",
+      "eslintPeer": "^3 || ^4 || ^5 || ^6 || ^7 || ^8 || ^9"
+    }
+  ],
+  "baselineComparison": {
+    "files": 37,
+    "errors": 4,
+    "warnings": 5,
+    "diagnosticsIdentical": true
+  },
+  "ownerDecision": "Keep ESLint 9; continue to Tailwind 4",
+  "merged": false
+}

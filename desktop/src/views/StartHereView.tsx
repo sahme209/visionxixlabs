@@ -59,7 +59,7 @@ export function StartHereView({ onNavigate }: { onNavigate: (view: View) => void
         {STEPS.map((step) => (
           <li
             key={step.ord}
-            className="rounded-xl border border-axiom-border bg-white/[0.01] p-4 hover:border-violet-500/30 transition-colors"
+            className="rounded-xl border border-axiom-border bg-white/1 p-4 hover:border-violet-500/30 transition-colors"
           >
             <div className="flex items-start gap-3">
               <span className="text-[10px] font-mono text-zinc-600 tabular-nums w-6 mt-1 shrink-0">
@@ -83,7 +83,7 @@ export function StartHereView({ onNavigate }: { onNavigate: (view: View) => void
                   {step.webHref && (
                     <ExternalLink
                       href={step.webHref}
-                      className="px-3 py-1.5 rounded-md bg-violet-500/[0.10] text-violet-200 text-[11px] font-medium border border-violet-500/20 hover:bg-violet-500/[0.18] transition-colors"
+                      className="px-3 py-1.5 rounded-md bg-violet-500/10 text-violet-200 text-[11px] font-medium border border-violet-500/20 hover:bg-violet-500/18 transition-colors"
                     >
                       {step.ctaLabel} ↗
                     </ExternalLink>

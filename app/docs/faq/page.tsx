@@ -21,7 +21,7 @@ export default function FaqPage() {
         <DocSection key={group.title} id={group.title.toLowerCase().replace(/\s+/g, "-")} title={group.title}>
           <div className="space-y-3">
             {group.items.map((item) => (
-              <details key={item.q} className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4 group">
+              <details key={item.q} className="rounded-xl bg-white/2 border border-white/6 p-4 group">
                 <summary className="cursor-pointer flex items-center justify-between gap-3 text-sm font-semibold text-white hover:text-orange-300 transition-colors list-none">
                   <span>{item.q}</span>
                   <svg className="h-4 w-4 text-zinc-500 transition-transform group-open:rotate-180 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

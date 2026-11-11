@@ -176,7 +176,7 @@ export default async function FindingDetailPage({
       {resources.length > 0 && (
         <section className="mb-10">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">affected resources · {resources.length}</p>
-          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/4 overflow-hidden">
             {resources.map((r, i) => (
               <li key={`${String(r)}_${i}`} className="px-6 py-3">
                 <p className="text-[12px] font-mono text-zinc-300 break-all">{String(r)}</p>
@@ -194,12 +194,12 @@ export default async function FindingDetailPage({
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">
             counts against · {violatedControls.length} control{violatedControls.length === 1 ? "" : "s"}
           </p>
-          <ul className="rounded-2xl border border-rose-500/15 bg-rose-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-rose-500/15 bg-rose-500/3 divide-y divide-white/4 overflow-hidden">
             {violatedControls.map((c) => (
               <li key={c.id}>
                 <Link
                   href={`/dashboard/compliance`}
-                  className="group flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                  className="group flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
@@ -228,7 +228,7 @@ export default async function FindingDetailPage({
       {finding.recommendations.length > 0 && (
         <section className="mb-10">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recommendations</p>
-          <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="surface-glass rounded-2xl divide-y divide-white/4 overflow-hidden">
             {finding.recommendations.map((r) => {
               const approval = approvalsByRec.get(r.id);
               const rationale = rationaleByRec.get(r.id);
@@ -268,7 +268,7 @@ export default async function FindingDetailPage({
                   )}
 
                   {rationale && (
-                    <div className="mt-3 rounded-lg border border-orange-500/15 bg-orange-500/[0.04] p-3">
+                    <div className="mt-3 rounded-lg border border-orange-500/15 bg-orange-500/4 p-3">
                       <div className="flex items-center gap-2 mb-1.5">
                         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300">AGI rationale</p>
                         {rationale.modelHint && (

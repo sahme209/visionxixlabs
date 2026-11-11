@@ -60,12 +60,12 @@ export function RoiCalculatorClient() {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.7 }}
-      className="rounded-3xl border border-white/[0.08] bg-white/[0.02] p-6 md:p-10"
+      className="rounded-3xl border border-white/8 bg-white/2 p-6 md:p-10"
     >
       <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300">
         ROI calculator · pick the roles you would hire
       </p>
-      <h3 className="mt-3 text-2xl md:text-3xl font-bold tracking-[-0.025em]">
+      <h3 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight">
         How much does your team cost <span className="text-emerald-300">without</span> Axiom?
       </h3>
 
@@ -81,8 +81,8 @@ export function RoiCalculatorClient() {
               className={[
                 "text-left rounded-lg border px-3 py-2 transition flex items-center justify-between",
                 on
-                  ? "border-zinc-500/40 bg-zinc-500/[0.08] text-white"
-                  : "border-white/[0.06] bg-white/[0.02] text-zinc-400 hover:bg-white/[0.04]",
+                  ? "border-zinc-500/40 bg-zinc-500/8 text-white"
+                  : "border-white/6 bg-white/2 text-zinc-400 hover:bg-white/4",
               ].join(" ")}
             >
               <span className="text-[13px]">{r.label}</span>
@@ -101,7 +101,7 @@ export function RoiCalculatorClient() {
           <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Axiom annual (illustrative)</p>
           <p className="mt-2 text-3xl font-bold tabular-nums">{usd(AXIOM_ANNUAL_USD)}</p>
         </div>
-        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-5">
+        <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-emerald-300">Annual savings</p>
           <p className="mt-2 text-3xl font-bold tabular-nums text-emerald-200">{usd(savings)}</p>
           <p className="mt-1 text-[11px] font-mono text-emerald-300/80">

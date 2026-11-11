@@ -54,13 +54,13 @@ export function OrganizationSessionsPanel() {
   }
 
   return (
-    <section className="border-t border-white/[0.08] py-8" aria-labelledby="organization-sessions-heading">
+    <section className="border-t border-white/8 py-8" aria-labelledby="organization-sessions-heading">
       <div className="flex items-end justify-between gap-4">
         <div>
           <h2 id="organization-sessions-heading" className="text-base font-medium">Active desktop sessions</h2>
           <p className="mt-2 max-w-2xl text-sm leading-6 text-zinc-500">Organization administrators can revoke a paired workstation immediately. Device fingerprints and bearer tokens are never displayed.</p>
         </div>
-        <button type="button" onClick={() => void load()} className="rounded-lg border border-white/[0.1] px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.04]">Refresh</button>
+        <button type="button" onClick={() => void load()} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/4">Refresh</button>
       </div>
       {loading && <p className="mt-5 text-sm text-zinc-500">Verifying sessions…</p>}
       {error && <p role="status" className="mt-5 text-sm text-rose-300">{error}</p>}
@@ -73,7 +73,7 @@ export function OrganizationSessionsPanel() {
                 <p className="truncate text-sm text-zinc-200">{session.deviceLabel}</p>
                 <p className="mt-1 truncate text-xs text-zinc-500">{session.platform}{session.desktopVersion ? ` · Axiom ${session.desktopVersion}` : ""} · user {session.userId} · last seen {new Date(session.lastSeenAt).toLocaleString()}</p>
               </div>
-              <button type="button" disabled={revoking === session.id} onClick={() => void revoke(session.id)} className="min-h-9 shrink-0 self-start rounded-lg border border-rose-300/20 px-3 text-xs font-medium text-rose-200 hover:bg-rose-300/[0.08] disabled:opacity-60 sm:self-auto">
+              <button type="button" disabled={revoking === session.id} onClick={() => void revoke(session.id)} className="min-h-9 shrink-0 self-start rounded-lg border border-rose-300/20 px-3 text-xs font-medium text-rose-200 hover:bg-rose-300/8 disabled:opacity-60 sm:self-auto">
                 {revoking === session.id ? "Revoking…" : "Revoke"}
               </button>
             </li>

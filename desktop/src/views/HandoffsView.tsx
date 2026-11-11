@@ -64,7 +64,7 @@ export function HandoffsView() {
       </div>
 
       {/* Boundary banner — desktop never bypasses approval */}
-      <div className="rounded-xl border border-white/15 bg-white/[0.04] p-4 flex gap-3">
+      <div className="rounded-xl border border-white/15 bg-white/4 p-4 flex gap-3">
         <div className="w-8 h-8 rounded-lg bg-white/15 border border-white/25 flex items-center justify-center shrink-0 mt-0.5">
           <ShieldIcon className="h-4 w-4 text-zinc-300" />
         </div>
@@ -80,7 +80,7 @@ export function HandoffsView() {
         {loading ? (
           <div className="rounded-xl border border-zinc-800/40 bg-zinc-900/30 p-8 text-center text-sm text-zinc-500">Loading handoffs…</div>
         ) : error ? (
-          <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/[0.06] p-4 text-sm text-red-300">Handoff inbox unavailable: {error}</div>
+          <div role="alert" className="rounded-xl border border-red-500/20 bg-red-500/6 p-4 text-sm text-red-300">Handoff inbox unavailable: {error}</div>
         ) : visible.length === 0 ? (
           <div className="rounded-xl border border-zinc-800/40 bg-zinc-900/30 p-8 text-center">
             <p className="text-sm text-zinc-400">No handoffs in this view.</p>

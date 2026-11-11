@@ -36,7 +36,7 @@ const WINDOW_OPTIONS = [
 ];
 
 function heat(count: number, max: number): string {
-  if (count === 0) return "bg-zinc-500/[0.04] text-zinc-600";
+  if (count === 0) return "bg-zinc-500/4 text-zinc-600";
   const ratio = max > 0 ? count / max : 0;
   if (ratio >= 0.75) return "bg-rose-500/30 text-rose-100 border-rose-400/40";
   if (ratio >= 0.5)  return "bg-rose-500/20 text-rose-200 border-rose-500/30";
@@ -74,7 +74,7 @@ export default function DecisionHeatmapPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -83,10 +83,10 @@ export default function DecisionHeatmapPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <Squares2X2Icon className="h-3.5 w-3.5 text-rose-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">
               Decision Heatmap
@@ -95,7 +95,7 @@ export default function DecisionHeatmapPage() {
           <button
             onClick={() => load(windowDays)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -117,7 +117,7 @@ export default function DecisionHeatmapPage() {
               className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition ${
                 windowDays === o.value
                   ? "bg-rose-500/15 text-rose-200 border-rose-500/30"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                  : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
               }`}
             >
               {o.label}
@@ -132,19 +132,19 @@ export default function DecisionHeatmapPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {!loading && !error && report && (
         report.totalRows === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No decisions logged in the selected window. Run an autonomy cycle (or wait for the */15 cron) to populate.
           </div>
         ) : (
           <>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 mb-6 overflow-x-auto">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-4 mb-6 overflow-x-auto">
               <table className="text-[11px] font-mono">
                 <thead>
                   <tr>
@@ -163,7 +163,7 @@ export default function DecisionHeatmapPage() {
                         const count = cellMap.get(`${stage}::${o}`) ?? 0;
                         return (
                           <td key={o} className="px-1 py-0.5">
-                            <div className={`min-w-[44px] text-center rounded border px-1.5 py-0.5 ${heat(count, maxCount)}`}>
+                            <div className={`min-w-[44px] text-center rounded-sm border px-1.5 py-0.5 ${heat(count, maxCount)}`}>
                               {count}
                             </div>
                           </td>
@@ -172,7 +172,7 @@ export default function DecisionHeatmapPage() {
                       <td className="text-zinc-200 px-2 py-1 font-bold">{report.perStageTotal[stage] ?? 0}</td>
                     </tr>
                   ))}
-                  <tr className="border-t border-white/[0.06]">
+                  <tr className="border-t border-white/6">
                     <td className="text-zinc-500 pr-3 pt-2 uppercase tracking-wider">total</td>
                     {report.outcomes.map((o) => (
                       <td key={o} className="text-zinc-200 px-2 pt-2 font-bold">{report.perOutcomeTotal[o] ?? 0}</td>
@@ -183,7 +183,7 @@ export default function DecisionHeatmapPage() {
               </table>
             </div>
 
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
               <div className="flex items-center gap-2 mb-3">
                 <FireIcon className="h-4 w-4 text-rose-300" />
                 <p className="text-[11px] font-mono text-rose-300/80 uppercase tracking-wider">// top hot spots</p>

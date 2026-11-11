@@ -17,7 +17,7 @@ export function CloudMethodologyGrid() {
     <div className="grid gap-6 md:grid-cols-3">
       {steps.map((step, idx) => (
         <Reveal key={step.title} direction="up" delay={idx * 0.06}>
-          <HoverCard className="p-6 bg-white/[0.02] border-white/[0.06] shadow-xl">
+          <HoverCard className="p-6 bg-white/2 border-white/6 shadow-xl">
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-lg font-semibold text-white">
                 {step.title}

@@ -71,33 +71,33 @@ export default async function ApprovalPacketsPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/approver_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} placeholder="e.g. Approve quarterly schema purge"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="proposalDescription" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">proposal description</label>
             <textarea id="proposalDescription" name="proposalDescription" required rows={6} maxLength={6000} placeholder={"What is the action you want approval to take? Be specific about scope and end state."}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="riskContext" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">risk context</label>
             <textarea id="riskContext" name="riskContext" required rows={6} maxLength={6000} placeholder={"What could go wrong? Blast radius, irreversibility, downstream consumers, mitigations already in place."}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="requestedAuthority" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">requested authority (optional)</label>
               <input id="requestedAuthority" name="requestedAuthority" maxLength={200} placeholder="operator | admin | council | board"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
             <div>
               <label htmlFor="knownDependencies" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">known dependencies (optional)</label>
               <input id="knownDependencies" name="knownDependencies" maxLength={1000} placeholder="e.g. blocks the migration_engineer Phase 3 runbook"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -110,17 +110,17 @@ export default async function ApprovalPacketsPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No approval packets yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Submit the form above to assemble the first one.</p>
         </div>
       ) : (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent packets · {decoded.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
               <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${APPROVER_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${APPROVER_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     {d.decision && (<span className={DECISION_TONE[d.decision] ?? "text-zinc-400"}>{d.decision}</span>)}
                     {d.authority && (<><span className="text-zinc-500">·</span><span className="text-zinc-400">{d.authority}</span></>)}

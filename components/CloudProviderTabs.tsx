@@ -16,15 +16,15 @@ export function CloudProviderTabs({
   const [active, setActive] = useState<"aws" | "azure" | "gcp">("aws");
 
   return (
-    <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06]">
+    <div className="card-hover bg-white/2 rounded-2xl p-6 shadow-xl border border-white/6">
       <div className="flex justify-center mb-6">
-        <div className="inline-flex rounded-full bg-white/[0.04] p-1">
+        <div className="inline-flex rounded-full bg-white/4 p-1">
           <button
             type="button"
             onClick={() => setActive("aws")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
               active === "aws"
-                ? "bg-white/[0.06] text-white shadow-sm"
+                ? "bg-white/6 text-white shadow-xs"
                 : "text-zinc-500"
             }`}
           >
@@ -35,7 +35,7 @@ export function CloudProviderTabs({
             onClick={() => setActive("azure")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
               active === "azure"
-                ? "bg-white/[0.06] text-white shadow-sm"
+                ? "bg-white/6 text-white shadow-xs"
                 : "text-zinc-500"
             }`}
           >
@@ -46,7 +46,7 @@ export function CloudProviderTabs({
             onClick={() => setActive("gcp")}
             className={`px-4 py-1.5 text-xs font-semibold rounded-full transition-colors ${
               active === "gcp"
-                ? "bg-white/[0.06] text-white shadow-sm"
+                ? "bg-white/6 text-white shadow-xs"
                 : "text-zinc-500"
             }`}
           >

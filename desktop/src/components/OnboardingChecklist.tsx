@@ -70,7 +70,7 @@ export function OnboardingChecklist({ onNavigate }: Props) {
         <p className="text-sm font-semibold text-violet-100">Get started</p>
         <div className="flex items-center gap-2">
           <div className="w-28 h-1.5 rounded-full bg-zinc-800/80 overflow-hidden">
-            <div className="h-full bg-gradient-to-r from-violet-500 to-fuchsia-500 transition-all" style={{ width: `${c.percent}%` }} />
+            <div className="h-full bg-linear-to-r from-violet-500 to-fuchsia-500 transition-all" style={{ width: `${c.percent}%` }} />
           </div>
           <p className="text-[11px] font-mono text-zinc-300">{c.completed}/{c.total} · {c.percent}%</p>
         </div>

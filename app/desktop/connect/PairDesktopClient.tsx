@@ -67,13 +67,13 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
 
   return (
     <div className="space-y-4">
-      <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4">
+      <div className="rounded-xl border border-white/10 bg-white/3 p-4">
         <p className="text-xs uppercase tracking-widest text-zinc-500">Device requesting access</p>
         <p className="mt-2 font-mono text-zinc-100">{deviceLabel}</p>
       </div>
       {error && <p role="alert" className="rounded-lg border border-red-500/20 bg-red-500/10 p-3 text-sm text-red-200">{error}</p>}
       <div className="grid grid-cols-2 gap-3">
-        <Link href="/" className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/[0.04] px-5 py-3 text-sm font-semibold text-zinc-300 hover:bg-white/[0.08]">Cancel</Link>
+        <Link href="/" className="inline-flex items-center justify-center rounded-full border border-white/10 bg-white/4 px-5 py-3 text-sm font-semibold text-zinc-300 hover:bg-white/8">Cancel</Link>
         <button
           type="button"
           onClick={approve}

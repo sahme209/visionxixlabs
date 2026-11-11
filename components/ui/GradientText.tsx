@@ -15,7 +15,7 @@ export function GradientText({
 }: GradientTextProps) {
   return (
     <span
-      className={`inline-block bg-clip-text text-transparent bg-gradient-to-r ${className}`}
+      className={`inline-block bg-clip-text text-transparent bg-linear-to-r ${className}`}
       style={{ backgroundImage: `linear-gradient(135deg, ${from}, ${to})` }}
     >
       {children}

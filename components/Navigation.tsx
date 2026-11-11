@@ -168,9 +168,9 @@ export function Navigation() {
   return (
     <nav
       aria-label="Primary navigation"
-      className={`site-navigation fixed inset-x-0 top-0 ${mobileMenuOpen ? "z-[10000]" : "z-50"} transition-[background-color,border-color] duration-300 ${
+      className={`site-navigation fixed inset-x-0 top-0 ${mobileMenuOpen ? "z-10000" : "z-50"} transition-[background-color,border-color] duration-300 ${
         scrolled
-          ? "border-b border-white/[0.09] bg-[#090a08]/88"
+          ? "border-b border-white/9 bg-[#090a08]/88"
           : "border-b border-transparent bg-[#090a08]/62"
       }`}
     >
@@ -186,7 +186,7 @@ export function Navigation() {
         <button
           type="button"
           onClick={skipToContent}
-          className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-black focus:outline focus:outline-2 focus:outline-offset-2 focus:outline-orange-300"
+          className="sr-only focus:not-sr-only focus:absolute focus:left-5 focus:top-3 focus:z-10 focus:rounded-lg focus:bg-white focus:px-4 focus:py-3 focus:text-sm focus:font-semibold focus:text-black focus:outline-solid focus:outline-2 focus:outline-offset-2 focus:outline-orange-300"
         >
           Skip to content
         </button>
@@ -214,9 +214,9 @@ export function Navigation() {
                 }
               }}>More <span aria-hidden="true" className="text-[10px]">⌄</span></button>
             {moreOpen && <div id="more-navigation" role="group" aria-label="More destinations"
-              className="absolute right-0 top-full mt-2 min-w-60 rounded-xl border border-white/[0.09] bg-[#11120f] p-2 shadow-xl">
+              className="absolute right-0 top-full mt-2 min-w-60 rounded-xl border border-white/9 bg-[#11120f] p-2 shadow-xl">
               {secondaryLinks.map((item) => <Link key={item.href} href={item.href} onClick={closeMenu}
-                className="block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/[0.05] hover:text-white">{item.label}</Link>)}
+                className="block rounded-lg px-3 py-2.5 text-sm text-zinc-300 transition-colors hover:bg-white/5 hover:text-white">{item.label}</Link>)}
             </div>}
           </div>
         </div>
@@ -233,7 +233,7 @@ export function Navigation() {
           aria-controls="mobile-navigation"
           aria-label="Open navigation menu"
           onClick={() => { setMoreOpen(false); setMobileMenuOpen((open) => !open); }}
-          className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/[0.06] xl:hidden"
+          className="flex h-11 w-11 items-center justify-center rounded-lg text-zinc-300 hover:bg-white/6 xl:hidden"
         >
           <Bars3Icon className="h-6 w-6" />
         </button>
@@ -252,7 +252,7 @@ export function Navigation() {
             <div className="flex min-h-16 items-center justify-between gap-4 border-b border-white/[0.07]">
               <p className="text-sm font-semibold tracking-[-0.02em] text-zinc-100">Explore Axiom</p>
               <button type="button" aria-label="Close navigation menu" onClick={closeMobileMenu}
-                className="flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg px-2 text-sm text-zinc-300 hover:bg-white/[0.06] focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">
+                className="flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg px-2 text-sm text-zinc-300 hover:bg-white/6 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-orange-300">
                 Close <XMarkIcon aria-hidden="true" className="h-5 w-5" />
               </button>
             </div>

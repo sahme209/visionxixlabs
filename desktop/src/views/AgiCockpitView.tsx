@@ -155,7 +155,7 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
         <>
           <div className={`glass-card p-4 ${data.headline.highestSeverity === "critical" || data.headline.highestSeverity === "high" ? "border border-rose-500/30" : "border border-emerald-500/30"}`}>
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border ${SEVERITY_CLASS[data.headline.highestSeverity] ?? SEVERITY_CLASS.none}`}>
+              <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-sm border ${SEVERITY_CLASS[data.headline.highestSeverity] ?? SEVERITY_CLASS.none}`}>
                 {data.headline.highestSeverity === "none" ? "all clear" : `severity ${data.headline.highestSeverity}`}
               </span>
               <p className="text-sm font-semibold text-white flex-1 min-w-[160px]">{data.headline.callToAction}</p>
@@ -163,18 +163,18 @@ export function AgiCockpitView({ onNavigate }: { onNavigate?: (v: View) => void 
                 type="button"
                 onClick={runNow}
                 disabled={runBusy}
-                className="px-3 py-1 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait"
+                className="px-3 py-1 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait"
               >
                 ✦ {runBusy ? "Running…" : "Run AGI now"}
               </button>
               {data.headline.totalPending > 0 && onNavigate && (
                 <div className="flex gap-2">
                   <button type="button" onClick={() => onNavigate("release-advisor")}
-                          className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[11px] font-mono text-white hover:bg-zinc-800/60">
+                          className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[11px] font-mono text-white hover:bg-zinc-800/60">
                     Advisor →
                   </button>
                   <button type="button" onClick={() => onNavigate("policy-proposals")}
-                          className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[11px] font-mono text-white hover:bg-zinc-800/60">
+                          className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[11px] font-mono text-white hover:bg-zinc-800/60">
                     Proposals →
                   </button>
                 </div>
@@ -306,7 +306,7 @@ function Metric({ label, value, tone }: { label: string; value: number; tone: "e
     zinc:    "text-zinc-300",
   }[tone];
   return (
-    <div className="rounded border border-zinc-700/30 bg-zinc-900/40 px-2 py-1">
+    <div className="rounded-sm border border-zinc-700/30 bg-zinc-900/40 px-2 py-1">
       <p className="text-zinc-500 uppercase tracking-[0.18em] text-[8px]">{label}</p>
       <p className={`${cls} text-[14px] font-bold`}>{value}</p>
     </div>
@@ -316,10 +316,10 @@ function Metric({ label, value, tone }: { label: string; value: number; tone: "e
 function AvailabilityStrip({ snapshot, onNavigate }: { snapshot: AvailSnapshot; onNavigate?: (v: View) => void }) {
   const tone =
     snapshot.aiAvailabilityPct >= 80
-      ? "border-emerald-500/30 bg-emerald-500/[0.05]"
+      ? "border-emerald-500/30 bg-emerald-500/5"
       : snapshot.aiAvailabilityPct >= 50
-      ? "border-white/30 bg-white/[0.05]"
-      : "border-rose-500/30 bg-rose-500/[0.05]";
+      ? "border-white/30 bg-white/5"
+      : "border-rose-500/30 bg-rose-500/5";
   return (
     <button
       type="button"
@@ -340,7 +340,7 @@ function AvailabilityStrip({ snapshot, onNavigate }: { snapshot: AvailSnapshot; 
         </div>
       </div>
       <div className="mt-2 h-1.5 rounded-full bg-black/40 overflow-hidden">
-        <div className="h-full bg-gradient-to-r from-violet-500 via-fuchsia-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
+        <div className="h-full bg-linear-to-r from-violet-500 via-fuchsia-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
       </div>
     </button>
   );
@@ -366,10 +366,10 @@ function CompactCard({ severity, title, rationale, confidence, chip, meta, onCli
     <button type="button" onClick={onClick}
             className="block w-full text-left glass-card p-3 hover:border-violet-500/30 transition-colors">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[severity] ?? SEVERITY_CLASS.unknown}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[severity] ?? SEVERITY_CLASS.unknown}`}>
           {severity}
         </span>
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
           {chip}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">confidence {confidence}%</span>

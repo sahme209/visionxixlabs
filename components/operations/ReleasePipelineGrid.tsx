@@ -41,7 +41,7 @@ const STATUS_CONFIG: Record<
   { icon: typeof CheckCircleIcon; iconClass: string; label: string; bgClass: string; borderClass: string; dotClass: string }
 > = {
   running: { icon: ArrowPathIcon, iconClass: "text-blue-400", label: "Running", bgClass: "bg-blue-500/10", borderClass: "border-blue-500/20", dotClass: "bg-blue-400 animate-pulse" },
-  queued: { icon: ClockIcon, iconClass: "text-zinc-400", label: "Queued", bgClass: "bg-white/[0.04]", borderClass: "border-white/[0.08]", dotClass: "bg-zinc-500" },
+  queued: { icon: ClockIcon, iconClass: "text-zinc-400", label: "Queued", bgClass: "bg-white/4", borderClass: "border-white/8", dotClass: "bg-zinc-500" },
   succeeded: { icon: CheckCircleIcon, iconClass: "text-emerald-400", label: "Succeeded", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20", dotClass: "bg-emerald-400" },
   failed: { icon: XCircleIcon, iconClass: "text-red-400", label: "Failed", bgClass: "bg-red-500/10", borderClass: "border-red-500/20", dotClass: "bg-red-400 animate-pulse" },
   blocked: { icon: PauseCircleIcon, iconClass: "text-zinc-400", label: "Blocked", bgClass: "bg-white/10", borderClass: "border-white/20", dotClass: "bg-zinc-400" },
@@ -86,9 +86,9 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
   const blocked = pipelines.filter((p) => p.status === "blocked" || p.status === "failed").length;
 
   return (
-    <div className={`rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="px-6 py-4 border-b border-white/6 bg-white/1">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
           <div className="flex items-center gap-3">
             <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
@@ -114,15 +114,15 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
           return (
             <div
               key={p.id}
-              className="group relative rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all overflow-hidden"
+              className="group relative rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all overflow-hidden"
             >
               {/* Running stripe */}
               {p.status === "running" && (
-                <span aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-blue-400 to-transparent animate-pulse" />
+                <span aria-hidden className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-blue-400 to-transparent animate-pulse" />
               )}
               {/* Failed stripe */}
               {p.status === "failed" && (
-                <span aria-hidden className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-red-400 to-transparent" />
+                <span aria-hidden className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-red-400 to-transparent" />
               )}
 
               <div className="flex items-start gap-3 flex-wrap">
@@ -190,13 +190,13 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
 
               {/* Blocked detail row */}
               {p.status === "blocked" && (
-                <div className="mt-3 rounded-lg bg-white/[0.05] border border-white/15 px-3 py-2 flex items-center gap-2 text-[11px] text-zinc-300">
+                <div className="mt-3 rounded-lg bg-white/5 border border-white/15 px-3 py-2 flex items-center gap-2 text-[11px] text-zinc-300">
                   <PauseCircleIcon className="h-3.5 w-3.5" />
                   Release readiness below threshold · rollback path not verified · open for governance review
                 </div>
               )}
               {p.status === "awaiting_approval" && (
-                <div className="mt-3 rounded-lg bg-white/[0.05] border border-white/15 px-3 py-2 flex items-center gap-2 text-[11px] text-zinc-300">
+                <div className="mt-3 rounded-lg bg-white/5 border border-white/15 px-3 py-2 flex items-center gap-2 text-[11px] text-zinc-300">
                   <LockClosedIcon className="h-3.5 w-3.5" />
                   {p.awaitingApprovals ?? 1} approver{(p.awaitingApprovals ?? 1) !== 1 ? "s" : ""} required · ServiceNow CR open · escalation path armed
                 </div>
@@ -207,7 +207,7 @@ export function ReleasePipelineGrid({ pipelines = DEMO_PIPELINES, className = ""
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between text-xs">
+      <div className="px-6 py-3 border-t border-white/6 bg-white/1 flex items-center justify-between text-xs">
         <span className="text-zinc-500">Aggregating from connected CI/CD systems</span>
         <button className="text-zinc-400 hover:text-white transition-colors font-medium">
           View all releases →

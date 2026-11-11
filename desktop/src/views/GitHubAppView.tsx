@@ -88,7 +88,7 @@ export function GitHubAppView() {
                 href={data.installUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[13px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[13px] font-semibold text-violet-100 hover:bg-violet-500/22 transition-colors"
               >
                 Continue to GitHub →
               </a>
@@ -103,7 +103,7 @@ export function GitHubAppView() {
           {data.installed && data.active && (
             <div className="glass-card p-4 border border-emerald-500/20">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[data.active.status]}`}>
+                <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[data.active.status]}`}>
                   {data.active.status}
                 </span>
                 <p className="text-sm font-semibold text-emerald-100">{data.active.accountLogin}</p>
@@ -124,7 +124,7 @@ export function GitHubAppView() {
                 {data.history.map((h) => (
                   <div key={h.id} className="glass-card p-3">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[h.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[h.status]}`}>
                         {h.status}
                       </span>
                       <span className="text-[12px] text-white">{h.accountLogin}</span>

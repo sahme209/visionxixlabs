@@ -57,7 +57,7 @@ export default function AdminChartersPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -66,10 +66,10 @@ export default function AdminChartersPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ShieldCheckIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Admin
@@ -95,29 +95,29 @@ export default function AdminChartersPage() {
       </div>
 
       {forbidden && (
-        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-100">
+        <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-100">
           <p className="font-semibold mb-1">Platform admin required.</p>
           <p>Add your email to the ADMIN_EMAILS env var to view this page.</p>
         </div>
       )}
 
       {error && !forbidden && (
-        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {report && (
         report.total === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No tenants have set a charter override yet. They're all running on the global observer default.
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] divide-y divide-white/[0.04] overflow-hidden mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 divide-y divide-white/4 overflow-hidden mb-8">
             {report.records.map((r) => (
-              <div key={r.organizationId} className="px-3 py-2.5 hover:bg-white/[0.02]">
+              <div key={r.organizationId} className="px-3 py-2.5 hover:bg-white/2">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
-                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${MODE_TONE[r.mode] ?? "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
+                  <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${MODE_TONE[r.mode] ?? "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
                     {r.mode}
                   </span>
                   <code className="text-[10px] font-mono text-zinc-400">{r.organizationId}</code>
@@ -125,7 +125,7 @@ export default function AdminChartersPage() {
                     <span className="text-[10px] font-mono text-zinc-500">cap {r.perCycleActionLimit}/cycle</span>
                   )}
                   {r.slackWebhookOverridePresent && (
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-cyan-500/15 text-cyan-300 border border-cyan-500/30">
                       slack override
                     </span>
                   )}
@@ -149,10 +149,10 @@ function Stat({
   label, value, tone, icon: Icon,
 }: { label: string; value: string; tone: "zinc" | "sky" | "orange" | "emerald"; icon?: typeof CpuChipIcon }) {
   const cls = {
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
-    sky:     "border-sky-500/[0.18] bg-sky-500/[0.03] text-sky-200",
-    orange:  "border-orange-500/[0.18] bg-orange-500/[0.03] text-orange-200",
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
+    sky:     "border-sky-500/18 bg-sky-500/3 text-sky-200",
+    orange:  "border-orange-500/18 bg-orange-500/3 text-orange-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

@@ -76,11 +76,11 @@ interface PriorityReportLite {
 }
 
 const SEVERITY_VISUAL: Record<Severity, { border: string; bg: string; text: string; pill: string; dot: string }> = {
-  critical: { border: "border-rose-500/[0.28]",   bg: "bg-rose-500/[0.05]",   text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200",      dot: "bg-rose-400 animate-pulse"   },
-  high:     { border: "border-white/[0.22]",  bg: "bg-white/[0.05]",  text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",    dot: "bg-zinc-400 animate-pulse"  },
-  medium:   { border: "border-cyan-500/[0.22]",   bg: "bg-cyan-500/[0.04]",   text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",      dot: "bg-cyan-400"                 },
-  low:      { border: "border-zinc-700/30",       bg: "bg-white/[0.02]",      text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300",      dot: "bg-zinc-500"                 },
-  info:     { border: "border-zinc-700/30",       bg: "bg-white/[0.02]",      text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",      dot: "bg-zinc-600"                 },
+  critical: { border: "border-rose-500/[0.28]",   bg: "bg-rose-500/5",   text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200",      dot: "bg-rose-400 animate-pulse"   },
+  high:     { border: "border-white/22",  bg: "bg-white/5",  text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",    dot: "bg-zinc-400 animate-pulse"  },
+  medium:   { border: "border-cyan-500/22",   bg: "bg-cyan-500/4",   text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",      dot: "bg-cyan-400"                 },
+  low:      { border: "border-zinc-700/30",       bg: "bg-white/2",      text: "text-zinc-300",    pill: "bg-zinc-700/40 text-zinc-300",      dot: "bg-zinc-500"                 },
+  info:     { border: "border-zinc-700/30",       bg: "bg-white/2",      text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",      dot: "bg-zinc-600"                 },
 };
 
 const CATEGORY_ICON: Record<Category, typeof CloudIcon> = {
@@ -130,7 +130,7 @@ export default function PrioritiesPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -139,12 +139,12 @@ export default function PrioritiesPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <ChartBarIcon className="h-3.5 w-3.5 text-cyan-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
                   Operational priorities · {(report?.overallSourceMode ?? "preview").replace(/_/g, " ")}
@@ -163,11 +163,11 @@ export default function PrioritiesPage() {
           </div>
 
           {report && (
-            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
               <Stat label="Critical" value={report.summary.critical} tone={report.summary.critical > 0 ? "text-rose-300" : "text-zinc-500"} />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="High" value={report.summary.high} tone={report.summary.high > 0 ? "text-zinc-300" : "text-zinc-500"} />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Avg conf." value={Math.round(report.averageConfidence * 100) + "%"} tone="text-white" />
             </div>
           )}
@@ -175,19 +175,19 @@ export default function PrioritiesPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// scoring canonical priorities…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// priorities unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
 
       {!loading && !error && report && report.items.length === 0 && (
-        <div className="rounded-2xl border border-emerald-500/[0.22] bg-emerald-500/[0.04] p-6 mb-6">
+        <div className="rounded-2xl border border-emerald-500/22 bg-emerald-500/4 p-6 mb-6">
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// queue clear</p>
           <p className="text-[14px] text-emerald-100 font-semibold">No operational priorities require attention.</p>
           <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">No critical findings, no pending approvals, no integration blockers. Use the recurring scan schedule to keep this true.</p>
@@ -215,13 +215,13 @@ export default function PrioritiesPage() {
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 mb-1 flex-wrap">
                         <span className="text-[10px] font-mono text-zinc-500">#{item.rank}</span>
-                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${sev.pill}`}>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${sev.pill}`}>
                           {item.severity}
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-orange-500/15 text-orange-300">
                           {item.urgency.replace(/_/g, " ")}
                         </span>
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                           {item.sourceMode.replace(/_/g, " ")}
                         </span>
                         <span className="text-[10px] font-mono text-zinc-500 ml-auto">score {item.score.composite}</span>
@@ -242,9 +242,9 @@ export default function PrioritiesPage() {
                 </button>
 
                 {isExpanded && (
-                  <div className="px-5 pb-5 border-t border-white/[0.06] pt-4 space-y-4">
+                  <div className="px-5 pb-5 border-t border-white/6 pt-4 space-y-4">
                     {/* Score breakdown */}
-                    <div className="rounded-lg bg-black/30 border border-white/[0.06] p-3">
+                    <div className="rounded-lg bg-black/30 border border-white/6 p-3">
                       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-2">// score breakdown</p>
                       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[11px] font-mono">
                         <Factor label="Severity" value={item.score.severityWeight} />
@@ -269,7 +269,7 @@ export default function PrioritiesPage() {
                     )}
 
                     {item.limitations.length > 0 && (
-                      <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2.5">
+                      <div className="rounded-md border border-white/18 bg-white/4 p-2.5">
                         <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// limitations</p>
                         <ul className="space-y-0.5">
                           {item.limitations.slice(0, 2).map((l, i) => (
@@ -284,7 +284,7 @@ export default function PrioritiesPage() {
                         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// evidence refs</p>
                         <div className="flex flex-wrap gap-1.5">
                           {item.evidenceRefs.map((ref, i) => (
-                            <span key={i} className="text-[10px] font-mono text-zinc-400 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5">{ref}</span>
+                            <span key={i} className="text-[10px] font-mono text-zinc-400 bg-white/4 border border-white/6 rounded-sm px-1.5 py-0.5">{ref}</span>
                           ))}
                         </div>
                       </div>
@@ -294,7 +294,7 @@ export default function PrioritiesPage() {
                       <p className="text-[11px] text-zinc-500">Safe next step</p>
                       <Link
                         href={item.safeNextAction.href}
-                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors"
+                        className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors"
                       >
                         {item.safeNextAction.label}
                         <ArrowRightIcon className="h-3 w-3" />
@@ -310,7 +310,7 @@ export default function PrioritiesPage() {
 
       {/* Engine contract footer */}
       {!loading && !error && report && (
-        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
           <ChartBarIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div className="flex-1">
             <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// priority engine contract</p>
@@ -329,7 +329,7 @@ export default function PrioritiesPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number | string; tone: string }) {
   return (
-    <div className="text-right min-w-[4rem]">
+    <div className="text-right min-w-16">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>
@@ -338,7 +338,7 @@ function Stat({ label, value, tone }: { label: string; value: number | string; t
 
 function Factor({ label, value }: { label: string; value: number | string }) {
   return (
-    <div className="rounded bg-white/[0.02] border border-white/[0.04] px-2 py-1.5">
+    <div className="rounded-sm bg-white/2 border border-white/4 px-2 py-1.5">
       <p className="text-[9px] text-zinc-500 uppercase tracking-wider">{label}</p>
       <p className="text-[13px] font-bold text-white tracking-tight">{value}</p>
     </div>

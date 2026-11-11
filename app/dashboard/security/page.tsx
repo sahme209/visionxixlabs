@@ -179,7 +179,7 @@ export default async function SecurityPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             Findings / approvals tables aren&apos;t migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
@@ -193,7 +193,7 @@ export default async function SecurityPage() {
         {creds.length === 0 ? (
           <Link
             href="/dashboard/connect-cloud"
-            className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-7"
+            className="group block rounded-2xl border border-white/6 bg-white/1.5 hover:border-white/12 transition-colors px-7 py-7"
           >
             <p className="text-[14px] font-medium text-white mb-1">No connectors yet</p>
             <p className="text-[12px] text-zinc-500 leading-relaxed max-w-md mb-4">
@@ -206,7 +206,7 @@ export default async function SecurityPage() {
             </span>
           </Link>
         ) : (
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {creds.map((c) => {
               const linkedDate = c.linkedAt ? new Date(c.linkedAt) : null;
               const tone = c.status === "linked" ? "text-emerald-300" : c.status === "invalid" ? "text-rose-300" : "text-zinc-400";
@@ -247,7 +247,7 @@ export default async function SecurityPage() {
           )}
         </div>
         {recentSecurity.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-8 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-8 text-center">
             <p className="text-[13px] text-zinc-300 mb-1">No security findings yet</p>
             <p className="text-[11px] text-zinc-500 leading-relaxed max-w-md mx-auto">
               Run a scan from the dashboard to populate findings. Security-category
@@ -255,12 +255,12 @@ export default async function SecurityPage() {
             </p>
           </div>
         ) : (
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {recentSecurity.map((f) => (
               <li key={f.id}>
                 <Link
                   href={`/dashboard/findings/${f.id}`}
-                  className="group block px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                  className="group block px-6 py-4 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1 text-[10px] font-mono uppercase tracking-wider">
                     <span className={SEVERITY_TONE[f.severity]}>{f.severity}</span>
@@ -280,7 +280,7 @@ export default async function SecurityPage() {
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">high-risk approvals</p>
         <Link
           href="/dashboard/approvals"
-          className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-5"
+          className="group block rounded-2xl border border-white/6 bg-white/1.5 hover:border-white/12 transition-colors px-7 py-5"
         >
           <div className="flex items-baseline justify-between gap-4">
             <div>
@@ -305,11 +305,11 @@ export default async function SecurityPage() {
           </Link>
         </div>
         {recentAudits.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-6 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-6 text-center">
             <p className="text-[12px] text-zinc-500">No security-relevant events yet.</p>
           </div>
         ) : (
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {recentAudits.map((a) => {
               const tone = a.outcome === "success" ? "text-emerald-300"
                          : a.outcome === "failure" ? "text-rose-300"

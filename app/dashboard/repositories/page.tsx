@@ -103,19 +103,19 @@ export default function RepositoriesPage() {
       <NewRepositoryPanel onCreated={loadList} />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading repositories…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -125,7 +125,7 @@ export default function RepositoriesPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -140,38 +140,38 @@ export default function RepositoriesPage() {
           </div>
 
           {data.repositories.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No repositories tracked yet. Connect a Git provider to start populating.
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {data.repositories.map((r) => (
-                <div key={r.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={r.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center justify-between gap-3 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
                         {PROVIDER_LABEL[r.provider]}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">{r.displayName}</p>
                       <span className="text-[10px] font-mono text-zinc-500">default: {r.defaultBranch}</span>
                       {r.flavorBadge && (
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                           {r.flavorBadge}
                         </span>
                       )}
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${PROTECTION_CLASS[r.protectionStrength]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${PROTECTION_CLASS[r.protectionStrength]}`}>
                         {r.protectionStrength} protection
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                         {r.openPrCount} open PR{r.openPrCount === 1 ? "" : "s"}
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                         {r.recentTagCount} tag{r.recentTagCount === 1 ? "" : "s"}
                       </span>
                       {r.lastWorkflow && (
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${workflowToneFor(r)}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${workflowToneFor(r)}`}>
                           {r.lastWorkflow.state === "completed"
                             ? `${r.lastWorkflow.name} · ${r.lastWorkflow.conclusion ?? "completed"}`
                             : `${r.lastWorkflow.name} · ${r.lastWorkflow.state}`}
@@ -242,7 +242,7 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
 
   const isRunning = outcome.kind === "running";
   return (
-    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[10px] font-mono">
+    <div className="mt-3 pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[10px] font-mono">
       <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync from provider</span>
       {(["pull_requests", "releases", "workflow_runs"] as const).map((k) => (
         <button
@@ -250,7 +250,7 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
           type="button"
           disabled={isRunning}
           onClick={() => trigger(k)}
-          className="px-2 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:border-white/[0.15] hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-2 py-1 rounded-sm border border-white/8 bg-white/2 text-zinc-300 hover:border-white/15 hover:text-white disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {outcome.kind === "running" && outcome.which === k
             ? "syncing…"
@@ -272,10 +272,10 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof CodeBracketSquareIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -346,7 +346,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/2.5 text-[12px] font-semibold text-white hover:bg-orange-500/12 transition-colors"
         >
           + Register repository
         </button>
@@ -356,7 +356,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-orange-100">New repository</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -368,7 +368,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
             value={provider}
             onChange={(e) => setProvider(e.target.value as typeof provider)}
             disabled={busy}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
           >
             <option value="github">GitHub</option>
             <option value="gitlab">GitLab</option>
@@ -389,7 +389,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !owner || !name}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Register"}
         </button>
@@ -419,7 +419,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

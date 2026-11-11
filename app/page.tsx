@@ -59,7 +59,7 @@ export default function Home() {
               <Link href="/product" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] hover:bg-white">
                 Explore Axiom <ArrowRightIcon className="h-4 w-4" />
               </Link>
-              <Link href="/demo" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.05] px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/[0.08]">
+              <Link href="/demo" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/8">
                 Explore the scripted tour <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
@@ -74,19 +74,19 @@ export default function Home() {
 
         <WorksWithStrip />
 
-        <section aria-label="Inside a deployment decision" className="border-t border-white/[0.06] px-5 py-16 sm:px-8 lg:px-10">
+        <section aria-label="Inside a deployment decision" className="border-t border-white/6 px-5 py-16 sm:px-8 lg:px-10">
           <div className="mx-auto max-w-[1200px]"><GovernanceAssembly /></div>
         </section>
 
         <GovernedDeploymentModel />
 
-        <section className="border-y border-white/[0.06] bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
+        <section className="border-y border-white/6 bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
           <div className="mx-auto max-w-[1200px]">
             <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Built for engineering teams</p>
             <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-[44px] sm:leading-[1.1]">More context. Clearer decisions.</h2>
-            <div className="mt-12 grid border-y border-white/[0.08] md:grid-cols-3 md:divide-x md:divide-white/[0.08]">
+            <div className="mt-12 grid border-y border-white/8 md:grid-cols-3 md:divide-x md:divide-white/8">
               {pillars.map((pillar) => (
-                <article key={pillar.eyebrow} className="border-b border-white/[0.08] py-8 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0">
+                <article key={pillar.eyebrow} className="border-b border-white/8 py-8 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0">
                   <pillar.icon className="h-5 w-5 text-zinc-300" />
                   <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-orange-300">{pillar.eyebrow}</p>
                   <h3 className="mt-2 text-lg font-medium leading-snug tracking-[-0.02em] text-zinc-100">{pillar.title}</h3>
@@ -120,7 +120,7 @@ export default function Home() {
           />
         </section>
 
-        <section className="border-y border-white/[0.06] bg-[#11110f] px-5 py-16 sm:px-8 lg:px-10">
+        <section className="border-y border-white/6 bg-[#11110f] px-5 py-16 sm:px-8 lg:px-10">
           <h2 className="mx-auto max-w-[1200px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Built for production reality.</h2>
           <div className="mx-auto mt-9 grid max-w-[1200px] gap-3 md:grid-cols-3">
             <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy stays in charge" detail="Local preferences cannot weaken your organization's approvals, permissions or production gates." />
@@ -135,7 +135,7 @@ export default function Home() {
               <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-orange-300">Founding Supporters</p>
               <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Help build autonomous engineering with people in control.</h2>
             </div>
-            <Link href="/support" className="inline-flex min-h-12 shrink-0 items-center gap-2 self-start rounded-full border border-white/[0.14] px-6 text-sm font-medium text-zinc-200 transition hover:border-orange-300/35 hover:bg-white/[0.04]">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
+            <Link href="/support" className="inline-flex min-h-12 shrink-0 items-center gap-2 self-start rounded-full border border-white/[0.14] px-6 text-sm font-medium text-zinc-200 transition hover:border-orange-300/35 hover:bg-white/4">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
           </div>
         </section>
 
@@ -150,13 +150,13 @@ export default function Home() {
 }
 
 function EditorialPanel({ eyebrow, title, copy, visual, reverse = false }: { eyebrow: string; title: string; copy: string; visual: ReactNode; reverse?: boolean }) {
-  return <article className="grid gap-8 border-t border-white/[0.08] py-10 lg:grid-cols-2 lg:items-center lg:gap-16">
+  return <article className="grid gap-8 border-t border-white/8 py-10 lg:grid-cols-2 lg:items-center lg:gap-16">
     <div className={`max-w-lg ${reverse ? "lg:order-2" : ""}`}><p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">{eyebrow}</p><h2 className="mt-4 text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-[34px]">{title}</h2><p className="mt-4 text-base leading-7 text-zinc-400">{copy}</p></div>
-    <div className={`min-w-0 rounded-lg border border-white/[0.08] bg-[#141414] p-5 sm:p-7 ${reverse ? "lg:order-1" : ""}`}><p className="mb-4 text-[10px] uppercase tracking-widest text-zinc-400">Illustrated record · sample data</p>{visual}</div>
+    <div className={`min-w-0 rounded-lg border border-white/8 bg-brand-ink p-5 sm:p-7 ${reverse ? "lg:order-1" : ""}`}><p className="mb-4 text-[10px] uppercase tracking-widest text-zinc-400">Illustrated record · sample data</p>{visual}</div>
   </article>;
 }
 
-function StageBoard() { return <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-white/[0.1] bg-[#10110f]/95 text-zinc-200"><div className="border-b border-white/[0.07] px-5 py-4 text-sm">Request completeness</div>{phases.map((phase, index) => <div key={phase} className="flex items-center gap-3 border-b border-white/[0.06] px-5 py-4 last:border-0"><span className={`h-2 w-2 rounded-full ${index < 4 ? 'bg-orange-300' : 'bg-zinc-600'}`} /><span className="text-sm">{phase}</span><span className="ml-auto text-xs text-zinc-400">{index < 4 ? 'Recorded' : 'Review required'}</span></div>)}</div>; }
-function HistoryBoard() { return <div className="mx-auto max-w-xl rounded-xl border border-white/[0.1] bg-[#10110f]/95 p-5 text-zinc-200"><p className="text-sm font-medium">Immutable history</p>{[4,3,2].map((version, index) => <div key={version} className="mt-4 rounded-lg border border-white/[0.07] bg-white/[0.025] p-4"><div className="flex justify-between"><span className="text-sm">Revision {version}</span><span className="text-xs text-zinc-400">{index === 0 ? 'Current record' : 'Superseded'}</span></div><p className="mt-2 text-xs text-zinc-400">Actor recorded · changed field names only · SHA-256 digest</p></div>)}</div>; }
-function ValidationBoard() { return <div className="mx-auto grid max-w-2xl gap-px overflow-hidden rounded-xl border border-white/[0.1] bg-black/35 text-zinc-200 sm:grid-cols-2">{[["Trigger","Workflow accepted"],["Execution","No result yet"],["Technical validation","Required"],["Functional validation","Required"],["Rollback","Instruction recorded"],["Closure","Blocked until evidence"]].map(([label,value]) => <div key={label} className="bg-[#10110f]/95 p-5"><p className="text-xs text-zinc-400">{label}</p><p className="mt-2 text-sm">{value}</p></div>)}</div>; }
-function EvidenceCard({ icon, title, detail }: { icon: ReactNode; title: string; detail: string }) { return <article className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-7 sm:p-8"><span className="text-zinc-400">{icon}</span><h3 className="mt-5 text-lg font-medium">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-400">{detail}</p></article>; }
+function StageBoard() { return <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-white/10 bg-[#10110f]/95 text-zinc-200"><div className="border-b border-white/[0.07] px-5 py-4 text-sm">Request completeness</div>{phases.map((phase, index) => <div key={phase} className="flex items-center gap-3 border-b border-white/6 px-5 py-4 last:border-0"><span className={`h-2 w-2 rounded-full ${index < 4 ? 'bg-orange-300' : 'bg-zinc-600'}`} /><span className="text-sm">{phase}</span><span className="ml-auto text-xs text-zinc-400">{index < 4 ? 'Recorded' : 'Review required'}</span></div>)}</div>; }
+function HistoryBoard() { return <div className="mx-auto max-w-xl rounded-xl border border-white/10 bg-[#10110f]/95 p-5 text-zinc-200"><p className="text-sm font-medium">Immutable history</p>{[4,3,2].map((version, index) => <div key={version} className="mt-4 rounded-lg border border-white/[0.07] bg-white/2.5 p-4"><div className="flex justify-between"><span className="text-sm">Revision {version}</span><span className="text-xs text-zinc-400">{index === 0 ? 'Current record' : 'Superseded'}</span></div><p className="mt-2 text-xs text-zinc-400">Actor recorded · changed field names only · SHA-256 digest</p></div>)}</div>; }
+function ValidationBoard() { return <div className="mx-auto grid max-w-2xl gap-px overflow-hidden rounded-xl border border-white/10 bg-black/35 text-zinc-200 sm:grid-cols-2">{[["Trigger","Workflow accepted"],["Execution","No result yet"],["Technical validation","Required"],["Functional validation","Required"],["Rollback","Instruction recorded"],["Closure","Blocked until evidence"]].map(([label,value]) => <div key={label} className="bg-[#10110f]/95 p-5"><p className="text-xs text-zinc-400">{label}</p><p className="mt-2 text-sm">{value}</p></div>)}</div>; }
+function EvidenceCard({ icon, title, detail }: { icon: ReactNode; title: string; detail: string }) { return <article className="rounded-lg border border-white/6 bg-white/2.5 p-7 sm:p-8"><span className="text-zinc-400">{icon}</span><h3 className="mt-5 text-lg font-medium">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-400">{detail}</p></article>; }

@@ -9,7 +9,7 @@ export function SecurityPrinciplesBlock({
 }: SecurityPrinciplesBlockProps) {
   return (
     <section
-      className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6"
+      className="rounded-xl border border-white/6 bg-white/2 p-6"
       aria-labelledby="security-principles-heading"
     >
       <h2

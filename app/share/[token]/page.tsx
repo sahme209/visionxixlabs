@@ -35,7 +35,7 @@ export default async function SharedEngineerReportPage({
   if (!validation.ok || !validation.payload) {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
-        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-6 text-center">
+        <div className="rounded-2xl border border-rose-500/20 bg-rose-500/4 p-6 text-center">
           <LockClosedIcon className="h-8 w-8 text-rose-300 mx-auto mb-3" />
           <p className="text-[14px] text-zinc-100 leading-relaxed mb-2">
             {validation.error === "expired" ? "This share link has expired." :
@@ -104,7 +104,7 @@ export default async function SharedEngineerReportPage({
         </p>
       </header>
 
-      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6">
+      <section className="mb-8 rounded-2xl border border-white/6 bg-white/2 p-6">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">narrative</p>
         <p className="text-[14.5px] text-zinc-100 leading-relaxed whitespace-pre-line">{entry.narrative}</p>
       </section>
@@ -112,7 +112,7 @@ export default async function SharedEngineerReportPage({
       {riskFactors.length > 0 && (
         <section className="mb-8">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">risk factors · {riskFactors.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {riskFactors.map((f, i) => (
               <li key={`risk-${i}`} className="px-5 py-3 text-[13px] text-zinc-200 leading-relaxed">{f}</li>
             ))}
@@ -123,7 +123,7 @@ export default async function SharedEngineerReportPage({
       {nextActions.length > 0 && (
         <section className="mb-8">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">structured payload · {nextActions.length}</p>
-          <ul className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-emerald-500/15 bg-emerald-500/3 divide-y divide-white/4 overflow-hidden">
             {nextActions.map((a, i) => (
               <li key={`action-${i}`} className="px-5 py-3 text-[12.5px] text-emerald-100/90 leading-relaxed font-mono">{a}</li>
             ))}
@@ -131,7 +131,7 @@ export default async function SharedEngineerReportPage({
         </section>
       )}
 
-      <footer className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mt-12">
+      <footer className="rounded-2xl border border-white/6 bg-white/1.5 p-5 mt-12">
         <div className="flex items-center justify-between gap-3 flex-wrap text-[11px]">
           <p className="text-zinc-500 inline-flex items-center gap-1.5">
             <LockClosedIcon className="h-3 w-3" />

@@ -136,7 +136,7 @@ export function TeamOfOneClient() {
 
       {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[70vh] w-[55vw] rounded-full bg-brand-orange/[0.10] blur-[150px]" />
+        <div className="ambient-drift absolute -top-1/4 left-1/4 h-[70vh] w-[55vw] rounded-full bg-brand-orange/10 blur-[150px]" />
         <div className="ambient-drift absolute top-[15%] right-[5%] h-[55vh] w-[45vw] rounded-full bg-brand-coral/[0.07] blur-[140px]" style={{ animationDelay: "-8s" }} />
       </div>
 
@@ -157,7 +157,7 @@ export function TeamOfOneClient() {
           className="mono-label inline-flex items-center gap-3"
         >
           <span className="text-brand-coral/90 tabular-nums">T1</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           <span className="relative flex h-1.5 w-1.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
             <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-emerald-300" />
@@ -174,7 +174,7 @@ export function TeamOfOneClient() {
           A whole IT team{" "}
           <span className="relative inline-block">
             in one platform.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
 
@@ -204,7 +204,7 @@ export function TeamOfOneClient() {
           </Link>
           <Link
             href="/status"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-sm text-zinc-300 hover:bg-white/[0.06] transition"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/2 px-5 py-2.5 text-sm text-zinc-300 hover:bg-white/6 transition"
           >
             Live platform status
           </Link>
@@ -230,7 +230,7 @@ export function TeamOfOneClient() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7 }}
-          className="text-3xl md:text-4xl font-bold tracking-[-0.025em]"
+          className="text-3xl md:text-4xl font-bold tracking-tight"
         >
           One person, twenty-five specialists in their head.
         </motion.h2>
@@ -271,12 +271,12 @@ export function TeamOfOneClient() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7 }}
-          className="rounded-3xl border border-white/[0.08] bg-gradient-to-br from-zinc-500/[0.07] via-orange-500/[0.04] to-transparent p-8 md:p-12"
+          className="rounded-3xl border border-white/8 bg-linear-to-br from-zinc-500/[0.07] via-orange-500/4 to-transparent p-8 md:p-12"
         >
           <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300 mb-3">
             ROI · loaded annual cost
           </p>
-          <h2 className="text-3xl md:text-5xl font-bold tracking-[-0.025em] leading-[1.05]">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]">
             A US-market specialist roster costs{" "}
             <span className="text-[#ff783d]">
               <AnimatedNumber value={TEAM_TOTAL} durationMs={2200} />
@@ -299,7 +299,7 @@ export function TeamOfOneClient() {
               </thead>
               <tbody>
                 {ROLE_COSTS_USD.map((r) => (
-                  <tr key={r.role} className="border-t border-white/[0.04]">
+                  <tr key={r.role} className="border-t border-white/4">
                     <td className="py-2 text-zinc-300">{r.role}</td>
                     <td className="py-2 text-right font-mono tabular-nums text-zinc-200">{usd(r.loadedAnnual)}</td>
                   </tr>
@@ -329,7 +329,7 @@ export function TeamOfOneClient() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 0.7 }}
-          className="text-3xl md:text-5xl font-bold tracking-[-0.025em] leading-[1.05]"
+          className="text-3xl md:text-5xl font-bold tracking-tight leading-[1.05]"
         >
           The team is built. The cockpit is open.
         </motion.h2>
@@ -357,7 +357,7 @@ export function TeamOfOneClient() {
           </Link>
           <Link
             href="/plans"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-6 py-3 text-sm text-zinc-300 hover:bg-white/[0.06] transition"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/2 px-6 py-3 text-sm text-zinc-300 hover:bg-white/6 transition"
           >
             See plans
           </Link>

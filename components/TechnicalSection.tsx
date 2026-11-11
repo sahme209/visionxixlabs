@@ -21,7 +21,7 @@ export function TechnicalSection({
         {subsections.map((sub) => (
           <div
             key={sub.title}
-            className="card-hover bg-white/[0.02] rounded-xl p-6 shadow-lg border border-white/[0.06]"
+            className="card-hover bg-white/2 rounded-xl p-6 shadow-lg border border-white/6"
           >
             <h3 className="text-lg font-semibold text-white mb-3">
               {sub.title}

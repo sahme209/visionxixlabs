@@ -23,7 +23,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
   }
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white">
+    <div className="min-h-screen bg-brand-ink text-white">
       <Navigation />
       <main className="mx-auto max-w-3xl px-4 pb-20 pt-28 sm:px-6 md:pt-36">
         <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-zinc-300">Installer availability</p>
@@ -35,7 +35,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
             ? "Required service storage-access checks are currently unavailable. Return to downloads to check availability again."
             : "This page is the honest fallback when the release manifest has no matching platform asset. It does not substitute a browser product, source archive, waitlist, or promised release date."}
         </p>
-        <div className="mt-8 rounded-2xl border border-white/20 bg-white/[0.04] p-6">
+        <div className="mt-8 rounded-2xl border border-white/20 bg-white/4 p-6">
           <div className="flex items-center gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-zinc-300" />
             <h2 className="font-semibold">{runtimeUnavailable ? "Why the download is paused" : "Check the current release first"}</h2>
@@ -50,7 +50,7 @@ export default async function DownloadPreviewPage({ searchParams }: DownloadPrev
           <Link href="/download" className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-zinc-950">
             <ArrowLeftIcon className="h-4 w-4" /> Return to downloads
           </Link>
-          <a href="mailto:support@visionxixlabs.com" className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm text-zinc-200 hover:bg-white/[0.05]">
+          <a href="mailto:support@visionxixlabs.com" className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-3 text-sm text-zinc-200 hover:bg-white/5">
             <EnvelopeIcon className="h-4 w-4" /> Contact support
           </a>
         </div>

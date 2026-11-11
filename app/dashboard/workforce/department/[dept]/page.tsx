@@ -209,7 +209,7 @@ export default async function WorkforceDepartmentPage({
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             AgentEngineerActionAttempt table not migrated. Run <code className="font-mono text-white">prisma migrate deploy</code>.
@@ -218,7 +218,7 @@ export default async function WorkforceDepartmentPage({
       )}
 
       {/* Department rollup */}
-      <section className="mb-4 grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+      <section className="mb-4 grid grid-cols-4 rounded-2xl border border-white/6 bg-white/1.5 divide-x divide-white/4 overflow-hidden">
         <RollupTile label="total"             count={rollup.total}             tone="text-white" />
         <RollupTile label="allowed"           count={rollup.allowed}           tone={rollup.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
         <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
@@ -229,7 +229,7 @@ export default async function WorkforceDepartmentPage({
           attempts rollup because pending count is a 'now' signal,
           not a 30-day cumulative one. */}
       {totalPending > 0 && (
-        <div className="mb-10 rounded-2xl border border-white/15 bg-white/[0.03] px-5 py-3 flex items-center justify-between gap-3">
+        <div className="mb-10 rounded-2xl border border-white/15 bg-white/3 px-5 py-3 flex items-center justify-between gap-3">
           <p className="text-[12px] text-zinc-100/85">
             <span className="font-semibold text-zinc-200 tabular-nums">{totalPending}</span> approval{totalPending === 1 ? "" : "s"} waiting on a workspace decision across this department.
           </p>
@@ -254,7 +254,7 @@ export default async function WorkforceDepartmentPage({
               memory feed →
             </Link>
           </div>
-          <div className="grid grid-cols-4 rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] divide-x divide-white/[0.04] overflow-hidden">
+          <div className="grid grid-cols-4 rounded-2xl border border-orange-500/15 bg-orange-500/3 divide-x divide-white/4 overflow-hidden">
             <RollupTile label="total"          count={agi.total}          tone="text-white" />
             <RollupTile label="ai generated"   count={agi.ai_generated}   tone={agi.ai_generated > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <RollupTile label="fallback rules" count={agi.fallback_rules} tone={agi.fallback_rules > 0 ? "text-zinc-300" : "text-zinc-600"} />
@@ -276,7 +276,7 @@ export default async function WorkforceDepartmentPage({
             download .csv
           </a>
         </div>
-        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
           {engineers.map((e) => {
             const c = counts.get(e.id) ?? { allowed: 0, requires_approval: 0, blocked: 0, total: 0 };
             const pending = pendingByEngineer.get(e.id) ?? 0;
@@ -284,7 +284,7 @@ export default async function WorkforceDepartmentPage({
               <li key={e.id}>
                 <Link
                   href={`/dashboard/workforce/${e.id}`}
-                  className="group flex items-start justify-between gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                  className="group flex items-start justify-between gap-4 px-6 py-4 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
@@ -330,7 +330,7 @@ export default async function WorkforceDepartmentPage({
               full audit log →
             </Link>
           </div>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {auditTrail.map((r) => {
               const engineerId = r.entityRef?.startsWith("engineer:") ? r.entityRef.slice("engineer:".length) : null;
               const tone =

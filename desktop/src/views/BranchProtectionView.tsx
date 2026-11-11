@@ -100,7 +100,7 @@ export function BranchProtectionView() {
             {data.snapshots.map((s) => (
               <div key={s.id} className="glass-card p-3">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STRENGTH_CLASS[s.strength]}`}>
+                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STRENGTH_CLASS[s.strength]}`}>
                     {s.strength}
                   </span>
                   <span className="text-[12px] font-semibold text-white">{s.branchName}</span>
@@ -132,7 +132,7 @@ function Flag({ label, on, extra, tone }: {
     : "bg-emerald-500/15 text-emerald-300 border-emerald-500/25";
   const offCls = "bg-zinc-700/40 text-zinc-400 border-zinc-700/40";
   return (
-    <span className={`px-1.5 py-0.5 rounded border ${on ? onCls : offCls}`}>
+    <span className={`px-1.5 py-0.5 rounded-sm border ${on ? onCls : offCls}`}>
       {label}{on && extra ? ` ${extra}` : ""}{on ? "" : " off"}
     </span>
   );
@@ -209,7 +209,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/8 text-[12px] font-semibold text-violet-200 hover:bg-violet-500/16 transition-colors"
         >
           + Refresh snapshot
         </button>
@@ -236,7 +236,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
           rows={6}
           placeholder='{"required_pull_request_reviews": {...}, "required_status_checks": {...}, ...}'
           disabled={busy}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[11px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[11px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="mt-3 flex items-center gap-3">
@@ -244,7 +244,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !repositoryId || !branchName}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Refresh"}
         </button>
@@ -272,7 +272,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

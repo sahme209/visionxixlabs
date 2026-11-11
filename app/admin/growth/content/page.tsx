@@ -71,7 +71,7 @@ export default async function ContentPlannerPage() {
         ))}
       </div>
 
-      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5">
+      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5">
         <header className="flex items-center gap-2 mb-2">
           <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Why nothing autoposts</p>
@@ -88,8 +88,8 @@ export default async function ContentPlannerPage() {
 function DraftCard({ draft }: { draft: SocialPostDraft }) {
   const channelLabel = draft.channel === "linkedin" ? "LinkedIn" : draft.channel === "x" ? "X / Twitter" : draft.channel;
   return (
-    <article className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-      <header className="px-5 py-3 border-b border-white/[0.05] flex items-center justify-between gap-3 flex-wrap">
+    <article className="rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+      <header className="px-5 py-3 border-b border-white/5 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2">
           <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px text-orange-300 bg-orange-500/10 border-orange-500/30">
             {channelLabel}
@@ -119,7 +119,7 @@ function DraftCard({ draft }: { draft: SocialPostDraft }) {
         )}
       </div>
 
-      <footer className="px-5 py-3 bg-white/[0.01] border-t border-white/[0.04] flex items-center justify-between gap-2 flex-wrap">
+      <footer className="px-5 py-3 bg-white/1 border-t border-white/4 flex items-center justify-between gap-2 flex-wrap">
         <span className="text-[10px] font-mono text-zinc-500">drafted by {draft.draftedByAgent}</span>
         <div className="flex items-center gap-2">
           <button
@@ -132,7 +132,7 @@ function DraftCard({ draft }: { draft: SocialPostDraft }) {
           </button>
           <button
             disabled
-            className="inline-flex items-center gap-1.5 text-[11.5px] font-medium px-3 py-1.5 rounded-lg bg-white/[0.04] text-zinc-200 border border-white/[0.08] disabled:opacity-60"
+            className="inline-flex items-center gap-1.5 text-[11.5px] font-medium px-3 py-1.5 rounded-lg bg-white/4 text-zinc-200 border border-white/8 disabled:opacity-60"
             title="Inline editor lands in next phase."
           >
             Edit

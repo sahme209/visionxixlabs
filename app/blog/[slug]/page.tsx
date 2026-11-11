@@ -44,9 +44,9 @@ export default async function BlogPostPage({ params }: Params) {
   const others = getAllPosts().filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-brand-ink text-white relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[150px]" />
+        <div className="absolute top-0 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-orange-500/6 blur-[150px]" />
       </div>
 
       <Navigation />
@@ -67,14 +67,14 @@ export default async function BlogPostPage({ params }: Params) {
             <span className="text-zinc-500">{post.readMinutes} min read</span>
           </div>
           <h1 className="relative text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-6 pl-5">
-            <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
+            <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-linear-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
             {post.title}
           </h1>
           <p className="text-lg text-zinc-400 leading-relaxed mb-8">
             {post.excerpt}
           </p>
-          <div className="flex items-center gap-3 pb-8 border-b border-white/[0.06]">
-            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
+          <div className="flex items-center gap-3 pb-8 border-b border-white/6">
+            <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
               {post.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
             </div>
             <div>
@@ -108,7 +108,7 @@ export default async function BlogPostPage({ params }: Params) {
                     return <strong key={j} className="text-white font-semibold">{seg.slice(2, -2)}</strong>;
                   }
                   if (seg.startsWith("`") && seg.endsWith("`")) {
-                    return <code key={j} className="px-1.5 py-0.5 rounded bg-white/[0.06] text-orange-300 text-[13px] font-mono">{seg.slice(1, -1)}</code>;
+                    return <code key={j} className="px-1.5 py-0.5 rounded-sm bg-white/6 text-orange-300 text-[13px] font-mono">{seg.slice(1, -1)}</code>;
                   }
                   return <span key={j}>{seg}</span>;
                 })}
@@ -121,13 +121,13 @@ export default async function BlogPostPage({ params }: Params) {
         <section className="surface-frost mt-16 rounded-2xl p-8 text-center">
           <p className="mono-label inline-flex items-center gap-3 mb-4">
             <span className="text-brand-coral/90 tabular-nums">AX</span>
-            <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+            <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
             Try Axiom
           </p>
           <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 leading-[1.04]">
             <span className="relative inline-block">
               See the governed desktop workflow.
-              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
             </span>
           </h3>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto mb-6">
@@ -149,7 +149,7 @@ export default async function BlogPostPage({ params }: Params) {
           <section className="mt-20">
             <p className="mono-label inline-flex items-center gap-3 mb-6">
               <span className="text-brand-coral/90 tabular-nums">→</span>
-              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
               Keep reading
             </p>
             <div className="grid sm:grid-cols-3 gap-3">

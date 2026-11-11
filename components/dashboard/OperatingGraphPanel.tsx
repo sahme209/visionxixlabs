@@ -113,7 +113,7 @@ export function OperatingGraphPanel({
   }, [graph]);
 
   return (
-    <div className={`rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 ${className ?? ""}`}>
+    <div className={`rounded-2xl border border-white/6 bg-white/2 p-5 ${className ?? ""}`}>
       <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
         <div className="flex items-center gap-2 min-w-0">
           <ArrowsRightLeftIcon className="h-4 w-4 text-orange-300 shrink-0" />
@@ -122,7 +122,7 @@ export function OperatingGraphPanel({
             <p className="text-[11.5px] text-zinc-400 leading-snug">{subtitle}</p>
           </div>
         </div>
-        <Link href="/dashboard/graph" className="inline-flex items-center gap-1.5 text-[11px] font-mono text-orange-300 hover:text-orange-200 border border-orange-500/30 hover:border-orange-500/50 bg-orange-500/[0.05] rounded-md px-2 py-1 transition-colors">
+        <Link href="/dashboard/graph" className="inline-flex items-center gap-1.5 text-[11px] font-mono text-orange-300 hover:text-orange-200 border border-orange-500/30 hover:border-orange-500/50 bg-orange-500/5 rounded-md px-2 py-1 transition-colors">
           open full graph <ArrowRightIcon className="h-3 w-3" />
         </Link>
       </div>
@@ -143,7 +143,7 @@ export function OperatingGraphPanel({
           </div>
           <div className="flex items-center gap-2 flex-wrap text-[10px] font-mono text-zinc-500 mb-3">
             <span>source mode</span>
-            <span className="px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-200">{graph.overallSourceMode.replace(/_/g, " ")}</span>
+            <span className="px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-200">{graph.overallSourceMode.replace(/_/g, " ")}</span>
             <span>·</span>
             <span>last sync {new Date(graph.generatedAt).toLocaleTimeString()}</span>
           </div>
@@ -153,13 +153,13 @@ export function OperatingGraphPanel({
               const v = STATUS_VISUAL[n.status] ?? STATUS_VISUAL.unknown;
               const Icon = v.icon;
               return (
-                <div key={n.id} className="flex items-start gap-2 rounded-md border border-white/[0.04] bg-white/[0.015] p-2">
+                <div key={n.id} className="flex items-start gap-2 rounded-md border border-white/4 bg-white/1.5 p-2">
                   <Icon className="h-3.5 w-3.5 text-white/60 mt-0.5 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[11.5px] text-white font-medium">{n.label}</span>
-                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${v.pill}`}>{v.label}</span>
-                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${v.pill}`}>{v.label}</span>
+                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                         {n.type.replace(/_/g, " ")}
                       </span>
                     </div>
@@ -178,9 +178,9 @@ export function OperatingGraphPanel({
           </div>
 
           {nodesByType.length > 0 && (
-            <div className="flex items-center gap-1.5 flex-wrap pt-2 border-t border-white/[0.06]">
+            <div className="flex items-center gap-1.5 flex-wrap pt-2 border-t border-white/6">
               {nodesByType.map(([type, count]) => (
-                <span key={type} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                <span key={type} className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                   {type.replace(/_/g, " ")}: {count}
                 </span>
               ))}
@@ -194,10 +194,10 @@ export function OperatingGraphPanel({
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-2.5`}>

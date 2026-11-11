@@ -55,14 +55,14 @@ interface BoundaryReportLite {
 }
 
 const VISUAL: Record<BoundaryClassification, { border: string; bg: string; text: string; pill: string; icon: typeof ShieldCheckIcon }> = {
-  readonly_allowed:            { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon         },
-  preview_allowed:             { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
-  simulation_allowed:          { border: "border-cyan-500/[0.18]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon               },
-  desktop_review_allowed:      { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: ComputerDesktopIcon       },
-  approval_required:           { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: LockClosedIcon            },
-  disabled_until_policy:       { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon   },
-  disabled_until_credentials:  { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon   },
-  unsafe_never_automate:       { border: "border-rose-500/[0.28]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200",       icon: XCircleIcon               },
+  readonly_allowed:            { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon         },
+  preview_allowed:             { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: EyeIcon                  },
+  simulation_allowed:          { border: "border-cyan-500/18",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: BeakerIcon               },
+  desktop_review_allowed:      { border: "border-white/10",  bg: "bg-white/1.5",  text: "text-orange-300",  pill: "bg-orange-500/15 text-orange-300",   icon: ComputerDesktopIcon       },
+  approval_required:           { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: LockClosedIcon            },
+  disabled_until_policy:       { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon   },
+  disabled_until_credentials:  { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon   },
+  unsafe_never_automate:       { border: "border-rose-500/[0.28]",    bg: "bg-rose-500/5",    text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200",       icon: XCircleIcon               },
 };
 
 const LABEL: Record<BoundaryClassification, string> = {
@@ -127,12 +127,12 @@ export default function AutomationBoundariesPage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// loading boundary table…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// boundaries unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -168,7 +168,7 @@ export default function AutomationBoundariesPage() {
                       <div key={e.actionClass} className={`rounded-xl border ${v.border} ${v.bg} p-4`}>
                         <div className="flex items-center justify-between gap-2 mb-1.5 flex-wrap">
                           <p className="text-[13.5px] font-semibold text-white tracking-tight">{e.label}</p>
-                          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${v.pill}`}>
+                          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${v.pill}`}>
                             {cls.replace(/_/g, " ")}
                           </span>
                         </div>
@@ -187,12 +187,12 @@ export default function AutomationBoundariesPage() {
           </div>
 
           {/* Contract footer */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// detector contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")}
@@ -207,7 +207,7 @@ export default function AutomationBoundariesPage() {
 
 function SummaryStat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">{label}</p>
       <p className={`text-2xl font-bold tracking-tight ${tone}`}>{value}</p>
     </div>

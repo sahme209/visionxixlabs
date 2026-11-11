@@ -132,19 +132,19 @@ export default function ReleasesPage() {
       <NewReleasePanel onCreated={loadList} />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading releases…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -154,7 +154,7 @@ export default function ReleasesPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required to view releases.
         </div>
       )}
@@ -169,7 +169,7 @@ export default function ReleasesPage() {
           </div>
 
           {data.releases.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No releases yet. The Phase 442 pipeline creates draft releases as deploys are initiated.
             </div>
           ) : (
@@ -189,7 +189,7 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
   return (
     <Link
       href={`/dashboard/releases/${r.id}`}
-      className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all"
+      className="block rounded-2xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all"
     >
       <div className="flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 min-w-0 flex-1">
@@ -197,23 +197,23 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
           <p className="text-[13px] font-semibold text-white truncate">
             {r.releaseTag ?? "(no tag)"} <span className="text-zinc-500 font-normal">· {r.applicationId}</span>
           </p>
-          <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08] shrink-0">
+          <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8 shrink-0">
             {r.statusLabel}
           </span>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {r.latestReadiness && (
-            <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${RISK_CLASS[r.latestReadiness.riskLevel]}`}>
+            <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${RISK_CLASS[r.latestReadiness.riskLevel]}`}>
               {r.latestReadiness.overallScore}/100 · {r.latestReadiness.riskLevel}
             </span>
           )}
           {r.latestReadiness && r.latestReadiness.blockerCount > 0 && (
-            <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/25">
+            <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/15 text-rose-300 border border-rose-500/25">
               {r.latestReadiness.blockerCount} blocker{r.latestReadiness.blockerCount === 1 ? "" : "s"}
             </span>
           )}
           {r.evidencePack && (
-            <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-white/10 text-zinc-300 border-white/20"}`}>
+            <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-white/10 text-zinc-300 border-white/20"}`}>
               evidence {r.evidencePack.signed ? "signed" : "draft"}
             </span>
           )}
@@ -233,10 +233,10 @@ function ReleaseRow({ r, now }: { r: ReleaseListRow; now: Date }) {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof RocketLaunchIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -257,9 +257,9 @@ function Stat({ icon: Icon, label, value, tone }: { icon: typeof RocketLaunchIco
    ────────────────────────────────────────────────────────────── */
 
 const SUBSYSTEMS: Array<{ label: string; href: string; tone: string }> = [
-  { label: "Repositories",         href: "/dashboard/repositories",     tone: "border-white/[0.12] text-white" },
-  { label: "Cherry-picks",         href: "/dashboard/cherry-picks",     tone: "border-white/[0.12] text-white" },
-  { label: "Change tickets",       href: "/dashboard/change-tickets",   tone: "border-white/[0.12] text-white" },
+  { label: "Repositories",         href: "/dashboard/repositories",     tone: "border-white/12 text-white" },
+  { label: "Cherry-picks",         href: "/dashboard/cherry-picks",     tone: "border-white/12 text-white" },
+  { label: "Change tickets",       href: "/dashboard/change-tickets",   tone: "border-white/12 text-white" },
   { label: "Release freeze",       href: "/dashboard/release-freeze",   tone: "border-cyan-500/30 text-cyan-200" },
   { label: "Release readiness",    href: "/dashboard/release-readiness", tone: "border-emerald-500/30 text-emerald-200" },
   { label: "Policy violations",    href: "/dashboard/policy-violations", tone: "border-rose-500/30 text-rose-200" },
@@ -275,7 +275,7 @@ function SubsystemNav() {
         <Link
           key={s.href}
           href={s.href}
-          className={`px-2.5 py-1 rounded-lg border bg-white/[0.02] hover:bg-white/[0.06] transition-colors ${s.tone}`}
+          className={`px-2.5 py-1 rounded-lg border bg-white/2 hover:bg-white/6 transition-colors ${s.tone}`}
         >
           {s.label}
         </Link>
@@ -317,7 +317,7 @@ function HealthSummaryTile() {
 
   if (loading) {
     return (
-      <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 text-[12px] text-zinc-500">
+      <div className="mb-6 rounded-2xl border border-white/6 bg-white/2 p-4 text-[12px] text-zinc-500">
         Loading platform health…
       </div>
     );
@@ -331,7 +331,7 @@ function HealthSummaryTile() {
     d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
 
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-gradient-to-br from-orange-500/[0.04] via-white/[0.02] to-cyan-500/[0.04] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-linear-to-br from-orange-500/4 via-white/2 to-cyan-500/4 p-5">
       <div className="flex items-baseline justify-between mb-3">
         <div>
           <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Platform health</p>
@@ -367,7 +367,7 @@ function SummaryStat({
     zinc:    "text-zinc-300",
   }[highlight];
   return (
-    <Link href={href} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-white/[0.12] transition-colors">
+    <Link href={href} className="block rounded-xl border border-white/6 bg-white/2 p-3 hover:border-white/12 transition-colors">
       <p className="text-[9px] font-mono uppercase tracking-wider opacity-70 mb-1">{label}</p>
       <p className={`text-[20px] font-bold ${tone}`}>{value}</p>
     </Link>
@@ -481,7 +481,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/2.5 text-[12px] font-semibold text-white hover:bg-orange-500/12 transition-colors"
         >
           + New release
         </button>
@@ -491,7 +491,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-orange-100">New release</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -503,7 +503,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
             value={applicationId}
             onChange={(e) => setApplicationId(e.target.value)}
             disabled={busy || appsLoading}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
           >
             {appsLoading ? (
               <option value="">loading…</option>
@@ -524,7 +524,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
             value={environmentId}
             onChange={(e) => setEnvironmentId(e.target.value)}
             disabled={busy || environmentsLoading}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
           >
             <option value="">unset</option>
             {environmentsLoading ? (
@@ -541,7 +541,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
             value={windowStart}
             onChange={(e) => setWindowStart(e.target.value)}
             disabled={busy}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
           />
         </label>
         <label className="block">
@@ -551,7 +551,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
             value={windowEnd}
             onChange={(e) => setWindowEnd(e.target.value)}
             disabled={busy}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
           />
         </label>
         <ReleaseField label="Summary (optional)" value={summary} onChange={setSummary} placeholder="Patch tuesday hotfix" disabled={busy} />
@@ -561,7 +561,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !applicationId || !releaseTag}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Create draft"}
         </button>
@@ -591,7 +591,7 @@ function ReleaseField({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

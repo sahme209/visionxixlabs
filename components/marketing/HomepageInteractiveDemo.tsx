@@ -28,9 +28,9 @@ export function HomepageInteractiveDemo() {
   const step = previewSteps[activeOrd]!;
 
   return (
-    <div className="relative mt-14 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#171714] p-3 shadow-2xl shadow-black/30 sm:p-5 lg:mt-16 lg:p-8">
+    <div className="relative mt-14 overflow-hidden rounded-2xl border border-white/12 bg-[#171714] p-3 shadow-2xl shadow-black/30 sm:p-5 lg:mt-16 lg:p-8">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <span className="inline-flex items-center gap-2 rounded-full border border-brand-coral/30 bg-brand-coral/[0.08] px-3 py-1.5 text-[11px] font-medium text-zinc-200">
+        <span className="inline-flex items-center gap-2 rounded-full border border-brand-coral/30 bg-brand-coral/8 px-3 py-1.5 text-[11px] font-medium text-zinc-200">
           <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-brand-coral/90">SANDBOX</span>
           <span className="text-zinc-500">·</span>
           example only
@@ -60,7 +60,7 @@ export function HomepageInteractiveDemo() {
             type="button"
             onClick={() => setActiveOrd((o) => Math.max(o - 1, 0))}
             disabled={activeOrd === 0}
-            className="rounded-full border border-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/[0.06] disabled:opacity-30"
+            className="rounded-full border border-white/10 px-4 py-2 text-xs font-medium text-zinc-300 hover:bg-white/6 disabled:opacity-30"
           >
             Back
           </button>

@@ -65,7 +65,7 @@ export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDes
               <Card className="h-full p-4">
                 <h3 className="text-sm font-semibold text-white">{stage.title}</h3>
                 <p className="mt-2 text-xs leading-6 text-zinc-400">{stage.detail}</p>
-                <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-orange-200 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-orange-300">{stage.cta}</button>
+                <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-orange-200 hover:bg-white/5 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-orange-300">{stage.cta}</button>
               </Card>
             </li>
           ))}

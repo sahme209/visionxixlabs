@@ -76,7 +76,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -85,10 +85,10 @@ export default function OnboardingPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <RocketLaunchIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               First-Run Wizard · setup_review_only_no_execution
@@ -97,7 +97,7 @@ export default function OnboardingPage() {
           <button
             onClick={load}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Re-check
@@ -117,9 +117,9 @@ export default function OnboardingPage() {
               <span>{checklist.completeCount}/{checklist.totalSteps} complete · {checklist.partialCount} partial · {checklist.pendingCount} pending</span>
               <span>{pct}%</span>
             </div>
-            <div className="h-2 rounded-full border border-white/[0.08] bg-black/40 overflow-hidden">
+            <div className="h-2 rounded-full border border-white/8 bg-black/40 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-zinc-500 via-cyan-400 to-emerald-400 transition-all"
+                className="h-full bg-linear-to-r from-zinc-500 via-cyan-400 to-emerald-400 transition-all"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -128,7 +128,7 @@ export default function OnboardingPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -138,7 +138,7 @@ export default function OnboardingPage() {
           {checklist.steps.map((s) => {
             const Icon = STATUS_ICON[s.status];
             return (
-              <div key={s.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-start gap-3">
+              <div key={s.id} className="rounded-2xl border border-white/6 bg-white/2 p-4 flex items-start gap-3">
                 <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${
                   s.status === "complete" ? "text-emerald-300" : s.status === "partial" ? "text-zinc-300" : "text-rose-300"
                 }`} />
@@ -146,13 +146,13 @@ export default function OnboardingPage() {
                   <div className="flex items-center gap-2 flex-wrap mb-1">
                     <span className="text-[10px] font-mono text-zinc-500">step {s.order}</span>
                     <p className="text-[14px] font-semibold text-white">{s.label}</p>
-                    <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_TONE[s.status]}`}>
+                    <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_TONE[s.status]}`}>
                       {s.status}
                     </span>
                   </div>
                   <p className="text-[11px] text-zinc-400 leading-relaxed">{s.description}</p>
                   {s.missingHint && (
-                    <div className="mt-2 rounded-md border border-white/15 bg-white/[0.04] p-2">
+                    <div className="mt-2 rounded-md border border-white/15 bg-white/4 p-2">
                       <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                       <p className="text-[11px] text-zinc-100">{s.missingHint}</p>
                     </div>

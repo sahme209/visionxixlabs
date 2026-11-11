@@ -34,7 +34,7 @@ export function AgentGithubReceipts({ actions }: { actions: GithubAction[] }) {
   if (context !== desktopClient.config) return null;
   return <>{actions.filter(action => action.status === "executed" && isGithubReceiptAction(action)).map(action => {
     const receipt = boundReceipt(action);
-    return <section key={action.id} aria-label="Recorded GitHub result" className="rounded-xl border border-white/10 bg-white/[0.025] px-4 py-3 text-xs text-zinc-400">
+    return <section key={action.id} aria-label="Recorded GitHub result" className="rounded-xl border border-white/10 bg-white/2.5 px-4 py-3 text-xs text-zinc-400">
       {receipt ? <>
         <p className="font-medium text-zinc-200">{receipt.identity}</p>
         <p className="mt-1 break-all">{receipt.detail}</p>

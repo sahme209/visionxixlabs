@@ -165,12 +165,12 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   return (
     <div className="settings-workbench relative flex min-h-0 flex-1 bg-axiom-bg">
       <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/[0.06] bg-[#18191b] px-3 pb-5 pt-8">
-          {onClose && <button data-help-id="settings.workspace.back-to-workspace" type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/[0.04] hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
+        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/6 bg-[#18191b] px-3 pb-5 pt-8">
+          {onClose && <button data-help-id="settings.workspace.back-to-workspace" type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/4 hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
           <h1 className="sr-only">Settings</h1>
-          <label className="mb-4 flex items-center gap-2 rounded-lg border border-white/[0.08] bg-white/[0.025] px-2.5 py-2 text-zinc-500">
+          <label className="mb-4 flex items-center gap-2 rounded-lg border border-white/8 bg-white/2.5 px-2.5 py-2 text-zinc-500">
             <Search aria-hidden className="h-3.5 w-3.5 shrink-0" />
-            <input data-help-id="settings.workspace.section-search" type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-none placeholder:text-zinc-600" />
+            <input data-help-id="settings.workspace.section-search" type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-hidden placeholder:text-zinc-600" />
           </label>
           {search.trim() && !sections.some(section => `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())) && <p role="status" className="px-3 py-2 text-xs text-zinc-500">No matching settings.</p>}
           {sectionGroups.map(group => {const visible=sections.filter(section=>section.group===group&&(!search.trim()||`${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())));return visible.length>0&&<div key={group} role="group" aria-label={group} className="mb-4"><p className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wider text-zinc-500">{group}</p>{visible.map(({ id, label, icon: Icon }) => (
@@ -180,7 +180,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
               onClick={() => { setActive(id); setSearch(""); }}
               aria-current={active === id ? "page" : undefined}
               className={`relative flex w-full items-center gap-3 rounded-md py-2 pl-3 pr-2 text-left text-[13px] transition-colors ${
-                active === id ? "bg-white/[0.06] text-white" : "text-zinc-500 hover:text-zinc-300"
+                active === id ? "bg-white/6 text-white" : "text-zinc-500 hover:text-zinc-300"
               }`}
             >
               {active === id && <span aria-hidden className="absolute left-0 top-1/2 h-4 w-[2px] -translate-y-1/2 rounded-full bg-white" />}
@@ -188,7 +188,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
               <span>{label}</span>
             </button>
           ))}</div>})}
-          <div className="mt-6 border-t border-white/[0.06] pl-3 pt-5">
+          <div className="mt-6 border-t border-white/6 pl-3 pt-5">
             <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-600">Signed in workspace</p>
             <p className="mt-2 truncate text-xs text-zinc-400" title={identity.organizationId}>{identity.organizationId}</p>
             <p className="mt-1 text-[11px] text-emerald-300">Service verified</p>
@@ -223,7 +223,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
             <h2 id="sign-out-title" className="text-lg font-semibold">Log out?</h2>
             <p className="mt-2 text-sm leading-6 text-zinc-400">You’ll be logged out of Axiom Agent on this device. Externally running workflows are not canceled.</p>
             <div className="mt-6 flex justify-end gap-3">
-              <button data-help-id="settings.workspace.sign-out-cancel" type="button" onClick={() => setShowSignOut(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-400 hover:bg-white/[0.05] hover:text-white">Cancel</button>
+              <button data-help-id="settings.workspace.sign-out-cancel" type="button" onClick={() => setShowSignOut(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">Cancel</button>
               <button data-help-id="settings.workspace.sign-out-confirm" type="button" onClick={() => void signOut()} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-100">Log out</button>
             </div>
           </div>
@@ -262,9 +262,9 @@ function ProfileSection({ identity, prefs, onSave, onRequestSignOut }: Preferenc
       <InfoRow label="Authentication" value={identity.kind === "desktop_session" ? "Browser-authorized desktop session" : "Enterprise recovery credential"} />
       <ToggleRow title="Hide email address" detail="Partially mask the address in this desktop interface." enabled={prefs?.hide_email ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, hide_email: !prefs.hide_email })} />
     </Group>
-    <div className="mt-5 flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/[0.02] p-4">
+    <div className="mt-5 flex items-center justify-between rounded-xl border border-white/[0.07] bg-white/2 p-4">
       <div><p className="text-sm text-zinc-200">Log out on this device</p><p className="mt-1 text-xs text-zinc-500">Removes the local credential from the operating-system vault.</p></div>
-      <button data-help-id="settings.workspace.sign-out-open" type="button" onClick={onRequestSignOut} className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]"><LogOut className="h-3.5 w-3.5" />Log out</button>
+      <button data-help-id="settings.workspace.sign-out-open" type="button" onClick={onRequestSignOut} className="inline-flex items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6"><LogOut className="h-3.5 w-3.5" />Log out</button>
     </div>
   </div>;
 }
@@ -342,7 +342,7 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         <SummaryCard label="Desktop access" value={access.allowed?"Active":access.title} detail={access.message}/>
       </>}
     </div>
-    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-5">
+    <div className="mt-5 rounded-xl border border-white/[0.07] bg-white/2.5 p-5">
       {snapshot ? <>
         <p className="text-sm text-zinc-200">{snapshot.plan.available?`${snapshot.plan.label} workspace plan`:"Billing verification unavailable"}</p>
         <p className="mt-1 text-xs leading-5 text-zinc-500">Billing records and verified credits are shared with the cockpit. A balance is not permission to run an Agent or bypass approvals.</p>
@@ -369,7 +369,7 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         <>
           <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button data-help-id="settings.workspace.billing-portal-legacy" type="button" disabled={opening||(identity.role!=="owner"&&identity.role!=="admin")} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
           {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
-          <p className="mt-4 border-t border-white/[0.06] pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
+          <p className="mt-4 border-t border-white/6 pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
         </>
       )}
     </div>
@@ -412,7 +412,7 @@ function AgentsSection({ prefs, onSave }: PreferenceSectionProps) {
     </Group>
     <ActionRow title="Workspace Agent policy" detail="Review organization-controlled Agent enablement and allowed tools. Desktop settings do not grant execution authority." action={<WebButton href="/control/ai-agents" label="Open Agent governance" />} />
     <Group label="Specialized Agent profiles">
-      {AGENT_PROFILES.map(profile => <div key={profile.id} className="border-b border-white/[0.05] px-4 py-3 last:border-0"><p className="text-xs text-zinc-200">{profile.label}</p><p className="mt-1 text-xs text-zinc-500">{profile.description}</p></div>)}
+      {AGENT_PROFILES.map(profile => <div key={profile.id} className="border-b border-white/5 px-4 py-3 last:border-0"><p className="text-xs text-zinc-200">{profile.label}</p><p className="mt-1 text-xs text-zinc-500">{profile.description}</p></div>)}
     </Group>
     <p className="mb-3 text-xs text-zinc-500">Profiles narrow the current workspace tool policy. They do not grant credentials, bypass approval or start independent background workers.</p>
     <WebButton href="/control/ai-agents" label="Manage workspace tool permissions" standalone />
@@ -682,14 +682,14 @@ function ModelsSection() {
 
   return <div>
     <SectionHeading title="Models" detail="Choose which service-configured models the Agent may use. Turning a model on updates the workspace policy immediately." />
-    <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.07] bg-white/[0.02]">
-      <div className="border-b border-white/[0.06] p-4">
+    <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.07] bg-white/2">
+      <div className="border-b border-white/6 p-4">
         <label htmlFor="model-search" className="sr-only">Search models</label>
-        <input data-help-id="settings.workspace.model-search" id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-none placeholder:text-zinc-600 focus:border-white/25" />
+        <input data-help-id="settings.workspace.model-search" id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-hidden placeholder:text-zinc-600 focus:border-white/25" />
         <div className="mt-3 flex gap-2" role="group" aria-label="Model catalog filters">{[false, true].map(approved => <button data-help-id="settings.workspace.model-filter" key={String(approved)} type="button" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px] ${approvedOnly === approved ? "bg-white/10 text-zinc-200" : "text-zinc-500 hover:text-zinc-300"}`}>{approved ? "Approved models" : "All models"}</button>)}</div>
         <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model.</p>
       </div>
-      {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/[0.06] p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button data-help-id="settings.workspace.model-remove-unavailable" type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
+      {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/6 p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button data-help-id="settings.workspace.model-remove-unavailable" type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
       {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button data-help-id="settings.workspace.model-retry" type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
       {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
@@ -697,17 +697,17 @@ function ModelsSection() {
         const enabled = Boolean(policy && isModelApproved(policy, model.provider, model.id));
         const gatewayDefault = model.provider === "vercel_gateway" && policy?.enabled && policy.modelSelections.vercel_gateway === model.id;
         const key = `${model.provider}:${model.id}`;
-        return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/[0.055] px-4 py-3.5 last:border-b-0">
+        return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/5.5 px-4 py-3.5 last:border-b-0">
           <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}{gatewayDefault && <span className="ml-2 text-[10px] text-orange-300">Workspace default</span>}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.managed ? "Service-managed legacy route" : model.tier}</p></div>
           <div className="flex shrink-0 items-center gap-3">
             {model.provider === "vercel_gateway" && model.available && enabled && !gatewayDefault && <button data-help-id="settings.workspace.model-make-default" type="button" aria-label={`Make ${model.label} workspace default`} disabled={Boolean(savingModel)} onClick={() => void makeDefault(model.id)} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Make default</button>}
           <button data-help-id="settings.workspace.model-approval-toggle" type="button" role="switch" aria-checked={enabled} aria-label={model.available || model.managed ? `${enabled ? "Disable" : "Enable"} ${model.label}` : `Remove unavailable approval ${model.id}`} disabled={!policy || Boolean(savingModel) || model.provider === "vercel_gateway" && !isConcreteGatewayModelId(model.id) && !enabled} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>
-            <span aria-hidden className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${enabled ? "translate-x-5" : "translate-x-0.5"}`} />
+            <span aria-hidden className={`absolute left-0 top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${enabled ? "translate-x-5" : "translate-x-0.5"}`} />
           </button>
           </div>
         </div>;
       })}
-      {rows.length > 50 && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/[0.06] px-4 py-3 text-xs text-zinc-400">
+      {rows.length > 50 && <div className="flex flex-wrap items-center justify-between gap-3 border-t border-white/6 px-4 py-3 text-xs text-zinc-400">
         <p role="status">Showing {catalogOffset + 1}–{Math.min(catalogOffset + 50, rows.length)} of {rows.length} models. Search includes the full catalog.</p>
         <div className="flex gap-3">
           <button data-help-id="settings.workspace.model-previous" type="button" disabled={safeCatalogPage === 0} onClick={() => setCatalogPage(safeCatalogPage - 1)} className="rounded-md border border-white/10 px-3 py-1.5 hover:text-white disabled:opacity-40">Previous models</button>
@@ -778,7 +778,7 @@ function CloneRepositoryPanel() {
             type="button"
             onClick={() => void cloneRepository()}
             disabled={status === "cloning" || !repositoryFullName.includes("/") || !destination}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50"
           >
             {status === "cloning" ? "Cloning…" : "Clone repository"}
           </button>
@@ -881,7 +881,7 @@ function CreatePullRequestPanel() {
             type="button"
             onClick={() => void submit()}
             disabled={!canSubmit || busy}
-            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50"
+            className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50"
           >
             {step === "branch" ? "Creating branch…" : step === "commit" ? "Committing file…" : step === "pull_request" ? "Opening pull request…" : "Create pull request"}
           </button>
@@ -958,7 +958,7 @@ function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }
             title="No environments yet"
             detail="Create the standard dev/test/prod set, or add one manually below."
             action={
-              <button data-help-id="settings.workspace.environments-create-standard-empty" type="button" onClick={() => void createStandardSet()} disabled={creating} className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+              <button data-help-id="settings.workspace.environments-create-standard-empty" type="button" onClick={() => void createStandardSet()} disabled={creating} className="rounded-md border border-white/10 bg-white/4 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/8 disabled:opacity-50">
                 {creating ? "Creating…" : "Create dev/test/prod"}
               </button>
             }
@@ -969,7 +969,7 @@ function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }
             title="Missing standard environments"
             detail={`Not yet configured: ${missing.map((s) => s.slug).join(", ")}`}
             action={
-              <button data-help-id="settings.workspace.environments-create-standard-missing" type="button" onClick={() => void createStandardSet()} disabled={creating} className="rounded-md border border-white/10 bg-white/[0.04] px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+              <button data-help-id="settings.workspace.environments-create-standard-missing" type="button" onClick={() => void createStandardSet()} disabled={creating} className="rounded-md border border-white/10 bg-white/4 px-2.5 py-1 text-[11px] text-zinc-200 hover:bg-white/8 disabled:opacity-50">
                 {creating ? "Creating…" : "Add missing"}
               </button>
             }
@@ -977,12 +977,12 @@ function EnvironmentsSection({ identity }: { identity: VerifiedDesktopIdentity }
         )}
         {createError && <div className="px-4 py-2 text-[12px] text-rose-300">{createError}</div>}
         {(environments ?? []).map((env) => (
-          <div key={env.id} className="border-b border-white/[0.045] last:border-b-0">
+          <div key={env.id} className="border-b border-white/4.5 last:border-b-0">
             <ActionRow
               title={`${env.name} (${env.tier})`}
               detail={`slug: ${env.slug}${env.hasApprovalPolicy ? " · approval policy attached" : ""}`}
               action={
-                <button data-help-id="settings.workspace.environment-target-toggle" type="button" onClick={() => setExpandedId(expandedId === env.id ? null : env.id)} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/[0.06]">
+                <button data-help-id="settings.workspace.environment-target-toggle" type="button" onClick={() => setExpandedId(expandedId === env.id ? null : env.id)} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-300 hover:bg-white/6">
                   {expandedId === env.id ? "Hide" : "AWS deploy"}
                 </button>
               }
@@ -1026,13 +1026,13 @@ function NewEnvironmentForm({ onCreated }: { onCreated: () => void }) {
           <LabeledInput label="Display name" placeholder="Staging" value={name} onChange={setName} />
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Tier</span>
-            <select data-help-id="settings.workspace.environment-tier" value={tier} onChange={(event) => setTier(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.environment-tier" value={tier} onChange={(event) => setTier(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               {["dev", "test", "qa", "uat", "stage", "preprod", "prod"].map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </label>
         </div>
         <div className="flex items-center gap-3">
-          <button data-help-id="settings.workspace.environment-create" type="button" onClick={() => void submit()} disabled={busy || !slug || !name} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          <button data-help-id="settings.workspace.environment-create" type="button" onClick={() => void submit()} disabled={busy || !slug || !name} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50">
             {busy ? "Creating…" : "Create environment"}
           </button>
           {ok && <span className="text-[12px] text-emerald-300">Created</span>}
@@ -1222,8 +1222,8 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
   if (loadError) return <div className="px-4 py-3 text-[12px] text-rose-300">{loadError}</div>;
 
   return (
-    <div className="border-t border-white/[0.04] bg-black/20 px-4 py-3.5 space-y-3">
-      <div className="rounded-lg border border-white/[0.07] bg-white/[0.025] px-3 py-2.5 text-[12px] text-zinc-400">
+    <div className="border-t border-white/4 bg-black/20 px-4 py-3.5 space-y-3">
+      <div className="rounded-lg border border-white/[0.07] bg-white/2.5 px-3 py-2.5 text-[12px] text-zinc-400">
         <span className="font-medium text-zinc-200">{environment.name}</span> deploys only to <span className="font-mono text-zinc-300">{region || "region"} / {ecsCluster || "cluster"} / {ecsService || "service"}</span>.
         {environment.tier === "prod" ? " Production is fail-closed until the full promotion evidence is valid." : " Changes remain isolated from production."}
       </div>
@@ -1234,21 +1234,21 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         <LabeledInput label="ECS service" placeholder="axiom-web-service" value={ecsService} onChange={setEcsService} />
       </div>
       <div className="flex items-center gap-3">
-        <button data-help-id="settings.workspace.deploy-target-save" type="button" onClick={() => void save()} disabled={saving || !roleArn || !region || !ecsCluster || !ecsService} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+        <button data-help-id="settings.workspace.deploy-target-save" type="button" onClick={() => void save()} disabled={saving || !roleArn || !region || !ecsCluster || !ecsService} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50">
           {saving ? "Saving…" : "Save deploy target"}
         </button>
         {saveOk && <span className="text-[12px] text-emerald-300">Saved</span>}
       </div>
       {saveError && <p role="alert" className="text-[12px] text-rose-300">{saveError}</p>}
 
-      <div className="mt-2 border-t border-white/[0.04] pt-3">
+      <div className="mt-2 border-t border-white/4 pt-3">
         <p className="mb-2 text-[11px] text-zinc-500">
           Add .github/workflows/axiom-deploy-aws-ecs.yml to the target repo once (see the Git &amp; PRs section to commit it via a pull request), then dispatch that workflow here. The bundled four-input template requests an ECS service restart; it does not release a new source artifact. Installed custom workflow behavior remains unverified.
         </p>
         <div className="grid grid-cols-2 items-end gap-3 xl:grid-cols-[1.4fr_1fr_0.65fr_0.65fr_auto_auto]">
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
-            <select data-help-id="settings.workspace.deploy-repository" value={deployRepo} onChange={(event) => { setDeployRepo(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.deploy-repository" value={deployRepo} onChange={(event) => { setDeployRepo(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               {deployRepositories.length === 0 && <option value="">Register a GitHub repository first</option>}
               {deployRepositories.map((repository) => <option key={repository.id} value={repository.displayName}>{repository.displayName}</option>)}
             </select>
@@ -1256,16 +1256,16 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
           <LabeledInput label="Workflow source branch or tag" placeholder="main or v1.2.3" value={sourceRef} onChange={(value) => { setSourceRef(value); setReadiness(null); }} />
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Source type</span>
-            <select data-help-id="settings.workspace.deploy-source-kind" value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as "branch" | "tag"); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.deploy-source-kind" value={sourceKind} onChange={(event) => { setSourceKind(event.target.value as "branch" | "tag"); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               <option value="branch">Branch</option>
               <option value="tag">Tag</option>
             </select>
           </label>
           <LabeledInput label="PR number" placeholder="optional" value={pullRequestNumber} onChange={(value) => { setPullRequestNumber(value); setReadiness(null); }} />
-          <button data-help-id="settings.workspace.deploy-readiness" type="button" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50 shrink-0">
+          <button data-help-id="settings.workspace.deploy-readiness" type="button" onClick={() => void checkReadiness()} disabled={checkingReadiness || deploying || !deployRepo || !sourceRef.trim()} className="inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50 shrink-0">
             {checkingReadiness ? "Checking…" : "Check readiness"}
           </button>
-          <button data-help-id="settings.workspace.deploy-dispatch" type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim() || !readiness || (emergencyBypass && bypassReason.trim().length < 20)} title={readiness ? "Dispatch the policy-checked workflow; artifact release remains unverified" : "Check workflow policy before dispatch"} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/[0.08] px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
+          <button data-help-id="settings.workspace.deploy-dispatch" type="button" onClick={() => void triggerDeploy()} disabled={deploying || !deployRepo.includes("/") || !sourceRef.trim() || !readiness || (emergencyBypass && bypassReason.trim().length < 20)} title={readiness ? "Dispatch the policy-checked workflow; artifact release remains unverified" : "Check workflow policy before dispatch"} className="inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-500/30 bg-emerald-500/8 px-3 py-2 text-xs text-emerald-200 hover:bg-emerald-500/[0.14] disabled:opacity-50 shrink-0">
             {deploying ? "Dispatching…" : "Dispatch workflow"}
           </button>
         </div>
@@ -1273,7 +1273,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         {environment.tier !== "dev" && (
           <label className="mt-3 block">
             <span className="mb-1 block text-[11px] text-zinc-500">Prior workflow receipt (not verified artifact promotion)</span>
-            <select data-help-id="settings.workspace.deploy-prior-receipt" value={promotedFromExecutionId} onChange={(event) => { setPromotedFromExecutionId(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.deploy-prior-receipt" value={promotedFromExecutionId} onChange={(event) => { setPromotedFromExecutionId(event.target.value); setReadiness(null); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               <option value="">Select a prior workflow receipt…</option>
               {successfulExecutions.map((item) => {
                 const sourceEnvironment = environments.find((candidate) => candidate.id === item.environmentId);
@@ -1283,17 +1283,17 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
           </label>
         )}
         {environment.tier === "prod" && identity.capabilities?.includes("deploy:production_bypass") && (
-          <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/[0.04] p-3">
+          <div className="mt-3 rounded-lg border border-amber-500/20 bg-amber-500/4 p-3">
             <label className="flex items-start gap-2 text-xs text-amber-200">
               <input data-help-id="settings.workspace.deploy-emergency-bypass" type="checkbox" checked={emergencyBypass} onChange={(event) => { setEmergencyBypass(event.target.checked); setReadiness(null); }} className="mt-0.5" />
               <span><strong>Emergency production bypass</strong><br /><span className="text-amber-200/70">Skips normal promotion evidence. Admin-only, reason required, and permanently audited.</span></span>
             </label>
-            {emergencyBypass && <textarea data-help-id="settings.workspace.deploy-bypass-reason" aria-label="Emergency bypass reason" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder="Explain the incident and why the normal release path cannot be used (minimum 20 characters)." className="mt-3 min-h-20 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-none" />}
+            {emergencyBypass && <textarea data-help-id="settings.workspace.deploy-bypass-reason" aria-label="Emergency bypass reason" value={bypassReason} onChange={(event) => { setBypassReason(event.target.value); setReadiness(null); }} placeholder="Explain the incident and why the normal release path cannot be used (minimum 20 characters)." className="mt-3 min-h-20 w-full rounded-lg border border-amber-500/20 bg-black/30 px-3 py-2 text-xs text-zinc-200 outline-hidden" />}
           </div>
         )}
         {readinessError && <p role="alert" className="mt-2 text-[12px] text-rose-300">{readinessError}</p>}
         {readiness && (
-          <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.06] px-3 py-2 text-[12px] text-emerald-200">
+          <div className="mt-2 rounded-lg border border-emerald-500/20 bg-emerald-500/6 px-3 py-2 text-[12px] text-emerald-200">
             Workflow policy check passed for source <span className="font-mono">{readiness.sourceCommitSha.slice(0, 12)}</span>
             {readiness.governanceMode === "emergency_bypass" ? " · emergency admin bypass will be audited" : readiness.policyId ? " · configured branch policy satisfied" : " · development target verified"}
             {readiness.pullRequestUrl && <> · <button data-help-id="settings.workspace.deploy-verified-pr-link" type="button" onClick={() => void open(readiness.pullRequestUrl!)} className="underline underline-offset-2">verified pull request</button></>}
@@ -1302,7 +1302,7 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
         {deployOk && !execution && <p className="text-[12px] text-amber-300">Workflow dispatched, but tracking could not be saved. Open GitHub Actions to verify the outcome.</p>}
         {deployError && <p role="alert" className="text-[12px] text-rose-300">{deployError}</p>}
         {execution && execution.environmentId === environmentId && (
-          <div className="mt-3 rounded-lg border border-white/[0.07] bg-white/[0.025] p-3 text-[12px]">
+          <div className="mt-3 rounded-lg border border-white/[0.07] bg-white/2.5 p-3 text-[12px]">
             <div className="flex items-center justify-between gap-3">
               <div>
                 <p className="font-medium text-zinc-200">{execution.repositoryFullName}</p>
@@ -1320,9 +1320,9 @@ function DeploymentTargetPanel({ environment, environments, identity }: { enviro
                 {!observation?.canPoll && execution.status !== "completed" && <p className="mt-1 text-zinc-500">Refresh the recorded status after reviewing the provider outcome. This does not dispatch or retry a deployment.</p>}
                 {observationError?.executionId === execution.id && <p role="alert" className="mt-1 text-rose-300">{observationError.message}</p>}
               </div>
-              <button data-help-id="settings.workspace.deploy-status-refresh" type="button" onClick={() => void refreshExecution()} disabled={refreshingExecution} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">{refreshingExecution ? "Refreshing…" : "Refresh status"}</button>
+              <button data-help-id="settings.workspace.deploy-status-refresh" type="button" onClick={() => void refreshExecution()} disabled={refreshingExecution} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/6 disabled:opacity-50">{refreshingExecution ? "Refreshing…" : "Refresh status"}</button>
               {execution.workflowUrl && (
-                <button data-help-id="settings.workspace.deploy-evidence-link" type="button" onClick={() => void open(execution.workflowUrl!)} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/[0.06]">
+                <button data-help-id="settings.workspace.deploy-evidence-link" type="button" onClick={() => void open(execution.workflowUrl!)} className="rounded-md border border-white/10 px-2.5 py-1.5 text-zinc-300 hover:bg-white/6">
                   View evidence ↗
                 </button>
               )}
@@ -1395,7 +1395,7 @@ function RevokeProviderButton({ id, onRevoked }: { id: string; onRevoked: () => 
   }
   return (
     <div className="flex items-center gap-2">
-      <button data-help-id="settings.workspace.identity-provider-revoke" type="button" onClick={() => void revoke()} disabled={busy} className="rounded-md border border-rose-500/30 bg-rose-500/[0.08] px-2.5 py-1 text-[11px] text-rose-200 hover:bg-rose-500/[0.14] disabled:opacity-50">
+      <button data-help-id="settings.workspace.identity-provider-revoke" type="button" onClick={() => void revoke()} disabled={busy} className="rounded-md border border-rose-500/30 bg-rose-500/8 px-2.5 py-1 text-[11px] text-rose-200 hover:bg-rose-500/[0.14] disabled:opacity-50">
         {busy ? "Revoking…" : "Revoke"}
       </button>
       {error && <span className="text-[11px] text-rose-300">{error}</span>}
@@ -1443,7 +1443,7 @@ function NewIdentityProviderForm({ onCreated }: { onCreated: () => void }) {
         <div className="grid grid-cols-2 gap-3">
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Protocol</span>
-            <select data-help-id="settings.workspace.identity-protocol" value={protocol} onChange={(event) => setProtocol(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.identity-protocol" value={protocol} onChange={(event) => setProtocol(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               <option value="oidc">OIDC</option>
               <option value="saml">SAML</option>
             </select>
@@ -1457,7 +1457,7 @@ function NewIdentityProviderForm({ onCreated }: { onCreated: () => void }) {
           <LabeledInput label="Claim value" placeholder="axiom-admins" value={claimValue} onChange={setClaimValue} />
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Maps to role</span>
-            <select data-help-id="settings.workspace.identity-mapped-role" value={role} onChange={(event) => setRole(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.identity-mapped-role" value={role} onChange={(event) => setRole(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               {["owner", "admin", "operator", "security_reviewer", "finance_viewer", "read_only"].map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
           </label>
@@ -1467,7 +1467,7 @@ function NewIdentityProviderForm({ onCreated }: { onCreated: () => void }) {
           Require MFA claim at sign-in (fails closed if absent, once live)
         </label>
         <div className="flex items-center gap-3">
-          <button data-help-id="settings.workspace.identity-provider-save-pending" type="button" onClick={() => void submit()} disabled={busy || !canSubmit} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          <button data-help-id="settings.workspace.identity-provider-save-pending" type="button" onClick={() => void submit()} disabled={busy || !canSubmit} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50">
             {busy ? "Saving…" : "Save (pending)"}
           </button>
           {ok && <span className="text-[12px] text-emerald-300">Saved — pending</span>}
@@ -1510,7 +1510,7 @@ function ScimPreviewPanel() {
         <LabeledTextArea label="Directory employees (JSON)" value={employeesJson} onChange={setEmployeesJson} />
         <LabeledTextArea label="Current grants (JSON)" value={grantsJson} onChange={setGrantsJson} />
         <div className="flex items-center gap-3">
-          <button data-help-id="settings.workspace.scim-compute-preview" type="button" onClick={() => void preview()} disabled={busy} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          <button data-help-id="settings.workspace.scim-compute-preview" type="button" onClick={() => void preview()} disabled={busy} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50">
             {busy ? "Computing…" : "Compute plan"}
           </button>
         </div>
@@ -1583,11 +1583,11 @@ function RepositoriesPanel() {
       {(repositories ?? []).map((r) => (
         <ActionRow key={r.id} title={r.displayName} detail={`${r.provider} · default branch: ${r.defaultBranch}`} action={null} />
       ))}
-      <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
+      <div className="px-4 py-3.5 space-y-3 border-t border-white/4">
         <div className="grid grid-cols-3 gap-3">
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Provider</span>
-            <select data-help-id="settings.workspace.repository-provider" value={provider} onChange={(event) => setProvider(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.repository-provider" value={provider} onChange={(event) => setProvider(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               <option value="github">GitHub</option>
               <option value="gitlab">GitLab</option>
               <option value="azuredevops">Azure DevOps</option>
@@ -1598,7 +1598,7 @@ function RepositoriesPanel() {
           <LabeledInput label="Repo name" placeholder="widgets" value={remoteName} onChange={setRemoteName} />
         </div>
         <div className="flex items-center gap-3">
-          <button data-help-id="settings.workspace.repository-register" type="button" onClick={() => void register()} disabled={busy || !remoteOwner || !remoteName} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          <button data-help-id="settings.workspace.repository-register" type="button" onClick={() => void register()} disabled={busy || !remoteOwner || !remoteName} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50">
             {busy ? "Registering…" : "Register repository"}
           </button>
         </div>
@@ -1681,18 +1681,18 @@ function BranchPoliciesPanel() {
       {(policies ?? []).map((p) => (
         <ActionRow key={p.id} title={p.branchPattern} detail={[p.requirePrLink && "merged PR", p.requireTestsPassing && "tests passing", p.requireReleaseTag && "release tag", p.requireCodeowners && "codeowners", p.requireChangeTicket && "change ticket", p.requirePromotionFromEnvironmentId && "prior-environment promotion"].filter(Boolean).join(", ") || "no requirements set"} action={null} />
       ))}
-      <div className="px-4 py-3.5 space-y-3 border-t border-white/[0.04]">
+      <div className="px-4 py-3.5 space-y-3 border-t border-white/4">
         <div className="grid grid-cols-3 gap-3">
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Repository</span>
-            <select data-help-id="settings.workspace.branch-policy-repository" value={repositoryId} onChange={(event) => setRepositoryId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.branch-policy-repository" value={repositoryId} onChange={(event) => setRepositoryId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               {repositories.length === 0 && <option value="">Register a repository first</option>}
               {repositories.map((repository) => <option key={repository.id} value={repository.id}>{repository.displayName}</option>)}
             </select>
           </label>
           <label className="block">
             <span className="mb-1 block text-[11px] text-zinc-500">Environment</span>
-            <select data-help-id="settings.workspace.branch-policy-environment" value={environmentId} onChange={(event) => { setEnvironmentId(event.target.value); setRequirePromotionFromEnvironmentId(""); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+            <select data-help-id="settings.workspace.branch-policy-environment" value={environmentId} onChange={(event) => { setEnvironmentId(event.target.value); setRequirePromotionFromEnvironmentId(""); }} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
               {environments.length === 0 && <option value="">Create an environment first</option>}
               {environments.map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
             </select>
@@ -1715,14 +1715,14 @@ function BranchPoliciesPanel() {
         </div>
         <label className="block">
           <span className="mb-1 block text-[11px] text-zinc-500">Promote only after a successful deploy in</span>
-          <select data-help-id="settings.workspace.branch-policy-prior-environment" value={requirePromotionFromEnvironmentId} onChange={(event) => setRequirePromotionFromEnvironmentId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25">
+          <select data-help-id="settings.workspace.branch-policy-prior-environment" value={requirePromotionFromEnvironmentId} onChange={(event) => setRequirePromotionFromEnvironmentId(event.target.value)} className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25">
             <option value="">No prior environment required</option>
             {environments.filter((candidate) => candidate.id !== environmentId).map((candidate) => <option key={candidate.id} value={candidate.id}>{candidate.name} · {candidate.tier}</option>)}
           </select>
           {isProductionPolicy && <span className="mt-1 block text-[11px] text-amber-300">Production requires a prior environment, a merged PR, and passing tests.</span>}
         </label>
         <div className="flex items-center gap-3">
-          <button data-help-id="settings.workspace.branch-policy-create" type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern || (isProductionPolicy && !requirePromotionFromEnvironmentId)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/[0.04] px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.08] disabled:opacity-50">
+          <button data-help-id="settings.workspace.branch-policy-create" type="button" onClick={() => void create()} disabled={busy || !repositoryId || !environmentId || !branchPattern || (isProductionPolicy && !requirePromotionFromEnvironmentId)} className="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/4 px-3 py-2 text-xs text-zinc-200 hover:bg-white/8 disabled:opacity-50">
             {busy ? "Saving…" : "Add policy"}
           </button>
         </div>
@@ -1741,7 +1741,7 @@ function LabeledInput({ label, placeholder, value, onChange, disabled = false }:
         value={value}
         placeholder={placeholder}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25"
+        className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25"
       />
     </label>
   );
@@ -1756,7 +1756,7 @@ function LabeledTextArea({ label, value, onChange, disabled = false }: { label: 
         value={value}
         rows={4}
         onChange={(event) => onChange(event.target.value)}
-        className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25 font-mono"
+        className="w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25 font-mono"
       />
     </label>
   );
@@ -1951,13 +1951,13 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
       ))}
     </div>
     <div className="mt-4 grid gap-3"><AwsGuidedConnection identity={identity} /><AzureGuidedConnection identity={identity} /><GcpGuidedConnection identity={identity} /></div>
-    <Disclosure className="mt-4 rounded-lg border border-white/10 bg-white/[0.015] p-4" buttonClassName="text-sm font-medium text-zinc-200" label={<>Advanced cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></>}>
+    <Disclosure className="mt-4 rounded-lg border border-white/10 bg-white/1.5 p-4" buttonClassName="text-sm font-medium text-zinc-200" label={<>Advanced cloud account connections <span className="ml-2 text-xs font-normal text-zinc-500">AWS and Azure · read-only</span></>}>
       <div className="mt-4"><AwsReadOnlyEnrollment identity={identity} /><AzureReadOnlyEnrollment identity={identity} /></div>
     </Disclosure>
     {refreshNote && <p role="status" className="mt-3 text-xs text-zinc-400">{refreshNote}</p>}
     {connectionNote && <p role="status" className="mt-3 text-xs text-zinc-400">{connectionNote}</p>}
     <p className="mt-4 text-xs leading-5 text-zinc-500">Approve only the workspace and access you intend to connect. Consent alone does not mark a connection verified.</p>
-    <Disclosure className="mt-3 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4" buttonClassName="text-sm text-zinc-200" label="Connection diagnostics">
+    <Disclosure className="mt-3 rounded-xl border border-white/[0.07] bg-white/2.5 p-4" buttonClassName="text-sm text-zinc-200" label="Connection diagnostics">
       <p className="mt-1 text-xs leading-5 text-zinc-500">
         {health
           ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
@@ -1967,7 +1967,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
     </Disclosure>
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <WebButton href="/account/integrations" label="Manage connections" />
-      <button data-help-id="settings.workspace.connections-refresh" type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">
+      <button data-help-id="settings.workspace.connections-refresh" type="button" onClick={() => void loadCloudConnections()} disabled={refreshing} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6 disabled:opacity-50">
         {refreshing ? "Checking…" : "Refresh verified status"}
       </button>
     </div>
@@ -1982,14 +1982,14 @@ type PreferenceSectionProps = { prefs: DesktopPreferences | null; onSave: (prefs
 type Option = { value: string; label: string };
 
 function SectionHeading({ title, detail }: { title: string; detail: string }) { return <div className="mb-6"><h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p></div>; }
-function Group({ label, children }: { label: string; children: ReactNode }) { return <section className="mb-6"><p className="mb-2 text-xs text-zinc-500">{label}</p><div className="overflow-hidden rounded-lg border border-white/[0.05] bg-white/[0.015]">{children}</div></section>; }
-function InfoRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) { return <div className="flex items-start justify-between gap-8 border-b border-white/[0.045] px-4 py-3.5 last:border-b-0"><span className="text-sm text-zinc-400">{label}</span><span className={`max-w-[65%] break-all text-right text-sm text-zinc-200 ${mono ? "font-mono text-xs" : ""}`}>{value}</span></div>; }
-function ActionRow({ title, detail, action }: { title: string; detail: string; action: ReactNode }) { return <div className="flex items-center gap-4 border-b border-white/[0.045] px-4 py-3.5 last:border-b-0"><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>{action}</div>; }
+function Group({ label, children }: { label: string; children: ReactNode }) { return <section className="mb-6"><p className="mb-2 text-xs text-zinc-500">{label}</p><div className="overflow-hidden rounded-lg border border-white/5 bg-white/1.5">{children}</div></section>; }
+function InfoRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) { return <div className="flex items-start justify-between gap-8 border-b border-white/4.5 px-4 py-3.5 last:border-b-0"><span className="text-sm text-zinc-400">{label}</span><span className={`max-w-[65%] break-all text-right text-sm text-zinc-200 ${mono ? "font-mono text-xs" : ""}`}>{value}</span></div>; }
+function ActionRow({ title, detail, action }: { title: string; detail: string; action: ReactNode }) { return <div className="flex items-center gap-4 border-b border-white/4.5 px-4 py-3.5 last:border-b-0"><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>{action}</div>; }
 function ToggleRow({ title, detail, enabled, disabled, onToggle, action }: { title: string; detail: string; enabled: boolean; disabled: boolean; onToggle: () => void; action?: ReactNode }) { return <ActionRow title={title} detail={detail} action={<div className="flex items-center gap-3">{action}<button data-help-id="settings.workspace.preference-toggle" type="button" role="switch" aria-checked={enabled} aria-label={title} disabled={disabled} onClick={onToggle} className={`relative h-6 w-11 shrink-0 rounded-full transition ${enabled ? "bg-emerald-600" : "bg-zinc-700"} disabled:opacity-50`}><span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`} /></button></div>} />; }
-function SelectRow({ title, detail, value, disabled, options, onChange }: { title: string; detail: string; value: string; disabled: boolean; options: Option[]; onChange: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<select data-help-id="settings.workspace.preference-select" aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="rounded-lg border border-white/10 bg-[#17181a] px-3 py-2 text-xs text-zinc-200 outline-none disabled:opacity-50">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>} />; }
+function SelectRow({ title, detail, value, disabled, options, onChange }: { title: string; detail: string; value: string; disabled: boolean; options: Option[]; onChange: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<select data-help-id="settings.workspace.preference-select" aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="rounded-lg border border-white/10 bg-[#17181a] px-3 py-2 text-xs text-zinc-200 outline-hidden disabled:opacity-50">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>} />; }
 function LockedRow({ title, detail }: { title: string; detail: string }) { return <ActionRow title={title} detail={detail} action={<span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300"><LockKeyhole className="h-3 w-3" />Always on</span>} />; }
-function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/[0.04] p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
-function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
+function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/4 p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
+function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/5 bg-white/1.5 p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
 function formatConnectorState(state: string) { return state.replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase()); }
 function IntegrationRow({ name, group, detail, state, action, tone }: { name: string; group: string; detail: string; state: string; action?: ReactNode; tone?: "attention" }) {
   const connected = isVerifiedIntegrationStatus(state);
@@ -1998,6 +1998,6 @@ function IntegrationRow({ name, group, detail, state, action, tone }: { name: st
     : connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200";
   const provider = ({GitHub:"github",Slack:"slack","Microsoft Teams":"teams",Linear:"linear"} as Record<string,CatalogProvider>)[name];
   const cloudGroup=name==="AWS, Azure & Google Cloud";
-  return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/[0.05] bg-white/[0.015] px-4 py-3"><span className={`flex h-8 shrink-0 items-center justify-center rounded-lg border border-white/[0.05] bg-black/20 text-zinc-300 ${cloudGroup?"px-2":"w-8"}`}>{cloudGroup?<ProviderLogoGroup providers={["aws","azure","gcp"]}/>:provider?<ProviderLogo provider={provider}/>:<Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
+  return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/5 bg-white/1.5 px-4 py-3"><span className={`flex h-8 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-black/20 text-zinc-300 ${cloudGroup?"px-2":"w-8"}`}>{cloudGroup?<ProviderLogoGroup providers={["aws","azure","gcp"]}/>:provider?<ProviderLogo provider={provider}/>:<Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
-function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button data-help-id="settings.workspace.browser-handoff" type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06]`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
+function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button data-help-id="settings.workspace.browser-handoff" type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }

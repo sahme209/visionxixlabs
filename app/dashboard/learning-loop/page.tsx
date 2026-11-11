@@ -59,7 +59,7 @@ const ENGINE_LABEL: Record<Signal["engine"], string> = {
 function strengthClass(s: number): string {
   if (s >= 80) return "bg-rose-500/15 text-rose-300 border-rose-500/25";
   if (s >= 60) return "bg-white/15 text-zinc-300 border-white/25";
-  if (s >= 40) return "bg-orange-500/15 text-orange-300 border-white/[0.10]";
+  if (s >= 40) return "bg-orange-500/15 text-orange-300 border-white/10";
   return "bg-zinc-700/40 text-zinc-300 border-zinc-700/40";
 }
 
@@ -105,7 +105,7 @@ export default function LearningLoopPage() {
           type="button"
           onClick={load}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/2.5 text-[12px] font-semibold text-white hover:bg-orange-500/12 disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <ArrowPathIcon className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           {loading ? "Refreshing…" : "Refresh signals"}
@@ -122,16 +122,16 @@ export default function LearningLoopPage() {
         </div>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading signals…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">Loading signals…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && data.signals.length === 0 && (
-        <div className="rounded-2xl border border-emerald-500/[0.18] bg-emerald-500/[0.04] p-8 text-center">
+        <div className="rounded-2xl border border-emerald-500/18 bg-emerald-500/4 p-8 text-center">
           <p className="text-[14px] font-semibold text-emerald-100 mb-2">All clear — no engine-improvement signals.</p>
           <p className="text-[12.5px] text-zinc-400">
             {data.totalDecisionsAnalyzed === 0
@@ -144,15 +144,15 @@ export default function LearningLoopPage() {
       {data && data.signals.length > 0 && (
         <div className="space-y-3 mb-8">
           {data.signals.map((s, i) => (
-            <div key={i} className="rounded-2xl border border-white/[0.06] bg-orange-500/[0.025] p-4">
+            <div key={i} className="rounded-2xl border border-white/6 bg-orange-500/2.5 p-4">
               <div className="flex items-center gap-2 mb-2 flex-wrap">
-                <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${strengthClass(s.strength)}`}>
+                <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm border ${strengthClass(s.strength)}`}>
                   strength {s.strength}
                 </span>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300">
+                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/8 bg-white/2 text-zinc-300">
                   {KIND_LABEL[s.kind]}
                 </span>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300">
+                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/8 bg-white/2 text-zinc-300">
                   {ENGINE_LABEL[s.engine]}
                 </span>
                 <span className="text-[10px] font-mono text-zinc-500">target: {s.targetKind}</span>
@@ -163,7 +163,7 @@ export default function LearningLoopPage() {
               </div>
               <p className="text-[13.5px] font-semibold text-white mb-1">{s.title}</p>
               <p className="text-[12.5px] text-zinc-300 mb-3">{s.rationale}</p>
-              <div className="rounded-lg border border-emerald-500/[0.18] bg-emerald-500/[0.025] p-2.5">
+              <div className="rounded-lg border border-emerald-500/18 bg-emerald-500/2.5 p-2.5">
                 <p className="text-[10px] font-mono uppercase tracking-wider text-emerald-300 mb-1">Suggested action</p>
                 <p className="text-[12px] text-zinc-200">{s.suggestedAction}</p>
               </div>
@@ -181,10 +181,10 @@ export default function LearningLoopPage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

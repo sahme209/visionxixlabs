@@ -100,7 +100,7 @@ export default async function AdminBillingAlertsPage() {
       </section>
 
       {alerts.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <BellAlertIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">No alerts this period.</p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
@@ -110,11 +110,11 @@ export default async function AdminBillingAlertsPage() {
       ) : (
         <section className="space-y-2">
           {alerts.map((a) => {
-            const tone = THRESHOLD_TONE[a.threshold] ?? "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
+            const tone = THRESHOLD_TONE[a.threshold] ?? "text-zinc-300 bg-white/4 border-white/8";
             const dimLabel = DIMENSION_LABEL[a.dimension] ?? a.dimension;
             const isCostDim = a.dimension === "ai_credits";
             return (
-              <article key={a.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+              <article key={a.id} className="rounded-xl border border-white/6 bg-white/2 px-4 py-3">
                 <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <ExclamationTriangleIcon className="h-4 w-4 text-zinc-400 shrink-0" />
@@ -150,7 +150,7 @@ export default async function AdminBillingAlertsPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// alert mechanics</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Cron <code className="text-zinc-200">/api/cron/check-billing-alerts</code> runs every 30 minutes (Bearer CRON_SECRET guarded).</li>
@@ -165,7 +165,7 @@ export default async function AdminBillingAlertsPage() {
 
 function SummaryStat({ label, value, tone, icon: Icon }: { label: string; value: string; tone: string; icon?: typeof ChartBarIcon }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       {Icon && <Icon className={`h-4 w-4 ${tone} mb-2`} />}
       <p className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>

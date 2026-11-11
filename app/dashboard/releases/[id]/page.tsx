@@ -83,12 +83,12 @@ export default function ReleaseOverviewPage() {
         </Link>
       </div>
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">Loading release overview…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">Loading release overview…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5">
           <p className="text-[12px] font-semibold text-zinc-200">{errorBody.error}</p>
           {errorBody.hint && <p className="text-[12.5px] text-zinc-300 mt-1">{errorBody.hint}</p>}
         </div>
@@ -97,7 +97,7 @@ export default function ReleaseOverviewPage() {
       {data && (
         <>
           {/* Header */}
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
             <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
               <div>
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">
@@ -108,7 +108,7 @@ export default function ReleaseOverviewPage() {
                 </h1>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                   {data.release.status}
                 </span>
                 {data.release.commitSha && (
@@ -136,13 +136,13 @@ export default function ReleaseOverviewPage() {
             <LifecycleControls releaseId={releaseId} currentStatus={data.release.status} />
 
             <div className="mt-4 flex items-center gap-2 flex-wrap">
-              <Link href={`/dashboard/releases/${releaseId}/branch${repositoryId ? `?repositoryId=${repositoryId}` : ""}`} className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.03] text-[11.5px] font-semibold text-white hover:bg-white/[0.06] transition-colors">
+              <Link href={`/dashboard/releases/${releaseId}/branch${repositoryId ? `?repositoryId=${repositoryId}` : ""}`} className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/3 text-[11.5px] font-semibold text-white hover:bg-white/6 transition-colors">
                 Open branch validation →
               </Link>
-              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=markdown`} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[11.5px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors" download>
+              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=markdown`} className="px-3 py-1.5 rounded-lg border border-white/8 bg-white/3 text-[11.5px] font-mono text-zinc-200 hover:border-white/12 transition-colors" download>
                 Evidence pack .md
               </Link>
-              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=json`} className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] text-[11.5px] font-mono text-zinc-200 hover:border-white/[0.12] transition-colors" download>
+              <Link href={`/api/dashboard/release-evidence-export/${releaseId}?format=json`} className="px-3 py-1.5 rounded-lg border border-white/8 bg-white/3 text-[11.5px] font-mono text-zinc-200 hover:border-white/12 transition-colors" download>
                 Evidence pack .json
               </Link>
             </div>
@@ -175,7 +175,7 @@ export default function ReleaseOverviewPage() {
               <div className="flex items-baseline gap-3">
                 <span className="text-[28px] font-bold text-white">{data.policyViolations.total}</span>
                 {data.policyViolations.blockingOpen > 0 && (
-                  <span className="text-[11px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/15 px-1.5 py-0.5 rounded border border-rose-500/25">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/15 px-1.5 py-0.5 rounded-sm border border-rose-500/25">
                     {data.policyViolations.blockingOpen} blocking open
                   </span>
                 )}
@@ -241,7 +241,7 @@ export default function ReleaseOverviewPage() {
           <ActivityTimeline releaseId={releaseId} />
 
           {/* Evidence pack footer */}
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-4 mb-8">
             <div className="flex items-center justify-between gap-3 flex-wrap">
               <div>
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Evidence pack</p>
@@ -265,7 +265,7 @@ export default function ReleaseOverviewPage() {
 
 function Tile({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-2">{title}</p>
       {children}
     </div>
@@ -332,7 +332,7 @@ function ActivityTimeline({ releaseId }: { releaseId: string }) {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 mb-6 text-[12px] text-zinc-500">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-4 mb-6 text-[12px] text-zinc-500">
         Loading activity…
       </div>
     );
@@ -343,7 +343,7 @@ function ActivityTimeline({ releaseId }: { releaseId: string }) {
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
       <div className="flex items-baseline justify-between mb-4">
         <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Activity timeline</p>
         <span className="text-[10px] font-mono text-zinc-500">{resp.data.events.length} events</span>
@@ -414,31 +414,31 @@ function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; cu
   const busy = state.kind === "submitting";
   const buttons: Array<{ action: LifecycleAction; label: string; tone: string }> = [];
   if (currentStatus === "draft") {
-    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-orange-500/40 bg-orange-500/[0.12] text-orange-100" });
+    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-orange-500/40 bg-orange-500/12 text-orange-100" });
   }
   if (currentStatus === "ready") {
-    buttons.push({ action: "start_deploy", label: "Start deploy", tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
-    buttons.push({ action: "mark_failed",  label: "Mark failed",  tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
+    buttons.push({ action: "start_deploy", label: "Start deploy", tone: "border-emerald-500/40 bg-emerald-500/12 text-emerald-100" });
+    buttons.push({ action: "mark_failed",  label: "Mark failed",  tone: "border-rose-500/40 bg-rose-500/8 text-rose-200" });
   }
   if (currentStatus === "deploying") {
-    buttons.push({ action: "complete_deploy",  label: "Complete deploy",  tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
-    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/[0.10] text-zinc-200" });
-    buttons.push({ action: "mark_failed",      label: "Mark failed",      tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
+    buttons.push({ action: "complete_deploy",  label: "Complete deploy",  tone: "border-emerald-500/40 bg-emerald-500/12 text-emerald-100" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/10 text-zinc-200" });
+    buttons.push({ action: "mark_failed",      label: "Mark failed",      tone: "border-rose-500/40 bg-rose-500/8 text-rose-200" });
   }
   if (currentStatus === "deployed") {
-    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/[0.10] text-zinc-200" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/10 text-zinc-200" });
   }
 
   if (buttons.length === 0) {
     return (
-      <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-2.5 text-[11px] font-mono text-zinc-500">
+      <div className="mt-4 rounded-xl border border-white/6 bg-white/2 p-2.5 text-[11px] font-mono text-zinc-500">
         Status <span className="text-zinc-300">{currentStatus}</span> is terminal — no further lifecycle actions.
       </div>
     );
   }
 
   return (
-    <div className="mt-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-center gap-2 flex-wrap text-[11.5px] font-mono">
+    <div className="mt-4 rounded-xl border border-white/6 bg-white/2 p-3 flex items-center gap-2 flex-wrap text-[11.5px] font-mono">
       <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">Lifecycle</span>
       {buttons.map((b) => (
         <button

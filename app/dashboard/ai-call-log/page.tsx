@@ -85,7 +85,7 @@ const OUTCOME_CLASS: Record<string, string> = {
   ok:            "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   error:         "bg-rose-500/15 text-rose-300 border-rose-500/25",
   timeout:       "bg-white/15 text-zinc-300 border-white/25",
-  short_circuit: "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  short_circuit: "bg-orange-500/15 text-orange-300 border-white/10",
 };
 
 const ENGINE_LABEL: Record<string, string> = {
@@ -163,7 +163,7 @@ export default function AiCallLogPage() {
         <button
           type="button"
           onClick={load}
-          className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-white/[0.08] bg-white/[0.02] text-[11px] font-mono text-zinc-300 hover:bg-white/[0.06] transition-colors"
+          className="ml-auto inline-flex items-center gap-1 px-2.5 py-1 rounded-md border border-white/8 bg-white/2 text-[11px] font-mono text-zinc-300 hover:bg-white/6 transition-colors"
         >
           <ArrowPathIcon className={`h-3.5 w-3.5 ${loading ? "animate-spin" : ""}`} />
           Refresh
@@ -181,7 +181,7 @@ export default function AiCallLogPage() {
       )}
 
       {openCircuits.length > 0 && (
-        <div className="mb-5 rounded-2xl border border-rose-500/30 bg-rose-500/[0.05] p-4">
+        <div className="mb-5 rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4">
           <div className="flex items-center gap-2 mb-2">
             <BoltIcon className="h-4 w-4 text-rose-300" />
             <p className="text-[13px] font-semibold text-rose-200">
@@ -190,7 +190,7 @@ export default function AiCallLogPage() {
           </div>
           <div className="flex flex-wrap gap-2">
             {openCircuits.map((e) => (
-              <span key={e.engineName} className={`text-[11px] font-mono uppercase tracking-wider px-2 py-1 rounded border ${STATE_CLASS[e.state]}`}>
+              <span key={e.engineName} className={`text-[11px] font-mono uppercase tracking-wider px-2 py-1 rounded-sm border ${STATE_CLASS[e.state]}`}>
                 {ENGINE_LABEL[e.engineName] ?? e.engineName} · {e.state}
               </span>
             ))}
@@ -198,12 +198,12 @@ export default function AiCallLogPage() {
         </div>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-4 text-[12px] text-zinc-400">Loading call log…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-4 text-[12px] text-zinc-400">Loading call log…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-4 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-4 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-4">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-4">
           <p className="text-[12px] font-semibold text-zinc-200 mb-1">Schema migration pending</p>
           <p className="text-[12.5px] text-zinc-300">{errorBody.hint}</p>
         </div>
@@ -219,7 +219,7 @@ export default function AiCallLogPage() {
       )}
 
       {data && data.calls.length === 0 && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-10 text-center text-[13px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-10 text-center text-[13px] text-zinc-400">
           No AI calls logged yet. Trigger any AGI engine to populate this surface.
         </div>
       )}
@@ -227,10 +227,10 @@ export default function AiCallLogPage() {
       {data && data.calls.length > 0 && (
         <>
           <h2 className="text-[13px] font-semibold text-white mb-3">Recent calls</h2>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+          <div className="rounded-xl border border-white/6 bg-white/2 overflow-hidden">
             <table className="w-full text-[11.5px] font-mono">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-white/6">
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">When</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Engine</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Model</th>
@@ -243,12 +243,12 @@ export default function AiCallLogPage() {
               </thead>
               <tbody>
                 {data.calls.map((c) => (
-                  <tr key={c.id} className="border-b border-white/[0.04] last:border-0">
+                  <tr key={c.id} className="border-b border-white/4 last:border-0">
                     <td className="px-3 py-1.5 text-zinc-300">{new Date(c.startedAtIso).toLocaleString()}</td>
                     <td className="px-3 py-1.5 text-zinc-200">{ENGINE_LABEL[c.engineName] ?? c.engineName}</td>
                     <td className="px-3 py-1.5 text-zinc-400">{c.model ?? "—"}</td>
                     <td className="px-3 py-1.5">
-                      <span className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[c.outcome] ?? OUTCOME_CLASS.error}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[c.outcome] ?? OUTCOME_CLASS.error}`}>
                         {c.outcome}
                       </span>
                     </td>
@@ -272,11 +272,11 @@ function EngineBreakdownCard({ engine }: { engine: EngineBreakdown }) {
   return (
     <Link
       href={`/dashboard/ai-call-log/${encodeURIComponent(engine.engineName)}`}
-      className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-white/[0.12] transition-colors"
+      className="block rounded-xl border border-white/6 bg-white/2 p-3 hover:border-white/12 transition-colors"
     >
       <div className="flex items-center gap-2 mb-2 flex-wrap">
         <span className="text-[11.5px] font-semibold text-white">{ENGINE_LABEL[engine.engineName] ?? engine.engineName}</span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATE_CLASS[engine.state]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATE_CLASS[engine.state]}`}>
           circuit {engine.state}
         </span>
         <span className="text-[10px] font-mono text-zinc-500 ml-auto">window: {engine.stats.windowSize}</span>
@@ -301,7 +301,7 @@ function Inline({ label, value, tone = "zinc" }: { label: string; value: string;
     zinc:    "text-zinc-200",
   }[tone];
   return (
-    <div className="rounded border border-white/[0.04] bg-black/20 px-1.5 py-1">
+    <div className="rounded-sm border border-white/4 bg-black/20 px-1.5 py-1">
       <p className="text-zinc-500 uppercase tracking-[0.18em] text-[8px]">{label}</p>
       <p className={`${cls} font-bold`}>{value}</p>
     </div>
@@ -316,7 +316,7 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
       className={`px-2.5 py-1 rounded-md border text-[11.5px] font-mono transition-colors ${
         active
           ? "border-orange-500/40 bg-orange-500/[0.14] text-orange-100"
-          : "border-white/[0.08] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.06]"
+          : "border-white/8 bg-white/2 text-zinc-300 hover:bg-white/6"
       }`}
     >
       {label}
@@ -326,11 +326,11 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

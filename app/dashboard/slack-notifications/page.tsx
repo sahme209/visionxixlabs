@@ -118,12 +118,12 @@ export default function SlackNotificationsPage() {
         </div>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading Slack config + log…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">Loading Slack config + log…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -135,10 +135,10 @@ export default function SlackNotificationsPage() {
       {logData && logData.entries.length > 0 && (
         <>
           <h2 className="text-[13px] font-semibold text-white mb-3">Recent deliveries</h2>
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
+          <div className="rounded-xl border border-white/6 bg-white/2 overflow-hidden">
             <table className="w-full text-[11.5px] font-mono">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-white/6">
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">When</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Kind</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Title</th>
@@ -148,12 +148,12 @@ export default function SlackNotificationsPage() {
               </thead>
               <tbody>
                 {logData.entries.map((e) => (
-                  <tr key={e.id} className="border-b border-white/[0.04] last:border-0">
+                  <tr key={e.id} className="border-b border-white/4 last:border-0">
                     <td className="px-3 py-1.5 text-zinc-300">{new Date(e.generatedAtIso).toLocaleString()}</td>
                     <td className="px-3 py-1.5 text-zinc-200">{KIND_LABEL[e.signalKind] ?? e.signalKind}</td>
                     <td className="px-3 py-1.5 text-zinc-200">{e.title}</td>
                     <td className="px-3 py-1.5">
-                      <span className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[e.outcome]}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[e.outcome]}`}>
                         {e.outcome}
                       </span>
                     </td>
@@ -237,7 +237,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
   const currentlyConfigured = current !== null && current.webhookUrl.length > 0;
 
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-orange-100">Slack incoming webhook</p>
         {currentlyConfigured && (
@@ -256,7 +256,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           onChange={(e) => setWebhookUrl(e.target.value)}
           placeholder="https://hooks.slack.com/services/T.../B.../..."
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -268,7 +268,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
             onChange={(e) => setDefaultChannel(e.target.value)}
             placeholder="#deploys"
             disabled={busy}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
           />
         </label>
         <label className="flex items-center gap-2 text-[12px] text-zinc-300 cursor-pointer pt-5">
@@ -286,7 +286,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
         <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">Signal kinds to route</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {SIGNAL_KINDS.map((k) => (
-            <label key={k} className="flex items-center gap-2 text-[11.5px] text-zinc-300 cursor-pointer rounded border border-white/[0.06] bg-black/20 px-2 py-1.5">
+            <label key={k} className="flex items-center gap-2 text-[11.5px] text-zinc-300 cursor-pointer rounded-sm border border-white/6 bg-black/20 px-2 py-1.5">
               <input
                 type="checkbox"
                 checked={kindsState[k]}
@@ -304,7 +304,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           type="button"
           onClick={save}
           disabled={busy || (!webhookUrl && !currentlyConfigured)}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <ArrowPathIcon className={`h-3.5 w-3.5 ${busy ? "animate-spin" : ""}`} />
           {busy ? "Saving…" : "Save config"}
@@ -318,10 +318,10 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ChatBubbleLeftRightIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

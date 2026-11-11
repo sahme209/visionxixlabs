@@ -33,7 +33,7 @@ export default async function GovernancePage() {
       <h1 className="text-2xl font-medium">Governance</h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review pending Agent actions, workspace roles, and environment policies.</p>
 
-      <section aria-label="Governance next step" className="mt-6 rounded-xl border border-white/10 bg-white/[0.025] p-4">
+      <section aria-label="Governance next step" className="mt-6 rounded-xl border border-white/10 bg-white/2.5 p-4">
         <p className="text-[10px] uppercase tracking-wider text-zinc-500">Your next step</p>
         <h2 className="mt-1 text-sm font-medium">{proposals.length ? "Review each exact pending action" : "No pending Agent decisions"}</h2>
         <p className="mt-2 text-xs leading-5 text-zinc-400">{canDecide ? "Inspect the target, content and current review below before deciding. Each action needs its own independent decision." : "An authorized independent reviewer handles the decisions below. You can inspect workspace roles and environment policies."}</p>
@@ -42,7 +42,7 @@ export default async function GovernancePage() {
         <details className="mt-3 text-xs leading-5 text-zinc-400"><summary className="cursor-pointer py-1">After a decision</summary><p className="mt-2">Approval can execute the exact Agent action shown below. Check its saved result before treating it as complete. If the outcome is uncertain, inspect its history before preparing another action; approval alone is not proof of success.</p><p className="mt-2">This inbox shows up to 20 pending Agent actions. Release, ticket and connected-app reviews remain in their exact workflows; this is not a complete approval or outcome history.</p></details>
       </section>
 
-      <section className="mt-10 border-t border-white/[0.08] py-7">
+      <section className="mt-10 border-t border-white/8 py-7">
         <h2 className="text-base font-medium">Pending approvals</h2>
         {proposals.length === 0 ? (
           <p className="mt-3 text-sm text-zinc-500">No Agent actions currently await approval.</p>
@@ -80,8 +80,8 @@ export default async function GovernancePage() {
                     <summary className="cursor-pointer text-zinc-200">Review pull request</summary>
                     <p className="mt-3 break-all">Repository: {pullReview.repository}</p>
                     <p className="mt-1 break-all">Head: {pullReview.head}</p><p className="mt-1 break-all">Base: {pullReview.base}</p>
-                    <p className="mt-2 break-words text-zinc-200">{pullReview.title}</p>
-                    <p className="mt-2 whitespace-pre-wrap break-words">{pullReview.body || "No description provided."}</p>
+                    <p className="mt-2 wrap-break-word text-zinc-200">{pullReview.title}</p>
+                    <p className="mt-2 whitespace-pre-wrap wrap-break-word">{pullReview.body || "No description provided."}</p>
                     <p className="mt-2">Approval records your decision only; it does not open, merge or deploy this pull request. The requester must execute separately after current access and source checks. Branch contents can change; inspect the current changes on GitHub before approving.</p>
                   </details> : <p role="alert" className="mt-3 text-amber-300">No bound pull-request source or valid metadata. Request a new proposal before approval.</p>)}
                   {proposal.toolName === "trigger_aws_deploy" && <div className="mt-3 space-y-1 break-all text-xs text-zinc-400">
@@ -100,14 +100,14 @@ export default async function GovernancePage() {
         <p className="mt-4 text-xs leading-5 text-zinc-600">Approvals are bound to the exact action, expire after 24 hours, require a separate authorized reviewer, and are claimed once before backend execution.</p>
       </section>
 
-      <section className="border-t border-white/[0.08] py-7">
+      <section className="border-t border-white/8 py-7">
         <h2 className="text-base font-medium">Organization roles</h2>
         {members.length === 0 ? <p className="mt-3 text-sm text-zinc-500">No accepted organization memberships were found.</p> : (
-          <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{members.map((entry) => <div key={entry.role} className="rounded-xl border border-white/[0.08] bg-[#171717] p-4"><dt className="text-xs capitalize text-zinc-500">{entry.role.replaceAll("_", " ")}</dt><dd className="mt-2 text-xl tabular-nums">{entry._count._all}</dd></div>)}</dl>
+          <dl className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{members.map((entry) => <div key={entry.role} className="rounded-xl border border-white/8 bg-[#171717] p-4"><dt className="text-xs capitalize text-zinc-500">{entry.role.replaceAll("_", " ")}</dt><dd className="mt-2 text-xl tabular-nums">{entry._count._all}</dd></div>)}</dl>
         )}
       </section>
 
-      <section className="border-t border-white/[0.08] py-7">
+      <section className="border-t border-white/8 py-7">
         <h2 className="text-base font-medium">Environment policy posture</h2>
         {environments.length === 0 ? <p className="mt-3 text-sm text-zinc-500">No environments are configured. Environment creation remains in its current verified flow during migration.</p> : (
           <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]">{environments.map((environment) => <div key={environment.id} className="flex items-center justify-between gap-4 py-4"><div><p className="text-sm">{environment.name}</p><p className="mt-1 font-mono text-[11px] text-zinc-600">{environment.slug}</p></div><div className="text-right"><p className="text-xs uppercase tracking-[0.12em] text-zinc-400">{environment.tier}</p><p className="mt-1 text-xs text-zinc-600">{environment.approvalPolicyId ? "Approval policy assigned" : "No approval policy assigned"}</p></div></div>)}</div>

@@ -77,24 +77,24 @@ export default async function DrPlansPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/dr_planner_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} placeholder="e.g. Production DR plan v2.0 · AWS us-east-1 primary"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="rpoTarget" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">rpo target</label>
               <input id="rpoTarget" name="rpoTarget" required maxLength={80} placeholder="e.g. 15 minutes"
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
               <p className="text-[10px] text-zinc-500 mt-1 font-mono">max acceptable data loss</p>
             </div>
             <div>
               <label htmlFor="rtoTarget" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">rto target</label>
               <input id="rtoTarget" name="rtoTarget" required maxLength={80} placeholder="e.g. 1 hour"
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
               <p className="text-[10px] text-zinc-500 mt-1 font-mono">max acceptable downtime</p>
             </div>
           </div>
@@ -102,25 +102,25 @@ export default async function DrPlansPage() {
             <label htmlFor="topology" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">infrastructure topology</label>
             <textarea id="topology" name="topology" required rows={10} maxLength={8000}
               placeholder={"Describe your stack. Examples:\n· AWS us-east-1 primary, us-west-2 standby (warm)\n· RDS Postgres 16, Multi-AZ, cross-region replicas\n· EKS clusters, 3 AZs each, ALB ingress\n· S3 buckets with cross-region replication\n· Datadog for monitoring, PagerDuty for paging\n· Daily backups via AWS Backup to glacier, weekly point-in-time test restores"}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="tier0Services" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">tier-0 services (optional)</label>
             <input id="tier0Services" name="tier0Services" maxLength={1000}
               placeholder="e.g. checkout API, auth service, payment processor — the ones that take the company offline"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="existingBackups" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">existing backups (optional)</label>
             <input id="existingBackups" name="existingBackups" maxLength={1000}
               placeholder="e.g. AWS Backup daily snapshots, Veeam for VMware, no current test-restore process"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="complianceContext" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">compliance context (optional)</label>
             <input id="complianceContext" name="complianceContext" maxLength={600}
               placeholder="e.g. SOC2 Type II CC7.5 evidence + HIPAA §164.308(a)(7) contingency plan"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <p className="text-[11px] text-zinc-500 font-mono">metered AI · billable · ~$0.45 per plan</p>
@@ -132,7 +132,7 @@ export default async function DrPlansPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-12 text-center">
+        <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No DR plans yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1 font-mono">submit the form above to draft the first one</p>
         </div>
@@ -144,10 +144,10 @@ export default async function DrPlansPage() {
             <span className="text-zinc-700">::</span>
             <span className="text-zinc-400 tabular-nums">{decoded.length}</span>
           </p>
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
               <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${DR_PLANNER_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-emerald-500/[0.04] transition-colors">
+                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${DR_PLANNER_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-emerald-500/4 transition-colors">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     {d.verdict && (
                       <span className={VERDICT_TONE[d.verdict] ?? "text-zinc-400"}>{d.verdict}</span>

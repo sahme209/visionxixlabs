@@ -36,13 +36,13 @@ export default async function AgentGatewayPage() {
         aiEngineers={[]}
         approval={{ severity: "human_required", note: "Deploys, merges, infrastructure, data migrations, secrets and deletes need an owner or admin who did not mint the agent's key. Production secret reads and deletes are always refused. Agents self-report actions; this is a cooperative control point, not a sandbox." }}
         storageKey="agent-gateway"
-        lastReviewed="2026-11-09"
+        lastReviewed="2026-11-11"
       />
       {scorecards.length > 0 && <section aria-label="Agent scorecards" className="mt-6">
         <h2 className="text-base font-medium text-zinc-100">Agents</h2>
         <p className="mt-1 text-sm text-zinc-400">Last 90 days. Trust is a summary of evidence and never changes what policy allows.</p>
         <ul className="mt-3 grid gap-3 md:grid-cols-2 lg:grid-cols-3">{scorecards.map((c) => (
-          <li key={c.apiKeyId} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <li key={c.apiKeyId} className="rounded-xl border border-white/8 bg-white/2 p-4">
             <div className="flex items-baseline justify-between gap-2"><p className="font-mono text-sm text-zinc-200">{c.agentNames.join(", ")}</p><span className={`text-xs ${c.trust === "reliable" ? "text-emerald-300" : c.trust === "needs_review" ? "text-rose-300" : "text-zinc-400"}`}>{TRUST_LABEL[c.trust]}</span></div>
             <p className="mt-2 text-xs leading-5 text-zinc-400">{c.requests} requests · {c.approved} approved · {c.rejected} rejected · {c.denied} denied{c.successRate !== null ? ` · ${Math.round(c.successRate * 100)}% reported success` : ""}</p>
             <p className="mt-1 text-xs leading-5 text-zinc-500">{c.trustReasons[0]}</p>
@@ -51,7 +51,7 @@ export default async function AgentGatewayPage() {
       {requests === null ? <p className="mt-6 text-sm text-zinc-400">Agent requests are unavailable right now.</p>
         : requests.length === 0 ? <p className="mt-6 text-sm text-zinc-400">No agent has asked for anything yet. Add the Axiom MCP server to an agent to begin.</p>
         : <ul aria-label="Agent requests" className="mt-6 space-y-3">{requests.map((r) => (
-          <li key={r.id} className="rounded-xl border border-white/[0.08] bg-white/[0.02] p-4">
+          <li key={r.id} className="rounded-xl border border-white/8 bg-white/2 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <p className="text-sm text-zinc-100"><span className="font-mono text-zinc-400">{r.agentName}</span> · {r.actionKind} · {r.environment} · <span className="text-zinc-300">{r.target}</span></p>
               <span className={`rounded-full border px-2 py-0.5 text-xs ${STATUS_TONE[r.status] ?? "text-zinc-400 border-white/10"}`}>{r.status} · {r.riskLevel} risk</span>

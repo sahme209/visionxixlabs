@@ -162,7 +162,7 @@ export default async function WorkforceTimelinePage() {
         <Stat label="Errors · 24h" value={last24Stats.error} tone="text-rose-300" />
       </section>
 
-      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <section className="mb-8 rounded-2xl border border-white/6 bg-white/1.5 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">engineer coverage · 7d</p>
         <p className="text-[14px] text-zinc-200 leading-relaxed">
           <span className="text-white font-semibold">{coverageEngineers.size}</span> of {domainKindSet.size} domain engineers
@@ -176,7 +176,7 @@ export default async function WorkforceTimelinePage() {
 
       {/* Bucketed activity feed */}
       {decoded.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No domain engineer activity in the last 14 days.</p>
           <p className="text-[11px] text-zinc-500 mt-1">
             Domain engineers fire on the hourly cron sweep — wait for the next tick or use the manual sweep button.
@@ -190,10 +190,10 @@ export default async function WorkforceTimelinePage() {
             return (
               <section key={label}>
                 <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">{label} · {items.length}</p>
-                <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+                <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
                   {items.map((row) => (
                     <li key={`${row.targetKind}:${row.targetId}:${row.updatedAt.getTime()}`}>
-                      <Link href={row.permalinkHref} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                      <Link href={row.permalinkHref} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                         <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                           <span className="text-zinc-300">{row.engineerLabel}</span>
                           <span className="text-zinc-500">·</span>
@@ -220,7 +220,7 @@ export default async function WorkforceTimelinePage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 px-4 py-3">
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className={`text-[22px] font-semibold tracking-tight ${tone}`}>{value}</p>
     </div>
@@ -234,7 +234,7 @@ function SweepHealth({ tick, fallbackUpdatedAt }: { tick: TickReadback | null; f
   const updatedAt = tick?.updatedAt ?? fallbackUpdatedAt;
   if (updatedAt === null) {
     return (
-      <section className="mb-8 rounded-2xl border border-zinc-500/20 bg-zinc-500/[0.04] p-5">
+      <section className="mb-8 rounded-2xl border border-zinc-500/20 bg-zinc-500/4 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">sweep health</p>
         <p className="text-[13.5px] text-zinc-200 leading-relaxed">
           No domain engineer activity recorded yet. Either the cron hasn&apos;t reached your workspace
@@ -246,17 +246,17 @@ function SweepHealth({ tick, fallbackUpdatedAt }: { tick: TickReadback | null; f
   const ageMs = Date.now() - updatedAt.getTime();
   const ageMin = Math.round(ageMs / 60_000);
   const minutesFmt = ageMin < 60 ? `${ageMin}m` : ageMin < 24 * 60 ? `${Math.round(ageMin / 60)}h` : `${Math.round(ageMin / (24 * 60))}d`;
-  let tone = "border-emerald-500/20 bg-emerald-500/[0.04]";
+  let tone = "border-emerald-500/20 bg-emerald-500/4";
   let badge = "text-emerald-300";
   let label = "healthy";
   let note = "Last sweep landed within the expected hourly window.";
   if (ageMs > 3 * 60 * 60 * 1000) {
-    tone = "border-rose-500/30 bg-rose-500/[0.06]";
+    tone = "border-rose-500/30 bg-rose-500/6";
     badge = "text-rose-300";
     label = "degraded";
     note = "No tick recorded in over 3 hours — the hourly cron may be sick. Try the manual sweep button.";
   } else if (ageMs > 2 * 60 * 60 * 1000) {
-    tone = "border-white/30 bg-white/[0.06]";
+    tone = "border-white/30 bg-white/6";
     badge = "text-zinc-300";
     label = "stale";
     note = "Last tick landed >2 hours ago — usually fine if the workspace is quiet, but worth a manual sweep if you expect activity.";

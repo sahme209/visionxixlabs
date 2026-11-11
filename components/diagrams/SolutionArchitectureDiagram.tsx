@@ -42,7 +42,7 @@ export function SolutionArchitectureDiagram() {
         {layers.map((layer) => (
           <div
             key={layer.id}
-            className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white/[0.02] shadow-sm"
+            className="relative flex flex-col min-h-[140px] rounded-xl border-2 overflow-hidden bg-white/2 shadow-xs"
             style={{ borderColor: layer.color }}
           >
             <div
@@ -55,7 +55,7 @@ export function SolutionArchitectureDiagram() {
             </div>
             <ul className="flex-1 px-4 py-3 space-y-2 text-xs text-zinc-300">
               {layer.items.map((item) => (
-                <li key={item} className="leading-snug break-words">
+                <li key={item} className="leading-snug wrap-break-word">
                   {item}
                 </li>
               ))}

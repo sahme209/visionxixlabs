@@ -89,9 +89,9 @@ export function DesktopAccessRequiredView({
   return (
     <main className="h-screen w-screen bg-axiom-bg text-white flex items-center justify-center px-6 relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-white/[0.08] blur-[150px]" />
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-white/8 blur-[150px]" />
       </div>
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/[0.08] bg-zinc-950/85 p-8 shadow-2xl">
+      <div className="relative w-full max-w-lg rounded-2xl border border-white/8 bg-zinc-950/85 p-8 shadow-2xl">
         <div className="flex items-start gap-4">
           <img src="/axiom-logo.png" alt="" className="h-10 w-10 shrink-0 object-contain" />
           <div>
@@ -100,7 +100,7 @@ export function DesktopAccessRequiredView({
           </div>
         </div>
         <p className="mt-6 text-sm leading-6 text-zinc-300">{identity.access.message}</p>
-        <div className="mt-5 rounded-xl border border-white/[0.08] bg-black/25 px-4 py-3 text-xs text-zinc-400">
+        <div className="mt-5 rounded-xl border border-white/8 bg-black/25 px-4 py-3 text-xs text-zinc-400">
           <div className="flex justify-between gap-4"><span>Workspace</span><span className="font-mono text-zinc-200">{identity.organizationId}</span></div>
           <div className="mt-2 flex justify-between gap-4"><span>Access status</span><span className="font-mono text-zinc-200">{identity.access.billingStatus.replaceAll("_", " ")}</span></div>
         </div>

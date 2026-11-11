@@ -47,8 +47,8 @@ export default async function InsightArticlePage({ params }: Props) {
   const nextArticle = nextSlug ? getInsightBySlug(nextSlug) : null;
 
   return (
-    <div className="min-h-screen bg-[#141414] relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[150px] pointer-events-none" aria-hidden />
+    <div className="min-h-screen bg-brand-ink relative overflow-hidden">
+      <div className="absolute top-0 left-1/2 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-orange-500/6 blur-[150px] pointer-events-none" aria-hidden />
 
       <Navigation />
       <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-16">
@@ -67,7 +67,7 @@ export default async function InsightArticlePage({ params }: Props) {
         <Reveal direction="up" blur delay={0.1}>
           <header className="mb-8">
             <h1 className="relative text-3xl md:text-4xl font-bold text-white mb-3 tracking-[-0.04em] leading-[1.06] pl-5">
-              <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-gradient-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
+              <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-linear-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
               {article.title}
             </h1>
             <p className="text-zinc-500 text-[12px] font-mono uppercase tracking-[0.16em]">
@@ -115,7 +115,7 @@ export default async function InsightArticlePage({ params }: Props) {
           </section>
         </Reveal>
 
-        <nav className="mt-12 pt-8 border-t border-white/[0.06] flex flex-col sm:flex-row justify-between gap-4">
+        <nav className="mt-12 pt-8 border-t border-white/6 flex flex-col sm:flex-row justify-between gap-4">
           {prevArticle ? (
             <Link
               href={`/insights/${prevArticle.slug}`}

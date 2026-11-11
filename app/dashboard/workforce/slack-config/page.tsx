@@ -56,38 +56,38 @@ export default async function SlackConfigPage({
       </header>
 
       {saved && (
-        <div className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <div className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="text-[12.5px] text-emerald-200">Configuration saved. Click test below to confirm the webhook works.</p>
         </div>
       )}
       {deleted && (
-        <div className="mb-6 rounded-2xl border border-zinc-500/20 bg-zinc-500/[0.04] p-4">
+        <div className="mb-6 rounded-2xl border border-zinc-500/20 bg-zinc-500/4 p-4">
           <p className="text-[12.5px] text-zinc-300">Configuration deleted. Slack notifications are now off.</p>
         </div>
       )}
       {testResult === "ok" && (
-        <div className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <div className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="text-[12.5px] text-emerald-200">Test message delivered. Check your Slack channel.</p>
         </div>
       )}
       {testResult && testResult !== "ok" && testResult !== "no_config" && (
-        <div className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-4">
+        <div className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/6 p-4">
           <p className="text-[12.5px] text-rose-200">Test failed: {decodeURIComponent(testResult)}</p>
         </div>
       )}
       {testResult === "no_config" && (
-        <div className="mb-6 rounded-2xl border border-white/30 bg-white/[0.06] p-4">
+        <div className="mb-6 rounded-2xl border border-white/30 bg-white/6 p-4">
           <p className="text-[12.5px] text-zinc-200">No configuration to test — save a webhook URL first.</p>
         </div>
       )}
       {error === "invalid_webhook_url" && (
-        <div className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-4">
+        <div className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/6 p-4">
           <p className="text-[12.5px] text-rose-200">Invalid URL. Webhooks must look like <span className="font-mono">https://hooks.slack.com/services/...</span></p>
         </div>
       )}
 
       {config && (
-        <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <section className="mb-8 rounded-2xl border border-white/6 bg-white/1.5 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">current config</p>
           <dl className="space-y-2 text-[13px]">
             <div className="flex items-baseline gap-3">
@@ -122,7 +122,7 @@ export default async function SlackConfigPage({
         </section>
       )}
 
-      <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-3">{config ? "update configuration" : "configure"}</p>
         <form action="/api/workforce/slack-config" method="POST" className="space-y-4">
           <div>
@@ -131,7 +131,7 @@ export default async function SlackConfigPage({
               id="webhookUrl" name="webhookUrl" type="url" required maxLength={500}
               placeholder="https://hooks.slack.com/services/T.../B.../..."
               defaultValue={config?.webhookUrl ?? ""}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12.5px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12.5px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             />
             <p className="text-[10.5px] text-zinc-500 mt-1.5 leading-snug">
               Create an incoming webhook at <span className="font-mono">api.slack.com/apps</span> → your app → Incoming Webhooks → Activate → Add New Webhook.
@@ -142,7 +142,7 @@ export default async function SlackConfigPage({
             <div>
               <label htmlFor="enabled" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">enabled</label>
               <select id="enabled" name="enabled" defaultValue={config?.enabled === false ? "false" : "true"}
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
                 <option value="true">yes · post to slack</option>
                 <option value="false">paused · keep config, no posts</option>
               </select>
@@ -150,7 +150,7 @@ export default async function SlackConfigPage({
             <div>
               <label htmlFor="minOutcome" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">notification threshold</label>
               <select id="minOutcome" name="minOutcome" defaultValue={config?.minOutcome ?? "critical"}
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
                 <option value="critical">critical only (recommended)</option>
                 <option value="active">active + critical (chatty)</option>
               </select>

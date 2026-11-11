@@ -135,7 +135,7 @@ export default function EvidenceLibraryPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -144,10 +144,10 @@ export default function EvidenceLibraryPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <DocumentTextIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
               Evidence library
@@ -166,12 +166,12 @@ export default function EvidenceLibraryPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// loading evidence library…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// library unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -193,8 +193,8 @@ export default function EvidenceLibraryPage() {
               onClick={() => setFilter("all")}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                 filter === "all"
-                  ? "bg-orange-500/15 border-white/[0.12] text-orange-300"
-                  : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
+                  ? "bg-orange-500/15 border-white/12 text-orange-300"
+                  : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:border-white/12"
               }`}
             >
               All ({report.summary.total})
@@ -206,8 +206,8 @@ export default function EvidenceLibraryPage() {
                 onClick={() => setFilter(t)}
                 className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                   filter === t
-                    ? "bg-orange-500/15 border-white/[0.12] text-orange-300"
-                    : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
+                    ? "bg-orange-500/15 border-white/12 text-orange-300"
+                    : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:border-white/12"
                 }`}
               >
                 {TYPE_LABEL[t]} ({report.summary.byType[t]})
@@ -217,7 +217,7 @@ export default function EvidenceLibraryPage() {
 
           {/* Records */}
           {visible.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-10">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-10">
               <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">// nothing matches filter</p>
               <p className="text-[13px] text-zinc-300">No evidence records of this type yet.</p>
             </div>
@@ -227,24 +227,24 @@ export default function EvidenceLibraryPage() {
                 const Icon = TYPE_ICON[r.type];
                 const tone = RETENTION_TONE[r.retentionStatus];
                 return (
-                  <div key={r.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] hover:-translate-y-0.5 transition-all p-5">
+                  <div key={r.id} className="rounded-2xl border border-white/6 bg-white/2 hover:-translate-y-0.5 transition-all p-5">
                     <div className="flex items-start gap-3">
-                      <div className="shrink-0 w-9 h-9 rounded-lg border border-white/[0.08] bg-white/[0.03] flex items-center justify-center">
+                      <div className="shrink-0 w-9 h-9 rounded-lg border border-white/8 bg-white/3 flex items-center justify-center">
                         <Icon className="h-4.5 w-4.5 text-zinc-300" />
                       </div>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
-                          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded bg-white/[0.04] border border-white/[0.06] text-zinc-300">
+                          <span className="text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm bg-white/4 border border-white/6 text-zinc-300">
                             {TYPE_LABEL[r.type]}
                           </span>
-                          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${tone.pill}`}>
+                          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${tone.pill}`}>
                             {RETENTION_LABEL[r.retentionStatus]}
                           </span>
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                             {r.sourceMode.replace(/_/g, " ")}
                           </span>
                           {r.exportable && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300">
+                            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-300">
                               exportable
                             </span>
                           )}
@@ -260,7 +260,7 @@ export default function EvidenceLibraryPage() {
                         </div>
 
                         {r.limitations.length > 0 && (
-                          <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2 mt-2">
+                          <div className="rounded-md border border-white/18 bg-white/4 p-2 mt-2">
                             <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">// limitation</p>
                             <p className="text-[10px] text-zinc-300 leading-snug">{r.limitations[0]}</p>
                           </div>
@@ -273,18 +273,18 @@ export default function EvidenceLibraryPage() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// library contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")} Export still routes through the existing audited /api/trust/export endpoint — this view never bundles or downloads on its own.
               </p>
               <div className="mt-3">
-                <Link href="/dashboard/trust" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 bg-emerald-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
+                <Link href="/dashboard/trust" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 bg-emerald-500/6 rounded-md px-3 py-1.5 transition-colors">
                   Open Trust Center to export
                   <ArrowRightIcon className="h-3 w-3" />
                 </Link>
@@ -299,7 +299,7 @@ export default function EvidenceLibraryPage() {
 
 function SummaryStat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">{label}</p>
       <p className={`text-2xl font-bold tracking-tight ${tone}`}>{value}</p>
     </div>

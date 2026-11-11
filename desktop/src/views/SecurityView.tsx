@@ -128,7 +128,7 @@ export function SecurityView() {
                 className={`px-3 py-1.5 rounded-md text-[11px] font-semibold transition-colors ${
                   filter === f
                     ? "bg-violet-500/15 border border-violet-500/30 text-violet-200"
-                    : "bg-white/[0.02] border border-axiom-border text-zinc-400 hover:text-white"
+                    : "bg-white/2 border border-axiom-border text-zinc-400 hover:text-white"
                 }`}
               >
                 {f.toUpperCase()} · {f === "all" ? results.length : results.filter((r) => r.status === f).length}

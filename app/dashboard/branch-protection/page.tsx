@@ -97,19 +97,19 @@ export default function BranchProtectionPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading snapshots…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -119,22 +119,22 @@ export default function BranchProtectionPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
 
       {data && (
         data.snapshots.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No protection snapshots yet. Use the panel above to register one.
           </div>
         ) : (
           <div className="space-y-2 mb-8">
             {data.snapshots.map((s) => (
-              <div key={s.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+              <div key={s.id} className="rounded-xl border border-white/6 bg-white/2 p-3">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STRENGTH_CLASS[s.strength]}`}>
+                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STRENGTH_CLASS[s.strength]}`}>
                     {s.strength}
                   </span>
                   <span className="text-[12px] font-semibold text-white">{s.branchName}</span>
@@ -167,7 +167,7 @@ function Flag({ label, on, extra, tone }: {
     : "bg-emerald-500/15 text-emerald-300 border-emerald-500/25";
   const offCls = "bg-zinc-700/40 text-zinc-400 border-zinc-700/40";
   return (
-    <span className={`px-1.5 py-0.5 rounded border ${on ? onCls : offCls}`}>
+    <span className={`px-1.5 py-0.5 rounded-sm border ${on ? onCls : offCls}`}>
       {label}{on && extra ? ` ${extra}` : ""}{on ? "" : " · off"}
     </span>
   );
@@ -175,10 +175,10 @@ function Flag({ label, on, extra, tone }: {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ShieldCheckIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -247,7 +247,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/2.5 text-[12px] font-semibold text-white hover:bg-orange-500/12 transition-colors"
         >
           + Refresh snapshot
         </button>
@@ -257,7 +257,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-orange-100">Refresh branch protection</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -274,7 +274,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
           rows={6}
           placeholder={`{"required_pull_request_reviews": {"required_approving_review_count": 2}, "required_status_checks": {"contexts": ["ci/build"]}, ...}`}
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="mt-4 flex items-center gap-3">
@@ -282,7 +282,7 @@ function RefreshPanel({ onRefreshed }: { onRefreshed: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !repositoryId || !branchName}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Refresh"}
         </button>
@@ -312,7 +312,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

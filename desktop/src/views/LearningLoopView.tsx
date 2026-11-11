@@ -80,7 +80,7 @@ export function LearningLoopView() {
           type="button"
           onClick={load}
           disabled={loading}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {loading ? "Refreshing…" : "🔄 Refresh"}
         </button>
@@ -120,13 +120,13 @@ export function LearningLoopView() {
           {data.signals.map((s, i) => (
             <div key={i} className="glass-card p-3 border border-violet-500/20">
               <div className="flex items-center gap-2 mb-1 flex-wrap">
-                <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${strengthClass(s.strength)}`}>
+                <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm border ${strengthClass(s.strength)}`}>
                   strength {s.strength}
                 </span>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
                   {KIND_LABEL[s.kind]}
                 </span>
-                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+                <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
                   {ENGINE_LABEL[s.engine]}
                 </span>
                 <span className="text-[10px] font-mono text-zinc-500">target {s.targetKind}</span>
@@ -135,7 +135,7 @@ export function LearningLoopView() {
               </div>
               <p className="text-sm font-semibold text-white">{s.title}</p>
               <p className="text-[12px] text-zinc-300 mt-1">{s.rationale}</p>
-              <div className="mt-2 rounded border border-emerald-500/20 bg-emerald-500/[0.025] p-2 text-[11.5px] text-zinc-200">
+              <div className="mt-2 rounded-sm border border-emerald-500/20 bg-emerald-500/2.5 p-2 text-[11.5px] text-zinc-200">
                 <span className="text-[9px] font-mono uppercase tracking-wider text-emerald-300 mr-2">action</span>
                 {s.suggestedAction}
               </div>

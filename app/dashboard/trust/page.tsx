@@ -79,11 +79,11 @@ export default function TrustCenterPage() {
           const Icon = kpi.icon;
           const toneClass =
             kpi.tone === "emerald" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
-            kpi.tone === "orange"  ? "text-orange-300 bg-orange-500/10 border-white/[0.08]" :
+            kpi.tone === "orange"  ? "text-orange-300 bg-orange-500/10 border-white/8" :
             kpi.tone === "cyan"    ? "text-cyan-300 bg-cyan-500/10 border-cyan-500/20" :
                                      "text-zinc-300 bg-white/10 border-white/20";
           return (
-            <div key={kpi.label} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <div key={kpi.label} className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <div className={`w-9 h-9 rounded-lg border flex items-center justify-center mb-3 ${toneClass}`}>
                 <Icon className="h-4.5 w-4.5" />
               </div>
@@ -119,14 +119,14 @@ export default function TrustCenterPage() {
           </div>
           <div className="space-y-4">
             {Object.entries(groupBy(CONTROL_REGISTRY, "category")).map(([cat, list]) => (
-              <div key={cat} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-                <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between flex-wrap gap-2">
+              <div key={cat} className="rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+                <div className="px-5 py-3 border-b border-white/4 flex items-center justify-between flex-wrap gap-2">
                   <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">
                     {CATEGORY_LABEL[cat as keyof typeof CATEGORY_LABEL]}
                   </p>
                   <span className="text-[10px] text-zinc-500 font-mono">{list.length} control{list.length === 1 ? "" : "s"}</span>
                 </div>
-                <div className="divide-y divide-white/[0.04]">
+                <div className="divide-y divide-white/4">
                   {list.map((c) => <ControlRow key={c.id} control={c} />)}
                 </div>
               </div>
@@ -137,7 +137,7 @@ export default function TrustCenterPage() {
 
       {/* Bundle export menu */}
       <Reveal direction="up" delay={0.12}>
-        <div className="mb-10 rounded-2xl border border-emerald-500/15 bg-gradient-to-br from-emerald-500/[0.03] via-transparent to-cyan-500/[0.02] p-6 overflow-hidden">
+        <div className="mb-10 rounded-2xl border border-emerald-500/15 bg-linear-to-br from-emerald-500/3 via-transparent to-cyan-500/2 p-6 overflow-hidden">
           <div className="flex items-center justify-between flex-wrap gap-3 mb-4">
             <div>
               <p className="text-[10px] font-semibold text-emerald-300 uppercase tracking-[0.18em] mb-1">Evidence bundles</p>
@@ -147,7 +147,7 @@ export default function TrustCenterPage() {
           </div>
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2">
             {(Object.keys(BUNDLE_KIND_LABEL) as ComplianceBundleKind[]).map((kind) => (
-              <div key={kind} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2 flex items-center gap-2">
+              <div key={kind} className="rounded-lg border border-white/5 bg-white/2 px-3 py-2 flex items-center gap-2">
                 <ArrowDownTrayIcon className="h-3.5 w-3.5 text-emerald-300 shrink-0" />
                 <span className="text-[11px] text-zinc-300 truncate">{BUNDLE_KIND_LABEL[kind]}</span>
               </div>
@@ -161,15 +161,15 @@ export default function TrustCenterPage() {
 
       {/* Release distribution */}
       <Reveal direction="up" delay={0.16}>
-        <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
+        <div className="mb-10 rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+          <div className="px-5 py-3 border-b border-white/4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ComputerDesktopIcon className="h-4 w-4 text-orange-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">Release distribution</p>
             </div>
             <Link href="/download" className="text-[11px] text-zinc-400 hover:text-white">Open download →</Link>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-white/4">
             {releaseRows.map((row) => {
               const ready = row.publicDistributionReady;
               return (
@@ -198,15 +198,15 @@ export default function TrustCenterPage() {
 
       {/* Connector permissions */}
       <Reveal direction="up" delay={0.2}>
-        <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
+        <div className="mb-10 rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+          <div className="px-5 py-3 border-b border-white/4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <ServerStackIcon className="h-4 w-4 text-orange-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">Connector permissions</p>
             </div>
             <Link href="/dashboard/integrations" className="text-[11px] text-zinc-400 hover:text-white">Open integrations →</Link>
           </div>
-          <div className="divide-y divide-white/[0.04]">
+          <div className="divide-y divide-white/4">
             {CONNECTOR_EVIDENCE.map((c) => (
               <div key={c.connectorId} className="px-5 py-4">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
@@ -215,7 +215,7 @@ export default function TrustCenterPage() {
                     c.status === "live"      ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
                     c.status === "expanding" ? "text-zinc-300 bg-white/10 border-white/20" :
                     c.status === "preview"   ? "text-zinc-300 bg-white/10 border-white/20" :
-                                               "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
+                                               "text-zinc-400 bg-white/4 border-white/8"
                   }`}>{c.status}</span>
                   <span className="text-[10px] text-zinc-500 font-mono">{c.authModel}</span>
                 </div>
@@ -241,15 +241,15 @@ export default function TrustCenterPage() {
 
       {/* AI safety */}
       <Reveal direction="up" delay={0.24}>
-        <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
+        <div className="mb-10 rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+          <div className="px-5 py-3 border-b border-white/4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CpuChipIcon className="h-4 w-4 text-cyan-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">AI safety</p>
             </div>
             <Link href="/dashboard/copilot" className="text-[11px] text-zinc-400 hover:text-white">Open copilot →</Link>
           </div>
-          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/[0.04]">
+          <div className="grid md:grid-cols-2 divide-y md:divide-y-0 md:divide-x divide-white/4">
             <div className="p-5">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-[0.15em] mb-3">Controls</p>
               <div className="space-y-2">
@@ -285,15 +285,15 @@ export default function TrustCenterPage() {
 
       {/* Data handling */}
       <Reveal direction="up" delay={0.28}>
-        <div className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-          <div className="px-5 py-3 border-b border-white/[0.04] flex items-center justify-between">
+        <div className="mb-10 rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+          <div className="px-5 py-3 border-b border-white/4 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <KeyIcon className="h-4 w-4 text-zinc-300" />
               <p className="text-[11px] font-semibold text-zinc-300 uppercase tracking-[0.15em]">Data handling</p>
             </div>
             <span className="text-[11px] text-zinc-500">{dataPosture.enforced} enforced · {dataPosture.attested} attested · {dataPosture.aspirational} aspirational</span>
           </div>
-          <div className="grid md:grid-cols-2 gap-px bg-white/[0.04]">
+          <div className="grid md:grid-cols-2 gap-px bg-white/4">
             <DataAssertionGroup title="What we collect"     items={dataHandling.whatWeCollect}     accent="emerald" />
             <DataAssertionGroup title="What we don't collect" items={dataHandling.whatWeDoNotCollect} accent="zinc"    />
             <DataAssertionGroup title="What we store"        items={dataHandling.whatWeStore}        accent="orange"  />
@@ -306,7 +306,7 @@ export default function TrustCenterPage() {
 
       {/* Enterprise reviewer Q&A */}
       <Reveal direction="up" delay={0.32}>
-        <div className="mt-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.02] p-6">
+        <div className="mt-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/2 p-6">
           <div className="flex items-center gap-2 mb-4">
             <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
             <p className="text-[10px] font-semibold text-emerald-300 uppercase tracking-[0.18em]">If your security team asks…</p>
@@ -330,9 +330,9 @@ export default function TrustCenterPage() {
               </li>
             ))}
           </ul>
-          <div className="mt-5 pt-5 border-t border-white/[0.06] flex items-center justify-between flex-wrap gap-3">
+          <div className="mt-5 pt-5 border-t border-white/6 flex items-center justify-between flex-wrap gap-3">
             <p className="text-[11px] text-zinc-500">Need a deeper review or DPA / security questionnaire?</p>
-            <Link href="/contact?topic=security" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/[0.1] bg-white/[0.04] text-zinc-200 hover:bg-white/[0.08] text-xs font-semibold">
+            <Link href="/contact?topic=security" className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/10 bg-white/4 text-zinc-200 hover:bg-white/8 text-xs font-semibold">
               Request enterprise security review
               <ArrowRightIcon className="h-3 w-3" />
             </Link>
@@ -354,7 +354,7 @@ export default function TrustCenterPage() {
             { href: "/dashboard/security",        label: "Security center",   icon: ShieldCheckIcon, sub: "Tenant isolation, RBAC, credentials, redaction." },
             { href: "/dashboard/reliability",     label: "Reliability",       icon: BoltIcon, sub: "Circuits, retries, dead-letter, system health." },
           ].map(({ href, label, icon: Icon, sub }) => (
-            <Link key={href} href={href} className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-emerald-500/25 hover:bg-emerald-500/[0.03] transition-colors">
+            <Link key={href} href={href} className="block rounded-2xl border border-white/6 bg-white/2 p-4 hover:border-emerald-500/25 hover:bg-emerald-500/3 transition-colors">
               <Icon className="h-4 w-4 text-emerald-300 mb-2" />
               <p className="text-sm font-semibold text-white">{label}</p>
               <p className="text-[11px] text-zinc-500 mt-1 leading-relaxed">{sub}</p>
@@ -383,7 +383,7 @@ function ValidationSummaryStrip() {
   return (
     <Link
       href="/dashboard/validation"
-      className="block mt-8 rounded-2xl border border-cyan-500/15 bg-gradient-to-br from-cyan-500/[0.05] via-transparent to-emerald-500/[0.03] p-5 hover:border-cyan-500/30 transition-colors group"
+      className="block mt-8 rounded-2xl border border-cyan-500/15 bg-linear-to-br from-cyan-500/5 via-transparent to-emerald-500/3 p-5 hover:border-cyan-500/30 transition-colors group"
     >
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div>
@@ -398,9 +398,9 @@ function ValidationSummaryStrip() {
         </div>
       </div>
       {actionable.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-white/[0.05] grid sm:grid-cols-3 gap-2">
+        <div className="mt-4 pt-4 border-t border-white/5 grid sm:grid-cols-3 gap-2">
           {actionable.map((r) => (
-            <div key={r.id} className="rounded-lg border border-white/[0.05] bg-white/[0.02] px-3 py-2">
+            <div key={r.id} className="rounded-lg border border-white/5 bg-white/2 px-3 py-2">
               <p className="text-[11px] text-zinc-300 font-semibold truncate">{r.capability}</p>
               <p className="text-[10px] text-zinc-300/80 mt-0.5">{r.nextFix ?? "Action needed"}</p>
             </div>
@@ -432,8 +432,8 @@ function ControlRow({ control }: { control: ComplianceControl }) {
             <span className={`text-[9px] font-bold uppercase tracking-wider border rounded-full px-1.5 py-px ${
               control.status === "implemented" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/20" :
               control.status === "partial"     ? "text-zinc-300 bg-white/10 border-white/20" :
-              control.status === "planned"     ? "text-zinc-400 bg-white/[0.04] border-white/[0.08]" :
-                                                  "text-zinc-400 bg-white/[0.04] border-white/[0.08]"
+              control.status === "planned"     ? "text-zinc-400 bg-white/4 border-white/8" :
+                                                  "text-zinc-400 bg-white/4 border-white/8"
             }`}>{STATUS_LABEL[control.status]}</span>
             {control.frameworkAlignments && control.frameworkAlignments.length > 0 && (
               <span className="text-[9px] text-zinc-500 font-mono">{control.frameworkAlignments.join(" · ")}</span>
@@ -546,14 +546,14 @@ function CanonicalTrustStrip() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
         <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing canonical trust summary…</p>
       </div>
     );
   }
   if (error || !summary) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-8">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-8">
         <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// trust summary unavailable</p>
         <p className="text-[13px] text-zinc-300">{error ?? "Sign in to load /api/trust/summary."}</p>
       </div>
@@ -561,7 +561,7 @@ function CanonicalTrustStrip() {
   }
 
   return (
-    <div className="rounded-2xl border border-emerald-500/[0.18] bg-gradient-to-br from-emerald-500/[0.04] via-white/[0.015] to-transparent p-5 mb-8 relative overflow-hidden">
+    <div className="rounded-2xl border border-emerald-500/18 bg-linear-to-br from-emerald-500/4 via-white/1.5 to-transparent p-5 mb-8 relative overflow-hidden">
       <div className="flex items-center gap-2 mb-4 flex-wrap">
         <span className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2 py-0.5 ${sourceTone}`}>
           {sourceMode} · from /api/trust/summary
@@ -599,7 +599,7 @@ function CanonicalTrustStrip() {
         </div>
       </div>
       {summary.limitations.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-white/[0.06]">
+        <div className="mt-4 pt-4 border-t border-white/6">
           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// limitations</p>
           <p className="text-[12px] text-zinc-400 leading-relaxed">{summary.limitations[0]}</p>
         </div>

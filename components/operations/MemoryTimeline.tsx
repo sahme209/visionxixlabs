@@ -58,7 +58,7 @@ const KIND_CONFIG: Record<
 > = {
   scan: { icon: CloudArrowDownIcon, iconClass: "text-blue-400", bgClass: "bg-blue-500/10", borderClass: "border-blue-500/20" },
   "recommendation.accepted": { icon: CheckCircleIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
-  "recommendation.ignored": { icon: XCircleIcon, iconClass: "text-zinc-500", bgClass: "bg-white/[0.04]", borderClass: "border-white/[0.08]" },
+  "recommendation.ignored": { icon: XCircleIcon, iconClass: "text-zinc-500", bgClass: "bg-white/4", borderClass: "border-white/8" },
   "execution.applied": { icon: CommandLineIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/10", borderClass: "border-emerald-500/20" },
   "execution.failed": { icon: XCircleIcon, iconClass: "text-red-400", bgClass: "bg-red-500/10", borderClass: "border-red-500/20" },
   "drift.detected": { icon: ArrowTrendingUpIcon, iconClass: "text-zinc-400", bgClass: "bg-white/10", borderClass: "border-white/20" },
@@ -93,9 +93,9 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
   const totalFindings = groups.reduce((s, g) => s + g.summary.findings, 0);
 
   return (
-    <div className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`relative rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="px-6 py-4 border-b border-white/6 bg-white/1">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
           <div className="flex items-center gap-3">
             <CpuChipIcon className="h-4 w-4 text-orange-400" />
@@ -112,7 +112,7 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
             { label: "Savings locked", value: `$${(totalSavings / 1000).toFixed(1)}k`, color: "text-emerald-400" },
             { label: "Findings tracked", value: totalFindings.toString(), color: "text-zinc-400" },
           ].map((s) => (
-            <div key={s.label} className="rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2">
+            <div key={s.label} className="rounded-lg bg-white/2 border border-white/4 px-3 py-2">
               <p className="text-[9px] text-zinc-500 uppercase tracking-wider">{s.label}</p>
               <p className={`text-base font-bold ${s.color}`}>{s.value}</p>
             </div>
@@ -124,7 +124,7 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
       <div className="px-6 py-6 max-h-[640px] overflow-y-auto">
         <div className="relative">
           {/* Continuous timeline rail */}
-          <span aria-hidden className="absolute left-3 top-2 bottom-2 w-px bg-gradient-to-b from-orange-500/30 via-white/[0.08] to-transparent" />
+          <span aria-hidden className="absolute left-3 top-2 bottom-2 w-px bg-linear-to-b from-orange-500/30 via-white/8 to-transparent" />
 
           {groups.map((group, gIdx) => (
             <div key={group.date} className={`relative ${gIdx === groups.length - 1 ? "" : "mb-8"}`}>
@@ -156,9 +156,9 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
                   const config = KIND_CONFIG[event.kind];
                   const Icon = config.icon;
                   return (
-                    <li key={event.id} className="relative rounded-xl bg-white/[0.02] border border-white/[0.04] p-3 hover:border-white/[0.08] transition-colors group">
+                    <li key={event.id} className="relative rounded-xl bg-white/2 border border-white/4 p-3 hover:border-white/8 transition-colors group">
                       {/* Connector dot */}
-                      <span aria-hidden className="absolute left-[-2.05rem] top-3.5 w-2.5 h-2.5 rounded-full border-2 border-[#09090b] bg-white/[0.1] group-hover:bg-orange-400 transition-colors" />
+                      <span aria-hidden className="absolute left-[-2.05rem] top-3.5 w-2.5 h-2.5 rounded-full border-2 border-[#09090b] bg-white/10 group-hover:bg-orange-400 transition-colors" />
 
                       <div className="flex items-start gap-3">
                         <div className={`w-7 h-7 rounded-lg ${config.bgClass} border ${config.borderClass} flex items-center justify-center shrink-0`}>
@@ -199,7 +199,7 @@ export function MemoryTimeline({ groups = DEMO_GROUPS, className = "" }: MemoryT
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between text-xs">
+      <div className="px-6 py-3 border-t border-white/6 bg-white/1 flex items-center justify-between text-xs">
         <span className="text-zinc-500">
           Showing {groups.length} day{groups.length !== 1 ? "s" : ""} · Memory window: 90 days
         </span>

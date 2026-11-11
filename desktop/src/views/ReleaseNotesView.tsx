@@ -131,7 +131,7 @@ function DraftCard({ draft, onChanged }: { draft: NotesView; onChanged: () => vo
   return (
     <div className="glass-card p-3">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[draft.status]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[draft.status]}`}>
           {draft.status}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">source: {draft.source}</span>
@@ -147,10 +147,10 @@ function DraftCard({ draft, onChanged }: { draft: NotesView; onChanged: () => vo
       {draft.publishedUrl && (
         <p className="text-[10.5px] font-mono text-emerald-300 mt-2">↳ published at {draft.publishedUrl}</p>
       )}
-      <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
         {draft.status === "draft" && (
           <button type="button" onClick={() => transition("review")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200 hover:bg-violet-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-violet-500/30 bg-violet-500/10 text-violet-200 hover:bg-violet-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "review" ? "…" : "Mark reviewed"}
           </button>
         )}
@@ -162,14 +162,14 @@ function DraftCard({ draft, onChanged }: { draft: NotesView; onChanged: () => vo
               onChange={(e) => setPublishedUrl(e.target.value)}
               placeholder="publish URL (optional)"
               disabled={busy !== null}
-              className="flex-1 min-w-[160px] rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/40 focus:outline-none disabled:opacity-50"
+              className="flex-1 min-w-[160px] rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-emerald-500/40 focus:outline-hidden disabled:opacity-50"
             />
             <button type="button" onClick={() => transition("publish")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
               {busy === "publish" ? "…" : "Publish"}
             </button>
             <button type="button" onClick={() => transition("revoke")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
               {busy === "revoke" ? "…" : "Revoke"}
             </button>
           </>
@@ -250,7 +250,7 @@ function UpsertPanel({ onSaved }: { onSaved: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/8 text-[12px] font-semibold text-violet-200 hover:bg-violet-500/16 transition-colors"
         >
           + Draft release notes
         </button>
@@ -277,7 +277,7 @@ function UpsertPanel({ onSaved }: { onSaved: () => void }) {
           rows={6}
           placeholder={"Improved checkout speed by 40% (#1234)\nFixed sign-in loop on Safari (#1245)"}
           disabled={busy}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="mt-3 flex items-center gap-3">
@@ -285,7 +285,7 @@ function UpsertPanel({ onSaved }: { onSaved: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !releaseId || !raw.trim()}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Save draft"}
         </button>
@@ -313,7 +313,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

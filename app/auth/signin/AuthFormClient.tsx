@@ -111,7 +111,7 @@ function SignInForm() {
       </Link>
 
       <div className="relative z-10 w-full max-w-[380px]">
-        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.045]">
+        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/4.5">
           <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
         </div>
         <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
@@ -137,7 +137,7 @@ function SignInForm() {
               autoComplete="email"
               autoFocus
               placeholder="you@company.com"
-              className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-none transition focus:border-orange-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-orange-500/20"
+              className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"
             />
           </div>
           <div>
@@ -154,12 +154,12 @@ function SignInForm() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="block w-full rounded-lg border border-white/[0.08] bg-white/[0.04] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-none transition focus:border-orange-500/50 focus:bg-white/[0.06] focus:ring-2 focus:ring-orange-500/20"
+                className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded p-1 text-zinc-500 hover:text-zinc-200 transition-colors"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 hover:text-zinc-200 transition-colors"
                 aria-label={showPassword ? "Hide password" : "Show password"}
 
               >
@@ -168,7 +168,7 @@ function SignInForm() {
             </div>
           </div>
           {error && (
-            <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/[0.08] px-3.5 py-2.5 text-sm text-red-300">
+            <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/8 px-3.5 py-2.5 text-sm text-red-300">
               {error}
             </div>
           )}
@@ -189,13 +189,13 @@ function SignInForm() {
         {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && (
           <>
             <div className="flex items-center gap-3 my-6">
-              <div className="flex-1 h-px bg-white/[0.06]" />
+              <div className="flex-1 h-px bg-white/6" />
               <span className="text-xs text-zinc-400">Or</span>
-              <div className="flex-1 h-px bg-white/[0.06]" />
+              <div className="flex-1 h-px bg-white/6" />
             </div>
 
             {oauthError && (
-              <div className="mb-3 rounded-lg border border-white/20 bg-white/[0.06] px-3.5 py-2.5 text-xs text-zinc-200 flex items-start gap-2">
+              <div className="mb-3 rounded-lg border border-white/20 bg-white/6 px-3.5 py-2.5 text-xs text-zinc-200 flex items-start gap-2">
                 <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
                 <span>OAuth returned <span className="font-mono">{oauthError}</span>.</span>
               </div>
@@ -207,7 +207,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("google")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/9 bg-white/2.5 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <GoogleMark className="h-4 w-4" />
                   {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
@@ -218,7 +218,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("github")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/9 bg-white/2.5 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <GitHubMark className="h-4 w-4" />
                   {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
@@ -229,7 +229,7 @@ function SignInForm() {
                   type="button"
                   onClick={() => handleOAuth("cognito")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/[0.09] bg-white/[0.025] px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/9 bg-white/2.5 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
                 >
                   <SsoMark className="h-4 w-4" />
                   {oauthLoading === "cognito" ? "Opening…" : "Sign in with Cognito"}

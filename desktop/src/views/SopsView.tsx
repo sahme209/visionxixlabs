@@ -119,7 +119,7 @@ export function SopsView() {
               <ul className="space-y-1">
                 {sec.bullets.map((b, i) => (
                   <li key={i} className="flex items-start gap-2 text-[11.5px] text-zinc-300">
-                    <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
+                    <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 shrink-0" />
                     <span className="leading-relaxed">{b}</span>
                   </li>
                 ))}

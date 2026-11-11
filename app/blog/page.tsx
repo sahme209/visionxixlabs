@@ -36,10 +36,10 @@ export default function BlogIndex() {
   const categories = listCategories();
 
   return (
-    <div className="min-h-screen bg-[#141414] text-white relative overflow-hidden">
+    <div className="min-h-screen bg-brand-ink text-white relative overflow-hidden">
       {/* One restrained brand accent keeps the editorial surface calm. */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-orange-500/[0.06] blur-[160px]" />
+        <div className="absolute top-0 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-orange-500/6 blur-[160px]" />
       </div>
 
       <Navigation />
@@ -49,7 +49,7 @@ export default function BlogIndex() {
         <header className="mb-16">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
             <span className="text-brand-coral/90 tabular-nums">B1</span>
-            <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+            <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
             Blog
           </p>
           <h1 className="text-5xl md:text-6xl font-bold tracking-[-0.045em] leading-[1.05] mb-4">
@@ -66,7 +66,7 @@ export default function BlogIndex() {
         <section className="mb-20">
           <Link
             href={`/blog/${featured.slug}`}
-            className="group block relative rounded-3xl border border-white/[0.07] bg-gradient-to-br from-[#1a1a1a] via-[#171717] to-[#141414] p-8 md:p-12 overflow-hidden hover:border-orange-500/30 transition-all"
+            className="group block relative rounded-3xl border border-white/[0.07] bg-linear-to-br from-brand-ink-card via-[#171717] to-brand-ink p-8 md:p-12 overflow-hidden hover:border-orange-500/30 transition-all"
           >
             <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-orange-500/15 blur-[100px] pointer-events-none" />
             <div className="absolute -bottom-32 -left-32 w-72 h-72 rounded-full bg-amber-500/10 blur-[120px] pointer-events-none" />
@@ -92,11 +92,11 @@ export default function BlogIndex() {
               </div>
 
               <div className="lg:col-span-5">
-                <div className="rounded-2xl border border-white/[0.08] bg-axiom-bg-elev/60 p-6 relative overflow-hidden">
-                  <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-orange-500/20 blur-[40px] pointer-events-none" />
+                <div className="rounded-2xl border border-white/8 bg-axiom-bg-elev/60 p-6 relative overflow-hidden">
+                  <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-orange-500/20 blur-2xl pointer-events-none" />
                   <div className="relative">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
+                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
                         {featured.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
                       </div>
                       <div>
@@ -130,7 +130,7 @@ export default function BlogIndex() {
           <div className="flex items-center gap-2 flex-wrap">
             <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-200 text-xs font-semibold">All posts</span>
             {categories.map((cat) => (
-              <span key={cat} className="inline-flex items-center px-3 py-1.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-zinc-400 text-xs font-medium">
+              <span key={cat} className="inline-flex items-center px-3 py-1.5 rounded-full border border-white/6 bg-white/2 text-zinc-400 text-xs font-medium">
                 {cat}
               </span>
             ))}
@@ -143,7 +143,7 @@ export default function BlogIndex() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6 hover:border-orange-500/30 hover:bg-white/[0.025] transition-all"
+              className="group block rounded-2xl border border-white/6 bg-white/1.5 p-6 hover:border-orange-500/30 hover:bg-white/2.5 transition-all"
             >
               <div className="flex items-center gap-3 mb-3 text-[10px] font-mono uppercase tracking-[0.18em]">
                 <span className={CAT_TONE[post.category] ?? "text-zinc-400"}>{post.category}</span>
@@ -158,7 +158,7 @@ export default function BlogIndex() {
               </p>
               <div className="flex items-center justify-between text-[11px]">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gradient-to-br from-orange-500/40 to-amber-500/40 flex items-center justify-center text-[9px] font-bold text-white">
+                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-orange-500/40 to-amber-500/40 flex items-center justify-center text-[9px] font-bold text-white">
                     {post.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
                   </div>
                   <span className="text-zinc-400">{post.author.name}</span>

@@ -64,7 +64,7 @@ export default function WorkforceAuditPage() {
       </section>
 
       {/* Duplicates */}
-      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-6">
+      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-6">
         <header className="flex items-center gap-2 mb-3">
           <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Consolidated kernels ({withDuplicates.length})</p>
@@ -74,7 +74,7 @@ export default function WorkforceAuditPage() {
         ) : (
           <ul className="space-y-2">
             {withDuplicates.map((e) => (
-              <li key={e.id} className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-3">
+              <li key={e.id} className="rounded-lg border border-white/5 bg-white/1.5 p-3">
                 <p className="text-[13px] font-semibold text-white">{e.displayName}</p>
                 <p className="text-[10.5px] font-mono text-zinc-500">{e.id}</p>
                 <ul className="mt-1 text-[11px] text-emerald-100/85 leading-snug list-disc list-inside marker:text-emerald-400/70">
@@ -87,14 +87,14 @@ export default function WorkforceAuditPage() {
       </section>
 
       {/* Open gaps */}
-      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 mb-6">
+      <section className="rounded-2xl border border-white/15 bg-white/4 p-5 mb-6">
         <header className="flex items-center gap-2 mb-3">
           <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">Implementation gaps ({withMissing.length} engineers · {summary.totalMissingPieces} items)</p>
         </header>
         <ul className="space-y-2">
           {withMissing.map((e) => (
-            <li key={e.id} className="rounded-lg border border-white/[0.05] bg-white/[0.015] p-3">
+            <li key={e.id} className="rounded-lg border border-white/5 bg-white/1.5 p-3">
               <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                 <p className="text-[12.5px] font-semibold text-white">{e.displayName}</p>
                 <span className="text-[10px] font-mono text-zinc-500">{e.productLayer === "client" ? "client" : "internal"}</span>
@@ -108,7 +108,7 @@ export default function WorkforceAuditPage() {
       </section>
 
       {/* Internal-only engineers */}
-      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] p-5 mb-6">
+      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/3 p-5 mb-6">
         <header className="flex items-center gap-2 mb-3">
           <ShieldCheckIcon className="h-4 w-4 text-orange-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Internal-layer engineers ({internal.length})</p>
@@ -128,7 +128,7 @@ export default function WorkforceAuditPage() {
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{label}</p>
       <p className="mt-1 text-[22px] font-semibold text-white tabular-nums">{value}</p>
     </div>
@@ -137,7 +137,7 @@ function Stat({ label, value }: { label: string; value: number }) {
 
 function InternalEngineerCard({ engineer }: { engineer: AgentEngineer }) {
   return (
-    <article className="rounded-xl border border-white/[0.05] bg-white/[0.015] p-4">
+    <article className="rounded-xl border border-white/5 bg-white/1.5 p-4">
       <header className="flex items-start justify-between gap-3 mb-1">
         <p className="text-[13px] font-semibold text-white">{engineer.displayName}</p>
         <span className="text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px text-rose-300 bg-rose-500/10 border-rose-500/30">internal</span>

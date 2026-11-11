@@ -89,8 +89,8 @@ export function HowItWorksClient() {
     <div className="relative">
       {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
+        <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -101,7 +101,7 @@ export function HowItWorksClient() {
           className="mono-label inline-flex items-center gap-3"
         >
           <span className="text-brand-coral/90 tabular-nums">HW</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           How Axiom works
         </motion.p>
         <motion.h1
@@ -113,7 +113,7 @@ export function HowItWorksClient() {
           Ten agents.{" "}
           <span className="relative inline-block">
             One human gate.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -130,8 +130,8 @@ export function HowItWorksClient() {
 
       {/* ===== AGENT DIAGRAM ===== */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-8">
-        <div className="rounded-3xl border border-white/[0.06] bg-white/[0.02] p-4 md:p-8 overflow-hidden">
-          <div className="aspect-[16/9] relative">
+        <div className="rounded-3xl border border-white/6 bg-white/2 p-4 md:p-8 overflow-hidden">
+          <div className="aspect-video relative">
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
@@ -188,7 +188,7 @@ export function HowItWorksClient() {
                   }}
                   transition={{ duration: 0.35 }}
                   style={{ left: `${n.x}%`, top: `${n.y}%` }}
-                  className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/[0.08] bg-[#1a1a1a] px-3 py-1.5 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
+                  className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/8 bg-brand-ink-card px-3 py-1.5 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
                 >
                   <p className="text-[11px] font-semibold text-white whitespace-nowrap">{n.label}</p>
                   <p className="text-[9px] font-mono text-zinc-300 whitespace-nowrap">{n.emits}</p>
@@ -220,8 +220,8 @@ export function HowItWorksClient() {
                     n.id === liveAgentId
                       ? "bg-zinc-500/10 border border-zinc-500/30"
                       : lit
-                      ? "bg-white/[0.03] border border-white/[0.06]"
-                      : "bg-white/[0.01] border border-white/[0.04] opacity-50",
+                      ? "bg-white/3 border border-white/6"
+                      : "bg-white/1 border border-white/4 opacity-50",
                   ].join(" ")}
                 >
                   <span className="text-[12px] font-semibold w-32 truncate">{n.label}</span>

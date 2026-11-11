@@ -95,10 +95,10 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
               key={option}
               className={`flex items-center justify-between gap-3 rounded-lg border px-4 py-3 ${
                 isSelected
-                  ? "border-orange-500/40 bg-orange-500/[0.05] cursor-pointer"
+                  ? "border-orange-500/40 bg-orange-500/5 cursor-pointer"
                   : allowed
-                    ? "border-white/[0.06] bg-white/[0.01] cursor-pointer hover:border-white/[0.12]"
-                    : "border-rose-500/15 bg-rose-500/[0.03] opacity-70 cursor-not-allowed"
+                    ? "border-white/6 bg-white/1 cursor-pointer hover:border-white/12"
+                    : "border-rose-500/15 bg-rose-500/3 opacity-70 cursor-not-allowed"
               }`}
             >
               <div>
@@ -155,7 +155,7 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
       </div>
 
       {state.kind === "saved" && (
-        <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/[0.04] px-3 py-2">
+        <div className="mt-3 rounded-lg border border-emerald-500/20 bg-emerald-500/4 px-3 py-2">
           <p className="text-[11px] font-semibold text-emerald-200 inline-flex items-center gap-1.5">
             <CheckCircleIcon className="h-3.5 w-3.5" />
             Saved · audit row written · runtime gate updated.
@@ -163,7 +163,7 @@ export function PolicyOverrideForm({ engineerId, canonical, initialRule, initial
         </div>
       )}
       {state.kind === "error" && (
-        <div className="mt-3 rounded-lg border border-rose-500/20 bg-rose-500/[0.04] px-3 py-2">
+        <div className="mt-3 rounded-lg border border-rose-500/20 bg-rose-500/4 px-3 py-2">
           <p className="text-[11px] font-semibold text-rose-200 inline-flex items-center gap-1.5">
             <ExclamationTriangleIcon className="h-3.5 w-3.5" />
             {state.message}

@@ -76,7 +76,7 @@ export default async function PostDraftsPage() {
       </div>
 
       {drafts.length === 0 && (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <p className="text-[14px] font-semibold text-white mb-1">No drafts yet</p>
           <p className="text-[12px] text-zinc-400 max-w-md mx-auto">
             Click "Generate 3 new drafts" above, or wait for the daily cron at /api/cron/linkedin-daily-drafts.
@@ -119,8 +119,8 @@ function DraftCard({ draft, canPublishNow }: {
   const isOpen = draft.status === "drafted" || draft.status === "in_review" || draft.status === "approved" || draft.status === "scheduled" || draft.status === "failed" || draft.status === "needs_revision";
 
   return (
-    <li id={draft.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02]">
-      <header className="px-5 py-3 border-b border-white/[0.05] flex items-center justify-between gap-3 flex-wrap">
+    <li id={draft.id} className="rounded-2xl border border-white/6 bg-white/2">
+      <header className="px-5 py-3 border-b border-white/5 flex items-center justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-2 min-w-0">
           <span className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">{draft.id.slice(0, 12)}</span>
           <span className="text-[9.5px] font-mono uppercase tracking-wider text-orange-300/90 bg-orange-500/10 border border-orange-500/20 rounded-full px-1.5 py-px">
@@ -142,7 +142,7 @@ function DraftCard({ draft, canPublishNow }: {
       </div>
 
       {isOpen && (
-        <footer className="px-5 py-3 bg-white/[0.01] border-t border-white/[0.04] flex items-center justify-between gap-2 flex-wrap">
+        <footer className="px-5 py-3 bg-white/1 border-t border-white/4 flex items-center justify-between gap-2 flex-wrap">
           <span className="text-[10.5px] font-mono text-zinc-500">drafted by {draft.createdByAgent}</span>
           <div className="flex flex-wrap items-center gap-2">
             {draft.status !== "approved" && draft.status !== "scheduled" && draft.status !== "rejected" && (
@@ -162,7 +162,7 @@ function DraftCard({ draft, canPublishNow }: {
             <a
               href={`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullText)}`}
               target="_blank" rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-white/[0.04] text-zinc-200 border border-white/[0.08] hover:bg-white/[0.08]"
+              className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-white/4 text-zinc-200 border border-white/8 hover:bg-white/8"
             >
               Open LinkedIn
             </a>
@@ -172,12 +172,12 @@ function DraftCard({ draft, canPublishNow }: {
       )}
 
       {draft.linkedinPostUrl && (
-        <footer className="px-5 py-2 border-t border-white/[0.04] text-[10.5px] text-emerald-300">
+        <footer className="px-5 py-2 border-t border-white/4 text-[10.5px] text-emerald-300">
           Published → <a href={draft.linkedinPostUrl} target="_blank" rel="noopener noreferrer" className="underline">{draft.linkedinPostUrl}</a>
         </footer>
       )}
       {draft.linkedinPostUrn && !draft.linkedinPostUrl && (
-        <footer className="px-5 py-2 border-t border-white/[0.04] text-[10.5px] text-emerald-300/80 font-mono">
+        <footer className="px-5 py-2 border-t border-white/4 text-[10.5px] text-emerald-300/80 font-mono">
           urn: {draft.linkedinPostUrn}
         </footer>
       )}
@@ -203,7 +203,7 @@ function TransitionForm({
         <input
           name="rejectionReason"
           placeholder="reason"
-          className="text-[10.5px] font-mono bg-transparent border border-white/[0.10] rounded px-1.5 py-0.5 text-zinc-200 w-24"
+          className="text-[10.5px] font-mono bg-transparent border border-white/10 rounded-sm px-1.5 py-0.5 text-zinc-200 w-24"
         />
       )}
       <button className={`inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg border ${palette}`}>
@@ -220,7 +220,7 @@ function ScheduleForm({ draftId }: { draftId: string }) {
       <input
         type="datetime-local"
         name="scheduledFor"
-        className="text-[10.5px] font-mono bg-transparent border border-white/[0.10] rounded px-1.5 py-0.5 text-zinc-200"
+        className="text-[10.5px] font-mono bg-transparent border border-white/10 rounded-sm px-1.5 py-0.5 text-zinc-200"
       />
       <button className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-cyan-500/15 text-cyan-100 border border-cyan-500/30 hover:bg-cyan-500/25">
         <CalendarDaysIcon className="h-3.5 w-3.5" /> Schedule

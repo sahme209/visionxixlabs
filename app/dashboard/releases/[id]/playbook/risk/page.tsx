@@ -48,7 +48,7 @@ export default function ReleaseRiskDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -56,7 +56,7 @@ export default function ReleaseRiskDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -74,7 +74,7 @@ export default function ReleaseRiskDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Risk Assessment</h1>
 
         <div className="space-y-6">
@@ -95,8 +95,8 @@ export default function ReleaseRiskDetailPage() {
             </h2>
             <div className={`rounded-2xl border p-4 ${
               typeof risk.affectedServiceCount === 'number'
-                ? 'border-white/[0.08] bg-white/[0.025]'
-                : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+                ? 'border-white/8 bg-white/2.5'
+                : 'border-zinc-500/25 bg-zinc-500/5'
             }`}>
               {typeof risk.affectedServiceCount === 'number' ? (
                 <>
@@ -118,7 +118,7 @@ export default function ReleaseRiskDetailPage() {
             </div>
           </section>
 
-          <section className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
+          <section className="rounded-2xl border border-cyan-500/15 bg-cyan-500/4 p-4">
             <p className="text-[12px] text-cyan-200">
               💡 Blast radius is calculated based on the scope of changes and number of affected services.
               {risk.blastRadius === "critical" && " Consider phased rollout or additional testing."}

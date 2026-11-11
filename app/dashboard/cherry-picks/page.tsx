@@ -97,19 +97,19 @@ export default function CherryPicksPage() {
       <NewCherryPickPanel onCreated={loadList} />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading cherry-pick exceptions…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -119,7 +119,7 @@ export default function CherryPicksPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -134,16 +134,16 @@ export default function CherryPicksPage() {
           </div>
 
           {data.exceptions.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No cherry-pick exceptions on file. Clean release trains are the goal.
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {data.exceptions.map((e) => (
-                <div key={e.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={e.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[e.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[e.status]}`}>
                         {e.status}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">
@@ -151,14 +151,14 @@ export default function CherryPicksPage() {
                       </p>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                         {e.approvedCount} approved
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                         {e.excludedCount} excluded
                       </span>
                       {e.hasFinalCommitValidation && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-300 border border-emerald-500/25">
                           final commits ✓
                         </span>
                       )}
@@ -228,7 +228,7 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
     const busy = false;
     const reasonValid = reason.trim().length >= 10;
     return (
-      <div className="mt-3 pt-3 border-t border-white/[0.04]">
+      <div className="mt-3 pt-3 border-t border-white/4">
         <span className="block text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-1">Deny reason ({reason.trim().length}/10 min)</span>
         <textarea
           aria-label="Deny reason"
@@ -236,21 +236,21 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this exception being denied?"
           rows={2}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-hidden"
         />
         <div className="mt-2 flex items-center gap-2">
           <button
             type="button"
             disabled={!reasonValid || busy}
             onClick={() => decide("deny", reason.trim())}
-            className="px-3 py-1 rounded border border-rose-500/40 bg-rose-500/[0.10] text-[11.5px] font-semibold text-rose-200 hover:bg-rose-500/[0.18] disabled:opacity-50 transition-colors"
+            className="px-3 py-1 rounded-sm border border-rose-500/40 bg-rose-500/10 text-[11.5px] font-semibold text-rose-200 hover:bg-rose-500/18 disabled:opacity-50 transition-colors"
           >
             Confirm deny
           </button>
           <button
             type="button"
             onClick={() => { setReason(""); setState({ kind: "idle" }); }}
-            className="px-3 py-1 rounded border border-white/[0.08] bg-white/[0.02] text-[11.5px] text-zinc-300 hover:bg-white/[0.05] transition-colors"
+            className="px-3 py-1 rounded-sm border border-white/8 bg-white/2 text-[11.5px] text-zinc-300 hover:bg-white/5 transition-colors"
           >
             Cancel
           </button>
@@ -261,12 +261,12 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+    <div className="mt-3 pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
       <button
         type="button"
         disabled={busy}
         onClick={() => decide("approve")}
-        className="px-3 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+        className="px-3 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
       >
         {state.kind === "submitting" && state.which === "approve" ? "approving…" : "Approve"}
       </button>
@@ -274,7 +274,7 @@ function DecideControls({ exceptionId, onDecided }: { exceptionId: string; onDec
         type="button"
         disabled={busy}
         onClick={() => setState({ kind: "denying" })}
-        className="px-3 py-1 rounded border border-rose-500/30 bg-rose-500/[0.06] text-rose-200 hover:bg-rose-500/[0.12] disabled:opacity-50 transition-colors"
+        className="px-3 py-1 rounded-sm border border-rose-500/30 bg-rose-500/6 text-rose-200 hover:bg-rose-500/12 disabled:opacity-50 transition-colors"
       >
         Deny…
       </button>
@@ -338,7 +338,7 @@ function NewCherryPickPanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/2.5 text-[12px] font-semibold text-white hover:bg-orange-500/12 transition-colors"
         >
           + Request cherry-pick exception
         </button>
@@ -348,7 +348,7 @@ function NewCherryPickPanel({ onCreated }: { onCreated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-orange-100">New cherry-pick exception</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>
@@ -376,7 +376,7 @@ function NewCherryPickPanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Submit request"}
         </button>
@@ -406,7 +406,7 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
           placeholder={placeholder}
           disabled={disabled}
           rows={3}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
         />
       ) : (
         <input
@@ -416,7 +416,7 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
           onChange={(e) => onChange(e.target.value)}
           placeholder={placeholder}
           disabled={disabled}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
         />
       )}
     </label>
@@ -425,10 +425,10 @@ function Field({ label, value, onChange, placeholder, multiline, disabled }: {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ScissorsIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -485,14 +485,14 @@ function ValidateControls({
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+    <div className="mt-3 pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
       <span className="text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Final-commit validation</span>
       {currentlyValidated ? (
         <button
           type="button"
           disabled={busy}
           onClick={() => flip(false)}
-          className="px-3 py-1 rounded border border-zinc-500/40 bg-zinc-500/[0.08] text-zinc-200 hover:bg-zinc-500/[0.15] disabled:opacity-50 transition-colors"
+          className="px-3 py-1 rounded-sm border border-zinc-500/40 bg-zinc-500/8 text-zinc-200 hover:bg-zinc-500/15 disabled:opacity-50 transition-colors"
         >
           {busy && state.kind === "submitting" && !state.targetState ? "clearing…" : "Clear validation"}
         </button>
@@ -501,7 +501,7 @@ function ValidateControls({
           type="button"
           disabled={busy}
           onClick={() => flip(true)}
-          className="px-3 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+          className="px-3 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
         >
           {busy && state.kind === "submitting" && state.targetState ? "validating…" : "Confirm final commits"}
         </button>

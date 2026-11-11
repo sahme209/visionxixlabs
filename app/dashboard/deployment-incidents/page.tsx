@@ -106,19 +106,19 @@ export default function DeploymentIncidentsPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading incidents…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -128,14 +128,14 @@ export default function DeploymentIncidentsPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
 
       {data && (
         data.incidents.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No incidents yet. Use the panel above when a release causes a regression.
           </div>
         ) : (
@@ -172,12 +172,12 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
   }
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-4">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[incident.severity]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[incident.severity]}`}>
           {incident.severity}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[incident.status]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[incident.status]}`}>
           {incident.status}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">release: {incident.releaseId}</span>
@@ -192,19 +192,19 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
           ↳ <a href={incident.externalUrl} target="_blank" rel="noopener noreferrer" className="text-orange-300 hover:underline">{incident.externalUrl}</a>
         </p>
       )}
-      <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+      <div className="mt-3 pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
         {incident.status === "open" && (
           <>
             <button type="button" onClick={() => transition("mitigate")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-white/30 bg-white/[0.08] text-zinc-200 hover:bg-white/[0.16] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-white/30 bg-white/8 text-zinc-200 hover:bg-white/16 disabled:opacity-50 disabled:cursor-wait">
               {busy === "mitigate" ? "…" : "Mitigate"}
             </button>
             <button type="button" onClick={() => transition("resolve")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/16 disabled:opacity-50 disabled:cursor-wait">
               {busy === "resolve" ? "…" : "Resolve"}
             </button>
             <button type="button" onClick={() => transition("wont_fix")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
               {busy === "wont_fix" ? "…" : "Won't fix"}
             </button>
           </>
@@ -212,11 +212,11 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
         {incident.status === "mitigated" && (
           <>
             <button type="button" onClick={() => transition("resolve")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/16 disabled:opacity-50 disabled:cursor-wait">
               {busy === "resolve" ? "…" : "Resolve"}
             </button>
             <button type="button" onClick={() => transition("reopen")} disabled={busy !== null}
-              className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.08] text-rose-200 hover:bg-rose-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+              className="px-2 py-1 rounded-sm border border-rose-500/30 bg-rose-500/8 text-rose-200 hover:bg-rose-500/16 disabled:opacity-50 disabled:cursor-wait">
               {busy === "reopen" ? "…" : "Re-open"}
             </button>
           </>
@@ -229,10 +229,10 @@ function IncidentCard({ incident, onChanged }: { incident: IncidentView; onChang
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof BoltSlashIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -297,7 +297,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/[0.06] text-[12px] font-semibold text-rose-200 hover:bg-rose-500/[0.12] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-rose-500/30 bg-rose-500/6 text-[12px] font-semibold text-rose-200 hover:bg-rose-500/12 transition-colors"
         >
           + Report incident
         </button>
@@ -307,7 +307,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.03] p-5">
+    <div className="mb-6 rounded-2xl border border-rose-500/18 bg-rose-500/3 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-rose-100">Report deployment incident</p>
         <button type="button" onClick={reset} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -320,7 +320,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
             value={severity}
             onChange={(e) => setSeverity(e.target.value as typeof severity)}
             disabled={busy}
-            className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
+            className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 disabled:opacity-50"
           >
             <option value="low">low</option>
             <option value="medium">medium</option>
@@ -341,7 +341,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
           rows={3}
           placeholder="One-paragraph context — symptoms, blast radius, current mitigation if any."
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="mt-4 flex items-center gap-3">
@@ -349,7 +349,7 @@ function ReportPanel({ onReported }: { onReported: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !releaseId || !title.trim()}
-          className="px-3 py-1.5 rounded-lg border border-rose-500/40 bg-rose-500/[0.12] text-[12px] font-semibold text-rose-100 hover:bg-rose-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-rose-500/40 bg-rose-500/12 text-[12px] font-semibold text-rose-100 hover:bg-rose-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Report"}
         </button>
@@ -377,7 +377,7 @@ function IncidentField({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-rose-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

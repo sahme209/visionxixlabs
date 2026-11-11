@@ -102,8 +102,8 @@ export default function AgentActivityPage() {
             onClick={() => setWindowHours(h)}
             className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition-colors ${
               windowHours === h
-                ? "text-white border-white/[0.18]"
-                : "text-zinc-500 border-white/[0.06] hover:text-white hover:border-white/[0.12]"
+                ? "text-white border-white/18"
+                : "text-zinc-500 border-white/6 hover:text-white hover:border-white/12"
             }`}
           >
             {h < 24 ? `${h}h` : h === 24 ? "24h" : h === 168 ? "7d" : "30d"}
@@ -112,7 +112,7 @@ export default function AgentActivityPage() {
         <button
           onClick={() => load(windowHours)}
           disabled={loading}
-          className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+          className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
         >
           <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
           Refresh
@@ -120,20 +120,20 @@ export default function AgentActivityPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
           <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3">By role · sent in window</h2>
           {activity && activity.agents.length > 0 ? (
             <div className="space-y-1.5">
               {activity.agents.map((a) => (
                 <div key={a.agent} className="flex items-center gap-2 text-[12px]">
                   <span className="font-mono text-zinc-200 w-28 truncate">{a.agent}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                  <div className="flex-1 h-1.5 rounded-full bg-white/4 overflow-hidden">
                     <div
                       className="h-full bg-white/30"
                       style={{ width: `${Math.min(100, (a.sent / Math.max(1, activity.totalMessages || 1)) * 100)}%` }}
@@ -148,14 +148,14 @@ export default function AgentActivityPage() {
           )}
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
           <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-3">By message kind</h2>
           {activity && activity.kinds.length > 0 ? (
             <div className="space-y-1.5">
               {activity.kinds.map((k) => (
                 <div key={k.kind} className="flex items-center gap-2 text-[12px]">
                   <span className="font-mono text-zinc-300 w-36 truncate">{k.kind}</span>
-                  <div className="flex-1 h-1.5 rounded-full bg-white/[0.04] overflow-hidden">
+                  <div className="flex-1 h-1.5 rounded-full bg-white/4 overflow-hidden">
                     <div
                       className="h-full bg-white/20"
                       style={{ width: `${Math.min(100, (k.count / Math.max(1, activity.totalMessages || 1)) * 100)}%` }}
@@ -169,7 +169,7 @@ export default function AgentActivityPage() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
         <div className="flex items-center gap-2 mb-3">
           <ScaleIcon className="h-3.5 w-3.5 text-zinc-500" />
           <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">
@@ -192,7 +192,7 @@ export default function AgentActivityPage() {
               </thead>
               <tbody>
                 {calibration.buckets.map((b) => (
-                  <tr key={`${b.authorAgent}/${b.target}`} className="border-t border-white/[0.04]">
+                  <tr key={`${b.authorAgent}/${b.target}`} className="border-t border-white/4">
                     <td className="py-1.5 font-mono text-zinc-200">{b.authorAgent}</td>
                     <td className="py-1.5 font-mono text-zinc-400">{b.target}</td>
                     <td className="py-1.5 text-right tabular-nums text-zinc-300">{b.decided}</td>
@@ -200,7 +200,7 @@ export default function AgentActivityPage() {
                     <td className="py-1.5 text-right tabular-nums text-zinc-300">{(b.avgConfidence * 100).toFixed(0)}%</td>
                     <td className="py-1.5 text-right tabular-nums text-zinc-400">{b.calibrationGap > 0 ? "+" : ""}{(b.calibrationGap * 100).toFixed(0)}%</td>
                     <td className="py-1.5">
-                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${VERDICT_TONE[b.verdict]}`}>
+                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${VERDICT_TONE[b.verdict]}`}>
                         {b.verdict.replace("_", " ")}
                       </span>
                     </td>

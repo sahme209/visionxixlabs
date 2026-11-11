@@ -82,7 +82,7 @@ function Step({ num, title, body, view, cta, onNavigate }: {
 }) {
   return (
     <li className="flex items-start gap-3">
-      <div className="w-7 h-7 rounded-full bg-violet-500/[0.12] border border-violet-500/30 flex items-center justify-center shrink-0 mt-0.5">
+      <div className="w-7 h-7 rounded-full bg-violet-500/12 border border-violet-500/30 flex items-center justify-center shrink-0 mt-0.5">
         <span className="text-[11px] font-mono font-semibold text-violet-200">{num}</span>
       </div>
       <div className="flex-1 min-w-0">

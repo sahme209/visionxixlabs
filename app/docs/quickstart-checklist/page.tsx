@@ -88,10 +88,10 @@ export default function QuickstartChecklistPage() {
             </Callout>
 
             <ol className="relative space-y-3 mb-12">
-                <span aria-hidden className="absolute left-[26px] top-3 bottom-3 w-px bg-gradient-to-b from-brand-coral/40 via-brand-orange/30 to-transparent" />
+                <span aria-hidden className="absolute left-[26px] top-3 bottom-3 w-px bg-linear-to-b from-brand-coral/40 via-brand-orange/30 to-transparent" />
                 {STEPS.map((step) => (
-                    <li key={step.num} className="relative rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 pl-16 hover:border-brand-coral/25 hover:bg-brand-coral/[0.02] transition-all">
-                        <span className="absolute left-4 top-5 w-9 h-9 rounded-full bg-gradient-to-br from-brand-coral/15 to-brand-orange/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums">
+                    <li key={step.num} className="relative rounded-2xl border border-white/6 bg-white/1.5 p-5 pl-16 hover:border-brand-coral/25 hover:bg-brand-coral/2 transition-all">
+                        <span className="absolute left-4 top-5 w-9 h-9 rounded-full bg-linear-to-br from-brand-coral/15 to-brand-orange/15 border border-brand-coral/30 flex items-center justify-center text-[11px] font-mono font-semibold text-brand-coral tabular-nums">
                             {step.num}
                         </span>
                         <div className="flex items-start justify-between gap-3 mb-2">
@@ -112,7 +112,7 @@ export default function QuickstartChecklistPage() {
                 ))}
             </ol>
 
-            <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.03] p-6 mb-12">
+            <section className="rounded-2xl border border-emerald-500/20 bg-emerald-500/3 p-6 mb-12">
                 <header className="flex items-center gap-2 mb-3">
                     <CheckCircleIcon className="h-4 w-4 text-emerald-400" />
                     <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-emerald-400">
@@ -139,7 +139,7 @@ export default function QuickstartChecklistPage() {
                     ].map((card) => {
                         const Icon = card.icon;
                         return (
-                            <Link key={card.href} href={card.href} className="group rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 hover:border-brand-coral/25 hover:bg-brand-coral/[0.03] transition-all">
+                            <Link key={card.href} href={card.href} className="group rounded-xl border border-white/6 bg-white/1.5 p-4 hover:border-brand-coral/25 hover:bg-brand-coral/3 transition-all">
                                 <div className="flex items-center gap-2 mb-2">
                                     <Icon className="h-4 w-4 text-brand-coral/70 group-hover:text-brand-coral transition-colors" />
                                     <p className="text-[14px] font-semibold text-white">{card.title}</p>

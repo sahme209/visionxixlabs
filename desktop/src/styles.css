@@ -1,41 +1,340 @@
-:root {
-  --neutral-zinc-50: 250 250 250;
-  --neutral-zinc-100: 244 244 245;
-  --neutral-zinc-200: 228 228 231;
-  --neutral-zinc-300: 212 212 216;
-  --neutral-zinc-400: 161 161 170;
-  --neutral-zinc-500: 146 149 158;
-  --neutral-zinc-600: 82 82 91;
-  --neutral-zinc-700: 63 63 70;
-  --neutral-zinc-800: 39 39 42;
-  --neutral-zinc-900: 24 24 27;
-  --neutral-zinc-950: 9 9 11;
-  --neutral-white: 255 255 255; --neutral-black: 0 0 0;
-  --axiom-bg: 9 9 11; --axiom-bg-elev: 12 12 16; --axiom-surface: 15 15 20; --axiom-surface-2: 19 19 26; --axiom-border: 31 31 39; --axiom-border-soft: 26 26 34;
-  --app-canvas: #111214; --app-ink: #e4e4e7; --app-secondary: #b0b2ba; --app-border: #30333a; --app-panel: #1d1f23; --app-focus: #a1a1aa; --app-local: #d4d4d8;
-  color-scheme: dark;
-}
-html[data-theme="light"] {
-  --neutral-zinc-50: 25 24 20;
-  --neutral-zinc-100: 37 35 30;
-  --neutral-zinc-200: 49 46 40;
-  --neutral-zinc-300: 68 64 57;
-  --neutral-zinc-400: 89 84 76;
-  --neutral-zinc-500: 105 100 91;
-  --neutral-zinc-600: 110 104 95;
-  --neutral-zinc-700: 185 178 165;
-  --neutral-zinc-800: 228 224 215;
-  --neutral-zinc-900: 240 238 230;
-  --neutral-zinc-950: 250 249 245;
-  --neutral-white: 37 35 30; --neutral-black: 255 254 249;
-  --axiom-bg: 250 249 245; --axiom-bg-elev: 240 238 230; --axiom-surface: 255 254 249; --axiom-surface-2: 245 243 236; --axiom-border: 216 212 201; --axiom-border-soft: 231 227 218;
-  --app-canvas: #faf9f5; --app-ink: #25231e; --app-secondary: #69645b; --app-border: #d8d4c9; --app-panel: #fffef9; --app-focus: #746a58; --app-local: #444039;
-  color-scheme: light;
+/* Keep utilities unlayered: legacy component CSS uses an unlayered cascade. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' source(none);
+@source "../index.html";
+@source "./**/*.{js,ts,jsx,tsx}";
+@source "../../components/shared/**/*.{ts,tsx}";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-white: rgb(var(--neutral-white));
+  --color-black: rgb(var(--neutral-black));
+
+  --color-zinc-50: rgb(var(--neutral-zinc-50));
+  --color-zinc-100: rgb(var(--neutral-zinc-100));
+  --color-zinc-200: rgb(var(--neutral-zinc-200));
+  --color-zinc-300: rgb(var(--neutral-zinc-300));
+  --color-zinc-400: rgb(var(--neutral-zinc-400));
+  --color-zinc-500: rgb(var(--neutral-zinc-500));
+  --color-zinc-600: rgb(var(--neutral-zinc-600));
+  --color-zinc-700: rgb(var(--neutral-zinc-700));
+  --color-zinc-800: rgb(var(--neutral-zinc-800));
+  --color-zinc-900: rgb(var(--neutral-zinc-900));
+  --color-zinc-950: rgb(var(--neutral-zinc-950));
+
+  --color-axiom-bg: rgb(var(--axiom-bg));
+  --color-axiom-bg-elev: rgb(var(--axiom-bg-elev));
+  --color-axiom-surface: rgb(var(--axiom-surface));
+  --color-axiom-surface-2: rgb(var(--axiom-surface-2));
+  --color-axiom-border: rgb(var(--axiom-border));
+  --color-axiom-border-soft: rgb(var(--axiom-border-soft));
+  --color-axiom-accent: #8b5cf6;
+  --color-axiom-accent-dim: #6d28d9;
+  --color-axiom-accent-glow: #a78bfa;
+  --color-axiom-violet: #8b5cf6;
+  --color-axiom-fuchsia: #d946ef;
+  --color-axiom-cyan: #22d3ee;
+  --color-axiom-emerald: #10b981;
+  --color-axiom-amber: #f59e0b;
+  --color-axiom-rose: #f43f5e;
+  --color-axiom-success: #10b981;
+  --color-axiom-warning: #f59e0b;
+  --color-axiom-danger: #ef4444;
+
+  --font-sans:
+    -apple-system, BlinkMacSystemFont, Segoe UI, Inter, system-ui, sans-serif;
+  --font-mono: JetBrains Mono, Fira Code, monospace;
+
+  --tracking-tightest: -0.045em;
+
+  --background-image-axiom-mesh:
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(139, 92, 246, 0.1),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 80%,
+      rgba(217, 70, 239, 0.07),
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 50% 50%,
+      rgba(34, 211, 238, 0.05),
+      transparent 60%
+    );
+  --background-image-axiom-hero: linear-gradient(
+    135deg,
+    rgba(139, 92, 246, 0.12) 0%,
+    rgba(217, 70, 239, 0.08) 50%,
+    rgba(34, 211, 238, 0.06) 100%
+  );
+
+  --shadow-glow-violet: 0 0 24px -4px rgba(139, 92, 246, 0.4);
+  --shadow-glow-cyan: 0 0 24px -4px rgba(34, 211, 238, 0.4);
+  --shadow-cinematic:
+    0 30px 80px -20px rgba(139, 92, 246, 0.25),
+    0 0 0 1px rgba(255, 255, 255, 0.04);
+  --shadow-card-lift: 0 20px 40px -20px rgba(0, 0, 0, 0.6);
+
+  --animate-pulse-glow: pulse-glow 2.5s ease-in-out infinite;
+  --animate-fade-in: fade-in 0.3s ease-out forwards;
+  --animate-fade-in-up: fade-in-up 0.4s ease-out forwards;
+  --animate-scan-line: scan-line 3s linear infinite;
+  --animate-shimmer: shimmer 2s linear infinite;
+  --animate-aurora: aurora 12s ease-in-out infinite;
+
+  @keyframes fade-in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes aurora {
+    0%,
+    100% {
+      transform: translate(0, 0) rotate(0deg);
+    }
+    50% {
+      transform: translate(-2%, 2%) rotate(2deg);
+    }
+  }
 }
 
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility glass-panel {
+  /* ── Matte surfaces ───────────────────────────────────────────────── */
+  @apply bg-axiom-bg-elev border border-axiom-border;
+}
+
+@utility glass-card {
+  @apply bg-axiom-surface border border-axiom-border rounded-xl;
+}
+
+@utility glass-card-lift {
+  @apply glass-card transition-all duration-200;
+  box-shadow: none;
+}
+
+@utility glass-card-interactive {
+  &:hover {
+    @apply border-white/15;
+    box-shadow: none;
+  }
+}
+
+@utility text-gradient {
+  /* ── Text gradients ───────────────────────────────────────────────── */
+  @apply bg-clip-text text-transparent bg-linear-to-r from-violet-300 via-fuchsia-300 to-cyan-300;
+}
+
+@utility text-gradient-warm {
+  @apply bg-clip-text text-transparent bg-linear-to-r from-zinc-300 via-fuchsia-300 to-rose-300;
+}
+
+@utility sidebar-item {
+  /* ── Sidebar items ────────────────────────────────────────────────── */
+  @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-zinc-400
+           hover:text-white hover:bg-white/4 transition-all duration-150 cursor-pointer
+           relative;
+}
+
+@utility sidebar-item-active {
+  /* Quiet current-page indicator — a left accent bar instead of a filled
+     pill, matching the same treatment applied to the Settings nav. No
+     background fill keeps the sidebar flat, consistent with the rest of
+     this pass toward Cursor's minimal settings/nav style. */
+  @apply text-white;
+  &::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 2px;
+    height: 16px;
+    border-radius: 9999px;
+    background: var(--app-ink);
+  }
+}
+
+@utility metric-card {
+  /* ── Metric / KPI cards ───────────────────────────────────────────── */
+  @apply glass-card-lift p-5 flex flex-col gap-2;
+}
+
+@utility metric-value {
+  @apply text-3xl font-bold tracking-tightest text-white;
+}
+
+@utility metric-label {
+  @apply text-[11px] font-medium tracking-normal text-zinc-500;
+}
+
+@utility metric-delta {
+  @apply text-[11px] font-mono;
+}
+
+@utility badge {
+  /* ── Status badges ────────────────────────────────────────────────── */
+  @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium tracking-normal border;
+}
+
+@utility badge-success {
+  @apply text-emerald-300 bg-emerald-500/10 border-emerald-500/25;
+}
+
+@utility badge-warning {
+  @apply text-zinc-300   bg-white/10   border-white/25;
+}
+
+@utility badge-danger {
+  @apply text-rose-300    bg-rose-500/10    border-rose-500/25;
+}
+
+@utility badge-preview {
+  @apply text-violet-300  bg-violet-500/10  border-violet-500/25;
+}
+
+@utility badge-neutral {
+  @apply text-zinc-300    bg-zinc-500/10    border-zinc-500/25;
+}
+
+@utility badge-cyan {
+  @apply text-cyan-300    bg-cyan-500/10    border-cyan-500/25;
+}
+
+@utility btn-primary {
+  /* ── Buttons ──────────────────────────────────────────────────────── */
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+           text-sm font-semibold text-zinc-950 bg-zinc-100 hover:bg-white
+           transition-colors;
+}
+
+@utility btn-secondary {
+  @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
+           text-sm font-medium text-zinc-200
+           bg-white/4 hover:bg-white/8 border border-white/8 hover:border-white/15
+           transition-all;
+}
+
+@utility btn-ghost {
+  @apply inline-flex items-center gap-1.5 text-[12px] font-semibold text-zinc-400
+           hover:text-white transition-colors;
+}
+
+@utility window-chrome-titlebar {
+  /* ── Window chrome ────────────────────────────────────────────────── */
+  @apply h-9 flex items-center justify-between px-3 border-b border-axiom-border bg-axiom-bg-elev/60;
+  -webkit-app-region: drag;
+}
+
+@utility section-kicker {
+  /* ── Section header ───────────────────────────────────────────────── */
+  @apply text-[10px] font-mono font-semibold uppercase tracking-[0.22em];
+}
+
+@utility section-title {
+  @apply text-2xl font-semibold tracking-tightest text-white;
+}
+
+@utility aurora-bg {
+  /* ── Aurora backdrop ──────────────────────────────────────────────── */
+  position: relative;
+  overflow: hidden;
+}
+
+@layer base {
+  :root {
+    --neutral-zinc-50: 250 250 250;
+    --neutral-zinc-100: 244 244 245;
+    --neutral-zinc-200: 228 228 231;
+    --neutral-zinc-300: 212 212 216;
+    --neutral-zinc-400: 161 161 170;
+    --neutral-zinc-500: 146 149 158;
+    --neutral-zinc-600: 82 82 91;
+    --neutral-zinc-700: 63 63 70;
+    --neutral-zinc-800: 39 39 42;
+    --neutral-zinc-900: 24 24 27;
+    --neutral-zinc-950: 9 9 11;
+    --neutral-white: 255 255 255;
+    --neutral-black: 0 0 0;
+    --axiom-bg: 9 9 11;
+    --axiom-bg-elev: 12 12 16;
+    --axiom-surface: 15 15 20;
+    --axiom-surface-2: 19 19 26;
+    --axiom-border: 31 31 39;
+    --axiom-border-soft: 26 26 34;
+    --app-canvas: #111214;
+    --app-ink: #e4e4e7;
+    --app-secondary: #b0b2ba;
+    --app-border: #30333a;
+    --app-panel: #1d1f23;
+    --app-focus: #a1a1aa;
+    --app-local: #d4d4d8;
+    color-scheme: dark;
+  }
+  html[data-theme='light'] {
+    --neutral-zinc-50: 25 24 20;
+    --neutral-zinc-100: 37 35 30;
+    --neutral-zinc-200: 49 46 40;
+    --neutral-zinc-300: 68 64 57;
+    --neutral-zinc-400: 89 84 76;
+    --neutral-zinc-500: 105 100 91;
+    --neutral-zinc-600: 110 104 95;
+    --neutral-zinc-700: 185 178 165;
+    --neutral-zinc-800: 228 224 215;
+    --neutral-zinc-900: 240 238 230;
+    --neutral-zinc-950: 250 249 245;
+    --neutral-white: 37 35 30;
+    --neutral-black: 255 254 249;
+    --axiom-bg: 250 249 245;
+    --axiom-bg-elev: 240 238 230;
+    --axiom-surface: 255 254 249;
+    --axiom-surface-2: 245 243 236;
+    --axiom-border: 216 212 201;
+    --axiom-border-soft: 231 227 218;
+    --app-canvas: #faf9f5;
+    --app-ink: #25231e;
+    --app-secondary: #69645b;
+    --app-border: #d8d4c9;
+    --app-panel: #fffef9;
+    --app-focus: #746a58;
+    --app-local: #444039;
+    color-scheme: light;
+  }
+}
 
 /* ===========================================================================
    GLOBAL BASE — restrained, native-feeling dark workspace.
@@ -85,145 +384,37 @@ html[data-theme="light"] {
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+@layer utilities {
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  html[data-reduce-motion='true'] *,
+  html[data-reduce-motion='true'] *::before,
+  html[data-reduce-motion='true'] *::after {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
-}
 
-html[data-reduce-motion="true"] *,
-html[data-reduce-motion="true"] *::before,
-html[data-reduce-motion="true"] *::after {
-  animation-duration: 0.01ms !important;
-  animation-iteration-count: 1 !important;
-  scroll-behavior: auto !important;
-  transition-duration: 0.01ms !important;
-}
+  html[data-high-contrast='true'] {
+    filter: contrast(1.14);
+  }
 
-html[data-high-contrast="true"] {
-  filter: contrast(1.14);
-}
+  html[data-density='compact'] {
+    font-size: 14px;
+  }
 
-html[data-density="compact"] {
-  font-size: 14px;
-}
-
-/* ===========================================================================
+  /* ===========================================================================
    COMPONENT-CLASS UTILITIES
    =========================================================================== */
-@layer components {
-  /* ── Matte surfaces ───────────────────────────────────────────────── */
-  .glass-panel {
-    @apply bg-axiom-bg-elev border border-axiom-border;
-  }
-  .glass-card {
-    @apply bg-axiom-surface border border-axiom-border rounded-xl;
-  }
-  .glass-card-lift {
-    @apply glass-card transition-all duration-200;
-    box-shadow: none;
-  }
-  .glass-card-interactive:hover {
-    @apply border-white/15;
-    box-shadow: none;
-  }
-
-  /* ── Text gradients ───────────────────────────────────────────────── */
-  .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-violet-300 via-fuchsia-300 to-cyan-300;
-  }
-  .text-gradient-warm {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-zinc-300 via-fuchsia-300 to-rose-300;
-  }
-
-  /* ── Sidebar items ────────────────────────────────────────────────── */
-  .sidebar-item {
-    @apply flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13px] font-medium text-zinc-400
-           hover:text-white hover:bg-white/[0.04] transition-all duration-150 cursor-pointer
-           relative;
-  }
-  /* Quiet current-page indicator — a left accent bar instead of a filled
-     pill, matching the same treatment applied to the Settings nav. No
-     background fill keeps the sidebar flat, consistent with the rest of
-     this pass toward Cursor's minimal settings/nav style. */
-  .sidebar-item-active {
-    @apply text-white;
-  }
-  .sidebar-item-active::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 2px;
-    height: 16px;
-    border-radius: 9999px;
-    background: var(--app-ink);
-  }
-
-  /* ── Metric / KPI cards ───────────────────────────────────────────── */
-  .metric-card {
-    @apply glass-card-lift p-5 flex flex-col gap-2;
-  }
-  .metric-value {
-    @apply text-3xl font-bold tracking-tightest text-white;
-  }
-  .metric-label {
-    @apply text-[11px] font-medium tracking-normal text-zinc-500;
-  }
-  .metric-delta {
-    @apply text-[11px] font-mono;
-  }
-
-  /* ── Status badges ────────────────────────────────────────────────── */
-  .badge {
-    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-medium tracking-normal border;
-  }
-  .badge-success { @apply text-emerald-300 bg-emerald-500/10 border-emerald-500/25; }
-  .badge-warning { @apply text-zinc-300   bg-white/10   border-white/25;   }
-  .badge-danger  { @apply text-rose-300    bg-rose-500/10    border-rose-500/25;    }
-  .badge-preview { @apply text-violet-300  bg-violet-500/10  border-violet-500/25;  }
-  .badge-neutral { @apply text-zinc-300    bg-zinc-500/10    border-zinc-500/25;    }
-  .badge-cyan    { @apply text-cyan-300    bg-cyan-500/10    border-cyan-500/25;    }
-
-  /* ── Buttons ──────────────────────────────────────────────────────── */
-  .btn-primary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
-           text-sm font-semibold text-zinc-950 bg-zinc-100 hover:bg-white
-           transition-colors;
-  }
-  .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg
-           text-sm font-medium text-zinc-200
-           bg-white/[0.04] hover:bg-white/[0.08] border border-white/[0.08] hover:border-white/[0.15]
-           transition-all;
-  }
-  .btn-ghost {
-    @apply inline-flex items-center gap-1.5 text-[12px] font-semibold text-zinc-400
-           hover:text-white transition-colors;
-  }
-
-  /* ── Window chrome ────────────────────────────────────────────────── */
-  .window-chrome-titlebar {
-    @apply h-9 flex items-center justify-between px-3 border-b border-axiom-border bg-axiom-bg-elev/60;
-    -webkit-app-region: drag;
-  }
-
-  /* ── Section header ───────────────────────────────────────────────── */
-  .section-kicker {
-    @apply text-[10px] font-mono font-semibold uppercase tracking-[0.22em];
-  }
-  .section-title {
-    @apply text-2xl font-semibold tracking-tightest text-white;
-  }
-
-  /* ── Aurora backdrop ──────────────────────────────────────────────── */
-  .aurora-bg {
-    position: relative;
-    overflow: hidden;
-  }
 }
 
 /* ===========================================================================

@@ -45,7 +45,7 @@ const ACCENT_COLORS: Record<string, { dot: string; border: string; bg: string; t
   orange: {
     dot: "bg-orange-500",
     border: "border-orange-500/20",
-    bg: "bg-orange-500/[0.06]",
+    bg: "bg-orange-500/6",
     text: "text-orange-400",
     num: "bg-orange-500/10 text-orange-400 border-orange-500/20",
     dotColor: "text-orange-500",
@@ -53,7 +53,7 @@ const ACCENT_COLORS: Record<string, { dot: string; border: string; bg: string; t
   zinc: {
     dot: "bg-amber-500",
     border: "border-amber-500/20",
-    bg: "bg-amber-500/[0.06]",
+    bg: "bg-amber-500/6",
     text: "text-amber-400",
     num: "bg-amber-500/10 text-amber-400 border-amber-500/20",
     dotColor: "text-amber-500",
@@ -61,7 +61,7 @@ const ACCENT_COLORS: Record<string, { dot: string; border: string; bg: string; t
   emerald: {
     dot: "bg-emerald-500",
     border: "border-emerald-500/20",
-    bg: "bg-emerald-500/[0.06]",
+    bg: "bg-emerald-500/6",
     text: "text-emerald-400",
     num: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
     dotColor: "text-emerald-500",
@@ -69,7 +69,7 @@ const ACCENT_COLORS: Record<string, { dot: string; border: string; bg: string; t
   amber: {
     dot: "bg-zinc-500",
     border: "border-white/20",
-    bg: "bg-white/[0.06]",
+    bg: "bg-white/6",
     text: "text-zinc-400",
     num: "bg-white/10 text-zinc-400 border-white/20",
     dotColor: "text-zinc-500",
@@ -105,8 +105,8 @@ export function ServicePipeline() {
         })}
         {/* Progress flow indicator — animated arrow */}
         <div className="absolute top-1/2 -translate-y-1/2 right-4 flex items-center gap-1">
-          <span className="block w-8 h-[2px] bg-gradient-to-r from-orange-500/40 to-transparent rounded-full" />
-          <span className="block w-0 h-0 border-l-[6px] border-l-orange-500/40 border-y-[4px] border-y-transparent" />
+          <span className="block w-8 h-[2px] bg-linear-to-r from-orange-500/40 to-transparent rounded-full" />
+          <span className="block w-0 h-0 border-l-[6px] border-l-orange-500/40 border-y-4 border-y-transparent" />
         </div>
       </div>
 
@@ -174,7 +174,7 @@ export function ServicePipeline() {
           <span className="w-1 h-1 rounded-full bg-zinc-700" />
           Click a phase to expand
         </div>
-        <div className="w-px h-3 bg-white/[0.06]" />
+        <div className="w-px h-3 bg-white/6" />
         <div className="flex items-center gap-1.5 text-xs text-zinc-600">
           <span className="block w-4 h-[1.5px] pipeline-animated-line rounded-full" />
           12-step autonomous loop

@@ -78,8 +78,8 @@ export default function TeamPage() {
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
+        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
       <Navigation />
@@ -89,7 +89,7 @@ export default function TeamPage() {
       <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">TM</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           Team
         </p>
 
@@ -97,7 +97,7 @@ export default function TeamPage() {
           A small team{" "}
           <span className="relative inline-block">
             shipping carefully.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </h1>
 
@@ -113,7 +113,7 @@ export default function TeamPage() {
             return (
               <article key={p.num} id={`team-${p.num}`} className="surface-glass rounded-2xl p-7 sm:p-9 hover:border-brand-coral/20 transition-all scroll-mt-24">
                 <header className="flex items-center gap-4 mb-5">
-                  <div className="shrink-0 w-10 h-10 rounded-lg border border-brand-coral/25 bg-gradient-to-br from-brand-coral/10 to-brand-orange/10 flex items-center justify-center">
+                  <div className="shrink-0 w-10 h-10 rounded-lg border border-brand-coral/25 bg-linear-to-br from-brand-coral/10 to-brand-orange/10 flex items-center justify-center">
                     <Icon className="h-4.5 w-4.5 text-brand-coral" style={{ height: "1.125rem", width: "1.125rem" }} />
                   </div>
                   <div>
@@ -129,9 +129,9 @@ export default function TeamPage() {
           })}
         </div>
 
-        <div className="mt-28 pt-12 border-t border-white/[0.06]">
+        <div className="mt-28 pt-12 border-t border-white/6">
           <p className="mono-label mb-4">Hiring</p>
-          <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-3 leading-tight tracking-[-0.025em]">
+          <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-3 leading-tight tracking-tight">
             We are not hiring right now.
           </h3>
           <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl mb-6">

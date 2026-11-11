@@ -46,7 +46,7 @@ export function HowWeWorkSection({
           return (
             <div
               key={p.phase}
-              className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5 shadow-sm hover:shadow-md transition-shadow"
+              className="rounded-xl border border-white/6 bg-white/2 p-5 shadow-xs hover:shadow-md transition-shadow"
             >
               <div className="flex items-start gap-3 mb-3">
                 <span

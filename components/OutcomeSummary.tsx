@@ -8,7 +8,7 @@ export function OutcomeSummary({
   title = "Outcome",
 }: OutcomeSummaryProps) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <h4 className="text-xs font-semibold text-zinc-500 uppercase tracking-wide mb-2">
         {title}
       </h4>

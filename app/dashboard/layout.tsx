@@ -25,7 +25,7 @@ export default async function DashboardLayout({
 
   return (
     <div className="axiom-canvas axiom-product-canvas min-h-screen relative overflow-hidden">
-      <header className="relative z-20 glass-dark border-b border-white/[0.06] backdrop-blur-sm">
+      <header className="relative z-20 glass-dark border-b border-white/6 backdrop-blur-sm">
         <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-4">
             <Link href="/dashboard/command-center" className="flex items-center gap-2 nav-link-underline">

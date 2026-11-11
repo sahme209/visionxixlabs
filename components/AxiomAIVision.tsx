@@ -42,7 +42,7 @@ export function AxiomAIVision() {
   ];
 
   return (
-    <div className="rounded-2xl border-2 border-orange-500/20 bg-gradient-to-br from-orange-950/20 to-amber-950/10 p-6">
+    <div className="rounded-2xl border-2 border-orange-500/20 bg-linear-to-br from-orange-950/20 to-amber-950/10 p-6">
       <div className="flex items-center gap-2 mb-4">
         <BoltIcon className="h-5 w-5 text-orange-400" />
         <h3 className="text-base font-bold text-white">
@@ -56,7 +56,7 @@ export function AxiomAIVision() {
         {capabilities.map((item) => (
           <div
             key={item.title}
-            className="flex gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/[0.06]"
+            className="flex gap-3 p-3 rounded-xl bg-white/2 border border-white/6"
           >
             <item.icon className="h-5 w-5 text-orange-400 shrink-0 mt-0.5" />
             <div>

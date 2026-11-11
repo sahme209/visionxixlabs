@@ -7,7 +7,7 @@ export const metadata = { title: "GitHub demo scan · Axiom" };
 export default function GitHubPage() {
   return (
     <>
-      <div className="mb-6 rounded-xl border border-white/20 bg-white/[0.05] p-4 text-[12px] leading-relaxed text-zinc-100">
+      <div className="mb-6 rounded-xl border border-white/20 bg-white/5 p-4 text-[12px] leading-relaxed text-zinc-100">
         This page runs a live, read-only scan against Axiom&apos;s own demonstration
         repository — a single operator-configured GitHub account shared across every
         workspace, not a connection to your organization&apos;s GitHub. For your own

@@ -144,15 +144,15 @@ export default function BillingPage() {
       />
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-100">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-100">
           {error}
         </div>
       )}
 
       {plan && plan.status !== "no_plan" && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-5 mb-6">
           <div className="flex items-center gap-2 flex-wrap mb-2">
-            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-orange-500/15 text-white border-white/[0.12]">
+            <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border bg-orange-500/15 text-white border-white/12">
               current plan
             </span>
             <p className="text-[15px] font-semibold text-white">{plan.spec.label}</p>
@@ -171,7 +171,7 @@ export default function BillingPage() {
       )}
 
       {plan && plan.status === "no_plan" && (
-        <div className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-orange-500/[0.05] via-transparent to-amber-500/[0.03] p-6 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-linear-to-br from-orange-500/5 via-transparent to-amber-500/3 p-6 mb-6">
           <p className="text-[10px] font-mono uppercase tracking-wider text-orange-300 mb-2">
             no plan selected
           </p>
@@ -189,7 +189,7 @@ export default function BillingPage() {
           const stripeReady = stripe?.configured && stripe.webhookConfigured && p.tier in (stripe?.pricedTiers ?? {});
           const isCurrent = plan?.tier === p.tier;
           return (
-            <div key={p.tier} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex flex-col">
+            <div key={p.tier} className="rounded-2xl border border-white/6 bg-white/2 p-4 flex flex-col">
               <p className="text-[14px] font-semibold text-white">{p.spec.label}</p>
               <p className="text-[11px] text-zinc-400 leading-snug mt-1 flex-1">{p.spec.description}</p>
               <div className="grid grid-cols-2 gap-1.5 mt-3 text-[10px] font-mono">
@@ -205,7 +205,7 @@ export default function BillingPage() {
                   isCurrent
                     ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/30 cursor-default"
                     : stripeReady
-                      ? "bg-orange-500/15 text-white border-white/[0.12] hover:bg-orange-500/20"
+                      ? "bg-orange-500/15 text-white border-white/12 hover:bg-orange-500/20"
                       : "bg-zinc-500/10 text-zinc-400 border-zinc-500/20 cursor-not-allowed"
                 } disabled:opacity-70`}
               >
@@ -229,7 +229,7 @@ export default function BillingPage() {
       {/* Client-facing trust strip. The Stripe configuration debug panel
           previously shown here (secret_key / webhook_secret status) is
           operator-only and was moved to /admin/billing-ops. */}
-      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
         <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
         <div>
           <p className="text-[13px] font-semibold text-emerald-100 leading-snug">
@@ -248,7 +248,7 @@ function Cap({ label, value, small }: { label: string; value: string; small?: bo
   const padding = small ? "px-1.5 py-1" : "p-3";
   const valueCls = small ? "text-[12px] font-bold" : "text-[18px] font-bold";
   return (
-    <div className={`rounded-lg border border-white/[0.06] bg-black/20 ${padding}`}>
+    <div className={`rounded-lg border border-white/6 bg-black/20 ${padding}`}>
       <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">{label}</p>
       <p className={`${valueCls} text-zinc-100 mt-0.5`}>{value}</p>
     </div>
