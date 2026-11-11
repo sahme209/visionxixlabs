@@ -358,3 +358,7 @@ Status details live in `docs/product/remaining-work.md` and `docs/product/execut
 - [ ] Every CI check green, including `Typecheck + Vitest`; merged with `--merge --delete-branch`.
 - [ ] `docs/product/remaining-work.md` updated.
 - [ ] Anything touching production (database, deploy, flags, billing, external posts) waits for the owner's explicit yes.
+
+## 12. Supplemental future technology assessment — gap-time research only
+
+The owner added `docs/product/future-technology-deployment-assessment.md` on November 11 and clarified “During gaps, without delaying current priorities.” This timing supersedes only the attached original's after-completion timing. Do not interrupt section 10.1, replace unfinished requirements, create a mandatory feature backlog or implement recommendations. Research the full preserved brief against actual source/existing plans during genuine gaps, then present recommendations for owner review. No assessment has started and no additional paid/provider/production authority is granted.

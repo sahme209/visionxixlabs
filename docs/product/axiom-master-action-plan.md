@@ -21,6 +21,14 @@ This checkpoint supersedes earlier operational instructions, not historical evid
 4. Offline AI only after the owner accepts the ADR and answers its three decisions. No unapproved fallback or inference.
 5. Source-grounded documentation guides: Plugins, Workspaces, MCP and Settings; update navigation, heading hashes, support corpus, guide-count tests and related living docs in the same PR.
 
+### Gap-time research — future technology and deployment assessment
+
+- [ ] **Planned, not started:** [complete assessment brief](future-technology-deployment-assessment.md). The owner's November 11 clarification schedules it **during gaps, without delaying current priorities**, superseding only the attachment's original after-completion timing. Continue the handoff sequence first; no interruption or reprioritization.
+- Cover all eight supplied areas: containers/orchestration; infrastructure automation; CI/CD/GitOps; modern deployment; platform engineering; AI-native infrastructure; security/networking/observability; emerging technologies over the next 3–5 years. Preserve every named technology and requirement in the linked brief.
+- For each topic, verify actual support and overlap with the existing roadmap; assess customer value, extension/integration/new-development options, architecture/security/maintenance/cost/complexity and intuitive product fit. Recommend adopt now, consider later, monitor or avoid, distinguishing evidence from assumptions/predictions and citing current authoritative sources.
+- Deliver verified capabilities, genuine gaps, already-planned coverage, architectural/integration recommendations, prioritized future suggestions, monitoring topics and risks/trade-offs. **Research only:** no automatic implementation, tickets, changes to completed functionality or additional master-plan scope. Recommendations require owner review/approval. Existing production, spending, data and security controls remain in force.
+- This assessment adds no completion claim and no new mandatory technology backlog. A1–A9/B1–B6/C1–C6 retain their existing requirements and acceptance gates.
+
 ### Rules and unfinished scope
 
 - Never push main, merge red/pending checks, bypass protection or use admin merge. Work on branches through one PR at a time; keep all applicable checks green.

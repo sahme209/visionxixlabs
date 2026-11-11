@@ -707,3 +707,7 @@ Key fact (L7, L30, L50 and others): **all 21 parents (A1–A9, B1–B6, C1–C6)
 - L435 favicon fix vs L499 live favicon verification.
 - B502 broker/guard decision "pending" vs B30 and B75, where it is consumed.
 - The "ServiceNow note" rule is mapped (L105). **"Fatima" appears in neither file.**
+
+## November 11 supplemental research item (outside the 21 delivery parents)
+
+- [ ] Future technology and deployment assessment: [full brief](future-technology-deployment-assessment.md), scheduled by explicit owner clarification for gaps without delaying current priorities. All eight technology areas, seven evaluation requirements and seven deliverable groups are preserved. Research/recommendations only; not implementation authority, a mandatory feature backlog or a parent-completion claim. See the master plan's “Gap-time research” subsection. Historical line coordinates above remain the November 8 snapshot.

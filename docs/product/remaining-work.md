@@ -155,3 +155,7 @@ AWS 3.1166.0 merged as PR #315 with every CI check green; production remains bui
 ## November 11 live schema discrepancy
 
 The approved, explicitly agent-delegated read-only Prisma preflight ran once on the recorded production branch/compute. Both November 9 tables (`AuditSeal`, `AgentGatewayRequest`) and ledger entries are absent; reservation columns match and unfinished migrations are zero. Historical build-3 receipt differs. Reconcile before production changes; no automatic apply, rollback or target-cause claim. [Actual result](../recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json).
+
+## Supplemental future-technology assessment (planned research)
+
+[Full supplied brief and owner timing clarification](future-technology-deployment-assessment.md): run during genuine gaps without delaying current priorities. Evaluate all eight areas against actual implementation and the existing integration/plugin roadmap; preserve factual/partial/planned/unsupported distinctions, costs/security/UX and current-source citations. Deliver recommendations for review, not automatic features/tickets or production actions. Not started.

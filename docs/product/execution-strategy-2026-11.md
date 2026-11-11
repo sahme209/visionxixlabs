@@ -138,3 +138,7 @@ PR #320 merged as `a99c053f` after all applicable CI checks passed, including ma
 ## November 11 agent-run read-only preflight
 
 After approving the owner-run query, the user explicitly requested Codex execution. Existing Neon connector metadata matched the recorded protected main branch and compute; one exact prepared SELECT returned two absent November 9 tables/ledger rows, zero unfinished migrations and correct reservation columns. Source/historical receipt conflict remains unresolved. No secret fetched, database write or deployment. Actual result preserved under `../recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json`; this supersedes the pending-owner-result note above.
+
+## November 11 future-assessment scheduling decision
+
+The owner supplied the full future-technology/deployment assessment and explicitly clarified “During gaps, without delaying current priorities.” This overrides only the brief's original after-master-completion timing. Full brief preserved at `future-technology-deployment-assessment.md`; master/requirements index/board/remaining-work linked consistently. All other research-only and review-before-action limits remain. The current Prisma/platform sequence is unchanged; no assessment or implementation started.
