@@ -202,8 +202,8 @@ export function ApprovalsView() {
                     }}
                     className={`border-t border-axiom-border align-top transition-colors ${
                       isHighlighted
-                        ? "bg-violet-500/[0.08] ring-1 ring-violet-500/30"
-                        : "hover:bg-white/[0.02]"
+                        ? "bg-violet-500/8 ring-1 ring-violet-500/30"
+                        : "hover:bg-white/2"
                     }`}
                   >
                     <td className="px-4 py-3 text-zinc-200">{r.id.slice(0, 18)}…</td>

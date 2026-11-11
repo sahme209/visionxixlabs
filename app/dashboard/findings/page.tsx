@@ -157,7 +157,7 @@ export default async function FindingsPage({
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The findings table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> against your database to surface scan results here.
@@ -172,7 +172,7 @@ export default async function FindingsPage({
       {findings.length > 0 && (
         <>
           {/* Severity counts strip */}
-          <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid grid-cols-5 overflow-hidden">
+          <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/4 grid grid-cols-5 overflow-hidden">
             {(["critical", "high", "medium", "low", "info"] as Severity[]).map((s) => (
               <div key={s} className="px-4 py-4 text-center">
                 <p className={`text-[22px] font-semibold tabular-nums ${counts[s] > 0 ? SEVERITY_TONE[s] : "text-zinc-600"}`}>
@@ -199,8 +199,8 @@ export default async function FindingsPage({
                       }).toString()}`}
                       className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition-colors ${
                         isActive
-                          ? "text-white border-white/[0.18]"
-                          : "text-zinc-500 border-white/[0.06] hover:text-white hover:border-white/[0.12]"
+                          ? "text-white border-white/18"
+                          : "text-zinc-500 border-white/6 hover:text-white hover:border-white/12"
                       }`}
                     >
                       {s}
@@ -214,7 +214,7 @@ export default async function FindingsPage({
                 aria-label="Search findings by title or description"
                 defaultValue={search}
                 placeholder="Search title or description…"
-                className="flex-1 min-w-[180px] rounded-full border border-white/[0.06] bg-white/[0.015] px-4 py-1.5 text-[12px] text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/[0.18] transition-colors"
+                className="flex-1 min-w-[180px] rounded-full border border-white/6 bg-white/1.5 px-4 py-1.5 text-[12px] text-white placeholder:text-zinc-600 focus:outline-hidden focus:border-white/18 transition-colors"
               />
               {severityFilter !== "all" && (
                 <input type="hidden" name="severity" value={severityFilter} />
@@ -224,7 +224,7 @@ export default async function FindingsPage({
               )}
               <button
                 type="submit"
-                className="rounded-full border border-white/[0.06] hover:border-white/[0.18] px-3 py-1.5 text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
+                className="rounded-full border border-white/6 hover:border-white/18 px-3 py-1.5 text-[11px] font-mono text-zinc-300 hover:text-white transition-colors"
               >
                 search
               </button>
@@ -260,7 +260,7 @@ export default async function FindingsPage({
                   ? `${findings.length} match${findings.length === 1 ? "" : "es"}`
                   : "latest 100"}
             </p>
-            <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+            <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
               {findings.map((f) => {
                 const resources = Array.isArray(f.affectedResources) ? f.affectedResources : [];
                 const firstRef = resources[0] != null ? String(resources[0]) : null;
@@ -268,7 +268,7 @@ export default async function FindingsPage({
                   <li key={f.id}>
                     <Link
                       href={`/dashboard/findings/${f.id}`}
-                      className="group block px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                      className="group block px-6 py-4 hover:bg-white/1.5 transition-colors"
                     >
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
@@ -303,7 +303,7 @@ function EmptyState() {
   return (
     <Link
       href="/dashboard/connect-cloud"
-      className="group block rounded-2xl border border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12] transition-colors px-7 py-12 text-center"
+      className="group block rounded-2xl border border-white/6 bg-white/1.5 hover:border-white/12 transition-colors px-7 py-12 text-center"
     >
       <CloudIcon className="h-8 w-8 text-zinc-600 mx-auto mb-4" />
       <p className="text-[15px] font-semibold text-white mb-1">No findings yet</p>

@@ -42,7 +42,7 @@ export default function ReleaseValidationDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -50,7 +50,7 @@ export default function ReleaseValidationDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -71,7 +71,7 @@ export default function ReleaseValidationDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Validation Results</h1>
 
         <div className="space-y-6">
@@ -82,8 +82,8 @@ export default function ReleaseValidationDetailPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className={`rounded-xl border p-4 ${
                 typeof validation.planCount === 'number'
-                  ? 'border-white/[0.08] bg-white/[0.025]'
-                  : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+                  ? 'border-white/8 bg-white/2.5'
+                  : 'border-zinc-500/25 bg-zinc-500/5'
               }`}>
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
                   Plans
@@ -99,8 +99,8 @@ export default function ReleaseValidationDetailPage() {
               </div>
               <div className={`rounded-xl border p-4 ${
                 typeof validation.resultsCount === 'number'
-                  ? 'border-white/[0.08] bg-white/[0.025]'
-                  : 'border-zinc-500/[0.25] bg-zinc-500/[0.05]'
+                  ? 'border-white/8 bg-white/2.5'
+                  : 'border-zinc-500/25 bg-zinc-500/5'
               }`}>
                 <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">
                   Results
@@ -122,7 +122,7 @@ export default function ReleaseValidationDetailPage() {
               <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-3">
                 Completion
               </h2>
-              <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+              <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-[13px] text-white">
                     {resultsCountNum} of {planCountNum} complete
@@ -131,7 +131,7 @@ export default function ReleaseValidationDetailPage() {
                 </div>
                 <div className="w-full h-2 bg-zinc-800 rounded-full overflow-hidden">
                   <div
-                    className="h-full bg-gradient-to-r from-zinc-500 to-emerald-500 transition-all"
+                    className="h-full bg-linear-to-r from-zinc-500 to-emerald-500 transition-all"
                     style={{ width: `${progress}%` }}
                   />
                 </div>
@@ -144,25 +144,25 @@ export default function ReleaseValidationDetailPage() {
               Status
             </h2>
             {validation.status === "not_run" ? (
-              <div className="rounded-2xl border border-zinc-500/[0.15] bg-zinc-500/[0.04] p-4">
+              <div className="rounded-2xl border border-zinc-500/15 bg-zinc-500/4 p-4">
                 <p className="text-[12px] text-zinc-200">
                   No validation plans created yet. Create test plans after approval.
                 </p>
               </div>
             ) : typeof validation.planCount !== "number" || typeof validation.resultsCount !== "number" ? (
-              <div className="rounded-2xl border border-zinc-500/[0.15] bg-zinc-500/[0.04] p-4">
+              <div className="rounded-2xl border border-zinc-500/15 bg-zinc-500/4 p-4">
                 <p className="text-[12px] text-zinc-200">
                   Validation status is not yet available for this release.
                 </p>
               </div>
             ) : resultsCountNum === planCountNum ? (
-              <div className="rounded-2xl border border-emerald-500/[0.15] bg-emerald-500/[0.04] p-4">
+              <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-4">
                 <p className="text-[12px] text-emerald-200">
                   ✓ All validation checks completed successfully.
                 </p>
               </div>
             ) : (
-              <div className="rounded-2xl border border-white/[0.15] bg-white/[0.04] p-4">
+              <div className="rounded-2xl border border-white/15 bg-white/4 p-4">
                 <p className="text-[12px] text-zinc-200">
                   ⏳ Validation in progress. {planCountNum - resultsCountNum} checks remaining.
                 </p>

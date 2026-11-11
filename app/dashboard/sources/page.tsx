@@ -69,13 +69,13 @@ const PROVIDER_DETAIL: Record<string, { icon: typeof CloudIcon; label: string; d
 };
 
 const MODE_TONE: Record<string, { border: string; bg: string; text: string; pillBg: string; dot: string }> = {
-  live:         { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pillBg: "bg-emerald-500/15", dot: "bg-emerald-400 animate-pulse" },
-  partial_live: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pillBg: "bg-cyan-500/15",    dot: "bg-cyan-400 animate-pulse"    },
-  expanding:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pillBg: "bg-white/15",   dot: "bg-zinc-400"                 },
-  preview:      { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pillBg: "bg-white/15",   dot: "bg-zinc-400"                 },
-  blocked:      { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pillBg: "bg-rose-500/15",    dot: "bg-rose-400"                  },
-  disabled:     { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    dot: "bg-zinc-600"                  },
-  unknown:      { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    dot: "bg-zinc-600"                  },
+  live:         { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pillBg: "bg-emerald-500/15", dot: "bg-emerald-400 animate-pulse" },
+  partial_live: { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pillBg: "bg-cyan-500/15",    dot: "bg-cyan-400 animate-pulse"    },
+  expanding:    { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pillBg: "bg-white/15",   dot: "bg-zinc-400"                 },
+  preview:      { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pillBg: "bg-white/15",   dot: "bg-zinc-400"                 },
+  blocked:      { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pillBg: "bg-rose-500/15",    dot: "bg-rose-400"                  },
+  disabled:     { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    dot: "bg-zinc-600"                  },
+  unknown:      { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pillBg: "bg-zinc-700/40",    dot: "bg-zinc-600"                  },
 };
 
 export default function SourcesPage() {
@@ -121,7 +121,7 @@ export default function SourcesPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -130,12 +130,12 @@ export default function SourcesPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <CloudIcon className="h-3.5 w-3.5 text-cyan-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
                   Sources · {state?.sourceMode?.replace(/_/g, " ") ?? (loading ? "composing…" : "preview")}
@@ -154,25 +154,25 @@ export default function SourcesPage() {
           </div>
 
           {/* Counts ribbon */}
-          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
             <Stat label="Live" value={liveCount} tone="text-emerald-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Partial" value={partialCount} tone="text-cyan-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Preview" value={previewCount} tone="text-zinc-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Blocked" value={blockedCount} tone={blockedCount > 0 ? "text-rose-300" : "text-zinc-500"} />
           </div>
         </div>
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing source map…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -228,7 +228,7 @@ export default function SourcesPage() {
                   )}
 
                   {p.missingRequirements.length > 0 && (
-                    <div className="rounded-lg border border-white/[0.12] bg-white/[0.03] px-2.5 py-2 mb-3">
+                    <div className="rounded-lg border border-white/12 bg-white/3 px-2.5 py-2 mb-3">
                       <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                       <ul className="space-y-0.5">
                         {p.missingRequirements.slice(0, 3).map((r, i) => (
@@ -258,13 +258,13 @@ export default function SourcesPage() {
       )}
 
       {!loading && !error && providers.length === 0 && (
-        <section className="mb-8 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-6">
+        <section className="mb-8 rounded-2xl border border-white/18 bg-white/4 p-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// no sources connected</p>
           <p className="text-[14px] text-zinc-200 font-semibold mb-1">No providers wired yet.</p>
           <p className="text-[12px] text-zinc-400 leading-relaxed mb-3">
             Connect at least one cloud provider or GitHub to unlock the scan → finding → remediation → simulation → approval → desktop review → evidence flow.
           </p>
-          <Link href="/dashboard/connect-cloud" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-zinc-100 border border-white/30 bg-white/[0.06] rounded-md px-3 py-1.5 transition-colors">
+          <Link href="/dashboard/connect-cloud" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-zinc-100 border border-white/30 bg-white/6 rounded-md px-3 py-1.5 transition-colors">
             Start onboarding <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </section>
@@ -285,10 +285,10 @@ export default function SourcesPage() {
               const ok = p.publiclyDownloadable;
               const partial = p.signed && !p.publiclyDownloadable;
               const tw = ok
-                ? "border-emerald-500/[0.22] bg-emerald-500/[0.04] hover:border-emerald-500/40"
+                ? "border-emerald-500/22 bg-emerald-500/4 hover:border-emerald-500/40"
                 : partial
-                  ? "border-cyan-500/[0.22] bg-cyan-500/[0.04] hover:border-cyan-500/40"
-                  : "border-zinc-700/30 bg-white/[0.02] hover:border-white/20";
+                  ? "border-cyan-500/22 bg-cyan-500/4 hover:border-cyan-500/40"
+                  : "border-zinc-700/30 bg-white/2 hover:border-white/20";
               const platformLabel =
                 p.platform === "macos-arm"   ? "macOS · Apple Silicon" :
                 p.platform === "macos-intel" ? "macOS · Intel" :
@@ -309,15 +309,15 @@ export default function SourcesPage() {
                   <p className={`text-sm font-semibold ${ok || partial ? "text-white" : "text-zinc-300"} mb-0.5 tracking-tight`}>{platformLabel}</p>
                   <p className="text-[11px] text-zinc-500 mb-3 leading-snug">{p.label}</p>
                   <div className="flex flex-wrap gap-1.5">
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.signed ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${p.signed ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
                       {p.signed ? "signed" : "unsigned"}
                     </span>
                     {p.notarized !== undefined && (
-                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.notarized ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
+                      <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${p.notarized ? "bg-emerald-500/15 text-emerald-300" : "bg-zinc-700/40 text-zinc-400"}`}>
                         {p.notarized ? "notarized" : "not-notarized"}
                       </span>
                     )}
-                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>
+                    <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${p.publiclyDownloadable ? "bg-emerald-500/15 text-emerald-300" : "bg-white/15 text-zinc-300"}`}>
                       {p.publiclyDownloadable ? "public download" : "local build only"}
                     </span>
                   </div>
@@ -329,7 +329,7 @@ export default function SourcesPage() {
       )}
 
       {/* Safety contract footer */}
-      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8">
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8">
         <div className="flex items-start gap-3">
           <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div>
@@ -346,7 +346,7 @@ export default function SourcesPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4rem]">
+    <div className="text-right min-w-16">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

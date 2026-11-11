@@ -63,11 +63,11 @@ interface ReadinessReportLite {
 }
 
 const STATUS_TONE: Record<string, { pill: string; border: string; bg: string; text: string }> = {
-  launch_ready:   { pill: "bg-emerald-500/15 text-emerald-300", border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.05]", text: "text-emerald-300" },
-  acceptable:     { pill: "bg-cyan-500/15 text-cyan-300",       border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.05]",    text: "text-cyan-300"    },
-  partial:        { pill: "bg-white/15 text-zinc-300",     border: "border-white/[0.22]",   bg: "bg-white/[0.05]",   text: "text-zinc-300"   },
-  blocked:        { pill: "bg-rose-500/15 text-rose-300",       border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.05]",    text: "text-rose-300"    },
-  failing:        { pill: "bg-rose-500/20 text-rose-200",       border: "border-rose-500/[0.30]",    bg: "bg-rose-500/[0.07]",    text: "text-rose-200"    },
+  launch_ready:   { pill: "bg-emerald-500/15 text-emerald-300", border: "border-emerald-500/22", bg: "bg-emerald-500/5", text: "text-emerald-300" },
+  acceptable:     { pill: "bg-cyan-500/15 text-cyan-300",       border: "border-cyan-500/22",    bg: "bg-cyan-500/5",    text: "text-cyan-300"    },
+  partial:        { pill: "bg-white/15 text-zinc-300",     border: "border-white/22",   bg: "bg-white/5",   text: "text-zinc-300"   },
+  blocked:        { pill: "bg-rose-500/15 text-rose-300",       border: "border-rose-500/22",    bg: "bg-rose-500/5",    text: "text-rose-300"    },
+  failing:        { pill: "bg-rose-500/20 text-rose-200",       border: "border-rose-500/30",    bg: "bg-rose-500/[0.07]",    text: "text-rose-200"    },
 };
 
 export default function ReadinessPage() {
@@ -120,7 +120,7 @@ export default function ReadinessPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -129,12 +129,12 @@ export default function ReadinessPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className={`inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1`}>
+              <span className={`inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1`}>
                 <ShieldCheckIcon className="h-3.5 w-3.5 text-cyan-300" />
                 <span className={`text-[10px] font-semibold uppercase tracking-widest ${overallTone.text}`}>
                   {launch?.overallStatus?.replace(/_/g, " ") ?? (loading ? "composing…" : "preview")}
@@ -152,23 +152,23 @@ export default function ReadinessPage() {
             </p>
           </div>
 
-          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+          <div className="hidden md:flex items-end gap-5 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
             <Stat label="Launch" value={`${launchScore}%`} tone={overallTone.text} />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Production" value={`${prodScore}%`} tone="text-white" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Pass / Fail" value={`${totalsRollup.passing}/${totalsRollup.failing}`} tone={totalsRollup.failing > 0 ? "text-rose-300" : "text-emerald-300"} />
           </div>
         </div>
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing readiness…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// readiness unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -191,7 +191,7 @@ export default function ReadinessPage() {
                 <div key={r.category} className={`rounded-2xl border ${tone.border} ${tone.bg} p-4`}>
                   <div className="flex items-start justify-between gap-2 mb-2">
                     <h3 className="text-[14px] font-semibold text-white tracking-tight truncate">{r.label}</h3>
-                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${tone.pill} shrink-0`}>
+                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${tone.pill} shrink-0`}>
                       {r.status?.replace(/_/g, " ") ?? "unknown"}
                     </span>
                   </div>
@@ -230,7 +230,7 @@ export default function ReadinessPage() {
             {launch.nextBestLaunchFixes.map((fix, i) => (
               <div
                 key={fix.id}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4"
+                className="block rounded-xl border border-white/6 bg-white/2 p-4"
               >
                 <div className="flex items-start gap-3">
                   <span className="text-[10px] font-mono text-zinc-500 mt-0.5">#{i + 1}</span>
@@ -247,7 +247,7 @@ export default function ReadinessPage() {
 
       {/* Production readiness summary */}
       {prod && (
-        <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <section className="mb-10 rounded-2xl border border-white/6 bg-white/2 p-5">
           <div className="flex items-center justify-between mb-3">
             <div>
               <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// production readiness</p>
@@ -262,7 +262,7 @@ export default function ReadinessPage() {
             </div>
           </div>
           {prod.criticalFailures.length > 0 && (
-            <div className="rounded-lg border border-rose-500/[0.22] bg-rose-500/[0.04] px-3 py-2 mt-2">
+            <div className="rounded-lg border border-rose-500/22 bg-rose-500/4 px-3 py-2 mt-2">
               <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-1">
                 // {prod.criticalFailures.length} critical failure{prod.criticalFailures.length === 1 ? "" : "s"}
               </p>
@@ -276,7 +276,7 @@ export default function ReadinessPage() {
       {launch && (launch.mustFixBeforeDemo.length > 0 || launch.mustFixBeforePaidCustomer.length > 0) && (
         <section className="mb-10 grid md:grid-cols-2 gap-3">
           {launch.mustFixBeforeDemo.length > 0 && (
-            <div className="rounded-2xl border border-rose-500/[0.22] bg-rose-500/[0.04] p-5">
+            <div className="rounded-2xl border border-rose-500/22 bg-rose-500/4 p-5">
               <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-[0.18em] mb-2">// must fix before demo</p>
               <ul className="space-y-1">
                 {launch.mustFixBeforeDemo.map((fix, i) => (
@@ -288,7 +288,7 @@ export default function ReadinessPage() {
             </div>
           )}
           {launch.mustFixBeforePaidCustomer.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.22] bg-white/[0.04] p-5">
+            <div className="rounded-2xl border border-white/22 bg-white/4 p-5">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// must fix before paid pilot</p>
               <ul className="space-y-1">
                 {launch.mustFixBeforePaidCustomer.map((fix, i) => (
@@ -303,7 +303,7 @@ export default function ReadinessPage() {
       )}
 
       {/* Safety footer */}
-      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8">
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8">
         <div className="flex items-start gap-3">
           <BoltIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div>
@@ -320,7 +320,7 @@ export default function ReadinessPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="text-right min-w-[5rem]">
+    <div className="text-right min-w-20">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

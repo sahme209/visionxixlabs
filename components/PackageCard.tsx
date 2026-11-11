@@ -22,7 +22,7 @@ export function PackageCard({
   ctaLabel = "Talk to us",
 }: PackageCardProps) {
   return (
-    <div className="card-hover bg-white/[0.02] rounded-2xl p-6 shadow-xl border border-white/[0.06] flex flex-col h-full">
+    <div className="card-hover bg-white/2 rounded-2xl p-6 shadow-xl border border-white/6 flex flex-col h-full">
       <div className="flex items-start justify-between mb-4">
         <h3 className="text-xl font-semibold text-white">
           {name}

@@ -234,7 +234,7 @@ export function AzureDeployConnect({
             onChange={(e) => { setCredsJson(e.target.value); setPasteHint(null); }}
             placeholder={`Click here, then press ⌘V (Mac) or Ctrl+V (Windows) to paste the JSON\n\n{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}`}
             rows={8}
-            className="mt-2 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-zinc-500/50 focus:outline-none transition-colors resize-y"
+            className="mt-2 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-zinc-500/50 focus:outline-hidden transition-colors resize-y"
             spellCheck={false}
             autoComplete="off"
           />
@@ -279,7 +279,7 @@ export function AzureDeployConnect({
               type="button"
               onClick={handleValidate}
               disabled={!credsJson.trim() || !looksParseable(credsJson).ok}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-xs transition-colors"
             >
               Finish connection
               <span aria-hidden className="opacity-70">→</span>
@@ -302,7 +302,7 @@ export function AzureDeployConnect({
           </div>
 
           {result?.ok === false && (
-            <div className="mt-4 rounded-xl border border-white/25 bg-white/[0.04] p-3 text-[12.5px] text-zinc-100/90 leading-relaxed">
+            <div className="mt-4 rounded-xl border border-white/25 bg-white/4 p-3 text-[12.5px] text-zinc-100/90 leading-relaxed">
               {result.hint ?? "Couldn't validate that JSON."}
             </div>
           )}
@@ -330,7 +330,7 @@ export function AzureDeployConnect({
               target="_blank"
               rel="noreferrer"
               onClick={() => setPhase("deploying")}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-[14px] font-medium shadow-xs transition-colors"
             >
               Open Azure Cloud Shell
               <span aria-hidden className="opacity-70">→</span>
@@ -372,7 +372,7 @@ export function AzureDeployConnect({
                 onChange={(e) => { setCredsJson(e.target.value); setPasteHint(null); }}
                 placeholder={`Click here, then press ⌘V (Mac) or Ctrl+V (Windows) to paste the JSON\n\n{\n  "clientId": "...",\n  "clientSecret": "...",\n  "subscriptionId": "...",\n  "tenantId": "..."\n}`}
                 rows={8}
-                className="mt-1 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-zinc-500/50 focus:outline-none transition-colors resize-y"
+                className="mt-1 w-full px-3 py-2.5 rounded-lg bg-zinc-900 border border-zinc-800 text-zinc-100 text-[12.5px] font-mono placeholder:text-zinc-600 focus:border-zinc-500/50 focus:outline-hidden transition-colors resize-y"
                 spellCheck={false}
                 autoComplete="off"
               />
@@ -416,7 +416,7 @@ export function AzureDeployConnect({
                   type="button"
                   onClick={handleValidate}
                   disabled={!credsJson.trim() || !looksParseable(credsJson).ok}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-sm transition-colors"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 disabled:bg-zinc-600/40 disabled:cursor-not-allowed text-white text-[14px] font-medium shadow-xs transition-colors"
                 >
                   Finish connection
                   <span aria-hidden className="opacity-70">→</span>
@@ -429,7 +429,7 @@ export function AzureDeployConnect({
               </div>
 
               {result?.ok === false && (
-                <div className="mt-1 rounded-xl border border-white/25 bg-white/[0.04] p-3 text-[12.5px] text-zinc-100/90 leading-relaxed">
+                <div className="mt-1 rounded-xl border border-white/25 bg-white/4 p-3 text-[12.5px] text-zinc-100/90 leading-relaxed">
                   {result.hint ?? "Couldn't validate that JSON."}
                 </div>
               )}
@@ -503,9 +503,9 @@ export function AzureDeployConnect({
 type Tone = "emerald" | "zinc" | "amber" | "neutral";
 
 const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
-  emerald: { border: "border-emerald-500/25", bg: "bg-emerald-500/[0.04]", kicker: "text-emerald-300" },
-  zinc:  { border: "border-zinc-500/25",  bg: "bg-zinc-500/[0.04]",  kicker: "text-zinc-300" },
-  amber:   { border: "border-white/25",   bg: "bg-white/[0.04]",   kicker: "text-zinc-300" },
+  emerald: { border: "border-emerald-500/25", bg: "bg-emerald-500/4", kicker: "text-emerald-300" },
+  zinc:  { border: "border-zinc-500/25",  bg: "bg-zinc-500/4",  kicker: "text-zinc-300" },
+  amber:   { border: "border-white/25",   bg: "bg-white/4",   kicker: "text-zinc-300" },
   neutral: { border: "border-zinc-800",       bg: "bg-zinc-900/40",        kicker: "text-zinc-400" },
 };
 
@@ -522,7 +522,7 @@ function KickerLine({ tone, children }: { tone: Tone; children: React.ReactNode 
 function TimelineStep({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 text-[11px] font-mono text-zinc-300 flex items-center justify-center mt-[1px]">{n}</span>
+      <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 text-[11px] font-mono text-zinc-300 flex items-center justify-center mt-px">{n}</span>
       <div className="flex-1 min-w-0">
         <p className="text-[13px] font-medium text-zinc-100">{title}</p>
         <p className="text-[12.5px] text-zinc-400 leading-relaxed mt-0.5">{children}</p>
@@ -534,7 +534,7 @@ function TimelineStep({ n, title, children }: { n: number; title: string; childr
 function ScopeRow({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 text-[12.5px] text-zinc-300">
-      <span aria-hidden className="w-1 h-1 rounded-full bg-emerald-400/70 flex-shrink-0" />
+      <span aria-hidden className="w-1 h-1 rounded-full bg-emerald-400/70 shrink-0" />
       <span>{children}</span>
     </div>
   );

@@ -96,7 +96,7 @@ export default async function IntegrationsPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             ConnectorSetupSession table not migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code>.
@@ -106,7 +106,7 @@ export default async function IntegrationsPage() {
 
       <section className="mb-10">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">cloud providers</p>
-        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
           {(["aws", "azure", "gcp"] as const).map((provider) => {
             const session = sessions.find((s) => s.provider === provider);
             const status = session?.status ?? "not_connected";
@@ -115,9 +115,9 @@ export default async function IntegrationsPage() {
               <li key={provider}>
                 <Link
                   href="/dashboard/connect-cloud"
-                  className="group flex items-center gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+                  className="group flex items-center gap-4 px-6 py-4 hover:bg-white/1.5 transition-colors"
                 >
-                  <div className="w-10 h-10 rounded-xl bg-white/[0.04] border border-white/[0.06] flex items-center justify-center shrink-0 text-[10px] font-mono font-semibold tracking-wider text-zinc-300">
+                  <div className="w-10 h-10 rounded-xl bg-white/4 border border-white/6 flex items-center justify-center shrink-0 text-[10px] font-mono font-semibold tracking-wider text-zinc-300">
                     {provider.toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -139,7 +139,7 @@ export default async function IntegrationsPage() {
 
       <section className="mb-10">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">notification channels</p>
-        <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
           <ChannelRow label="Slack" configured={slackOn} hint="Incoming webhook URL" />
           <ChannelRow label="Microsoft Teams" configured={teamsOn} hint="Connector URL" />
           <ChannelRow label="Email digest" configured={emailOn} hint="Recipient address" deferred />
@@ -164,7 +164,7 @@ function ChannelRow({
     <li>
       <Link
         href="/dashboard/settings/notifications"
-        className="group flex items-center gap-4 px-6 py-4 hover:bg-white/[0.015] transition-colors"
+        className="group flex items-center gap-4 px-6 py-4 hover:bg-white/1.5 transition-colors"
       >
         <div className="flex-1 min-w-0">
           <p className="text-[14px] font-medium text-white">{label}</p>

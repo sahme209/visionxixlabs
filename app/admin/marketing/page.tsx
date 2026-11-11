@@ -143,7 +143,7 @@ export default function MarketingPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         {/* Drafts queue — 2 cols */}
-        <section className="lg:col-span-2 rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 md:p-5">
+        <section className="lg:col-span-2 rounded-2xl border border-white/5 bg-white/1.5 p-4 md:p-5">
           <header className="flex items-center justify-between gap-3 mb-3">
             <h2 className="text-[13px] font-semibold text-zinc-200 flex items-center gap-2">
               Drafts queue
@@ -158,12 +158,12 @@ export default function MarketingPage() {
             {allDrafts.map((d) => (
               <li
                 key={d.id}
-                className="rounded-xl border border-white/[0.04] bg-white/[0.02] p-3.5"
+                className="rounded-xl border border-white/4 bg-white/2 p-3.5"
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest mb-1">
-                      <span className="rounded-full border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-zinc-300">
+                      <span className="rounded-full border border-white/6 bg-white/2 px-2 py-0.5 text-zinc-300">
                         {d.channel}
                       </span>
                       <span className={["rounded-full px-2 py-0.5 border whitespace-nowrap", RISK_TONE[d.riskTier]].join(" ")}>
@@ -172,7 +172,7 @@ export default function MarketingPage() {
                       <span className="rounded-full border border-orange-500/30 bg-orange-500/10 px-2 py-0.5 text-orange-300 whitespace-nowrap">
                         gate · {d.recommendedGate.replace("_", " ")}
                       </span>
-                      <span className="rounded-full border border-white/[0.06] bg-white/[0.02] px-2 py-0.5 text-zinc-400">
+                      <span className="rounded-full border border-white/6 bg-white/2 px-2 py-0.5 text-zinc-400">
                         {d.charCount} chars
                       </span>
                     </div>
@@ -196,7 +196,7 @@ export default function MarketingPage() {
 
         {/* Schedule + LinkedIn preview */}
         <aside className="space-y-4">
-          <section className="rounded-2xl border border-white/[0.05] bg-white/[0.015] p-4 md:p-5">
+          <section className="rounded-2xl border border-white/5 bg-white/1.5 p-4 md:p-5">
             <header className="flex items-center gap-2 mb-3">
               <ClockIcon className="h-4 w-4 text-zinc-400" />
               <h2 className="text-[13px] font-semibold text-zinc-200">Schedule preview</h2>
@@ -204,7 +204,7 @@ export default function MarketingPage() {
             </header>
             <ul className="space-y-2">
               {plan.slice(0, 6).map((p) => (
-                <li key={p.draftId} className="rounded-lg border border-white/[0.04] bg-white/[0.02] px-3 py-2">
+                <li key={p.draftId} className="rounded-lg border border-white/4 bg-white/2 px-3 py-2">
                   <div className="flex items-start justify-between gap-2 flex-wrap">
                     <p className="text-[11.5px] text-white font-medium">{p.channel}</p>
                     <span className={[
@@ -228,7 +228,7 @@ export default function MarketingPage() {
           </section>
 
           {linkedinPreview?.ok ? (
-            <section className="rounded-2xl border border-cyan-500/20 bg-cyan-500/[0.04] p-4 md:p-5">
+            <section className="rounded-2xl border border-cyan-500/20 bg-cyan-500/4 p-4 md:p-5">
               <header className="flex items-center gap-2 mb-2">
                 <RocketLaunchIcon className="h-4 w-4 text-cyan-300" />
                 <h2 className="text-[13px] font-semibold text-cyan-100">LinkedIn payload preview</h2>
@@ -248,7 +248,7 @@ export default function MarketingPage() {
       </div>
 
       {/* Safety contract */}
-      <section className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mt-8 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <header className="flex items-center gap-2 mb-2">
           <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
           <h2 className="text-[13px] font-semibold text-emerald-100">Marketing safety contract</h2>
@@ -271,14 +271,14 @@ export default function MarketingPage() {
           </Link>
           <Link
             href="/dashboard/audit"
-            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/3 px-3 py-1.5 text-[12px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             Audit log
             <ArrowRightIcon className="h-3 w-3" />
           </Link>
           <Link
             href="/dashboard/connectors"
-            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/[0.03] px-3 py-1.5 text-[12px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+            className="inline-flex items-center gap-1 rounded-full border border-white/10 bg-white/3 px-3 py-1.5 text-[12px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             LinkedIn connector
             <ArrowRightIcon className="h-3 w-3" />
@@ -298,7 +298,7 @@ export default function MarketingPage() {
 
 function Stat({ label, value, sub }: { label: string; value: number; sub?: string }) {
   return (
-    <div className="rounded-2xl border border-white/[0.05] bg-white/[0.015] px-4 py-3">
+    <div className="rounded-2xl border border-white/5 bg-white/1.5 px-4 py-3">
       <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">{label}</p>
       <p className="mt-1 text-[20px] font-semibold text-white tabular-nums">{value}</p>
       {sub ? <p className="text-[10.5px] text-zinc-500 mt-0.5">{sub}</p> : null}

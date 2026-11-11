@@ -12,7 +12,7 @@ export default function TermsOfServicePage() {
       <Navigation />
 
       <main className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
+        <div className="rounded-2xl border border-white/6 bg-white/2 backdrop-blur-sm p-8 md:p-12">
           {/* Header */}
           <div className="text-center mb-12">
             <DocumentTextIcon className="h-14 w-14 text-orange-400 mx-auto mb-4" />
@@ -159,7 +159,7 @@ export default function TermsOfServicePage() {
             <p className="text-zinc-300 leading-relaxed mt-3">
               Confidential Information does not include information that: (a) is publicly available or becomes publicly available through no breach of these Terms, (b) was rightfully known by the receiving party before disclosure, (c) is independently developed without use of Confidential Information, or (d) is rightfully received from a third party without breach of confidentiality.
             </p>
-            <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
+            <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
               <strong>Formal NDAs:</strong> For enterprise engagements, formal Non-Disclosure Agreements (NDAs) may be executed separately and will supplement these Terms.
             </p>
           </section>
@@ -341,7 +341,7 @@ export default function TermsOfServicePage() {
             <p className="text-zinc-300 leading-relaxed mb-3">
               If you have questions about these Terms, please contact us:
             </p>
-            <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4">
+            <div className="bg-white/2 border border-white/6 rounded-lg p-4">
               <p className="text-white font-semibold mb-2">Vision XIX Labs LLC</p>
               <p className="text-zinc-300 mb-1">
                 Email:{" "}
@@ -356,7 +356,7 @@ export default function TermsOfServicePage() {
           </section>
 
           {/* Footer Note */}
-          <div className="border-t border-white/[0.06] pt-6 mt-8">
+          <div className="border-t border-white/6 pt-6 mt-8">
             <p className="text-sm text-zinc-500 text-center">
               These Terms apply to all Services provided by Vision XIX Labs LLC, including consulting services, website access, and mobile applications. For enterprise clients, executed consulting agreements and SOWs take precedence.
             </p>

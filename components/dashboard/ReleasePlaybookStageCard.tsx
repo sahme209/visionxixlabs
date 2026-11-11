@@ -56,7 +56,7 @@ export function ReleasePlaybookStageCard({
   const Icon = STATUS_ICON[status];
 
   return (
-    <article className={`rounded-2xl border ${STATUS_BORDER[status]} bg-white/[0.025] p-5 transition hover:bg-white/[0.04]`}>
+    <article className={`rounded-2xl border ${STATUS_BORDER[status]} bg-white/2.5 p-5 transition hover:bg-white/4`}>
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-1">

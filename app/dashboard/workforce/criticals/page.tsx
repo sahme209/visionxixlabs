@@ -37,9 +37,9 @@ interface CriticalRow {
 const SEVERITY_RANK: Record<Severity, number> = { block: 0, high: 1, escalate: 2 };
 
 const SEVERITY_TONE: Record<Severity, string> = {
-  block: "text-rose-300 border-rose-500/30 bg-rose-500/[0.06]",
-  high: "text-zinc-300 border-white/30 bg-white/[0.06]",
-  escalate: "text-sky-300 border-sky-500/30 bg-sky-500/[0.06]",
+  block: "text-rose-300 border-rose-500/30 bg-rose-500/6",
+  high: "text-zinc-300 border-white/30 bg-white/6",
+  escalate: "text-sky-300 border-sky-500/30 bg-sky-500/6",
 };
 
 function extractTitle(payload: unknown, fallback: string): string {
@@ -223,7 +223,7 @@ export default async function CriticalsPage() {
       </section>
 
       {rows.length === 0 ? (
-        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/4 px-6 py-12 text-center">
           <p className="text-[13px] text-emerald-200">No critical safety verdicts in the last 14 days.</p>
           <p className="text-[11px] text-zinc-500 mt-1">
             Either nothing has triggered the safety triad, or every triage cleared. Calm state — keep watching the timeline.
@@ -253,7 +253,7 @@ export default async function CriticalsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] px-4 py-3">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 px-4 py-3">
       <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className={`text-[22px] font-semibold tracking-tight ${tone}`}>{value}</p>
     </div>

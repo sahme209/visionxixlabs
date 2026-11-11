@@ -119,7 +119,7 @@ function Engine({ label, runs }: { label: string; runs: { outcome: string }[] })
   const skip = runs.filter((r) => r.outcome === "skipped").length;
   const err = runs.filter((r) => r.outcome === "error").length;
   return (
-    <div className="rounded border border-zinc-700/30 bg-zinc-900/40 p-2">
+    <div className="rounded-sm border border-zinc-700/30 bg-zinc-900/40 p-2">
       <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{label}</p>
       <p className="text-[11px] font-mono">
         <span className="text-emerald-300">{ok}</span>

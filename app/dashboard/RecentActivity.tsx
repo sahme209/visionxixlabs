@@ -83,7 +83,7 @@ export function RecentActivity() {
           </Link>
         </div>
       </div>
-      <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+      <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
         {entries.map((e) => {
           const tone = OUTCOME_TONE[e.outcome] ?? "text-zinc-400";
           return (

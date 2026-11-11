@@ -72,7 +72,7 @@ export default async function FlagsPage() {
             <span className="text-zinc-400 tabular-nums">{flags.length}</span>
           </p>
           <h2 className="text-[18px] font-semibold text-white tracking-[-0.01em] mb-4">{GROUP_LABEL[group as keyof typeof GROUP_LABEL] ?? group}</h2>
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {flags.map((f) => (
               <li key={f.key} className="px-5 py-4">
                 <div className="flex items-start justify-between gap-4 flex-wrap">
@@ -105,7 +105,7 @@ export default async function FlagsPage() {
         </section>
       ))}
 
-      <footer className="mt-10 pt-6 border-t border-white/[0.06]">
+      <footer className="mt-10 pt-6 border-t border-white/6">
         <p className="text-[11.5px] text-zinc-500 leading-relaxed font-mono">
           write via POST /api/flags · clear override via DELETE /api/flags — this page is read-only until an inline toggle form is added.
         </p>

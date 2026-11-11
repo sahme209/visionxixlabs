@@ -106,8 +106,8 @@ export function DisciplinesClient() {
     <div className="relative">
       {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
+        <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -118,7 +118,7 @@ export function DisciplinesClient() {
           className="mono-label inline-flex items-center gap-3"
         >
           <span className="text-brand-coral/90 tabular-nums">DI</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           AI-assisted coverage across every discipline
         </motion.p>
         <motion.h1
@@ -130,7 +130,7 @@ export function DisciplinesClient() {
           {DISCIPLINES.length} disciplines.{" "}
           <span className="relative inline-block">
             One platform.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -161,7 +161,7 @@ export function DisciplinesClient() {
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 filter === c.id
                   ? "bg-amber-500/15 border-amber-500/40 text-amber-200"
-                  : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
+                  : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
               ].join(" ")}
             >
               {c.label}
@@ -222,7 +222,7 @@ export function DisciplinesClient() {
           </Link>
           <Link
             href="/download"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             Open cockpit
           </Link>

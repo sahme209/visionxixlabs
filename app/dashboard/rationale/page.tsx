@@ -54,7 +54,7 @@ interface Report {
 
 const OUTCOME_TONE: Record<string, string> = {
   deferred_to_human:        "bg-white/15 text-zinc-300 border-white/30",
-  approval_packet_prepared: "bg-orange-500/15 text-orange-300 border-white/[0.12]",
+  approval_packet_prepared: "bg-orange-500/15 text-orange-300 border-white/12",
   execution_handed_off:     "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
   verified_complete:        "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
   halted_at_gate:           "bg-rose-500/15 text-rose-300 border-rose-500/30",
@@ -87,7 +87,7 @@ export default function RationalePage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -96,10 +96,10 @@ export default function RationalePage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <DocumentMagnifyingGlassIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Decision Rationale
@@ -108,14 +108,14 @@ export default function RationalePage() {
           <button
             onClick={() => load(filter)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
           </button>
           <a
             href={`/api/autonomy/rationale/export${filter === "all" ? "?limit=1000" : `?limit=1000&outcome=${encodeURIComponent(filter)}`}`}
-            className="inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-emerald-500/[0.05] text-emerald-300 border-emerald-500/[0.20] hover:bg-emerald-500/[0.1]"
+            className="inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-emerald-500/5 text-emerald-300 border-emerald-500/20 hover:bg-emerald-500/10"
           >
             Export CSV
           </a>
@@ -147,8 +147,8 @@ export default function RationalePage() {
             onClick={() => setFilter(o)}
             className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
               filter === o
-                ? "bg-orange-500/15 text-white border-white/[0.12]"
-                : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                ? "bg-orange-500/15 text-white border-white/12"
+                : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
             }`}
           >
             {o}
@@ -157,24 +157,24 @@ export default function RationalePage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {!loading && !error && report && (
         report.rows.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No rationale rows yet. Run an autonomy cycle (or wait for the cron) to populate.
           </div>
         ) : (
           <div className="space-y-3 mb-8">
             {report.rows.map((r) => (
-              <div key={r.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={r.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap mb-1">
-                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_TONE[r.outcome] ?? "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
+                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_TONE[r.outcome] ?? "bg-zinc-500/10 text-zinc-400 border-zinc-500/20"}`}>
                         {r.outcome}
                       </span>
                       <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">{r.charterMode}</span>
@@ -190,7 +190,7 @@ export default function RationalePage() {
                 </div>
 
                 {r.haltedAtStage && (
-                  <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-2 mb-2">
+                  <div className="rounded-md border border-rose-500/20 bg-rose-500/4 p-2 mb-2">
                     <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-wider">
                       // halted at {r.haltedAtStage}
                     </p>
@@ -202,9 +202,9 @@ export default function RationalePage() {
                   <summary className="text-[10px] font-mono text-zinc-500 cursor-pointer hover:text-zinc-300 uppercase tracking-wider">
                     {r.stages.length} stage{r.stages.length === 1 ? "" : "s"} — transcript
                   </summary>
-                  <div className="mt-2 space-y-1 border-l border-white/[0.08] pl-3">
+                  <div className="mt-2 space-y-1 border-l border-white/8 pl-3">
                     {r.stages.map((s, i) => (
-                      <div key={i} className="rounded border border-white/[0.06] bg-black/30 p-2">
+                      <div key={i} className="rounded-sm border border-white/6 bg-black/30 p-2">
                         <div className="flex items-center gap-2 flex-wrap">
                           <span className="text-[10px] font-mono uppercase tracking-wider text-white">{s.stage}</span>
                           <span className={`text-[9px] font-mono uppercase tracking-wider px-1 py-0.5 rounded ${
@@ -241,11 +241,11 @@ function Stat({
   label, value, tone, icon: Icon,
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc"; icon?: typeof ClockIcon }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

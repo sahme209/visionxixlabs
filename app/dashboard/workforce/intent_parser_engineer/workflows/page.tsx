@@ -59,28 +59,28 @@ export default async function IntentWorkflowsPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/intent_parser_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} placeholder="e.g. Re-engage inactive users via email"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="intentText" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">intent</label>
             <textarea id="intentText" name="intentText" required rows={6} maxLength={4000} placeholder={"Describe what you want, in plain language. Example: \"Every Monday, find users who haven't logged in for 30 days and send them a re-engagement email. Skip anyone who unsubscribed.\""}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="knownCapabilities" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">known capabilities (optional)</label>
               <input id="knownCapabilities" name="knownCapabilities" maxLength={1000} placeholder="db.read, email.send, audit.write"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
             <div>
               <label htmlFor="hardConstraints" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">hard constraints (optional)</label>
               <input id="hardConstraints" name="hardConstraints" maxLength={800} placeholder="e.g. opt-out compliance, max 1000 emails/run"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -93,17 +93,17 @@ export default async function IntentWorkflowsPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No parsed workflows yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Submit the form above to parse the first one.</p>
         </div>
       ) : (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent workflows · {decoded.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
               <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${INTENT_PARSER_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${INTENT_PARSER_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <span className={OUTCOME_TONE[d.outcome] ?? "text-zinc-400"}>{d.outcome.replace(/_/g, " ")}</span>
                     {d.modelHint && (<><span className="text-zinc-500">·</span><span className="text-zinc-400">{d.modelHint}</span></>)}

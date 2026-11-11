@@ -38,12 +38,12 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
         Vision XIX Labs
       </Link>
       <div className="w-full max-w-lg p-2 sm:p-8">
-        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
+        <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
         <h1 className="mt-7 text-3xl font-normal tracking-[-0.045em]">Authorize Axiom Agent</h1>
         <p className="mb-7 mt-2 text-sm leading-6 text-zinc-400">
           Signed in as <span className="text-zinc-200">{context.email}</span>. Approve only if this is your desktop.
         </p>
-        <dl className="mb-6 divide-y divide-white/[0.07] rounded-xl border border-white/[0.08] bg-white/[0.025] px-4 text-sm">
+        <dl className="mb-6 divide-y divide-white/[0.07] rounded-xl border border-white/8 bg-white/2.5 px-4 text-sm">
           <Row label="Device" value={pairing.deviceLabel} />
           <Row label="Platform" value={pairing.platform} />
           <Row label="App version" value={pairing.desktopVersion ?? "Not reported"} />
@@ -77,7 +77,7 @@ function Message({ title, detail }: { title: string; detail: string }) {
   return (
     <main className="axiom-canvas flex min-h-screen items-center justify-center px-5 text-white">
       <div className="max-w-md p-8 text-center">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
         <h1 className="mt-7 text-2xl font-normal">{title}</h1>
         <p className="mt-3 text-sm text-zinc-400">{detail}</p>
       </div>

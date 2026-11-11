@@ -109,7 +109,7 @@ export default async function EngineerAskPage({
       </header>
 
       {/* Ask form */}
-      <section className="mb-10 rounded-2xl border border-orange-500/15 bg-orange-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-orange-500/15 bg-orange-500/4 p-5">
         <form action={`/api/workforce/${engineer.id}/ask`} method="POST">
           <label htmlFor="question" className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 mb-2 block">
             your question
@@ -121,7 +121,7 @@ export default async function EngineerAskPage({
             rows={3}
             maxLength={1500}
             placeholder="e.g. What would you do about the consecutive blocks on apply_terraform today?"
-            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/40 transition-colors resize-none"
+            className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-orange-500/40 transition-colors resize-none"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
             <p className="text-[10px] font-mono text-zinc-500">1500 char max · plain prose answer</p>
@@ -137,7 +137,7 @@ export default async function EngineerAskPage({
 
       {/* Thread */}
       {thread.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No questions yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Ask above — your conversation with {engineer.displayName} will appear here.</p>
         </div>
@@ -156,7 +156,7 @@ export default async function EngineerAskPage({
           </div>
           <ul className="space-y-3">
             {thread.map((t) => (
-              <li key={t.targetId} className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+              <li key={t.targetId} className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
                 <div className="flex items-center justify-between gap-2 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                   <div className="flex items-center gap-2">
                     <span className={OUTCOME_TONE[t.outcome] ?? "text-zinc-400"}>{t.outcome.replace(/_/g, " ")}</span>

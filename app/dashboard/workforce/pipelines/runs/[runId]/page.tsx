@@ -30,20 +30,20 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const STAGE_TONE: Record<string, { tone: string; icon: typeof CheckCircleIcon; label: string }> = {
-  queued:             { tone: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",                     icon: ClockIcon,                label: "queued" },
+  queued:             { tone: "text-zinc-400 bg-white/4 border-white/8",                     icon: ClockIcon,                label: "queued" },
   running:            { tone: "text-zinc-300 bg-white/10 border-white/30",                    icon: ArrowPathIcon,            label: "running" },
   succeeded:          { tone: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",              icon: CheckCircleIcon,          label: "succeeded" },
   failed:             { tone: "text-rose-300 bg-rose-500/10 border-rose-500/30",                       icon: ExclamationTriangleIcon,  label: "failed" },
-  skipped:            { tone: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",                     icon: CheckCircleIcon,          label: "skipped" },
+  skipped:            { tone: "text-zinc-400 bg-white/4 border-white/8",                     icon: CheckCircleIcon,          label: "skipped" },
   awaiting_approval:  { tone: "text-zinc-300 bg-white/15 border-white/40",                    icon: PauseCircleIcon,          label: "awaiting approval" },
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
-  queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  queued:    "text-zinc-400 bg-white/4 border-white/8",
   running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
-  cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  cancelled: "text-zinc-400 bg-white/4 border-white/8",
 };
 
 export default async function PipelineRunPage({ params }: { params: Promise<{ runId: string }> }) {
@@ -93,7 +93,7 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
         </p>
       </div>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
           <p className="text-[11px] font-semibold text-white">Run summary</p>
           <span className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2 py-0.5 ${runTone}`}>
@@ -109,7 +109,7 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
           <Meta label="Run id" value={run.id} span2 />
         </dl>
         {run.errorSummary && (
-          <p className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-rose-300">
+          <p className="mt-4 pt-4 border-t border-white/6 text-[11px] font-mono text-rose-300">
             {run.errorSummary}
           </p>
         )}
@@ -122,7 +122,7 @@ export default async function PipelineRunPage({ params }: { params: Promise<{ ru
           const Icon = meta.icon;
           const defStage = def?.stages.find((ds) => ds.id === s.stageId);
           return (
-            <li key={s.id} className={`rounded-xl border bg-white/[0.02] px-4 py-3 ${meta.tone.split(" ").find((c) => c.startsWith("border-")) ?? "border-white/[0.06]"}`}>
+            <li key={s.id} className={`rounded-xl border bg-white/2 px-4 py-3 ${meta.tone.split(" ").find((c) => c.startsWith("border-")) ?? "border-white/6"}`}>
               <header className="flex items-center justify-between gap-3 flex-wrap mb-1">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[10px] font-mono text-zinc-500">#{i + 1}</span>

@@ -146,7 +146,7 @@ export default function OutboundNotificationsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -155,10 +155,10 @@ export default function OutboundNotificationsPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <BellAlertIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
               Outbound notifications
@@ -175,7 +175,7 @@ export default function OutboundNotificationsPage() {
       </div>
 
       {statusError && (
-        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {statusError}
         </div>
       )}
@@ -186,7 +186,7 @@ export default function OutboundNotificationsPage() {
             {status.channels.map((c) => {
               const Icon = CHANNEL_ICON[c.channel];
               return (
-                <div key={c.channel} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={c.channel} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Icon className="h-4 w-4 text-cyan-300" />
@@ -213,7 +213,7 @@ export default function OutboundNotificationsPage() {
             })}
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-mono text-cyan-300/80 uppercase tracking-wider mb-1">// step 1 · verify wiring</p>
@@ -232,7 +232,7 @@ export default function OutboundNotificationsPage() {
               </button>
             </div>
             {testResult && (
-              <div className="mt-3 rounded-lg border border-white/[0.06] bg-black/30 p-3">
+              <div className="mt-3 rounded-lg border border-white/6 bg-black/30 p-3">
                 <div className="flex items-center gap-2 mb-1">
                   {testResult.ok ? (
                     <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
@@ -263,7 +263,7 @@ export default function OutboundNotificationsPage() {
             )}
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
             <div className="flex items-start justify-between gap-3 flex-wrap">
               <div className="min-w-0 flex-1">
                 <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-wider mb-1">// step 2 · close the loop</p>
@@ -276,7 +276,7 @@ export default function OutboundNotificationsPage() {
               <button
                 onClick={dispatchTelemetry}
                 disabled={busy || status.configuredCount === 0}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-white border border-white/[0.12] hover:bg-orange-500/20 disabled:opacity-50"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-white border border-white/12 hover:bg-orange-500/20 disabled:opacity-50"
               >
                 <PaperAirplaneIcon className="h-3.5 w-3.5" />
                 {busy ? "Dispatching…" : "Dispatch high+ signals"}
@@ -292,7 +292,7 @@ export default function OutboundNotificationsPage() {
           </div>
 
           {/* History panel */}
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
             <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
               <div className="min-w-0">
                 <p className="text-[11px] font-mono text-cyan-300/80 uppercase tracking-wider mb-1">// audit · OutboundNotificationRecord</p>
@@ -303,15 +303,15 @@ export default function OutboundNotificationsPage() {
               </div>
               {history && (
                 <div className="grid grid-cols-3 gap-2 text-[10px] font-mono">
-                  <div className="rounded border border-emerald-500/20 bg-emerald-500/[0.04] px-2 py-1 text-center">
+                  <div className="rounded-sm border border-emerald-500/20 bg-emerald-500/4 px-2 py-1 text-center">
                     <p className="text-emerald-300/80 uppercase">ok</p>
                     <p className="text-emerald-200 font-bold">{history.perOutcome.ok ?? 0}</p>
                   </div>
-                  <div className="rounded border border-white/20 bg-white/[0.04] px-2 py-1 text-center">
+                  <div className="rounded-sm border border-white/20 bg-white/4 px-2 py-1 text-center">
                     <p className="text-zinc-300/80 uppercase">deduped</p>
                     <p className="text-zinc-200 font-bold">{history.perOutcome.deduped ?? 0}</p>
                   </div>
-                  <div className="rounded border border-rose-500/20 bg-rose-500/[0.04] px-2 py-1 text-center">
+                  <div className="rounded-sm border border-rose-500/20 bg-rose-500/4 px-2 py-1 text-center">
                     <p className="text-rose-300/80 uppercase">failed</p>
                     <p className="text-rose-200 font-bold">{(history.perOutcome.failed ?? 0) + (history.perOutcome.skipped ?? 0)}</p>
                   </div>
@@ -326,9 +326,9 @@ export default function OutboundNotificationsPage() {
                 No outbound sends yet. Fire a test above and the row will land here.
               </p>
             ) : (
-              <div className="divide-y divide-white/[0.04] border border-white/[0.06] rounded-lg overflow-hidden">
+              <div className="divide-y divide-white/4 border border-white/6 rounded-lg overflow-hidden">
                 {history.rows.map((row) => (
-                  <div key={row.id} className="px-3 py-2 hover:bg-white/[0.02]">
+                  <div key={row.id} className="px-3 py-2 hover:bg-white/2">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                         row.outcome === "ok"
@@ -355,12 +355,12 @@ export default function OutboundNotificationsPage() {
             )}
           </div>
 
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">Delivery promises</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">notification_read_only</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">notification_read_only</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 Every payload passes through redactPayload before transmit. Notifications announce — they never
@@ -376,10 +376,10 @@ export default function OutboundNotificationsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "orange" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber: "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    orange: "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc: "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber: "border-white/18 bg-white/3 text-zinc-200",
+    orange: "border-white/6 bg-white/1.5 text-white",
+    zinc: "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

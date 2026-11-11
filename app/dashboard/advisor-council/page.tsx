@@ -83,7 +83,7 @@ const KIND_LABEL: Record<string, string> = {
 };
 
 const DECISION_CLASS: Record<Decision, string> = {
-  pending:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  pending:    "bg-orange-500/15 text-orange-300 border-white/10",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   overridden: "bg-white/15 text-zinc-300 border-white/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -97,11 +97,11 @@ function agreementClass(score: number): string {
 }
 
 function consensusClass(kind: Kind): string {
-  if (kind === "block_deploy" || kind === "rollback") return "border-rose-500/30 bg-rose-500/[0.04]";
-  if (kind === "needs_evidence" || kind === "propose_freeze" || kind === "proceed_with_caution") return "border-white/30 bg-white/[0.04]";
-  if (kind === "no_consensus") return "border-white/[0.12] bg-white/[0.02]";
-  if (kind === "proceed") return "border-emerald-500/30 bg-emerald-500/[0.04]";
-  return "border-white/[0.08] bg-white/[0.02]";
+  if (kind === "block_deploy" || kind === "rollback") return "border-rose-500/30 bg-rose-500/4";
+  if (kind === "needs_evidence" || kind === "propose_freeze" || kind === "proceed_with_caution") return "border-white/30 bg-white/4";
+  if (kind === "no_consensus") return "border-white/12 bg-white/2";
+  if (kind === "proceed") return "border-emerald-500/30 bg-emerald-500/4";
+  return "border-white/8 bg-white/2";
 }
 
 export default function AdvisorCouncilPage() {
@@ -153,12 +153,12 @@ export default function AdvisorCouncilPage() {
         </div>
       )}
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading council decisions…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">Loading council decisions…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -167,12 +167,12 @@ export default function AdvisorCouncilPage() {
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">Sign in required.</div>
       )}
 
       {data && (
         data.decisions.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No council decisions yet. Paste a release id and hit Generate to run the three voters.
           </div>
         ) : (
@@ -217,13 +217,13 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
   return (
     <div className={`rounded-2xl border p-4 ${consensusClass(decision.consensusKind)}`}>
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/8 bg-white/2 text-zinc-300">
           {KIND_LABEL[decision.consensusKind]}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${agreementClass(decision.agreementScore)}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${agreementClass(decision.agreementScore)}`}>
           {decision.agreementScore}% agreement
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${DECISION_CLASS[decision.operatorDecision]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${DECISION_CLASS[decision.operatorDecision]}`}>
           {decision.operatorDecision}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">{decision.voterCount} voters</span>
@@ -236,7 +236,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
       <AiRationaleCard decisionId={decision.id} />
 
       {/* Per-voter breakdown */}
-      <div className="mb-3 rounded-lg border border-white/[0.06] bg-black/20 p-2.5">
+      <div className="mb-3 rounded-lg border border-white/6 bg-black/20 p-2.5">
         <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-2">Votes</p>
         <div className="space-y-1.5">
           {decision.votes.map((v, i) => (
@@ -258,13 +258,13 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
       )}
 
       {decision.operatorDecision === "pending" && (
-        <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <select
             aria-label="Override recommendation kind"
             value={overrideKind}
             onChange={(e) => setOverrideKind(e.target.value)}
             disabled={busy !== null}
-            className="rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 disabled:opacity-50"
+            className="rounded-md border border-white/8 bg-black/30 px-2 py-1 text-[11px] text-zinc-100 disabled:opacity-50"
           >
             <option value="block_deploy">block_deploy</option>
             <option value="rollback">rollback</option>
@@ -282,18 +282,18 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"
             disabled={busy !== null}
-            className="flex-1 min-w-[180px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[180px] rounded-md border border-white/8 bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/16 disabled:opacity-50 disabled:cursor-wait">
             {busy === "accept" ? "…" : "Accept consensus"}
           </button>
           <button type="button" onClick={() => decide("override")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-white/30 bg-white/[0.08] text-zinc-200 hover:bg-white/[0.16] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-white/30 bg-white/8 text-zinc-200 hover:bg-white/16 disabled:opacity-50 disabled:cursor-wait">
             {busy === "override" ? "…" : `Override → ${overrideKind}`}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
             {busy === "dismiss" ? "…" : "Dismiss"}
           </button>
           {err && <span className="text-rose-300">✗ {err}</span>}
@@ -306,10 +306,10 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ScaleIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -362,7 +362,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/[0.12] bg-white/[0.025] text-[12px] font-semibold text-white hover:bg-orange-500/[0.12] transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-white/12 bg-white/2.5 text-[12px] font-semibold text-white hover:bg-orange-500/12 transition-colors inline-flex items-center gap-1.5"
         >
           <ScaleIcon className="h-3.5 w-3.5" />
           Run council
@@ -373,7 +373,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
       <div className="flex items-center justify-between mb-3">
         <p className="text-[13px] font-semibold text-orange-100">Run advisor council</p>
         <button type="button" onClick={() => { setReleaseId(""); setState({ kind: "closed" }); }} className="text-[11px] font-mono text-zinc-400 hover:text-zinc-200" disabled={busy}>cancel</button>
@@ -386,7 +386,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           onChange={(e) => setReleaseId(e.target.value)}
           placeholder="rel_..."
           disabled={busy}
-          className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12.5px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <label className="flex items-center gap-2 mb-3 text-[12px] text-zinc-300 cursor-pointer">
@@ -404,7 +404,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !releaseId}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <ScaleIcon className="h-3.5 w-3.5" />
           {busy ? "Running…" : "Run council"}
@@ -444,7 +444,7 @@ interface EnrichmentView {
 type EnrichBody = { ok: true; data: { enrichment: EnrichmentView | null } } | { ok: false; error: string; hint?: string };
 
 const OUTCOME_BADGE: Record<string, string> = {
-  ai_generated:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  ai_generated:    "bg-orange-500/15 text-orange-300 border-white/10",
   fallback_rules:  "bg-white/15 text-zinc-300 border-white/25",
   error:           "bg-rose-500/15 text-rose-300 border-rose-500/25",
 };
@@ -495,7 +495,7 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
 
   if (!enrichment) {
     return (
-      <div className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.015] p-2.5">
+      <div className="mb-3 rounded-lg border border-white/6 bg-white/1.5 p-2.5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2 text-[11px] font-mono text-white">
             <SparklesIcon className="h-3.5 w-3.5" />
@@ -505,7 +505,7 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
             type="button"
             onClick={generate}
             disabled={generating}
-            className="px-2 py-1 rounded border border-orange-500/40 bg-orange-500/[0.12] text-[10.5px] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+            className="px-2 py-1 rounded-sm border border-orange-500/40 bg-orange-500/12 text-[10.5px] font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
           >
             {generating ? "Generating…" : "Generate why-this"}
           </button>
@@ -516,12 +516,12 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
   }
 
   return (
-    <div className="mb-3 rounded-lg border border-white/[0.06] bg-white/[0.015] p-3">
+    <div className="mb-3 rounded-lg border border-white/6 bg-white/1.5 p-3">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.12] bg-white/[0.04] text-white">
+        <span className="inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/12 bg-white/4 text-white">
           <SparklesIcon className="h-3 w-3" /> AI rationale
         </span>
-        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_BADGE[enrichment.outcome] ?? OUTCOME_BADGE.error}`}>
+        <span className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_BADGE[enrichment.outcome] ?? OUTCOME_BADGE.error}`}>
           {enrichment.outcome}
         </span>
         {enrichment.modelHint && (

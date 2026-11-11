@@ -64,7 +64,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
       <section className="mx-auto max-w-[1280px] px-5 pb-12 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-16">
         <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Get started</p>
         <div className="mt-5 grid gap-6 lg:grid-cols-[1fr_0.9fr] lg:items-end lg:gap-16">
-          <h1 className="max-w-2xl text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.04] tracking-[-0.05em] text-zinc-100">
+          <h1 className="max-w-2xl text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.04] tracking-tighter text-zinc-100">
             Free to explore.<br /><span className="text-zinc-400">Prepay only for the AI you use.</span>
           </h1>
           <p className="max-w-xl text-base leading-7 text-zinc-400">
@@ -74,7 +74,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
       </section>
 
       <section aria-label="How Axiom is offered" className="mx-auto grid max-w-[1280px] gap-4 px-5 pb-12 sm:px-8 lg:grid-cols-3 lg:px-10 lg:pb-16">
-        <article className="flex flex-col rounded-xl border border-white/[0.09] bg-[#181818] p-6">
+        <article className="flex flex-col rounded-xl border border-white/9 bg-[#181818] p-6">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Axiom</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Free to explore</h2>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
@@ -87,13 +87,13 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           </div>
         </article>
 
-        <article className="flex flex-col rounded-xl border border-[#f54e00]/40 bg-[#1a1a1a] p-6">
+        <article className="flex flex-col rounded-xl border border-[#f54e00]/40 bg-brand-ink-card p-6">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">AI usage</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Prepaid credits, the only paid part</h2>
-          <figure className="mt-5 rounded-lg border border-white/[0.08] bg-black/30 p-4" aria-label="Example credit meter">
+          <figure className="mt-5 rounded-lg border border-white/8 bg-black/30 p-4" aria-label="Example credit meter">
             <figcaption className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">Example credit meter</figcaption>
             <div className="mt-3 flex items-baseline justify-between text-sm text-zinc-300"><span>Prepaid balance</span><span className="tabular-nums text-zinc-100">{usd(AI_RATE_CARD.minimumTopUpCents)}</span></div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/[0.08]" aria-hidden><div className="h-full w-full rounded-full bg-[#ff783d]" /></div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8" aria-hidden><div className="h-full w-full rounded-full bg-[#ff783d]" /></div>
             <p className="mt-3 text-xs leading-5 text-zinc-400">Shown before you run it: a typical code analysis costs about {usd(exampleCustomerCents)}.</p>
           </figure>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
@@ -102,14 +102,14 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
             <li>Minimum top-up {usd(AI_RATE_CARD.minimumTopUpCents)}; credits never expire</li>
           </ul>
           <div className="mt-auto flex flex-col gap-3 pt-8">
-            <a href="#ai-rates" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.04]">See AI rates</a>
+            <a href="#ai-rates" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/4">See AI rates</a>
             {creditPurchasesOpen
               ? <Link href="/auth/signin?callbackUrl=%2Fcontrol%2Fusage-billing" className="flex min-h-11 items-center justify-center rounded-lg bg-[#f54e00] px-5 text-sm font-semibold text-white transition hover:bg-[#ff641f]">Buy prepaid credits</Link>
               : <p className="text-xs leading-5 text-zinc-500">Credit purchases are not open yet. No charge can be started from this page.</p>}
           </div>
         </article>
 
-        <article className="flex flex-col rounded-xl border border-white/[0.09] bg-[#181818] p-6">
+        <article className="flex flex-col rounded-xl border border-white/9 bg-[#181818] p-6">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Enterprise</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Scoped evaluation</h2>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
@@ -118,7 +118,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
             <li>Bring your own key (BYOK) {AI_RATE_CARD.byok}</li>
           </ul>
           <div className="mt-auto pt-8">
-            <Link href="/contact" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.04]">Talk to us</Link>
+            <Link href="/contact" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/4">Talk to us</Link>
           </div>
         </article>
       </section>
@@ -227,7 +227,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">No billing decision required</p>
           <h2 className="mt-3 max-w-2xl text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">See the workflow before you prepay anything.</h2>
         </div>
-        <Link href="/demo" className="inline-flex min-h-11 shrink-0 items-center justify-center self-start rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/[0.04] lg:self-auto">
+        <Link href="/demo" className="inline-flex min-h-11 shrink-0 items-center justify-center self-start rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/4 lg:self-auto">
           Explore the interactive demo
         </Link>
       </section>

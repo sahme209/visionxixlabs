@@ -31,20 +31,20 @@ export const metadata: Metadata = {
 export const dynamic = "force-dynamic";
 
 const STAGE_TONE: Record<string, { tone: string; icon: typeof CheckCircleIcon; border: string }> = {
-  queued:            { tone: "text-zinc-400",    icon: ClockIcon,               border: "border-white/[0.06]" },
+  queued:            { tone: "text-zinc-400",    icon: ClockIcon,               border: "border-white/6" },
   running:           { tone: "text-zinc-300",   icon: ArrowPathIcon,           border: "border-white/30" },
   succeeded:         { tone: "text-emerald-300", icon: CheckCircleIcon,         border: "border-emerald-500/20" },
   failed:            { tone: "text-rose-300",    icon: ExclamationTriangleIcon, border: "border-rose-500/30" },
-  skipped:           { tone: "text-zinc-400",    icon: CheckCircleIcon,         border: "border-white/[0.06]" },
+  skipped:           { tone: "text-zinc-400",    icon: CheckCircleIcon,         border: "border-white/6" },
   awaiting_approval: { tone: "text-zinc-300",   icon: PauseCircleIcon,         border: "border-white/40" },
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
-  queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  queued:    "text-zinc-400 bg-white/4 border-white/8",
   running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
-  cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  cancelled: "text-zinc-400 bg-white/4 border-white/8",
 };
 
 export default async function CodingTaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -94,7 +94,7 @@ export default async function CodingTaskDetailPage({ params }: { params: Promise
         </p>
       </div>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
           <p className="text-[11px] font-semibold text-white">Run summary</p>
           <span className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2 py-0.5 ${runTone}`}>
@@ -108,7 +108,7 @@ export default async function CodingTaskDetailPage({ params }: { params: Promise
           <Meta label="Correlation" value={task.correlationId} span2 />
         </dl>
         {task.instruction.length > 120 && (
-          <details className="mt-4 pt-4 border-t border-white/[0.06]">
+          <details className="mt-4 pt-4 border-t border-white/6">
             <summary className="text-[11px] font-mono uppercase tracking-wider text-zinc-400 cursor-pointer">full instruction ({task.instruction.length} chars)</summary>
             <p className="mt-2 text-[12px] text-zinc-200 leading-relaxed whitespace-pre-wrap">{task.instruction}</p>
           </details>
@@ -122,7 +122,7 @@ export default async function CodingTaskDetailPage({ params }: { params: Promise
           const Icon = meta.icon;
           const defStage = def?.stages.find((ds) => ds.id === s.stageId);
           return (
-            <li key={s.id} className={`rounded-xl border bg-white/[0.02] px-4 py-3 ${meta.border}`}>
+            <li key={s.id} className={`rounded-xl border bg-white/2 px-4 py-3 ${meta.border}`}>
               <header className="flex items-center justify-between gap-3 flex-wrap mb-1">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[10px] font-mono text-zinc-500">#{i + 1}</span>
@@ -161,7 +161,7 @@ export default async function CodingTaskDetailPage({ params }: { params: Promise
         })}
       </ol>
 
-      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// safety rails</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>The PR-open stage is gated by two-step approval — no code leaves until both approvers vote.</li>

@@ -105,8 +105,8 @@ export function DesktopSignInView({
   return (
     <main className="h-screen w-screen bg-[#0a0a0b] text-white flex items-center justify-center px-6 relative overflow-hidden">
       <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[720px] h-[720px] rounded-full bg-violet-500/[0.08] blur-[160px]" />
-        <div className="absolute bottom-[-15%] right-[-10%] w-[480px] h-[480px] rounded-full bg-fuchsia-500/[0.05] blur-[140px]" />
+        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[720px] h-[720px] rounded-full bg-violet-500/8 blur-[160px]" />
+        <div className="absolute bottom-[-15%] right-[-10%] w-[480px] h-[480px] rounded-full bg-fuchsia-500/5 blur-[140px]" />
       </div>
       <div className="relative w-full max-w-[420px] text-center">
         <img src="/axiom-logo.png" alt="" className="mx-auto mb-8 h-14 w-14 shrink-0 object-contain" />
@@ -115,9 +115,9 @@ export function DesktopSignInView({
         <p className="mx-auto mt-3 max-w-sm text-[14px] leading-6 text-zinc-500">
           Sign in through your system browser, then return here automatically. Your workspace access is verified before operational data loads.
         </p>
-        {error && <div role="alert" className="mt-5 rounded-xl border border-red-500/20 bg-red-500/[0.08] p-3.5 text-left text-xs leading-5 text-red-200">{error}</div>}
+        {error && <div role="alert" className="mt-5 rounded-xl border border-red-500/20 bg-red-500/8 p-3.5 text-left text-xs leading-5 text-red-200">{error}</div>}
         {retryAvailable && <button type="button" disabled={state !== "idle" || checkingKey} onClick={() => void retrySavedSignIn()} className="mt-5 w-full rounded-xl border border-white/10 px-5 py-3 text-sm text-zinc-200 disabled:opacity-60">Retry saved sign-in</button>}
-        <div className="mt-8 rounded-2xl border border-white/[0.08] bg-white/[0.02] p-1.5 shadow-[0_1px_0_rgba(255,255,255,0.03)_inset]">
+        <div className="mt-8 rounded-2xl border border-white/8 bg-white/2 p-1.5 shadow-[0_1px_0_rgba(255,255,255,0.03)_inset]">
           <button
             type="button"
             onClick={() => void continueInBrowser("sign_in")}
@@ -129,22 +129,22 @@ export function DesktopSignInView({
               {state === "retrying" ? "Checking saved sign-in…" : state === "saving" ? "Saving secure sign-in…" : state === "opening" ? "Opening secure browser…" : state === "waiting" ? "Waiting for browser approval…" : "Log in"}
             </span>
           </button>
-          <button type="button" onClick={() => void continueInBrowser("sign_up")} disabled={state !== "idle" || checkingKey} className="mt-1.5 w-full rounded-xl px-5 py-3.5 text-sm font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/[0.06] disabled:opacity-60">
+          <button type="button" onClick={() => void continueInBrowser("sign_up")} disabled={state !== "idle" || checkingKey} className="mt-1.5 w-full rounded-xl px-5 py-3.5 text-sm font-medium text-zinc-200 transition-colors duration-150 hover:bg-white/6 disabled:opacity-60">
             Create account
           </button>
         </div>
         {(state === "opening" || state === "waiting" || state === "retrying") && (
-          <button type="button" onClick={cancelBrowserSignIn} className="mt-3 w-full rounded-xl px-5 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-white/[0.04] hover:text-white">
+          <button type="button" onClick={cancelBrowserSignIn} className="mt-3 w-full rounded-xl px-5 py-2 text-sm font-medium text-zinc-500 transition-colors hover:bg-white/4 hover:text-white">
             Cancel
           </button>
         )}
         <p className="mt-5 text-xs leading-5 text-zinc-600">Both options open visionxixlabs.com in your default browser. Axiom never embeds your identity-provider password.</p>
-        <details className="group mt-6 rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 text-left transition-colors open:border-white/[0.09] open:bg-white/[0.025]">
+        <details className="group mt-6 rounded-xl border border-white/6 bg-white/1.5 p-4 text-left transition-colors open:border-white/9 open:bg-white/2.5">
           <summary className="cursor-pointer text-xs font-medium text-zinc-500 transition-colors group-hover:text-zinc-300">Enterprise recovery sign-in</summary>
           <p className="mt-3 text-xs leading-5 text-zinc-600">For administrator-issued recovery access only. The workspace must still have an active approved pilot or commercial entitlement.</p>
           <label htmlFor="workspace-key" className="mt-3 block text-xs font-medium text-zinc-300">Workspace API key</label>
-          <input id="workspace-key" type="password" autoComplete="off" spellCheck={false} value={apiKey} onChange={(event) => { setApiKey(event.target.value); setError(null); }} onKeyDown={(event) => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Enter" && apiKey.trim() && !checkingKey && state === "idle") void signInWithKey(); }} placeholder="vxlk_live_…" className="mt-2 w-full rounded-xl border border-white/[0.10] bg-black/30 px-4 py-3 text-sm font-mono text-white outline-none placeholder:text-zinc-700 transition-colors focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15" />
-          <button type="button" onClick={() => void signInWithKey()} disabled={!apiKey.trim() || checkingKey || state !== "idle"} className="mt-3 w-full rounded-full border border-white/[0.10] bg-white/[0.05] px-5 py-3 text-sm font-semibold text-zinc-100 transition-colors hover:bg-white/[0.09] disabled:cursor-not-allowed disabled:opacity-50">
+          <input id="workspace-key" type="password" autoComplete="off" spellCheck={false} value={apiKey} onChange={(event) => { setApiKey(event.target.value); setError(null); }} onKeyDown={(event) => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Enter" && apiKey.trim() && !checkingKey && state === "idle") void signInWithKey(); }} placeholder="vxlk_live_…" className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-mono text-white outline-hidden placeholder:text-zinc-700 transition-colors focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15" />
+          <button type="button" onClick={() => void signInWithKey()} disabled={!apiKey.trim() || checkingKey || state !== "idle"} className="mt-3 w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-100 transition-colors hover:bg-white/9 disabled:cursor-not-allowed disabled:opacity-50">
             {checkingKey ? "Verifying workspace…" : "Use administrator key"}
           </button>
         </details>

@@ -194,9 +194,9 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
   );
 
   return (
-    <div className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`relative rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.01] flex items-center justify-between flex-wrap gap-3">
+      <div className="px-6 py-4 border-b border-white/6 bg-white/1 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-3">
           <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
           <h3 className="text-sm font-semibold text-white">Infrastructure Topology</h3>
@@ -211,12 +211,12 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
       </div>
 
       {/* Topology Canvas */}
-      <div className="relative p-8 bg-gradient-to-br from-transparent via-orange-500/[0.02] to-transparent">
+      <div className="relative p-8 bg-linear-to-br from-transparent via-orange-500/2 to-transparent">
         {/* Background grid */}
         <div className="absolute inset-0 bg-grid-mesh opacity-20 pointer-events-none" aria-hidden />
 
         {/* Spotlight orb */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-orange-500/[0.06] blur-[80px] pointer-events-none" aria-hidden />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 rounded-full bg-orange-500/6 blur-[80px] pointer-events-none" aria-hidden />
 
         {/* SVG layer for connection lines */}
         <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden>
@@ -235,10 +235,10 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
             {/* Pulsing rings */}
             <div className="absolute -inset-8 rounded-full border border-orange-500/20 animate-ping" style={{ animationDuration: "3s" }} />
             <div className="absolute -inset-6 rounded-full border border-orange-500/30 animate-ping" style={{ animationDuration: "2.5s", animationDelay: "0.4s" }} />
-            <div className="absolute -inset-4 rounded-full bg-gradient-to-br from-orange-500/30 via-amber-500/20 to-blue-500/30 blur-[20px]" />
+            <div className="absolute -inset-4 rounded-full bg-linear-to-br from-orange-500/30 via-amber-500/20 to-blue-500/30 blur-[20px]" />
             {/* Core */}
-            <div className="relative w-24 h-24 rounded-3xl bg-gradient-to-br from-[#1a1a20] via-[#0f0f12] to-[#0a0a0c] border border-orange-500/30 flex items-center justify-center shadow-2xl shadow-orange-900/40">
-              <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/[0.06] via-transparent to-transparent" />
+            <div className="relative w-24 h-24 rounded-3xl bg-linear-to-br from-[#1a1a20] via-[#0f0f12] to-[#0a0a0c] border border-orange-500/30 flex items-center justify-center shadow-2xl shadow-orange-900/40">
+              <div className="absolute inset-0 rounded-3xl bg-linear-to-br from-white/6 via-transparent to-transparent" />
               <CpuChipIcon className="h-10 w-10 text-orange-400 relative z-10" />
               <span className="absolute -bottom-1.5 right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#09090b] shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             </div>
@@ -260,8 +260,8 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
                 key={provider.id}
                 onMouseEnter={() => setActiveProvider(provider.id)}
                 onMouseLeave={() => setActiveProvider(null)}
-                className={`relative rounded-xl border bg-white/[0.02] p-4 transition-all duration-300 ${
-                  isActive ? "border-white/[0.15] -translate-y-1 shadow-2xl" : "border-white/[0.06]"
+                className={`relative rounded-xl border bg-white/2 p-4 transition-all duration-300 ${
+                  isActive ? "border-white/15 -translate-y-1 shadow-2xl" : "border-white/6"
                 }`}
                 style={isActive ? { boxShadow: `0 20px 60px ${colors.glow}` } : undefined}
               >
@@ -283,17 +283,17 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
 
                 {/* Stats strip */}
                 <div className="grid grid-cols-3 gap-1.5 mb-3">
-                  <div className="rounded bg-black/30 border border-white/[0.04] px-2 py-1.5">
+                  <div className="rounded-sm bg-black/30 border border-white/4 px-2 py-1.5">
                     <p className="text-[8px] text-zinc-500 uppercase tracking-wider">Resources</p>
                     <p className="text-xs font-bold text-white">{providerResources}</p>
                   </div>
-                  <div className="rounded bg-black/30 border border-white/[0.04] px-2 py-1.5">
+                  <div className="rounded-sm bg-black/30 border border-white/4 px-2 py-1.5">
                     <p className="text-[8px] text-zinc-500 uppercase tracking-wider">Findings</p>
                     <p className={`text-xs font-bold ${providerFindings > 5 ? "text-zinc-400" : providerFindings > 0 ? "text-white/80" : "text-emerald-400"}`}>
                       {providerFindings}
                     </p>
                   </div>
-                  <div className="rounded bg-black/30 border border-white/[0.04] px-2 py-1.5">
+                  <div className="rounded-sm bg-black/30 border border-white/4 px-2 py-1.5">
                     <p className="text-[8px] text-zinc-500 uppercase tracking-wider">Spend</p>
                     <p className="text-xs font-bold text-emerald-400">${(providerCost / 1000).toFixed(1)}k</p>
                   </div>
@@ -302,9 +302,9 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
                 {/* Region tree */}
                 <div className="space-y-2">
                   {provider.regions.map((region) => (
-                    <div key={region.id} className="rounded-lg bg-black/20 border border-white/[0.04] overflow-hidden">
+                    <div key={region.id} className="rounded-lg bg-black/20 border border-white/4 overflow-hidden">
                       {/* Region header */}
-                      <div className="px-2.5 py-2 flex items-center justify-between border-b border-white/[0.04]">
+                      <div className="px-2.5 py-2 flex items-center justify-between border-b border-white/4">
                         <div className="flex items-center gap-1.5">
                           <span className={`w-1.5 h-1.5 rounded-full ${STATUS_DOT[region.status]}`} />
                           <span className="text-[11px] font-semibold text-white">{region.code}</span>
@@ -343,7 +343,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
                 {provider.status !== "degraded" && (
                   <div className="absolute -top-px left-1/2 -translate-x-1/2 h-1 w-12 overflow-hidden rounded-b-full">
                     <div
-                      className={`h-full w-full bg-gradient-to-r from-transparent via-orange-400 to-transparent`}
+                      className={`h-full w-full bg-linear-to-r from-transparent via-orange-400 to-transparent`}
                       style={{ transform: `translateX(${scanPulse - 50}%)`, opacity: 0.6 }}
                     />
                   </div>
@@ -355,7 +355,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
       </div>
 
       {/* Footer legend */}
-      <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between flex-wrap gap-2 text-[10px]">
+      <div className="px-6 py-3 border-t border-white/6 bg-white/1 flex items-center justify-between flex-wrap gap-2 text-[10px]">
         <div className="flex items-center gap-x-4 gap-y-1 flex-wrap">
           <span className="flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />

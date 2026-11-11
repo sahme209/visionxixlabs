@@ -22,7 +22,7 @@ export function AccentMarker({
   const sizeClass = size === "sm" ? "h-2 w-2" : "h-3 w-3";
   return (
     <span
-      className={`inline-block rounded-sm shrink-0 ${sizeClass} ${colorClasses[color]} ${className}`}
+      className={`inline-block rounded-xs shrink-0 ${sizeClass} ${colorClasses[color]} ${className}`}
       aria-hidden
     />
   );

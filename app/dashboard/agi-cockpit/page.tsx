@@ -91,11 +91,11 @@ const SEVERITY_CLASS: Record<string, string> = {
 };
 
 const HEADLINE_TONE: Record<string, string> = {
-  critical: "border-rose-500/40 bg-rose-500/[0.05]",
-  high:     "border-rose-500/30 bg-rose-500/[0.04]",
-  medium:   "border-white/30 bg-white/[0.04]",
-  low:      "border-emerald-500/30 bg-emerald-500/[0.04]",
-  none:     "border-emerald-500/30 bg-emerald-500/[0.04]",
+  critical: "border-rose-500/40 bg-rose-500/5",
+  high:     "border-rose-500/30 bg-rose-500/4",
+  medium:   "border-white/30 bg-white/4",
+  low:      "border-emerald-500/30 bg-emerald-500/4",
+  none:     "border-emerald-500/30 bg-emerald-500/4",
 };
 
 interface RunNowReport {
@@ -190,15 +190,15 @@ export default function AgiCockpitPage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading cockpit…
         </div>
       )}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -207,7 +207,7 @@ export default function AgiCockpitPage() {
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -217,7 +217,7 @@ export default function AgiCockpitPage() {
           {/* Headline banner */}
           <div className={`rounded-2xl border ${HEADLINE_TONE[data.headline.highestSeverity] ?? HEADLINE_TONE.none} p-5 mb-6`}>
             <div className="flex items-center gap-3 flex-wrap">
-              <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded border ${SEVERITY_CLASS[data.headline.highestSeverity] ?? SEVERITY_CLASS.none}`}>
+              <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-sm border ${SEVERITY_CLASS[data.headline.highestSeverity] ?? SEVERITY_CLASS.none}`}>
                 {data.headline.highestSeverity === "none" ? "all clear" : `severity ${data.headline.highestSeverity}`}
               </span>
               <p className="text-[14px] font-semibold text-white flex-1 min-w-[200px]">{data.headline.callToAction}</p>
@@ -225,7 +225,7 @@ export default function AgiCockpitPage() {
                 type="button"
                 onClick={runNow}
                 disabled={runBusy}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-orange-500/40 bg-orange-500/[0.14] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
               >
                 <SparklesIcon className={`h-3.5 w-3.5 ${runBusy ? "animate-spin" : ""}`} />
                 {runBusy ? "Running…" : "Run AGI now"}
@@ -233,11 +233,11 @@ export default function AgiCockpitPage() {
               {data.headline.totalPending > 0 && (
                 <div className="flex gap-2">
                   <Link href="/dashboard/release-advisor"
-                        className="px-3 py-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] text-[11.5px] font-mono text-white hover:bg-white/[0.08]">
+                        className="px-3 py-1.5 rounded-md border border-white/8 bg-white/4 text-[11.5px] font-mono text-white hover:bg-white/8">
                     Release advisor →
                   </Link>
                   <Link href="/dashboard/policy-proposals"
-                        className="px-3 py-1.5 rounded-md border border-white/[0.08] bg-white/[0.04] text-[11.5px] font-mono text-white hover:bg-white/[0.08]">
+                        className="px-3 py-1.5 rounded-md border border-white/8 bg-white/4 text-[11.5px] font-mono text-white hover:bg-white/8">
                     Policy proposals →
                   </Link>
                 </div>
@@ -347,7 +347,7 @@ export default function AgiCockpitPage() {
 function EngineCard({ engine, icon, href }: { engine: EngineTelemetry; icon: React.ReactNode; href: string }) {
   const lastRun = engine.lastRunIso ? new Date(engine.lastRunIso).toLocaleString() : "never";
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/1.5 p-4">
       <div className="flex items-center gap-2 mb-2">
         <span className="text-orange-300">{icon}</span>
         <p className="text-[13px] font-semibold text-white">{engine.name}</p>
@@ -376,7 +376,7 @@ function Metric({ label, value, tone }: { label: string; value: number; tone: "e
     zinc:    "text-zinc-300",
   }[tone];
   return (
-    <div className="rounded border border-white/[0.06] bg-black/20 px-2 py-1">
+    <div className="rounded-sm border border-white/6 bg-black/20 px-2 py-1">
       <p className="text-zinc-500 uppercase tracking-[0.18em] text-[8px]">{label}</p>
       <p className={`${cls} text-[14px] font-bold`}>{value}</p>
     </div>
@@ -386,10 +386,10 @@ function Metric({ label, value, tone }: { label: string; value: number; tone: "e
 function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
   const tone =
     snapshot.aiAvailabilityPct >= 80
-      ? "border-emerald-500/[0.20] bg-emerald-500/[0.04]"
+      ? "border-emerald-500/20 bg-emerald-500/4"
       : snapshot.aiAvailabilityPct >= 50
-      ? "border-white/[0.20] bg-white/[0.04]"
-      : "border-rose-500/[0.20] bg-rose-500/[0.04]";
+      ? "border-white/20 bg-white/4"
+      : "border-rose-500/20 bg-rose-500/4";
   return (
     <Link href="/dashboard/agi-memory" className="block mb-6">
       <div className={`rounded-xl border p-3 ${tone} hover:brightness-110 transition`}>
@@ -407,7 +407,7 @@ function AvailabilityStrip({ snapshot }: { snapshot: AvailSnapshot }) {
           </div>
         </div>
         <div className="mt-2 h-1.5 rounded-full bg-black/40 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-orange-500 via-amber-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
+          <div className="h-full bg-linear-to-r from-orange-500 via-amber-500 to-cyan-400" style={{ width: `${snapshot.aiAvailabilityPct}%` }} />
         </div>
       </div>
     </Link>
@@ -432,12 +432,12 @@ function CompactCard({ severity, title, rationale, confidence, chip, meta, href,
 }) {
   return (
     <Link href={href}
-          className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 hover:border-white/[0.12] transition-colors">
+          className="block rounded-xl border border-white/6 bg-white/2 p-3 hover:border-white/12 transition-colors">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[severity] ?? SEVERITY_CLASS.unknown}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[severity] ?? SEVERITY_CLASS.unknown}`}>
           {severity}
         </span>
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/8 bg-white/2 text-zinc-300">
           {chip}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">confidence {confidence}%</span>

@@ -89,7 +89,7 @@ export function ApprovalDecisionButtons({ approvalId, status, myVote, approvedCo
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why are you rejecting? (1 line)"
           autoFocus
-          className="w-full rounded-md border border-rose-500/30 bg-rose-500/[0.05] px-2 py-1 text-[11px] text-rose-100 placeholder:text-rose-300/40 focus:outline-none focus:border-rose-500/60"
+          className="w-full rounded-md border border-rose-500/30 bg-rose-500/5 px-2 py-1 text-[11px] text-rose-100 placeholder:text-rose-300/40 focus:outline-hidden focus:border-rose-500/60"
         />
         <div className="flex items-center gap-1.5">
           <button

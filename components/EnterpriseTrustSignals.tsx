@@ -49,7 +49,7 @@ const GOVERNANCE = [
 export function EnterpriseTrustSignals() {
   return (
     <section
-      className="py-24 px-4 sm:px-6 lg:px-8 border-t border-white/[0.04] relative overflow-hidden"
+      className="py-24 px-4 sm:px-6 lg:px-8 border-t border-white/4 relative overflow-hidden"
       aria-labelledby="trust-signals-heading"
     >
       {/* Grid mesh background */}
@@ -61,7 +61,7 @@ export function EnterpriseTrustSignals() {
           <div className="text-center mb-14">
             <p className="mono-label inline-flex items-center gap-3 mb-5">
               <span className="text-brand-coral/90 tabular-nums">EG</span>
-              <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+              <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
               Enterprise governance
             </p>
             <h2
@@ -71,7 +71,7 @@ export function EnterpriseTrustSignals() {
               Powerful automation.<br className="hidden sm:block" />
               <span className="relative inline-block">
                 Explicit human authority.
-                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+                <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
               </span>
             </h2>
             <p className="text-zinc-400 max-w-lg mx-auto leading-relaxed">
@@ -85,7 +85,7 @@ export function EnterpriseTrustSignals() {
             <AnimateOnScroll key={block.title} delay={idx * 100}>
               <div className="surface-glass rounded-xl p-6 hover:border-brand-coral/20 hover:-translate-y-0.5 transition-all duration-300">
                 <div className="flex items-center gap-2.5 mb-4">
-                  <div className="p-1.5 rounded-lg bg-brand-coral/[0.08] border border-brand-coral/15">
+                  <div className="p-1.5 rounded-lg bg-brand-coral/8 border border-brand-coral/15">
                     {block.icon}
                   </div>
                   <h3 className="text-sm font-semibold tracking-tight">

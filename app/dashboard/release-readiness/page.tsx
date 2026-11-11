@@ -90,19 +90,19 @@ export default function ReleaseReadinessPage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading readiness snapshots…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -112,7 +112,7 @@ export default function ReleaseReadinessPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -127,13 +127,13 @@ export default function ReleaseReadinessPage() {
           </div>
 
           {data.releases.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No releases tracked yet. Connect a Git provider + run a sync to populate this view.
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {data.releases.map((r) => (
-                <div key={r.releaseId} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={r.releaseId} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
                       <p className="text-[13px] font-semibold text-white truncate">{r.releaseTag ?? "(untagged)"}</p>
@@ -142,12 +142,12 @@ export default function ReleaseReadinessPage() {
                     </div>
                     {r.hasSnapshot && r.riskLevel ? (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${RISK_CLASS[r.riskLevel]}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${RISK_CLASS[r.riskLevel]}`}>
                           {r.riskLevel}
                         </span>
                         <span className="text-[12px] font-mono text-white">{r.overallScore}/100</span>
                         {r.blockerCount > 0 && (
-                          <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+                          <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
                             {r.blockerCount} blocker{r.blockerCount === 1 ? "" : "s"}
                           </span>
                         )}
@@ -176,10 +176,10 @@ export default function ReleaseReadinessPage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof ChartBarIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

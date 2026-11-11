@@ -21,7 +21,7 @@ export function DesktopPreviewFrame({ view, children }: { view: PreviewView; chi
         <div className="mt-6 space-y-6">{CUSTOMER_NAVIGATION.map(group => <div key={group.kind}>
           <p className="px-2 text-[10px] text-zinc-400">{group.label}</p>
           <ul className="mt-2 space-y-1">{group.items.map(item => <li key={item.id} className={`flex items-center gap-2 border-l-2 px-2 py-2 text-[11px] ${item.id === view ? "border-zinc-100 text-zinc-100" : "border-transparent text-zinc-400"}`}>
-            <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-sm border border-current" /><span>{item.label}</span>
+            <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-xs border border-current" /><span>{item.label}</span>
           </li>)}</ul>
         </div>)}</div>
         <p className="mt-8 border-t border-white/[0.07] px-2 pt-3 text-[10px] leading-5 text-zinc-400">Illustrated navigation.<br />No connected account.</p>

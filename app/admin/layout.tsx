@@ -24,7 +24,7 @@ export default async function AdminLayout({
       {/* Background pattern */}
       <div className="bg-grid-mesh absolute inset-0 pointer-events-none" />
 
-      <header className="relative z-10 border-b border-white/[0.06] bg-white/[0.02] backdrop-blur-sm">
+      <header className="relative z-10 border-b border-white/6 bg-white/2 backdrop-blur-sm">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
           <div className="flex items-center gap-6">
             <Link href="/admin/leads" className="flex items-center gap-2 font-bold text-white tracking-[-0.04em]">

@@ -16,10 +16,10 @@ export function ComparisonTable({ title, rows }: ComparisonTableProps) {
       <p className="text-zinc-400 mb-6 max-w-3xl">
         High-level comparison across providers. We tailor implementation to the platform you use.
       </p>
-      <div className="border border-white/[0.06] rounded-xl overflow-hidden">
+      <div className="border border-white/6 rounded-xl overflow-hidden">
         <table className="w-full text-left text-sm">
           <thead>
-            <tr className="bg-white/[0.03]/80 border-b border-white/[0.06]">
+            <tr className="bg-white/[0.03]/80 border-b border-white/6">
               <th className="px-4 py-3 font-semibold text-white w-1/4">
                 Dimension
               </th>
@@ -38,7 +38,7 @@ export function ComparisonTable({ title, rows }: ComparisonTableProps) {
             {rows.map((row) => (
               <tr
                 key={row.dimension}
-                className="border-b border-white/[0.06] last:border-0"
+                className="border-b border-white/6 last:border-0"
               >
                 <td className="px-4 py-3 font-medium text-zinc-300">
                   {row.dimension}

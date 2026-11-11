@@ -103,7 +103,7 @@ export function CodingTaskForm() {
       </div>
 
       {state.kind === "error" && (
-        <p className="rounded-lg border border-rose-500/30 bg-rose-500/[0.06] px-3 py-2 text-[12px] text-rose-200">
+        <p className="rounded-lg border border-rose-500/30 bg-rose-500/6 px-3 py-2 text-[12px] text-rose-200">
           <ExclamationTriangleIcon className="h-3.5 w-3.5 inline mr-1.5 -mt-0.5" />
           {state.message}
         </p>

@@ -92,7 +92,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
       <SandboxNavigation />
       <main className="max-w-6xl mx-auto px-4 sm:px-6 py-10 space-y-8">
       {/* Sandbox marker — pinned, calm. */}
-      <div className="rounded-lg border border-orange-500/20 bg-orange-500/[0.04] px-3 py-2 flex items-center gap-2">
+      <div className="rounded-lg border border-orange-500/20 bg-orange-500/4 px-3 py-2 flex items-center gap-2">
         <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
         <span className="text-[10px] font-mono text-orange-200/90 uppercase tracking-[0.22em]">
           sandbox · example data only · not your workspace
@@ -122,12 +122,12 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
         {(engineers.length > 0 || connectors.length > 0) && (
           <div className="flex flex-wrap gap-1.5">
             {engineers.map((e) => (
-              <span key={e} className="text-[10px] font-mono px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/[0.04] text-orange-200/90">
+              <span key={e} className="text-[10px] font-mono px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/4 text-orange-200/90">
                 engineer · {e}
               </span>
             ))}
             {connectors.map((c) => (
-              <span key={c} className="text-[10px] font-mono px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/[0.04] text-orange-200/90">
+              <span key={c} className="text-[10px] font-mono px-2 py-1 rounded-full border border-orange-500/25 bg-orange-500/4 text-orange-200/90">
                 connector · {c}
               </span>
             ))}
@@ -135,7 +135,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
         )}
 
         {/* Read-first doc + every doc the scenario covers. */}
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 space-y-2">
+        <div className="rounded-xl border border-white/6 bg-white/1.5 p-4 space-y-2">
           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">read first</p>
           <Link
             href={primaryDoc.href}
@@ -150,7 +150,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                 <Link
                   key={d.href}
                   href={d.href}
-                  className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/[0.06] bg-white/[0.02] text-zinc-300 hover:bg-white/[0.05] hover:text-white transition-colors"
+                  className="text-[10px] font-mono px-2 py-0.5 rounded-full border border-white/6 bg-white/2 text-zinc-300 hover:bg-white/5 hover:text-white transition-colors"
                   title={d.blurb}
                 >
                   {d.title}
@@ -163,7 +163,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
 
       {/* Architecture diagram — ASCII flow, no chart library. */}
       {diagram && (
-        <section className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4 sm:p-5 space-y-2">
+        <section className="rounded-xl border border-white/6 bg-white/1.5 p-4 sm:p-5 space-y-2">
           <div className="flex items-center justify-between gap-3">
             <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">data flow</p>
             <p className="text-[10px] font-mono text-zinc-600">scenario architecture</p>
@@ -182,7 +182,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
               <span className="text-zinc-700">/</span>
               <span>{scenario.steps.length}</span>
               <span className="text-zinc-700 mx-1">·</span>
-              <span className={`px-1.5 py-0.5 rounded border ${APPROVAL_TONE[step.approval].cls}`}>{APPROVAL_TONE[step.approval].label}</span>
+              <span className={`px-1.5 py-0.5 rounded-sm border ${APPROVAL_TONE[step.approval].cls}`}>{APPROVAL_TONE[step.approval].label}</span>
             </div>
             <div className="flex items-center gap-2">
               <NavButton onClick={prev} disabled={activeOrd === 0}>← Prev</NavButton>
@@ -204,7 +204,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
 
           {/* Illustrative endpoint payloads — no request is sent here. */}
           {endpoint && (
-            <div className="rounded-xl border border-orange-500/15 bg-orange-500/[0.03] p-4 space-y-2">
+            <div className="rounded-xl border border-orange-500/15 bg-orange-500/3 p-4 space-y-2">
               <div className="flex items-baseline gap-2 flex-wrap">
                 <p className="text-[10px] font-mono text-orange-300/90 uppercase tracking-[0.22em]">Illustrative API reference</p>
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
@@ -220,7 +220,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
               {endpoint.reqBody && (
                 <div>
                   <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">Example request body</p>
-                  <pre className="rounded-lg bg-black/50 border border-white/[0.06] p-2.5 text-[10.5px] font-mono leading-relaxed overflow-x-auto text-zinc-200">{endpoint.reqBody}</pre>
+                  <pre className="rounded-lg bg-black/50 border border-white/6 p-2.5 text-[10.5px] font-mono leading-relaxed overflow-x-auto text-zinc-200">{endpoint.reqBody}</pre>
                 </div>
               )}
               <div>
@@ -232,7 +232,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                   <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1.5">closed-union errors</p>
                   <div className="flex flex-wrap gap-1.5">
                     {endpoint.errorCodes.map((c) => (
-                      <code key={c} className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-red-500/10 text-red-200 border border-red-500/20">{c}</code>
+                      <code key={c} className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm bg-red-500/10 text-red-200 border border-red-500/20">{c}</code>
                     ))}
                   </div>
                 </div>
@@ -244,14 +244,14 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           )}
 
           {/* Knowledge card — "behind the scenes" educational copy */}
-          <div className="rounded-xl border border-orange-500/15 bg-orange-500/[0.03] p-4 space-y-1.5">
+          <div className="rounded-xl border border-orange-500/15 bg-orange-500/3 p-4 space-y-1.5">
             <p className="text-[10px] font-mono text-orange-300/90 uppercase tracking-[0.22em]">{knowledge.title}</p>
             <p className="text-[13px] text-zinc-300 leading-relaxed max-w-3xl">{knowledge.body}</p>
           </div>
 
           {/* Safety invariants — what's guaranteed during this step */}
           {invariants.length > 0 && (
-            <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/[0.03] p-4 space-y-2">
+            <div className="rounded-xl border border-emerald-500/15 bg-emerald-500/3 p-4 space-y-2">
               <p className="text-[10px] font-mono text-emerald-300/90 uppercase tracking-[0.22em]">safety invariants in play</p>
               <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1.5">
                 {invariants.map((inv) => (
@@ -268,7 +268,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           )}
 
           {/* Expected result */}
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-4">
+          <div className="rounded-xl border border-white/6 bg-white/1.5 p-4">
             <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em] mb-1">expected result</p>
             <p className="text-[13px] text-zinc-200 leading-relaxed max-w-3xl">{step.expectedResult}</p>
           </div>
@@ -277,21 +277,21 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             {step.route && (step.route.startsWith("/dashboard") ? (
               // /dashboard/* is desktop-app territory in the browser; show where it lives instead of a link that bounces.
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3">
+              <div className="rounded-xl border border-white/6 bg-white/1.5 p-3">
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">in the desktop app</p>
                 <p className="text-[12px] text-zinc-400">This step happens in Axiom Agent. <Link href="/download" className="text-orange-200/90 underline underline-offset-2">Download</Link></p>
               </div>
             ) : (
               <Link
                 href={step.route.startsWith("/control") ? `/auth/signin?callbackUrl=${encodeURIComponent(step.route)}` : step.route}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.015] hover:border-orange-500/25 hover:bg-orange-500/[0.04] p-3 transition-colors group"
+                className="block rounded-xl border border-white/6 bg-white/1.5 hover:border-orange-500/25 hover:bg-orange-500/4 p-3 transition-colors group"
               >
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">{step.route.startsWith("/control") ? "in your workspace · sign-in required" : "platform route"}</p>
                 <p className="text-[12px] font-mono text-orange-200/90 group-hover:text-orange-100 transition-colors break-all">{step.route} →</p>
               </Link>
             ))}
             {stepDocs.length > 0 && (
-              <div className="rounded-xl border border-white/[0.06] bg-white/[0.015] p-3">
+              <div className="rounded-xl border border-white/6 bg-white/1.5 p-3">
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1.5">read more</p>
                 <div className="flex flex-wrap gap-1.5">
                   {stepDocs.map((d) => (
@@ -339,9 +339,9 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
                     type="button"
                     onClick={() => setActiveOrd(i)}
                     className={`w-full text-left flex items-start gap-2.5 px-2.5 py-2 rounded-lg transition-colors ${
-                      isActive ? "bg-orange-500/[0.08] border border-orange-500/25" :
-                      isDone   ? "bg-white/[0.015] border border-emerald-500/15 hover:bg-white/[0.03]" :
-                                 "bg-white/[0.01] border border-white/[0.04] hover:bg-white/[0.03]"
+                      isActive ? "bg-orange-500/8 border border-orange-500/25" :
+                      isDone   ? "bg-white/1.5 border border-emerald-500/15 hover:bg-white/3" :
+                                 "bg-white/1 border border-white/4 hover:bg-white/3"
                     }`}
                   >
                     <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-mono shrink-0 ${
@@ -369,7 +369,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
       </div>
 
       {/* Closing knowledge — engineering principle takeaway */}
-      <section className="rounded-2xl border border-white/[0.06] bg-gradient-to-br from-white/[0.02] to-transparent p-5 sm:p-6 space-y-2">
+      <section className="rounded-2xl border border-white/6 bg-linear-to-br from-white/2 to-transparent p-5 sm:p-6 space-y-2">
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.22em]">engineering principle</p>
         <p className="text-[14px] text-zinc-200 leading-relaxed max-w-3xl">{closer}</p>
         <div className="flex flex-wrap gap-3 pt-2">
@@ -394,7 +394,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
 
 function FactCell({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/[0.06] bg-white/[0.015] px-3 py-2">
+    <div className="rounded-lg border border-white/6 bg-white/1.5 px-3 py-2">
       <div className="text-[9px] font-mono text-zinc-500 uppercase tracking-[0.18em]">{label}</div>
       <div className="text-[13px] font-mono text-zinc-200 mt-0.5">{value}</div>
     </div>
@@ -409,7 +409,7 @@ function NavButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="px-3 py-1.5 rounded-md border border-white/[0.08] bg-white/[0.02] text-zinc-200 text-[12px] font-medium hover:bg-white/[0.06] hover:border-white/[0.14] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+      className="px-3 py-1.5 rounded-md border border-white/8 bg-white/2 text-zinc-200 text-[12px] font-medium hover:bg-white/6 hover:border-white/[0.14] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
     >
       {children}
     </button>

@@ -36,7 +36,7 @@ export default function ReleaseClosureDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -44,7 +44,7 @@ export default function ReleaseClosureDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -64,7 +64,7 @@ export default function ReleaseClosureDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Release Closure</h1>
 
         <div className="space-y-6">
@@ -75,10 +75,10 @@ export default function ReleaseClosureDetailPage() {
             <div
               className={`rounded-2xl border p-5 ${
                 isClosed
-                  ? "border-emerald-500/[0.25] bg-emerald-500/[0.04]"
+                  ? "border-emerald-500/25 bg-emerald-500/4"
                   : isTerminated
-                    ? "border-rose-500/[0.25] bg-rose-500/[0.04]"
-                    : "border-zinc-500/[0.25] bg-zinc-500/[0.04]"
+                    ? "border-rose-500/25 bg-rose-500/4"
+                    : "border-zinc-500/25 bg-zinc-500/4"
               }`}
             >
               <p className={`text-[14px] font-semibold uppercase tracking-wider ${
@@ -95,20 +95,20 @@ export default function ReleaseClosureDetailPage() {
           </section>
 
           {isClosed ? (
-            <div className="rounded-2xl border border-emerald-500/[0.15] bg-emerald-500/[0.04] p-4">
+            <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-4">
               <p className="text-[12px] text-emerald-200">
                 ✓ This release has been completed and closed. All stages are finished.
               </p>
             </div>
           ) : isTerminated ? (
-            <div className="rounded-2xl border border-rose-500/[0.15] bg-rose-500/[0.04] p-4">
+            <div className="rounded-2xl border border-rose-500/15 bg-rose-500/4 p-4">
               <p className="text-[12px] text-rose-200">
                 This release failed or was rolled back. Its lifecycle has ended without a successful
                 deployment — it will not progress further without a new release.
               </p>
             </div>
           ) : (
-            <div className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
+            <div className="rounded-2xl border border-cyan-500/15 bg-cyan-500/4 p-4">
               <p className="text-[12px] text-cyan-200">
                 💡 This release is still in progress. It will be marked as closed once all stages
                 (execution, validation, evidence) are complete.

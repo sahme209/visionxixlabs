@@ -54,7 +54,7 @@ function statusTone(status: string): string {
     case "blocked":   return "text-rose-300 bg-rose-500/10 border-rose-500/25";
     case "completed": return "text-emerald-300 bg-emerald-500/10 border-emerald-500/25";
     case "failed":    return "text-rose-300 bg-rose-500/10 border-rose-500/25";
-    case "preview":   return "text-orange-300 bg-orange-500/10 border-white/[0.10]";
+    case "preview":   return "text-orange-300 bg-orange-500/10 border-white/10";
     case "planned":   return "text-zinc-300 bg-zinc-500/10 border-zinc-500/25";
     default:          return "text-zinc-300 bg-zinc-500/10 border-zinc-500/25";
   }
@@ -95,7 +95,7 @@ export default async function AutonomousOpsPage() {
           <span className="text-[10px] font-mono text-zinc-500">observe → reason → plan → validate → govern → approve → prepare → verify → audit → remember</span>
         </div>
         <h1 className="text-3xl md:text-4xl font-bold tracking-[-0.04em] mb-2">
-          The <span className="bg-gradient-to-r from-orange-300 via-amber-300 to-cyan-300 bg-clip-text text-transparent">autonomous</span> operations loop.
+          The <span className="bg-linear-to-r from-orange-300 via-amber-300 to-cyan-300 bg-clip-text text-transparent">autonomous</span> operations loop.
         </h1>
         <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
           Axiom moves toward A-to-Z cloud operations through one coordinated loop. Every action is approval-gated and reversible. Preview / planned / blocked surfaces are labelled honestly.
@@ -106,7 +106,7 @@ export default async function AutonomousOpsPage() {
       <RunOperatingLoopPanel />
 
       {/* ── Brain headline strip ─────────────────────────────────── */}
-      <section className="rounded-2xl border border-white/[0.07] bg-gradient-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-6">
+      <section className="rounded-2xl border border-white/[0.07] bg-linear-to-br from-[#0d0d12] via-[#0a0a0f] to-[#08080c] p-6">
         <div className="flex flex-wrap items-start justify-between gap-6 mb-5">
           <div>
             <p className="text-[10px] font-mono text-orange-300 uppercase tracking-[0.22em] mb-2">// brain</p>
@@ -121,7 +121,7 @@ export default async function AutonomousOpsPage() {
         </div>
 
         {/* Loop visualisation */}
-        <div className="grid grid-cols-5 md:grid-cols-10 gap-2 pt-4 border-t border-white/[0.05]">
+        <div className="grid grid-cols-5 md:grid-cols-10 gap-2 pt-4 border-t border-white/5">
           {LOOP_STEPS.map(({ key, label, Icon, tone }) => (
             <div key={key} className="flex flex-col items-center text-center">
               <Icon className={`h-4 w-4 mb-1.5 ${tone}`} />
@@ -142,7 +142,7 @@ export default async function AutonomousOpsPage() {
       {/* ── Two-column body ───────────────────────────────────────── */}
       <section className="grid lg:grid-cols-3 gap-5">
         {/* Next actions */}
-        <div className="lg:col-span-2 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+        <div className="lg:col-span-2 rounded-2xl border border-white/6 bg-white/1.5 p-6">
           <SectionHeader Icon={BoltIcon} title="What Axiom can do next" tone="text-orange-300" />
           {nextActions.length === 0 && (
             <p className="text-sm text-zinc-500">No high-leverage next action right now — connect a provider to start the loop.</p>
@@ -151,12 +151,12 @@ export default async function AutonomousOpsPage() {
             {nextActions.map((node) => {
               const href = node.evidence.find((e) => e.label === "href")?.ref;
               return (
-                <li key={node.id} className="flex items-start justify-between gap-4 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <li key={node.id} className="flex items-start justify-between gap-4 rounded-xl border border-white/6 bg-white/2 p-4">
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-white">{node.title}</p>
                     {node.detail && <p className="text-xs text-zinc-500 mt-1">{node.detail}</p>}
                     <div className="flex items-center gap-3 mt-2 text-[10px] font-mono">
-                      <span className={`px-1.5 py-0.5 rounded border ${statusTone(node.status)}`}>{node.status}</span>
+                      <span className={`px-1.5 py-0.5 rounded-sm border ${statusTone(node.status)}`}>{node.status}</span>
                       <span className={riskTone(node.risk)}>risk · {node.risk}</span>
                       <span className="text-zinc-600">source · {node.sourceMode}</span>
                     </div>
@@ -174,7 +174,7 @@ export default async function AutonomousOpsPage() {
 
         {/* Safety contract + memory */}
         <div className="space-y-5">
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
             <SectionHeader Icon={ShieldCheckIcon} title="Safety contract" tone="text-emerald-300" />
             <ul className="space-y-2 text-xs text-zinc-400">
               <li>✓ Destructive autonomy <span className="text-emerald-300">disabled</span></li>
@@ -184,7 +184,7 @@ export default async function AutonomousOpsPage() {
             </ul>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
             <SectionHeader Icon={ArrowPathIcon} title="Memory" tone="text-cyan-300" />
             <p className="text-xs text-zinc-400 leading-relaxed">{memory.narrative}</p>
             {memory.weights.preferredFixStyle !== "none" && (
@@ -195,15 +195,15 @@ export default async function AutonomousOpsPage() {
       </section>
 
       {/* ── Top risk graph nodes ──────────────────────────────────── */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+      <section className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
         <SectionHeader Icon={ExclamationTriangleIcon} title="Top risk in the execution graph" tone="text-zinc-300" />
         <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-3">
           {topRisk.map((n) => (
-            <div key={n.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <div key={n.id} className="rounded-xl border border-white/6 bg-white/2 p-4">
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">{n.type.replace(/_/g, " ")}</p>
               <p className="text-sm font-semibold text-white leading-snug mb-2">{n.title}</p>
               <div className="flex items-center gap-2 text-[10px] font-mono">
-                <span className={`px-1.5 py-0.5 rounded border ${statusTone(n.status)}`}>{n.status}</span>
+                <span className={`px-1.5 py-0.5 rounded-sm border ${statusTone(n.status)}`}>{n.status}</span>
                 <span className={riskTone(n.risk)}>{n.risk}</span>
               </div>
             </div>
@@ -213,12 +213,12 @@ export default async function AutonomousOpsPage() {
 
       {/* ── Coverage gaps + deep validation ──────────────────────── */}
       <section className="grid lg:grid-cols-2 gap-5">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
           <SectionHeader Icon={EyeIcon} title="Coverage gaps" tone="text-cyan-300" />
           <p className="text-xs text-zinc-500 mb-4">Honest map of what Axiom cannot do yet — guides the engineering roadmap.</p>
           <ul className="space-y-2">
             {gaps.gaps.slice(0, 6).map((g) => (
-              <li key={g.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.05] bg-white/[0.01] px-3 py-2">
+              <li key={g.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/1 px-3 py-2">
                 <div className="min-w-0">
                   <p className="text-xs font-semibold text-white truncate">{g.title}</p>
                   <p className="text-[10px] text-zinc-500 mt-0.5 truncate">{g.selfServeExplanation}</p>
@@ -234,7 +234,7 @@ export default async function AutonomousOpsPage() {
           </ul>
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
           <SectionHeader Icon={CheckCircleIcon} title="Deep validation" tone="text-emerald-300" />
           <p className="text-xs text-zinc-500 mb-4">{deep.narrative}</p>
           <div className="grid grid-cols-3 gap-3 text-[10px] font-mono mb-4">
@@ -254,13 +254,13 @@ export default async function AutonomousOpsPage() {
       </section>
 
       {/* ── Execution graph stats ─────────────────────────────────── */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+      <section className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
         <SectionHeader Icon={CpuChipIcon} title="Execution graph" tone="text-amber-300" />
         <GraphStats graph={graph} />
       </section>
 
       {/* ── Honest limitations ────────────────────────────────────── */}
-      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-5">
+      <section className="rounded-xl border border-white/20 bg-white/4 p-5">
         <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em] mb-2">Known limitations</p>
         <ul className="space-y-1 text-xs text-zinc-300">
           {brain.safeLimitations.map((line, i) => (
@@ -282,10 +282,10 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: stri
 }
 
 function Card({ title, value, tone, detail }: { title: string; value: string; tone: "orange" | "amber" | "rose" | "cyan"; detail: string }) {
-  const ring = tone === "orange" ? "border-white/[0.08]" : tone === "amber" ? "border-white/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
+  const ring = tone === "orange" ? "border-white/8" : tone === "amber" ? "border-white/20" : tone === "rose" ? "border-rose-500/20" : "border-cyan-500/20";
   const text = tone === "orange" ? "text-orange-300" : tone === "amber" ? "text-zinc-300" : tone === "rose" ? "text-rose-300" : "text-cyan-300";
   return (
-    <div className={`rounded-xl border ${ring} bg-white/[0.02] p-5`}>
+    <div className={`rounded-xl border ${ring} bg-white/2 p-5`}>
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{title}</p>
       <p className={`text-3xl font-bold ${text}`}>{value}</p>
       <p className="text-[11px] text-zinc-500 mt-2">{detail}</p>

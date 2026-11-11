@@ -287,7 +287,7 @@ export function DashboardSidebar() {
   return (
     <>
       {/* Desktop sidebar */}
-      <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:sticky lg:top-[57px] lg:self-start lg:h-[calc(100vh-57px)] lg:overflow-y-auto border-r border-white/[0.06] py-6 pr-2">
+      <aside className="hidden lg:flex lg:flex-col lg:w-60 lg:shrink-0 lg:sticky lg:top-[57px] lg:self-start lg:h-[calc(100vh-57px)] lg:overflow-y-auto border-r border-white/6 py-6 pr-2">
         <nav className="space-y-6 pl-2">
           {GROUPS.map((group) => {
             const isOpen = openGroups[group.label] !== false;
@@ -317,14 +317,14 @@ export function DashboardSidebar() {
                       return (
                         <li key={item.href} className="relative">
                           {active && (
-                            <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-gradient-to-b from-orange-400 to-orange-500" />
+                            <span aria-hidden className="absolute left-0 top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-linear-to-b from-orange-400 to-orange-500" />
                           )}
                           <Link
                             href={item.href}
                             className={`flex items-center gap-2.5 rounded-lg pl-4 pr-3 py-1.5 text-[12.5px] transition-all ${
                               active
-                                ? "text-white bg-white/[0.04]"
-                                : "text-zinc-400 hover:text-white hover:bg-white/[0.02]"
+                                ? "text-white bg-white/4"
+                                : "text-zinc-400 hover:text-white hover:bg-white/2"
                             }`}
                           >
                             <Icon className={`h-3.5 w-3.5 shrink-0 ${active ? "text-orange-300" : "text-zinc-500"}`} />
@@ -353,7 +353,7 @@ export function DashboardSidebar() {
 
       {/* Mobile horizontal nav strip — show non-power items only (the
           power-user routes are hidden on mobile to keep the strip short). */}
-      <div className="lg:hidden border-b border-white/[0.06] -mx-4 sm:-mx-6 mb-4 overflow-x-auto">
+      <div className="lg:hidden border-b border-white/6 -mx-4 sm:-mx-6 mb-4 overflow-x-auto">
         <nav className="flex items-center gap-1 px-4 sm:px-6 py-2 whitespace-nowrap">
           {GROUPS.flatMap((g) => g.items.filter((it) => !it.power)).map((item) => {
             const Icon = item.icon;
@@ -364,8 +364,8 @@ export function DashboardSidebar() {
                 href={item.href}
                 className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] border transition-colors ${
                   active
-                    ? "text-white border-white/[0.18]"
-                    : "text-zinc-500 border-white/[0.04] hover:text-zinc-200 hover:border-white/[0.10]"
+                    ? "text-white border-white/18"
+                    : "text-zinc-500 border-white/4 hover:text-zinc-200 hover:border-white/10"
                 }`}
               >
                 <Icon className="h-3 w-3 shrink-0" />

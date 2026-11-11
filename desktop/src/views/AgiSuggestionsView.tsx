@@ -140,7 +140,7 @@ export function AgiSuggestionsView() {
           type="button"
           onClick={generate}
           disabled={genBusy}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait"
         >
           ✦ {genBusy ? "Generating…" : "Generate suggestions"}
         </button>
@@ -233,16 +233,16 @@ function SuggestionCard({ suggestion, onChanged }: { suggestion: Suggestion; onC
   return (
     <div className="glass-card p-3 border border-violet-500/20">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-200">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-200">
           {KIND_LABEL[suggestion.kind] ?? suggestion.kind}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${confidenceClass(suggestion.confidence)}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${confidenceClass(suggestion.confidence)}`}>
           {suggestion.confidence}% confident
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${DECISION_CLASS[suggestion.operatorDecision]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${DECISION_CLASS[suggestion.operatorDecision]}`}>
           {suggestion.operatorDecision}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[suggestion.outcome] ?? OUTCOME_CLASS.unknown}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[suggestion.outcome] ?? OUTCOME_CLASS.unknown}`}>
           {suggestion.outcome}
         </span>
         {suggestion.modelHint && <span className="text-[10px] font-mono text-zinc-500">{suggestion.modelHint}</span>}
@@ -265,21 +265,21 @@ function SuggestionCard({ suggestion, onChanged }: { suggestion: Suggestion; onC
       )}
 
       {suggestion.operatorDecision === "pending" && (
-        <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional note"
             disabled={busy !== null}
-            className="flex-1 min-w-[140px] rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[140px] rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("act")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "act" ? "…" : "Act"}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
             {busy === "dismiss" ? "…" : "Dismiss"}
           </button>
           {err && <span className="text-rose-300">✗ {err}</span>}

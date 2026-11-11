@@ -82,7 +82,7 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
       </div>
 
       {/* Tightening invariant rail */}
-      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-6">
+      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-6">
         <header className="flex items-center gap-2 mb-2">
           <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Tightening rule</p>
@@ -99,7 +99,7 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
       </section>
 
       {/* Override form — client component, posts to /api/workforce/[id]/policy */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <PolicyOverrideForm
           engineerId={engineer.id}
           canonical={canonical}
@@ -108,7 +108,7 @@ export default async function EditEngineerPolicyPage({ params }: { params: Promi
         />
       </section>
 
-      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="rounded-2xl border border-white/15 bg-white/4 p-5">
         <header className="flex items-center gap-2 mb-2">
           <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">What happens when you save</p>

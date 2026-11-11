@@ -31,7 +31,7 @@ function GcpConnectionWorkspace({identity}:{identity:VerifiedDesktopIdentity}){
   try{const result=await client.cancel(state.attemptId,o.controller.signal);if(!owns()||revision!==o.revision)return;if(result.ok){setState(result.data);hold(result.data.status==='outcome_unknown'||result.data.status==='working')}else{setError(result.error);hold(true)}}finally{o.mutating=false;if(owns()&&revision===o.revision)setBusy(null)}
  }
  const idle=['not_connected','expired','cancelled'].includes(state.status);
- return <section aria-label="Google Cloud connection" className="rounded-xl border border-white/10 bg-white/[0.015] p-4">
+ return <section aria-label="Google Cloud connection" className="rounded-xl border border-white/10 bg-white/1.5 p-4">
   <div className="flex items-center justify-between gap-4"><div><h3 className="flex items-center gap-2 text-sm font-medium text-zinc-100"><ProviderLogo provider="gcp" />Google Cloud</h3><p className="mt-1 text-xs leading-5 text-zinc-400">Sign in, choose your project and return to Axiom.</p></div>{state.status==='connected_read_only'&&!error?<span className="text-xs text-zinc-300">Connected · read-only</span>:idle&&canManage?<button type="button" className="btn-primary" disabled={busy!==null||held} onClick={()=>void start()}>{busy==='start'?'Opening…':'Connect Google Cloud'}</button>:null}</div>
   {!canManage&&<p className="mt-3 text-xs text-zinc-400">Ask a workspace owner or administrator to connect Google Cloud.</p>}
   {state.status==='awaiting_consent'&&<p role="status" className="mt-3 text-xs text-zinc-300">Finish signing in with Google, then return here. Axiom checks the connection automatically.</p>}

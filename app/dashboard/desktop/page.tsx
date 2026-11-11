@@ -100,7 +100,7 @@ export default function DesktopDashboardPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -109,9 +109,9 @@ export default function DesktopDashboardPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
         <div className="flex items-center gap-3 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ComputerDesktopIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Desktop runtime · {sourceMode.replace(/_/g, " ")}
@@ -131,12 +131,12 @@ export default function DesktopDashboardPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing desktop state…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// state unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -177,12 +177,12 @@ export default function DesktopDashboardPage() {
           </section>
 
           {/* Local exec literal — TS-enforced */}
-          <section className="mb-8 rounded-2xl border border-emerald-500/[0.22] bg-emerald-500/[0.04] p-5 flex items-start gap-3">
+          <section className="mb-8 rounded-2xl border border-emerald-500/22 bg-emerald-500/4 p-5 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// safety contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug mb-1">
-                localExecutionStatus = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{state.localExecutionStatus}</code>
+                localExecutionStatus = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{state.localExecutionStatus}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed">
                 The TypeScript literal type prevents drift. No Terraform apply, no CLI apply, no cloud mutation, no GitHub mutation can be wired without rewriting the DesktopState contract.
@@ -204,10 +204,10 @@ export default function DesktopDashboardPage() {
                 const ok = p.publiclyDownloadable;
                 const partial = p.signed && !p.publiclyDownloadable;
                 const cardTone = ok
-                  ? "border-emerald-500/[0.22] bg-emerald-500/[0.04]"
+                  ? "border-emerald-500/22 bg-emerald-500/4"
                   : partial
-                    ? "border-cyan-500/[0.22] bg-cyan-500/[0.04]"
-                    : "border-zinc-700/30 bg-white/[0.02]";
+                    ? "border-cyan-500/22 bg-cyan-500/4"
+                    : "border-zinc-700/30 bg-white/2";
                 return (
                   <div key={p.platform} className={`rounded-2xl border ${cardTone} p-4 transition-colors hover:-translate-y-0.5`}>
                     <div className="flex items-center justify-between mb-3">
@@ -252,7 +252,7 @@ export default function DesktopDashboardPage() {
 
           {/* Limitations */}
           {state.limitations.length > 0 && (
-            <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <section className="mb-8 rounded-2xl border border-white/6 bg-white/2 p-5">
               <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">// limitations</p>
               <ul className="space-y-1">
                 {state.limitations.map((l, i) => (
@@ -267,14 +267,14 @@ export default function DesktopDashboardPage() {
 
           {/* Safe next action */}
           {state.safeNextAction && (
-            <section className="mb-8 flex items-center justify-between rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 gap-3">
+            <section className="mb-8 flex items-center justify-between rounded-2xl border border-orange-500/15 bg-white/1.5 p-5 gap-3">
               <div>
                 <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// next safe step</p>
                 <p className="text-[13px] text-white font-semibold">{state.safeNextAction.label}</p>
               </div>
               <Link
                 href={state.safeNextAction.href}
-                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-white border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors"
+                className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-white border border-white/12 hover:border-orange-500/50 bg-white/2.5 rounded-md px-3 py-1.5 transition-colors"
               >
                 Open <ArrowRightIcon className="h-3 w-3" />
               </Link>
@@ -288,10 +288,10 @@ export default function DesktopDashboardPage() {
 
 function RollupCard({ label, value, detail, tone }: { label: string; value: string; detail: string; tone: "emerald" | "amber" | "cyan" | "zinc" }) {
   const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
-    emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300" },
-    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300"   },
-    cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300"    },
-    zinc:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-300"    },
+    emerald: { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300" },
+    amber:   { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300"   },
+    cyan:    { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300"    },
+    zinc:    { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-300"    },
   };
   const t = toneClasses[tone];
   return (
@@ -311,7 +311,7 @@ function BadgeFlag({ label, good, amberIfBad }: { label: string; good: boolean; 
       : "bg-zinc-700/40 text-zinc-400";
   const Icon = good ? CheckCircleIcon : XCircleIcon;
   return (
-    <span className={`inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded ${cls}`}>
+    <span className={`inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded-sm ${cls}`}>
       <Icon className="h-3 w-3 shrink-0" />
       {label}
     </span>

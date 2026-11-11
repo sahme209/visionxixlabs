@@ -36,7 +36,7 @@ export function ConnectorsView({ onNavigate }: { onNavigate: (view: View) => voi
         </p>
       </div>
 
-      <div role="status" className="rounded-xl border border-white/25 bg-white/[0.08] p-4">
+      <div role="status" className="rounded-xl border border-white/25 bg-white/8 p-4">
         <p className="text-sm font-semibold text-zinc-200">Provider setup capabilities</p>
         <p className="mt-1 text-xs leading-5 text-zinc-400">
           Azure setup is available in this source candidate from Settings. This capability screen does not collect credentials or confirm provider acceptance.

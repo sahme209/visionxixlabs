@@ -160,13 +160,13 @@ function RecCard({ rec, onChanged }: { rec: RecommendationView; onChanged: () =>
   return (
     <div className="glass-card p-3 border border-violet-500/20">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[rec.severity]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[rec.severity]}`}>
           {rec.severity}
         </span>
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
           {KIND_LABEL[rec.kind]}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${DECISION_CLASS[rec.operatorDecision]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${DECISION_CLASS[rec.operatorDecision]}`}>
           {rec.operatorDecision}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">confidence {rec.confidence}%</span>
@@ -181,29 +181,29 @@ function RecCard({ rec, onChanged }: { rec: RecommendationView; onChanged: () =>
         <p className="text-[11px] font-mono text-zinc-400 mt-1 italic">↳ note: {rec.decisionNote}</p>
       )}
       {rec.operatorDecision === "pending" && (
-        <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
             value={note}
             onChange={(e) => setNote(e.target.value)}
             placeholder="optional decision note"
             disabled={busy !== null}
-            className="flex-1 min-w-[160px] rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[160px] rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "accept" ? "…" : "Accept"}
           </button>
           <button type="button" onClick={() => decide("implement")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-cyan-500/30 bg-cyan-500/[0.10] text-cyan-200 hover:bg-cyan-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-cyan-500/30 bg-cyan-500/10 text-cyan-200 hover:bg-cyan-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "implement" ? "…" : "Implemented"}
           </button>
           <button type="button" onClick={() => decide("reject")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.10] text-rose-200 hover:bg-rose-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "reject" ? "…" : "Reject"}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
             {busy === "dismiss" ? "…" : "Dismiss"}
           </button>
           {err && <span className="text-rose-300">✗ {err}</span>}
@@ -267,7 +267,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/8 text-[12px] font-semibold text-violet-200 hover:bg-violet-500/16 transition-colors"
         >
           ✨ Generate recommendations
         </button>
@@ -290,7 +290,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           onChange={(e) => setReleaseId(e.target.value)}
           placeholder="rel_..."
           disabled={busy}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="flex items-center gap-3">
@@ -298,7 +298,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !releaseId}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Generating…" : "Generate"}
         </button>

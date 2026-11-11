@@ -205,7 +205,7 @@ export function CommandPalette() {
       role="dialog"
       aria-modal="true"
       aria-label="Command palette"
-      className="fixed inset-0 z-[200] flex items-start justify-center pt-[12vh] px-4"
+      className="fixed inset-0 z-200 flex items-start justify-center pt-[12vh] px-4"
     >
       {/* Backdrop */}
       <button
@@ -218,7 +218,7 @@ export function CommandPalette() {
       {/* Modal */}
       <div className="surface-frost relative w-full max-w-xl rounded-2xl overflow-hidden shadow-[0_40px_100px_-30px_rgba(0,0,0,0.6)]">
         {/* Search row */}
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.06]">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/6">
           <MagnifyingGlassIcon className="h-4 w-4 text-brand-coral/85" />
           <input
             ref={inputRef}
@@ -227,14 +227,14 @@ export function CommandPalette() {
             onChange={(e) => { setQuery(e.target.value); setActiveIdx(0); }}
             onKeyDown={onKeyDown}
             placeholder="Search the site… type, then ↵"
-            className="flex-1 bg-transparent text-[14.5px] text-white placeholder:text-zinc-500 outline-none border-0 focus:ring-0"
+            className="flex-1 bg-transparent text-[14.5px] text-white placeholder:text-zinc-500 outline-hidden border-0 focus:ring-0"
             autoComplete="off"
             spellCheck={false}
           />
-          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 border border-white/[0.10] rounded px-1.5 py-0.5 tabular-nums">
+          <span className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 border border-white/10 rounded-sm px-1.5 py-0.5 tabular-nums">
             {results.length} / {COMMANDS.length}
           </span>
-          <kbd className="text-[10px] font-mono text-zinc-500 border border-white/[0.10] rounded px-1.5 py-0.5">ESC</kbd>
+          <kbd className="text-[10px] font-mono text-zinc-500 border border-white/10 rounded-sm px-1.5 py-0.5">ESC</kbd>
         </div>
 
         {/* Results */}
@@ -275,12 +275,12 @@ export function CommandPalette() {
         </div>
 
         {/* Footer — keyboard hints */}
-        <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-white/[0.06] text-[10px] font-mono text-zinc-500">
+        <div className="flex items-center justify-between gap-3 px-4 py-2 border-t border-white/6 text-[10px] font-mono text-zinc-500">
           <div className="flex items-center gap-2">
-            <kbd className="border border-white/[0.10] rounded px-1.5 py-0.5">↑</kbd>
-            <kbd className="border border-white/[0.10] rounded px-1.5 py-0.5">↓</kbd>
+            <kbd className="border border-white/10 rounded-sm px-1.5 py-0.5">↑</kbd>
+            <kbd className="border border-white/10 rounded-sm px-1.5 py-0.5">↓</kbd>
             <span>move</span>
-            <kbd className="border border-white/[0.10] rounded px-1.5 py-0.5 ml-2">↵</kbd>
+            <kbd className="border border-white/10 rounded-sm px-1.5 py-0.5 ml-2">↵</kbd>
             <span>open</span>
           </div>
           <span>
@@ -308,8 +308,8 @@ function Row({
       onClick={() => onSelect(cmd)}
       className={`w-full flex items-center gap-3 px-4 py-2.5 text-left transition-colors ${
         active
-          ? "bg-brand-coral/[0.08] text-white"
-          : "text-zinc-300 hover:bg-white/[0.03]"
+          ? "bg-brand-coral/8 text-white"
+          : "text-zinc-300 hover:bg-white/3"
       }`}
     >
       <Icon className={`h-4 w-4 shrink-0 ${active ? "text-brand-coral" : "text-zinc-400"}`} />

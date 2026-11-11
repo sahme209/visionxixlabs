@@ -26,7 +26,7 @@ export function TechStackSection({
         {groups.map((group) => (
           <div
             key={group.label}
-            className="card-hover bg-white/[0.02] rounded-xl p-5 shadow-lg border border-white/[0.06]"
+            className="card-hover bg-white/2 rounded-xl p-5 shadow-lg border border-white/6"
           >
             <h3 className="text-sm font-semibold text-zinc-500 uppercase tracking-wide mb-3">
               {group.label}

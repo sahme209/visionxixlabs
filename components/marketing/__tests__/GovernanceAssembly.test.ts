@@ -102,7 +102,7 @@ it('server renders seven distinct deployment objects and their named equivalent 
  expect(fallback.textContent).toContain('Production · held');expect(fallback.textContent).toContain('does not run or authorize a deployment');
 });
 
-it('commits a touch choice over an earlier focus preview even without a blur event',()=>{
+it("commits a touch choice over an earlier focus preview even without a blur event",()=>{
  render(createElement(GovernanceAssembly));
  fireEvent.focus(screen.getByRole('button',{name:'Inspect Review gate'}));
  const scene=screen.getByRole('img',{name:/Deployment constellation/});

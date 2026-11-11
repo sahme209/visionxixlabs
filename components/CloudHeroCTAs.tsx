@@ -11,7 +11,7 @@ export function CloudHeroCTAs() {
       <AnimatedButton
         href="#solutions-grid"
         variant="secondary"
-        className="bg-white/[0.02] backdrop-blur border-2 border-white/[0.06]"
+        className="bg-white/2 backdrop-blur-sm border-2 border-white/6"
       >
         View Solutions
       </AnimatedButton>

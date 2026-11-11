@@ -20,9 +20,9 @@ import {
 type Sentiment = "happy" | "neutral" | "frustrated";
 
 const SENTIMENTS: Array<{ key: Sentiment; label: string; icon: typeof FaceSmileIcon; tone: string }> = [
-  { key: "happy",      label: "Happy",      icon: FaceSmileIcon,  tone: "border-emerald-500/30 hover:bg-emerald-500/[0.08] text-emerald-300" },
-  { key: "neutral",    label: "Neutral",    icon: MinusCircleIcon, tone: "border-white/30 hover:bg-white/[0.08] text-zinc-300" },
-  { key: "frustrated", label: "Frustrated", icon: FaceFrownIcon,  tone: "border-rose-500/30 hover:bg-rose-500/[0.08] text-rose-300" },
+  { key: "happy",      label: "Happy",      icon: FaceSmileIcon,  tone: "border-emerald-500/30 hover:bg-emerald-500/8 text-emerald-300" },
+  { key: "neutral",    label: "Neutral",    icon: MinusCircleIcon, tone: "border-white/30 hover:bg-white/8 text-zinc-300" },
+  { key: "frustrated", label: "Frustrated", icon: FaceFrownIcon,  tone: "border-rose-500/30 hover:bg-rose-500/8 text-rose-300" },
 ];
 
 export function FeedbackWidget() {
@@ -87,7 +87,7 @@ export function FeedbackWidget() {
   return (
     <div className="fixed bottom-5 right-20 z-40">
       {open && (
-        <div role="dialog" aria-label="Send feedback" className="mb-2 w-[300px] rounded-2xl border border-white/[0.08] bg-zinc-950/95 backdrop-blur shadow-2xl p-4">
+        <div role="dialog" aria-label="Send feedback" className="mb-2 w-[300px] rounded-2xl border border-white/8 bg-zinc-950/95 backdrop-blur-sm shadow-2xl p-4">
           <div className="flex items-start justify-between gap-2 mb-3">
             <p className="text-[10px] font-mono text-amber-300/80 uppercase tracking-wider">// feedback</p>
             <button onClick={() => { setOpen(false); reset(); triggerRef.current?.focus(); }} className="text-zinc-400 hover:text-white">
@@ -112,7 +112,7 @@ export function FeedbackWidget() {
                       key={s.key}
                       onClick={() => setSentiment(s.key)}
                       className={`flex flex-col items-center gap-1 rounded-lg border p-2 transition ${s.tone} ${
-                        selected ? "bg-white/[0.05] ring-2 ring-white/30" : "bg-black/20"
+                        selected ? "bg-white/5 ring-2 ring-white/30" : "bg-black/20"
                       }`}
                     >
                       <SIcon className="h-4 w-4" />
@@ -129,7 +129,7 @@ export function FeedbackWidget() {
                 rows={4}
                 maxLength={2000}
                 placeholder="What's working? What's not?"
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-2.5 py-2 text-[12px] text-white focus:border-amber-400/60 focus:outline-none resize-none"
+                className="w-full rounded-lg border border-white/8 bg-black/30 px-2.5 py-2 text-[12px] text-white focus:border-amber-400/60 focus:outline-hidden resize-none"
               />
 
               {error && <p role="alert" aria-live="assertive" className="text-[11px] text-rose-300 mt-2">{error}</p>}
@@ -151,7 +151,7 @@ export function FeedbackWidget() {
         onClick={() => setOpen((v) => !v)}
         aria-label="Send feedback"
         aria-expanded={open}
-        className="rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/40 hover:bg-amber-500/30 p-2 shadow-lg backdrop-blur transition"
+        className="rounded-full bg-amber-500/20 text-amber-200 border border-amber-500/40 hover:bg-amber-500/30 p-2 shadow-lg backdrop-blur-sm transition"
       >
         <ChatBubbleLeftRightIcon className="h-5 w-5" />
       </button>

@@ -25,7 +25,7 @@ export function CTASection({
 }: CTASectionProps) {
   return (
     <section className="py-16">
-      <div className="max-w-4xl mx-auto bg-gradient-to-r from-zinc-600 to-orange-600 rounded-3xl px-8 py-12 text-center text-white shadow-2xl">
+      <div className="max-w-4xl mx-auto bg-linear-to-r from-zinc-600 to-orange-600 rounded-3xl px-8 py-12 text-center text-white shadow-2xl">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">{title}</h2>
         <p className="text-base md:text-lg text-zinc-100 mb-8">{subtitle}</p>
         <div className="flex flex-wrap justify-center gap-4">

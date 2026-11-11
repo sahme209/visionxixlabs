@@ -160,9 +160,9 @@ export function SurfaceExplainer({ surface }: { surface: ExplainerSurface }) {
   const ex = EXPLAINERS[surface];
 
   return (
-    <div className="mb-5 rounded-2xl border border-white/[0.10] bg-white/[0.015] p-4">
+    <div className="mb-5 rounded-2xl border border-white/10 bg-white/1.5 p-4">
       <div className="flex items-start gap-3">
-        <div className="w-8 h-8 rounded-lg bg-white/[0.04] border border-white/[0.12] flex items-center justify-center flex-shrink-0">
+        <div className="w-8 h-8 rounded-lg bg-white/4 border border-white/12 flex items-center justify-center shrink-0">
           <LightBulbIcon className="h-4 w-4 text-orange-300" />
         </div>
         <div className="flex-1 min-w-0">

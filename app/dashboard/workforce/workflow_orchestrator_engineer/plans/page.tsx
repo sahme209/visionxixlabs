@@ -61,23 +61,23 @@ export default async function WorkflowPlansPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/workflow_orchestrator_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} placeholder="e.g. Provision a new tenant workspace"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="workflowSpec" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">workflow spec</label>
             <textarea id="workflowSpec" name="workflowSpec" required rows={10} maxLength={6000} placeholder={"Describe the workflow. Steps, dependencies, what each step does, and the engineers it touches."}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="approvalPolicy" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">approval policy</label>
               <select id="approvalPolicy" name="approvalPolicy" defaultValue="per_step"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors">
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors">
                 <option value="auto">auto · advance without review</option>
                 <option value="per_step">per_step · operator reviews each step</option>
                 <option value="terminal">terminal · review only the final state</option>
@@ -86,7 +86,7 @@ export default async function WorkflowPlansPage() {
             <div>
               <label htmlFor="guardrailRequirements" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">guardrail requirements (optional)</label>
               <input id="guardrailRequirements" name="guardrailRequirements" maxLength={1000} placeholder="e.g. no destructive ops without snapshot"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -99,17 +99,17 @@ export default async function WorkflowPlansPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No orchestration plans yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Submit the form above to build the first one.</p>
         </div>
       ) : (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent plans · {decoded.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
               <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${WORKFLOW_ORCHESTRATOR_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${WORKFLOW_ORCHESTRATOR_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <span className={OUTCOME_TONE[d.outcome] ?? "text-zinc-400"}>{d.outcome.replace(/_/g, " ")}</span>
                     {d.duration && (<><span className="text-zinc-500">·</span><span className="text-zinc-400">{d.duration}</span></>)}

@@ -16,10 +16,10 @@ const CALLOUT_CONFIG: Record<
   CalloutVariant,
   { icon: typeof InformationCircleIcon; iconClass: string; bgClass: string; borderClass: string; labelClass: string; label: string }
 > = {
-  info: { icon: InformationCircleIcon, iconClass: "text-blue-400", bgClass: "bg-blue-500/[0.04]", borderClass: "border-blue-500/15", labelClass: "text-blue-400", label: "Info" },
-  safe: { icon: ShieldCheckIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/[0.04]", borderClass: "border-emerald-500/15", labelClass: "text-emerald-400", label: "Safe by default" },
-  warning: { icon: ExclamationTriangleIcon, iconClass: "text-zinc-400", bgClass: "bg-white/[0.04]", borderClass: "border-white/15", labelClass: "text-zinc-400", label: "Heads up" },
-  tip: { icon: LightBulbIcon, iconClass: "text-orange-400", bgClass: "bg-orange-500/[0.04]", borderClass: "border-orange-500/15", labelClass: "text-orange-400", label: "Tip" },
+  info: { icon: InformationCircleIcon, iconClass: "text-blue-400", bgClass: "bg-blue-500/4", borderClass: "border-blue-500/15", labelClass: "text-blue-400", label: "Info" },
+  safe: { icon: ShieldCheckIcon, iconClass: "text-emerald-400", bgClass: "bg-emerald-500/4", borderClass: "border-emerald-500/15", labelClass: "text-emerald-400", label: "Safe by default" },
+  warning: { icon: ExclamationTriangleIcon, iconClass: "text-zinc-400", bgClass: "bg-white/4", borderClass: "border-white/15", labelClass: "text-zinc-400", label: "Heads up" },
+  tip: { icon: LightBulbIcon, iconClass: "text-orange-400", bgClass: "bg-orange-500/4", borderClass: "border-orange-500/15", labelClass: "text-orange-400", label: "Tip" },
 };
 
 /** Inline trust/info/warning/tip callout used throughout docs. */
@@ -42,7 +42,7 @@ export function Callout({
           <p className={`text-[10px] font-semibold ${c.labelClass} uppercase tracking-wider mb-1`}>
             {title ?? c.label}
           </p>
-          <div className="text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/[0.06] [&_code]:rounded [&_code]:px-1.5 [&_code]:py-0.5">
+          <div className="text-sm text-zinc-300 leading-relaxed [&_a]:text-white [&_a]:underline [&_a:hover]:text-orange-300 [&_code]:font-mono [&_code]:text-[12px] [&_code]:bg-black/40 [&_code]:border [&_code]:border-white/6 [&_code]:rounded-sm [&_code]:px-1.5 [&_code]:py-0.5">
             {children}
           </div>
         </div>
@@ -82,7 +82,7 @@ export function Step({ number, title, children }: { number: number; title: strin
 /** Mono code block for shell snippets or config examples. */
 export function CodeBlock({ language, children }: { language?: string; children: string }) {
   return (
-    <pre className="rounded-lg bg-black/40 border border-white/[0.06] p-4 overflow-x-auto text-[12px] leading-relaxed text-zinc-200 my-4">
+    <pre className="rounded-lg bg-black/40 border border-white/6 p-4 overflow-x-auto text-[12px] leading-relaxed text-zinc-200 my-4">
       {language && (
         <span className="block text-[9px] text-zinc-600 uppercase tracking-widest mb-2 font-sans not-italic">
           {language}
@@ -135,7 +135,7 @@ export function TrustGrid({
   return (
     <div className="grid sm:grid-cols-2 gap-3 my-6">
       {items.map((item) => (
-        <div key={item.question} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div key={item.question} className="rounded-xl border border-white/6 bg-white/2 p-4">
           <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-2 inline-flex items-center gap-1.5">
             <CheckCircleIcon className="h-3 w-3" />
             {item.question}
@@ -156,11 +156,11 @@ export function DocFooterNav({
   next?: { href: string; label: string };
 }) {
   return (
-    <nav aria-label="Documentation pagination" className="mt-16 pt-6 border-t border-white/[0.06] grid sm:grid-cols-2 gap-3">
+    <nav aria-label="Documentation pagination" className="mt-16 pt-6 border-t border-white/6 grid sm:grid-cols-2 gap-3">
       {prev ? (
         <Link
           href={prev.href}
-          className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group"
+          className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all group"
         >
           <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5">
             <ArrowLeftIcon className="h-3 w-3" /> Previous
@@ -173,7 +173,7 @@ export function DocFooterNav({
       {next ? (
         <Link
           href={next.href}
-          className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group text-right sm:text-right"
+          className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all group text-right sm:text-right"
         >
           <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-1 inline-flex items-center gap-1.5 justify-end w-full">
             Next <ArrowRightIcon className="h-3 w-3" />
@@ -190,14 +190,14 @@ export function DocFooterNav({
 /** Bottom "Was this page helpful?" + contact card. */
 export function DocFeedback() {
   return (
-    <div className="mt-8 rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center justify-between flex-wrap gap-3">
+    <div className="mt-8 rounded-xl border border-white/6 bg-white/2 p-4 flex items-center justify-between flex-wrap gap-3">
       <div>
         <p className="text-sm font-semibold text-white mb-0.5">Still blocked?</p>
         <p className="text-xs text-zinc-500">Include the failed step and error. Never send a password, token, or cloud secret.</p>
       </div>
       <Link
         href="/contact"
-        className="inline-flex items-center gap-2 px-4 py-2 border border-white/[0.1] text-zinc-300 rounded-full text-xs font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
+        className="inline-flex items-center gap-2 px-4 py-2 border border-white/10 text-zinc-300 rounded-full text-xs font-semibold hover:bg-white/5 hover:border-white/20 transition-colors"
       >
         Open support request
         <ArrowRightIcon className="h-3.5 w-3.5" />

@@ -122,3 +122,7 @@ Main green and production build 4 (`a344f4f6`) verified. AWS 3.1166.0 is the fir
 ## November 11 AI SDK 7 candidate
 
 AWS PR #315 merged with all checks green before starting this batch. AI 7.0.170 / Gateway 4.0.143 moves the installed transport to the reviewed Vercel v4 URL; the text-only adapter explicitly disables automatic tool choice. Source, wire and streaming review evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. No paid model call, production change or offline provider fallback.
+
+## November 11 Tailwind migration and ESLint hold
+
+AWS #315 and AI SDK 7 #317 merged sequentially with green CI. ESLint 10 produced an invalid peer graph with the latest React/import/accessibility plugins; the owner chose to retain ESLint 9 and continue. Tailwind 4.3.5 now has a CSS-first web/desktop candidate, literal-only template migration, scoped scanners and browser cascade checks. No deployment or installer release. Full evidence and remaining browser/native limits: `../recovery/2026-11-11/tailwind4-upgrade/README.md`.

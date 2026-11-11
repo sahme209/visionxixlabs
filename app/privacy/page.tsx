@@ -12,7 +12,7 @@ export default function PrivacyPolicyPage() {
       <Navigation />
 
       <main className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] backdrop-blur-sm p-8 md:p-12">
+        <div className="rounded-2xl border border-white/6 bg-white/2 backdrop-blur-sm p-8 md:p-12">
           {/* Header */}
           <div className="text-center mb-12">
             <ShieldCheckIcon className="h-14 w-14 text-orange-400 mx-auto mb-4" />
@@ -84,7 +84,7 @@ export default function PrivacyPolicyPage() {
                   <li><strong>Notification Preferences:</strong> Your notification settings and preferences for reminders</li>
                   <li><strong>Usage Data:</strong> App features accessed, reminder interactions, error logs (for app improvement)</li>
                 </ul>
-                <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
+                <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
                   <strong>Important:</strong> All health and medication data you enter in RecallEase is stored locally on your device. We do not have access to your personal health information unless you explicitly choose to sync it to a cloud service (such as iCloud, if enabled).
                 </p>
               </div>
@@ -125,7 +125,7 @@ export default function PrivacyPolicyPage() {
                 <li><strong>Project Data:</strong> Requirements, specifications, deliverables, documentation created during engagements</li>
                 <li><strong>Communication Data:</strong> Emails, meeting notes, support tickets, and other communications related to engagements</li>
               </ul>
-              <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
+              <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
                 <strong>Enterprise Data Handling:</strong> We process your data only as necessary to provide consulting services. We do not access your production data unless explicitly required and authorized. All work is performed using role-based access in your cloud accounts. We do not store copies of your production data outside your cloud environment unless explicitly agreed in writing.
               </p>
             </div>
@@ -140,13 +140,13 @@ export default function PrivacyPolicyPage() {
               </p>
               <ul className="list-disc list-inside space-y-2 text-zinc-300 ml-4">
                 <li><strong>Cross-Account AssumeRole:</strong> You create an IAM role in your account that trusts our broker account. We assume this role using AWS STS with a unique External ID to prevent confused-deputy attacks.</li>
-                <li><strong>Read-Only Permissions:</strong> The IAM role is scoped to three permissions: <code className="bg-white/[0.06] px-1 rounded text-xs">ec2:Describe*</code>, <code className="bg-white/[0.06] px-1 rounded text-xs">s3:ListAllMyBuckets</code>, and <code className="bg-white/[0.06] px-1 rounded text-xs">sts:GetCallerIdentity</code>. We cannot modify, delete, or write to any resource in your account.</li>
+                <li><strong>Read-Only Permissions:</strong> The IAM role is scoped to three permissions: <code className="bg-white/6 px-1 rounded-sm text-xs">ec2:Describe*</code>, <code className="bg-white/6 px-1 rounded-sm text-xs">s3:ListAllMyBuckets</code>, and <code className="bg-white/6 px-1 rounded-sm text-xs">sts:GetCallerIdentity</code>. We cannot modify, delete, or write to any resource in your account.</li>
                 <li><strong>Temporary Credentials Only:</strong> STS session tokens are valid for 15 minutes and are used in-memory only. We do not store AWS access keys, secret keys, or session tokens.</li>
                 <li><strong>Encrypted Connector Storage:</strong> Your IAM Role ARN and External ID are encrypted at rest using AES-256-GCM. These are deleted immediately when you disconnect.</li>
                 <li><strong>Scan Results:</strong> We store aggregate data only — instance counts, bucket counts, region lists, and generated insights. No raw AWS API responses or resource-level details are persisted.</li>
                 <li><strong>Scan History:</strong> Up to 5 previous scan snapshots are retained for trend comparison. Older snapshots are automatically dropped.</li>
               </ul>
-              <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
+              <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
                 <strong>Revocation:</strong> You can revoke our access at any time by deleting the IAM role from your AWS console. For full technical details, see our <a href="/security" className="text-orange-400 hover:text-orange-300">Security page</a>.
               </p>
             </div>
@@ -205,7 +205,7 @@ export default function PrivacyPolicyPage() {
               <li>Comply with legal obligations and respond to legal requests</li>
               <li>Communicate with you about Services, updates, and relevant information (with opt-out options)</li>
             </ul>
-            <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
+            <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
               <strong>AI Model Training:</strong> We do not use your data (including enterprise client data, USCIS case information, or health data) to train AI models unless explicitly agreed in writing. We use third-party AI services (e.g., OpenAI, Azure OpenAI) only with appropriate data processing agreements and &ldquo;no training&rdquo; terms where available.
             </p>
           </section>
@@ -313,7 +313,7 @@ export default function PrivacyPolicyPage() {
                 <strong>With Your Consent:</strong> We may share information with your explicit consent or as directed by you
               </li>
             </ul>
-            <p className="text-zinc-500 text-sm mt-3 italic bg-white/[0.02] border border-white/[0.06] p-3 rounded-lg">
+            <p className="text-zinc-500 text-sm mt-3 italic bg-white/2 border border-white/6 p-3 rounded-lg">
               <strong>Enterprise Clients:</strong> A list of subprocessors used in consulting engagements is available upon request. We will notify you of material changes to subprocessors and provide an opportunity to object where contractually required.
             </p>
           </section>
@@ -434,7 +434,7 @@ export default function PrivacyPolicyPage() {
             <p className="text-zinc-300 leading-relaxed mb-3">
               If you have questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:
             </p>
-            <div className="bg-white/[0.02] border border-white/[0.06] rounded-lg p-4 mb-3">
+            <div className="bg-white/2 border border-white/6 rounded-lg p-4 mb-3">
               <p className="text-white font-semibold mb-2">
                 Vision XIX Labs LLC
               </p>
@@ -457,7 +457,7 @@ export default function PrivacyPolicyPage() {
           </section>
 
           {/* Footer Note */}
-          <div className="border-t border-white/[0.06] pt-6 mt-8">
+          <div className="border-t border-white/6 pt-6 mt-8">
             <p className="text-sm text-zinc-500 text-center">
               This Privacy Policy applies to all products and services offered by Vision XIX Labs LLC, including VisaNova and RecallEase mobile applications, our website, and cloud and AI engineering consulting services.
             </p>

@@ -14,7 +14,7 @@ export function DesktopShowcase() {
   return (
     <section className="px-6 py-24 lg:px-10 lg:py-32">
       <div className="mx-auto max-w-[1400px]">
-        <div className="grid items-end gap-8 border-t border-white/[0.08] pt-10 lg:grid-cols-[0.72fr_1.28fr]">
+        <div className="grid items-end gap-8 border-t border-white/8 pt-10 lg:grid-cols-[0.72fr_1.28fr]">
           <div>
             <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Axiom Desktop</p>
             <h2 className="mt-4 max-w-xl text-[clamp(2.4rem,4vw,4.5rem)] font-medium leading-[0.98] tracking-[-0.045em] text-white">
@@ -31,27 +31,27 @@ export function DesktopShowcase() {
                 <ArrowDownTrayIcon className="h-4 w-4" />
                 Download desktop app
               </Link>
-              <Link href="/demo" className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/[0.10] bg-white/[0.035] px-5 py-2.5 text-sm font-medium text-zinc-200 hover:bg-white/[0.07]">
+              <Link href="/demo" className="inline-flex min-h-11 items-center gap-2 rounded-full border border-white/10 bg-white/[0.035] px-5 py-2.5 text-sm font-medium text-zinc-200 hover:bg-white/[0.07]">
                 Explore the isolated demo <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="mt-16 overflow-hidden rounded-2xl border border-white/[0.09] bg-[#171817]">
+        <div className="mt-16 overflow-hidden rounded-2xl border border-white/9 bg-[#171817]">
           <div className="flex h-10 items-center border-b border-white/[0.07] px-4">
             <div className="flex gap-1.5" aria-hidden>
-              <span className="h-2.5 w-2.5 rounded-full bg-white/[0.12]" />
-              <span className="h-2.5 w-2.5 rounded-full bg-white/[0.12]" />
-              <span className="h-2.5 w-2.5 rounded-full bg-white/[0.12]" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/12" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/12" />
+              <span className="h-2.5 w-2.5 rounded-full bg-white/12" />
             </div>
             <p className="flex-1 text-center text-[11px] text-zinc-500">Axiom Agent · illustrative workspace</p>
           </div>
 
           <div className="grid min-h-[520px] lg:grid-cols-[250px_minmax(0,1fr)]">
             <aside className="border-b border-white/[0.07] bg-[#141515] p-4 lg:border-b-0 lg:border-r">
-              <div className="flex items-center gap-2.5 border-b border-white/[0.06] pb-4">
-                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/[0.10] bg-white/[0.04] text-sm font-semibold">A</span>
+              <div className="flex items-center gap-2.5 border-b border-white/6 pb-4">
+                <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/4 text-sm font-semibold">A</span>
                 <div>
                   <p className="text-sm font-semibold text-white">Axiom Agent</p>
                   <p className="text-[10px] text-zinc-500">Desktop workspace</p>
@@ -61,7 +61,7 @@ export function DesktopShowcase() {
                 <PreviewNavGroup label="Deployment" items={["Requests & playbooks"]} active="Requests & playbooks" />
                 <PreviewNavGroup label="Workspace" items={["Documentation", "Settings"]} />
               </nav>
-              <div className="mt-28 flex items-center gap-2 rounded-lg border border-white/[0.06] bg-white/[0.025] px-3 py-2.5 text-[11px] text-zinc-400">
+              <div className="mt-28 flex items-center gap-2 rounded-lg border border-white/6 bg-white/2.5 px-3 py-2.5 text-[11px] text-zinc-400">
                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
                 Production access active
               </div>
@@ -73,7 +73,7 @@ export function DesktopShowcase() {
                   <p className="text-sm font-semibold text-white">Requests & playbooks</p>
                   <p className="mt-0.5 text-[11px] text-zinc-500">Governed intake into a versioned deployment playbook</p>
                 </div>
-                <span className="rounded-lg border border-white/[0.08] bg-white/[0.03] px-3 py-1.5 text-[11px] text-zinc-300">Workspace verified</span>
+                <span className="rounded-lg border border-white/8 bg-white/3 px-3 py-1.5 text-[11px] text-zinc-300">Workspace verified</span>
               </header>
 
               <div className="p-6">
@@ -85,7 +85,7 @@ export function DesktopShowcase() {
                   <button type="button" className="rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-zinc-950">New request</button>
                 </div>
 
-                <div className="mt-6 rounded-xl border border-white/[0.08] bg-[#191a1a] p-5">
+                <div className="mt-6 rounded-xl border border-white/8 bg-[#191a1a] p-5">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <p className="text-sm font-semibold text-white">Production configuration rollout</p>
@@ -96,7 +96,7 @@ export function DesktopShowcase() {
 
                   <div className="mt-5 grid grid-cols-5 gap-2">
                     {workflowStages.map((stage, index) => (
-                      <div key={stage} className={`rounded-lg border px-2 py-2 text-center text-[10px] ${index < 3 ? "border-white/[0.10] bg-white/[0.05] text-zinc-200" : "border-white/[0.05] text-zinc-600"}`}>
+                      <div key={stage} className={`rounded-lg border px-2 py-2 text-center text-[10px] ${index < 3 ? "border-white/10 bg-white/5 text-zinc-200" : "border-white/5 text-zinc-600"}`}>
                         {index + 1}. {stage}
                       </div>
                     ))}
@@ -149,7 +149,7 @@ function PreviewNavGroup({ label, items, active }: { label: string; items: strin
 
 function Detail({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
-    <div className="rounded-lg border border-white/[0.06] bg-white/[0.025] p-3">
+    <div className="rounded-lg border border-white/6 bg-white/2.5 p-3">
       <Icon className="h-4 w-4 text-zinc-500" />
       <p className="mt-3 text-[10px] text-zinc-600">{label}</p>
       <p className="mt-0.5 text-[12px] text-zinc-300">{value}</p>

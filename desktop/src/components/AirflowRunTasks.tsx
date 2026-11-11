@@ -25,7 +25,7 @@ export function AirflowRunTasks({ dagId, runId }: { dagId: string; runId: string
     <button disabled={busy} onClick={() => void load(0)} className="underline disabled:opacity-40">{busy ? "Loading tasks…" : page ? "Refresh tasks" : "Inspect tasks"}</button>
     {error && <p role="alert">Task state could not be loaded. No execution outcome is confirmed.</p>}
     {page && <><p className="mt-2 text-zinc-400">{page.tasks.length ? `${page.offset + 1}–${page.offset + page.tasks.length}` : "0"} of {page.totalEntries} tasks · observed state only</p>
-      <ul>{page.tasks.map((task) => <li key={`${task.taskId}:${task.mapIndex}`} className="mt-2 break-words">{task.taskId}{task.mapIndex >= 0 ? ` [${task.mapIndex}]` : ""} · {task.state ?? "Not scheduled"} · try {task.tryNumber}</li>)}</ul>
+      <ul>{page.tasks.map((task) => <li key={`${task.taskId}:${task.mapIndex}`} className="mt-2 wrap-break-word">{task.taskId}{task.mapIndex >= 0 ? ` [${task.mapIndex}]` : ""} · {task.state ?? "Not scheduled"} · try {task.tryNumber}</li>)}</ul>
       {page.offset > 0 && <button disabled={busy} onClick={() => void load(Math.max(0, page.offset - 100))} className="mr-3 mt-2 underline">Previous task page</button>}
       {page.tasks.length > 0 && page.offset + page.tasks.length < page.totalEntries && <button disabled={busy} onClick={() => void load(page.offset + page.tasks.length)} className="mt-2 underline">Next task page</button>}
     </>}

@@ -92,23 +92,23 @@ export default async function IntegrationsPage({
       </header>
 
       {notice === "saved" && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="text-[12.5px] text-emerald-200 font-mono">integration saved</p>
         </section>
       )}
       {notice === "test_fired" && (
-        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-emerald-500/30 bg-emerald-500/6 p-4">
           <p className="text-[12.5px] text-emerald-200 font-mono">test issue fired — see recent actions below</p>
         </section>
       )}
       {error && (
-        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/[0.06] p-4">
+        <section className="mb-6 rounded-md border border-rose-500/30 bg-rose-500/6 p-4">
           <p className="text-[12.5px] text-rose-200 font-mono">error: {error}</p>
         </section>
       )}
 
       {/* GitHub config */}
-      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span>github-issue</span>
@@ -128,7 +128,7 @@ export default async function IntegrationsPage({
               maxLength={200}
               defaultValue={config.github?.repo ?? ""}
               placeholder="owner/repo"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             />
           </div>
           <div>
@@ -140,7 +140,7 @@ export default async function IntegrationsPage({
               maxLength={400}
               defaultValue={config.github?.patReference ?? "env://GITHUB_ACTION_PAT"}
               placeholder="env://GITHUB_ACTION_PAT or vault://..."
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             />
             <p className="text-[10.5px] text-zinc-500 mt-1 font-mono leading-relaxed">
               env://VAR reads process.env · vault://path reads VAULT_ADDR + VAULT_TOKEN (KV v1/v2, .data.value) · secretsmanager://name uses default AWS chain in AWS_REGION · azurekeyvault:// / gcpsecretmanager:// not yet wired
@@ -154,7 +154,7 @@ export default async function IntegrationsPage({
                 name="issueLabel"
                 maxLength={64}
                 defaultValue={config.github?.issueLabel ?? "axiom-finding"}
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
               />
             </div>
             <div>
@@ -163,7 +163,7 @@ export default async function IntegrationsPage({
                 id="enabled"
                 name="enabled"
                 defaultValue={config.github?.enabled === false ? "false" : "true"}
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
               >
                 <option value="true">yes</option>
                 <option value="false">paused</option>
@@ -182,7 +182,7 @@ export default async function IntegrationsPage({
       </section>
 
       {/* Slack actions config */}
-      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span>slack-actions</span>
@@ -205,7 +205,7 @@ export default async function IntegrationsPage({
               maxLength={400}
               defaultValue={config.slackActions?.webhookUrl ?? ""}
               placeholder="https://hooks.slack.com/services/T.../B.../..."
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             />
           </div>
           <div>
@@ -214,7 +214,7 @@ export default async function IntegrationsPage({
               id="slackEnabled"
               name="enabled"
               defaultValue={config.slackActions?.enabled === false ? "false" : "true"}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             >
               <option value="true">yes</option>
               <option value="false">paused</option>
@@ -230,7 +230,7 @@ export default async function IntegrationsPage({
 
       {/* Linear config */}
       <form id="linear-test-form" action="/api/workforce/integrations/linear/test" method="POST" />
-      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-8 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-emerald-300 mb-3 inline-flex items-center gap-2">
           <span className="text-zinc-700">//</span>
           <span>linear-ticket</span>
@@ -252,7 +252,7 @@ export default async function IntegrationsPage({
               maxLength={80}
               defaultValue={config.linear?.teamId ?? ""}
               placeholder="b3c2a1d4-e5f6-... (Linear team UUID)"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             />
           </div>
           <div>
@@ -264,7 +264,7 @@ export default async function IntegrationsPage({
               maxLength={400}
               defaultValue={config.linear?.apiKeyReference ?? "env://LINEAR_API_KEY"}
               placeholder="env://LINEAR_API_KEY or vault://kv/linear/api or secretsmanager://linear-key"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors"
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
             />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
@@ -275,7 +275,7 @@ export default async function IntegrationsPage({
                 name="labelName"
                 maxLength={64}
                 defaultValue={config.linear?.labelName ?? "axiom-finding"}
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] font-mono text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
               />
             </div>
             <div>
@@ -284,7 +284,7 @@ export default async function IntegrationsPage({
                 id="linearEnabled"
                 name="enabled"
                 defaultValue={config.linear?.enabled === false ? "false" : "true"}
-                className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 focus:outline-none focus:border-emerald-500/40 transition-colors"
+                className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 focus:outline-hidden focus:border-emerald-500/40 transition-colors"
               >
                 <option value="true">yes</option>
                 <option value="false">paused</option>
@@ -311,12 +311,12 @@ export default async function IntegrationsPage({
           <span className="text-zinc-400 tabular-nums">{executions.length}</span>
         </p>
         {executions.length === 0 ? (
-          <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-10 text-center">
+          <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-10 text-center">
             <p className="text-[13px] text-zinc-400">No actions executed yet.</p>
             <p className="text-[11px] text-zinc-500 mt-1 font-mono">configure an integration above + click test → first execution lands here</p>
           </div>
         ) : (
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {executions.map((ex) => (
               <li key={ex.targetId} className="px-5 py-3.5">
                 <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">

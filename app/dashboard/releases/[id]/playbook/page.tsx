@@ -108,12 +108,12 @@ export default function UnifiedPlaybookPage() {
 
       {/* Header */}
       {data && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <div className="flex items-center justify-between gap-4 flex-wrap mb-3">
             <h1 className="text-[24px] font-bold text-white">
               {data.releaseTag ?? "(Untagged Release)"}
             </h1>
-            <span className="text-[11px] font-mono uppercase px-2 py-1 rounded bg-white/5 border border-white/[0.08] text-zinc-300">
+            <span className="text-[11px] font-mono uppercase px-2 py-1 rounded-sm bg-white/5 border border-white/8 text-zinc-300">
               {data.status}
             </span>
           </div>
@@ -126,7 +126,7 @@ export default function UnifiedPlaybookPage() {
       )}
 
       {/* Tab Navigation */}
-      <div className="flex gap-1 mb-6 border-b border-white/[0.06]">
+      <div className="flex gap-1 mb-6 border-b border-white/6">
         <button
           onClick={() => setTab("what")}
           className={`px-3 py-2 text-[12px] font-semibold border-b-2 transition ${
@@ -161,13 +161,13 @@ export default function UnifiedPlaybookPage() {
 
       {/* Content */}
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
           Loading playbook…
         </div>
       )}
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -316,7 +316,7 @@ export default function UnifiedPlaybookPage() {
               </p>
               <div className="space-y-3">
                 {!data.readiness.evaluatedAt && (
-                  <div className="rounded-2xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] p-5">
+                  <div className="rounded-2xl border border-zinc-500/25 bg-zinc-500/4 p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-zinc-400 mt-0.5">•</div>
                       <div className="flex-1">
@@ -327,7 +327,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {Boolean(data.readiness.evaluatedAt) && (data.readiness.blockerCount as unknown as number) > 0 && (
-                  <div className="rounded-2xl border border-orange-500/[0.25] bg-orange-500/[0.04] p-5">
+                  <div className="rounded-2xl border border-orange-500/25 bg-orange-500/4 p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-orange-400 mt-0.5">⚠️</div>
                       <div className="flex-1">
@@ -342,7 +342,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {requiredCount(data.approval.required) === null && (
-                  <div className="rounded-2xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] p-5">
+                  <div className="rounded-2xl border border-zinc-500/25 bg-zinc-500/4 p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-zinc-400 mt-0.5">•</div>
                       <div className="flex-1">
@@ -358,7 +358,7 @@ export default function UnifiedPlaybookPage() {
                   if (required === null || granted >= required) return null;
                   const remaining = required - granted;
                   return (
-                    <div className="rounded-2xl border border-white/[0.25] bg-white/[0.04] p-5">
+                    <div className="rounded-2xl border border-white/25 bg-white/4 p-5">
                       <div className="flex items-start gap-3">
                         <div className="text-zinc-400 mt-0.5">⏳</div>
                         <div className="flex-1">
@@ -374,7 +374,7 @@ export default function UnifiedPlaybookPage() {
                   );
                 })()}
                 {(data.playbook.policyViolationCount as unknown as number) > 0 && (
-                  <div className="rounded-2xl border border-rose-500/[0.25] bg-rose-500/[0.04] p-5">
+                  <div className="rounded-2xl border border-rose-500/25 bg-rose-500/4 p-5">
                     <div className="flex items-start gap-3">
                       <div className="text-rose-400 mt-0.5">🔴</div>
                       <div className="flex-1">
@@ -389,7 +389,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {Boolean(data.readiness.evaluatedAt) && (data.readiness.blockerCount as unknown as number) === 0 && requiredCount(data.approval.required) !== null && requiredCount(data.approval.required) === (data.approval.granted as unknown as number) && (data.playbook.policyViolationCount as unknown as number) === 0 && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5 text-[12px] text-zinc-400">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-5 text-[12px] text-zinc-400">
                     ✓ No blockers, no pending approvals, no policy violations. Ready to proceed.
                   </div>
                 )}
@@ -404,7 +404,7 @@ export default function UnifiedPlaybookPage() {
               </p>
               <div className="space-y-3">
                 {data.lifecycle.closedAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-emerald-400 mt-0.5 text-[14px]">✓</div>
                       <div className="flex-1">
@@ -417,7 +417,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {data.lifecycle.validationCompleteAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-emerald-400 mt-0.5 text-[14px]">✓</div>
                       <div className="flex-1">
@@ -430,7 +430,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {data.lifecycle.executionStartedAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-emerald-400 mt-0.5 text-[14px]">▶</div>
                       <div className="flex-1">
@@ -443,7 +443,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {data.lifecycle.approvalGrantedAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-emerald-400 mt-0.5 text-[14px]">✓</div>
                       <div className="flex-1">
@@ -456,7 +456,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {data.lifecycle.readinessScoredAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-zinc-400 mt-0.5 text-[14px]">📊</div>
                       <div className="flex-1">
@@ -469,7 +469,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {data.lifecycle.scopeFinalizedAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-blue-400 mt-0.5 text-[14px]">🎯</div>
                       <div className="flex-1">
@@ -482,7 +482,7 @@ export default function UnifiedPlaybookPage() {
                   </div>
                 )}
                 {data.lifecycle.requestedAt && (
-                  <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-4">
+                  <div className="rounded-2xl border border-white/8 bg-white/2.5 p-4">
                     <div className="flex items-start gap-3">
                       <div className="text-blue-400 mt-0.5 text-[14px]">📝</div>
                       <div className="flex-1">

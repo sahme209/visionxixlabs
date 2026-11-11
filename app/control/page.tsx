@@ -76,7 +76,7 @@ export default async function ControlOverviewPage() {
       </section>
 
       {!overview ? (
-        <div role="alert" className="mt-10 border-y border-white/[0.08] py-6">
+        <div role="alert" className="mt-10 border-y border-white/8 py-6">
           <p className="text-sm font-medium">Organization status is temporarily unavailable.</p>
           <p className="mt-2 text-sm text-zinc-500">No cached or simulated values are shown. Refresh after the service connection recovers.</p>
         </div>
@@ -86,7 +86,7 @@ export default async function ControlOverviewPage() {
             <p className="text-xs text-zinc-500">Most important next action</p>
             <div className="mt-2 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
               <div>
-                <h2 id="decision-heading" className="text-base font-medium tracking-[-0.025em]">
+                <h2 id="decision-heading" className="text-base font-medium tracking-tight">
                   {overview.pendingActions > 0 ? `${overview.pendingActions} agent ${overview.pendingActions === 1 ? "action awaits" : "actions await"} review` : "No agent actions await review"}
                 </h2>
                 <p className="mt-2 text-sm text-zinc-500">Every action follows your workspace policy and approval rules.</p>
@@ -95,7 +95,7 @@ export default async function ControlOverviewPage() {
             </div>
           </section>
 
-          <dl className="grid gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-2 lg:grid-cols-4 mt-8">
+          <dl className="grid gap-px overflow-hidden rounded-xl border border-white/8 bg-white/8 sm:grid-cols-2 lg:grid-cols-4 mt-8">
             {[
               ["Members", overview.members],
               ["Active integrations", overview.activeIntegrations],

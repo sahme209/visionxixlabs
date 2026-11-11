@@ -94,8 +94,8 @@ export default async function ContentCalendarPage() {
               key={day.isoDate}
               className={`rounded-2xl border p-3 ${
                 totalCount === 0
-                  ? "border-white/15 bg-white/[0.03]"
-                  : "border-white/[0.06] bg-white/[0.02]"
+                  ? "border-white/15 bg-white/3"
+                  : "border-white/6 bg-white/2"
               }`}
             >
               <header className="mb-2">

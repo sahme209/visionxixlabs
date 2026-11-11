@@ -100,7 +100,7 @@ export default function TauriDashboardPage() {
   const [playbook, setPlaybook] = useState<DeploymentPlaybook | null>(null);
   const [currentStep, setCurrentStep] = useState(0);
   const issues = useMemo(() => validateIntake(intake), [intake]);
-  const inputClass = "mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-none focus:border-orange-400";
+  const inputClass = "mt-1 w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2 text-sm text-white outline-hidden focus:border-orange-400";
   const labelClass = "text-[11px] font-mono uppercase tracking-wider text-zinc-400";
 
   function createPlaybook() {
@@ -120,7 +120,7 @@ export default function TauriDashboardPage() {
 
   return (
     <div className="space-y-6">
-      <header className="rounded-2xl border border-orange-500/20 bg-gradient-to-br from-orange-500/10 via-white/[0.025] to-cyan-500/5 p-6">
+      <header className="rounded-2xl border border-orange-500/20 bg-linear-to-br from-orange-500/10 via-white/2.5 to-cyan-500/5 p-6">
         <p className="text-[10px] font-mono uppercase tracking-[0.24em] text-orange-300">Axiom Agent · Deployment Operations</p>
         <div className="mt-2 flex flex-wrap items-end justify-between gap-4">
           <div>
@@ -139,7 +139,7 @@ export default function TauriDashboardPage() {
         <h2 id="module-heading" className="mb-3 text-xs font-mono uppercase tracking-wider text-zinc-500">Operations modules</h2>
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
           {modules.map(([name, description]) => (
-            <article key={name} className="rounded-xl border border-white/[0.07] bg-white/[0.025] p-3">
+            <article key={name} className="rounded-xl border border-white/[0.07] bg-white/2.5 p-3">
               <h3 className="text-sm font-semibold text-white">{name}</h3>
               <p className="mt-1 text-xs leading-relaxed text-zinc-500">{description}</p>
             </article>
@@ -148,7 +148,7 @@ export default function TauriDashboardPage() {
       </section>
 
       <div className="grid gap-6 xl:grid-cols-[1.05fr_.95fr]">
-        <section className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5" aria-labelledby="intake-heading">
+        <section className="rounded-2xl border border-white/[0.07] bg-white/2.5 p-5" aria-labelledby="intake-heading">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-mono uppercase tracking-wider text-cyan-300">Step 1 · Intake</p>
@@ -228,7 +228,7 @@ export default function TauriDashboardPage() {
           </button>
         </section>
 
-        <section className="rounded-2xl border border-white/[0.07] bg-white/[0.025] p-5" aria-labelledby="run-heading">
+        <section className="rounded-2xl border border-white/[0.07] bg-white/2.5 p-5" aria-labelledby="run-heading">
           <p className="text-[10px] font-mono uppercase tracking-wider text-emerald-300">Step 2 · Guided run</p>
           <h2 id="run-heading" className="mt-1 text-xl font-semibold text-white">Production execution</h2>
           {!playbook ? (

@@ -80,19 +80,19 @@ export default function SopsCatalogPage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading SOPs…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <span>Sign in required to view SOPs.</span>
@@ -106,7 +106,7 @@ export default function SopsCatalogPage() {
             <Link
               key={e.deploymentType}
               href={`/dashboard/sops/${e.deploymentType}`}
-              className="block rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group"
+              className="block rounded-2xl border border-white/6 bg-white/2 p-5 hover:border-white/12 hover:bg-white/3 transition-all group"
             >
               <div className="flex items-start gap-3 mb-2">
                 <div className="text-2xl shrink-0">{ICON_BY_TYPE[e.deploymentType] ?? "📋"}</div>
@@ -124,7 +124,7 @@ export default function SopsCatalogPage() {
         </div>
       )}
 
-      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
         <BookOpenIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
         <div>
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// SOP contract</p>

@@ -86,13 +86,13 @@ interface ReportLite {
 }
 
 const STATUS_VISUAL: Record<Status, { border: string; bg: string; pill: string; icon: typeof CheckCircleIcon; label: string }> = {
-  ready_for_handoff:        { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", pill: "bg-emerald-500/15 text-emerald-300",  icon: CheckCircleIcon,         label: "Ready for handoff" },
-  awaiting_simulation:      { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    pill: "bg-cyan-500/15 text-cyan-300",         icon: ClockIcon,               label: "Awaiting simulation" },
-  policy_blocked:           { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   pill: "bg-white/15 text-zinc-300",       icon: ExclamationTriangleIcon, label: "Policy blocked" },
-  missing_evidence:         { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   pill: "bg-white/15 text-zinc-300",       icon: ExclamationTriangleIcon, label: "Missing evidence" },
-  blocked_by_pairing:       { border: "border-white/[0.10]",  bg: "bg-white/[0.015]",  pill: "bg-orange-500/15 text-orange-300",     icon: ComputerDesktopIcon,     label: "Blocked — not paired" },
-  blocked_by_config:        { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    pill: "bg-rose-500/15 text-rose-300",         icon: XCircleIcon,             label: "Blocked by config" },
-  disabled_local_execution: { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    pill: "bg-rose-500/15 text-rose-300",         icon: LockClosedIcon,          label: "Disabled — local exec off" },
+  ready_for_handoff:        { border: "border-emerald-500/22", bg: "bg-emerald-500/4", pill: "bg-emerald-500/15 text-emerald-300",  icon: CheckCircleIcon,         label: "Ready for handoff" },
+  awaiting_simulation:      { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    pill: "bg-cyan-500/15 text-cyan-300",         icon: ClockIcon,               label: "Awaiting simulation" },
+  policy_blocked:           { border: "border-white/18",   bg: "bg-white/4",   pill: "bg-white/15 text-zinc-300",       icon: ExclamationTriangleIcon, label: "Policy blocked" },
+  missing_evidence:         { border: "border-white/18",   bg: "bg-white/4",   pill: "bg-white/15 text-zinc-300",       icon: ExclamationTriangleIcon, label: "Missing evidence" },
+  blocked_by_pairing:       { border: "border-white/10",  bg: "bg-white/1.5",  pill: "bg-orange-500/15 text-orange-300",     icon: ComputerDesktopIcon,     label: "Blocked — not paired" },
+  blocked_by_config:        { border: "border-rose-500/22",    bg: "bg-rose-500/4",    pill: "bg-rose-500/15 text-rose-300",         icon: XCircleIcon,             label: "Blocked by config" },
+  disabled_local_execution: { border: "border-rose-500/22",    bg: "bg-rose-500/4",    pill: "bg-rose-500/15 text-rose-300",         icon: LockClosedIcon,          label: "Disabled — local exec off" },
 };
 
 const SEVERITY_PILL: Record<Severity, string> = {
@@ -127,7 +127,7 @@ export default function DesktopIntelligencePage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -136,10 +136,10 @@ export default function DesktopIntelligencePage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ComputerDesktopIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Desktop Intelligence · desktop_review_only_no_local_execution
@@ -167,12 +167,12 @@ export default function DesktopIntelligencePage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing desktop review queue…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// workstation unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -181,12 +181,12 @@ export default function DesktopIntelligencePage() {
       {!loading && !error && report && (
         <>
           {/* Recommended next action callout */}
-          <div className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 mb-6 flex items-center justify-between gap-3 flex-wrap">
+          <div className="rounded-2xl border border-orange-500/15 bg-white/1.5 p-5 mb-6 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// recommended next step</p>
               <p className="text-[14px] text-white font-semibold leading-snug">{report.safeNextAction.label}</p>
             </div>
-            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors">
+            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/12 hover:border-orange-500/50 bg-white/2.5 rounded-md px-3 py-1.5 transition-colors">
               {report.safeNextAction.label}
               <ArrowRightIcon className="h-3 w-3" />
             </Link>
@@ -204,7 +204,7 @@ export default function DesktopIntelligencePage() {
           </div>
 
           {report.items.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-6 text-center">
               <ShieldCheckIcon className="h-6 w-6 text-emerald-300 mx-auto mb-2" />
               <p className="text-[13px] text-zinc-300">No items currently pending desktop review.</p>
             </div>
@@ -222,16 +222,16 @@ export default function DesktopIntelligencePage() {
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-1 flex-wrap">
                           <span className="text-[10px] font-mono text-zinc-500">#{it.rank}</span>
-                          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill}`}>
+                          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill}`}>
                             {v.label}
                           </span>
-                          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${SEVERITY_PILL[it.severity]}`}>
+                          <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${SEVERITY_PILL[it.severity]}`}>
                             {it.severity}
                           </span>
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                             {it.category.replace(/_/g, " ")}
                           </span>
-                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                             {it.sourceMode.replace(/_/g, " ")}
                           </span>
                           <span className="text-[9px] font-mono text-zinc-500">score {Math.round(it.priorityScore)}</span>
@@ -251,12 +251,12 @@ export default function DesktopIntelligencePage() {
                         </div>
                       </div>
                       <div className="flex items-center gap-2 shrink-0">
-                        <Link href={it.inspectRoute.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors">
+                        <Link href={it.inspectRoute.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors">
                           inspect
                           <ArrowRightIcon className="h-3 w-3" />
                         </Link>
                         {it.status === "ready_for_handoff" && (
-                          <Link href={it.handoffRoute.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-2.5 py-1.5 transition-colors">
+                          <Link href={it.handoffRoute.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/12 hover:border-orange-500/50 bg-white/2.5 rounded-md px-2.5 py-1.5 transition-colors">
                             {it.handoffRoute.label}
                             <ArrowRightIcon className="h-3 w-3" />
                           </Link>
@@ -269,12 +269,12 @@ export default function DesktopIntelligencePage() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// workstation contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")}
@@ -289,12 +289,12 @@ export default function DesktopIntelligencePage() {
 
 function StatusCard({ label, value, tone }: { label: string; value: number; tone: "emerald" | "cyan" | "amber" | "orange" | "rose" | "zinc" }) {
   const toneClass = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-300",
-    cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-300",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-300",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-orange-300",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-300",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-300",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-300",
+    cyan:    "border-cyan-500/18 bg-cyan-500/3 text-cyan-300",
+    amber:   "border-white/18 bg-white/3 text-zinc-300",
+    orange:  "border-white/6 bg-white/1.5 text-orange-300",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-300",
+    zinc:    "border-white/6 bg-white/2 text-zinc-300",
   }[tone];
   return (
     <div className={`rounded-xl border ${toneClass} p-3`}>
@@ -306,10 +306,10 @@ function StatusCard({ label, value, tone }: { label: string; value: number; tone
 
 function PairingStat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "orange" | "zinc" }) {
   const toneClass = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${toneClass} p-3`}>

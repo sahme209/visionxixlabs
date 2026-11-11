@@ -18,7 +18,7 @@ describe("Navigation — scroll elevation", () => {
   });
 
   it("deepens the border/shadow and shrinks the bar height once scrolled", () => {
-    expect(src).toMatch(/scrolled\s*\n?\s*\?\s*"border-b border-white\/\[0\.09\]/);
+    expect(src).toMatch(/scrolled\s*\n?\s*\?\s*"border-b border-white\/9/);
     expect(src).toContain('h-14 xl:h-16');
   });
 

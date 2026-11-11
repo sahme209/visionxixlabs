@@ -134,7 +134,7 @@ export function AxiomBootSequence({
       `}</style>
 
       <div
-        className="vx-container fixed inset-0 z-[99] flex flex-col items-center justify-center bg-black"
+        className="vx-container fixed inset-0 z-99 flex flex-col items-center justify-center bg-black"
         aria-hidden="true"
       >
         {/* Scan-line wipe — single horizontal bar that travels top→bottom

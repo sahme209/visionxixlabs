@@ -35,7 +35,7 @@ export function ApiKeysManager() {
   const now = Date.now();
   return (
     <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]">
-      <section aria-label="Create an API key" className="rounded-xl border border-white/[0.08] p-5">
+      <section aria-label="Create an API key" className="rounded-xl border border-white/8 p-5">
         <h2 className="text-sm font-medium text-zinc-100">Create a key</h2>
         <label htmlFor="key-name" className="mt-4 block text-xs text-zinc-400">Name</label>
         <input id="key-name" value={name} onChange={(e) => setName(e.target.value)} maxLength={80} placeholder="cursor-ci" className="mt-1 w-full rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm" />
@@ -46,12 +46,12 @@ export function ApiKeysManager() {
         <select id="key-days" value={days} onChange={(e) => setDays(Number(e.target.value))} className="mt-1 w-full rounded-md border border-white/10 bg-black/30 px-3 py-2 text-sm">{[7, 30, 60, 90].map((d) => <option key={d} value={d}>{d} days</option>)}</select>
         <button type="button" disabled={busy || !name.trim() || scopes.length === 0} onClick={() => void create()} className="mt-4 rounded-md bg-zinc-100 px-4 py-2 text-sm font-medium text-zinc-950 disabled:opacity-50">Create key</button>
         {error && <p role="alert" className="mt-3 text-sm text-rose-300">{error}</p>}
-        {secret && <div role="status" className="mt-4 rounded-md border border-amber-300/30 bg-amber-300/[0.05] p-3"><p className="text-xs text-amber-200">Copy this key now. It will not be shown again.</p><code className="mt-2 block break-all font-mono text-xs text-zinc-100">{secret}</code></div>}
+        {secret && <div role="status" className="mt-4 rounded-md border border-amber-300/30 bg-amber-300/5 p-3"><p className="text-xs text-amber-200">Copy this key now. It will not be shown again.</p><code className="mt-2 block break-all font-mono text-xs text-zinc-100">{secret}</code></div>}
       </section>
-      <section aria-label="Workspace API keys" className="rounded-xl border border-white/[0.08] p-5">
+      <section aria-label="Workspace API keys" className="rounded-xl border border-white/8 p-5">
         <h2 className="text-sm font-medium text-zinc-100">Keys</h2>
         {keys === null ? <p className="mt-3 text-sm text-zinc-500">Loading…</p> : keys.length === 0 ? <p className="mt-3 text-sm text-zinc-500">No keys yet.</p> :
-          <ul className="mt-3 divide-y divide-white/[0.06]">{keys.map((k) => {
+          <ul className="mt-3 divide-y divide-white/6">{keys.map((k) => {
             const state = k.revokedAt ? "revoked" : k.expiresAt && new Date(k.expiresAt).getTime() <= now ? "expired" : "active";
             return <li key={k.id} className="flex flex-wrap items-center justify-between gap-2 py-3 text-sm">
               <div><p className="text-zinc-100">{k.name} <span className="font-mono text-xs text-zinc-500">{k.prefix}…</span></p><p className="text-xs text-zinc-500">{k.scopes.join(", ")} · by {k.createdBy} · {state === "active" && k.expiresAt ? `expires ${k.expiresAt.slice(0, 10)}` : state}{k.lastUsedAt ? ` · last used ${k.lastUsedAt.slice(0, 10)}` : ""}</p></div>

@@ -92,19 +92,19 @@ export default function WebhookDeliveriesPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading webhook deliveries…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -114,22 +114,22 @@ export default function WebhookDeliveriesPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
 
       {data && (
         data.deliveries.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No webhook deliveries received yet. Configure the GitHub webhook (see description above) and trigger an event to see it land here.
           </div>
         ) : (
           <div className="space-y-2 mb-8">
             {data.deliveries.map((d) => (
-              <div key={d.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3">
+              <div key={d.id} className="rounded-xl border border-white/6 bg-white/2 p-3">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[d.outcome]}`}>
+                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[d.outcome]}`}>
                     {d.outcome}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400">{d.provider}:{d.eventKind}</span>
@@ -153,10 +153,10 @@ export default function WebhookDeliveriesPage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof InboxIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

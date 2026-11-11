@@ -51,9 +51,9 @@ const WARNING_TONE: Record<MarginWarningKind, string> = {
   ai_cost_above_plan_price: "text-rose-300 bg-rose-500/10 border-rose-500/30",
   ai_cost_above_50pct_of_plan_price: "text-zinc-300 bg-white/10 border-white/30",
   negative_gross_margin: "text-rose-300 bg-rose-500/15 border-rose-500/40",
-  ai_credit_pool_exhausted: "text-zinc-300 bg-white/[0.04] border-white/[0.08]",
+  ai_credit_pool_exhausted: "text-zinc-300 bg-white/4 border-white/8",
   no_overage_revenue_on_overage_plan: "text-zinc-300 bg-white/10 border-white/30",
-  enterprise_should_have_custom_contract: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  enterprise_should_have_custom_contract: "text-zinc-400 bg-white/4 border-white/8",
 };
 
 const periodKey = (d: Date) => `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}`;
@@ -152,7 +152,7 @@ export default async function AdminProfitabilityPage() {
 
       <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// per-workspace margin</p>
       {rows.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <CpuChipIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">No usage summaries for {period}.</p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
@@ -162,7 +162,7 @@ export default async function AdminProfitabilityPage() {
       ) : (
         <section className="space-y-2">
           {rows.map(({ summary, plan, margin, overage }) => (
-            <article key={summary.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+            <article key={summary.id} className="rounded-xl border border-white/6 bg-white/2 px-4 py-3">
               <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                 <div className="flex items-center gap-2 min-w-0">
                   <span className="text-[11px] font-mono text-zinc-200 truncate">{summary.organizationId}</span>
@@ -208,7 +208,7 @@ export default async function AdminProfitabilityPage() {
               </div>
 
               {margin.warnings.length > 0 && (
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/[0.04]">
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/4">
                   {margin.warnings.map((w) => (
                     <span key={w} className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${WARNING_TONE[w]}`}>
                       {WARNING_LABEL[w]}
@@ -221,7 +221,7 @@ export default async function AdminProfitabilityPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// margin allocation notes</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Infra cost is allocated at $20/workspace/month — adjust in <code className="text-zinc-200">app/admin/profitability/page.tsx</code> when the per-tenant model lands.</li>
@@ -236,7 +236,7 @@ export default async function AdminProfitabilityPage() {
 
 function SummaryStat({ label, value, tone, icon: Icon }: { label: string; value: string; tone: string; icon?: typeof CheckCircleIcon }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       {Icon && <Icon className={`h-4 w-4 ${tone} mb-2`} />}
       <p className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>

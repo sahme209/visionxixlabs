@@ -146,7 +146,7 @@ export default async function WorkforceActivityPage({
       </section>
 
       {attempts.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <CpuChipIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">
             {decisionFilter === "all" && !engineerFilter ? "No activity yet." : "No attempts match this filter."}
@@ -195,7 +195,7 @@ function buildHref(decision: DecisionFilter | null, engineerId: string | null): 
 
 function Stat({ label, value, icon: Icon, tone }: { label: string; value: number; icon: typeof ShieldCheckIcon; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <Icon className={`h-4 w-4 ${tone} mb-2`} />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
@@ -207,11 +207,11 @@ function FilterPill({
   href, active, label, tone = "zinc",
 }: { href: string; active: boolean; label: string; tone?: "zinc" | "amber" | "emerald" | "rose" | "orange" }) {
   const toneClass = {
-    zinc:    active ? "bg-white/[0.08] text-white border-white/[0.12]"           : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
-    amber:   active ? "bg-white/15 text-zinc-200 border-white/40"       : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-zinc-200",
-    emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40" : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-emerald-200",
-    rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"          : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-rose-200",
-    orange:  active ? "bg-orange-500/15 text-white border-orange-500/40"    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white",
+    zinc:    active ? "bg-white/8 text-white border-white/12"           : "bg-white/2 text-zinc-400 border-white/6 hover:text-zinc-200",
+    amber:   active ? "bg-white/15 text-zinc-200 border-white/40"       : "bg-white/2 text-zinc-400 border-white/6 hover:text-zinc-200",
+    emerald: active ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/40" : "bg-white/2 text-zinc-400 border-white/6 hover:text-emerald-200",
+    rose:    active ? "bg-rose-500/15 text-rose-200 border-rose-500/40"          : "bg-white/2 text-zinc-400 border-white/6 hover:text-rose-200",
+    orange:  active ? "bg-orange-500/15 text-white border-orange-500/40"    : "bg-white/2 text-zinc-400 border-white/6 hover:text-white",
   }[tone];
   return (
     <Link href={href} className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-2.5 py-1 transition ${toneClass}`}>
@@ -246,7 +246,7 @@ function ActivityRow(props: {
                                           "text-zinc-500";
 
   return (
-    <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+    <article className="rounded-xl border border-white/6 bg-white/2 px-4 py-3">
       <header className="flex items-center justify-between gap-3 flex-wrap mb-1">
         <div className="flex items-center gap-2 min-w-0">
           <CpuChipIcon className="h-4 w-4 text-orange-300 shrink-0" />

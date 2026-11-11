@@ -90,7 +90,7 @@ const TABS: readonly CompareTab[] = [
 const VERDICT_STYLE: Record<Verdict, { icon: string; tone: string; label: string }> = {
   full:    { icon: "✓", tone: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30", label: "covered" },
   partial: { icon: "~", tone: "text-zinc-300  bg-white/10  border-white/30",  label: "partial" },
-  none:    { icon: "·", tone: "text-zinc-500   bg-white/[0.02] border-white/10",       label: "missing" },
+  none:    { icon: "·", tone: "text-zinc-500   bg-white/2 border-white/10",       label: "missing" },
 };
 
 export function CompareClient() {
@@ -101,8 +101,8 @@ export function CompareClient() {
     <div className="relative">
       {/* Restrained Axiom atmosphere */}
       <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
-        <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
+        <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
       </div>
 
       {/* ===== HERO ===== */}
@@ -113,7 +113,7 @@ export function CompareClient() {
           className="mono-label inline-flex items-center gap-3"
         >
           <span className="text-brand-coral/90 tabular-nums">CM</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           Buyer-honest comparison
         </motion.p>
         <motion.h1
@@ -125,7 +125,7 @@ export function CompareClient() {
           Compare —{" "}
           <span className="relative inline-block">
             three alternatives, side by side.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-[88%] rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-[88%] rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -152,7 +152,7 @@ export function CompareClient() {
                 "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
                 tab === t.id
                   ? "bg-orange-500/15 border-orange-500/40 text-orange-200"
-                  : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/[0.05]",
+                  : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
               ].join(" ")}
             >
               {t.label}
@@ -172,7 +172,7 @@ export function CompareClient() {
           className="surface-glass overflow-hidden rounded-2xl"
         >
           {/* header */}
-          <div className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] border-b border-white/[0.06] bg-white/[0.02] px-4 py-3 text-[11px] font-mono uppercase tracking-widest text-zinc-400">
+          <div className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] border-b border-white/6 bg-white/2 px-4 py-3 text-[11px] font-mono uppercase tracking-widest text-zinc-400">
             <span>Capability</span>
             <span className="text-center text-zinc-300">Axiom</span>
             <span className="text-center text-zinc-300">{active.rivalLabel}</span>
@@ -184,7 +184,7 @@ export function CompareClient() {
               initial={{ opacity: 0, y: 4 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.25, delay: Math.min(i * 0.025, 0.2) }}
-              className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] items-start gap-3 border-b border-white/[0.04] px-4 py-3 last:border-b-0 hover:bg-white/[0.02] transition"
+              className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] items-start gap-3 border-b border-white/4 px-4 py-3 last:border-b-0 hover:bg-white/2 transition"
             >
               <div>
                 <p className="text-[13.5px] text-white">{row.capability}</p>
@@ -229,7 +229,7 @@ export function CompareClient() {
           </Link>
           <Link
             href="/faq"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.03] px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
           >
             Read the FAQ
           </Link>

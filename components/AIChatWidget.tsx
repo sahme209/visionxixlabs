@@ -177,7 +177,7 @@ export default function AIChatWidget() {
       <button
         onClick={() => setOpen(true)}
         aria-label="Open Axiom Assistant"
-        className="fixed bottom-6 right-6 z-[9998] hidden min-h-11 items-center gap-2.5 rounded-full border border-white/[0.08] bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/[0.16] hover:bg-[#1a1a1a] hover:text-white focus:outline-none focus:ring-2 focus:ring-brand-coral/50 md:flex"
+        className="fixed bottom-6 right-6 z-9998 hidden min-h-11 items-center gap-2.5 rounded-full border border-white/8 bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/16 hover:bg-brand-ink-card hover:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-coral/50 md:flex"
       >
         <div className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.035]">
           <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-zinc-300" />
@@ -188,11 +188,11 @@ export default function AIChatWidget() {
 
       {open && (
         <div
-          className="fixed right-6 left-auto w-[420px] z-[9999] hidden md:flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-6 max-h-[calc(100vh-8rem)]"
+          className="fixed right-6 left-auto w-[420px] z-9999 hidden md:flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-6 max-h-[calc(100vh-8rem)]"
           role="dialog"
           aria-label="Ask Axiom support chat"
         >
-          <div className="flex items-center justify-between border-b border-white/[0.06] bg-zinc-600 px-4 py-3">
+          <div className="flex items-center justify-between border-b border-white/6 bg-zinc-600 px-4 py-3">
             <div className="flex items-center gap-2">
               <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/20">
                 <SparklesIcon className="h-5 w-5 text-white" />
@@ -213,11 +213,11 @@ export default function AIChatWidget() {
 
           <div
             ref={scrollRef}
-            className="flex max-h-[320px] min-h-[240px] flex-1 flex-col overflow-y-auto p-4 bg-white/[0.02]"
+            className="flex max-h-[320px] min-h-[240px] flex-1 flex-col overflow-y-auto p-4 bg-white/2"
           >
             {messages.length === 0 ? (
               <div className="flex flex-1 flex-col items-center justify-center text-center">
-                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/[0.02] border border-white/[0.06]">
+                <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/2 border border-white/6">
                   <ChatBubbleLeftRightIcon className="h-6 w-6 text-zinc-600" />
                 </div>
                 <p className="text-sm font-medium text-white">Ask Axiom</p>
@@ -227,7 +227,7 @@ export default function AIChatWidget() {
                     <button
                       key={s}
                       onClick={() => setInput(s)}
-                      className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-zinc-400 hover:text-zinc-600"
+                      className="rounded-lg border border-white/6 bg-white/2 px-3 py-1.5 text-left text-xs text-zinc-400 hover:border-zinc-400 hover:text-zinc-600"
                     >
                       {s}
                     </button>
@@ -245,7 +245,7 @@ export default function AIChatWidget() {
                       className={`max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
                         m.role === "user"
                           ? "bg-zinc-600 text-white rounded-br-xl"
-                          : "bg-white/[0.02] border border-white/[0.06] text-white rounded-bl-xl"
+                          : "bg-white/2 border border-white/6 text-white rounded-bl-xl"
                       }`}
                     >
                       {m.role === "assistant" && (
@@ -254,7 +254,7 @@ export default function AIChatWidget() {
                           <button
                             onClick={() => copyResponse(m.content)}
                             aria-label="Copy"
-                            className="rounded p-0.5 text-slate-400 hover:bg-white/[0.06] hover:text-slate-700"
+                            className="rounded-sm p-0.5 text-slate-400 hover:bg-white/6 hover:text-slate-700"
                           >
                             <ClipboardDocumentIcon className="h-3.5 w-3.5" />
                           </button>
@@ -270,7 +270,7 @@ export default function AIChatWidget() {
                         <button type="button" onClick={() => void askAi(m.question!)} disabled={loading} className="mt-2 text-[11px] text-zinc-400 underline underline-offset-2 hover:text-white disabled:opacity-50">Get a fuller AI answer (signed-in workspaces; uses prepaid credits)</button>
                       )}
                       {m.role === "assistant" && m.sources && m.sources.length > 0 && (
-                        <ul aria-label="Sources" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-white/[0.06] pt-2 text-[11px]">
+                        <ul aria-label="Sources" className="mt-2 flex flex-wrap gap-x-3 gap-y-1 border-t border-white/6 pt-2 text-[11px]">
                           {m.sources.map((src) => src.href.startsWith("/") ? <li key={src.href + src.title}><Link href={src.href} className="text-zinc-400 underline underline-offset-2 hover:text-white">{src.title}</Link></li> : null)}
                         </ul>
                       )}
@@ -279,7 +279,7 @@ export default function AIChatWidget() {
                 ))}
                 {loading && (
                   <div className="flex justify-start">
-                    <div className="flex gap-1 rounded-2xl rounded-bl-xl border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+                    <div className="flex gap-1 rounded-2xl rounded-bl-xl border border-white/6 bg-white/2 px-3 py-2">
                       <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-600" />
                       <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-600 [animation-delay:0.2s]" />
                       <span className="h-2 w-2 animate-pulse rounded-full bg-zinc-600 [animation-delay:0.4s]" />
@@ -290,7 +290,7 @@ export default function AIChatWidget() {
             )}
           </div>
 
-          <div className="border-t border-white/[0.06] px-4 py-2">
+          <div className="border-t border-white/6 px-4 py-2">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
               className="flex items-center gap-2 text-xs text-zinc-400 hover:text-zinc-600"
@@ -300,7 +300,7 @@ export default function AIChatWidget() {
             </a>
           </div>
 
-          <div className="border-t border-white/[0.06] p-3">
+          <div className="border-t border-white/6 p-3">
             {error && <p className="mb-2 text-xs text-red-600">{error}</p>}
             <div className="flex gap-2">
               <input
@@ -310,7 +310,7 @@ export default function AIChatWidget() {
                 onKeyDown={handleKeyDown}
                 placeholder="Ask about setup, security, pricing…"
                 disabled={loading}
-                className="flex-1 rounded-xl border border-white/[0.06] bg-white/[0.03] px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300 disabled:opacity-60"
+                className="flex-1 rounded-xl border border-white/6 bg-white/3 px-3 py-2.5 text-sm text-white placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-orange-500/40 focus:border-orange-500/50 transition-all duration-300 disabled:opacity-60"
               />
               <button
                 onClick={sendMessage}
@@ -345,12 +345,12 @@ function AccessRequestForm() {
   }
   if (state && state.startsWith("Sent")) return <p role="status" className="mt-2 text-[11px] text-emerald-300">{state}</p>;
   return (
-    <div className="mt-2 space-y-1.5 border-t border-white/[0.06] pt-2 text-[11px]">
+    <div className="mt-2 space-y-1.5 border-t border-white/6 pt-2 text-[11px]">
       <label className="block text-zinc-400" htmlFor="ask-axiom-role">Role you need</label>
-      <select id="ask-axiom-role" value={role} onChange={(e) => setRole(e.target.value)} className="w-full rounded border border-white/10 bg-black/30 px-2 py-1">{["operator", "security_reviewer", "finance_viewer", "admin"].map((r) => <option key={r} value={r}>{r.replace("_", " ")}</option>)}</select>
+      <select id="ask-axiom-role" value={role} onChange={(e) => setRole(e.target.value)} className="w-full rounded-sm border border-white/10 bg-black/30 px-2 py-1">{["operator", "security_reviewer", "finance_viewer", "admin"].map((r) => <option key={r} value={r}>{r.replace("_", " ")}</option>)}</select>
       <label className="block text-zinc-400" htmlFor="ask-axiom-reason">Why</label>
-      <input id="ask-axiom-reason" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} className="w-full rounded border border-white/10 bg-black/30 px-2 py-1" placeholder="e.g. I approve staging releases for the web team" />
-      <button type="button" disabled={busy} onClick={() => void send()} className="rounded bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Ask an admin</button>
+      <input id="ask-axiom-reason" value={reason} onChange={(e) => setReason(e.target.value)} maxLength={500} className="w-full rounded-sm border border-white/10 bg-black/30 px-2 py-1" placeholder="e.g. I approve staging releases for the web team" />
+      <button type="button" disabled={busy} onClick={() => void send()} className="rounded-sm bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Ask an admin</button>
       {state && <p role="alert" className="text-rose-300">{state}</p>}
     </div>
   );
@@ -375,15 +375,15 @@ function SupportActionCard({ action }: { action: SupportAction }) {
   }
   if (result) return <p role={result.ok ? "status" : "alert"} className={`mt-2 text-[11px] ${result.ok ? "text-emerald-300" : "text-rose-300"}`}>{result.text}{result.ok && <> <Link href={action === "list_expiring_keys" ? "/control/api-keys" : "/control/trust-tools"} className="underline">{action === "list_expiring_keys" ? "API keys" : "Trust tools"}</Link></>}</p>;
   return (
-    <div className="mt-2 space-y-1.5 border-t border-white/[0.06] pt-2 text-[11px]">
+    <div className="mt-2 space-y-1.5 border-t border-white/6 pt-2 text-[11px]">
       {!confirming ? (
-        <button type="button" onClick={() => setConfirming(true)} className="rounded border border-white/15 px-2 py-1 font-medium text-zinc-100 hover:bg-white/5">{info.label}</button>
+        <button type="button" onClick={() => setConfirming(true)} className="rounded-sm border border-white/15 px-2 py-1 font-medium text-zinc-100 hover:bg-white/5">{info.label}</button>
       ) : (
         <>
           <p className="text-zinc-300">{info.confirmText}</p>
           <div className="flex gap-1.5">
-            <button type="button" disabled={busy} onClick={() => void run()} className="rounded bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Confirm: {info.label.toLowerCase()}</button>
-            <button type="button" disabled={busy} onClick={() => setConfirming(false)} className="rounded px-2 py-1 text-zinc-400 hover:text-zinc-200">Cancel</button>
+            <button type="button" disabled={busy} onClick={() => void run()} className="rounded-sm bg-zinc-100 px-2 py-1 font-medium text-zinc-950 disabled:opacity-50">Confirm: {info.label.toLowerCase()}</button>
+            <button type="button" disabled={busy} onClick={() => setConfirming(false)} className="rounded-sm px-2 py-1 text-zinc-400 hover:text-zinc-200">Cancel</button>
           </div>
         </>
       )}

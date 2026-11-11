@@ -17,7 +17,7 @@ export function ConfirmDialog({title, children, onCancel, onConfirm, confirmLabe
   return ()=>{document.body.style.overflow=overflow;if(returnFocusRef?.current?.isConnected)returnFocusRef.current.focus();else if(previous?.isConnected)previous.focus();};
  },[returnFocusRef]);
  useEffect(()=>{if(busy)dialog.current?.focus();},[busy]);
- return createPortal(<div className="fixed inset-0 z-[100] grid place-items-center bg-black/75 p-5 backdrop-blur-sm" onKeyDown={event=>{
+ return createPortal(<div className="fixed inset-0 z-100 grid place-items-center bg-black/75 p-5 backdrop-blur-sm" onKeyDown={event=>{
   if(event.key==="Escape" && !busy){event.preventDefault();event.stopPropagation();onCancel();}
   if(event.key!=="Tab")return;
   const elements=dialog.current?.querySelectorAll<HTMLButtonElement>('button:not([disabled]), a[href], input:not([disabled]), [tabindex="0"]');

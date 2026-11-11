@@ -35,7 +35,7 @@ export function AuditEvidencePanel({ records }: { records: AuditEvidenceRecord[]
   const visible = filtered.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   const buttonClass = "h-8 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-40";
 
-  return <section className="mt-6 rounded-xl border border-white/[0.08] bg-white/[0.015] p-5" aria-labelledby="audit-events-heading">
+  return <section className="mt-6 rounded-xl border border-white/8 bg-white/1.5 p-5" aria-labelledby="audit-events-heading">
     <h2 id="audit-events-heading" className="text-sm font-medium text-zinc-100">Recent audit evidence</h2>
     <p className="mt-2 text-xs leading-5 text-zinc-500">Latest 100 workspace records. Filters apply to these loaded records. Times shown in UTC.</p>
     <div className="mt-4 flex flex-wrap items-end gap-3">
@@ -49,7 +49,7 @@ export function AuditEvidencePanel({ records }: { records: AuditEvidenceRecord[]
       </label>
       <button type="button" disabled={!query && outcome === "all"} onClick={() => { setQuery(""); setOutcome("all"); setPage(0); }} className={buttonClass}>Clear audit filters</button>
     </div>
-    {records.length === 0 ? <p className="mt-5 text-sm text-zinc-500">No audit records have been written for this organization.</p> : filtered.length === 0 ? <p className="mt-5 text-sm text-zinc-500">No matching audit records.</p> : <ul className="mt-4 divide-y divide-white/[0.06] border-y border-white/[0.06]">
+    {records.length === 0 ? <p className="mt-5 text-sm text-zinc-500">No audit records have been written for this organization.</p> : filtered.length === 0 ? <p className="mt-5 text-sm text-zinc-500">No matching audit records.</p> : <ul className="mt-4 divide-y divide-white/6 border-y border-white/6">
       {visible.map(record => <li key={record.id} className="py-3">
         <div className="flex flex-wrap items-start justify-between gap-2">
           <div className="flex min-w-0 flex-wrap items-center gap-2 text-xs">
@@ -61,7 +61,7 @@ export function AuditEvidencePanel({ records }: { records: AuditEvidenceRecord[]
         </div>
         <details className="mt-2 text-xs text-zinc-500">
           <summary className="cursor-pointer text-zinc-400">Evidence details</summary>
-          <dl className="mt-2 grid gap-2 rounded-lg bg-white/[0.025] p-3 sm:grid-cols-[105px_minmax(0,1fr)]">
+          <dl className="mt-2 grid gap-2 rounded-lg bg-white/2.5 p-3 sm:grid-cols-[105px_minmax(0,1fr)]">
             <dt>Reference</dt><dd className="break-all text-zinc-300">{record.entityRef ?? "Organization"}</dd>
             <dt>Correlation ID</dt><dd className="break-all font-mono text-[11px] text-zinc-300">{record.correlationId}</dd>
             <dt>Actor</dt><dd className="break-all text-zinc-300">{record.actorKind}{record.actorUserId ? ` · ${record.actorUserId}` : ""}</dd>

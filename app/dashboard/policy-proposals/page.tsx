@@ -77,7 +77,7 @@ const SEVERITY_CLASS: Record<ProposalView["severity"], string> = {
 };
 
 const DECISION_CLASS: Record<ProposalDecision, string> = {
-  pending:    "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  pending:    "bg-orange-500/15 text-orange-300 border-white/10",
   accepted:   "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
   rejected:   "bg-rose-500/15 text-rose-300 border-rose-500/25",
   dismissed:  "bg-zinc-700/40 text-zinc-300 border-zinc-700/40",
@@ -141,7 +141,7 @@ export default function PolicyProposalsPage() {
           type="button"
           onClick={generateProposals}
           disabled={loading}
-          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-white/[0.04] text-[12px] font-semibold text-orange-100 hover:bg-orange-500/[0.18] disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
+          className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-white/4 text-[12px] font-semibold text-orange-100 hover:bg-orange-500/18 disabled:opacity-50 disabled:cursor-wait transition-colors inline-flex items-center gap-1.5"
         >
           <SparklesIcon className="h-3.5 w-3.5" />
           {loading ? "Working…" : "Generate proposals"}
@@ -159,15 +159,15 @@ export default function PolicyProposalsPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading proposals…
         </div>
       )}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -176,14 +176,14 @@ export default function PolicyProposalsPage() {
         </div>
       )}
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
 
       {data && (
         data.proposals.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No proposals yet. Click "Generate proposals" — the engine will scan your org's release patterns and suggest new policy rules to adopt.
           </div>
         ) : (
@@ -228,15 +228,15 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
   const body = proposal.suggestedRuleBody as { description?: string; defaultBlocking?: boolean; scope?: string } | null;
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-orange-500/[0.025] p-4">
+    <div className="rounded-2xl border border-white/6 bg-orange-500/2.5 p-4">
       <div className="flex items-center gap-2 mb-2 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[proposal.severity]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[proposal.severity]}`}>
           {proposal.severity}
         </span>
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-white/[0.08] bg-white/[0.02] text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-white/8 bg-white/2 text-zinc-300">
           {KIND_LABEL[proposal.kind]}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${DECISION_CLASS[proposal.operatorDecision]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${DECISION_CLASS[proposal.operatorDecision]}`}>
           {proposal.operatorDecision}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">confidence {proposal.confidence}%</span>
@@ -248,7 +248,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
       <p className="text-[12.5px] text-zinc-300 mb-3">{proposal.rationale}</p>
 
       {proposal.evidence.length > 0 && (
-        <div className="mb-3 rounded-lg border border-white/[0.06] bg-black/20 p-2.5">
+        <div className="mb-3 rounded-lg border border-white/6 bg-black/20 p-2.5">
           <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Evidence</p>
           <ul className="space-y-0.5 text-[11px] font-mono text-zinc-300">
             {proposal.evidence.map((e, i) => (
@@ -261,7 +261,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
       )}
 
       {body && (
-        <div className="mb-3 rounded-lg border border-white/[0.06] bg-black/20 p-2.5">
+        <div className="mb-3 rounded-lg border border-white/6 bg-black/20 p-2.5">
           <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 mb-1">Suggested rule</p>
           <p className="text-[11.5px] text-zinc-200 mb-1">{body.description}</p>
           <p className="text-[10px] font-mono text-zinc-500">
@@ -278,7 +278,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
       )}
 
       {proposal.operatorDecision === "pending" && (
-        <div className="pt-3 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="pt-3 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
             aria-label="Override rule key"
@@ -286,7 +286,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setOverride(e.target.value)}
             placeholder="override rule key (optional)"
             disabled={busy !== null}
-            className="rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50 w-[180px]"
+            className="rounded-md border border-white/8 bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50 w-[180px]"
           />
           <input
             type="text"
@@ -295,18 +295,18 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             placeholder="optional decision note"
             disabled={busy !== null}
             aria-label="Optional decision note"
-            className="flex-1 min-w-[160px] rounded-md border border-white/[0.08] bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[160px] rounded-md border border-white/8 bg-black/30 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-orange-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/16 disabled:opacity-50 disabled:cursor-wait">
             {busy === "accept" ? "…" : "Accept → create rule"}
           </button>
           <button type="button" onClick={() => decide("reject")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.08] text-rose-200 hover:bg-rose-500/[0.16] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-rose-500/30 bg-rose-500/8 text-rose-200 hover:bg-rose-500/16 disabled:opacity-50 disabled:cursor-wait">
             {busy === "reject" ? "…" : "Reject"}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
             {busy === "dismiss" ? "…" : "Dismiss"}
           </button>
           {err && <span className="text-rose-300">✗ {err}</span>}
@@ -319,10 +319,10 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof CpuChipIcon; label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

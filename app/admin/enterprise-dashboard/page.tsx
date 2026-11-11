@@ -85,14 +85,14 @@ export default function EnterpriseDashboardPage() {
               type="checkbox"
               checked={filters.highUrgency}
               onChange={(e) => setFilters((f) => ({ ...f, highUrgency: e.target.checked }))}
-              className="rounded border-white/[0.08] bg-white/[0.02]"
+              className="rounded-sm border-white/8 bg-white/2"
             />
             High urgency
           </label>
           <select
             value={filters.tier}
             onChange={(e) => setFilters((f) => ({ ...f, tier: e.target.value }))}
-            className="rounded-lg border border-white/[0.08] bg-white/[0.02] px-2 py-1 text-sm text-zinc-300"
+            className="rounded-lg border border-white/8 bg-white/2 px-2 py-1 text-sm text-zinc-300"
           >
             <option value="">All tiers</option>
             <option value="free">Free</option>
@@ -105,7 +105,7 @@ export default function EnterpriseDashboardPage() {
               type="checkbox"
               checked={filters.driftDetected}
               onChange={(e) => setFilters((f) => ({ ...f, driftDetected: e.target.checked }))}
-              className="rounded border-white/[0.08] bg-white/[0.02]"
+              className="rounded-sm border-white/8 bg-white/2"
             />
             Drift detected
           </label>
@@ -114,7 +114,7 @@ export default function EnterpriseDashboardPage() {
             placeholder="Min savings $"
             value={filters.minSavings}
             onChange={(e) => setFilters((f) => ({ ...f, minSavings: e.target.value }))}
-            className="w-28 rounded-lg border border-white/[0.08] bg-white/[0.02] px-2 py-1 text-sm text-zinc-300"
+            className="w-28 rounded-lg border border-white/8 bg-white/2 px-2 py-1 text-sm text-zinc-300"
           />
         </div>
       </Reveal>
@@ -128,7 +128,7 @@ export default function EnterpriseDashboardPage() {
           <div className="overflow-x-auto glass-card rounded-xl">
             <table className="min-w-full text-sm">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-white/6">
                   <th className="px-4 py-3 text-left font-medium text-white tracking-[-0.04em]">Lead</th>
                   <th className="px-4 py-3 text-left font-medium text-white tracking-[-0.04em]">Tier</th>
                   <th className="px-4 py-3 text-left font-medium text-white tracking-[-0.04em]">Urgency</th>
@@ -149,7 +149,7 @@ export default function EnterpriseDashboardPage() {
                   </tr>
                 ) : (
                   leads.map((row) => (
-                    <tr key={row.id} className="border-b border-white/[0.04] hover:bg-white/[0.03] transition-colors">
+                    <tr key={row.id} className="border-b border-white/4 hover:bg-white/3 transition-colors">
                       <td className="px-4 py-3">
                         <a
                           href={`mailto:${row.email}`}

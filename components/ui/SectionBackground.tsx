@@ -21,7 +21,7 @@ export function SectionBackground({
   const base = "absolute inset-0 -z-10 pointer-events-none overflow-hidden";
   const vignette =
     "absolute inset-0" +
-    " [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,black_40%,transparent_100%)]";
+    " mask-[radial-gradient(ellipse_80%_80%_at_50%_50%,black_40%,transparent_100%)]";
 
   if (variant === "hero-light") {
     return (

@@ -121,17 +121,17 @@ export function PolicyViolationsView() {
                 <div key={v.id} className="glass-card p-3">
                   <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${SEVERITY_CLASS[v.severity]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${SEVERITY_CLASS[v.severity]}`}>
                         {v.severity}
                       </span>
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[v.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[v.status]}`}>
                         {v.status.replace("_", " ")}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">{v.ruleLabel}</p>
                       <span className="text-[10px] font-mono text-zinc-500">{v.ruleKey}</span>
                     </div>
                     {v.blocking && (
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/25 shrink-0">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/15 text-rose-300 border border-rose-500/25 shrink-0">
                         blocking
                       </span>
                     )}
@@ -215,7 +215,7 @@ function DecideControls({
   if (state.kind === "granting") {
     const valid = reason.trim().length >= 10;
     return (
-      <div className="mt-2 pt-2 border-t border-white/[0.04]">
+      <div className="mt-2 pt-2 border-t border-white/4">
         <span className="block text-[9px] font-mono uppercase tracking-wider text-zinc-400 mb-1">
           Exception rationale ({reason.trim().length}/10 min)
         </span>
@@ -224,21 +224,21 @@ function DecideControls({
           onChange={(e) => setReason(e.target.value)}
           placeholder="Why is this exception justified?"
           rows={2}
-          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none"
+          className="w-full rounded-lg border border-zinc-700/40 bg-zinc-900/40 px-2.5 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden"
         />
         <div className="mt-1.5 flex items-center gap-1.5">
           <button
             type="button"
             disabled={!valid}
             onClick={() => decide("grant_exception", reason.trim())}
-            className="px-2 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] text-[10px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 transition-colors"
+            className="px-2 py-1 rounded-sm border border-violet-500/40 bg-violet-500/12 text-[10px] font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 transition-colors"
           >
             Confirm exception
           </button>
           <button
             type="button"
             onClick={() => { setReason(""); setState({ kind: "idle" }); }}
-            className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
+            className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[10px] text-zinc-300 hover:bg-zinc-800/60 transition-colors"
           >
             Cancel
           </button>
@@ -249,13 +249,13 @@ function DecideControls({
 
   const busy = state.kind === "submitting";
   return (
-    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
+    <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-1.5 flex-wrap text-[10px] font-mono">
       {exceptionAllowed && (
         <button
           type="button"
           disabled={busy}
           onClick={() => setState({ kind: "granting" })}
-          className="px-2 py-1 rounded border border-violet-500/30 bg-violet-500/[0.06] text-violet-200 hover:bg-violet-500/[0.12] disabled:opacity-50 transition-colors"
+          className="px-2 py-1 rounded-sm border border-violet-500/30 bg-violet-500/6 text-violet-200 hover:bg-violet-500/12 disabled:opacity-50 transition-colors"
         >
           Grant exception…
         </button>
@@ -264,7 +264,7 @@ function DecideControls({
         type="button"
         disabled={busy}
         onClick={() => decide("resolve")}
-        className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.08] text-emerald-200 hover:bg-emerald-500/[0.15] disabled:opacity-50 transition-colors"
+        className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/8 text-emerald-200 hover:bg-emerald-500/15 disabled:opacity-50 transition-colors"
       >
         {busy && state.kind === "submitting" && state.which === "resolve" ? "…" : "Mark resolved"}
       </button>
@@ -314,7 +314,7 @@ function SeedBootstrapButton() {
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2.5 py-1 rounded border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-cyan-500/40 bg-cyan-500/12 font-semibold text-cyan-100 hover:bg-cyan-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Seeding…" : "Seed default rules"}
       </button>

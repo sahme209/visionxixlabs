@@ -50,7 +50,7 @@ export default function ReleaseApprovalDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -58,7 +58,7 @@ export default function ReleaseApprovalDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -81,7 +81,7 @@ export default function ReleaseApprovalDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Approval Status</h1>
 
         <div className="space-y-6">
@@ -90,7 +90,7 @@ export default function ReleaseApprovalDetailPage() {
             <h2 className="text-[12px] font-mono uppercase tracking-wider text-zinc-400 mb-4">
               Approval Progress
             </h2>
-            <div className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
+            <div className="rounded-2xl border border-white/8 bg-white/2.5 p-5">
               <div className="flex items-center justify-between mb-4">
                 <div>
                   <p className="text-[28px] font-bold text-white">
@@ -136,25 +136,25 @@ export default function ReleaseApprovalDetailPage() {
               Current Status
             </h2>
             {notYetEvaluated ? (
-              <div className="rounded-xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] px-4 py-3 inline-block">
+              <div className="rounded-xl border border-zinc-500/25 bg-zinc-500/4 px-4 py-3 inline-block">
                 <span className="text-[13px] font-semibold text-zinc-300 uppercase tracking-wider">
                   {approval.status === "unavailable" ? "Approval storage unavailable" : "Not Yet Evaluated"}
                 </span>
               </div>
             ) : isApproved ? (
-              <div className="rounded-xl border border-emerald-500/[0.25] bg-emerald-500/[0.04] px-4 py-3 inline-block">
+              <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/4 px-4 py-3 inline-block">
                 <span className="text-[13px] font-semibold text-emerald-300 uppercase tracking-wider">
                   ✓ Approved
                 </span>
               </div>
             ) : isPending ? (
-              <div className="rounded-xl border border-white/[0.25] bg-white/[0.04] px-4 py-3 inline-block">
+              <div className="rounded-xl border border-white/25 bg-white/4 px-4 py-3 inline-block">
                 <span className="text-[13px] font-semibold text-zinc-300 uppercase tracking-wider">
                   ⏳ Pending
                 </span>
               </div>
             ) : (
-              <div className="rounded-xl border border-zinc-500/[0.25] bg-zinc-500/[0.04] px-4 py-3 inline-block">
+              <div className="rounded-xl border border-zinc-500/25 bg-zinc-500/4 px-4 py-3 inline-block">
                 <span className="text-[13px] font-semibold text-zinc-300 uppercase tracking-wider">
                   Not Required
                 </span>
@@ -175,7 +175,7 @@ export default function ReleaseApprovalDetailPage() {
           )}
 
           {/* Guidance */}
-          <section className="rounded-2xl border border-cyan-500/[0.15] bg-cyan-500/[0.04] p-4">
+          <section className="rounded-2xl border border-cyan-500/15 bg-cyan-500/4 p-4">
             <p className="text-[12px] text-cyan-200">
               {notYetEvaluated ? (
                 approval.status === "unavailable" ? "Approval records cannot be read. No approval authority can be established." : "💡 No approval chain has been created for this release yet. Run readiness or policy evaluation to determine how many approvals are required."

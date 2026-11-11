@@ -76,7 +76,7 @@ describe("Sitewide dashboard error announcement", () => {
   it.each(SITEWIDE_AMBER_PANEL_FILES)("%s announces its error panel", (path) => {
     const src = source(path);
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6',
     );
   });
 
@@ -88,7 +88,7 @@ describe("Sitewide dashboard error announcement", () => {
 
   it("the release playbook page announces its error", () => {
     const src = source("app/dashboard/releases/[id]/playbook/page.tsx");
-    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18]');
+    expect(src).toContain('role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18');
   });
 
   it("resilience page announces its error", () => {

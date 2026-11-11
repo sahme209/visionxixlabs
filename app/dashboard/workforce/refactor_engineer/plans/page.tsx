@@ -56,33 +56,33 @@ export default async function RefactorPlansPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/refactor_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} placeholder="e.g. Extract retry-loop from fetchWithRetry"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="refactorGoal" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">refactor goal</label>
             <textarea id="refactorGoal" name="refactorGoal" required rows={2} maxLength={1000} placeholder="What outcome do you want? Smaller functions? Removed duplication? Faster path?"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="sourceCode" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">source code</label>
             <textarea id="sourceCode" name="sourceCode" required rows={12} maxLength={8000} placeholder="Paste the function/module to refactor…"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             <div>
               <label htmlFor="language" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">language (optional)</label>
               <input id="language" name="language" maxLength={80} placeholder="typescript"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
             <div>
               <label htmlFor="smellsToAddress" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">smells to address (optional)</label>
               <input id="smellsToAddress" name="smellsToAddress" maxLength={800} placeholder="e.g. duplicated retry logic across 3 functions"
-                className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+                className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
             </div>
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -95,17 +95,17 @@ export default async function RefactorPlansPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No refactor plans yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Submit the form above to draft the first one.</p>
         </div>
       ) : (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent plans · {decoded.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
               <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${REFACTOR_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors">
+                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${REFACTOR_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <span className={OUTCOME_TONE[d.outcome] ?? "text-zinc-400"}>{d.outcome.replace(/_/g, " ")}</span>
                     {d.modelHint && (<><span className="text-zinc-500">·</span><span className="text-zinc-400">{d.modelHint}</span></>)}

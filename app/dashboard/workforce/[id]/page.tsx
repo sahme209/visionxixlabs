@@ -513,7 +513,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           as a structured list (compliance: per-control / detector:
           per-signal). Refresh button POSTs the domain endpoint. */}
       {domainImpl && (
-        <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+        <section className="mb-6 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
           <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
               {domainImpl.reportLabel} · {engineer.displayName} doing its job
@@ -607,7 +607,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           mints a fresh narrative + risk factors + next actions and
           upserts the row. When the row doesn't exist yet, surface a
           'Run AGI now' button so operators kick off the first run. */}
-      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.04] p-5 mb-6">
+      <section className="rounded-2xl border border-orange-500/15 bg-orange-500/4 p-5 mb-6">
         <div className="flex items-center justify-between gap-3 mb-3 flex-wrap">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
             {engineer.displayName} · speaking for itself
@@ -615,7 +615,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           <div className="flex items-center gap-2">
             <Link
               href={`/dashboard/workforce/${engineer.id}/ask`}
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-white/[0.08] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-colors"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1.5 rounded-full border border-white/8 text-zinc-300 hover:text-white hover:border-white/18 transition-colors"
               title={`Ask ${engineer.displayName} a question`}
             >
               ask →
@@ -713,7 +713,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           exchanges with this engineer. Each row deep-links to the
           full thread page so a long conversation stays accessible. */}
       {qaEntries.length > 0 && (
-        <section className="mb-6 rounded-2xl border border-orange-500/10 bg-white/[0.015] p-5">
+        <section className="mb-6 rounded-2xl border border-orange-500/10 bg-white/1.5 p-5">
           <div className="flex items-baseline justify-between mb-3">
             <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">recent Q&amp;A · {qaEntries.length}</p>
             <Link
@@ -725,7 +725,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           </div>
           <ul className="space-y-3">
             {qaEntries.map((q) => (
-              <li key={q.targetId} className="rounded-lg border border-white/[0.04] bg-white/[0.015] p-3">
+              <li key={q.targetId} className="rounded-lg border border-white/4 bg-white/1.5 p-3">
                 <p className="text-[10px] font-mono text-zinc-500 mb-1">{q.generatedAt.toISOString().slice(0, 16).replace("T", " ")}</p>
                 {q.question && (
                   <p className="text-[11.5px] text-zinc-400 leading-snug mb-2 line-clamp-2">
@@ -744,7 +744,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       {/* Enable / disable toggle — workspace-level switch on top of the
           canonical approval rule. Lives directly under the header so
           the operator never has to scroll to flip the engineer off. */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
+      <section className="rounded-2xl border border-white/6 bg-white/1.5 p-4 mb-6 flex items-center justify-between gap-4 flex-wrap">
         <div className="min-w-0">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">workspace state</p>
           <p className="text-[13px] font-semibold text-white">
@@ -774,7 +774,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       {/* Operator notes — admin-visible scratchpad for context like
           "broker flaky on Tue mornings, keep disabled until fix lands".
           Plain server-rendered form, no client JS. */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/1.5 p-5 mb-6">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">operator notes</p>
         <form action={`/api/workforce/${engineer.id}/notes`} method="POST">
           <textarea
@@ -784,7 +784,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             rows={3}
             maxLength={4000}
             placeholder="Context the next operator should see — disabled-reason, runbook link, on-call notes."
-            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12.5px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-white/[0.18] transition-colors resize-none"
+            className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12.5px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-white/18 transition-colors resize-none"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
             <p className="text-[10px] font-mono text-zinc-500">
@@ -792,7 +792,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             </p>
             <button
               type="submit"
-              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-white/[0.08] text-zinc-300 hover:text-white hover:border-white/[0.18] transition-colors"
+              className="text-[11px] font-mono uppercase tracking-wider px-3 py-1 rounded-full border border-white/8 text-zinc-300 hover:text-white hover:border-white/18 transition-colors"
             >
               save notes
             </button>
@@ -805,7 +805,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           renders when there's at least one row so empty engineers stay
           tidy. */}
       {recentOperatorChanges.length > 0 && (
-        <section className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+        <section className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">recent operator changes</p>
           <ul className="space-y-1.5">
             {recentOperatorChanges.map((c) => {
@@ -816,7 +816,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               const nextLen = typeof detail.nextLen === "number" ? detail.nextLen : null;
               const nextRule = typeof detail.nextRule === "string" ? detail.nextRule : null;
               return (
-                <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-white/[0.04] bg-white/[0.015]">
+                <li key={c.id} className="flex items-center justify-between gap-3 px-3 py-2 rounded-lg border border-white/4 bg-white/1.5">
                   <div className="min-w-0 flex-1">
                     <p className="text-[12px] font-mono text-white">{actionLabel}</p>
                     <p className="text-[10px] font-mono text-zinc-500 mt-0.5">
@@ -835,7 +835,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       )}
 
       {/* Approval rule strip */}
-      <section className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 mb-6">
+      <section className="rounded-2xl border border-orange-500/15 bg-white/1.5 p-5 mb-6">
         <header className="flex items-center gap-2 mb-3 flex-wrap">
           <ShieldCheckIcon className="h-4 w-4 text-orange-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Approval rule in this workspace</p>
@@ -868,7 +868,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             )}
             <Link
               href={`/dashboard/workforce/${engineer.id}/edit`}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-white/[0.12] hover:bg-orange-500/25 transition"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-orange-100 border border-white/12 hover:bg-orange-500/25 transition"
             >
               Tighten rule
               <ArrowRightIcon className="h-3 w-3" />
@@ -884,7 +884,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Last 30 days</p>
           <span className="text-[10px] font-mono text-zinc-500">{totalAttempts30d} attempt{totalAttempts30d === 1 ? "" : "s"}</span>
         </header>
-        <div className="grid grid-cols-3 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+        <div className="grid grid-cols-3 rounded-2xl border border-white/6 bg-white/1.5 divide-x divide-white/4 overflow-hidden">
           <RollupTile label="allowed"           count={rollup.allowed}           tone={rollup.allowed > 0 ? "text-emerald-300" : "text-zinc-600"} />
           <RollupTile label="requires approval" count={rollup.requires_approval} tone={rollup.requires_approval > 0 ? "text-zinc-300" : "text-zinc-600"} />
           <RollupTile label="blocked"           count={rollup.blocked}           tone={rollup.blocked > 0 ? "text-rose-300" : "text-zinc-600"} />
@@ -906,7 +906,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               return (
                 <div key={t.day} className="flex-1 flex flex-col justify-end" title={`${t.day} · ${t.count}`}>
                   <div
-                    className={`w-full rounded-sm ${t.count > 0 ? (isToday ? "bg-emerald-300/80" : "bg-zinc-400/70") : "bg-white/[0.04]"}`}
+                    className={`w-full rounded-xs ${t.count > 0 ? (isToday ? "bg-emerald-300/80" : "bg-zinc-400/70") : "bg-white/4"}`}
                     style={{ height: `${Math.max(pct, 2)}%` }}
                   />
                 </div>
@@ -920,7 +920,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           the last 50 decided requests. Honest 'no decisions yet' note
           when the engineer has never minted an approval. */}
       <section className="mb-6 grid sm:grid-cols-2 gap-3">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-5 py-4">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">pending approvals</p>
           <p className={`text-[22px] font-semibold tabular-nums ${pendingApprovalCount > 0 ? "text-zinc-300" : "text-zinc-600"}`}>
             {pendingApprovalCount}
@@ -936,7 +936,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             <p className="text-[11px] text-zinc-500 mt-1">Nothing waiting on a workspace decision.</p>
           )}
         </div>
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-5 py-4">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">median decision latency</p>
           <p className={`text-[22px] font-semibold tabular-nums ${medianDecisionMs !== null ? "text-white" : "text-zinc-600"}`}>
             {medianDecisionMs !== null ? formatMs(medianDecisionMs) : "—"}
@@ -956,7 +956,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       {funnel.minted > 0 && (
         <section className="mb-6">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-3">Approval funnel · all time</p>
-          <ol className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ol className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             <FunnelRow label="minted"   count={funnel.minted}   tone="text-white" />
             <FunnelRow label="decided"  count={funnel.decided}  tone={funnel.decided > 0 ? "text-zinc-200" : "text-zinc-600"} />
             <FunnelRow label="executed" count={funnel.executed} tone={funnel.executed > 0 ? "text-emerald-300" : "text-zinc-600"} />
@@ -981,7 +981,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               manage
             </Link>
           </header>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {cloudConnectorDeps.map((c) => {
               const isConnected = connectedProviders.has(c);
               return (
@@ -1050,12 +1050,12 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
               </Link>
             </div>
           </div>
-          <ul className="rounded-2xl border border-orange-500/15 bg-orange-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-orange-500/15 bg-orange-500/3 divide-y divide-white/4 overflow-hidden">
             {recentAgiRationale.map((r) => (
               <li key={`${r.targetKind}:${r.targetId}`}>
                 <Link
                   href={`/dashboard/agi-memory/${encodeURIComponent(`${r.targetKind}:${r.targetId}`)}`}
-                  className="group block px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                  className="group block px-5 py-3 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex items-center gap-2 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     <span className="text-orange-300">{r.targetKind}</span>
@@ -1090,12 +1090,12 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       {touchedAccounts.length > 0 && (
         <section className="mb-6">
           <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-3">Cloud accounts touched · 30d</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {touchedAccounts.map((a) => (
               <li key={a.id}>
                 <Link
                   href={`/dashboard/cloud-accounts/${a.id}`}
-                  className="group flex items-center justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                  className="group flex items-center justify-between gap-3 px-5 py-3 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300 shrink-0">{a.provider}</span>
@@ -1124,7 +1124,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400">Top actions · 30d</p>
             <span className="text-[10px] font-mono text-zinc-500">{topActions.length} of {actionMap.size}</span>
           </header>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {topActions.map((a) => {
               const allowedPct = a.total > 0 ? (a.allowed / a.total) * 100 : 0;
               const approvalPct = a.total > 0 ? (a.requires_approval / a.total) * 100 : 0;
@@ -1136,7 +1136,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                     <span className="text-[11px] font-mono text-zinc-500 tabular-nums shrink-0">{a.total}</span>
                   </div>
                   {/* Stacked bar — emerald/amber/rose proportional to outcomes. */}
-                  <div className="h-1.5 rounded-full overflow-hidden bg-white/[0.04] flex">
+                  <div className="h-1.5 rounded-full overflow-hidden bg-white/4 flex">
                     {a.allowed > 0 && (
                       <span className="bg-emerald-400/70" style={{ width: `${allowedPct}%` }} />
                     )}
@@ -1170,7 +1170,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       </section>
 
       {/* Surfaces */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-400 mb-3">Where this engineer is exposed</p>
         <div className="flex flex-wrap gap-2 text-[10.5px] font-mono uppercase tracking-wider">
           {engineer.requiresDesktopApp && (
@@ -1184,7 +1184,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
             </span>
           )}
           {engineer.ideExposed && (
-            <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.12] bg-orange-500/10 text-orange-300 px-2 py-0.5">
+            <span className="inline-flex items-center gap-1 rounded-full border border-white/12 bg-orange-500/10 text-orange-300 px-2 py-0.5">
               <CodeBracketIcon className="h-3 w-3" /> ide
             </span>
           )}
@@ -1196,7 +1196,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
 
       {/* Missing pieces */}
       {engineer.missingPieces.length > 0 && (
-        <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5 mb-6">
+        <section className="rounded-2xl border border-white/15 bg-white/4 p-5 mb-6">
           <header className="flex items-center gap-2 mb-2">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">Missing setup ({engineer.missingPieces.length})</p>
@@ -1211,7 +1211,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
           sees what's actually happening to this engineer's outputs.
           Hidden when there are no decisions yet. */}
       {recentDecidedFull.length > 0 && (
-        <section className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <section className="mb-6 rounded-2xl border border-white/6 bg-white/2 p-5">
           <header className="flex items-center justify-between gap-3 mb-3 flex-wrap">
             <p className="text-[12px] font-semibold text-white">Recent decisions</p>
             <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{recentDecidedFull.length} shown</span>
@@ -1229,7 +1229,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
                 d.executionStatus === "failed"   ? "text-rose-300"    :
                 "text-zinc-500";
               return (
-                <li key={d.id} className="rounded-lg border border-white/[0.04] bg-white/[0.015] px-3 py-2.5">
+                <li key={d.id} className="rounded-lg border border-white/4 bg-white/1.5 px-3 py-2.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                     <p className="text-[12px] font-mono text-white truncate">{d.action}</p>
                     <div className="flex items-center gap-2 text-[10px] font-mono uppercase tracking-wider shrink-0">
@@ -1252,7 +1252,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       )}
 
       {/* Recent attempts */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <header className="flex items-center justify-between gap-3 mb-3 flex-wrap">
           <div className="flex items-center gap-2">
             <ClockIcon className="h-4 w-4 text-zinc-400" />
@@ -1280,7 +1280,7 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
         ) : (
           <ul className="space-y-1.5">
             {attempts.map((a) => (
-              <li key={a.id} className="rounded-lg border border-white/[0.04] bg-white/[0.015] px-3 py-2.5">
+              <li key={a.id} className="rounded-lg border border-white/4 bg-white/1.5 px-3 py-2.5">
                 <div className="flex items-center justify-between gap-2 flex-wrap mb-1">
                   <p className="text-[12px] font-semibold text-white truncate">{a.action}</p>
                   <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-px ${
@@ -1302,17 +1302,17 @@ export default async function EngineerDetailPage({ params }: { params: Promise<{
       </section>
 
       <section className="mt-6 grid sm:grid-cols-3 gap-3">
-        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <ShieldCheckIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
           <p className="text-[11px] text-zinc-500 mt-1">Per-action read / write / approval rules.</p>
         </Link>
-        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href="/dashboard/approvals" className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <PuzzlePieceIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Approvals queue</p>
           <p className="text-[11px] text-zinc-500 mt-1">Where this engineer's actions stage.</p>
         </Link>
-        <Link href={`/dashboard/workforce/${engineer.id}/audit`} className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href={`/dashboard/workforce/${engineer.id}/audit`} className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <CheckCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Audit timeline</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every workspace event tagged with this engineer&apos;s topics.</p>
@@ -1343,18 +1343,18 @@ function FunnelRow({ label, count, tone }: { label: string; count: number; tone:
 function DepCard({ title, items, tone }: { title: string; items: readonly string[]; tone: string }) {
   if (items.length === 0) {
     return (
-      <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+      <article className="rounded-xl border border-white/6 bg-white/2 p-4">
         <p className={`text-[10px] font-mono uppercase tracking-wider mb-1 ${tone}`}>{title}</p>
         <p className="text-[11px] text-zinc-500">None required.</p>
       </article>
     );
   }
   return (
-    <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <article className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className={`text-[10px] font-mono uppercase tracking-wider mb-2 ${tone}`}>{title}</p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((it) => (
-          <span key={it} className="text-[10.5px] font-mono text-zinc-200 bg-white/[0.02] border border-white/[0.06] rounded-full px-1.5 py-0.5">
+          <span key={it} className="text-[10.5px] font-mono text-zinc-200 bg-white/2 border border-white/6 rounded-full px-1.5 py-0.5">
             {it}
           </span>
         ))}

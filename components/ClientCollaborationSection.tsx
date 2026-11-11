@@ -21,7 +21,7 @@ export function ClientCollaborationSection({
           We work alongside your team and integrate with your existing processes.
         </p>
       </div>
-      <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 md:p-8">
+      <div className="rounded-xl border border-white/6 bg-white/2 p-6 md:p-8">
         <div className="flex items-start gap-4">
           <span
             className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-orange-500/10 text-orange-400"

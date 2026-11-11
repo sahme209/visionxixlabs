@@ -39,7 +39,7 @@ export function HonestEmptyPage({
         </p>
       </header>
 
-      <div className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-7 py-7">
+      <div className="mb-8 rounded-2xl border border-white/6 bg-white/1.5 px-7 py-7">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">
           this surface reads from
         </p>

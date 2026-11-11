@@ -157,7 +157,7 @@ export function AxiomUpgradeModal({
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-2xl border border-white/[0.06] bg-white/[0.02] p-0 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
+      className="fixed inset-0 z-50 m-auto w-full max-w-md rounded-2xl border border-white/6 bg-white/2 p-0 shadow-2xl backdrop:bg-black/40 backdrop:backdrop-blur-sm"
     >
       <div className="p-6">
         <div className="flex items-start justify-between mb-4">
@@ -173,7 +173,7 @@ export function AxiomUpgradeModal({
           </div>
           <button
             onClick={onClose}
-            className="p-1 rounded-lg hover:bg-white/[0.04] text-zinc-400 hover:text-zinc-200 transition-colors"
+            className="p-1 rounded-lg hover:bg-white/4 text-zinc-400 hover:text-zinc-200 transition-colors"
           >
             <XMarkIcon className="h-5 w-5" />
           </button>
@@ -186,7 +186,7 @@ export function AxiomUpgradeModal({
         <div className="space-y-3 mb-5">
           {content.features.map((feat) => (
             <div key={feat.label} className="flex items-center gap-3">
-              <div className="flex-shrink-0 h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
+              <div className="shrink-0 h-8 w-8 rounded-lg bg-orange-500/10 flex items-center justify-center">
                 <feat.icon className="h-4 w-4 text-orange-400" />
               </div>
               <span className="text-sm text-zinc-300">
@@ -196,7 +196,7 @@ export function AxiomUpgradeModal({
           ))}
         </div>
 
-        <div className="mb-5 rounded-lg border border-orange-500/20 bg-orange-500/[0.06] p-3">
+        <div className="mb-5 rounded-lg border border-orange-500/20 bg-orange-500/6 p-3">
           <p className="text-[10px] font-bold text-orange-400 uppercase tracking-wide mb-1.5">
             {content.example.heading}
           </p>

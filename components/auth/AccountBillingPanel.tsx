@@ -41,11 +41,11 @@ export function AccountBillingPanel({
   }
 
   return (
-    <aside className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5">
+    <aside className="rounded-2xl border border-white/8 bg-white/2.5 p-5">
       <p className="text-[10px] uppercase tracking-[0.18em] text-orange-300">Workspace plan</p>
       <div className="mt-3 flex items-center justify-between gap-3">
         <h2 className="text-xl font-medium tracking-[-0.03em] text-zinc-100">{planLabel}</h2>
-        <span className="rounded-full border border-white/[0.08] bg-white/[0.03] px-2.5 py-1 text-[9px] uppercase tracking-[0.12em] text-zinc-400">{status.replaceAll("_", " ")}</span>
+        <span className="rounded-full border border-white/8 bg-white/3 px-2.5 py-1 text-[9px] uppercase tracking-[0.12em] text-zinc-400">{status.replaceAll("_", " ")}</span>
       </div>
       <p className="mt-3 text-sm leading-6 text-zinc-500">
         {billingEnabled ? "Manage invoices, payment methods, and your subscription in the secure billing portal." : "Self-service billing is still in review. The signed organization plan remains authoritative, and no charge can be started while billing is disabled."}
@@ -56,7 +56,7 @@ export function AccountBillingPanel({
             {busy ? "Opening secure portal…" : "Manage billing"}
           </button>
         ) : canManage ? (
-          <Link href="/control/plans" className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/[0.1] px-4 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.05]">Review plans</Link>
+          <Link href="/control/plans" className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/10 px-4 text-xs font-medium text-zinc-200 transition hover:bg-white/5">Review plans</Link>
         ) : (
           <p className="text-xs leading-5 text-zinc-500">A workspace owner or admin manages billing.</p>
         )}

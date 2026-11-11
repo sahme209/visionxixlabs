@@ -87,7 +87,7 @@ export default function EvidencePage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -96,12 +96,12 @@ export default function EvidencePage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <DocumentTextIcon className="h-3.5 w-3.5 text-emerald-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Evidence · audit-ready</span>
               </span>
@@ -119,9 +119,9 @@ export default function EvidencePage() {
 
           <div className="surface-glass hidden md:flex items-end gap-5 rounded-2xl px-5 py-4">
             <Stat label="Total" value={String(data?.summary.total ?? (loading ? 0 : 0))} tone="text-white" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Verified" value={String(data?.summary.verified ?? 0)} tone="text-emerald-300" />
-            <div className="w-px h-9 bg-white/[0.08]" />
+            <div className="w-px h-9 bg-white/8" />
             <Stat label="Coverage" value={`${coveragePct}%`} tone={coveragePct >= 60 ? "text-emerald-300" : coveragePct >= 30 ? "text-zinc-300" : "text-rose-300"} />
           </div>
         </div>
@@ -133,7 +133,7 @@ export default function EvidencePage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// evidence unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -164,8 +164,8 @@ export default function EvidencePage() {
                   onClick={() => setKindFilter(k)}
                   className={`text-[11px] font-mono uppercase tracking-wider px-2.5 py-1 rounded-full border transition-colors ${
                     kindFilter === k
-                      ? "bg-white/[0.06] border-white/[0.18] text-white"
-                      : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white"
+                      ? "bg-white/6 border-white/18 text-white"
+                      : "bg-white/2 border-white/6 text-zinc-400 hover:text-white"
                   }`}
                 >
                   {k.replace(/_/g, " ")}
@@ -174,7 +174,7 @@ export default function EvidencePage() {
             </div>
           </div>
           <div className="surface-glass rounded-2xl overflow-hidden">
-            <div className="divide-y divide-white/[0.04]">
+            <div className="divide-y divide-white/4">
               {records.slice(0, 100).map((r) => {
                 const tone = r.verified ? "emerald" : r.manual ? "amber" : r.selfAttested ? "cyan" : "zinc";
                 const dot =
@@ -184,15 +184,15 @@ export default function EvidencePage() {
                                        "bg-zinc-500";
                 const sourceClass = SOURCE_TONE[r.source] ?? "bg-zinc-700/40 text-zinc-300";
                 return (
-                  <div key={r.id} className="px-4 py-3 hover:bg-white/[0.02] transition-colors">
+                  <div key={r.id} className="px-4 py-3 hover:bg-white/2 transition-colors">
                     <div className="flex items-start gap-3">
                       <span className={`mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 ${dot}`} />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 flex-wrap mb-0.5">
                           <p className="text-[13px] font-semibold text-white tracking-tight truncate">{r.title}</p>
-                          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded ${sourceClass}`}>{r.source.replace(/_/g, " ")}</span>
+                          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded-sm ${sourceClass}`}>{r.source.replace(/_/g, " ")}</span>
                           {r.controlId && (
-                            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded bg-orange-500/15 text-orange-300">{r.controlId}</span>
+                            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-px rounded-sm bg-orange-500/15 text-orange-300">{r.controlId}</span>
                           )}
                         </div>
                         <p className="text-[11px] text-zinc-500 font-mono">
@@ -208,7 +208,7 @@ export default function EvidencePage() {
               })}
             </div>
             {records.length > 100 && (
-              <div className="px-4 py-2 border-t border-white/[0.06] text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
+              <div className="px-4 py-2 border-t border-white/6 text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
                 Showing first 100 of {records.length} records · use /api/trust/evidence?control=X to drill down
               </div>
             )}
@@ -217,13 +217,13 @@ export default function EvidencePage() {
       )}
 
       {data && data.records.length === 0 && (
-        <section className="mb-8 rounded-2xl border border-white/[0.18] bg-white/[0.04] p-6">
+        <section className="mb-8 rounded-2xl border border-white/18 bg-white/4 p-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// no evidence collected yet</p>
           <p className="text-[14px] text-zinc-200 font-semibold mb-1">No records to inspect.</p>
           <p className="text-[12px] text-zinc-400 leading-relaxed">
             Evidence is collected when scans run, approvals are decided, validation passes, and security reviews complete. Connect at least one source to start populating the audit trail.
           </p>
-          <Link href="/dashboard/sources" className="inline-flex items-center gap-1.5 mt-3 text-[12px] font-medium text-zinc-200 hover:text-zinc-100 border border-white/30 bg-white/[0.06] rounded-md px-3 py-1.5 transition-colors">
+          <Link href="/dashboard/sources" className="inline-flex items-center gap-1.5 mt-3 text-[12px] font-medium text-zinc-200 hover:text-zinc-100 border border-white/30 bg-white/6 rounded-md px-3 py-1.5 transition-colors">
             Open sources <ArrowRightIcon className="h-3 w-3" />
           </Link>
         </section>
@@ -245,7 +245,7 @@ export default function EvidencePage() {
       )}
 
       {/* Export pointer */}
-      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+      <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
         <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
         <div className="flex-1">
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// export</p>
@@ -256,7 +256,7 @@ export default function EvidencePage() {
             POST /api/trust/export returns a signed compliance bundle (JSON / NDJSON) with audit events, evidence records, control mappings, and traces.
           </p>
         </div>
-        <Link href="/dashboard/trust" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 bg-emerald-500/[0.06] rounded-md px-3 py-1.5 transition-colors shrink-0">
+        <Link href="/dashboard/trust" className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 bg-emerald-500/6 rounded-md px-3 py-1.5 transition-colors shrink-0">
           Trust Center <ArrowRightIcon className="h-3 w-3" />
         </Link>
       </div>
@@ -266,7 +266,7 @@ export default function EvidencePage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="text-right min-w-[4.5rem]">
+    <div className="text-right min-w-18">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>
@@ -275,10 +275,10 @@ function Stat({ label, value, tone }: { label: string; value: string; tone: stri
 
 function SummaryCard({ label, value, tone, detail }: { label: string; value: number; tone: "emerald" | "cyan" | "amber" | "rose"; detail: string }) {
   const toneClasses: Record<string, { border: string; bg: string; text: string }> = {
-    emerald: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300" },
-    cyan:    { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300"    },
-    amber:   { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300"   },
-    rose:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300"    },
+    emerald: { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300" },
+    cyan:    { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300"    },
+    amber:   { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300"   },
+    rose:    { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300"    },
   };
   const t = toneClasses[tone];
   return (

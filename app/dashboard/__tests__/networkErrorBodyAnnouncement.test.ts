@@ -42,13 +42,13 @@ describe("networkError/errorBody announcement — standard scaffold", () => {
   it.each(STANDARD_SCAFFOLD_FILES)("%s announces all 3 error states", (path) => {
     const src = source(path);
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">\n          {networkError}',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">\n          {networkError}',
     );
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">',
     );
     expect(src).toMatch(
-      /errorBody\?\.error === "auth_required" && \(\s*\n\s*<div role="alert" aria-live="assertive" className="rounded-2xl border border-white\/\[0\.18\] bg-white\/\[0\.04\] p-5 mb-6 text-\[13px\] text-zinc-300"/,
+      /errorBody\?\.error === "auth_required" && \(\s*\n\s*<div role="alert" aria-live="assertive" className="rounded-2xl border border-white\/18 bg-white\/4 p-5 mb-6 text-\[13px\] text-zinc-300"/,
     );
   });
 });
@@ -57,10 +57,10 @@ describe("networkError/errorBody announcement — non-standard variants", () => 
   it("sops page announces both its error states (no migration-pending block exists here)", () => {
     const src = source("app/dashboard/sops/page.tsx");
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18]',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18',
     );
     expect(src).toContain(
-      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">',
+      'role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">',
     );
   });
 

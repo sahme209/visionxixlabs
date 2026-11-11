@@ -49,9 +49,9 @@ interface Report {
 
 const CLOUD_LABEL: Record<Cloud, string> = { aws: "AWS SCP", azure: "Azure Policy", gcp: "GCP Org Policy" };
 const CLOUD_TONE: Record<Cloud, string> = {
-  aws: "border-white/30 bg-white/[0.04]",
-  azure: "border-sky-500/30 bg-sky-500/[0.04]",
-  gcp: "border-emerald-500/30 bg-emerald-500/[0.04]",
+  aws: "border-white/30 bg-white/4",
+  azure: "border-sky-500/30 bg-sky-500/4",
+  gcp: "border-emerald-500/30 bg-emerald-500/4",
 };
 
 const LOOKBACK_OPTIONS = [
@@ -111,7 +111,7 @@ export default function PolicyPreviewsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -120,10 +120,10 @@ export default function PolicyPreviewsPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <LockClosedIcon className="h-3.5 w-3.5 text-emerald-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
               Policy Previews · approval_only_no_execution
@@ -150,7 +150,7 @@ export default function PolicyPreviewsPage() {
               className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition ${
                 lookback === o.value
                   ? "bg-emerald-500/15 text-emerald-200 border-emerald-500/30"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                  : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
               }`}
             >
               {o.label}
@@ -159,7 +159,7 @@ export default function PolicyPreviewsPage() {
           <button
             onClick={() => load(lookback)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -177,12 +177,12 @@ export default function PolicyPreviewsPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
           // generating SCP + Azure Policy + GCP Org Policy previews…
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -190,15 +190,15 @@ export default function PolicyPreviewsPage() {
       {!loading && !error && report && (
         <>
           {report.packages.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No runbooks in this window — no policy previews to draft.
             </div>
           ) : (
             <div className="space-y-4 mb-8">
               {report.packages.map((pkg) => (
-                <div key={pkg.runbookId} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={pkg.runbookId} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center gap-2 flex-wrap mb-2">
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border bg-orange-500/15 text-orange-300 border-white/[0.12]">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border bg-orange-500/15 text-orange-300 border-white/12">
                       {pkg.severity}
                     </span>
                     <p className="text-[14px] font-semibold text-white">{pkg.eventName}</p>
@@ -206,7 +206,7 @@ export default function PolicyPreviewsPage() {
                   </div>
 
                   {pkg.previews.length === 0 && pkg.notes.length > 0 && (
-                    <div className="rounded-md border border-white/15 bg-white/[0.04] p-2.5">
+                    <div className="rounded-md border border-white/15 bg-white/4 p-2.5">
                       {pkg.notes.map((n, i) => (
                         <p key={i} className="text-[11px] text-zinc-200">{n}</p>
                       ))}
@@ -227,13 +227,13 @@ export default function PolicyPreviewsPage() {
                                 <button
                                   onClick={() => draftTf(key, p.cloud, p.label, p.policyJson)}
                                   disabled={tfBusy === key}
-                                  className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border bg-black/30 border-white/[0.08] text-zinc-300 hover:text-white disabled:opacity-50"
+                                  className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded-sm border bg-black/30 border-white/8 text-zinc-300 hover:text-white disabled:opacity-50"
                                 >
                                   {tfBusy === key ? "…" : "tf"}
                                 </button>
                                 <button
                                   onClick={() => copyOne(key, p.policyJson)}
-                                  className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded border bg-black/30 border-white/[0.08] text-zinc-300 hover:text-white"
+                                  className="inline-flex items-center gap-1 text-[10px] font-mono px-1.5 py-0.5 rounded-sm border bg-black/30 border-white/8 text-zinc-300 hover:text-white"
                                 >
                                   {copied === key ? (
                                     <>
@@ -251,7 +251,7 @@ export default function PolicyPreviewsPage() {
                             </div>
                             <p className="text-[12px] font-semibold text-white">{p.label}</p>
                             <p className="text-[10px] text-zinc-400 mt-0.5 leading-snug">{p.description}</p>
-                            <pre className="mt-2 max-h-44 overflow-auto rounded border border-white/[0.08] bg-black/40 p-2 text-[10px] font-mono text-zinc-200 leading-snug">
+                            <pre className="mt-2 max-h-44 overflow-auto rounded-sm border border-white/8 bg-black/40 p-2 text-[10px] font-mono text-zinc-200 leading-snug">
                               {p.policyJson}
                             </pre>
                             <p className="mt-2 text-[10px] font-mono text-zinc-500 leading-snug">{p.applyHint}</p>
@@ -266,7 +266,7 @@ export default function PolicyPreviewsPage() {
           )}
 
           {report.limitations.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+            <div className="rounded-2xl border border-white/18 bg-white/3 p-4 mb-8">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// notes</p>
               {report.limitations.map((l, i) => <p key={i} className="text-[12px] text-zinc-300">· {l}</p>)}
             </div>
@@ -274,27 +274,27 @@ export default function PolicyPreviewsPage() {
 
           {tfDraft && (
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4" onClick={() => setTfDraft(null)}>
-              <div onClick={(e) => e.stopPropagation()} className="max-w-3xl w-full rounded-2xl border border-white/[0.1] bg-zinc-950 p-5">
+              <div onClick={(e) => e.stopPropagation()} className="max-w-3xl w-full rounded-2xl border border-white/10 bg-zinc-950 p-5">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[12px] font-mono text-orange-300 uppercase tracking-wider">// terraform draft · {tfDraft.key}</p>
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => navigator.clipboard.writeText(tfDraft.hcl)}
-                      className="text-[11px] font-mono px-2 py-1 rounded border bg-black/30 border-white/[0.08] text-zinc-200 hover:text-white"
+                      className="text-[11px] font-mono px-2 py-1 rounded-sm border bg-black/30 border-white/8 text-zinc-200 hover:text-white"
                     >
                       copy HCL
                     </button>
-                    <button onClick={() => setTfDraft(null)} className="text-[11px] font-mono px-2 py-1 rounded border bg-black/30 border-white/[0.08] text-zinc-200 hover:text-white">
+                    <button onClick={() => setTfDraft(null)} className="text-[11px] font-mono px-2 py-1 rounded-sm border bg-black/30 border-white/8 text-zinc-200 hover:text-white">
                       close
                     </button>
                   </div>
                 </div>
-                <pre className="max-h-[55vh] overflow-auto rounded-lg border border-white/[0.08] bg-black/60 p-3 text-[11px] font-mono text-emerald-100 leading-relaxed">
+                <pre className="max-h-[55vh] overflow-auto rounded-lg border border-white/8 bg-black/60 p-3 text-[11px] font-mono text-emerald-100 leading-relaxed">
 {tfDraft.hcl}
                 </pre>
                 <p className="text-[11px] text-zinc-400 mt-2 leading-snug">{tfDraft.applyHint}</p>
                 {tfDraft.warnings.length > 0 && (
-                  <div className="mt-2 rounded border border-white/15 bg-white/[0.04] p-2">
+                  <div className="mt-2 rounded-sm border border-white/15 bg-white/4 p-2">
                     {tfDraft.warnings.map((w, i) => (
                       <p key={i} className="text-[10px] text-zinc-200">· {w}</p>
                     ))}
@@ -313,9 +313,9 @@ function Stat({
   label, value, tone, icon: Icon,
 }: { label: string; value: string; tone: "emerald" | "orange" | "zinc"; icon?: typeof LockClosedIcon }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

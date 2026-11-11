@@ -107,7 +107,7 @@ export function PolicyProposalsView() {
           type="button"
           onClick={generateProposals}
           disabled={loading}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {loading ? "Working…" : "✨ Generate proposals"}
         </button>
@@ -186,13 +186,13 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
   return (
     <div className="glass-card p-3 border border-violet-500/20">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEVERITY_CLASS[proposal.severity]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEVERITY_CLASS[proposal.severity]}`}>
           {proposal.severity}
         </span>
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
           {KIND_LABEL[proposal.kind]}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${DECISION_CLASS[proposal.operatorDecision]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${DECISION_CLASS[proposal.operatorDecision]}`}>
           {proposal.operatorDecision}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">confidence {proposal.confidence}%</span>
@@ -204,7 +204,7 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
       <p className="text-[12px] text-zinc-300 mt-1">{proposal.rationale}</p>
 
       {proposal.evidence.length > 0 && (
-        <div className="mt-2 rounded border border-zinc-700/30 bg-zinc-900/40 p-2 text-[10.5px] font-mono">
+        <div className="mt-2 rounded-sm border border-zinc-700/30 bg-zinc-900/40 p-2 text-[10.5px] font-mono">
           <p className="text-zinc-500 uppercase tracking-[0.18em] mb-1">Evidence</p>
           {proposal.evidence.map((e, i) => (
             <p key={i} className="text-zinc-300">
@@ -228,14 +228,14 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
       )}
 
       {proposal.operatorDecision === "pending" && (
-        <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
             value={override}
             onChange={(e) => setOverride(e.target.value)}
             placeholder="override rule key"
             disabled={busy !== null}
-            className="rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50 w-[140px]"
+            className="rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50 w-[140px]"
           />
           <input
             type="text"
@@ -243,18 +243,18 @@ function ProposalCard({ proposal, onChanged }: { proposal: ProposalView; onChang
             onChange={(e) => setNote(e.target.value)}
             placeholder="decision note"
             disabled={busy !== null}
-            className="flex-1 min-w-[140px] rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[140px] rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "accept" ? "…" : "Accept"}
           </button>
           <button type="button" onClick={() => decide("reject")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-rose-500/30 bg-rose-500/[0.10] text-rose-200 hover:bg-rose-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "reject" ? "…" : "Reject"}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
             {busy === "dismiss" ? "…" : "Dismiss"}
           </button>
           {err && <span className="text-rose-300">✗ {err}</span>}

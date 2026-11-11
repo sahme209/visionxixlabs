@@ -47,10 +47,10 @@ export interface TenantEmptyStateProps {
 }
 
 const TONE_GLOW: Record<NonNullable<TenantEmptyStateProps["tone"]>, string> = {
-  orange:  "from-orange-500/[0.05] via-transparent to-amber-500/[0.03]",
-  emerald: "from-emerald-500/[0.05] via-transparent to-cyan-500/[0.03]",
-  amber: "from-amber-500/[0.05] via-transparent to-orange-500/[0.03]",
-  cyan:    "from-cyan-500/[0.05] via-transparent to-orange-500/[0.03]",
+  orange:  "from-orange-500/5 via-transparent to-amber-500/3",
+  emerald: "from-emerald-500/5 via-transparent to-cyan-500/3",
+  amber: "from-amber-500/5 via-transparent to-orange-500/3",
+  cyan:    "from-cyan-500/5 via-transparent to-orange-500/3",
 };
 
 const TONE_ICON_BG: Record<NonNullable<TenantEmptyStateProps["tone"]>, string> = {
@@ -89,7 +89,7 @@ export function TenantEmptyState({
       : [{ href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" }];
 
   return (
-    <div className={`relative rounded-2xl border border-white/[0.06] bg-gradient-to-br ${TONE_GLOW[tone]} p-8 md:p-10 overflow-hidden`}>
+    <div className={`relative rounded-2xl border border-white/6 bg-linear-to-br ${TONE_GLOW[tone]} p-8 md:p-10 overflow-hidden`}>
       <div
         className="absolute -top-16 -right-12 w-64 h-64 rounded-full blur-[80px] pointer-events-none"
         style={{ background: "radial-gradient(circle, rgba(251, 106, 43,0.08), transparent 60%)" }}
@@ -109,7 +109,7 @@ export function TenantEmptyState({
           {description}
         </p>
         {agiNote && (
-          <div className="flex items-start gap-2 mb-6 rounded-xl border border-white/[0.05] bg-black/30 px-3 py-2.5">
+          <div className="flex items-start gap-2 mb-6 rounded-xl border border-white/5 bg-black/30 px-3 py-2.5">
             <SparklesIcon className="h-4 w-4 text-orange-300 shrink-0 mt-0.5" />
             <p className="text-[12px] text-zinc-300 leading-relaxed">{agiNote}</p>
           </div>

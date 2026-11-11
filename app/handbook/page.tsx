@@ -93,8 +93,8 @@ export default function HandbookPage() {
     <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
+        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
       <Navigation />
@@ -104,7 +104,7 @@ export default function HandbookPage() {
       <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">HB</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           Engineering handbook
         </p>
 
@@ -112,7 +112,7 @@ export default function HandbookPage() {
           How we{" "}
           <span className="relative inline-block">
             build it.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </h1>
 
@@ -128,7 +128,7 @@ export default function HandbookPage() {
               <div className="hairline-soft mb-10" />
               <p className="mono-label mb-5 inline-flex items-center gap-3">
                 <span className="text-brand-coral/90 tabular-nums text-[11px]">{s.num}</span>
-                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+                <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
                 <span className="text-zinc-500">{s.topic}</span>
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-white leading-[1.06] tracking-[-0.035em] mb-5">
@@ -140,7 +140,7 @@ export default function HandbookPage() {
                   {s.bullets.map((b) => (
                     <li key={b} className="flex items-start gap-3 text-[13.5px] text-zinc-300 leading-relaxed">
                       <span className="text-brand-coral/70 mt-1 shrink-0">·</span>
-                      <span dangerouslySetInnerHTML={{ __html: b.replace(/`([^`]+)`/g, '<code class="font-mono text-brand-coral/90 bg-white/[0.04] px-1.5 py-0.5 rounded text-[12.5px]">$1</code>') }} />
+                      <span dangerouslySetInnerHTML={{ __html: b.replace(/`([^`]+)`/g, '<code class="font-mono text-brand-coral/90 bg-white/4 px-1.5 py-0.5 rounded-sm text-[12.5px]">$1</code>') }} />
                     </li>
                   ))}
                 </ul>
@@ -149,7 +149,7 @@ export default function HandbookPage() {
           ))}
         </div>
 
-        <div className="mt-32 pt-12 border-t border-white/[0.06] grid sm:grid-cols-2 gap-6">
+        <div className="mt-32 pt-12 border-t border-white/6 grid sm:grid-cols-2 gap-6">
           <div>
             <p className="mono-label mb-2">Companion pieces</p>
             <p className="font-display text-xl font-semibold text-white mb-3 leading-tight">More of the same posture.</p>

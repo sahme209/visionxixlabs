@@ -75,19 +75,19 @@ export default function SopDetailPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading SOP…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "unknown_deployment_type" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <span className="text-[13px] text-zinc-300">Unknown deployment type. <Link href="/dashboard/sops" className="text-white underline underline-offset-4">Back to catalog</Link>.</span>
@@ -96,7 +96,7 @@ export default function SopDetailPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required to view SOPs.
         </div>
       )}
@@ -104,13 +104,13 @@ export default function SopDetailPage() {
       {data && (
         <div className="space-y-3 mb-8">
           {data.sections.map((sec) => (
-            <section key={sec.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <section key={sec.id} className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">// {sec.id}</p>
               <h2 className="text-[15px] font-semibold text-white mb-3">{sec.title}</h2>
               <ul className="space-y-1.5">
                 {sec.bullets.map((b, i) => (
                   <li key={i} className="flex items-start gap-2.5 text-[12.5px] text-zinc-300">
-                    <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 flex-shrink-0" />
+                    <span aria-hidden className="mt-1.5 w-1 h-1 rounded-full bg-white/40 shrink-0" />
                     <span className="leading-relaxed">{b}</span>
                   </li>
                 ))}

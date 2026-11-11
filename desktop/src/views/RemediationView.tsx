@@ -66,7 +66,7 @@ export function RemediationView() {
           return (
             <Card key={b.candidate.id} className="p-0 overflow-hidden">
               <button
-                className="w-full px-5 py-4 text-left flex items-start justify-between gap-4 hover:bg-white/[0.02] transition-colors"
+                className="w-full px-5 py-4 text-left flex items-start justify-between gap-4 hover:bg-white/2 transition-colors"
                 onClick={() => setOpenId(isOpen ? null : b.candidate.id)}
               >
                 <div className="min-w-0 flex-1">
@@ -136,7 +136,7 @@ export function RemediationView() {
         })}
       </section>
 
-      <section className="rounded-xl border border-white/20 bg-white/[0.04] p-4">
+      <section className="rounded-xl border border-white/20 bg-white/4 p-4">
         <p className="text-[10px] font-mono text-zinc-300 uppercase tracking-[0.22em] mb-1.5">// honest limitations</p>
         <p className="text-[12px] text-zinc-300">This release does not execute remediation locally. Apply remains disabled until the installed runtime can verify a signed approval and tenant policy.</p>
       </section>

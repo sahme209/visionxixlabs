@@ -54,14 +54,14 @@ const DEPT_META: Record<WorkforceDepartment, { label: string; tone: string }> = 
   safety:            { label: "Safety",             tone: "border-white/30 bg-white/10 text-zinc-300" },
   verification:      { label: "Verification",       tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   memory:            { label: "Memory",             tone: "border-zinc-500/30 bg-zinc-500/10 text-zinc-300" },
-  workflow:          { label: "Workflow",           tone: "border-white/[0.12] bg-orange-500/10 text-orange-300" },
-  devops:            { label: "DevOps",             tone: "border-white/[0.12] bg-orange-500/10 text-orange-300" },
+  workflow:          { label: "Workflow",           tone: "border-white/12 bg-orange-500/10 text-orange-300" },
+  devops:            { label: "DevOps",             tone: "border-white/12 bg-orange-500/10 text-orange-300" },
   database:          { label: "Database",           tone: "border-blue-500/30 bg-blue-500/10 text-blue-300" },
   security:          { label: "Security",           tone: "border-emerald-500/30 bg-emerald-500/10 text-emerald-300" },
   finops:            { label: "FinOps",             tone: "border-white/30 bg-white/10 text-zinc-300" },
   observability:     { label: "Observability",      tone: "border-cyan-500/30 bg-cyan-500/10 text-cyan-300" },
   incident_response: { label: "Incident response",  tone: "border-rose-500/30 bg-rose-500/10 text-rose-300" },
-  marketing:         { label: "Marketing",          tone: "border-white/[0.12] bg-orange-500/10 text-orange-300" },
+  marketing:         { label: "Marketing",          tone: "border-white/12 bg-orange-500/10 text-orange-300" },
   sales:             { label: "Sales",              tone: "border-amber-500/30 bg-amber-500/10 text-amber-300" },
 };
 
@@ -283,7 +283,7 @@ export default async function WorkforcePage({
           has zero domain-engineer outputs. Auto-hides once the first
           sweep lands. */}
       {firstRunState !== "active" && (
-        <section className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/[0.06] p-6">
+        <section className="mb-6 rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-6">
           <div className="flex items-center gap-2 mb-3 flex-wrap">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300">your AI workforce is online</p>
             <span className="text-zinc-500">·</span>
@@ -338,7 +338,7 @@ export default async function WorkforcePage({
       {/* Phase 628: surface sweep-now credit-block result so the
           operator knows why their click did nothing. */}
       {blocked === "credits_exhausted" && (
-        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-5">
+        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/6 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-1">sweep blocked · AI credit pool exhausted</p>
           <p className="text-[13.5px] text-zinc-100 leading-relaxed">
             Workspace AI credit pool is exhausted for this billing period — the manual sweep would have fired up to 14 AI calls. Wait for the next cycle or upgrade your plan.
@@ -354,10 +354,10 @@ export default async function WorkforcePage({
       {dailyDigest && (
         <section className={`mb-6 rounded-2xl border p-5 ${
           dailyDigest.outcome === "critical"
-            ? "border-rose-500/30 bg-rose-500/[0.06]"
+            ? "border-rose-500/30 bg-rose-500/6"
             : dailyDigest.outcome === "active"
-            ? "border-emerald-500/20 bg-emerald-500/[0.04]"
-            : "border-white/[0.06] bg-white/[0.015]"
+            ? "border-emerald-500/20 bg-emerald-500/4"
+            : "border-white/6 bg-white/1.5"
         }`}>
           <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
             <span className="text-zinc-500">daily digest · last 24h</span>
@@ -529,7 +529,7 @@ export default async function WorkforcePage({
       </div>
 
       {/* Approval legend */}
-      <section className="mt-10 rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5">
+      <section className="mt-10 rounded-2xl border border-orange-500/15 bg-white/1.5 p-5">
         <header className="flex items-center gap-2 mb-3">
           <ShieldCheckIcon className="h-4 w-4 text-orange-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">Approval rules</p>
@@ -545,32 +545,32 @@ export default async function WorkforcePage({
       </section>
 
       <section className="mt-6 grid sm:grid-cols-2 lg:grid-cols-6 gap-3">
-        <Link href="/dashboard/workforce/coding" className="block rounded-xl border border-white/[0.12] bg-white/[0.015] p-4 hover:border-white/[0.15] transition-colors">
+        <Link href="/dashboard/workforce/coding" className="block rounded-xl border border-white/12 bg-white/1.5 p-4 hover:border-white/15 transition-colors">
           <CodeBracketSquareIcon className="h-4 w-4 text-orange-300 mb-2" />
           <p className="text-sm font-semibold text-white">AI coding</p>
           <p className="text-[11px] text-zinc-400 mt-1">Describe a change · we propose, gate, and ship the PR.</p>
         </Link>
-        <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-white/[0.12] bg-white/[0.015] p-4 hover:border-white/[0.15] transition-colors">
+        <Link href="/dashboard/workforce/pipelines" className="block rounded-xl border border-white/12 bg-white/1.5 p-4 hover:border-white/15 transition-colors">
           <PuzzlePieceIcon className="h-4 w-4 text-orange-300 mb-2" />
           <p className="text-sm font-semibold text-white">Pipelines</p>
           <p className="text-[11px] text-zinc-400 mt-1">Multi-stage CI/CD, DB-migrate, security sweeps — one click.</p>
         </Link>
-        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href="/dashboard/agent-tools" className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <ShieldCheckIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Agent tool access matrix</p>
           <p className="text-[11px] text-zinc-500 mt-1">Per-action read / write / approval rules.</p>
         </Link>
-        <Link href="/dashboard/workforce/approvals" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href="/dashboard/workforce/approvals" className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <ExclamationTriangleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Engineer approvals</p>
           <p className="text-[11px] text-zinc-500 mt-1">Engineer-sourced risky actions awaiting sign-off.</p>
         </Link>
-        <Link href="/dashboard/workforce/activity" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href="/dashboard/workforce/activity" className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <ClockIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Activity feed</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every gated attempt — allowed, requires approval, or blocked.</p>
         </Link>
-        <Link href="/dashboard/audit" className="block rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.10] transition-colors">
+        <Link href="/dashboard/audit" className="block rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/10 transition-colors">
           <CheckCircleIcon className="h-4 w-4 text-zinc-500 mb-2" />
           <p className="text-sm font-semibold text-white">Audit log</p>
           <p className="text-[11px] text-zinc-500 mt-1">Every engineer action recorded.</p>
@@ -590,7 +590,7 @@ const APPROVAL_DESC: Record<ApprovalRule, string> = {
 
 function Stat({ label, value, icon: Icon, sub }: { label: string; value: number; icon: typeof UserGroupIcon; sub?: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <Icon className="h-4 w-4 text-orange-300 mb-2" />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
@@ -602,7 +602,7 @@ function Stat({ label, value, icon: Icon, sub }: { label: string; value: number;
 function LiveStat({ label, value, sub, tone }: { label: string; value: number | string; sub: string; tone: string }) {
   const isPositive = typeof value === "number" ? value > 0 : value !== "—" && value !== "0";
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{label}</p>
       <p className={`text-2xl font-bold tabular-nums ${isPositive ? tone : "text-zinc-600"}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>
@@ -613,7 +613,7 @@ function LiveStat({ label, value, sub, tone }: { label: string; value: number | 
 function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: { engineer: AgentEngineer; attempts30d: number; pending: number; disabled: boolean; agiStatus: "fresh" | "stale" | null }) {
   const approval = APPROVAL_TONE[engineer.approvalRule];
   return (
-    <article className={`rounded-2xl border bg-white/[0.02] p-5 flex flex-col transition-opacity ${disabled ? "border-rose-500/15 opacity-60" : "border-white/[0.06]"}`}>
+    <article className={`rounded-2xl border bg-white/2 p-5 flex flex-col transition-opacity ${disabled ? "border-rose-500/15 opacity-60" : "border-white/6"}`}>
       <header className="flex items-start justify-between gap-3 mb-2">
         <div className="min-w-0">
           <p className="text-[13px] font-semibold text-white">{engineer.displayName}</p>
@@ -644,7 +644,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
       <p className="text-[11.5px] text-zinc-400 leading-snug mb-3">{engineer.role}</p>
 
       {engineer.supersedes && engineer.supersedes.length > 0 && (
-        <div className="mb-3 rounded-lg border border-emerald-500/15 bg-emerald-500/[0.04] p-2.5">
+        <div className="mb-3 rounded-lg border border-emerald-500/15 bg-emerald-500/4 p-2.5">
           <p className="text-[10px] font-semibold text-emerald-300 uppercase tracking-wider mb-1">consolidated</p>
           {engineer.supersedes.map((s) => (
             <p key={s} className="text-[10.5px] text-emerald-100/85 leading-snug">↳ {s}</p>
@@ -672,7 +672,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
           </span>
         )}
         {engineer.ideExposed && (
-          <span className="inline-flex items-center gap-1 rounded-full border border-white/[0.12] bg-orange-500/10 text-orange-300 px-1.5 py-0.5">
+          <span className="inline-flex items-center gap-1 rounded-full border border-white/12 bg-orange-500/10 text-orange-300 px-1.5 py-0.5">
             <CodeBracketIcon className="h-3 w-3" /> ide
           </span>
         )}
@@ -683,7 +683,7 @@ function EngineerCard({ engineer, attempts30d, pending, disabled, agiStatus }: {
       </p>
 
       {engineer.missingPieces.length > 0 && (
-        <div className="mt-auto pt-2 border-t border-white/[0.04]">
+        <div className="mt-auto pt-2 border-t border-white/4">
           <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-wider mb-1 inline-flex items-center gap-1">
             <ExclamationTriangleIcon className="h-3 w-3" /> Missing setup ({engineer.missingPieces.length})
           </p>
@@ -735,7 +735,7 @@ function SmallRow({ label, items, tone }: { label: string; items: readonly strin
       <p className={`text-[9.5px] font-mono uppercase tracking-wider mb-1 ${tone}/80`}>{label}</p>
       <div className="flex flex-wrap gap-1">
         {items.slice(0, 4).map((it) => (
-          <span key={it} className={`text-[10px] font-mono ${tone} bg-white/[0.02] border border-white/[0.06] rounded-full px-1.5 py-0.5`}>
+          <span key={it} className={`text-[10px] font-mono ${tone} bg-white/2 border border-white/6 rounded-full px-1.5 py-0.5`}>
             {it}
           </span>
         ))}

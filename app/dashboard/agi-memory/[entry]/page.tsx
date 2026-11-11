@@ -315,11 +315,11 @@ export default async function AgiMemoryEntryPage({
 
       {/* Narrative — the headline payload. Preserve newlines, never
           truncate. Operators may copy this into a postmortem. */}
-      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-6">
+      <section className="mb-8 rounded-2xl border border-white/6 bg-white/1.5 p-6">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">narrative</p>
         <p className="text-[14px] text-zinc-200 leading-relaxed whitespace-pre-line">{entry.narrative}</p>
         {entry.errorMessage && (
-          <div className="mt-4 rounded-lg border border-rose-500/15 bg-rose-500/[0.04] px-4 py-3">
+          <div className="mt-4 rounded-lg border border-rose-500/15 bg-rose-500/4 px-4 py-3">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-1 inline-flex items-center gap-1">
               <ExclamationTriangleIcon className="h-3 w-3" /> error
             </p>
@@ -332,7 +332,7 @@ export default async function AgiMemoryEntryPage({
       {riskFactors.length > 0 && (
         <section className="mb-8">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">risk factors · {riskFactors.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {riskFactors.map((f, i) => (
               <li key={`${i}_${f.slice(0, 24)}`} className="px-5 py-3 text-[13px] text-zinc-200 leading-relaxed">{f}</li>
             ))}
@@ -344,7 +344,7 @@ export default async function AgiMemoryEntryPage({
       {nextActions.length > 0 && (
         <section className="mb-8">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">next actions · {nextActions.length}</p>
-          <ul className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.03] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-emerald-500/15 bg-emerald-500/3 divide-y divide-white/4 overflow-hidden">
             {nextActions.map((a, i) => (
               <li key={`${i}_${a.slice(0, 24)}`} className="px-5 py-3 text-[13px] text-emerald-100/90 leading-relaxed">{a}</li>
             ))}
@@ -355,7 +355,7 @@ export default async function AgiMemoryEntryPage({
       {/* Phase 649: dispatch this row to configured integrations.
           Operator-initiated counterpart to Phase 646 approver auto-dispatch. */}
       {allowDispatch && (
-        <section className="mb-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5">
+        <section className="mb-8 rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-3 inline-flex items-center gap-2">
             <span className="text-zinc-700">//</span>
             <span>dispatch</span>
@@ -383,7 +383,7 @@ export default async function AgiMemoryEntryPage({
                 {dispatchableKinds.map((d) => (
                   <label
                     key={d.kind}
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[12px] font-mono ${d.enabled ? "border-emerald-500/30 text-emerald-100 cursor-pointer hover:bg-emerald-500/10" : "border-white/[0.06] text-zinc-600 cursor-not-allowed"}`}
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full border text-[12px] font-mono ${d.enabled ? "border-emerald-500/30 text-emerald-100 cursor-pointer hover:bg-emerald-500/10" : "border-white/6 text-zinc-600 cursor-not-allowed"}`}
                   >
                     <input
                       type="checkbox"
@@ -429,12 +429,12 @@ export default async function AgiMemoryEntryPage({
       {relevantEngineers.length > 0 && (
         <section className="mb-8">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">relevant engineers · {relevantEngineers.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {relevantEngineers.map((e) => (
               <li key={e.id}>
                 <Link
                   href={`/dashboard/workforce/${e.id}`}
-                  className="group flex items-center justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors"
+                  className="group flex items-center justify-between gap-3 px-5 py-3 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-500 shrink-0">{e.department}</span>
@@ -457,7 +457,7 @@ export default async function AgiMemoryEntryPage({
       {sourceHref && (
         <Link
           href={sourceHref}
-          className="group block rounded-2xl border border-white/[0.06] bg-white/[0.02] px-6 py-4 hover:border-white/[0.12] transition-colors"
+          className="group block rounded-2xl border border-white/6 bg-white/2 px-6 py-4 hover:border-white/12 transition-colors"
         >
           <div className="flex items-center justify-between gap-3">
             <div className="min-w-0">

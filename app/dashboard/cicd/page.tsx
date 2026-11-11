@@ -137,12 +137,12 @@ export default function CicdOpsPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing CI/CD surface…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// surface unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -154,7 +154,7 @@ export default function CicdOpsPage() {
           <h2 className="text-xs font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">// providers</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-8">
             {report.providers.map((p) => (
-              <div key={p.provider} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={p.provider} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                   <p className="text-[13px] font-semibold text-white">{PROVIDER_LABEL[p.provider]}</p>
                   <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${
@@ -165,7 +165,7 @@ export default function CicdOpsPage() {
                 </div>
                 <p className="text-[11.5px] text-zinc-300 leading-snug">{p.headline}</p>
                 {p.missingRequirements.length > 0 && (
-                  <div className="mt-2 rounded-md border border-white/[0.12] bg-white/[0.03] p-2">
+                  <div className="mt-2 rounded-md border border-white/12 bg-white/3 p-2">
                     <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-0.5">Setup needed</p>
                     {p.missingRequirements.map((m, i) => (
                       <p key={i} className="text-[10.5px] font-mono text-zinc-300">{m}</p>
@@ -186,14 +186,14 @@ export default function CicdOpsPage() {
               const v = CLASSIFICATION_VISUAL[o.classification];
               const Icon = v.icon;
               return (
-                <div key={o.kind} className="flex items-start gap-2 rounded-md border border-white/[0.04] bg-white/[0.015] p-2.5">
+                <div key={o.kind} className="flex items-start gap-2 rounded-md border border-white/4 bg-white/1.5 p-2.5">
                   <Icon className="h-3.5 w-3.5 text-white/60 mt-0.5 shrink-0" />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 flex-wrap">
                       <span className="text-[12px] text-white font-medium">{o.label}</span>
-                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${v.pill}`}>{v.label}</span>
+                      <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${v.pill}`}>{v.label}</span>
                       {o.requiredPolicyId && (
-                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">policy: {o.requiredPolicyId}</span>
+                        <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">policy: {o.requiredPolicyId}</span>
                       )}
                     </div>
                     <p className="text-[11px] text-zinc-400 leading-snug">{o.description}</p>
@@ -204,12 +204,12 @@ export default function CicdOpsPage() {
             })}
           </div>
 
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// CI/CD contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">{report.limitations.join(" ")}</p>
             </div>
@@ -222,11 +222,11 @@ export default function CicdOpsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "cyan" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    cyan:    "border-cyan-500/[0.18] bg-cyan-500/[0.03] text-cyan-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    cyan:    "border-cyan-500/18 bg-cyan-500/3 text-cyan-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

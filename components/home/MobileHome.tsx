@@ -68,14 +68,14 @@ export function MobileHome() {
             </Link>
             <Link
               href="/demo"
-              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/[0.04] px-5 py-3 text-[15px] font-semibold text-white"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-white/10 bg-white/4 px-5 py-3 text-[15px] font-semibold text-white"
             >
               <PlayCircleIcon className="h-5 w-5 text-brand-coral" />
               Explore the isolated demo
             </Link>
           </div>
 
-          <div className="mt-7 grid grid-cols-3 divide-x divide-white/[0.08] rounded-xl border border-white/[0.08] bg-white/[0.025] py-4 text-center">
+          <div className="mt-7 grid grid-cols-3 divide-x divide-white/8 rounded-xl border border-white/8 bg-white/2.5 py-4 text-center">
             <div className="px-2">
               <p className="text-xs font-semibold text-white">Desktop</p>
               <p className="mt-1 text-[10px] text-zinc-500">Delivered locally</p>
@@ -92,7 +92,7 @@ export function MobileHome() {
         </div>
       </section>
 
-      <section className="border-y border-white/[0.06] bg-white/[0.018] px-4 py-12">
+      <section className="border-y border-white/6 bg-white/[0.018] px-4 py-12">
         <div className="mx-auto max-w-md">
           <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-brand-coral">
             Request → playbook
@@ -105,7 +105,7 @@ export function MobileHome() {
             in for production validation.
           </p>
 
-          <div className="mt-7 overflow-hidden rounded-2xl border border-white/[0.09] bg-[#101015] shadow-2xl shadow-black/30">
+          <div className="mt-7 overflow-hidden rounded-2xl border border-white/9 bg-[#101015] shadow-2xl shadow-black/30">
             <div className="flex items-center justify-between border-b border-white/[0.07] px-4 py-3">
               <div>
                 <p className="text-[11px] font-mono uppercase tracking-[0.14em] text-zinc-500">
@@ -119,10 +119,10 @@ export function MobileHome() {
                 Awaiting approval
               </span>
             </div>
-            <ol className="divide-y divide-white/[0.06] px-4">
+            <ol className="divide-y divide-white/6 px-4">
               {playbookPhases.map((phase, index) => (
                 <li key={phase} className="flex items-center gap-3 py-3.5">
-                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.04] text-[11px] font-mono text-zinc-300">
+                  <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/4 text-[11px] font-mono text-zinc-300">
                     {index + 1}
                   </span>
                   <span className="text-sm text-zinc-200">{phase}</span>
@@ -148,7 +148,7 @@ export function MobileHome() {
             {promises.map((item) => (
               <article
                 key={item.title}
-                className="rounded-2xl border border-white/[0.08] bg-white/[0.025] p-5"
+                className="rounded-2xl border border-white/8 bg-white/2.5 p-5"
               >
                 <item.icon className="h-6 w-6 text-brand-coral" />
                 <h3 className="mt-4 text-lg font-semibold text-white">{item.title}</h3>
@@ -160,7 +160,7 @@ export function MobileHome() {
       </section>
 
       <section className="px-4 pb-14">
-        <div className="mx-auto max-w-md rounded-2xl border border-brand-coral/20 bg-gradient-to-br from-brand-coral/[0.09] to-brand-orange/[0.08] p-6">
+        <div className="mx-auto max-w-md rounded-2xl border border-brand-coral/20 bg-linear-to-br from-brand-coral/9 to-brand-orange/8 p-6">
           <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-rose-200">
             Explore safely
           </p>

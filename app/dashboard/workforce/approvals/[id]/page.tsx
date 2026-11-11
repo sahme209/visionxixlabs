@@ -110,8 +110,8 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
     snapshot.status === "pending"  ? "text-zinc-300 bg-white/10 border-white/30"   :
     snapshot.status === "approved" ? "text-emerald-300 bg-emerald-500/10 border-emerald-500/30" :
     snapshot.status === "rejected" ? "text-rose-300 bg-rose-500/10 border-rose-500/30"      :
-    snapshot.status === "expired"  ? "text-zinc-400 bg-white/[0.04] border-white/[0.08]"    :
-                                     "text-zinc-400 bg-white/[0.04] border-white/[0.08]";
+    snapshot.status === "expired"  ? "text-zinc-400 bg-white/4 border-white/8"    :
+                                     "text-zinc-400 bg-white/4 border-white/8";
 
   return (
     <div className="relative max-w-4xl">
@@ -150,7 +150,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
         )}
       </div>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-3">
           <div className="flex items-center gap-2 min-w-0">
             <CpuChipIcon className="h-4 w-4 text-orange-300 shrink-0" />
@@ -192,7 +192,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
         {codingReviewRequired && !codingArtifact && <p role="alert" className="mt-4 text-xs leading-5 text-amber-200">The exact coding review is unavailable. Approval is disabled; you can reject this request and start a fresh coding run.</p>}
 
         {snapshot.status === "pending" && (
-          <div className="mt-4 pt-4 border-t border-white/[0.06] flex items-center justify-between gap-3 flex-wrap">
+          <div className="mt-4 pt-4 border-t border-white/6 flex items-center justify-between gap-3 flex-wrap">
             <span className="text-[11px] text-zinc-400">
               {snapshot.requiredApprovers > 1
                 ? `Two-step approval · needs ${snapshot.requiredApprovers - approvedCount} more approver${snapshot.requiredApprovers - approvedCount === 1 ? "" : "s"}.`
@@ -215,7 +215,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
             composed safety triad with the approval's engineer +
             action + risk pre-filled. Operator adds the rest. */}
         {snapshot.status === "pending" && (
-          <div className="mt-3 pt-3 border-t border-white/[0.04] flex items-center justify-between gap-3 flex-wrap">
+          <div className="mt-3 pt-3 border-t border-white/4 flex items-center justify-between gap-3 flex-wrap">
             <span className="text-[11px] text-zinc-500">
               Want a safety triad verdict before deciding?
             </span>
@@ -233,7 +233,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
           </div>
         )}
         {snapshot.status !== "pending" && snapshot.decisionReason && (
-          <p className="mt-4 pt-4 border-t border-white/[0.06] text-[11px] font-mono text-zinc-400">
+          <p className="mt-4 pt-4 border-t border-white/6 text-[11px] font-mono text-zinc-400">
             decision reason · "{snapshot.decisionReason}"
           </p>
         )}
@@ -241,7 +241,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
 
       {/* Execution section — only renders for terminal-approved snapshots. */}
       {snapshot.status === "approved" && (
-        <section className="rounded-2xl border border-white/20 bg-white/[0.03] p-5 mb-6">
+        <section className="rounded-2xl border border-white/20 bg-white/3 p-5 mb-6">
           <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-3">// execution</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px] mb-4">
             <Meta label="Status" value={snapshot.executionStatus} mono />
@@ -269,7 +269,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
       <section className="mb-6">
         <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// vote history</p>
         {snapshot.decisions.length === 0 ? (
-          <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-6 text-center">
+          <div className="rounded-xl border border-white/6 bg-white/2 p-6 text-center">
             <ClockIcon className="h-5 w-5 text-zinc-500 mx-auto mb-2" />
             <p className="text-[12px] text-zinc-400">No votes recorded yet.</p>
             <p className="text-[10.5px] text-zinc-500 mt-1">First approver vote will appear here.</p>
@@ -282,7 +282,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
               const tone = isApprove ? "text-emerald-300" : "text-rose-300";
               const border = isApprove ? "border-emerald-500/20" : "border-rose-500/20";
               return (
-                <li key={d.id} className={`rounded-xl border bg-white/[0.02] px-4 py-3 ${border}`}>
+                <li key={d.id} className={`rounded-xl border bg-white/2 px-4 py-3 ${border}`}>
                   <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
                     <div className="flex items-center gap-2 min-w-0">
                       <span className="text-[10px] font-mono text-zinc-500">#{i + 1}</span>
@@ -302,7 +302,7 @@ export default async function ApprovalDetailPage({ params }: { params: Promise<{
         )}
       </section>
 
-      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// quorum rules</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Critical actions require {snapshot.requiredApprovers} distinct approvers. Same user cannot vote twice.</li>

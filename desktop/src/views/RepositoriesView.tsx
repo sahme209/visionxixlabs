@@ -116,24 +116,24 @@ export function RepositoriesView() {
                 <div key={r.id} className="glass-card p-3">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300 border border-zinc-600/40 shrink-0">
                         {PROVIDER_LABEL[r.provider]}
                       </span>
                       <p className="text-sm font-semibold text-white truncate">{r.displayName}</p>
                       <span className="text-[10px] font-mono text-zinc-500">default: {r.defaultBranch}</span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${PROTECTION_CLASS[r.protectionStrength]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${PROTECTION_CLASS[r.protectionStrength]}`}>
                         {r.protectionStrength} prot
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                         {r.openPrCount} PR
                       </span>
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                         {r.recentTagCount} tag
                       </span>
                       {r.lastWorkflow && (
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${workflowToneFor(r)}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${workflowToneFor(r)}`}>
                           {r.lastWorkflow.state === "completed"
                             ? `${r.lastWorkflow.name} · ${r.lastWorkflow.conclusion ?? "done"}`
                             : `${r.lastWorkflow.name} · ${r.lastWorkflow.state}`}
@@ -188,7 +188,7 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
 
   const isRunning = outcome.kind === "running";
   return (
-    <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[10px] font-mono">
+    <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[10px] font-mono">
       <span className="text-zinc-500 uppercase tracking-[0.18em]">Sync</span>
       {(["pull_requests", "releases", "workflow_runs"] as const).map((k) => (
         <button
@@ -196,7 +196,7 @@ function SyncControls({ repositoryId }: { repositoryId: string }) {
           type="button"
           disabled={isRunning}
           onClick={() => trigger(k)}
-          className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40 hover:text-violet-200 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {outcome.kind === "running" && outcome.which === k
             ? "…"
@@ -282,7 +282,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/8 text-[12px] font-semibold text-violet-200 hover:bg-violet-500/16 transition-colors"
         >
           + Register repository
         </button>
@@ -325,7 +325,7 @@ function NewRepositoryPanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !owner || !name}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Register"}
         </button>
@@ -355,7 +355,7 @@ function Field({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

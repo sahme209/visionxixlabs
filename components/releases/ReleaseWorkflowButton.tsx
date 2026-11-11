@@ -39,7 +39,7 @@ export function ReleaseWorkflowButton({ releaseId }: { releaseId: string }) {
   );
   return (
     <span className="inline-flex items-center gap-1.5">
-      <button type="button" onClick={dispatch} disabled={state.kind === "sending"} title="Dispatch the configured workflow. The bundled template requests a service restart; it does not release a new artifact." className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-orange-500/40 bg-orange-500/[0.12] text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors">
+      <button type="button" onClick={dispatch} disabled={state.kind === "sending"} title="Dispatch the configured workflow. The bundled template requests a service restart; it does not release a new artifact." className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-orange-500/40 bg-orange-500/12 text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors">
         {state.kind === "sending" ? "dispatching…" : "Dispatch workflow"}
       </button>
       {state.kind === "error" && <span role="alert" className="text-[9.5px] font-mono text-rose-300">{state.message}</span>}

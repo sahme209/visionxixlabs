@@ -57,11 +57,11 @@ export default async function StageMigrationPage() {
         </p>
       </div>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <MigrationStageForm />
       </section>
 
-      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// how staging works</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Risk floor is <span className="font-mono text-rose-300">critical</span> — every migration apply requires two distinct approvers.</li>

@@ -162,13 +162,13 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
   return (
     <div className="glass-card p-3 border border-violet-500/20">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-300">
           {KIND_LABEL[decision.consensusKind] ?? decision.consensusKind}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${agreementClass(decision.agreementScore)}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${agreementClass(decision.agreementScore)}`}>
           {decision.agreementScore}% agreement
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${DECISION_CLASS[decision.operatorDecision]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${DECISION_CLASS[decision.operatorDecision]}`}>
           {decision.operatorDecision}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">{decision.voterCount} voters</span>
@@ -179,7 +179,7 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
 
       <AiRationaleCard decisionId={decision.id} />
 
-      <div className="mt-2 rounded border border-zinc-700/30 bg-zinc-900/40 p-2">
+      <div className="mt-2 rounded-sm border border-zinc-700/30 bg-zinc-900/40 p-2">
         <p className="text-[9px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1.5">Votes</p>
         <div className="space-y-1">
           {decision.votes.map((v, i) => (
@@ -202,12 +202,12 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
       )}
 
       {decision.operatorDecision === "pending" && (
-        <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <select
             value={overrideKind}
             onChange={(e) => setOverrideKind(e.target.value)}
             disabled={busy !== null}
-            className="rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 disabled:opacity-50"
+            className="rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 disabled:opacity-50"
           >
             <option value="block_deploy">block_deploy</option>
             <option value="rollback">rollback</option>
@@ -224,18 +224,18 @@ function CouncilCard({ decision, onChanged }: { decision: CouncilView; onChanged
             onChange={(e) => setNote(e.target.value)}
             placeholder="note"
             disabled={busy !== null}
-            className="flex-1 min-w-[140px] rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[140px] rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button type="button" onClick={() => decide("accept")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "accept" ? "…" : "Accept"}
           </button>
           <button type="button" onClick={() => decide("override")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-white/30 bg-white/[0.10] text-zinc-200 hover:bg-white/[0.18] disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-white/30 bg-white/10 text-zinc-200 hover:bg-white/18 disabled:opacity-50 disabled:cursor-wait">
             {busy === "override" ? "…" : `Override → ${overrideKind}`}
           </button>
           <button type="button" onClick={() => decide("dismiss")} disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait">
             {busy === "dismiss" ? "…" : "Dismiss"}
           </button>
           {err && <span className="text-rose-300">✗ {err}</span>}
@@ -300,7 +300,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 transition-colors"
         >
           ⚖️ Run council
         </button>
@@ -323,7 +323,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           onChange={(e) => setReleaseId(e.target.value)}
           placeholder="rel_..."
           disabled={busy}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <label className="flex items-center gap-2 mb-2 text-[11.5px] text-zinc-300 cursor-pointer">
@@ -341,7 +341,7 @@ function GeneratePanel({ onGenerated }: { onGenerated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !releaseId}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Running…" : "Run"}
         </button>
@@ -429,14 +429,14 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
 
   if (!enrichment) {
     return (
-      <div className="mt-2 rounded border border-violet-500/[0.20] bg-violet-500/[0.04] p-2">
+      <div className="mt-2 rounded-sm border border-violet-500/20 bg-violet-500/4 p-2">
         <div className="flex items-center justify-between">
           <span className="text-[10.5px] font-mono uppercase tracking-[0.18em] text-violet-200">⨯ AI rationale not yet generated</span>
           <button
             type="button"
             onClick={generate}
             disabled={generating}
-            className="px-2 py-0.5 rounded border border-violet-500/40 bg-violet-500/[0.12] text-[10.5px] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait"
+            className="px-2 py-0.5 rounded-sm border border-violet-500/40 bg-violet-500/12 text-[10.5px] font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 disabled:cursor-wait"
           >
             {generating ? "Generating…" : "Generate why-this"}
           </button>
@@ -447,12 +447,12 @@ function AiRationaleCard({ decisionId }: { decisionId: string }) {
   }
 
   return (
-    <div className="mt-2 rounded border border-violet-500/[0.20] bg-violet-500/[0.04] p-2.5">
+    <div className="mt-2 rounded-sm border border-violet-500/20 bg-violet-500/4 p-2.5">
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border border-violet-500/30 bg-violet-500/[0.10] text-violet-200">
+        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border border-violet-500/30 bg-violet-500/10 text-violet-200">
           ✦ AI rationale
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${ENRICH_OUTCOME_CLASS[enrichment.outcome] ?? ENRICH_OUTCOME_CLASS.error}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${ENRICH_OUTCOME_CLASS[enrichment.outcome] ?? ENRICH_OUTCOME_CLASS.error}`}>
           {enrichment.outcome}
         </span>
         {enrichment.modelHint && (

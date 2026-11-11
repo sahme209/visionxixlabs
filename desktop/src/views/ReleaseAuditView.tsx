@@ -78,7 +78,7 @@ export function ReleaseAuditView() {
           <button
             type="button"
             onClick={() => { setKindFilter(""); loadList(""); }}
-            className={`px-2 py-1 rounded border ${kindFilter === "" ? "border-violet-500/40 bg-violet-500/[0.16] text-violet-200" : "border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40"} transition-colors`}
+            className={`px-2 py-1 rounded-sm border ${kindFilter === "" ? "border-violet-500/40 bg-violet-500/16 text-violet-200" : "border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40"} transition-colors`}
           >
             all ({data.summary.total})
           </button>
@@ -87,7 +87,7 @@ export function ReleaseAuditView() {
               key={k}
               type="button"
               onClick={() => { setKindFilter(k); loadList(k); }}
-              className={`px-2 py-1 rounded border ${kindFilter === k ? "border-violet-500/40 bg-violet-500/[0.16] text-violet-200" : "border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40"} transition-colors`}
+              className={`px-2 py-1 rounded-sm border ${kindFilter === k ? "border-violet-500/40 bg-violet-500/16 text-violet-200" : "border-zinc-700/40 bg-zinc-800/40 text-zinc-300 hover:border-violet-500/40"} transition-colors`}
             >
               {k} ({count})
             </button>
@@ -122,7 +122,7 @@ export function ReleaseAuditView() {
             {data.events.map((e) => (
               <div key={e.id} className="glass-card p-3">
                 <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${OUTCOME_CLASS[e.outcome] ?? OUTCOME_CLASS.unknown}`}>
+                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${OUTCOME_CLASS[e.outcome] ?? OUTCOME_CLASS.unknown}`}>
                     {e.outcome}
                   </span>
                   <span className="text-[10px] font-mono text-zinc-400">{e.kind}</span>

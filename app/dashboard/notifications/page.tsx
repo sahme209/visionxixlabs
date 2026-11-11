@@ -59,9 +59,9 @@ interface ReportLite {
 }
 
 const SEVERITY_VISUAL: Record<Severity, { border: string; bg: string; text: string; pill: string }> = {
-  critical: { border: "border-rose-500/[0.28]",   bg: "bg-rose-500/[0.05]",   text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200"     },
-  warning:  { border: "border-white/[0.22]",  bg: "bg-white/[0.04]",  text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
-  info:     { border: "border-cyan-500/[0.18]",   bg: "bg-cyan-500/[0.04]",   text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"     },
+  critical: { border: "border-rose-500/[0.28]",   bg: "bg-rose-500/5",   text: "text-rose-300",    pill: "bg-rose-500/20 text-rose-200"     },
+  warning:  { border: "border-white/22",  bg: "bg-white/4",  text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"   },
+  info:     { border: "border-cyan-500/18",   bg: "bg-cyan-500/4",   text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"     },
 };
 
 const TYPE_ICON: Record<string, typeof BellAlertIcon> = {
@@ -126,14 +126,14 @@ export default function NotificationsPage() {
       />
 
       {/* Hidden md+ summary card kept for layout — Stat is still useful here */}
-      <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4 mb-6">
+      <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4 mb-6">
         <div className="min-w-0">
           {report && (
             <div className="flex items-end gap-4">
               <Stat label="Critical" value={report.summary.critical} tone={report.summary.critical > 0 ? "text-rose-300" : "text-zinc-500"} />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Warning" value={report.summary.warning} tone={report.summary.warning > 0 ? "text-zinc-300" : "text-zinc-500"} />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Info" value={report.summary.info} tone="text-cyan-300" />
             </div>
           )}
@@ -150,8 +150,8 @@ export default function NotificationsPage() {
               onClick={() => setFilter(f)}
               className={`inline-flex items-center px-3 py-1.5 rounded-full text-[11px] font-medium border transition-all ${
                 filter === f
-                  ? "bg-orange-500/15 border-white/[0.12] text-orange-300"
-                  : "bg-white/[0.02] border-white/[0.06] text-zinc-400 hover:text-white hover:border-white/[0.12]"
+                  ? "bg-orange-500/15 border-white/12 text-orange-300"
+                  : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:border-white/12"
               }`}
             >
               {f === "all" ? "All" : f.charAt(0).toUpperCase() + f.slice(1)}
@@ -161,19 +161,19 @@ export default function NotificationsPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// synthesising notifications…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// notifications unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
       )}
 
       {!loading && !error && report && visible.length === 0 && (
-        <div className="rounded-2xl border border-emerald-500/[0.22] bg-emerald-500/[0.04] p-6 mb-6">
+        <div className="rounded-2xl border border-emerald-500/22 bg-emerald-500/4 p-6 mb-6">
           <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// inbox clear</p>
           <p className="text-[14px] text-emerald-100 font-semibold">No notifications match this filter.</p>
         </div>
@@ -196,11 +196,11 @@ export default function NotificationsPage() {
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1 flex-wrap">
-                      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill}`}>
+                      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill}`}>
                         {n.severity}
                       </span>
                       <span className="text-[10px] font-mono text-zinc-500">{n.type.replace(/_/g, " ")}</span>
-                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">
+                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">
                         {n.sourceMode.replace(/_/g, " ")}
                       </span>
                       <span className="text-[10px] font-mono text-zinc-500 ml-auto">
@@ -226,12 +226,12 @@ export default function NotificationsPage() {
       )}
 
       {!loading && !error && report && (
-        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+        <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
           <CheckCircleIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
           <div>
             <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// notification engine contract</p>
             <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-              safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+              safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
             </p>
             <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
               {report.limitations.join(" ")}
@@ -245,7 +245,7 @@ export default function NotificationsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4rem]">
+    <div className="text-right min-w-16">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

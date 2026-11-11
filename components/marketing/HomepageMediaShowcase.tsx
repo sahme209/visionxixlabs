@@ -44,7 +44,7 @@ export function HomepageMediaShowcase({ fallback }: HomepageMediaShowcaseProps) 
   if (!hasVideo && !hasScreenshot) return <>{fallback}</>;
 
   return (
-    <div className="relative mt-14 overflow-hidden rounded-2xl border border-white/[0.12] bg-[#171714] shadow-2xl shadow-black/30">
+    <div className="relative mt-14 overflow-hidden rounded-2xl border border-white/12 bg-[#171714] shadow-2xl shadow-black/30">
       {hasVideo ? (
         <video
           className="w-full"

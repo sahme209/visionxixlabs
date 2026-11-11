@@ -17,7 +17,7 @@ function Section({
 }) {
   const body = Array.isArray(content) ? content : [content];
   return (
-    <details className="group border-b border-white/[0.06] last:border-b-0">
+    <details className="group border-b border-white/6 last:border-b-0">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 py-4 text-left">
         <span className="text-sm font-semibold text-white">
           {title}
@@ -48,7 +48,7 @@ export function CaseStudyBlock({ study, index }: CaseStudyBlockProps) {
       className="surface-glass rounded-2xl overflow-hidden"
       aria-labelledby={`case-study-${study.id}-title`}
     >
-      <div className="px-6 py-5 border-b border-white/[0.06]">
+      <div className="px-6 py-5 border-b border-white/6">
         <div className="flex items-baseline gap-3">
           <span className="font-mono text-xs font-semibold text-brand-coral/85 tabular-nums">
             {String(index).padStart(2, "0")}

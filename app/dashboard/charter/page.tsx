@@ -30,10 +30,10 @@ interface Record {
 }
 
 const MODES: { mode: Mode; tagline: string; tone: string }[] = [
-  { mode: "observer",   tagline: "Loop runs but never auto-approves. Operator drives every transition.", tone: "border-zinc-500/30 bg-zinc-500/[0.04]" },
-  { mode: "review",     tagline: "Auto-approves read-only / preview / simulation; halts everything else for review.", tone: "border-sky-500/30 bg-sky-500/[0.04]" },
-  { mode: "assisted",   tagline: "Also hands desktop-reviewable actions to the paired runtime. Mutations halt.", tone: "border-white/[0.12] bg-white/[0.015]" },
-  { mode: "autonomous", tagline: "Drives policy-gated executions end-to-end. Unsafe + credential-disabled classes always halt.", tone: "border-emerald-500/30 bg-emerald-500/[0.04]" },
+  { mode: "observer",   tagline: "Loop runs but never auto-approves. Operator drives every transition.", tone: "border-zinc-500/30 bg-zinc-500/4" },
+  { mode: "review",     tagline: "Auto-approves read-only / preview / simulation; halts everything else for review.", tone: "border-sky-500/30 bg-sky-500/4" },
+  { mode: "assisted",   tagline: "Also hands desktop-reviewable actions to the paired runtime. Mutations halt.", tone: "border-white/12 bg-white/1.5" },
+  { mode: "autonomous", tagline: "Drives policy-gated executions end-to-end. Unsafe + credential-disabled classes always halt.", tone: "border-emerald-500/30 bg-emerald-500/4" },
 ];
 
 export default function CharterPage() {
@@ -122,7 +122,7 @@ export default function CharterPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -131,10 +131,10 @@ export default function CharterPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <CpuChipIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Autonomy charter
@@ -152,14 +152,14 @@ export default function CharterPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {!loading && (
         <>
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
             <p className="text-[11px] font-mono text-orange-300/80 uppercase tracking-wider mb-3">Autonomy mode</p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {MODES.map((m) => (
@@ -169,7 +169,7 @@ export default function CharterPage() {
                   className={`text-left rounded-lg border p-3 transition ${
                     mode === m.mode
                       ? `${m.tone} ring-2 ring-orange-400/40`
-                      : "border-white/[0.06] bg-black/20 hover:border-white/[0.18]"
+                      : "border-white/6 bg-black/20 hover:border-white/18"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2 mb-1">
@@ -182,7 +182,7 @@ export default function CharterPage() {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label htmlFor="charter-per-cycle" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">
                 Per-cycle action limit (1–50)
@@ -195,7 +195,7 @@ export default function CharterPage() {
                 value={perCycle}
                 onChange={(e) => setPerCycle(e.target.value)}
                 placeholder="defaults to mode preset"
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] text-white focus:border-orange-400/60 focus:outline-none"
+                className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[13px] text-white focus:border-orange-400/60 focus:outline-hidden"
               />
             </div>
             <div>
@@ -208,7 +208,7 @@ export default function CharterPage() {
                 value={slackWebhook}
                 onChange={(e) => setSlackWebhook(e.target.value)}
                 placeholder="https://hooks.slack.com/..."
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] font-mono text-white focus:border-orange-400/60 focus:outline-none"
+                className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[13px] font-mono text-white focus:border-orange-400/60 focus:outline-hidden"
               />
             </div>
             <div className="md:col-span-2">
@@ -221,7 +221,7 @@ export default function CharterPage() {
                 onChange={(e) => setRationale(e.target.value)}
                 rows={3}
                 placeholder="Why are you setting this mode? (1000 chars max)"
-                className="w-full rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[13px] text-white focus:border-orange-400/60 focus:outline-none"
+                className="w-full rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[13px] text-white focus:border-orange-400/60 focus:outline-hidden"
               />
             </div>
           </div>
@@ -230,7 +230,7 @@ export default function CharterPage() {
             <button
               onClick={save}
               disabled={busy}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-white border border-white/[0.12] hover:bg-orange-500/20 disabled:opacity-50"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-orange-500/15 text-white border border-white/12 hover:bg-orange-500/20 disabled:opacity-50"
             >
               <CheckIcon className="h-3.5 w-3.5" />
               {busy ? "Saving…" : hasOverride ? "Update charter" : "Save charter"}
@@ -253,14 +253,14 @@ export default function CharterPage() {
           </div>
 
           {record && (
-            <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-4">
+            <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-4">
               <p className="text-[10px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-2">// resolved charter</p>
               <p className="text-[13px] text-emerald-100"><strong>Mode:</strong> {record.resolved.mode}</p>
               <p className="text-[13px] text-emerald-100"><strong>Per-cycle limit:</strong> {record.resolved.perCycleActionLimit}</p>
               <p className="text-[12px] text-zinc-300 mt-1">{record.resolved.rationale}</p>
               <div className="mt-2 flex items-center gap-1.5 flex-wrap">
                 {record.resolved.allowedClasses.map((c) => (
-                  <span key={c} className="text-[10px] font-mono px-1.5 py-0.5 rounded border bg-emerald-500/10 text-emerald-200 border-emerald-500/20">{c}</span>
+                  <span key={c} className="text-[10px] font-mono px-1.5 py-0.5 rounded-sm border bg-emerald-500/10 text-emerald-200 border-emerald-500/20">{c}</span>
                 ))}
               </div>
             </div>

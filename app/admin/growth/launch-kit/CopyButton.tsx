@@ -22,7 +22,7 @@ export function CopyButton({ value }: { value: string }) {
     <button
       type="button"
       onClick={onClick}
-      className="absolute top-2 right-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.04] border border-white/[0.08] text-[10.5px] font-mono uppercase tracking-wider text-zinc-300 hover:bg-brand-coral/[0.10] hover:border-brand-coral/30 hover:text-brand-coral transition-all"
+      className="absolute top-2 right-2 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/4 border border-white/8 text-[10.5px] font-mono uppercase tracking-wider text-zinc-300 hover:bg-brand-coral/10 hover:border-brand-coral/30 hover:text-brand-coral transition-all"
     >
       {copied ? (
         <>

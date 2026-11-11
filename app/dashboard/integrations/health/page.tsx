@@ -56,12 +56,12 @@ interface IntegrationHealthReportLite {
 }
 
 const STATUS_VISUAL: Record<IntegrationHealthStatus, { border: string; bg: string; text: string; pill: string; icon: typeof CheckCircleIcon }> = {
-  healthy:  { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon       },
-  degraded: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
-  preview:  { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon                 },
-  blocked:  { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon             },
-  disabled: { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon         },
-  unknown:  { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon         },
+  healthy:  { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon       },
+  degraded: { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon },
+  preview:  { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon                 },
+  blocked:  { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: XCircleIcon             },
+  disabled: { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon         },
+  unknown:  { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: MinusCircleIcon         },
 };
 
 export default function IntegrationHealthPage() {
@@ -92,7 +92,7 @@ export default function IntegrationHealthPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -101,12 +101,12 @@ export default function IntegrationHealthPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="grid md:grid-cols-[1fr_auto] items-end gap-6">
           <div className="min-w-0">
             <div className="flex items-center gap-2 flex-wrap">
-              <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+              <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
                 <ServerStackIcon className="h-3.5 w-3.5 text-cyan-300" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">
                   Integration health · {(report?.overallSourceMode ?? "preview").replace(/_/g, " ")}
@@ -126,11 +126,11 @@ export default function IntegrationHealthPage() {
           </div>
 
           {report && (
-            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/[0.06] bg-white/[0.025] backdrop-blur-sm px-5 py-4">
+            <div className="hidden md:flex items-end gap-4 rounded-2xl border border-white/6 bg-white/2.5 backdrop-blur-sm px-5 py-4">
               <Stat label="Healthy" value={report.summary.healthy} tone="text-emerald-300" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Preview" value={report.summary.preview + report.summary.degraded} tone="text-zinc-300" />
-              <div className="w-px h-9 bg-white/[0.08]" />
+              <div className="w-px h-9 bg-white/8" />
               <Stat label="Blocked" value={report.summary.blocked} tone={report.summary.blocked > 0 ? "text-rose-300" : "text-zinc-500"} />
             </div>
           )}
@@ -139,12 +139,12 @@ export default function IntegrationHealthPage() {
 
       {/* States */}
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing health report…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// health unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -190,7 +190,7 @@ export default function IntegrationHealthPage() {
                       </p>
                     </div>
                   </div>
-                  <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill} shrink-0`}>
+                  <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill} shrink-0`}>
                     {e.status}
                   </span>
                 </div>
@@ -205,14 +205,14 @@ export default function IntegrationHealthPage() {
                 </div>
 
                 {e.failureReason && (
-                  <div className="rounded-md border border-rose-500/[0.18] bg-rose-500/[0.04] p-2.5 mb-3">
+                  <div className="rounded-md border border-rose-500/18 bg-rose-500/4 p-2.5 mb-3">
                     <p className="text-[10px] font-mono text-rose-300/80 uppercase tracking-wider mb-1">// failure reason</p>
                     <p className="text-[12px] text-zinc-200 leading-snug">{e.failureReason}</p>
                   </div>
                 )}
 
                 {e.missingConfig.length > 0 && (
-                  <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2.5 mb-3">
+                  <div className="rounded-md border border-white/18 bg-white/4 p-2.5 mb-3">
                     <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                     <ul className="space-y-0.5">
                       {e.missingConfig.slice(0, 4).map((c, i) => (
@@ -223,7 +223,7 @@ export default function IntegrationHealthPage() {
                 )}
 
                 {e.limitations.length > 0 && (
-                  <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-2.5 mb-3">
+                  <div className="rounded-md border border-white/6 bg-white/2 p-2.5 mb-3">
                     <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// limitations</p>
                     <ul className="space-y-0.5">
                       {e.limitations.slice(0, 2).map((l, i) => (
@@ -237,7 +237,7 @@ export default function IntegrationHealthPage() {
                   {e.safeNextAction && (
                     <Link
                       href={e.safeNextAction.href}
-                      className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors"
                     >
                       {e.safeNextAction.label}
                       <ArrowRightIcon className="h-3 w-3" />
@@ -268,7 +268,7 @@ export default function IntegrationHealthPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="text-right min-w-[4.5rem]">
+    <div className="text-right min-w-18">
       <p className={`text-2xl font-bold tracking-tight leading-none ${tone}`}>{value}</p>
       <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1.5">{label}</p>
     </div>

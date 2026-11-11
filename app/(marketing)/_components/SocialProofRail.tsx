@@ -62,7 +62,7 @@ export function SocialProofRail() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, amount: 0.3 }}
             transition={{ duration: 0.4, delay: Math.min(index * 0.06, 0.18) }}
-            className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br p-5 md:p-6 ${item.tone}`}
+            className={`relative overflow-hidden rounded-2xl border bg-linear-to-br p-5 md:p-6 ${item.tone}`}
           >
             <h3 className="text-sm font-semibold text-white">{item.title}</h3>
             <p className="mt-2 text-[13px] leading-relaxed text-zinc-300">{item.body}</p>

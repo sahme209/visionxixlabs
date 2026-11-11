@@ -119,7 +119,7 @@ export default function NetworkTopologyPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -128,10 +128,10 @@ export default function NetworkTopologyPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <GlobeAltIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Network Topology
@@ -167,12 +167,12 @@ export default function NetworkTopologyPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
           // walking VPCs / VNets / Networks across 3 clouds…
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -181,7 +181,7 @@ export default function NetworkTopologyPage() {
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-6">
             {report.sections.map((s) => (
-              <div key={s.cloud} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={s.cloud} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-center justify-between mb-2">
                   <p className="text-[13px] font-semibold text-white">{CLOUD_LABEL[s.cloud]}</p>
                   <span
@@ -217,7 +217,7 @@ export default function NetworkTopologyPage() {
           </div>
 
           {/* Topology canvas */}
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8 overflow-x-auto">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8 overflow-x-auto">
             <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-wider mb-3">
               // unified topology · grouped by cloud · hover a VPC for highlight
             </p>
@@ -227,7 +227,7 @@ export default function NetworkTopologyPage() {
                 return (
                   <div
                     key={cloud}
-                    className="rounded-xl border border-white/[0.06] p-3"
+                    className="rounded-xl border border-white/6 p-3"
                     style={{ background: `linear-gradient(180deg, ${CLOUD_COLOR[cloud]}, transparent 70%)` }}
                   >
                     <p className="text-[10px] font-mono text-white/80 uppercase tracking-wider mb-2">
@@ -248,22 +248,22 @@ export default function NetworkTopologyPage() {
                               onMouseLeave={() => setHoverVpc(null)}
                               className={`rounded-lg border p-2.5 transition cursor-default ${
                                 isHovered
-                                  ? "border-orange-400/60 bg-white/[0.025]"
+                                  ? "border-orange-400/60 bg-white/2.5"
                                   : v.internetFacing
-                                    ? "border-rose-500/30 bg-rose-500/[0.04]"
-                                    : "border-white/[0.08] bg-black/20"
+                                    ? "border-rose-500/30 bg-rose-500/4"
+                                    : "border-white/8 bg-black/20"
                               }`}
                             >
                               <div className="flex items-center justify-between gap-2">
                                 <p className="text-[12px] font-semibold text-white truncate" title={v.label}>{v.label}</p>
                                 <div className="flex items-center gap-1 shrink-0">
                                   {v.internetFacing && (
-                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded bg-rose-500/15 text-rose-300 border border-rose-500/30">
+                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded-sm bg-rose-500/15 text-rose-300 border border-rose-500/30">
                                       🌐 igw
                                     </span>
                                   )}
                                   {peerCount > 0 && (
-                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded bg-orange-500/15 text-orange-300 border border-white/[0.12]">
+                                    <span className="text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded-sm bg-orange-500/15 text-orange-300 border border-white/12">
                                       ⇄ {peerCount}
                                     </span>
                                   )}
@@ -301,7 +301,7 @@ export default function NetworkTopologyPage() {
           </div>
 
           {report.limitations.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+            <div className="rounded-2xl border border-white/18 bg-white/3 p-4 mb-8">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// limitations</p>
               {report.limitations.map((l, i) => <p key={i} className="text-[12px] text-zinc-300">· {l}</p>)}
             </div>
@@ -320,11 +320,11 @@ function Stat({
   icon?: typeof ServerStackIcon;
 }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -344,7 +344,7 @@ function Tile({ label, value, tone = "zinc" }: { label: string; value: number; t
     zinc: "text-zinc-300",
   }[tone];
   return (
-    <div className="rounded border border-white/[0.06] bg-black/20 px-1.5 py-1 text-center">
+    <div className="rounded-sm border border-white/6 bg-black/20 px-1.5 py-1 text-center">
       <p className="text-[9px] uppercase tracking-wider text-zinc-500">{label}</p>
       <p className={`text-[12px] font-bold ${cls}`}>{value}</p>
     </div>

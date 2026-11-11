@@ -204,9 +204,9 @@ export function CommandPalette() {
         role="dialog"
         aria-modal
         aria-label="Command palette"
-        className="relative w-full max-w-xl mx-4 rounded-2xl border border-white/[0.08] bg-[#0c0c0e] shadow-2xl overflow-hidden"
+        className="relative w-full max-w-xl mx-4 rounded-2xl border border-white/8 bg-[#0c0c0e] shadow-2xl overflow-hidden"
       >
-        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/[0.04]">
+        <div className="flex items-center gap-3 px-4 py-3 border-b border-white/4">
           <MagnifyingGlassIcon className="h-4 w-4 text-zinc-500 shrink-0" />
           <input
             ref={inputRef}
@@ -219,9 +219,9 @@ export function CommandPalette() {
             value={query}
             onChange={(e) => { setQuery(e.target.value); setCursor(0); }}
             placeholder="Jump to a surface, run an action, search findings…"
-            className="flex-1 bg-transparent text-[14px] text-white placeholder:text-zinc-600 focus:outline-none"
+            className="flex-1 bg-transparent text-[14px] text-white placeholder:text-zinc-600 focus:outline-hidden"
           />
-          <kbd className="text-[10px] font-mono text-zinc-600 border border-white/[0.08] rounded px-1.5 py-0.5">ESC</kbd>
+          <kbd className="text-[10px] font-mono text-zinc-600 border border-white/8 rounded-sm px-1.5 py-0.5">ESC</kbd>
         </div>
         <p className="sr-only" role="status" aria-live="polite">
           {ordered.length === 0 ? "No matches." : `${ordered.length} result${ordered.length === 1 ? "" : "s"}.`}
@@ -246,7 +246,7 @@ export function CommandPalette() {
                             type="button"
                             onMouseEnter={() => setCursor(idx)}
                             onClick={() => void entry.onActivate()}
-                            className={`w-full flex items-center gap-3 px-4 py-2 text-left ${active ? "bg-white/[0.04]" : ""}`}
+                            className={`w-full flex items-center gap-3 px-4 py-2 text-left ${active ? "bg-white/4" : ""}`}
                           >
                             <Icon className="h-4 w-4 text-zinc-500 shrink-0" />
                             <span className="text-[13px] text-zinc-200">{entry.label}</span>
@@ -271,7 +271,7 @@ export function CommandPalette() {
                             type="button"
                             onMouseEnter={() => setCursor(idx)}
                             onClick={() => void entry.onActivate()}
-                            className={`w-full flex items-center gap-3 px-4 py-2 text-left ${active ? "bg-white/[0.04]" : ""}`}
+                            className={`w-full flex items-center gap-3 px-4 py-2 text-left ${active ? "bg-white/4" : ""}`}
                           >
                             <Icon className="h-4 w-4 text-zinc-500 shrink-0" />
                             <span className="text-[13px] text-zinc-200">{entry.label}</span>
@@ -286,18 +286,18 @@ export function CommandPalette() {
           )}
         </div>
 
-        <div className="border-t border-white/[0.04] px-4 py-2 flex items-center gap-3 text-[10px] font-mono text-zinc-600">
+        <div className="border-t border-white/4 px-4 py-2 flex items-center gap-3 text-[10px] font-mono text-zinc-600">
           <span>
-            <kbd className="border border-white/[0.08] rounded px-1 py-px">↑</kbd>{" "}
-            <kbd className="border border-white/[0.08] rounded px-1 py-px">↓</kbd>{" "}
+            <kbd className="border border-white/8 rounded-sm px-1 py-px">↑</kbd>{" "}
+            <kbd className="border border-white/8 rounded-sm px-1 py-px">↓</kbd>{" "}
             navigate
           </span>
           <span>
-            <kbd className="border border-white/[0.08] rounded px-1 py-px">↵</kbd> activate
+            <kbd className="border border-white/8 rounded-sm px-1 py-px">↵</kbd> activate
           </span>
           <span className="ml-auto">
-            <kbd className="border border-white/[0.08] rounded px-1 py-px">⌘</kbd>{" "}
-            <kbd className="border border-white/[0.08] rounded px-1 py-px">K</kbd>{" "}
+            <kbd className="border border-white/8 rounded-sm px-1 py-px">⌘</kbd>{" "}
+            <kbd className="border border-white/8 rounded-sm px-1 py-px">K</kbd>{" "}
             toggle
           </span>
         </div>

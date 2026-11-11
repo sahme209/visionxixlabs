@@ -41,7 +41,7 @@ export function PlatformHero({
     "radial-gradient(900px 320px at 14% 0%, rgba(245, 78, 0,0.12), transparent 60%), radial-gradient(700px 260px at 86% 110%, rgba(45,212,191,0.06), transparent 60%)";
 
   return (
-    <div className="mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.03] via-white/[0.015] to-transparent p-6 md:p-8 relative overflow-hidden">
+    <div className="mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/3 via-white/1.5 to-transparent p-6 md:p-8 relative overflow-hidden">
       <div
         className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
         style={{ background: gradient }}

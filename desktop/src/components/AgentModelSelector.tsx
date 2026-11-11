@@ -36,7 +36,7 @@ export function AgentModelSelector({ options, value, onChange, disabled, loading
         if (option && !option.unavailableReason) onChange(option.key);
       }}
       disabled={disabled || !options.length}
-      className="w-52 max-w-full rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-none focus:border-white/25 disabled:opacity-50"
+      className="w-52 max-w-full rounded-md border border-white/10 bg-[#151719] px-2 py-1.5 text-xs text-zinc-300 outline-hidden focus:border-white/25 disabled:opacity-50"
     >
       {loading ? <option value="__checking__">Checking workspace models…</option> : <>
       {!options.length && <option value="">No model enabled</option>}

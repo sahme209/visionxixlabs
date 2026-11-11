@@ -109,14 +109,14 @@ export function ReleaseFreezeView() {
                 <div key={r.releaseId} className="glass-card p-3">
                   <div className="flex items-start justify-between gap-2 flex-wrap mb-1.5">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[r.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[r.status]}`}>
                         {STATUS_LABEL[r.status]}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">{r.releaseTag ?? "(untagged)"}</p>
                       <span className="text-[10px] font-mono text-zinc-500">{r.applicationId}</span>
                     </div>
                     {r.hoursSinceScopeFinalized !== null && (
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 shrink-0">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 shrink-0">
                         {r.hoursSinceScopeFinalized}h
                       </span>
                     )}

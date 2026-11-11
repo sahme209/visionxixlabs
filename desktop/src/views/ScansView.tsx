@@ -75,10 +75,10 @@ export function ScansView() {
             </div>
             <p className="text-xs text-zinc-500">{scan.description}</p>
             <div className="mt-2 flex items-center gap-1.5">
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-orange-500/10 text-orange-400 uppercase tracking-wider">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-orange-500/10 text-orange-400 uppercase tracking-wider">
                 {scan.provider}
               </span>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-zinc-700/50 text-zinc-400">
+              <span className="text-[10px] px-1.5 py-0.5 rounded-sm bg-zinc-700/50 text-zinc-400">
                 Read-only
               </span>
             </div>

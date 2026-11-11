@@ -51,8 +51,8 @@ export function TrustClient() {
     <div className="relative">
       {!reduce && (
         <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/[0.08] blur-[140px]" />
-          <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/[0.06] blur-[130px]" style={{ animationDelay: "-8s" }} />
+          <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
+          <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
         </div>
       )}
 
@@ -63,7 +63,7 @@ export function TrustClient() {
           className="mono-label inline-flex items-center gap-3"
         >
           <span className="text-brand-coral/90 tabular-nums">TR</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           Trust + safety
         </motion.p>
         <motion.h1
@@ -75,7 +75,7 @@ export function TrustClient() {
           The safety contract{" "}
           <span className="relative inline-block">
             is the product.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </motion.h1>
         <motion.p
@@ -124,10 +124,10 @@ export function TrustClient() {
           {COMPLIANCE.map((c) => {
             const tone =
               c.status === "implemented"
-                ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-200"
+                ? "border-emerald-500/30 bg-emerald-500/6 text-emerald-200"
                 : c.status === "unverified"
-                ? "border-white/30 bg-white/[0.06] text-zinc-200"
-                : "border-white/[0.06] bg-white/[0.02] text-zinc-400";
+                ? "border-white/30 bg-white/6 text-zinc-200"
+                : "border-white/6 bg-white/2 text-zinc-400";
             return (
               <div key={c.tag} className={`rounded-2xl border p-4 ${tone}`}>
                 <div className="flex items-center gap-2">
@@ -153,7 +153,7 @@ export function TrustClient() {
         <div className="mt-6 flex items-center justify-center gap-3">
           <Link
             href="/status"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.02] px-5 py-2.5 text-sm text-zinc-300 hover:bg-white/[0.06] transition"
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/2 px-5 py-2.5 text-sm text-zinc-300 hover:bg-white/6 transition"
           >
             Public status
           </Link>

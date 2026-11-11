@@ -50,12 +50,12 @@ export function ApprovalDecisionButtons({ proposalId, disabledReason, approveDis
 
   if (disabledReason) return <p className="max-w-xs text-xs text-zinc-500">{disabledReason}</p>;
   if (outcome) return <div className="max-w-xs space-y-3 text-left">
-    <div ref={feedback} tabIndex={-1} role={outcome.status === "failed" || outcome.status === "unconfirmed" ? "alert" : "status"} className={`text-xs leading-5 outline-none ${outcome.status === "failed" || outcome.status === "unconfirmed" ? "text-amber-200" : "text-zinc-300"}`}>{outcome.message}</div>
+    <div ref={feedback} tabIndex={-1} role={outcome.status === "failed" || outcome.status === "unconfirmed" ? "alert" : "status"} className={`text-xs leading-5 outline-hidden ${outcome.status === "failed" || outcome.status === "unconfirmed" ? "text-amber-200" : "text-zinc-300"}`}>{outcome.message}</div>
     <button type="button" onClick={() => window.location.reload()} className="h-8 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5">Reload approvals</button>
   </div>;
   return <div className="text-right">
     <div className="flex gap-2">
-      <button type="button" disabled={pending !== null} onClick={() => void decide("reject")} className="h-8 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/[0.05] disabled:opacity-50">{pending === "reject" ? "Rejecting…" : ownProposal ? "Cancel proposal" : "Reject"}</button>
+      <button type="button" disabled={pending !== null} onClick={() => void decide("reject")} className="h-8 rounded-lg border border-white/10 px-3 text-xs text-zinc-300 hover:bg-white/5 disabled:opacity-50">{pending === "reject" ? "Rejecting…" : ownProposal ? "Cancel proposal" : "Reject"}</button>
       <button type="button" disabled={pending !== null || Boolean(approvalRestriction)} aria-describedby={approvalRestriction ? `${proposalId}-approve-reason` : undefined} onClick={() => void decide("approve")} className="h-8 rounded-lg bg-[#f54e00] px-3 text-xs font-semibold text-white hover:bg-[#ff6424] disabled:opacity-50">{pending === "approve" ? "Approving…" : "Record approval"}</button>
     </div>
     {approvalRestriction && <p id={`${proposalId}-approve-reason`} className="mt-2 max-w-xs text-xs text-zinc-500">{approvalRestriction}</p>}

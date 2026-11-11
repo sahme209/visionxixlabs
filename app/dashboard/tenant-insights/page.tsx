@@ -57,9 +57,9 @@ export default function TenantInsightsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Tenant insights · aggregate_input_only
@@ -68,7 +68,7 @@ export default function TenantInsightsPage() {
           <button
             onClick={() => load(days)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -90,7 +90,7 @@ export default function TenantInsightsPage() {
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                 days === d
                   ? "bg-zinc-500/15 text-zinc-200 border-zinc-500/30"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                  : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
               }`}
             >
               Last {d} days
@@ -100,14 +100,14 @@ export default function TenantInsightsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {data && (
         <>
-          <div className="rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6 max-w-3xl">
+          <div className="rounded-2xl border border-zinc-500/18 bg-zinc-500/4 p-5 mb-6 max-w-3xl">
             <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300 mb-2">Summary</p>
             <p className="text-[14px] text-zinc-100 leading-relaxed">{data.narrative.paragraph}</p>
             <p className="mt-3 text-[10px] font-mono text-zinc-500">
@@ -136,9 +136,9 @@ export default function TenantInsightsPage() {
 
 function Card({ label, value, tone }: { label: string; value: number; tone?: "emerald" | "rose" }) {
   const tones: Record<"emerald" | "rose" | "default", string> = {
-    emerald: "text-emerald-300 border-emerald-500/30 bg-emerald-500/[0.06]",
-    rose:    "text-rose-300 border-rose-500/30 bg-rose-500/[0.06]",
-    default: "text-zinc-200 border-white/[0.06] bg-white/[0.02]",
+    emerald: "text-emerald-300 border-emerald-500/30 bg-emerald-500/6",
+    rose:    "text-rose-300 border-rose-500/30 bg-rose-500/6",
+    default: "text-zinc-200 border-white/6 bg-white/2",
   };
   return (
     <div className={`rounded-2xl border p-4 ${tones[tone ?? "default"]}`}>

@@ -214,7 +214,7 @@ export default async function AskAllPage({
       </header>
 
       {/* Ask form */}
-      <section className="mb-10 rounded-2xl border border-orange-500/15 bg-orange-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-orange-500/15 bg-orange-500/4 p-5">
         <form action="/api/workforce/ask-all" method="POST">
           <label htmlFor="question" className="text-[10px] font-mono uppercase tracking-[0.18em] text-orange-300 mb-2 block">
             your question to the workforce
@@ -226,7 +226,7 @@ export default async function AskAllPage({
             rows={3}
             maxLength={1500}
             placeholder="e.g. What's the single most important thing you'd improve about this workspace this week?"
-            className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-orange-500/40 transition-colors resize-none"
+            className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-orange-500/40 transition-colors resize-none"
           />
           <div className="mt-2 flex items-center justify-between gap-2">
             <p className="text-[10px] font-mono text-zinc-500">sequential sweep · ~30s per engineer · bounded 270s</p>
@@ -259,13 +259,13 @@ export default async function AskAllPage({
               </form>
             )}
           </div>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {pastSweeps.map((s) => {
               const isCurrent = s.sweepId === sweepId;
               const hasSynth = synthesizedSet.has(s.sweepId);
               return (
-                <li key={s.sweepId} className={isCurrent ? "bg-orange-500/[0.05]" : ""}>
-                  <div className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/[0.015] transition-colors">
+                <li key={s.sweepId} className={isCurrent ? "bg-orange-500/5" : ""}>
+                  <div className="flex items-start justify-between gap-3 px-5 py-3 hover:bg-white/1.5 transition-colors">
                     <Link
                       href={`/dashboard/workforce/ask-all?sweep=${encodeURIComponent(s.sweepId)}`}
                       className="min-w-0 flex-1 block"
@@ -305,14 +305,14 @@ export default async function AskAllPage({
 
       {/* Collective response */}
       {responses.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No sweeps yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Ask above to get the first collective response from your workforce.</p>
         </div>
       ) : (
         <section>
           {question && (
-            <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+            <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
               <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-2">the question</p>
               <p className="text-[14px] text-zinc-100 leading-relaxed whitespace-pre-line">{question}</p>
               {sweepId && (
@@ -327,7 +327,7 @@ export default async function AskAllPage({
               engineer responses because that's how operators consume
               this: TL;DR first, drilldown second. */}
           {synthesisRow && (
-            <div className="mb-6 rounded-2xl border border-orange-500/25 bg-orange-500/[0.06] p-5">
+            <div className="mb-6 rounded-2xl border border-orange-500/25 bg-orange-500/6 p-5">
               <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-[0.18em]">
                 <div className="flex items-center gap-2">
                   <SparklesIcon className="h-3.5 w-3.5 text-orange-300" />
@@ -352,7 +352,7 @@ export default async function AskAllPage({
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">responses · {responses.length}</p>
           <ul className="space-y-3">
             {responses.map((r) => (
-              <li key={r.engineerId} className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+              <li key={r.engineerId} className="rounded-2xl border border-white/6 bg-white/1.5 p-5">
                 <div className="flex items-center justify-between gap-3 mb-2 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                   <div className="flex items-center gap-2 min-w-0">
                     {r.engineer ? (

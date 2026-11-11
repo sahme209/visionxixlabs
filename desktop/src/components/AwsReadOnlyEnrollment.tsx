@@ -173,10 +173,10 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
   }
 
   const expired = challenge !== null && Date.parse(challenge.expiresAt) <= now;
-  const inputClass = "mt-1 w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-none focus:border-white/25 disabled:opacity-50";
-  const buttonClass = "rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50";
+  const inputClass = "mt-1 w-full rounded-lg border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50";
+  const buttonClass = "rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/6 disabled:opacity-50";
 
-  return <section aria-labelledby="aws-enrollment-heading" className="mt-5 rounded-xl border border-white/[0.07] bg-white/[0.025] p-4">
+  return <section aria-labelledby="aws-enrollment-heading" className="mt-5 rounded-xl border border-white/[0.07] bg-white/2.5 p-4">
     <h3 id="aws-enrollment-heading" className="text-sm font-semibold text-zinc-200">AWS read-only role enrollment</h3>
     <p className="mt-2 text-xs leading-5 text-zinc-400">Verify an existing AWS role in the intended account. This app does not create IAM roles, change trust policies, run Terraform, or grant deployment permission. Role identity verification does not attest the role’s complete IAM permission policy.</p>
     <CloudOnboardingStatus provider="aws" identity={identity} />
@@ -194,7 +194,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
             {canManage && account.connected && <AwsDisconnectControls key={account.connectionVersion} account={account} suspended={suspendedAccounts.includes(account.id)} onStarted={() => beginDisconnect(account)} onSettled={() => settleDisconnect(account.id, account.connectionVersion)} onDisconnected={updated => confirmDisconnected(account, updated)} />}
             {suspendedAccounts.includes(account.id) && <p className="mt-2 text-xs text-zinc-400">Inventory is hidden until a fresh account-state read confirms the disconnect outcome.</p>}
             {account.connected && !suspendedAccounts.includes(account.id) && <AwsBoundedInventory account={account} />}
-            {!account.connected && canManage && <button type="button" onClick={() => { updateInput("expectedAccountId", account.accountId); setInput(previous => ({ ...previous, expectedAccountId: account.accountId, roleArn: "", region: account.regions[0] ?? "us-east-1" })); }} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06]">Prepare a fresh reconnection</button>}
+            {!account.connected && canManage && <button type="button" onClick={() => { updateInput("expectedAccountId", account.accountId); setInput(previous => ({ ...previous, expectedAccountId: account.accountId, roleArn: "", region: account.regions[0] ?? "us-east-1" })); }} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/6">Prepare a fresh reconnection</button>}
           </li>)}</ul>}
       <button type="button" onClick={() => { setRefreshing(true); void refreshAccounts(); }} disabled={refreshing} className={`${buttonClass} mt-2`}>Refresh AWS account state</button>
     </div>}
@@ -255,7 +255,7 @@ function AwsBoundedInventory({ account }: { account: DesktopAwsAccount }) {
 
   return <div className="mt-2 border-t border-white/10 pt-2">
     <p className="text-xs leading-5 text-zinc-500">Read one EC2 page in the enrolled region. This is a bounded live sample, not a complete inventory. Agent scans and deployment remain disabled.</p>
-    <button type="button" disabled={loading} onClick={() => void readInventory()} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/[0.06] disabled:opacity-50">{loading ? "Reading bounded inventory…" : "Read bounded EC2 inventory"}</button>
+    <button type="button" disabled={loading} onClick={() => void readInventory()} className="mt-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-200 hover:bg-white/6 disabled:opacity-50">{loading ? "Reading bounded inventory…" : "Read bounded EC2 inventory"}</button>
     {error && <p role="alert" className="mt-2 text-xs text-red-300">{error} No sample data is substituted.</p>}
     {inventory && <div className="mt-2 text-xs leading-5 text-zinc-400">
       <p>Live EC2 sample · {inventory.region} · observed {inventory.observedAt}</p>
@@ -301,7 +301,7 @@ function AwsDisconnectControls({ account, suspended, onStarted, onSettled, onDis
   }
 
   return <div className="mt-2">
-    {!confirming ? <button type="button" disabled={suspended} onClick={() => setConfirming(true)} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/[0.06] disabled:opacity-50">Disconnect from Axiom</button>
+    {!confirming ? <button type="button" disabled={suspended} onClick={() => setConfirming(true)} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6 disabled:opacity-50">Disconnect from Axiom</button>
       : <div role="alertdialog" aria-labelledby={`aws-disconnect-${account.id}`} className="rounded-lg border border-white/15 p-3">
         <h4 id={`aws-disconnect-${account.id}`} className="text-xs font-semibold text-zinc-200">Disconnect AWS account {account.accountId} from Axiom?</h4>
         <p className="mt-2 text-xs leading-5 text-zinc-400">This removes Axiom’s saved connection configuration and stops new reads through this connection. It does not delete or modify AWS roles or trust policies, revoke existing STS sessions, stop deployments, or delete history. Previously issued STS sessions may remain valid for up to 15 minutes. The retained account still counts toward your workspace allowance.</p>

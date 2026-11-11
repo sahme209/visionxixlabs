@@ -105,12 +105,12 @@ export default function BranchDetailPage() {
       <PolicyEvaluateButton releaseId={releaseId} />
       <ReadinessEvaluateButton releaseId={releaseId} branchSummary={data?.summary ?? null} />
 
-      {loading && <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">Loading branch validation…</div>}
+      {loading && <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">Loading branch validation…</div>}
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">{networkError}</div>
       )}
       {!loading && errorBody && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">{errorBody.error}</p>
@@ -121,7 +121,7 @@ export default function BranchDetailPage() {
 
       {data && (
         <>
-          <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+          <div className="mb-6 rounded-2xl border border-white/6 bg-white/2 p-4">
             <p className="text-[12px] text-zinc-400">
               <span className="font-mono">{data.repositoryDisplayName}</span>
               {data.releaseTag && <span> · tag <span className="font-mono">{data.releaseTag}</span></span>}
@@ -146,13 +146,13 @@ export default function BranchDetailPage() {
             {data.checks.map((c) => {
               const Icon = STATE_ICON[c.state];
               return (
-                <div key={c.key} className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 flex items-start gap-3">
+                <div key={c.key} className="rounded-xl border border-white/6 bg-white/2 p-3 flex items-start gap-3">
                   <Icon className={`h-4 w-4 shrink-0 mt-0.5 ${STATE_TONE[c.state]}`} />
                   <div className="flex-1 min-w-0">
                     <p className="text-[13px] font-semibold text-white">{c.label}</p>
                     <p className="text-[11.5px] text-zinc-400 mt-0.5">{c.detail}</p>
                   </div>
-                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${STATE_TONE[c.state]}`}>
+                  <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm shrink-0 ${STATE_TONE[c.state]}`}>
                     {c.state.replace("_", " ")}
                   </span>
                 </div>
@@ -167,10 +167,10 @@ export default function BranchDetailPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>
@@ -223,26 +223,26 @@ function EvidencePackButton({ releaseId, repositoryId }: { releaseId: string; re
   const exportUrl = (fmt: "json" | "markdown") =>
     `/api/dashboard/release-evidence-export/${encodeURIComponent(releaseId)}?format=${fmt}`;
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+    <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-4 flex items-center gap-3 flex-wrap text-[12px]">
       <span className="text-[10px] font-mono uppercase tracking-wider text-orange-300/70">Evidence pack</span>
       <button
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/[0.12] font-semibold text-orange-100 hover:bg-orange-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-orange-500/40 bg-orange-500/12 font-semibold text-orange-100 hover:bg-orange-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Generating…" : "Generate / refresh pack"}
       </button>
       <a
         href={exportUrl("markdown")}
-        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-white/[0.12] hover:text-white transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-white/8 bg-white/3 font-mono text-[11px] text-zinc-200 hover:border-white/12 hover:text-white transition-colors"
         download
       >
         Download .md
       </a>
       <a
         href={exportUrl("json")}
-        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-white/[0.12] hover:text-white transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-white/8 bg-white/3 font-mono text-[11px] text-zinc-200 hover:border-white/12 hover:text-white transition-colors"
         download
       >
         Download .json
@@ -304,19 +304,19 @@ function PolicyEvaluateButton({ releaseId }: { releaseId: string }) {
 
   const busy = outcome.kind === "running";
   return (
-    <div className="mb-6 rounded-2xl border border-cyan-500/[0.18] bg-cyan-500/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+    <div className="mb-6 rounded-2xl border border-cyan-500/18 bg-cyan-500/3 p-4 flex items-center gap-3 flex-wrap text-[12px]">
       <span className="text-[10px] font-mono uppercase tracking-wider text-cyan-300/70">Policy</span>
       <button
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-cyan-500/40 bg-cyan-500/12 font-semibold text-cyan-100 hover:bg-cyan-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Evaluating…" : "Re-evaluate policy"}
       </button>
       <a
         href="/dashboard/policy-violations"
-        className="px-3 py-1.5 rounded-lg border border-white/[0.08] bg-white/[0.03] font-mono text-[11px] text-zinc-200 hover:border-cyan-500/30 hover:text-cyan-200 transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-white/8 bg-white/3 font-mono text-[11px] text-zinc-200 hover:border-cyan-500/30 hover:text-cyan-200 transition-colors"
       >
         Open inbox
       </a>
@@ -396,13 +396,13 @@ function ReadinessEvaluateButton({
 
   const busy = outcome.kind === "running";
   return (
-    <div className="mb-6 rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 flex items-center gap-3 flex-wrap text-[12px]">
+    <div className="mb-6 rounded-2xl border border-white/18 bg-white/3 p-4 flex items-center gap-3 flex-wrap text-[12px]">
       <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-300/70">Readiness</span>
       <button
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-3 py-1.5 rounded-lg border border-white/40 bg-white/[0.12] font-semibold text-zinc-100 hover:bg-white/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-3 py-1.5 rounded-lg border border-white/40 bg-white/12 font-semibold text-zinc-100 hover:bg-white/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Scoring…" : "Re-evaluate readiness"}
       </button>

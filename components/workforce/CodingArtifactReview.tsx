@@ -2,7 +2,7 @@ import type { CodingArtifact } from "@/lib/workforce/pipelines/codingArtifact";
 
 /** Server-rendered, tenant-checked artifact. React escapes repository content. */
 export function CodingArtifactReview({artifact,digest}:{artifact:CodingArtifact;digest:string}) {
-  return <section aria-label="Exact coding review" className="mb-5 rounded-xl border border-white/10 bg-white/[0.02] p-4">
+  return <section aria-label="Exact coding review" className="mb-5 rounded-xl border border-white/10 bg-white/2 p-4">
     <h2 className="text-sm font-semibold text-zinc-100">Review coding changes</h2>
     <p className="mt-1 text-xs leading-5 text-zinc-400">Approval covers these exact files at the saved commit. Structural and assertion checks do not run repository lint or tests.</p>
     <dl className="mt-3 grid min-w-0 gap-3 text-xs sm:grid-cols-2">

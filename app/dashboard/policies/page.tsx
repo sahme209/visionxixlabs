@@ -56,10 +56,10 @@ interface ReportLite {
 }
 
 const ENF_VISUAL: Record<Enforcement, { border: string; bg: string; text: string; pill: string; icon: typeof ShieldCheckIcon }> = {
-  enforced_always:     { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon  },
-  enforced_with_audit: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: DocumentCheckIcon },
-  advisory:            { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon          },
-  disabled:            { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon       },
+  enforced_always:     { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: ShieldCheckIcon  },
+  enforced_with_audit: { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: DocumentCheckIcon },
+  advisory:            { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon          },
+  disabled:            { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300",       icon: XCircleIcon       },
 };
 
 const ENF_LABEL: Record<Enforcement, string> = {
@@ -149,7 +149,7 @@ export default function PoliciesPage() {
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// policies unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -194,10 +194,10 @@ export default function PoliciesPage() {
                               </div>
                             </div>
                             <div className="flex items-center gap-1 shrink-0">
-                              <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${v.pill}`}>
+                              <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${v.pill}`}>
                                 {ENF_LABEL[p.enforcement]}
                               </span>
-                              <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${SEV_PILL[p.severity]}`}>
+                              <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${SEV_PILL[p.severity]}`}>
                                 {p.severity}
                               </span>
                             </div>
@@ -206,11 +206,11 @@ export default function PoliciesPage() {
                           <p className="text-[11px] text-zinc-400 italic leading-snug mb-2">{p.rationale}</p>
 
                           {p.blockedActions.length > 0 && (
-                            <div className="rounded-md border border-rose-500/[0.18] bg-rose-500/[0.04] p-2 mb-2">
+                            <div className="rounded-md border border-rose-500/18 bg-rose-500/4 p-2 mb-2">
                               <p className="text-[9px] font-mono text-rose-300/80 uppercase tracking-wider mb-1">// blocks</p>
                               <div className="flex flex-wrap gap-1">
                                 {p.blockedActions.map((a, i) => (
-                                  <span key={i} className="text-[10px] font-mono text-rose-200 bg-black/30 border border-rose-500/[0.18] rounded px-1.5 py-0.5">{a}</span>
+                                  <span key={i} className="text-[10px] font-mono text-rose-200 bg-black/30 border border-rose-500/18 rounded-sm px-1.5 py-0.5">{a}</span>
                                 ))}
                               </div>
                             </div>
@@ -230,12 +230,12 @@ export default function PoliciesPage() {
           </div>
 
           {/* Contract footer */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// registry contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")}

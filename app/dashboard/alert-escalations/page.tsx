@@ -74,7 +74,7 @@ const DOT_CLASS: Record<SidebarTone, string> = {
 
 const TONE_BTN: Record<ActionTone, string> = {
   primary:   "border border-white/20 bg-white text-zinc-900 hover:bg-zinc-200",
-  secondary: "border border-white/15 bg-white/[0.04] text-zinc-200 hover:bg-white/[0.08]",
+  secondary: "border border-white/15 bg-white/4 text-zinc-200 hover:bg-white/8",
   danger:    "border border-rose-500/30 bg-rose-500/10 text-rose-200 hover:bg-rose-500/15",
   none:      "border border-transparent bg-transparent text-zinc-500 cursor-default",
 };
@@ -188,19 +188,19 @@ export default function AlertEscalationsPage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading alert state…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -210,19 +210,19 @@ export default function AlertEscalationsPage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required to view alerts.
         </div>
       )}
 
       {!loading && errorBody && !["migration_pending", "auth_required"].includes(errorBody.error) && (
-        <div className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {errorBody.error}
         </div>
       )}
 
       {actionError && (
-        <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-3 mb-4 text-[12.5px] text-zinc-300">
+        <div className="rounded-2xl border border-white/18 bg-white/4 p-3 mb-4 text-[12.5px] text-zinc-300">
           {actionError}
         </div>
       )}
@@ -237,7 +237,7 @@ export default function AlertEscalationsPage() {
           </div>
 
           {data.alerts.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No active alerts. The sticky-error bridge will fire alerts here automatically when Phase 418 crosses the threshold.
             </div>
           ) : (
@@ -254,7 +254,7 @@ export default function AlertEscalationsPage() {
             </div>
           )}
 
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// alert lifecycle contract</p>
@@ -282,18 +282,18 @@ function AlertCard({
   const canSnooze = a.open && a.status !== "snoozed";
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-4">
       <div className="flex items-start justify-between gap-2 mb-3">
         <div className="flex items-center gap-2 min-w-0 flex-1">
           <span className={`w-2 h-2 rounded-full shrink-0 ${DOT_CLASS[a.sidebarTone]}`} />
           <p className="text-[13px] font-semibold text-white tracking-tight truncate">{a.signalRef}</p>
         </div>
         <div className="flex items-center gap-1 shrink-0">
-          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08]">
+          <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8">
             {a.statusLabel}
           </span>
           {a.minutesSinceFirstFire !== null && a.open && (
-            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/10 text-rose-200 border border-rose-500/20">
+            <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/10 text-rose-200 border border-rose-500/20">
               open {a.minutesSinceFirstFire}m
             </span>
           )}
@@ -329,7 +329,7 @@ function AlertCard({
       </div>
 
       {a.timeline.length > 0 && (
-        <div className="border-t border-white/[0.04] pt-2 mt-1">
+        <div className="border-t border-white/4 pt-2 mt-1">
           <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5">
             // Recent transitions
           </p>
@@ -356,10 +356,10 @@ function Stat({ label, value, tone, icon: Icon }: {
   icon?: typeof BellAlertIcon;
 }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

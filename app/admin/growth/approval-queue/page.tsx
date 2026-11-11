@@ -52,7 +52,7 @@ export default function ApprovalQueuePage() {
         </p>
       </div>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 mb-8">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-8 mb-8">
         {pending.length === 0 ? (
           <div className="text-center">
             <ClockIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
@@ -73,7 +73,7 @@ export default function ApprovalQueuePage() {
         )}
       </section>
 
-      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5">
+      <section className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5">
         <header className="flex items-center gap-2 mb-2">
           <CheckCircleIcon className="h-4 w-4 text-emerald-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">Approval rules</p>
@@ -88,12 +88,12 @@ export default function ApprovalQueuePage() {
       </section>
 
       <section className="mt-6 grid sm:grid-cols-2 gap-3">
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-white/6 bg-white/2 p-4">
           <CheckCircleIcon className="h-4 w-4 text-emerald-400 mb-2" />
           <p className="text-sm font-semibold text-white">Approved · last 7 days</p>
           <p className="text-2xl font-bold text-white mt-1">0</p>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="rounded-xl border border-white/6 bg-white/2 p-4">
           <XCircleIcon className="h-4 w-4 text-rose-400 mb-2" />
           <p className="text-sm font-semibold text-white">Rejected · last 7 days</p>
           <p className="text-2xl font-bold text-white mt-1">0</p>

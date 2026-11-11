@@ -549,7 +549,7 @@ export function DeploymentRequestsView() {
           </div>
           <details className="mt-3"><summary data-help-id="releases.workspace.workflow-runs" className="cursor-pointer py-1 text-xs text-zinc-400">Browse recorded workflow runs</summary><div className="mt-3 space-y-2">
             {executions.slice(0, 5).map((execution) => (
-              <div key={execution.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/[0.06] bg-black/15 px-3 py-2.5">
+              <div key={execution.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/6 bg-black/15 px-3 py-2.5">
                 <div className="min-w-0">
                   <p className="truncate text-xs font-medium text-zinc-200">
                     {execution.repositoryFullName}{execution.sourceRef ? `@${execution.sourceRef}` : ""}
@@ -611,7 +611,7 @@ export function DeploymentRequestsView() {
                     <p className="mt-1 break-all font-mono">Correlation {request.correlationId}</p>
                   </details>
                 </div>
-                <span className="shrink-0 text-[11px] font-medium capitalize px-2.5 py-1 rounded-md border border-white/10 bg-white/[0.04] text-zinc-300">
+                <span className="shrink-0 text-[11px] font-medium capitalize px-2.5 py-1 rounded-md border border-white/10 bg-white/4 text-zinc-300">
                   {request.status.replaceAll("_", " ")}
                 </span>
               </div>
@@ -893,7 +893,7 @@ function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boo
         tone="attention"
       />
       </div>
-      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/[0.015] px-3 py-2">
+      <div className="mt-2 flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/1.5 px-3 py-2">
         <p className="text-[10px] leading-4 text-zinc-500">
           Human decisions stay in the authenticated browser Approval Center. This record cannot approve or dispatch a deployment, and it does not claim production health until observability is verified.
         </p>
@@ -947,7 +947,7 @@ function ContextSignal({ label, value, detail, tone = "neutral" }: {
     ? "border-emerald-500/20 bg-emerald-500/5"
     : tone === "attention"
     ? "border-white/20 bg-white/5"
-    : "border-white/5 bg-white/[0.02]";
+    : "border-white/5 bg-white/2";
   return (
     <div className={`rounded-lg border px-3 py-2 ${color}`}>
       <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-500">{label}</p>

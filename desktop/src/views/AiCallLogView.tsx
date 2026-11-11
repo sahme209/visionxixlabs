@@ -171,7 +171,7 @@ function ScopedAiCallLog({ revision }: { revision: number }) {
           </p>
           <div className="flex flex-wrap gap-1.5">
             {openCircuits.map((e) => (
-              <span key={e.engineName} className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATE_CLASS[e.state]}`}>
+              <span key={e.engineName} className={`text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATE_CLASS[e.state]}`}>
                 {ENGINE_LABEL[e.engineName] ?? e.engineName} · {e.state}
               </span>
             ))}
@@ -210,7 +210,7 @@ function ScopedAiCallLog({ revision }: { revision: number }) {
           <div className="glass-card overflow-x-auto">
             <table className="w-full text-[11.5px] font-mono">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-white/6">
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">When</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Engine</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Model</th>
@@ -223,12 +223,12 @@ function ScopedAiCallLog({ revision }: { revision: number }) {
               </thead>
               <tbody>
                 {data.calls.map((c) => (
-                  <tr key={c.id} className="border-b border-white/[0.04] last:border-0">
+                  <tr key={c.id} className="border-b border-white/4 last:border-0">
                     <td className="px-3 py-1.5 text-zinc-300">{new Date(c.startedAtIso).toLocaleString()}</td>
                     <td className="px-3 py-1.5 text-zinc-200">{ENGINE_LABEL[c.engineName] ?? c.engineName}</td>
                     <td className="px-3 py-1.5 text-zinc-400">{c.model ?? "—"}</td>
                     <td className="px-3 py-1.5">
-                      <span className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[c.outcome] ?? OUTCOME_CLASS.error}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[c.outcome] ?? OUTCOME_CLASS.error}`}>
                         {c.outcome}
                       </span>
                     </td>
@@ -253,7 +253,7 @@ function EngineBreakdownCard({ engine }: { engine: EngineBreakdown }) {
     <div className="glass-card p-3">
       <div className="flex items-center gap-2 mb-1.5 flex-wrap">
         <span className="text-[11.5px] font-semibold text-white">{ENGINE_LABEL[engine.engineName] ?? engine.engineName}</span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATE_CLASS[engine.state]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATE_CLASS[engine.state]}`}>
           circuit {engine.state}
         </span>
         <span className="text-[10px] font-mono text-zinc-500 ml-auto">window: {engine.stats.windowSize}</span>
@@ -278,7 +278,7 @@ function Inline({ label, value, tone = "zinc" }: { label: string; value: string;
     zinc:    "text-zinc-200",
   }[tone];
   return (
-    <div className="rounded border border-zinc-700/40 bg-zinc-900/40 px-1.5 py-1">
+    <div className="rounded-sm border border-zinc-700/40 bg-zinc-900/40 px-1.5 py-1">
       <p className="text-zinc-500 uppercase tracking-[0.18em] text-[8px]">{label}</p>
       <p className={`${cls} font-bold`}>{value}</p>
     </div>

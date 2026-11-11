@@ -158,7 +158,7 @@ function SignUpForm() {
 
       <div className="relative z-10 flex flex-1 items-center justify-center px-5 py-24 sm:px-8">
           <div className="w-full max-w-lg p-2 sm:p-8">
-            <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/[0.08] bg-white/[0.035]">
+            <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/[0.035]">
               <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
             </div>
             <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Create your account</h1>
@@ -177,7 +177,7 @@ function SignUpForm() {
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   autoComplete="name"
-                  className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
+                  className="auth-input w-full rounded-lg border border-white/6 bg-white/3 px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
                 />
               </div>
               <div>
@@ -191,7 +191,7 @@ function SignUpForm() {
                   onChange={(e) => setEmail(e.target.value)}
                   required
                   autoComplete="email"
-                  className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
+                  className="auth-input w-full rounded-lg border border-white/6 bg-white/3 px-3.5 py-2.5 text-sm text-white transition-all duration-300 placeholder:text-zinc-600"
                 />
               </div>
               <div>
@@ -209,7 +209,7 @@ function SignUpForm() {
                     maxLength={128}
                     placeholder="12+ characters"
                     autoComplete="new-password"
-                    className="auth-input w-full rounded-lg border border-white/[0.06] bg-white/[0.03] px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 transition-all duration-300"
+                    className="auth-input w-full rounded-lg border border-white/6 bg-white/3 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-600 transition-all duration-300"
                   />
                   <button
                     type="button"
@@ -221,12 +221,12 @@ function SignUpForm() {
                   </button>
                 </div>
               </div>
-              <label className="flex items-start gap-3 rounded-xl border border-white/[0.06] bg-white/[0.02] p-3 text-xs leading-5 text-zinc-400">
-                <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} required className="mt-0.5 h-4 w-4 rounded border-white/20 bg-black/30 accent-orange-500" />
+              <label className="flex items-start gap-3 rounded-xl border border-white/6 bg-white/2 p-3 text-xs leading-5 text-zinc-400">
+                <input type="checkbox" checked={acceptedTerms} onChange={(event) => setAcceptedTerms(event.target.checked)} required className="mt-0.5 h-4 w-4 rounded-sm border-white/20 bg-black/30 accent-orange-500" />
                 <span>I agree to the <Link href="/terms" target="_blank" className="text-orange-300 underline">Terms</Link> and acknowledge the <Link href="/privacy" target="_blank" className="text-orange-300 underline">Privacy Policy</Link>.</span>
               </label>
               {error && (
-                <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/[0.06] px-3.5 py-2.5 text-sm text-red-400">
+                <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/6 px-3.5 py-2.5 text-sm text-red-400">
                   {error}
                 </div>
               )}
@@ -243,9 +243,9 @@ function SignUpForm() {
             {(enabledProviders?.google || enabledProviders?.github) && (
               <>
                 <div className="flex items-center gap-3 my-6">
-                  <div className="flex-1 h-px bg-white/[0.06]" />
+                  <div className="flex-1 h-px bg-white/6" />
                   <span className="text-xs text-zinc-600">Or use your organization identity</span>
-                  <div className="flex-1 h-px bg-white/[0.06]" />
+                  <div className="flex-1 h-px bg-white/6" />
                 </div>
                 <div className={`grid gap-3 ${enabledProviders.google && enabledProviders.github ? "grid-cols-2" : "grid-cols-1"}`}>
                   {enabledProviders.google && (
@@ -253,7 +253,7 @@ function SignUpForm() {
                       type="button"
                       disabled={loading || oauthLoading !== null || !acceptedTerms || !desktopChallenge}
                       onClick={() => void handleOAuth("google")}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-300 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/8 bg-white/2 text-sm text-zinc-300 hover:bg-white/6 hover:text-white transition-all disabled:opacity-50"
                     >
                       {oauthLoading === "google" ? "Opening…" : "Continue with Google"}
                     </button>
@@ -263,7 +263,7 @@ function SignUpForm() {
                       type="button"
                       disabled={loading || oauthLoading !== null || !acceptedTerms || !desktopChallenge}
                       onClick={() => void handleOAuth("github")}
-                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/[0.08] bg-white/[0.02] text-sm text-zinc-300 hover:bg-white/[0.06] hover:text-white transition-all disabled:opacity-50"
+                      className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-full border border-white/8 bg-white/2 text-sm text-zinc-300 hover:bg-white/6 hover:text-white transition-all disabled:opacity-50"
                     >
                       {oauthLoading === "github" ? "Opening…" : "Continue with GitHub"}
                     </button>

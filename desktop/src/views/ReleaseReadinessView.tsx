@@ -112,12 +112,12 @@ export function ReleaseReadinessView() {
                     </div>
                     {r.hasSnapshot && r.riskLevel ? (
                       <div className="flex items-center gap-1.5 shrink-0">
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${RISK_CLASS[r.riskLevel]}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${RISK_CLASS[r.riskLevel]}`}>
                           {r.riskLevel}
                         </span>
                         <span className="text-[12px] font-mono text-white">{r.overallScore}/100</span>
                         {r.blockerCount > 0 && (
-                          <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                          <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                             {r.blockerCount} blocker{r.blockerCount === 1 ? "" : "s"}
                           </span>
                         )}

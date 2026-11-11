@@ -43,7 +43,7 @@ type RespBody =
 
 const STATUS_CLASS: Record<Status, string> = {
   not_yet_finalized:    "bg-zinc-700/40 text-zinc-300 border-zinc-600/40",
-  frozen:               "bg-orange-500/15 text-orange-300 border-white/[0.10]",
+  frozen:               "bg-orange-500/15 text-orange-300 border-white/10",
   deploy_window_started: "bg-emerald-500/15 text-emerald-300 border-emerald-500/25",
 };
 
@@ -89,19 +89,19 @@ export default function ReleaseFreezePage() {
       />
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[12px] text-zinc-400">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[12px] text-zinc-400">
           Loading freeze board…
         </div>
       )}
 
       {!loading && networkError && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 mb-6 text-[13px] text-zinc-300">
           {networkError}
         </div>
       )}
 
       {!loading && errorBody?.error === "migration_pending" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <div className="flex items-center gap-2 mb-1">
             <ExclamationTriangleIcon className="h-4 w-4 text-zinc-300" />
             <p className="text-[12px] font-semibold text-zinc-200">Schema migration pending</p>
@@ -111,7 +111,7 @@ export default function ReleaseFreezePage() {
       )}
 
       {!loading && errorBody?.error === "auth_required" && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           Sign in required.
         </div>
       )}
@@ -125,16 +125,16 @@ export default function ReleaseFreezePage() {
           </div>
 
           {data.releases.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No releases on file.
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {data.releases.map((r) => (
-                <div key={r.releaseId} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={r.releaseId} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                     <div className="flex items-center gap-2 min-w-0 flex-1">
-                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border shrink-0 ${STATUS_CLASS[r.status]}`}>
+                      <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border shrink-0 ${STATUS_CLASS[r.status]}`}>
                         {STATUS_LABEL[r.status]}
                       </span>
                       <p className="text-[13px] font-semibold text-white truncate">
@@ -143,7 +143,7 @@ export default function ReleaseFreezePage() {
                       <span className="text-[10px] font-mono text-zinc-500">{r.applicationId}</span>
                     </div>
                     {r.hoursSinceScopeFinalized !== null && (
-                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-white/5 text-zinc-300 border border-white/[0.08] shrink-0">
+                      <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-white/5 text-zinc-300 border border-white/8 shrink-0">
                         {r.hoursSinceScopeFinalized}h since freeze
                       </span>
                     )}
@@ -172,10 +172,10 @@ export default function ReleaseFreezePage() {
 
 function Stat({ icon: Icon, label, value, tone }: { icon: typeof LockClosedIcon; label: string; value: string; tone: "orange" | "emerald" | "rose" | "zinc" }) {
   const cls = {
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

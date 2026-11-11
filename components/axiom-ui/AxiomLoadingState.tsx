@@ -71,7 +71,7 @@ export function AxiomLoadingState({
               }}
             >
               <motion.div
-                className="rounded-xl bg-white/[0.03] border border-white/[0.06] shadow-sm px-4 py-2.5 flex items-center gap-2"
+                className="rounded-xl bg-white/3 border border-white/6 shadow-xs px-4 py-2.5 flex items-center gap-2"
                 animate={
                   reduceMotion
                     ? {}
@@ -135,7 +135,7 @@ export function AxiomLoadingState({
           transition={{ duration: duration || motionDurations.short }}
         >
           <motion.div
-            className="h-full rounded-full bg-gradient-to-r from-zinc-500 to-orange-500"
+            className="h-full rounded-full bg-linear-to-r from-zinc-500 to-orange-500"
             animate={
               reduceMotion
                 ? { width: "60%" }

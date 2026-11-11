@@ -108,7 +108,7 @@ export default async function AuditPage() {
       </header>
 
       {migrationPending && (
-        <div className="mb-8 rounded-2xl border border-white/15 bg-white/[0.015] px-6 py-5">
+        <div className="mb-8 rounded-2xl border border-white/15 bg-white/1.5 px-6 py-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-300 mb-1">migration pending</p>
           <p className="text-[13px] text-zinc-300">
             The audit table hasn&apos;t been migrated yet. Run <code className="font-mono text-white">prisma migrate deploy</code> to populate the trail.
@@ -128,7 +128,7 @@ export default async function AuditPage() {
 
       {records.length > 0 && (
         <>
-          <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/[0.04] grid grid-cols-3 overflow-hidden">
+          <section className="surface-glass mb-10 rounded-2xl divide-x divide-white/4 grid grid-cols-3 overflow-hidden">
             <CountTile label="success"  count={counts.success}  tone={counts.success > 0 ? "text-emerald-300" : "text-zinc-600"} />
             <CountTile label="failure"  count={counts.failure}  tone={counts.failure > 0 ? "text-rose-300" : "text-zinc-600"} />
             <CountTile label="blocked"  count={counts.blocked}  tone={counts.blocked > 0 ? "text-zinc-300" : "text-zinc-600"} />
@@ -136,7 +136,7 @@ export default async function AuditPage() {
 
           <section>
             <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">timeline · latest 200</p>
-            <ul className="surface-glass rounded-2xl divide-y divide-white/[0.04] overflow-hidden">
+            <ul className="surface-glass rounded-2xl divide-y divide-white/4 overflow-hidden">
               {records.map((r) => {
                 const outcome = r.outcome as Outcome;
                 const actor = r.actorKind as ActorKind;

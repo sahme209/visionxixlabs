@@ -31,7 +31,7 @@ export default function DashboardError({
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-rose-500/18 bg-rose-500/4 p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -40,10 +40,10 @@ export default function DashboardError({
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-rose-400/[0.18] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-rose-400/18 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/[0.06] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-rose-500/30 bg-rose-500/6 px-2.5 py-1">
             <ExclamationTriangleIcon className="h-3.5 w-3.5 text-rose-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">
               Route error · safety contract preserved
@@ -59,7 +59,7 @@ export default function DashboardError({
           below when reaching out.
         </p>
 
-        <div className="mt-5 rounded-lg border border-white/[0.08] bg-black/30 p-3 font-mono text-[11px] text-zinc-300">
+        <div className="mt-5 rounded-lg border border-white/8 bg-black/30 p-3 font-mono text-[11px] text-zinc-300">
           <p className="text-[9px] uppercase tracking-wider text-zinc-500 mb-1">// error digest</p>
           <code>{digest}</code>
         </div>
@@ -74,14 +74,14 @@ export default function DashboardError({
           </button>
           <Link
             href="/dashboard/command-center"
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/[0.04] text-zinc-200 border border-white/[0.08] hover:bg-white/[0.08]"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/4 text-zinc-200 border border-white/8 hover:bg-white/8"
           >
             <HomeIcon className="h-3.5 w-3.5" />
             Back to Command Center
           </Link>
           <Link
             href="/dashboard/self-diagnostic"
-            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/[0.04] text-zinc-200 border border-white/[0.08] hover:bg-white/[0.08]"
+            className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-white/4 text-zinc-200 border border-white/8 hover:bg-white/8"
           >
             Run self-diagnostic
           </Link>

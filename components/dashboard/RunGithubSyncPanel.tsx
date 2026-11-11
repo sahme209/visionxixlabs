@@ -44,9 +44,9 @@ interface SyncResultLite {
 type Phase = "idle" | "running" | "done" | "error";
 
 const SOURCE_TONE: Record<string, { border: string; bg: string; text: string; dot: string; pill: string }> = {
-  live:    { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse", pill: "bg-emerald-500/15 text-emerald-300" },
-  partial: { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse",    pill: "bg-cyan-500/15 text-cyan-300"       },
-  preview: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   dot: "bg-zinc-400",                 pill: "bg-white/15 text-zinc-300"     },
+  live:    { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", dot: "bg-emerald-400 animate-pulse", pill: "bg-emerald-500/15 text-emerald-300" },
+  partial: { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    dot: "bg-cyan-400 animate-pulse",    pill: "bg-cyan-500/15 text-cyan-300"       },
+  preview: { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   dot: "bg-zinc-400",                 pill: "bg-white/15 text-zinc-300"     },
 };
 
 export function RunGithubSyncPanel() {
@@ -85,7 +85,7 @@ export function RunGithubSyncPanel() {
   const summary = result?.summary;
 
   return (
-    <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+    <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
       <div className="flex items-center justify-between gap-4 mb-4 flex-wrap">
         <div className="min-w-0">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">// step 2 · run a read-only sync</p>
@@ -100,8 +100,8 @@ export function RunGithubSyncPanel() {
           disabled={phase === "running"}
           className={`inline-flex items-center gap-2 rounded-lg border px-3.5 py-2 text-[13px] font-semibold transition-all ${
             phase === "running"
-              ? "border-white/[0.08] bg-white/[0.02] text-zinc-400 cursor-wait"
-              : "border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:border-emerald-500/50 hover:bg-emerald-500/[0.15]"
+              ? "border-white/8 bg-white/2 text-zinc-400 cursor-wait"
+              : "border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:border-emerald-500/50 hover:bg-emerald-500/15"
           }`}
         >
           {phase === "running" ? (
@@ -125,7 +125,7 @@ export function RunGithubSyncPanel() {
 
       {/* Idle hint */}
       {phase === "idle" && (
-        <div className="rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+        <div className="rounded-lg border border-white/6 bg-white/2 px-3 py-2">
           <p className="text-[11px] text-zinc-500 leading-relaxed font-mono">
             POST /api/github/sync · live when GITHUB_PAT or GITHUB_APP_* set + GITHUB_SYNC_MODE=live; honest preview otherwise.
           </p>
@@ -134,7 +134,7 @@ export function RunGithubSyncPanel() {
 
       {/* Running — honest progress */}
       {phase === "running" && (
-        <div className="rounded-lg border border-cyan-500/[0.22] bg-cyan-500/[0.04] px-3 py-3">
+        <div className="rounded-lg border border-cyan-500/22 bg-cyan-500/4 px-3 py-3">
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
             <p className="text-[12px] text-cyan-200 font-mono">
@@ -151,7 +151,7 @@ export function RunGithubSyncPanel() {
 
       {/* Error */}
       {phase === "error" && (
-        <div className="rounded-lg border border-rose-500/[0.22] bg-rose-500/[0.04] px-3 py-3">
+        <div className="rounded-lg border border-rose-500/22 bg-rose-500/4 px-3 py-3">
           <div className="flex items-start gap-2">
             <ExclamationTriangleIcon className="h-4 w-4 text-rose-300 mt-0.5 shrink-0" />
             <div className="min-w-0">
@@ -199,7 +199,7 @@ export function RunGithubSyncPanel() {
 
           {/* Empty / healthy state */}
           {summary && summary.failingWorkflows === 0 && summary.repoCount > 0 && (
-            <div className="rounded-md border border-emerald-500/[0.22] bg-emerald-500/[0.04] p-3 flex items-center gap-2">
+            <div className="rounded-md border border-emerald-500/22 bg-emerald-500/4 p-3 flex items-center gap-2">
               <CheckCircleIcon className="h-4 w-4 text-emerald-300 shrink-0" />
               <p className="text-[12px] text-emerald-100 font-semibold">
                 All workflows are passing. Branch protection + deployment env discovery complete.
@@ -209,7 +209,7 @@ export function RunGithubSyncPanel() {
 
           {/* Limitations */}
           {result.limitations && result.limitations.length > 0 && (
-            <div className="mt-3 pt-3 border-t border-white/[0.06]">
+            <div className="mt-3 pt-3 border-t border-white/6">
               <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">// limitations</p>
               <ul className="space-y-0.5">
                 {result.limitations.slice(0, 3).map((l, i) => (
@@ -220,11 +220,11 @@ export function RunGithubSyncPanel() {
           )}
 
           {/* Next step */}
-          <div className="mt-3 pt-3 border-t border-white/[0.06] flex items-center justify-between gap-3">
+          <div className="mt-3 pt-3 border-t border-white/6 flex items-center justify-between gap-3">
             <p className="text-[11px] text-zinc-500">Next safe step</p>
             <Link
               href={summary && summary.failingWorkflows > 0 ? "/dashboard/releaseops" : "/dashboard/command-center"}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/[0.08] hover:border-white/[0.2] rounded-md px-2.5 py-1.5 transition-colors"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-200 hover:text-white border border-white/8 hover:border-white/20 rounded-md px-2.5 py-1.5 transition-colors"
             >
               {summary && summary.failingWorkflows > 0 ? "Review failing workflows" : "Open Command Center"}
               <ArrowRightIcon className="h-3 w-3" />
@@ -238,7 +238,7 @@ export function RunGithubSyncPanel() {
 
 function ResultStat({ label, value, tone }: { label: string; value: string; tone?: string }) {
   return (
-    <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-3 py-2">
+    <div className="rounded-md border border-white/6 bg-white/2 px-3 py-2">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-0.5">{label}</p>
       <p className={`text-lg font-bold tracking-tight leading-none ${tone ?? "text-white"}`}>{value}</p>
     </div>

@@ -109,7 +109,7 @@ export default function WorkspaceSettingsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -118,10 +118,10 @@ export default function WorkspaceSettingsPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <UserGroupIcon className="h-3.5 w-3.5 text-emerald-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
               Workspace + team + RBAC · rbac_never_enables_mutation
@@ -140,12 +140,12 @@ export default function WorkspaceSettingsPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// loading workspace state…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// workspace unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -166,9 +166,9 @@ export default function WorkspaceSettingsPage() {
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-3">// members</p>
             <div className="space-y-2">
               {state.members.map((m) => (
-                <div key={m.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 flex items-center justify-between gap-3 flex-wrap">
+                <div key={m.id} className="rounded-2xl border border-white/6 bg-white/2 p-4 flex items-center justify-between gap-3 flex-wrap">
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-10 h-10 rounded-full bg-white/[0.04] border border-white/[0.08] flex items-center justify-center shrink-0">
+                    <div className="w-10 h-10 rounded-full bg-white/4 border border-white/8 flex items-center justify-center shrink-0">
                       <UserCircleIcon className="h-5 w-5 text-zinc-300" />
                     </div>
                     <div className="min-w-0">
@@ -178,9 +178,9 @@ export default function WorkspaceSettingsPage() {
                   </div>
                   <div className="flex items-center gap-2 shrink-0">
                     {m.isCurrentSession && (
-                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-300">current session</span>
+                      <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-orange-500/15 text-orange-300">current session</span>
                     )}
-                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${ROLE_PILL[m.role]}`}>
+                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${ROLE_PILL[m.role]}`}>
                       {m.role.replace(/_/g, " ")}
                     </span>
                   </div>
@@ -197,10 +197,10 @@ export default function WorkspaceSettingsPage() {
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-3">// role catalog</p>
             <div className="grid lg:grid-cols-2 gap-2">
               {state.roleCatalog.map((r) => (
-                <div key={r.role} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={r.role} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-center justify-between gap-2 mb-2 flex-wrap">
                     <p className="text-[13.5px] font-semibold text-white tracking-tight">{r.label}</p>
-                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${ROLE_PILL[r.role]}`}>
+                    <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${ROLE_PILL[r.role]}`}>
                       {r.role.replace(/_/g, " ")}
                     </span>
                   </div>
@@ -208,7 +208,7 @@ export default function WorkspaceSettingsPage() {
                   <p className="text-[11px] text-zinc-400 italic leading-snug mb-2">{r.rationale}</p>
                   <div className="flex flex-wrap gap-1">
                     {r.permissions.map((p, i) => (
-                      <span key={i} className="text-[10px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5">
+                      <span key={i} className="text-[10px] font-mono text-zinc-300 bg-white/4 border border-white/6 rounded-sm px-1.5 py-0.5">
                         {PERMISSION_LABEL[p] ?? p}
                       </span>
                     ))}
@@ -221,15 +221,15 @@ export default function WorkspaceSettingsPage() {
           {/* Per-permission enforcement table */}
           <section className="mb-8">
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-3">// permission enforcement</p>
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden">
-              <div className="divide-y divide-white/[0.04]">
+            <div className="rounded-2xl border border-white/6 bg-white/2 overflow-hidden">
+              <div className="divide-y divide-white/4">
                 {Object.entries(state.enforcement).map(([perm, enf]) => {
                   const v = ENF_PILL[enf];
                   const Icon = v.icon;
                   return (
                     <div key={perm} className="flex items-center justify-between px-4 py-2.5">
                       <p className="text-[12.5px] text-zinc-200">{PERMISSION_LABEL[perm] ?? perm}</p>
-                      <span className={`inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill}`}>
+                      <span className={`inline-flex items-center gap-1 text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill}`}>
                         <Icon className="h-3 w-3" />
                         {v.label}
                       </span>
@@ -241,18 +241,18 @@ export default function WorkspaceSettingsPage() {
           </section>
 
           {/* Contract footer */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// rbac contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{state.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{state.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {state.limitations[2]} {state.limitations[0]}
               </p>
               <div className="mt-3">
-                <Link href={state.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 bg-emerald-500/[0.06] rounded-md px-3 py-1.5 transition-colors">
+                <Link href={state.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 bg-emerald-500/6 rounded-md px-3 py-1.5 transition-colors">
                   {state.safeNextAction.label} →
                 </Link>
               </div>
@@ -266,7 +266,7 @@ export default function WorkspaceSettingsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: number; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">{label}</p>
       <p className={`text-2xl font-bold tracking-tight ${tone}`}>{value}</p>
     </div>

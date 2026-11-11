@@ -125,7 +125,7 @@ export function SlackNotificationsView() {
           <div className="glass-card overflow-hidden">
             <table className="w-full text-[11.5px] font-mono">
               <thead>
-                <tr className="border-b border-white/[0.06]">
+                <tr className="border-b border-white/6">
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">When</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Kind</th>
                   <th className="text-left px-3 py-2 text-zinc-500 uppercase tracking-[0.18em] text-[10px]">Title</th>
@@ -135,12 +135,12 @@ export function SlackNotificationsView() {
               </thead>
               <tbody>
                 {logData.entries.map((e) => (
-                  <tr key={e.id} className="border-b border-white/[0.04] last:border-0">
+                  <tr key={e.id} className="border-b border-white/4 last:border-0">
                     <td className="px-3 py-1.5 text-zinc-300">{new Date(e.generatedAtIso).toLocaleString()}</td>
                     <td className="px-3 py-1.5 text-zinc-200">{KIND_LABEL[e.signalKind] ?? e.signalKind}</td>
                     <td className="px-3 py-1.5 text-zinc-200">{e.title}</td>
                     <td className="px-3 py-1.5">
-                      <span className={`px-1.5 py-0.5 rounded border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[e.outcome]}`}>
+                      <span className={`px-1.5 py-0.5 rounded-sm border text-[10px] uppercase tracking-wider ${OUTCOME_CLASS[e.outcome]}`}>
                         {e.outcome}
                       </span>
                     </td>
@@ -243,7 +243,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           onChange={(e) => setWebhookUrl(e.target.value)}
           placeholder="https://hooks.slack.com/services/T.../B.../..."
           disabled={busy}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] font-mono text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="grid grid-cols-2 gap-3 mb-3">
@@ -255,7 +255,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
             onChange={(e) => setDefaultChannel(e.target.value)}
             placeholder="#deploys"
             disabled={busy}
-            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
           />
         </label>
         <label className="flex items-center gap-2 text-[12px] text-zinc-300 cursor-pointer pt-5">
@@ -273,7 +273,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
         <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">Signal kinds to route</p>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
           {SIGNAL_KINDS.map((k) => (
-            <label key={k} className="flex items-center gap-2 text-[11.5px] text-zinc-300 cursor-pointer rounded border border-zinc-700/40 bg-zinc-900/40 px-2 py-1.5">
+            <label key={k} className="flex items-center gap-2 text-[11.5px] text-zinc-300 cursor-pointer rounded-sm border border-zinc-700/40 bg-zinc-900/40 px-2 py-1.5">
               <input
                 type="checkbox"
                 checked={kindsState[k]}
@@ -291,7 +291,7 @@ function ConfigPanel({ current, onSaved }: { current: ConfigView | null; onSaved
           type="button"
           onClick={save}
           disabled={busy || (!webhookUrl && !currentlyConfigured)}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Saving…" : "Save config"}
         </button>

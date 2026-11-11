@@ -17,7 +17,7 @@ export function ServicesGrid({ services }: { services: Service[] }) {
         const Icon = service.icon;
         return (
           <Reveal key={service.id} direction="up" delay={idx * 0.06}>
-            <HoverCard className="p-8 flex flex-col h-full bg-white/[0.02] border-white/[0.06] shadow-xl">
+            <HoverCard className="p-8 flex flex-col h-full bg-white/2 border-white/6 shadow-xl">
               <div className="flex items-start gap-4 mb-4">
                 <div className="inline-flex h-12 w-12 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400">
                   <Icon className="h-6 w-6" />

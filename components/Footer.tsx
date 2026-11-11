@@ -43,7 +43,7 @@ export function Footer() {
           </div>
           <div className="flex flex-wrap gap-3">
             <Link href="/product" className="rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore Axiom</Link>
-            <Link href="/support" className="rounded-lg border border-orange-300/30 px-5 py-3 text-sm font-medium text-orange-200 transition hover:border-orange-300/60 hover:bg-orange-300/[0.06]">Founding Supporters</Link>
+            <Link href="/support" className="rounded-lg border border-orange-300/30 px-5 py-3 text-sm font-medium text-orange-200 transition hover:border-orange-300/60 hover:bg-orange-300/6">Founding Supporters</Link>
           </div>
         </section>
 

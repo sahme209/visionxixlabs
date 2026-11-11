@@ -159,8 +159,8 @@ export default function NotificationSettingsPage() {
                 key={opt.value}
                 className={`flex items-start gap-3 px-4 py-3 rounded-lg border transition-colors cursor-pointer ${
                   prefs.severityFloor === opt.value
-                    ? "border-white/[0.18] bg-white/[0.025]"
-                    : "border-white/[0.06] bg-white/[0.015] hover:border-white/[0.12]"
+                    ? "border-white/18 bg-white/2.5"
+                    : "border-white/6 bg-white/1.5 hover:border-white/12"
                 }`}
               >
                 <input
@@ -228,7 +228,7 @@ function Field({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3.5 py-2.5 text-[13px] text-white placeholder:text-zinc-600 focus:outline-none focus:border-white/[0.18] transition-colors"
+        className="w-full rounded-lg border border-white/6 bg-white/2 px-3.5 py-2.5 text-[13px] text-white placeholder:text-zinc-600 focus:outline-hidden focus:border-white/18 transition-colors"
       />
     </div>
   );

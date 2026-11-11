@@ -18,7 +18,7 @@ export default async function ControlSectionPage({ params }: { params: Promise<{
       <p className="text-[11px] uppercase tracking-[0.2em] text-[#ff783d]">Governance control plane</p>
       <h1 className="mt-3 text-3xl font-semibold tracking-[-0.045em]">{content[0]}</h1>
       <p className="mt-4 text-sm leading-6 text-zinc-400">{content[1]}</p>
-      <div className="mt-10 border-y border-white/[0.08] py-6">
+      <div className="mt-10 border-y border-white/8 py-6">
         <p className="text-sm font-medium">Migration in progress</p>
         <p className="mt-2 text-sm leading-6 text-zinc-500">This section intentionally shows no simulated organization state. Existing controls remain available through their current verified surface until migration and security tests pass.</p>
       </div>

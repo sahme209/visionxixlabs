@@ -37,7 +37,7 @@ export default function ReleaseExecutionDetailPage() {
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 text-[12px] text-zinc-400">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 text-[12px] text-zinc-400">
         Loading…
       </div>
     );
@@ -45,7 +45,7 @@ export default function ReleaseExecutionDetailPage() {
 
   if (error || !data) {
     return (
-      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/[0.18] bg-rose-500/[0.04] p-5 text-[13px] text-zinc-300">
+      <div role="alert" aria-live="assertive" className="rounded-2xl border border-rose-500/18 bg-rose-500/4 p-5 text-[13px] text-zinc-300">
         {error || "Release not found"}
       </div>
     );
@@ -70,7 +70,7 @@ export default function ReleaseExecutionDetailPage() {
         Back to playbook
       </Link>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
         <h1 className="text-[24px] font-bold text-white mb-6">Execution Status</h1>
 
         <div className="space-y-6">
@@ -90,13 +90,13 @@ export default function ReleaseExecutionDetailPage() {
               Timeline
             </h2>
             <dl className="space-y-3 text-[13px]">
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-3">
+              <div className="rounded-xl border border-white/8 bg-white/2.5 p-3">
                 <dt className="text-zinc-500 text-[11px] font-mono uppercase mb-1">Planned</dt>
                 <dd className="text-white">
                   {execution.plannedAt ? new Date(execution.plannedAt).toLocaleString() : "Not scheduled"}
                 </dd>
               </div>
-              <div className="rounded-xl border border-white/[0.08] bg-white/[0.025] p-3">
+              <div className="rounded-xl border border-white/8 bg-white/2.5 p-3">
                 <dt className="text-zinc-500 text-[11px] font-mono uppercase mb-1">Started</dt>
                 <dd className="text-white">
                   {execution.startedAt ? new Date(execution.startedAt).toLocaleString() : "Not started"}

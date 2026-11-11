@@ -122,18 +122,18 @@ export function TestimonialsCarousel() {
             <div
               className={`p-8 flex flex-col justify-center ${
                 t.color === "orange"
-                  ? "bg-orange-500/[0.06]"
+                  ? "bg-orange-500/6"
                   : t.color === "amber"
-                    ? "bg-amber-500/[0.06]"
+                    ? "bg-amber-500/6"
                     : t.color === "zinc"
-                      ? "bg-zinc-500/[0.06]"
-                      : "bg-emerald-500/[0.06]"
+                      ? "bg-zinc-500/6"
+                      : "bg-emerald-500/6"
               }`}
             >
               <AccentMarker color={t.color} size="md" className="mb-4" />
               {/* Author avatar placeholder with ring */}
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-orange-500/20 to-amber-500/20 ring-2 ring-white/[0.06] flex items-center justify-center">
+                <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-500/20 to-amber-500/20 ring-2 ring-white/6 flex items-center justify-center">
                   <span className="text-sm font-bold text-white/60">
                     {t.author.charAt(0)}
                   </span>
@@ -147,7 +147,7 @@ export function TestimonialsCarousel() {
               </div>
             </div>
             {/* Right: quote */}
-            <div className="p-8 flex flex-col justify-center bg-white/[0.02] relative">
+            <div className="p-8 flex flex-col justify-center bg-white/2 relative">
               {/* Decorative large quote mark */}
               <span
                 className="absolute top-4 left-6 text-7xl font-serif text-brand-coral/12 select-none pointer-events-none leading-none"
@@ -177,11 +177,11 @@ export function TestimonialsCarousel() {
           </div>
 
           {/* Carousel controls */}
-          <div className="flex items-center justify-between px-6 py-4 bg-white/[0.02] border-t border-white/[0.06]">
+          <div className="flex items-center justify-between px-6 py-4 bg-white/2 border-t border-white/6">
             <button
               type="button"
               onClick={goPrev}
-              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-brand-coral transition-colors"
+              className="p-2 rounded-xl text-zinc-400 hover:bg-white/4 hover:text-brand-coral transition-colors"
               aria-label="Previous testimonial"
             >
               <ChevronLeftIcon className="h-6 w-6" />
@@ -194,7 +194,7 @@ export function TestimonialsCarousel() {
                   onClick={() => goTo(i)}
                   className={`rounded-full transition-all duration-300 ${
                     i === index
-                      ? "w-7 h-2 bg-gradient-to-r from-brand-coral via-amber-400 to-brand-orange"
+                      ? "w-7 h-2 bg-linear-to-r from-brand-coral via-amber-400 to-brand-orange"
                       : "w-2 h-2 bg-zinc-700 hover:bg-zinc-600"
                   }`}
                   aria-label={`Go to testimonial ${i + 1}`}
@@ -204,7 +204,7 @@ export function TestimonialsCarousel() {
             <button
               type="button"
               onClick={goNext}
-              className="p-2 rounded-xl text-zinc-400 hover:bg-white/[0.04] hover:text-brand-coral transition-colors"
+              className="p-2 rounded-xl text-zinc-400 hover:bg-white/4 hover:text-brand-coral transition-colors"
               aria-label="Next testimonial"
             >
               <ChevronRightIcon className="h-6 w-6" />

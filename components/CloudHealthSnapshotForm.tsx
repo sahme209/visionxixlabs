@@ -55,7 +55,7 @@ export function CloudHealthSnapshotForm() {
 
   if (submitted) {
     return (
-      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/[0.06] px-4 py-3 text-emerald-300 text-sm">
+      <div className="rounded-xl border border-emerald-500/20 bg-emerald-500/6 px-4 py-3 text-emerald-300 text-sm">
         Thanks! We&apos;ll send your Cloud Health Snapshot soon. Check your inbox.
       </div>
     );
@@ -70,7 +70,7 @@ export function CloudHealthSnapshotForm() {
           name="email"
           type="email"
           required
-          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-white/8 bg-white/2 px-3 py-2 text-sm"
         />
       </div>
       <div>
@@ -79,7 +79,7 @@ export function CloudHealthSnapshotForm() {
           id="snapshot-company"
           name="company"
           type="text"
-          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-white/8 bg-white/2 px-3 py-2 text-sm"
         />
       </div>
       <div>
@@ -87,7 +87,7 @@ export function CloudHealthSnapshotForm() {
         <select
           id="snapshot-cloud"
           name="cloudProvider"
-          className="w-full rounded-lg border border-white/[0.08] bg-white/[0.02] px-3 py-2 text-sm"
+          className="w-full rounded-lg border border-white/8 bg-white/2 px-3 py-2 text-sm"
         >
           <option value="">Select</option>
           <option value="AWS">AWS</option>
@@ -99,7 +99,7 @@ export function CloudHealthSnapshotForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full inline-flex justify-center items-center px-6 py-3 bg-gradient-to-r from-orange-600 to-amber-600 text-white rounded-xl font-semibold text-sm hover:opacity-90 disabled:opacity-50"
+        className="w-full inline-flex justify-center items-center px-6 py-3 bg-linear-to-r from-orange-600 to-amber-600 text-white rounded-xl font-semibold text-sm hover:opacity-90 disabled:opacity-50"
       >
         {loading ? "Sending..." : "Get my snapshot"}
       </button>

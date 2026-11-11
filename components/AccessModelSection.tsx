@@ -29,7 +29,7 @@ export function AccessModelSection({
         {intro}
       </p>
       <div className="grid gap-6 md:grid-cols-2 mb-8">
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-xl border border-white/6 bg-white/2 p-5">
           <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-3">
             We operate using
           </h3>
@@ -42,7 +42,7 @@ export function AccessModelSection({
             ))}
           </ul>
         </div>
-        <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-5">
+        <div className="rounded-xl border border-white/6 bg-white/2 p-5">
           <h3 className="text-sm font-semibold text-zinc-300 uppercase tracking-wide mb-3">
             {whatWeAreNotTitle}
           </h3>

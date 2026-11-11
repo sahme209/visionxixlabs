@@ -109,7 +109,7 @@ export function AuditView() {
             </thead>
             <tbody className="font-mono">
               {audit.map((row, idx) => (
-                <tr key={idx} className="border-t border-axiom-border hover:bg-white/[0.02] transition-colors">
+                <tr key={idx} className="border-t border-axiom-border hover:bg-white/2 transition-colors">
                   <td className="px-4 py-2 text-zinc-500">{new Date(row.ts).toLocaleString()}</td>
                   <td className="px-3 py-2 text-zinc-300 truncate max-w-[160px]">{row.actor}</td>
                   <td className="px-3 py-2 text-zinc-200">{row.action}</td>

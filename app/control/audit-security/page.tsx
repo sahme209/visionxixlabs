@@ -45,7 +45,7 @@ export default async function AuditSecurityPage() {
       <h1 className="text-2xl font-medium">Audit &amp; security</h1>
       <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Review organization activity, policy decisions, and active desktop sessions.</p>
 
-      <dl className="mt-6 grid gap-px overflow-hidden rounded-xl border border-white/[0.08] bg-white/[0.08] sm:grid-cols-3">
+      <dl className="mt-6 grid gap-px overflow-hidden rounded-xl border border-white/8 bg-white/8 sm:grid-cols-3">
         {[["Active desktop sessions", activeSessions], ["Blocked · last 24h", blockedLastDay], ["Failures · last 24h", failuresLastDay]].map(([label, value]) => (
           <div key={String(label)} className="bg-[#171717] p-5"><dt className="text-xs text-zinc-500">{label}</dt><dd className="mt-3 text-2xl font-medium tabular-nums">{value}</dd></div>
         ))}

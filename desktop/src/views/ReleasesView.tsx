@@ -166,23 +166,23 @@ export function ReleasesView({ onNavigate }: { onNavigate?: (v: View) => void } 
                       <p className="text-sm font-semibold text-white truncate">
                         {r.releaseTag ?? "(no tag)"} <span className="text-zinc-500 font-normal">· {r.applicationId}</span>
                       </p>
-                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 shrink-0">
+                      <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40 shrink-0">
                         {r.statusLabel}
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5 shrink-0">
                       {r.latestReadiness && (
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${RISK_CLASS[r.latestReadiness.riskLevel]}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${RISK_CLASS[r.latestReadiness.riskLevel]}`}>
                           {r.latestReadiness.overallScore}/100 · {r.latestReadiness.riskLevel}
                         </span>
                       )}
                       {r.latestReadiness && r.latestReadiness.blockerCount > 0 && (
-                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-rose-500/15 text-rose-300 border border-rose-500/25">
+                        <span className="text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-rose-500/15 text-rose-300 border border-rose-500/25">
                           {r.latestReadiness.blockerCount} blocker{r.latestReadiness.blockerCount === 1 ? "" : "s"}
                         </span>
                       )}
                       {r.evidencePack && (
-                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-white/10 text-zinc-300 border-white/20"}`}>
+                        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${r.evidencePack.signed ? "bg-emerald-500/15 text-emerald-300 border-emerald-500/25" : "bg-white/10 text-zinc-300 border-white/20"}`}>
                           evidence {r.evidencePack.signed ? "signed" : "draft"}
                         </span>
                       )}
@@ -256,7 +256,7 @@ function HealthSummaryTile({ onNavigate }: { onNavigate?: (v: View) => void }) {
     d.platformHealthScore >= 40 ? "text-orange-300" : "text-rose-300";
 
   return (
-    <div className="glass-card p-4 border border-violet-500/[0.18]">
+    <div className="glass-card p-4 border border-violet-500/18">
       <div className="flex items-baseline justify-between mb-2">
         <div>
           <p className="text-[9px] font-mono uppercase tracking-wider text-zinc-500">Platform health</p>
@@ -381,7 +381,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/[0.08] text-[12px] font-semibold text-violet-200 hover:bg-violet-500/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-violet-500/30 bg-violet-500/8 text-[12px] font-semibold text-violet-200 hover:bg-violet-500/16 transition-colors"
         >
           + New release
         </button>
@@ -445,7 +445,7 @@ function NewReleasePanel({ onCreated }: { onCreated: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !applicationId || !releaseTag}
-          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-violet-500/40 bg-violet-500/[0.14] text-[12px] font-semibold text-violet-100 hover:bg-violet-500/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Create draft"}
         </button>
@@ -475,7 +475,7 @@ function ReleaseField({ label, value, onChange, placeholder, disabled }: {
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
         disabled={disabled}
-        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+        className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
       />
     </label>
   );

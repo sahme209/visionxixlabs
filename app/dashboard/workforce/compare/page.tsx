@@ -220,7 +220,7 @@ export default async function CompareEngineersPage({
       {/* Engineer picker — quick swap to any client engineer via a
           link list. Selecting one toggles it in/out of the current
           comparison via URL math. */}
-      <section className="mb-8 rounded-2xl border border-white/[0.06] bg-white/[0.015] px-5 py-4">
+      <section className="mb-8 rounded-2xl border border-white/6 bg-white/1.5 px-5 py-4">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">add / swap</p>
         <div className="flex flex-wrap gap-1.5">
           {clientEngineers.map((e) => {
@@ -234,8 +234,8 @@ export default async function CompareEngineersPage({
                 href={`/dashboard/workforce/compare?ids=${nextIds.join(",")}`}
                 className={`text-[10px] font-mono uppercase tracking-wider px-2 py-1 rounded-full border transition-colors ${
                   isSelected
-                    ? "text-white border-white/[0.18] bg-white/[0.04]"
-                    : "text-zinc-500 border-white/[0.06] hover:text-zinc-200 hover:border-white/[0.12]"
+                    ? "text-white border-white/18 bg-white/4"
+                    : "text-zinc-500 border-white/6 hover:text-zinc-200 hover:border-white/12"
                 }`}
               >
                 {e.id}
@@ -248,7 +248,7 @@ export default async function CompareEngineersPage({
       {/* Comparison grid */}
       <section className={`grid gap-3 ${columns.length === 1 ? "grid-cols-1" : columns.length === 2 ? "grid-cols-2" : columns.length === 3 ? "grid-cols-3" : "grid-cols-4"}`}>
         {columns.map((c) => (
-          <article key={c.engineer.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 flex flex-col">
+          <article key={c.engineer.id} className="rounded-2xl border border-white/6 bg-white/1.5 p-5 flex flex-col">
             <header className="mb-4">
               <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-1">{c.engineer.department}</p>
               <Link href={`/dashboard/workforce/${c.engineer.id}`} className="text-[14px] font-semibold text-white hover:text-zinc-300 transition-colors">
@@ -313,5 +313,5 @@ function MetricRow({ label, value, tone, mono }: { label: string; value: string;
 }
 
 function Divider() {
-  return <div className="my-2 border-t border-white/[0.04]" />;
+  return <div className="my-2 border-t border-white/4" />;
 }

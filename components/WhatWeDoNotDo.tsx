@@ -22,7 +22,7 @@ export function WhatWeDoNotDo({
         Clear scope builds credibility. We are explicit about what we do and what we do not do.
       </p>
       <div className="grid gap-8 md:grid-cols-2">
-        <div className="card-hover bg-white/[0.02] rounded-xl p-6 shadow-lg border border-white/[0.06] border-l-4 border-l-orange-500">
+        <div className="card-hover bg-white/2 rounded-xl p-6 shadow-lg border border-white/6 border-l-4 border-l-orange-500">
           <h3 className="text-lg font-semibold text-white mb-3">
             {focusTitle}
           </h3>
@@ -35,7 +35,7 @@ export function WhatWeDoNotDo({
             ))}
           </ul>
         </div>
-        <div className="card-hover bg-white/[0.02] rounded-xl p-6 shadow-lg border border-white/[0.06] border-l-4 border-l-zinc-600">
+        <div className="card-hover bg-white/2 rounded-xl p-6 shadow-lg border border-white/6 border-l-4 border-l-zinc-600">
           <h3 className="text-lg font-semibold text-white mb-3">
             {notDoTitle}
           </h3>

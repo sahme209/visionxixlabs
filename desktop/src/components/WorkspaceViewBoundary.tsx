@@ -35,7 +35,7 @@ export class WorkspaceViewBoundary extends Component<WorkspaceViewBoundaryProps,
 
     return (
       <div role="alert" className="flex flex-1 items-center justify-center bg-axiom-bg p-8 text-white">
-        <div className="max-w-md rounded-2xl border border-white/10 bg-white/[0.03] p-6">
+        <div className="max-w-md rounded-2xl border border-white/10 bg-white/3 p-6">
           <h2 className="text-base font-semibold">This view could not be displayed</h2>
           <p className="mt-2 text-sm leading-6 text-zinc-400">Your session is still active. Retry this view, or return to the Agent without restarting the app.</p>
           <div className="mt-5 flex gap-3">

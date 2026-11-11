@@ -97,7 +97,7 @@ export default async function BillingUsagePage() {
       </div>
 
       {/* AI credit pool — the big number */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-6 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-6 mb-6">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div className="flex items-center gap-2">
             <BoltIcon className="h-4 w-4 text-orange-300" />
@@ -113,7 +113,7 @@ export default async function BillingUsagePage() {
           <p className="text-[13px] text-zinc-500">of {formatCents(includedCents)} included</p>
         </div>
 
-        <div className="w-full h-2 bg-white/[0.04] rounded-full overflow-hidden mb-3">
+        <div className="w-full h-2 bg-white/4 rounded-full overflow-hidden mb-3">
           <div
             className={`h-full rounded-full ${
               usedRatio >= 1    ? "bg-rose-500"    :
@@ -125,7 +125,7 @@ export default async function BillingUsagePage() {
           />
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px] mt-4 pt-4 border-t border-white/[0.06]">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-[11px] mt-4 pt-4 border-t border-white/6">
           <Stat label="Remaining" value={formatCents(remainingCents)} />
           <Stat label="Invocations" value={(summary?.aiInvocationCount ?? 0).toLocaleString()} />
           <Stat label="Input tokens" value={Number(summary?.aiInputTokens ?? 0).toLocaleString()} />
@@ -133,13 +133,13 @@ export default async function BillingUsagePage() {
         </div>
 
         {usedRatio >= 1 && plan.entitlements.overagePolicy === "hard_stop" && (
-          <p className="mt-4 pt-4 border-t border-white/[0.06] text-[12px] text-rose-200 leading-relaxed">
+          <p className="mt-4 pt-4 border-t border-white/6 text-[12px] text-rose-200 leading-relaxed">
             <ExclamationTriangleIcon className="h-4 w-4 inline mr-1.5 -mt-0.5" />
             Your AI credit pool is exhausted. New AI invocations are blocked until next month, or upgrade to a plan with metered overage billing.
           </p>
         )}
         {usedRatio >= 0.7 && usedRatio < 1 && (
-          <p className="mt-4 pt-4 border-t border-white/[0.06] text-[12px] text-zinc-200 leading-relaxed">
+          <p className="mt-4 pt-4 border-t border-white/6 text-[12px] text-zinc-200 leading-relaxed">
             <ExclamationTriangleIcon className="h-4 w-4 inline mr-1.5 -mt-0.5" />
             Heads up — you have used {usedPct}% of your monthly AI credits. {plan.entitlements.overagePolicy === "hard_stop" ? "Starter plans hard-stop at 100% — upgrade to enable overage." : "Overage will bill automatically at retail markup."}
           </p>
@@ -170,7 +170,7 @@ export default async function BillingUsagePage() {
       </section>
 
       {/* Recent activity */}
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+      <section className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
         <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">{"// recent activity"}</p>
         {recent.length === 0 ? (
           <div className="text-center py-6">
@@ -180,7 +180,7 @@ export default async function BillingUsagePage() {
         ) : (
           <ul className="space-y-1.5">
             {recent.map((e) => (
-              <li key={e.id} className="rounded-lg border border-white/[0.04] bg-white/[0.015] px-3 py-2 flex items-center justify-between gap-3 flex-wrap">
+              <li key={e.id} className="rounded-lg border border-white/4 bg-white/1.5 px-3 py-2 flex items-center justify-between gap-3 flex-wrap">
                 <div className="flex items-center gap-2 min-w-0">
                   <CpuChipIcon className="h-3 w-3 text-orange-300 shrink-0" />
                   <span className="text-[11px] font-mono text-zinc-200 truncate">{e.eventKind.replace(/_/g, " ")}</span>
@@ -201,7 +201,7 @@ export default async function BillingUsagePage() {
 
       {/* Add-ons CTA — surfaces when approaching the credit pool ceiling */}
       {plan.tier !== "enterprise" && usedRatio >= 0.5 && (
-        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5 mb-4">
+        <section className="rounded-2xl border border-white/8 bg-white/1.5 p-5 mb-4">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <p className="text-[12px] font-semibold text-white mb-1">Do not want to upgrade? Buy a top-up.</p>
@@ -222,7 +222,7 @@ export default async function BillingUsagePage() {
 
       {/* Plan upgrade hint */}
       {plan.tier !== "enterprise" && (
-        <section className="rounded-2xl border border-white/[0.08] bg-white/[0.015] p-5">
+        <section className="rounded-2xl border border-white/8 bg-white/1.5 p-5">
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <div>
               <p className="text-[12px] font-semibold text-white mb-1">Need more credits or more seats?</p>
@@ -263,11 +263,11 @@ function UsageCard({ label, used, limit, textOverride }: { label: string; used: 
     ratio >= 0.7               ? "text-zinc-300"   :
                                  "text-emerald-300";
   return (
-    <article className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <article className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 mb-2">{label}</p>
       <p className={`text-[15px] font-semibold tabular-nums ${tone}`}>{display}</p>
       {limit !== null && limit > 0 && !textOverride && (
-        <div className="w-full h-1 bg-white/[0.04] rounded-full overflow-hidden mt-2">
+        <div className="w-full h-1 bg-white/4 rounded-full overflow-hidden mt-2">
           <div
             className={`h-full rounded-full ${
               ratio >= 0.9 ? "bg-rose-500" : ratio >= 0.7 ? "bg-zinc-500" : "bg-emerald-500"

@@ -200,9 +200,9 @@ export default function AISettingsPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               AI providers
@@ -211,7 +211,7 @@ export default function AISettingsPage() {
           <button
             onClick={loadStatus}
             disabled={loadingStatus}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loadingStatus ? "animate-spin" : ""}`} />
             Refresh
@@ -228,14 +228,14 @@ export default function AISettingsPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {status && (
         <>
-          <div className="rounded-2xl border border-zinc-500/[0.18] bg-zinc-500/[0.04] p-5 mb-6">
+          <div className="rounded-2xl border border-zinc-500/18 bg-zinc-500/4 p-5 mb-6">
             <div className="flex items-start justify-between gap-4 flex-wrap mb-1">
               <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-300">Active</p>
               {adminPolicy && (
@@ -249,7 +249,7 @@ export default function AISettingsPage() {
                     onClick={toggleAi}
                     disabled={toggleBusy}
                     className={`relative inline-flex h-6 w-11 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
-                      adminPolicy.policy.enabled ? "bg-emerald-500/80" : "bg-white/[0.12]"
+                      adminPolicy.policy.enabled ? "bg-emerald-500/80" : "bg-white/12"
                     }`}
                   >
                     <span
@@ -263,7 +263,7 @@ export default function AISettingsPage() {
             </div>
             <div className="flex items-center gap-3 flex-wrap">
               <span className="text-[16px] font-semibold text-white">{!status.policyEnabled ? "AI is disabled for this workspace" : status.activeProvider ? LABEL[status.activeProvider] : "No approved live provider"}</span>
-              {status.activeModel && <span className="text-[11px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5">
+              {status.activeModel && <span className="text-[11px] font-mono text-zinc-300 bg-white/4 border border-white/6 rounded-full px-2 py-0.5">
                 model: {status.activeModel}
               </span>}
             </div>
@@ -274,7 +274,7 @@ export default function AISettingsPage() {
               <p className="mt-2 text-[11px] text-zinc-500">Only a workspace owner or admin can change this setting.</p>
             )}
             {adminPolicy && adminPolicy.policy.enabled && adminPolicy.availableProviders.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-white/[0.06]">
+              <div className="mt-4 pt-4 border-t border-white/6">
                 <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500 mb-2">Per-provider</p>
                 <ul className="space-y-2">
                   {adminPolicy.availableProviders.map((provider) => {
@@ -289,7 +289,7 @@ export default function AISettingsPage() {
                           onClick={() => toggleProvider(provider)}
                           disabled={providerToggleBusy !== null}
                           className={`relative inline-flex h-5 w-9 shrink-0 items-center rounded-full transition-colors disabled:opacity-50 ${
-                            allowed ? "bg-emerald-500/80" : "bg-white/[0.12]"
+                            allowed ? "bg-emerald-500/80" : "bg-white/12"
                           }`}
                         >
                           <span
@@ -312,7 +312,7 @@ export default function AISettingsPage() {
 
           <div className="space-y-3 mb-8">
             {status.providers.map((p, index) => (
-              <div key={p.provider} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+              <div key={p.provider} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                 <div className="flex items-center gap-2 flex-wrap mb-2">
                   <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">#{index + 1}</span>
                   <span className="text-[14px] font-semibold text-white">{LABEL[p.provider]}</span>
@@ -343,14 +343,14 @@ export default function AISettingsPage() {
             ))}
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
             <div className="flex items-center gap-2 mb-3">
               <BoltIcon className="h-3.5 w-3.5 text-zinc-300" />
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Provider health</h2>
               <button
                 onClick={runHealth}
                 disabled={loadingHealth}
-                className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+                className="ml-auto inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
               >
                 <ArrowPathIcon className={`h-3 w-3 ${loadingHealth ? "animate-spin" : ""}`} />
                 Run health check
@@ -373,7 +373,7 @@ export default function AISettingsPage() {
             )}
           </div>
 
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-12">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-12">
             <div className="flex items-center gap-2 mb-3">
               <PlayIcon className="h-3.5 w-3.5 text-zinc-300" />
               <h2 className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Try it</h2>
@@ -383,7 +383,7 @@ export default function AISettingsPage() {
               value={tryPrompt}
               onChange={(e) => setTryPrompt(e.target.value)}
               rows={3}
-              className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none mb-3"
+              className="w-full rounded-md border border-white/8 bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-hidden mb-3"
             />
             <button
               onClick={runTry}
@@ -397,7 +397,7 @@ export default function AISettingsPage() {
               <div className="mt-3 text-[11px] font-mono text-rose-300">{tryError}</div>
             )}
             {tryResp && (
-              <div className="mt-3 rounded-lg border border-white/[0.06] bg-black/30 p-3">
+              <div className="mt-3 rounded-lg border border-white/6 bg-black/30 p-3">
                 <div className="flex items-center gap-2 mb-2 text-[10px] font-mono text-zinc-500">
                   <span>provider: <span className="text-zinc-300">{tryResp.provider}</span></span>
                   <span>model: <span className="text-zinc-300">{tryResp.model}</span></span>

@@ -37,11 +37,11 @@ const OUTCOME_TONE: Record<string, string> = {
   pass:     "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   fail:     "text-rose-300 bg-rose-500/10 border-rose-500/30",
   errored:  "text-rose-300 bg-rose-500/15 border-rose-500/40",
-  skipped:  "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  skipped:  "text-zinc-400 bg-white/4 border-white/8",
 };
 
 const STATUS_TONE: Record<string, string> = {
-  pending:   "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  pending:   "text-zinc-400 bg-white/4 border-white/8",
   running:   "text-zinc-300 bg-white/10 border-white/30",
   completed: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
@@ -102,7 +102,7 @@ export default async function AdminEvalRunsPage() {
         />
       </section>
 
-      <section className="rounded-2xl border border-orange-500/20 bg-orange-500/[0.04] p-5 mb-8">
+      <section className="rounded-2xl border border-orange-500/20 bg-orange-500/4 p-5 mb-8">
         <div className="flex items-center justify-between gap-3 flex-wrap">
           <div>
             <p className="text-[12px] font-semibold text-white mb-1">Trigger an eval run</p>
@@ -119,7 +119,7 @@ export default async function AdminEvalRunsPage() {
 
       <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// recent runs</p>
       {runs.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <CpuChipIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">No eval runs yet.</p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
@@ -133,7 +133,7 @@ export default async function AdminEvalRunsPage() {
             const denom = Math.max(1, r.totalCases - r.skippedCount);
             const passRate = Math.round((r.passCount / denom) * 100);
             return (
-              <article key={r.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+              <article key={r.id} className="rounded-xl border border-white/6 bg-white/2 px-4 py-3">
                 <header className="flex items-center justify-between gap-3 flex-wrap mb-2">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-[10px] font-mono uppercase tracking-wider text-orange-300">{r.runKind}</span>
@@ -154,7 +154,7 @@ export default async function AdminEvalRunsPage() {
                 </div>
 
                 {r.cases.length > 0 && (
-                  <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/[0.04]">
+                  <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/4">
                     {r.cases.map((c) => {
                       const tone = OUTCOME_TONE[c.outcome] ?? OUTCOME_TONE.skipped;
                       const Icon = c.outcome === "pass" ? CheckCircleIcon : c.outcome === "skipped" ? CpuChipIcon : ExclamationTriangleIcon;
@@ -177,7 +177,7 @@ export default async function AdminEvalRunsPage() {
         </section>
       )}
 
-      <section className="mt-8 rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="mt-8 rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">// how the eval harness works</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>Corpus lives in <code className="text-zinc-200">lib/workforce/eval/evalTaskCorpus.ts</code> — add tasks here to expand coverage.</li>
@@ -193,7 +193,7 @@ export default async function AdminEvalRunsPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
     </div>

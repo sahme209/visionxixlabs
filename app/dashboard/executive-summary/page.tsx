@@ -52,11 +52,11 @@ interface ExecutiveSummaryLite {
 }
 
 const STATUS_VISUAL: Record<OverallStatus, { border: string; bg: string; text: string; pill: string; icon: typeof CheckCircleIcon; dot: string }> = {
-  operating_normally: { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,        dot: "bg-emerald-400 animate-pulse" },
-  needs_attention:    { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, dot: "bg-zinc-400 animate-pulse"   },
-  blocked:            { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: ExclamationTriangleIcon, dot: "bg-rose-400"                  },
-  preview_mode:       { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon,                  dot: "bg-zinc-400"                 },
-  expanding:          { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: RocketLaunchIcon,         dot: "bg-cyan-400 animate-pulse"    },
+  operating_normally: { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300", icon: CheckCircleIcon,        dot: "bg-emerald-400 animate-pulse" },
+  needs_attention:    { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: ExclamationTriangleIcon, dot: "bg-zinc-400 animate-pulse"   },
+  blocked:            { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300",       icon: ExclamationTriangleIcon, dot: "bg-rose-400"                  },
+  preview_mode:       { border: "border-white/18",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300",     icon: EyeIcon,                  dot: "bg-zinc-400"                 },
+  expanding:          { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300",       icon: RocketLaunchIcon,         dot: "bg-cyan-400 animate-pulse"    },
 };
 
 const SEVERITY_PILL: Record<Severity, string> = {
@@ -94,7 +94,7 @@ export default function ExecutiveSummaryPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -103,10 +103,10 @@ export default function ExecutiveSummaryPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 flex-wrap mb-3">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ChartBarIcon className="h-3.5 w-3.5 text-cyan-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-cyan-300">Executive summary · canonical projection</span>
           </span>
@@ -123,12 +123,12 @@ export default function ExecutiveSummaryPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// composing executive summary…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// summary unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -149,7 +149,7 @@ export default function ExecutiveSummaryPage() {
           </div>
 
           {/* Recommended next action */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-center justify-between gap-3 flex-wrap">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <p className="text-[10px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// recommended next action</p>
               <p className="text-[14px] text-white font-semibold leading-snug">{report.recommendedNextAction.title}</p>
@@ -157,7 +157,7 @@ export default function ExecutiveSummaryPage() {
             </div>
             <Link
               href={report.recommendedNextAction.route.href}
-              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 hover:border-emerald-500/50 bg-emerald-500/[0.06] rounded-md px-3 py-1.5 transition-colors shrink-0"
+              className="inline-flex items-center gap-1.5 text-[12px] font-medium text-emerald-200 hover:text-emerald-100 border border-emerald-500/30 hover:border-emerald-500/50 bg-emerald-500/6 rounded-md px-3 py-1.5 transition-colors shrink-0"
             >
               {report.recommendedNextAction.route.label}
               <ArrowRightIcon className="h-3 w-3" />
@@ -167,7 +167,7 @@ export default function ExecutiveSummaryPage() {
           {/* 4-card bento: top risks + readiness + integration + trust */}
           <div className="grid lg:grid-cols-2 gap-3 mb-8">
             {/* Top risks */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-3">// top risks</p>
               {report.topRisks.length === 0 ? (
                 <p className="text-[12px] text-zinc-400">No high-severity operator action signals.</p>
@@ -178,7 +178,7 @@ export default function ExecutiveSummaryPage() {
                       <span className="text-[10px] font-mono text-zinc-500 mt-1 shrink-0">#{r.rank}</span>
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${SEVERITY_PILL[r.severity]}`}>{r.severity}</span>
+                          <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${SEVERITY_PILL[r.severity]}`}>{r.severity}</span>
                           <span className="text-[10px] font-mono text-zinc-500">conf {Math.round(r.confidence * 100)}%</span>
                           <span className="text-[10px] font-mono text-zinc-500">· {r.sourceMode.replace(/_/g, " ")}</span>
                         </div>
@@ -196,7 +196,7 @@ export default function ExecutiveSummaryPage() {
             </div>
 
             {/* Readiness */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <div className="flex items-center gap-2 mb-3">
                 <RocketLaunchIcon className="h-4 w-4 text-orange-300" />
                 <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// readiness</p>
@@ -220,7 +220,7 @@ export default function ExecutiveSummaryPage() {
             </div>
 
             {/* Integration health */}
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-5">
               <div className="flex items-center gap-2 mb-3">
                 <ServerStackIcon className="h-4 w-4 text-cyan-300" />
                 <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// integration health</p>
@@ -243,7 +243,7 @@ export default function ExecutiveSummaryPage() {
             </div>
 
             {/* Trust */}
-            <div className="rounded-2xl border border-emerald-500/[0.18] bg-emerald-500/[0.04] p-5">
+            <div className="rounded-2xl border border-emerald-500/18 bg-emerald-500/4 p-5">
               <div className="flex items-center gap-2 mb-3">
                 <ShieldCheckIcon className="h-4 w-4 text-emerald-300" />
                 <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em]">// trust</p>
@@ -255,14 +255,14 @@ export default function ExecutiveSummaryPage() {
               <ul className="space-y-1 text-[11px] text-zinc-300">
                 <li className="flex items-center gap-1.5"><CheckCircleIcon className="h-3 w-3 text-emerald-300 shrink-0" /> Read-only by default</li>
                 <li className="flex items-center gap-1.5"><CheckCircleIcon className="h-3 w-3 text-emerald-300 shrink-0" /> Approval-gated</li>
-                <li className="flex items-center gap-1.5"><CheckCircleIcon className="h-3 w-3 text-emerald-300 shrink-0" /> Desktop local exec: <code className="font-mono text-[10px] bg-black/30 border border-white/[0.06] rounded px-1">{report.trust.desktopLocalExecution}</code></li>
+                <li className="flex items-center gap-1.5"><CheckCircleIcon className="h-3 w-3 text-emerald-300 shrink-0" /> Desktop local exec: <code className="font-mono text-[10px] bg-black/30 border border-white/6 rounded-sm px-1">{report.trust.desktopLocalExecution}</code></li>
               </ul>
             </div>
           </div>
 
           {/* Honest limitations */}
           {report.honestLimitations.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-8">
+            <div className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-8">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">Known limitations</p>
               <ul className="space-y-1">
                 {report.honestLimitations.map((l, i) => (
@@ -276,12 +276,12 @@ export default function ExecutiveSummaryPage() {
           )}
 
           {/* Safety contract footer */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <ShieldCheckIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// platform safety contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 Every signal in this summary comes from canonical state. Nothing on this page can apply Terraform, run CLI mutations, or execute on desktop.
@@ -296,7 +296,7 @@ export default function ExecutiveSummaryPage() {
 
 function MiniStat({ label, value, tone }: { label: string; value: number | string; tone: string }) {
   return (
-    <div className="rounded-md border border-white/[0.06] bg-white/[0.02] px-2.5 py-1.5">
+    <div className="rounded-md border border-white/6 bg-white/2 px-2.5 py-1.5">
       <p className="text-[9px] text-zinc-500 uppercase tracking-wider">{label}</p>
       <p className={`text-[15px] font-bold tracking-tight ${tone}`}>{value}</p>
     </div>

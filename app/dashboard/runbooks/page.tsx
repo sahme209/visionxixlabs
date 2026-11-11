@@ -67,7 +67,7 @@ const SEV_TONE: Record<Severity, string> = {
 
 const RISK_TONE: Record<ActionRisk, string> = {
   safe_revert: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  policy_change: "bg-orange-500/15 text-orange-300 border-white/[0.12]",
+  policy_change: "bg-orange-500/15 text-orange-300 border-white/12",
   needs_human_triage: "bg-rose-500/15 text-rose-300 border-rose-500/30",
 };
 
@@ -157,8 +157,8 @@ export default function RunbooksPage() {
               onClick={() => setLookback(o.value)}
               className={`text-[11px] font-mono px-2.5 py-1 rounded-full border transition ${
                 lookback === o.value
-                  ? "bg-orange-500/15 text-white border-white/[0.12]"
-                  : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                  ? "bg-orange-500/15 text-white border-white/12"
+                  : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
               }`}
             >
               {o.label}
@@ -167,7 +167,7 @@ export default function RunbooksPage() {
           <button
             onClick={() => load(lookback)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -189,12 +189,12 @@ export default function RunbooksPage() {
       )}
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6 text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">
           // walking CloudTrail + drafting runbooks…
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
@@ -209,8 +209,8 @@ export default function RunbooksPage() {
                 onClick={() => setSeverityFilter(s)}
                 className={`text-[10px] font-mono px-2 py-0.5 rounded-full border transition ${
                   severityFilter === s
-                    ? "bg-orange-500/15 text-white border-white/[0.12]"
-                    : "bg-white/[0.02] text-zinc-400 border-white/[0.06] hover:text-white"
+                    ? "bg-orange-500/15 text-white border-white/12"
+                    : "bg-white/2 text-zinc-400 border-white/6 hover:text-white"
                 }`}
               >
                 {s}
@@ -219,17 +219,17 @@ export default function RunbooksPage() {
           </div>
 
           {filtered.length === 0 ? (
-            <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+            <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
               No runbooks drafted in this window. {report.totalEventsInspected === 0 && "(No CloudTrail events returned — check IAM permissions for cloudtrail:LookupEvents.)"}
             </div>
           ) : (
             <div className="space-y-3 mb-8">
               {filtered.map((rb) => (
-                <div key={rb.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+                <div key={rb.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
                   <div className="flex items-start justify-between gap-3 flex-wrap mb-2">
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap mb-1">
-                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${SEV_TONE[rb.severity]}`}>
+                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${SEV_TONE[rb.severity]}`}>
                           {rb.severity}
                         </span>
                         <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider">
@@ -246,36 +246,36 @@ export default function RunbooksPage() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
                     {/* Reversal */}
-                    <div className="rounded-lg border border-white/[0.06] bg-black/20 p-3">
+                    <div className="rounded-lg border border-white/6 bg-black/20 p-3">
                       <div className="flex items-center gap-2 mb-1.5">
                         <ArrowUturnLeftIcon className="h-3.5 w-3.5 text-emerald-300" />
                         <p className="text-[10px] font-mono text-emerald-300/80 uppercase tracking-wider">Reversal</p>
-                        <span className={`text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded border ${RISK_TONE[rb.reversal.risk]} ml-auto`}>
+                        <span className={`text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded-sm border ${RISK_TONE[rb.reversal.risk]} ml-auto`}>
                           {RISK_LABEL[rb.reversal.risk]}
                         </span>
                       </div>
                       <p className="text-[12px] font-semibold text-white">{rb.reversal.label}</p>
                       <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">{rb.reversal.description}</p>
                       {rb.reversal.suggestedApi && (
-                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/[0.06] rounded px-1.5 py-0.5 mt-1.5">
+                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/6 rounded-sm px-1.5 py-0.5 mt-1.5">
                           {rb.reversal.suggestedApi}
                         </code>
                       )}
                     </div>
 
                     {/* Hardening */}
-                    <div className="rounded-lg border border-white/[0.06] bg-black/20 p-3">
+                    <div className="rounded-lg border border-white/6 bg-black/20 p-3">
                       <div className="flex items-center gap-2 mb-1.5">
                         <ShieldCheckIcon className="h-3.5 w-3.5 text-orange-300" />
                         <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-wider">Hardening</p>
-                        <span className={`text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded border ${RISK_TONE[rb.hardening.risk]} ml-auto`}>
+                        <span className={`text-[8.5px] font-mono uppercase tracking-wider px-1 py-px rounded-sm border ${RISK_TONE[rb.hardening.risk]} ml-auto`}>
                           {RISK_LABEL[rb.hardening.risk]}
                         </span>
                       </div>
                       <p className="text-[12px] font-semibold text-white">{rb.hardening.label}</p>
                       <p className="text-[11px] text-zinc-400 mt-0.5 leading-snug">{rb.hardening.description}</p>
                       {rb.hardening.suggestedApi && (
-                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/[0.06] rounded px-1.5 py-0.5 mt-1.5">
+                        <code className="inline-block text-[10px] font-mono text-cyan-300 bg-black/40 border border-white/6 rounded-sm px-1.5 py-0.5 mt-1.5">
                           {rb.hardening.suggestedApi}
                         </code>
                       )}
@@ -304,7 +304,7 @@ export default function RunbooksPage() {
           )}
 
           {report.limitations.length > 0 && (
-            <div className="rounded-2xl border border-white/[0.18] bg-white/[0.03] p-4 mb-8">
+            <div className="rounded-2xl border border-white/18 bg-white/3 p-4 mb-8">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-2">// notes</p>
               {report.limitations.map((l, i) => <p key={i} className="text-[12px] text-zinc-300">· {l}</p>)}
             </div>
@@ -319,11 +319,11 @@ function Stat({
   label, value, tone, icon: Icon,
 }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "orange" | "zinc"; icon?: typeof WrenchScrewdriverIcon }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    orange:  "border-white/[0.06] bg-white/[0.015] text-white",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    orange:  "border-white/6 bg-white/1.5 text-white",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

@@ -142,7 +142,7 @@ export function BranchValidationView() {
                       <p className="text-[13px] font-semibold text-white">{c.label}</p>
                       <p className="text-[11px] text-zinc-400 mt-0.5">{c.detail}</p>
                     </div>
-                    <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded shrink-0 ${STATE_TONE[c.state]}`}>
+                    <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm shrink-0 ${STATE_TONE[c.state]}`}>
                       {c.state.replace("_", " ")}
                     </span>
                   </div>
@@ -215,20 +215,20 @@ function EvidencePackButton({ releaseId }: { releaseId: string }) {
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2.5 py-1 rounded border border-violet-500/40 bg-violet-500/[0.12] font-semibold text-violet-100 hover:bg-violet-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-violet-500/40 bg-violet-500/12 font-semibold text-violet-100 hover:bg-violet-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Generating…" : "Generate / refresh"}
       </button>
       <a
         href={exportUrl("markdown")}
-        className="px-2.5 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
         download
       >
         .md
       </a>
       <a
         href={exportUrl("json")}
-        className="px-2.5 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
         download
       >
         .json
@@ -289,7 +289,7 @@ function PolicyEvaluateButton({ releaseId }: { releaseId: string }) {
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2.5 py-1 rounded border border-cyan-500/40 bg-cyan-500/[0.12] font-semibold text-cyan-100 hover:bg-cyan-500/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-cyan-500/40 bg-cyan-500/12 font-semibold text-cyan-100 hover:bg-cyan-500/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Evaluating…" : "Re-evaluate"}
       </button>
@@ -364,7 +364,7 @@ function ReadinessEvaluateButton({
         type="button"
         disabled={busy}
         onClick={trigger}
-        className="px-2.5 py-1 rounded border border-white/40 bg-white/[0.12] font-semibold text-zinc-100 hover:bg-white/[0.20] disabled:opacity-50 disabled:cursor-wait transition-colors"
+        className="px-2.5 py-1 rounded-sm border border-white/40 bg-white/12 font-semibold text-zinc-100 hover:bg-white/20 disabled:opacity-50 disabled:cursor-wait transition-colors"
       >
         {busy ? "Scoring…" : "Re-evaluate"}
       </button>

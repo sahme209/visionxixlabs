@@ -57,13 +57,13 @@ export default function ReleaseOpsConnectorsPage() {
             <li><strong className="text-zinc-300">Auth method:</strong> {c.auth}</li>
           </ul>
           <div className="grid md:grid-cols-2 gap-3 mt-3">
-            <div className="rounded-xl bg-emerald-500/[0.04] border border-emerald-500/15 p-4">
+            <div className="rounded-xl bg-emerald-500/4 border border-emerald-500/15 p-4">
               <p className="text-[10px] font-semibold text-emerald-400 uppercase tracking-widest mb-2">What Axiom reads</p>
               <ul className="text-xs text-zinc-300 space-y-1">
                 {c.reads.map((r) => <li key={r}>· {r}</li>)}
               </ul>
             </div>
-            <div className="rounded-xl bg-white/[0.02] border border-white/[0.06] p-4">
+            <div className="rounded-xl bg-white/2 border border-white/6 p-4">
               <p className="text-[10px] font-semibold text-zinc-500 uppercase tracking-widest mb-2">What Axiom does NOT read</p>
               <ul className="text-xs text-zinc-400 space-y-1">
                 {c.notReads.map((r) => <li key={r}>· {r}</li>)}

@@ -201,7 +201,7 @@ export default async function AiCallLogEnginePage({
       </header>
 
       {/* Outcome tiles */}
-      <section className="mb-8 grid grid-cols-4 rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-x divide-white/[0.04] overflow-hidden">
+      <section className="mb-8 grid grid-cols-4 rounded-2xl border border-white/6 bg-white/1.5 divide-x divide-white/4 overflow-hidden">
         <Tile label="ok"            count={counts.ok}            tone={counts.ok > 0 ? "text-emerald-300" : "text-zinc-600"} />
         <Tile label="error"         count={counts.error}         tone={counts.error > 0 ? "text-rose-300" : "text-zinc-600"} />
         <Tile label="timeout"       count={counts.timeout}       tone={counts.timeout > 0 ? "text-zinc-300" : "text-zinc-600"} />
@@ -223,7 +223,7 @@ export default async function AiCallLogEnginePage({
       {/* Cost rollup tile — Phase 580. Always renders so the
           'rate not configured' state stays visible (operators see
           when a model is uncovered, not a misleading $0). */}
-      <section className="mb-10 rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5">
+      <section className="mb-10 rounded-2xl border border-white/6 bg-white/1.5 p-5">
         <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">provider cost · 24h window</p>
           <span className="text-[10px] font-mono text-zinc-500 tabular-nums">
@@ -237,7 +237,7 @@ export default async function AiCallLogEnginePage({
         {costRollup.perModel.length > 0 && (
           <div className="mt-3 flex flex-wrap gap-2">
             {costRollup.perModel.map((m) => (
-              <span key={`${m.provider}_${m.modelId}`} className="text-[10.5px] font-mono text-zinc-400 bg-white/[0.025] border border-white/[0.06] rounded-full px-2 py-0.5">
+              <span key={`${m.provider}_${m.modelId}`} className="text-[10.5px] font-mono text-zinc-400 bg-white/2.5 border border-white/6 rounded-full px-2 py-0.5">
                 {m.provider}/{m.modelId} · {formatCents(m.cents)}
               </span>
             ))}
@@ -254,10 +254,10 @@ export default async function AiCallLogEnginePage({
       {topErrors.length > 0 && (
         <section className="mb-10">
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">top errors · 24h</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {topErrors.map(([msg, n]) => (
               <li key={msg} className="px-5 py-3 flex items-start justify-between gap-3">
-                <p className="text-[12px] font-mono text-rose-200/90 leading-relaxed min-w-0 break-words">{msg}</p>
+                <p className="text-[12px] font-mono text-rose-200/90 leading-relaxed min-w-0 wrap-break-word">{msg}</p>
                 <span className="text-[11px] font-mono text-zinc-500 tabular-nums shrink-0">{n}×</span>
               </li>
             ))}
@@ -281,14 +281,14 @@ export default async function AiCallLogEnginePage({
           </a>
         </div>
         {recentCalls.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+          <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
             <p className="text-[13px] text-zinc-400">No calls in the last 24 hours.</p>
             <p className="text-[11px] text-zinc-500 mt-1">
               Trigger this engine via the AGI cockpit or wait for the next autonomous tick.
             </p>
           </div>
         ) : (
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {recentCalls.slice(0, 50).map((c) => (
               <li key={c.id} className="px-5 py-3">
                 <div className="flex items-center justify-between gap-3 flex-wrap">
@@ -331,7 +331,7 @@ function Tile({ label, count, tone }: { label: string; count: number; tone: stri
 
 function MetricCard({ label, value, sub }: { label: string; value: string; sub: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-2">{label}</p>
       <p className="text-[20px] font-semibold text-white tabular-nums">{value}</p>
       <p className="text-[10px] text-zinc-500 mt-1 leading-snug">{sub}</p>

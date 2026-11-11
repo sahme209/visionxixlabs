@@ -81,11 +81,11 @@ const GATE_VISUAL: Record<GateStatus, { pill: string; icon: typeof CheckCircleIc
 };
 
 const PLATFORM_STATE_VISUAL: Record<PlatformState, { border: string; bg: string; pill: string }> = {
-  live:       { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", pill: "bg-emerald-500/15 text-emerald-300" },
-  preview:    { border: "border-white/[0.18]",   bg: "bg-white/[0.04]",   pill: "bg-white/15 text-zinc-300" },
-  planned:    { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       pill: "bg-zinc-700/40 text-zinc-300" },
-  blocked:    { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    pill: "bg-rose-500/15 text-rose-300" },
-  deprecated: { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       pill: "bg-zinc-700/40 text-zinc-300" },
+  live:       { border: "border-emerald-500/22", bg: "bg-emerald-500/4", pill: "bg-emerald-500/15 text-emerald-300" },
+  preview:    { border: "border-white/18",   bg: "bg-white/4",   pill: "bg-white/15 text-zinc-300" },
+  planned:    { border: "border-zinc-700/30",        bg: "bg-white/2",       pill: "bg-zinc-700/40 text-zinc-300" },
+  blocked:    { border: "border-rose-500/22",    bg: "bg-rose-500/4",    pill: "bg-rose-500/15 text-rose-300" },
+  deprecated: { border: "border-zinc-700/30",        bg: "bg-white/2",       pill: "bg-zinc-700/40 text-zinc-300" },
 };
 
 export default function DesktopReleasesPage() {
@@ -112,7 +112,7 @@ export default function DesktopReleasesPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -121,10 +121,10 @@ export default function DesktopReleasesPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <RocketLaunchIcon className="h-3.5 w-3.5 text-emerald-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
               Desktop Releases · release_review_only_no_publish
@@ -165,12 +165,12 @@ export default function DesktopReleasesPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">Loading desktop release info…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// release center unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -179,12 +179,12 @@ export default function DesktopReleasesPage() {
       {!loading && !error && report && (
         <>
           {/* Next action */}
-          <div className="rounded-2xl border border-orange-500/15 bg-white/[0.015] p-5 mb-6 flex items-center justify-between gap-3 flex-wrap">
+          <div className="rounded-2xl border border-orange-500/15 bg-white/1.5 p-5 mb-6 flex items-center justify-between gap-3 flex-wrap">
             <div className="min-w-0">
               <p className="text-[10px] font-mono text-orange-300/80 uppercase tracking-[0.18em] mb-1">// recommended next step</p>
               <p className="text-[14px] text-white font-semibold leading-snug">{report.safeNextAction.label}</p>
             </div>
-            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/[0.12] hover:border-orange-500/50 bg-white/[0.025] rounded-md px-3 py-1.5 transition-colors">
+            <Link href={report.safeNextAction.href} className="inline-flex items-center gap-1.5 text-[12px] font-medium text-white hover:text-orange-100 border border-white/12 hover:border-orange-500/50 bg-white/2.5 rounded-md px-3 py-1.5 transition-colors">
               {report.safeNextAction.label}
               <ArrowRightIcon className="h-3 w-3" />
             </Link>
@@ -200,23 +200,23 @@ export default function DesktopReleasesPage() {
                     <div className="min-w-0">
                       <p className="text-[14px] font-semibold text-white tracking-tight">{p.label}</p>
                       <div className="flex items-center gap-2 mt-1 flex-wrap">
-                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${visual.pill}`}>{p.state}</span>
-                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-700/40 text-zinc-300">{p.channel}</span>
+                        <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${visual.pill}`}>{p.state}</span>
+                        <span className="text-[10px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-700/40 text-zinc-300">{p.channel}</span>
                         {p.liveVersion && (
                           <span className="text-[10px] font-mono text-zinc-400">v{p.liveVersion}</span>
                         )}
                       </div>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
-                      {p.signed && <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300">signed</span>}
-                      {p.notarized && <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300">notarized</span>}
+                      {p.signed && <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-300">signed</span>}
+                      {p.notarized && <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-emerald-500/15 text-emerald-300">notarized</span>}
                     </div>
                   </div>
 
                   <p className="text-[11.5px] text-zinc-400 italic leading-snug mb-2">{p.installFriction}</p>
 
                   {p.assetFileName && p.downloadUrl && (
-                    <div className="rounded-md border border-white/[0.06] bg-white/[0.02] p-2 mb-3">
+                    <div className="rounded-md border border-white/6 bg-white/2 p-2 mb-3">
                       <p className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider mb-0.5">// active asset</p>
                       <Link href={p.downloadUrl} target="_blank" className="text-[11px] font-mono text-emerald-300 hover:text-emerald-200 break-all inline-flex items-center gap-1">
                         {p.assetFileName} <ArrowTopRightOnSquareIcon className="h-3 w-3" />
@@ -232,12 +232,12 @@ export default function DesktopReleasesPage() {
                       const gv = GATE_VISUAL[g.status];
                       const Icon = gv.icon;
                       return (
-                        <div key={`${p.platform}:${g.id}`} className="flex items-start gap-2 rounded-md border border-white/[0.04] bg-white/[0.015] p-2">
+                        <div key={`${p.platform}:${g.id}`} className="flex items-start gap-2 rounded-md border border-white/4 bg-white/1.5 p-2">
                           <Icon className="h-3.5 w-3.5 text-white/60 mt-0.5 shrink-0" />
                           <div className="min-w-0 flex-1">
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="text-[11.5px] text-white font-medium">{g.label}</span>
-                              <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${gv.pill}`}>{gv.label}</span>
+                              <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${gv.pill}`}>{gv.label}</span>
                             </div>
                             <p className="text-[11px] text-zinc-400 leading-snug">{g.reason}</p>
                             {g.nextFix && (
@@ -254,19 +254,19 @@ export default function DesktopReleasesPage() {
           </div>
 
           {/* Global gates */}
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
             <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-3">// global release gates</p>
             <div className="space-y-1">
               {report.globalGates.map((g) => {
                 const gv = GATE_VISUAL[g.status];
                 const Icon = gv.icon;
                 return (
-                  <div key={g.id} className="flex items-start gap-2 rounded-md border border-white/[0.04] bg-white/[0.015] p-2">
+                  <div key={g.id} className="flex items-start gap-2 rounded-md border border-white/4 bg-white/1.5 p-2">
                     <Icon className="h-3.5 w-3.5 text-white/60 mt-0.5 shrink-0" />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[11.5px] text-white font-medium">{g.label}</span>
-                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${gv.pill}`}>{gv.label}</span>
+                        <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm ${gv.pill}`}>{gv.label}</span>
                       </div>
                       <p className="text-[11px] text-zinc-400 leading-snug">{g.reason}</p>
                       {g.nextFix && (
@@ -281,12 +281,12 @@ export default function DesktopReleasesPage() {
           </div>
 
           {/* Contract */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <CheckCircleIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// release center contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")}
@@ -301,10 +301,10 @@ export default function DesktopReleasesPage() {
 
 function Stat({ label, value, tone }: { label: string; value: string; tone: "emerald" | "amber" | "rose" | "zinc" }) {
   const cls = {
-    emerald: "border-emerald-500/[0.18] bg-emerald-500/[0.03] text-emerald-200",
-    amber:   "border-white/[0.18] bg-white/[0.03] text-zinc-200",
-    rose:    "border-rose-500/[0.18] bg-rose-500/[0.03] text-rose-200",
-    zinc:    "border-white/[0.06] bg-white/[0.02] text-zinc-200",
+    emerald: "border-emerald-500/18 bg-emerald-500/3 text-emerald-200",
+    amber:   "border-white/18 bg-white/3 text-zinc-200",
+    rose:    "border-rose-500/18 bg-rose-500/3 text-rose-200",
+    zinc:    "border-white/6 bg-white/2 text-zinc-200",
   }[tone];
   return (
     <div className={`rounded-xl border ${cls} p-3`}>

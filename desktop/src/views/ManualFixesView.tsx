@@ -148,10 +148,10 @@ function FixRow({ fix, onReconciled }: { fix: FixView; onReconciled: () => void 
   return (
     <div className="glass-card p-3">
       <div className="flex items-center gap-2 mb-1 flex-wrap">
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${STATUS_CLASS[fix.status]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${STATUS_CLASS[fix.status]}`}>
           {fix.status}
         </span>
-        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${TIER_CLASS[fix.environmentTier]}`}>
+        <span className={`text-[9.5px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm border ${TIER_CLASS[fix.environmentTier]}`}>
           {fix.environmentTier}
         </span>
         <span className="text-[10px] font-mono text-zinc-500">
@@ -166,20 +166,20 @@ function FixRow({ fix, onReconciled }: { fix: FixView; onReconciled: () => void 
         <p className="text-[10.5px] font-mono text-emerald-300 mt-1">↳ reconciled via {fix.reconciliationRef}</p>
       )}
       {fix.status === "pending" && (
-        <div className="mt-2 pt-2 border-t border-white/[0.04] flex items-center gap-2 flex-wrap text-[11px] font-mono">
+        <div className="mt-2 pt-2 border-t border-white/4 flex items-center gap-2 flex-wrap text-[11px] font-mono">
           <input
             type="text"
             value={ref}
             onChange={(e) => setRef(e.target.value)}
             placeholder="ref (PR # / commit) — optional"
             disabled={busy !== null}
-            className="flex-1 min-w-[160px] rounded border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-none disabled:opacity-50"
+            className="flex-1 min-w-[160px] rounded-sm border border-zinc-700/40 bg-zinc-900/60 px-2 py-1 text-[11px] text-zinc-100 placeholder:text-zinc-600 focus:border-violet-500/40 focus:outline-hidden disabled:opacity-50"
           />
           <button
             type="button"
             onClick={() => reconcile("reconciled")}
             disabled={busy !== null}
-            className="px-2 py-1 rounded border border-emerald-500/30 bg-emerald-500/[0.10] text-emerald-200 hover:bg-emerald-500/[0.18] disabled:opacity-50 disabled:cursor-wait"
+            className="px-2 py-1 rounded-sm border border-emerald-500/30 bg-emerald-500/10 text-emerald-200 hover:bg-emerald-500/18 disabled:opacity-50 disabled:cursor-wait"
           >
             {busy === "reconciled" ? "…" : "Reconcile"}
           </button>
@@ -187,7 +187,7 @@ function FixRow({ fix, onReconciled }: { fix: FixView; onReconciled: () => void 
             type="button"
             onClick={() => reconcile("wont_fix")}
             disabled={busy !== null}
-            className="px-2 py-1 rounded border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait"
+            className="px-2 py-1 rounded-sm border border-zinc-600/40 bg-zinc-800/40 text-zinc-300 hover:bg-zinc-800/60 disabled:opacity-50 disabled:cursor-wait"
           >
             {busy === "wont_fix" ? "…" : "Won't fix"}
           </button>
@@ -268,7 +268,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
         <button
           type="button"
           onClick={() => setState({ kind: "open" })}
-          className="px-3 py-1.5 rounded-lg border border-white/30 bg-white/[0.08] text-[12px] font-semibold text-zinc-200 hover:bg-white/[0.16] transition-colors"
+          className="px-3 py-1.5 rounded-lg border border-white/30 bg-white/8 text-[12px] font-semibold text-zinc-200 hover:bg-white/16 transition-colors"
         >
           + Log manual fix
         </button>
@@ -291,7 +291,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
           placeholder="e.g. Restarted redis on web-prod-1 + bumped maxmemory"
           disabled={busy}
           rows={2}
-          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-white/40 focus:outline-none disabled:opacity-50"
+          className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-white/40 focus:outline-hidden disabled:opacity-50"
         />
       </label>
       <div className="grid grid-cols-3 gap-2">
@@ -327,7 +327,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
             onChange={(e) => setReleaseId(e.target.value)}
             disabled={busy}
             placeholder="rel_..."
-            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-white/40 focus:outline-none disabled:opacity-50"
+            className="w-full rounded-md border border-zinc-700/40 bg-zinc-900/60 px-2 py-1.5 text-[12px] text-zinc-100 placeholder:text-zinc-600 focus:border-white/40 focus:outline-hidden disabled:opacity-50"
           />
         </label>
       </div>
@@ -336,7 +336,7 @@ function LogManualFixPanel({ onLogged }: { onLogged: () => void }) {
           type="button"
           onClick={submit}
           disabled={busy || !summary.trim()}
-          className="px-3 py-1.5 rounded-md border border-white/40 bg-white/[0.14] text-[12px] font-semibold text-zinc-100 hover:bg-white/[0.22] disabled:opacity-50 disabled:cursor-wait transition-colors"
+          className="px-3 py-1.5 rounded-md border border-white/40 bg-white/[0.14] text-[12px] font-semibold text-zinc-100 hover:bg-white/22 disabled:opacity-50 disabled:cursor-wait transition-colors"
         >
           {busy ? "Submitting…" : "Log fix"}
         </button>

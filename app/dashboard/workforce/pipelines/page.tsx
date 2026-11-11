@@ -43,11 +43,11 @@ const CATEGORY_META: Record<PipelineCategory, { label: string; icon: typeof Bolt
 };
 
 const RUN_STATUS_TONE: Record<string, string> = {
-  queued:    "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  queued:    "text-zinc-400 bg-white/4 border-white/8",
   running:   "text-zinc-300 bg-white/10 border-white/30",
   succeeded: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
   failed:    "text-rose-300 bg-rose-500/10 border-rose-500/30",
-  cancelled: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  cancelled: "text-zinc-400 bg-white/4 border-white/8",
 };
 
 export default async function PipelinesPage() {
@@ -107,7 +107,7 @@ export default async function PipelinesPage() {
           const Icon = meta.icon;
           const totalSeconds = p.stages.reduce((acc, s) => acc + s.expectedDurationSeconds, 0);
           return (
-            <article key={p.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.10] transition-colors">
+            <article key={p.id} className="rounded-2xl border border-white/6 bg-white/2 p-5 hover:border-white/10 transition-colors">
               <header className="flex items-center gap-2 mb-2 flex-wrap">
                 <Icon className={`h-4 w-4 ${meta.tone}`} />
                 <p className={`text-[10px] font-mono uppercase tracking-wider ${meta.tone}`}>{meta.label}</p>
@@ -122,7 +122,7 @@ export default async function PipelinesPage() {
                     className={`text-[10px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${
                       s.requiresApproval
                         ? "text-zinc-300 bg-white/10 border-white/30"
-                        : "text-zinc-300 bg-white/[0.02] border-white/[0.08]"
+                        : "text-zinc-300 bg-white/2 border-white/8"
                     }`}
                     title={s.description}
                   >
@@ -130,7 +130,7 @@ export default async function PipelinesPage() {
                   </span>
                 ))}
               </div>
-              <div className="flex items-center justify-between gap-3 flex-wrap pt-3 border-t border-white/[0.04]">
+              <div className="flex items-center justify-between gap-3 flex-wrap pt-3 border-t border-white/4">
                 <span className="text-[10px] font-mono text-zinc-500">
                   {p.stages.length} stages · ~{totalSeconds}s dry-run
                 </span>
@@ -143,7 +143,7 @@ export default async function PipelinesPage() {
 
       <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">// recent runs</p>
       {recentRuns.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <ClockIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">No runs yet.</p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
@@ -162,7 +162,7 @@ export default async function PipelinesPage() {
               <Link
                 key={r.id}
                 href={`/dashboard/workforce/pipelines/runs/${r.id}`}
-                className="block rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3 hover:border-white/[0.10] transition-colors"
+                className="block rounded-xl border border-white/6 bg-white/2 px-4 py-3 hover:border-white/10 transition-colors"
               >
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
                   <p className="text-[12px] font-semibold text-white truncate">
@@ -188,7 +188,7 @@ export default async function PipelinesPage() {
 
 function Stat({ label, value, icon: Icon, tone }: { label: string; value: number; icon: typeof BoltIcon; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <Icon className={`h-4 w-4 ${tone} mb-2`} />
       <p className="text-2xl font-bold text-white tabular-nums">{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>

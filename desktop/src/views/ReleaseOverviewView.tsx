@@ -151,7 +151,7 @@ export function ReleaseOverviewView() {
                     </h2>
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
+                    <span className="text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded-sm bg-zinc-800/60 text-zinc-300 border border-zinc-700/40">
                       {detail.data.release.status}
                     </span>
                     {detail.data.release.commitSha && (
@@ -174,14 +174,14 @@ export function ReleaseOverviewView() {
                 <div className="mt-2 flex items-center gap-1.5 flex-wrap">
                   <a
                     href={`/api/dashboard/release-evidence-export/${encodeURIComponent(detail.data.release.id)}?format=markdown`}
-                    className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] font-mono text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+                    className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[10px] font-mono text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
                     download
                   >
                     Pack .md
                   </a>
                   <a
                     href={`/api/dashboard/release-evidence-export/${encodeURIComponent(detail.data.release.id)}?format=json`}
-                    className="px-2 py-1 rounded border border-zinc-700/40 bg-zinc-800/40 text-[10px] font-mono text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
+                    className="px-2 py-1 rounded-sm border border-zinc-700/40 bg-zinc-800/40 text-[10px] font-mono text-zinc-200 hover:border-violet-500/30 hover:text-violet-200 transition-colors"
                     download
                   >
                     Pack .json
@@ -216,7 +216,7 @@ export function ReleaseOverviewView() {
                   <div className="flex items-baseline gap-2">
                     <span className="text-[22px] font-bold text-white">{detail.data.policyViolations.total}</span>
                     {detail.data.policyViolations.blockingOpen > 0 && (
-                      <span className="text-[9px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/15 px-1 py-0.5 rounded border border-rose-500/25">
+                      <span className="text-[9px] font-mono uppercase tracking-wider text-rose-300 bg-rose-500/15 px-1 py-0.5 rounded-sm border border-rose-500/25">
                         {detail.data.policyViolations.blockingOpen} blocking open
                       </span>
                     )}
@@ -403,19 +403,19 @@ function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; cu
   const busy = state.kind === "submitting";
   const buttons: Array<{ action: LifecycleAction; label: string; tone: string }> = [];
   if (currentStatus === "draft") {
-    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-violet-500/40 bg-violet-500/[0.12] text-violet-100" });
+    buttons.push({ action: "finalize_scope", label: "Finalize scope", tone: "border-violet-500/40 bg-violet-500/12 text-violet-100" });
   }
   if (currentStatus === "ready") {
-    buttons.push({ action: "start_deploy", label: "Start deploy", tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
-    buttons.push({ action: "mark_failed",  label: "Mark failed",  tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
+    buttons.push({ action: "start_deploy", label: "Start deploy", tone: "border-emerald-500/40 bg-emerald-500/12 text-emerald-100" });
+    buttons.push({ action: "mark_failed",  label: "Mark failed",  tone: "border-rose-500/40 bg-rose-500/8 text-rose-200" });
   }
   if (currentStatus === "deploying") {
-    buttons.push({ action: "complete_deploy",  label: "Complete deploy",  tone: "border-emerald-500/40 bg-emerald-500/[0.12] text-emerald-100" });
-    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/[0.10] text-zinc-200" });
-    buttons.push({ action: "mark_failed",      label: "Mark failed",      tone: "border-rose-500/40 bg-rose-500/[0.08] text-rose-200" });
+    buttons.push({ action: "complete_deploy",  label: "Complete deploy",  tone: "border-emerald-500/40 bg-emerald-500/12 text-emerald-100" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/10 text-zinc-200" });
+    buttons.push({ action: "mark_failed",      label: "Mark failed",      tone: "border-rose-500/40 bg-rose-500/8 text-rose-200" });
   }
   if (currentStatus === "deployed") {
-    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/[0.10] text-zinc-200" });
+    buttons.push({ action: "mark_rolled_back", label: "Mark rolled back", tone: "border-white/40 bg-white/10 text-zinc-200" });
   }
 
   if (buttons.length === 0) {
@@ -435,7 +435,7 @@ function LifecycleControls({ releaseId, currentStatus }: { releaseId: string; cu
           type="button"
           disabled={busy}
           onClick={() => trigger(b.action)}
-          className={`px-2.5 py-1 rounded border font-semibold ${b.tone} hover:brightness-110 disabled:opacity-50 disabled:cursor-wait transition-all`}
+          className={`px-2.5 py-1 rounded-sm border font-semibold ${b.tone} hover:brightness-110 disabled:opacity-50 disabled:cursor-wait transition-all`}
         >
           {busy && state.kind === "submitting" && state.action === b.action ? "…" : b.label}
         </button>

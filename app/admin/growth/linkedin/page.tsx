@@ -134,7 +134,7 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
               {isConnected ? "Reconnect LinkedIn" : "Connect LinkedIn"}
             </a>
           ) : (
-            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-zinc-700/30 text-zinc-300 border border-white/[0.08]">
+            <span className="inline-flex items-center gap-1.5 text-[12px] font-medium px-3 py-1.5 rounded-lg bg-zinc-700/30 text-zinc-300 border border-white/8">
               <ExclamationTriangleIcon className="h-3.5 w-3.5" />
               Set LinkedIn env vars to enable connect
             </span>
@@ -149,7 +149,7 @@ export default async function LinkedInAdminPage({ searchParams }: PageProps) {
         </div>
 
         {!configured && (
-          <div className="mt-4 rounded-xl border border-white/20 bg-white/[0.04] p-3">
+          <div className="mt-4 rounded-xl border border-white/20 bg-white/4 p-3">
             <p className="text-[11px] text-zinc-100/90 leading-relaxed">
               Add to <span className="font-mono text-zinc-200">.env.local</span>:
             </p>
@@ -187,7 +187,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
             detail="Generate some on the content page or wait for the daily cron at /api/cron/linkedin-daily-drafts."
           />
         ) : (
-          <ul className="divide-y divide-white/[0.05]">
+          <ul className="divide-y divide-white/5">
             {drafts.map((d) => (
               <DraftRow key={d.id} draft={d} isConnected={isConnected} postingEnabled={postingEnabled} />
             ))}
@@ -285,7 +285,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
       </section>
 
       {/* 4 · Safety rules */}
-      <section className="rounded-2xl border border-rose-500/20 bg-rose-500/[0.04] p-5">
+      <section className="rounded-2xl border border-rose-500/20 bg-rose-500/4 p-5">
         <header className="flex items-center gap-2 mb-2">
           <ShieldCheckIcon className="h-4 w-4 text-rose-300" />
           <p className="text-[10px] font-semibold uppercase tracking-widest text-rose-300">Hard rules</p>
@@ -307,7 +307,7 @@ LINKEDIN_POSTING_ENABLED=false    # flip to true ONLY when you're ready`}
 
 function StatusPill({ label, ok, hint }: { label: string; ok: boolean; hint: string }) {
   return (
-    <div className={`rounded-xl border p-3 ${ok ? "border-emerald-500/20 bg-emerald-500/[0.04]" : "border-white/20 bg-white/[0.04]"}`}>
+    <div className={`rounded-xl border p-3 ${ok ? "border-emerald-500/20 bg-emerald-500/4" : "border-white/20 bg-white/4"}`}>
       <div className="flex items-center gap-2 mb-0.5">
         {ok ? <CheckCircleIcon className="h-3.5 w-3.5 text-emerald-300" /> : <ExclamationTriangleIcon className="h-3.5 w-3.5 text-zinc-300" />}
         <p className={`text-[11px] font-semibold ${ok ? "text-emerald-200" : "text-zinc-200"}`}>{label}</p>
@@ -319,8 +319,8 @@ function StatusPill({ label, ok, hint }: { label: string; ok: boolean; hint: str
 
 function ResultBanner({ tone, title, detail }: { tone: "ok" | "error"; title: string; detail: string }) {
   const palette = tone === "ok"
-    ? "border-emerald-500/30 bg-emerald-500/[0.06] text-emerald-100"
-    : "border-rose-500/30 bg-rose-500/[0.06] text-rose-100";
+    ? "border-emerald-500/30 bg-emerald-500/6 text-emerald-100"
+    : "border-rose-500/30 bg-rose-500/6 text-rose-100";
   return (
     <div className={`rounded-xl border ${palette} p-3 mb-4`}>
       <p className="text-[12px] font-semibold">{title}</p>
@@ -346,21 +346,21 @@ function statusChip(s: string): string {
   if (s === "published")      return "text-emerald-200 bg-emerald-700/10 border-emerald-500/30";
   if (s === "rejected")       return "text-rose-300 bg-rose-500/10 border-rose-500/30";
   if (s === "failed")         return "text-rose-200 bg-rose-700/10 border-rose-500/40";
-  return                            "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
+  return                            "text-zinc-300 bg-white/4 border-white/8";
 }
 
 function outcomeChip(s: string): string {
   if (s === "success")              return "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
   if (s.startsWith("skipped"))      return "text-zinc-300 bg-white/10 border-white/30";
   if (s === "failed")               return "text-rose-300 bg-rose-500/10 border-rose-500/30";
-  return                                   "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
+  return                                   "text-zinc-300 bg-white/4 border-white/8";
 }
 
 function autopilotChip(s: string): string {
   if (s === "published" || s === "scheduled")  return "text-emerald-300 bg-emerald-500/10 border-emerald-500/30";
   if (s === "queued_for_review")               return "text-cyan-300 bg-cyan-500/10 border-cyan-500/30";
   if (s === "killed")                          return "text-rose-300 bg-rose-500/10 border-rose-500/30";
-  if (s === "disabled")                        return "text-zinc-300 bg-white/[0.04] border-white/[0.08]";
+  if (s === "disabled")                        return "text-zinc-300 bg-white/4 border-white/8";
   return                                              "text-zinc-300 bg-white/10 border-white/30";
 }
 
@@ -399,7 +399,7 @@ function DraftRow({
           href={`https://www.linkedin.com/feed/?shareActive=true&text=${encodeURIComponent(fullText)}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-white/[0.04] text-zinc-200 border border-white/[0.08] hover:bg-white/[0.08]"
+          className="inline-flex items-center gap-1 text-[10.5px] font-medium px-2 py-1 rounded-lg bg-white/4 text-zinc-200 border border-white/8 hover:bg-white/8"
           title="Open LinkedIn with this draft pre-filled"
         >
           <ArrowTopRightOnSquareIcon className="h-3 w-3" />

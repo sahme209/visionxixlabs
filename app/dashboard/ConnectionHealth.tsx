@@ -47,7 +47,7 @@ export function ConnectionHealth({ provider = "aws" }: { provider?: "aws" | "azu
   }, []);
 
   return (
-    <div className="flex items-center gap-2 px-6 py-3 border-t border-white/[0.04] bg-white/[0.005]">
+    <div className="flex items-center gap-2 px-6 py-3 border-t border-white/4 bg-white/0.5">
       {loading && (
         <>
           <span className="w-3 h-3 rounded-full border-2 border-zinc-500 border-t-transparent animate-spin" />

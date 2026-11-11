@@ -261,7 +261,7 @@ export default function LaunchKitPage() {
       <div className="mb-8">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
           <span className="text-rose-300/90 tabular-nums">LK</span>
-          <span className="h-px w-6 bg-gradient-to-r from-rose-400/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-rose-400/60 to-transparent" />
           Launch kit · internal
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-3">
@@ -358,9 +358,9 @@ export default function LaunchKitPage() {
           <li><strong className="text-brand-coral">1.</strong> Open <a href="https://x.com/VisionXIXLabs" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">x.com/VisionXIXLabs</a> → Profile → Edit profile. Paste display name, bio, location, website from the section above.</li>
           <li><strong className="text-brand-coral">2.</strong> Post the pinned tweet from above. Long-press → Pin to profile.</li>
           <li><strong className="text-brand-coral">3.</strong> Schedule the 12 daily posts. X has native scheduling — Tweet composer → calendar icon → pick time.</li>
-          <li><strong className="text-brand-coral">4.</strong> Open <a href="https://github.com/sahme209/axiom-releases" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">github.com/sahme209/axiom-releases</a>. Add file → name it <code className="font-mono text-brand-coral/90 bg-white/[0.04] px-1 rounded">LICENSE</code> → paste the LICENSE block above.</li>
-          <li><strong className="text-brand-coral">5.</strong> Same repo → Add file → <code className="font-mono text-brand-coral/90 bg-white/[0.04] px-1 rounded">README.md</code> → paste the README block above.</li>
-          <li><strong className="text-brand-coral">6.</strong> Done. Marketing site already points to <code className="font-mono text-brand-coral/90 bg-white/[0.04] px-1 rounded">github.com/sahme209/axiom-releases</code> in Nav + Footer.</li>
+          <li><strong className="text-brand-coral">4.</strong> Open <a href="https://github.com/sahme209/axiom-releases" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">github.com/sahme209/axiom-releases</a>. Add file → name it <code className="font-mono text-brand-coral/90 bg-white/4 px-1 rounded-sm">LICENSE</code> → paste the LICENSE block above.</li>
+          <li><strong className="text-brand-coral">5.</strong> Same repo → Add file → <code className="font-mono text-brand-coral/90 bg-white/4 px-1 rounded-sm">README.md</code> → paste the README block above.</li>
+          <li><strong className="text-brand-coral">6.</strong> Done. Marketing site already points to <code className="font-mono text-brand-coral/90 bg-white/4 px-1 rounded-sm">github.com/sahme209/axiom-releases</code> in Nav + Footer.</li>
         </ol>
       </section>
     </div>
@@ -378,7 +378,7 @@ function Field({ label, value, max, multiline }: { label: string; value: string;
         </p>
       </div>
       <div className={`relative ${multiline ? "" : "inline-block w-full"}`}>
-        <pre className="font-mono text-[12.5px] text-zinc-100 bg-black/30 border border-white/[0.06] rounded-lg p-3 whitespace-pre-wrap break-words leading-relaxed">{value}</pre>
+        <pre className="font-mono text-[12.5px] text-zinc-100 bg-black/30 border border-white/6 rounded-lg p-3 whitespace-pre-wrap wrap-break-word leading-relaxed">{value}</pre>
         <CopyButton value={value} />
       </div>
     </div>
@@ -388,7 +388,7 @@ function Field({ label, value, max, multiline }: { label: string; value: string;
 function Block({ value }: { value: string }) {
   return (
     <div className="relative">
-      <pre className="font-mono text-[12px] text-zinc-100 bg-black/30 border border-white/[0.06] rounded-lg p-4 whitespace-pre-wrap break-words leading-relaxed max-h-96 overflow-y-auto">
+      <pre className="font-mono text-[12px] text-zinc-100 bg-black/30 border border-white/6 rounded-lg p-4 whitespace-pre-wrap wrap-break-word leading-relaxed max-h-96 overflow-y-auto">
         {value}
       </pre>
       <CopyButton value={value} />

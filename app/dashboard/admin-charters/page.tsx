@@ -21,7 +21,7 @@ import { prisma } from "@/lib/db";
 export const dynamic = "force-dynamic";
 
 const MODE_TONE: Record<string, string> = {
-  observer:   "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  observer:   "text-zinc-400 bg-white/4 border-white/8",
   review:     "text-sky-300 bg-sky-500/10 border-sky-500/20",
   assisted:   "text-emerald-300 bg-emerald-500/10 border-emerald-500/20",
   autonomous: "text-zinc-300 bg-white/10 border-white/20",
@@ -40,7 +40,7 @@ export default async function AdminChartersPage() {
           <ArrowLeftIcon className="h-3.5 w-3.5" />
           Dashboard
         </Link>
-        <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-6">
+        <div className="rounded-md border border-rose-500/20 bg-rose-500/4 p-6">
           <p className="font-mono text-[10px] uppercase tracking-[0.24em] text-rose-300 mb-3 inline-flex items-center gap-2">
             <LockClosedIcon className="h-4 w-4" />
             <span>forbidden</span>
@@ -95,7 +95,7 @@ export default async function AdminChartersPage() {
       {/* Per-mode count ribbon */}
       <section className="mb-8 flex gap-3 flex-wrap">
         {["observer", "review", "assisted", "autonomous"].map((mode) => (
-          <div key={mode} className={`rounded-md border ${MODE_TONE[mode] ?? "border-white/[0.06] bg-white/[0.02]"} px-4 py-2`}>
+          <div key={mode} className={`rounded-md border ${MODE_TONE[mode] ?? "border-white/6 bg-white/2"} px-4 py-2`}>
             <p className="font-mono text-[10px] uppercase tracking-wider text-zinc-500">{mode}</p>
             <p className="text-[18px] font-semibold tabular-nums">{perMode[mode] ?? 0}</p>
           </div>
@@ -104,11 +104,11 @@ export default async function AdminChartersPage() {
 
       {/* Roster */}
       {rows.length === 0 ? (
-        <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-10 text-center">
+        <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-10 text-center">
           <p className="text-[13px] text-zinc-400">No autonomy charters yet.</p>
         </div>
       ) : (
-        <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+        <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
           {rows.map((r) => (
             <li key={r.organizationId} className="px-5 py-3.5">
               <div className="flex items-start justify-between gap-4 flex-wrap">

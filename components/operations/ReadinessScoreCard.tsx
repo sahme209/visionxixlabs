@@ -43,9 +43,9 @@ export function ReadinessScoreCard({
   const fleetAvg = Math.round(services.reduce((s, x) => s + x.compositeScore, 0) / services.length);
 
   return (
-    <div className={`rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="px-6 py-4 border-b border-white/6 bg-white/1">
         <div className="flex items-center justify-between flex-wrap gap-3 mb-3">
           <div className="flex items-center gap-3">
             <ShieldCheckIcon className="h-4 w-4 text-emerald-400" />
@@ -70,7 +70,7 @@ export function ReadinessScoreCard({
           return (
             <div
               key={s.id}
-              className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4 hover:border-white/[0.12] hover:bg-white/[0.03] transition-all group"
+              className="rounded-xl border border-white/6 bg-white/2 p-4 hover:border-white/12 hover:bg-white/3 transition-all group"
             >
               <div className="flex items-start gap-3 flex-wrap mb-3">
                 <div className="flex-1 min-w-0">
@@ -110,8 +110,8 @@ export function ReadinessScoreCard({
               </div>
 
               {/* Score bar */}
-              <div className="h-1 bg-white/[0.06] rounded-full overflow-hidden mb-3">
-                <div className={`h-full rounded-full bg-gradient-to-r ${color.bg}`} style={{ width: `${s.compositeScore}%` }} />
+              <div className="h-1 bg-white/6 rounded-full overflow-hidden mb-3">
+                <div className={`h-full rounded-full bg-linear-to-r ${color.bg}`} style={{ width: `${s.compositeScore}%` }} />
               </div>
 
               {/* Dimension chips */}
@@ -123,7 +123,7 @@ export function ReadinessScoreCard({
                     <span
                       key={d.key}
                       title={d.detail}
-                      className="inline-flex items-center gap-1 text-[10px] font-medium bg-white/[0.04] border border-white/[0.06] rounded-full px-2 py-0.5"
+                      className="inline-flex items-center gap-1 text-[10px] font-medium bg-white/4 border border-white/6 rounded-full px-2 py-0.5"
                     >
                       <span className={c.text}>{pct}</span>
                       <span className="text-zinc-500">{d.label}</span>
@@ -137,7 +137,7 @@ export function ReadinessScoreCard({
       </div>
 
       {/* Footer */}
-      <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between text-xs">
+      <div className="px-6 py-3 border-t border-white/6 bg-white/1 flex items-center justify-between text-xs">
         <span className="text-zinc-500">
           Scoring engine · 9 operational dimensions · recalibrated continuously
         </span>

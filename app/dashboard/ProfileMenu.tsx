@@ -63,7 +63,7 @@ export function ProfileMenu({ email }: { email: string }) {
         ref={triggerRef}
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] text-zinc-400 hover:bg-white/[0.04] hover:text-zinc-200 transition-colors"
+        className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[12px] text-zinc-400 hover:bg-white/4 hover:text-zinc-200 transition-colors"
         aria-expanded={open}
         aria-haspopup="menu"
       >
@@ -74,9 +74,9 @@ export function ProfileMenu({ email }: { email: string }) {
       {open && (
         <div
           role="menu"
-          className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-white/[0.08] bg-[#0c0c0e] shadow-xl overflow-hidden"
+          className="absolute right-0 top-full mt-2 w-60 rounded-xl border border-white/8 bg-[#0c0c0e] shadow-xl overflow-hidden"
         >
-          <div className="px-4 py-3 border-b border-white/[0.04]">
+          <div className="px-4 py-3 border-b border-white/4">
             <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500">signed in</p>
             <p className="text-[12px] text-zinc-200 truncate">{email}</p>
           </div>
@@ -86,11 +86,11 @@ export function ProfileMenu({ email }: { email: string }) {
             <MenuRow href="/dashboard/integrations" icon={PuzzlePieceIcon} label="Integrations" />
             <MenuRow href="/api/admin/diag/connect-flow" icon={WrenchScrewdriverIcon} label="Connection diagnostic" external />
           </ul>
-          <div className="border-t border-white/[0.04] py-1">
+          <div className="border-t border-white/4 py-1">
             <button
               role="menuitem"
               onClick={() => signOut({ callbackUrl: "/" })}
-              className="w-full flex items-center gap-2 px-4 py-2 text-[12px] text-zinc-300 hover:bg-white/[0.04] hover:text-white transition-colors text-left"
+              className="w-full flex items-center gap-2 px-4 py-2 text-[12px] text-zinc-300 hover:bg-white/4 hover:text-white transition-colors text-left"
             >
               <ArrowRightOnRectangleIcon className="h-3.5 w-3.5 text-zinc-500" />
               Sign out
@@ -113,7 +113,7 @@ function MenuRow({
   label: string;
   external?: boolean;
 }) {
-  const className = "w-full flex items-center gap-2 px-4 py-2 text-[12px] text-zinc-300 hover:bg-white/[0.04] hover:text-white transition-colors";
+  const className = "w-full flex items-center gap-2 px-4 py-2 text-[12px] text-zinc-300 hover:bg-white/4 hover:text-white transition-colors";
   if (external) {
     return (
       <li>

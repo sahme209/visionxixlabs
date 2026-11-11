@@ -76,37 +76,37 @@ export default async function WorkloadPerformanceAnalysesPage() {
         </p>
       </header>
 
-      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-md border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/workload_performance_engineer/run-domain" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200}
               placeholder="e.g. checkout API p95 latency spike · 2026-06-15 14:00 UTC"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="serviceDescription" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">service description</label>
             <textarea id="serviceDescription" name="serviceDescription" required rows={3} maxLength={2000}
               placeholder={"e.g. checkout API · Node 22 · EKS us-east-1 · 6 pods · ALB ingress · backed by Aurora Postgres + Redis ElastiCache · ~2k rps steady"}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="telemetrySnapshot" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">telemetry snapshot</label>
             <textarea id="telemetrySnapshot" name="telemetrySnapshot" required rows={12} maxLength={12000}
               placeholder={"Paste anything tabular:\n· CloudWatch metric JSON\n· Datadog API export\n· Prometheus query result\n· vCenter perfQuery output\n· kubectl top pods/nodes output\n· Grafana CSV export\n\nThe richer the time series, the more precise the analysis."}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="baselineExpectations" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">baseline expectations (optional but recommended)</label>
             <textarea id="baselineExpectations" name="baselineExpectations" rows={3} maxLength={2000}
               placeholder={"e.g. p95 latency ~ 180ms · error rate < 0.5% · CPU < 60% · memory < 70% · Aurora replica lag < 2s"}
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="recentChanges" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">recent changes (optional)</label>
             <input id="recentChanges" name="recentChanges" maxLength={2000}
               placeholder="e.g. node-affinity rule shipped 2h ago · Aurora minor version bump last night · index rebuild ran at 13:30 UTC"
-              className="w-full rounded border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-sm border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <p className="text-[11px] text-zinc-500 font-mono">metered AI · billable · ~$0.30 per analysis</p>
@@ -118,7 +118,7 @@ export default async function WorkloadPerformanceAnalysesPage() {
       </section>
 
       {decoded.length === 0 ? (
-        <div className="rounded-md border border-white/[0.06] bg-white/[0.012] px-6 py-12 text-center">
+        <div className="rounded-md border border-white/6 bg-white/[0.012] px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No analyses yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1 font-mono">paste a telemetry snapshot to run the first one</p>
         </div>
@@ -130,10 +130,10 @@ export default async function WorkloadPerformanceAnalysesPage() {
             <span className="text-zinc-700">::</span>
             <span className="text-zinc-400 tabular-nums">{decoded.length}</span>
           </p>
-          <ul className="rounded-md border border-white/[0.06] bg-white/[0.012] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-md border border-white/6 bg-white/[0.012] divide-y divide-white/4 overflow-hidden">
             {decoded.map((d) => (
               <li key={d.targetId}>
-                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${WORKLOAD_PERFORMANCE_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-emerald-500/[0.04] transition-colors">
+                <Link href={`/dashboard/agi-memory/${encodeURIComponent(`${WORKLOAD_PERFORMANCE_TARGET_KIND}:${d.targetId}`)}`} className="block px-5 py-3.5 hover:bg-emerald-500/4 transition-colors">
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     {d.verdict && (
                       <span className={VERDICT_TONE[d.verdict] ?? "text-zinc-400"}>{d.verdict}</span>

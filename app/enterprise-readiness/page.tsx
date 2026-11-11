@@ -26,7 +26,7 @@ const pending = [
 
 export default function EnterpriseReadinessPage() {
   return (
-    <div className="min-h-screen bg-[#141414] text-zinc-100">
+    <div className="min-h-screen bg-brand-ink text-zinc-100">
       <Navigation />
       <main>
         <section className="mx-auto max-w-[1400px] px-5 pb-20 pt-28 sm:px-8 lg:px-10 lg:pb-28 lg:pt-36">
@@ -46,13 +46,13 @@ export default function EnterpriseReadinessPage() {
             <Link href="/download" className="inline-flex min-h-12 items-center rounded-full bg-zinc-100 px-6 text-sm font-semibold text-zinc-950 hover:bg-white">
               Download Axiom
             </Link>
-            <Link href="/docs/permissions-model" className="inline-flex min-h-12 items-center rounded-full border border-white/[0.12] px-6 text-sm font-medium text-zinc-200 hover:bg-white/[0.05]">
+            <Link href="/docs/permissions-model" className="inline-flex min-h-12 items-center rounded-full border border-white/12 px-6 text-sm font-medium text-zinc-200 hover:bg-white/5">
               Review the permission model
             </Link>
           </div>
         </section>
 
-        <section className="border-y border-white/[0.08] bg-[#181818]">
+        <section className="border-y border-white/8 bg-[#181818]">
           <div className="mx-auto grid max-w-[1400px] gap-14 px-5 py-20 sm:px-8 lg:grid-cols-[0.72fr_1.28fr] lg:px-10 lg:py-28">
             <div>
               <ShieldCheckIcon className="h-7 w-7 text-[#ff783d]" aria-hidden />
@@ -64,7 +64,7 @@ export default function EnterpriseReadinessPage() {
                 provider workflows in the current codebase.
               </p>
             </div>
-            <ul className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+            <ul className="divide-y divide-white/8 border-y border-white/8">
               {released.map((item) => (
                 <li key={item} className="flex gap-4 py-5 text-sm leading-6 text-zinc-300">
                   <CheckIcon className="mt-1 h-4 w-4 shrink-0 text-[#ff783d]" aria-hidden />
@@ -86,7 +86,7 @@ export default function EnterpriseReadinessPage() {
               capability until the end-to-end path is verified.
             </p>
           </div>
-          <ul className="divide-y divide-white/[0.08] border-y border-white/[0.08]">
+          <ul className="divide-y divide-white/8 border-y border-white/8">
             {pending.map((item) => (
               <li key={item} className="flex gap-4 py-5 text-sm leading-6 text-zinc-400">
                 <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-zinc-600" aria-hidden />
@@ -96,10 +96,10 @@ export default function EnterpriseReadinessPage() {
           </ul>
         </section>
 
-        <section className="border-t border-white/[0.08]">
+        <section className="border-t border-white/8">
           <div className="mx-auto max-w-[1400px] px-5 py-20 sm:px-8 lg:px-10 lg:py-28">
             <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">Self-service path</p>
-            <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-white/[0.08] bg-white/[0.08] md:grid-cols-4">
+            <div className="mt-8 grid gap-px overflow-hidden rounded-2xl border border-white/8 bg-white/8 md:grid-cols-4">
               {[
                 ["01", "Download", "Install the current signed release shown on the download page."],
                 ["02", "Connect", "Choose a repository and configure only the environment you intend to use."],

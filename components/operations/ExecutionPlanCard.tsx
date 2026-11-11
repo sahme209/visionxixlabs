@@ -42,7 +42,7 @@ const PHASE_STATUS_CONFIG: Record<
   PlanPhase["status"],
   { label: string; color: string; bg: string; dot: string }
 > = {
-  pending: { label: "Pending", color: "text-zinc-400", bg: "bg-white/[0.04] border-white/[0.08]", dot: "bg-zinc-500" },
+  pending: { label: "Pending", color: "text-zinc-400", bg: "bg-white/4 border-white/8", dot: "bg-zinc-500" },
   approved: { label: "Approved", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", dot: "bg-emerald-400" },
   executing: { label: "Executing", color: "text-blue-400", bg: "bg-blue-500/10 border-blue-500/20", dot: "bg-blue-400 animate-pulse" },
   complete: { label: "Complete", color: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", dot: "bg-emerald-400" },
@@ -86,9 +86,9 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
   const allSafetyPassed = data.safetyChecks.every((c) => c.passed);
 
   return (
-    <div className={`rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="px-6 py-5 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="px-6 py-5 border-b border-white/6 bg-white/1">
         <div className="flex items-start justify-between gap-4 flex-wrap mb-4">
           <div>
             <div className="flex items-center gap-2 mb-2">
@@ -117,7 +117,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
           ].map((m) => {
             const Icon = m.Icon;
             return (
-              <div key={m.label} className="rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2.5">
+              <div key={m.label} className="rounded-lg bg-white/2 border border-white/4 px-3 py-2.5">
                 <div className="flex items-center gap-1.5 mb-1">
                   <Icon className="h-3 w-3 text-zinc-500" />
                   <span className="text-[10px] text-zinc-500 uppercase tracking-wider font-semibold">{m.label}</span>
@@ -130,7 +130,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="flex border-b border-white/6 bg-white/1">
         {([
           { id: "phases", label: "Phases", count: data.phases.length },
           { id: "terraform", label: "Terraform", count: undefined },
@@ -164,7 +164,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
               return (
                 <li key={phase.id} className="relative pl-12">
                   {!isLast && (
-                    <span aria-hidden className="absolute left-[1.25rem] top-10 bottom-0 w-px bg-white/[0.06]" />
+                    <span aria-hidden className="absolute left-5 top-10 bottom-0 w-px bg-white/6" />
                   )}
                   <div className={`absolute left-0 top-0 w-10 h-10 rounded-xl ${config.bg} border flex items-center justify-center font-mono font-bold text-sm ${config.color}`}>
                     {phase.number}
@@ -204,7 +204,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
               <span className="text-zinc-600">·</span>
               <span className="text-zinc-400">{data.totalResources} total</span>
             </div>
-            <pre className="rounded-lg bg-black/40 border border-white/[0.04] p-4 text-[11px] leading-relaxed text-zinc-300 font-mono overflow-x-auto">
+            <pre className="rounded-lg bg-black/40 border border-white/4 p-4 text-[11px] leading-relaxed text-zinc-300 font-mono overflow-x-auto">
               <code>{data.terraformPreview}</code>
             </pre>
           </div>
@@ -213,7 +213,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
         {activeTab === "resources" && (
           <div className="space-y-1.5">
             {data.affectedResources.map((r) => (
-              <div key={r.name} className="flex items-center justify-between rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2 hover:bg-white/[0.04] transition-colors">
+              <div key={r.name} className="flex items-center justify-between rounded-lg bg-white/2 border border-white/4 px-3 py-2 hover:bg-white/4 transition-colors">
                 <div className="flex items-center gap-2.5 min-w-0">
                   <span className={`font-mono text-sm font-bold w-4 ${ACTION_COLOR[r.action]}`}>{ACTION_SYMBOL[r.action]}</span>
                   <span className="text-sm text-white font-mono truncate">{r.name}</span>
@@ -227,7 +227,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
         {activeTab === "safety" && (
           <div className="space-y-2">
             {data.safetyChecks.map((check) => (
-              <div key={check.label} className="flex items-center gap-3 rounded-lg bg-white/[0.02] border border-white/[0.04] px-3 py-2.5">
+              <div key={check.label} className="flex items-center gap-3 rounded-lg bg-white/2 border border-white/4 px-3 py-2.5">
                 {check.passed ? (
                   <CheckCircleIcon className="h-4 w-4 text-emerald-400 shrink-0" />
                 ) : (
@@ -244,7 +244,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
       </div>
 
       {/* Footer / Approval CTA */}
-      <div className="px-6 py-4 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between flex-wrap gap-3">
+      <div className="px-6 py-4 border-t border-white/6 bg-white/1 flex items-center justify-between flex-wrap gap-3">
         <div className="flex items-center gap-2 text-xs">
           <ShieldCheckIcon className={`h-4 w-4 ${allSafetyPassed ? "text-emerald-400" : "text-zinc-400"}`} />
           <span className={allSafetyPassed ? "text-emerald-400" : "text-zinc-400"}>
@@ -252,7 +252,7 @@ export function ExecutionPlanCard({ plan, className = "", onApprove }: Execution
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <button className="px-4 py-1.5 text-xs font-semibold rounded-full border border-white/[0.1] text-zinc-300 hover:bg-white/[0.04] hover:border-white/[0.2] transition-colors">
+          <button className="px-4 py-1.5 text-xs font-semibold rounded-full border border-white/10 text-zinc-300 hover:bg-white/4 hover:border-white/20 transition-colors">
             View Terraform diff
           </button>
           <button

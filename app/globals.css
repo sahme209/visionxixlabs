@@ -1,6 +1,168 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* Keep utilities unlayered: legacy component CSS uses an unlayered cascade. */
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' source(none);
+@source "../pages/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../components/**/*.{js,ts,jsx,tsx,mdx}";
+@source "../desktop/src/components/FileDiff.tsx";
+@source "./**/*.{js,ts,jsx,tsx,mdx}";
+
+@theme {
+  --color-brand-coral: #ff783d;
+  --color-brand-coral-deep: #f54e00;
+  --color-brand-orange: #ff783d;
+  --color-brand-orange-deep: #f54e00;
+  --color-brand-ink: #141414;
+  --color-brand-ink-card: #1a1a1a;
+  --color-brand-hairline: rgba(255, 255, 255, 0.06);
+  --color-brand-hairline-strong: rgba(255, 255, 255, 0.1);
+
+  --background-image-axiom-warm: linear-gradient(
+    135deg,
+    rgba(245, 78, 0, 0.18) 0%,
+    rgba(255, 120, 61, 0.1) 100%
+  );
+  --background-image-axiom-cool: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.06) 0%,
+    rgba(245, 78, 0, 0.08) 100%
+  );
+  --background-image-axiom-aurora:
+    radial-gradient(
+      40% 50% at 20% 30%,
+      rgba(245, 78, 0, 0.22),
+      transparent 60%
+    ),
+    radial-gradient(
+      35% 40% at 80% 60%,
+      rgba(255, 120, 61, 0.12),
+      transparent 60%
+    );
+  --background-image-axiom-coral-fade: linear-gradient(
+    90deg,
+    #f54e00 0%,
+    #ff783d 60%,
+    transparent 100%
+  );
+
+  --shadow-axiom-card:
+    0 12px 40px -16px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  --shadow-axiom-coral-glow: 0 20px 60px -20px rgba(251, 146, 60, 0.35);
+  --shadow-axiom-orange-glow: 0 20px 60px -20px rgba(255, 120, 61, 0.4);
+
+  --animate-fade-in: fadeIn 0.6s ease-out forwards;
+  --animate-slide-up: slideUp 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  --animate-float: float 6s ease-in-out infinite;
+  --animate-beam: beam-sweep 8s ease-in-out infinite;
+  --animate-glow-pulse: pulse-glow 3s ease-in-out infinite;
+  --animate-border-flow: border-flow 4s ease infinite;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+  --animate-text-reveal: text-reveal 0.8s cubic-bezier(0.22, 1, 0.36, 1)
+    forwards;
+
+  --radius-axiom: 0.875rem;
+  --radius-axiom-lg: 1.25rem;
+
+  --backdrop-blur-xs: 2px;
+  --backdrop-blur-axiom: 24px;
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(16px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  @keyframes float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-8px);
+    }
+  }
+  @keyframes beam-sweep {
+    0% {
+      transform: translateX(-100%) rotate(-45deg);
+    }
+    100% {
+      transform: translateX(200%) rotate(-45deg);
+    }
+  }
+  @keyframes pulse-glow {
+    0%,
+    100% {
+      box-shadow: 0 0 16px rgba(245, 78, 0, 0.15);
+    }
+    50% {
+      box-shadow: 0 0 28px rgba(245, 78, 0, 0.35);
+    }
+  }
+  @keyframes border-flow {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  @keyframes shimmer {
+    0% {
+      background-position: -200% 0;
+    }
+    100% {
+      background-position: 200% 0;
+    }
+  }
+  @keyframes text-reveal {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+      filter: blur(0);
+    }
+  }
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
 
 /* ── Design Tokens ─────────────────────────────────────────────── */
 :root {

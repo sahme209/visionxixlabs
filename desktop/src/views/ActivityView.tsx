@@ -128,9 +128,9 @@ function Stat({
   label, value, tone, sub,
 }: { label: string; value: string; tone: "neutral" | "warning" | "error"; sub?: string }) {
   const colorClass =
-    tone === "warning" ? "border-white/30 bg-white/[0.06] text-zinc-200" :
-    tone === "error"   ? "border-red-500/30 bg-red-500/[0.06] text-red-200" :
-                         "border-axiom-border bg-white/[0.02] text-zinc-300";
+    tone === "warning" ? "border-white/30 bg-white/6 text-zinc-200" :
+    tone === "error"   ? "border-red-500/30 bg-red-500/6 text-red-200" :
+                         "border-axiom-border bg-white/2 text-zinc-300";
   return (
     <div className={`rounded-lg border ${colorClass} px-3 py-2`}>
       <div className="text-[10px] font-mono uppercase tracking-[0.16em] opacity-70">{label}</div>
@@ -212,7 +212,7 @@ function RecentVotesPanel({ votes }: { votes: ReadonlyArray<VoteRecord> }) {
 function QueueRetryPanel({ queue }: { queue: ReadonlyArray<QueuedVote> }) {
   return (
     <Card className="p-0 overflow-hidden border-white/30">
-      <div className="px-4 py-2.5 border-b border-white/30 bg-white/[0.05] flex items-center justify-between">
+      <div className="px-4 py-2.5 border-b border-white/30 bg-white/5 flex items-center justify-between">
         <p className="text-[11px] font-mono uppercase tracking-[0.18em] text-zinc-200">Offline queue · awaiting retry</p>
         <span className="text-[10px] font-mono text-zinc-300">{queue.length}</span>
       </div>

@@ -14,13 +14,13 @@ export function BackgroundBlobs() {
 
       {/* Bottom-left — amber with rotation */}
       <div
-        className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-amber-600/[0.12] blur-3xl animate-blob-rotate-delayed"
+        className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-amber-600/12 blur-3xl animate-blob-rotate-delayed"
         aria-hidden
       />
 
       {/* Center — deep orange, standard float */}
       <div
-        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-orange-700/[0.08] blur-3xl animate-blob"
+        className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] rounded-full bg-orange-700/8 blur-3xl animate-blob"
         style={{ animationDelay: "-2s" }}
         aria-hidden
       />
@@ -30,14 +30,14 @@ export function BackgroundBlobs() {
 
       {/* Bottom-right — amber accent with rotation */}
       <div
-        className="absolute -bottom-20 right-1/4 w-[300px] h-[300px] rounded-full bg-amber-500/[0.08] blur-3xl animate-blob-rotate"
+        className="absolute -bottom-20 right-1/4 w-[300px] h-[300px] rounded-full bg-amber-500/8 blur-3xl animate-blob-rotate"
         style={{ animationDelay: "-6s" }}
         aria-hidden
       />
 
       {/* Extra: top-left — subtle orange glow, slow float */}
       <div
-        className="absolute -top-20 left-1/4 w-[350px] h-[350px] rounded-full bg-orange-500/[0.06] blur-3xl animate-blob-rotate-delayed"
+        className="absolute -top-20 left-1/4 w-[350px] h-[350px] rounded-full bg-orange-500/6 blur-3xl animate-blob-rotate-delayed"
         style={{ animationDelay: "-12s" }}
         aria-hidden
       />

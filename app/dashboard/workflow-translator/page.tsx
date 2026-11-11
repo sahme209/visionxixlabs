@@ -50,9 +50,9 @@ export default function WorkflowTranslatorPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <SparklesIcon className="h-3.5 w-3.5 text-zinc-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-zinc-300">
               Workflow translator · approval_only_no_execution
@@ -68,7 +68,7 @@ export default function WorkflowTranslatorPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 max-w-3xl mb-6">
+      <div className="rounded-2xl border border-white/6 bg-white/2 p-5 max-w-3xl mb-6">
         <textarea
           aria-label="Describe the workflow you want"
           value={intent}
@@ -76,7 +76,7 @@ export default function WorkflowTranslatorPage() {
           rows={4}
           placeholder="e.g. when an S3 bucket gets public ACL, page security and stage a remediation runbook"
           maxLength={2000}
-          className="w-full rounded-md border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-none mb-3"
+          className="w-full rounded-md border border-white/8 bg-black/30 px-3 py-2 text-[12px] font-mono text-zinc-200 focus:border-zinc-400/60 focus:outline-hidden mb-3"
         />
         <button
           onClick={run}
@@ -90,7 +90,7 @@ export default function WorkflowTranslatorPage() {
       </div>
 
       {resp && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 max-w-3xl">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 max-w-3xl">
           <div className="flex items-center gap-2 mb-3 text-[10px] font-mono text-zinc-500">
             <span>provider: <span className="text-zinc-300">{resp.provider ?? "(none)"}</span></span>
             <span>model: <span className="text-zinc-300">{resp.model ?? "(none)"}</span></span>
@@ -123,7 +123,7 @@ export default function WorkflowTranslatorPage() {
                   ))}
                 </ul>
               </div>
-              <p className="text-[10px] font-mono text-zinc-500 pt-2 border-t border-white/[0.04]">
+              <p className="text-[10px] font-mono text-zinc-500 pt-2 border-t border-white/4">
                 approval_only_no_execution · drafts are never auto-applied.
               </p>
             </div>

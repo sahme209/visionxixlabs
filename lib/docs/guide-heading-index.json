@@ -1,12 +1,12 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "25c8fecc4cd4afddad5d439df1be92fb32bfd231298b7da677fca34be02fd0e9",
+  "navigationSha256": "d5f1e84155e376f2f6b3333205395cd40362a4386ca590690c321d9a66dd71ae",
   "guides": [
     {
       "href": "/docs",
       "source": "app/docs/page.tsx",
-      "sourceSha256": "51b08bd313ca2faebedea3fa240e02375b61250ddf0b06bfaf706dca3479831d",
+      "sourceSha256": "0dc080ca59684a5718e155e5fb1787bb2608cfd5581635aaaefbfa01a45f583c",
       "fields": [
         "Find your next step.",
         "Set up, follow a task, check a control or investigate an outcome. Pick the guide for the work in front of you.",
@@ -17,7 +17,7 @@
     {
       "href": "/docs/quickstart-checklist",
       "source": "app/docs/quickstart-checklist/page.tsx",
-      "sourceSha256": "49eb4234bdd59f012d637751029d2fb0d10acb6fd0cbf4ac31556581b3979357",
+      "sourceSha256": "74d366b7934a45042c632c8a6e2b149bda706d574c202c55f330677fd7fd7637",
       "fields": [
         "Install, configure, and verify your first workflow.",
         "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
@@ -175,7 +175,7 @@
     {
       "href": "/docs/releaseops/connectors",
       "source": "app/docs/releaseops/connectors/page.tsx",
-      "sourceSha256": "bb77feb3010780bcc416a307547d1c2dc5682781b806fcdbebc70765d2320104",
+      "sourceSha256": "194762416b29a1cbd69eeae7ecf1ac3811500c2adb8287179a7918baa1c45ca9",
       "fields": [
         "Integration boundaries.",
         "What Axiom can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
@@ -187,7 +187,7 @@
     {
       "href": "/docs/releaseops/readiness",
       "source": "app/docs/releaseops/readiness/page.tsx",
-      "sourceSha256": "0c34ac29fe6525f68df106f2fc305bd81bdb8a7b138aa312227327d875b10e3a",
+      "sourceSha256": "0b89e36febce4e45cc0294f51ae228087beb29e243c07f26fc9f353e520b6f47",
       "fields": [
         "Deployment readiness.",
         "Axiom Agent assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
@@ -201,7 +201,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "c8d8d571b899897ea8c01f4d1f251f7f1c1aecf6b0d16ef01c01de794437538c",
+      "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes Axiom Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
@@ -420,7 +420,7 @@
     {
       "href": "/docs/faq",
       "source": "app/docs/faq/page.tsx",
-      "sourceSha256": "fedf1b7339905ef9adbc6e9e683c572043d86e00886d160b24943ef1f650a878",
+      "sourceSha256": "ee01db61222292d0f316625197fed95cb7d08d7d3f2763ae796c0e8c06f69f21",
       "fields": [
         "Frequently asked questions.",
         "The questions we see most often, grouped by topic. If something isn't answered here, the troubleshooting guide or product documentation usually has the answer.",
@@ -430,7 +430,7 @@
     {
       "href": "/docs/glossary",
       "source": "app/docs/glossary/page.tsx",
-      "sourceSha256": "d6b7283b7bb71a7c36e932f30e2eed5c98a65581160db5ac3ed6c5d55d527d3f",
+      "sourceSha256": "0a4c8b83de73e10736c3724aa42dab73bf0cdf03a7a94f89a7623f36f8e0f865",
       "fields": [
         "Glossary.",
         "Definitions for vocabulary used across the Axiom platform — operational, AI, cloud, and ReleaseOps terms."

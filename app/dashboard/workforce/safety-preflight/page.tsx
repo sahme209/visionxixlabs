@@ -99,7 +99,7 @@ export default async function SafetyPreflightPage({
       </header>
 
       {blocked === "credits_exhausted" && (
-        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/[0.06] p-5">
+        <section className="mb-6 rounded-2xl border border-rose-500/30 bg-rose-500/6 p-5">
           <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-rose-300 mb-1">blocked · AI credit pool exhausted</p>
           <p className="text-[13.5px] text-zinc-100 leading-relaxed">
             Your workspace AI credit pool is exhausted for this billing period. The composed
@@ -111,32 +111,32 @@ export default async function SafetyPreflightPage({
         </section>
       )}
 
-      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/[0.04] p-5">
+      <section className="mb-10 rounded-2xl border border-emerald-500/20 bg-emerald-500/4 p-5">
         <form action="/api/workforce/safety-preflight/run" method="POST" className="space-y-4">
           <div>
             <label htmlFor="title" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">title</label>
             <input id="title" name="title" required maxLength={200} defaultValue={prefill.title} placeholder="e.g. Apply Phase 4 schema migration"
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[13px] text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors" />
           </div>
           <div>
             <label htmlFor="actionDescription" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">action description</label>
             <textarea id="actionDescription" name="actionDescription" required rows={5} maxLength={6000} defaultValue={prefill.actionDescription} placeholder={"What action do you want pre-flighted?"}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="currentState" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">current state</label>
             <textarea id="currentState" name="currentState" required rows={4} maxLength={6000} defaultValue={prefill.currentState} placeholder={"What state will the action run against? Topology, scope, dependencies."}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="riskContext" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">risk context</label>
             <textarea id="riskContext" name="riskContext" required rows={4} maxLength={6000} defaultValue={prefill.riskContext} placeholder={"What could go wrong? Blast radius, irreversibility, mitigations."}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div>
             <label htmlFor="tenantCharter" className="text-[10px] font-mono uppercase tracking-[0.18em] text-emerald-300 mb-2 block">tenant charter (optional — enables policy_gate)</label>
             <textarea id="tenantCharter" name="tenantCharter" rows={5} maxLength={6000} defaultValue={prefill.tenantCharter} placeholder={"Paste the operator-signed scope document. If empty, the pre-flight skips policy_gate and defaults the composed verdict to \"review\"."}
-              className="w-full rounded-lg border border-white/[0.06] bg-white/[0.02] px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-none focus:border-emerald-500/40 transition-colors resize-none" />
+              className="w-full rounded-lg border border-white/6 bg-white/2 px-3 py-2 text-[12px] font-mono text-zinc-200 placeholder:text-zinc-600 focus:outline-hidden focus:border-emerald-500/40 transition-colors resize-none" />
           </div>
           <div className="flex items-center justify-between gap-3 flex-wrap">
             <p className="text-[11px] text-zinc-500">3 metered AI calls in parallel · billable usage · same pipeline as every engineer.</p>
@@ -147,7 +147,7 @@ export default async function SafetyPreflightPage({
         </form>
       </section>
 
-      <section className="rounded-2xl border border-white/[0.06] bg-white/[0.015] p-5 mb-8">
+      <section className="rounded-2xl border border-white/6 bg-white/1.5 p-5 mb-8">
         <p className="text-[10px] font-mono uppercase tracking-[0.18em] text-zinc-500 mb-3">composed verdicts</p>
         <ul className="space-y-2 text-[13px] text-zinc-300 leading-relaxed">
           <li><span className="text-emerald-300 font-mono">allow</span> — all three engineers cleared the action. Safe to auto-advance without further human review.</li>
@@ -164,19 +164,19 @@ export default async function SafetyPreflightPage({
       </section>
 
       {preflights.length === 0 ? (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.015] px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/6 bg-white/1.5 px-6 py-12 text-center">
           <p className="text-[13px] text-zinc-400">No pre-flights run yet.</p>
           <p className="text-[11px] text-zinc-500 mt-1">Submit the form above to run the first one.</p>
         </div>
       ) : (
         <section>
           <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-3">recent pre-flights · {preflights.length}</p>
-          <ul className="rounded-2xl border border-white/[0.06] bg-white/[0.015] divide-y divide-white/[0.04] overflow-hidden">
+          <ul className="rounded-2xl border border-white/6 bg-white/1.5 divide-y divide-white/4 overflow-hidden">
             {preflights.map((p) => (
               <li key={p.preflightSlug}>
                 <Link
                   href={`/dashboard/agi-memory/${encodeURIComponent(`engineer_approval_packet:${p.preflightSlug}`)}`}
-                  className="block px-5 py-3.5 hover:bg-white/[0.015] transition-colors"
+                  className="block px-5 py-3.5 hover:bg-white/1.5 transition-colors"
                 >
                   <div className="flex items-center justify-between gap-3 mb-1 flex-wrap text-[10px] font-mono uppercase tracking-wider">
                     {p.decision && (<span className={DECISION_TONE[p.decision] ?? "text-zinc-400"}>{p.decision}</span>)}

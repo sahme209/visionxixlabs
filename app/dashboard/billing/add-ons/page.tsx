@@ -44,7 +44,7 @@ const CATEGORY_META: Record<AddOnCategory, { label: string; icon: typeof BoltIco
 const STATUS_TONE: Record<string, string> = {
   pending:  "text-zinc-300 bg-white/10 border-white/30",
   paid:     "text-emerald-300 bg-emerald-500/10 border-emerald-500/30",
-  refunded: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  refunded: "text-zinc-400 bg-white/4 border-white/8",
   failed:   "text-rose-300 bg-rose-500/10 border-rose-500/30",
 };
 
@@ -79,7 +79,7 @@ export default async function AddOnsPage() {
         aiEngineers={[]}
         approval={{ severity: "soft", note: "An owner or administrator must initiate checkout. Uncertain purchases require reconciliation before another attempt; this page does not authorize live billing." }}
         storageKey="billing-add-ons"
-        lastReviewed="2026-10-15"
+        lastReviewed="2026-11-11"
       />
       <div className="mb-6">
         <Link href="/dashboard/billing/usage" className="text-[11px] text-zinc-300 hover:text-white inline-flex items-center gap-1">
@@ -122,7 +122,7 @@ export default async function AddOnsPage() {
           const meta = CATEGORY_META[a.category];
           const Icon = meta.icon;
           return (
-            <article key={a.sku} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 hover:border-white/[0.10] transition-colors">
+            <article key={a.sku} className="rounded-2xl border border-white/6 bg-white/2 p-5 hover:border-white/10 transition-colors">
               <header className="flex items-center gap-2 mb-2 flex-wrap">
                 <Icon className={`h-4 w-4 ${meta.tone}`} />
                 <p className={`text-[10px] font-mono uppercase tracking-wider ${meta.tone}`}>{meta.label}</p>
@@ -133,7 +133,7 @@ export default async function AddOnsPage() {
               <h3 className="text-[15px] font-semibold text-white mb-1">{a.displayName}</h3>
               <p className="text-[12px] text-zinc-400 mb-3 leading-snug">{a.tagline}</p>
 
-              <dl className="grid grid-cols-2 gap-2 text-[11px] mb-4 pt-3 border-t border-white/[0.04]">
+              <dl className="grid grid-cols-2 gap-2 text-[11px] mb-4 pt-3 border-t border-white/4">
                 <div>
                   <dt className="text-[9px] uppercase tracking-wider text-zinc-500">Price</dt>
                   <dd className="text-[14px] font-bold text-white">{formatCents(a.priceCents)}</dd>
@@ -160,7 +160,7 @@ export default async function AddOnsPage() {
 
       <p className="text-[10px] font-semibold text-zinc-400 uppercase tracking-widest mb-3">{"// purchase history"}</p>
       {purchases.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <ClockIcon className="h-6 w-6 text-zinc-500 mx-auto mb-3" />
           <p className="text-[13px] font-semibold text-white">No purchases yet.</p>
           <p className="text-[11.5px] text-zinc-500 mt-1 max-w-md mx-auto leading-snug">
@@ -172,7 +172,7 @@ export default async function AddOnsPage() {
           {purchases.map((p) => {
             const tone = STATUS_TONE[p.status] ?? STATUS_TONE.pending;
             return (
-              <li key={p.id} className="rounded-xl border border-white/[0.06] bg-white/[0.02] px-4 py-3">
+              <li key={p.id} className="rounded-xl border border-white/6 bg-white/2 px-4 py-3">
                 <div className="flex items-center justify-between gap-3 flex-wrap mb-1">
                   <p className="text-[12px] font-mono text-white">{p.sku}</p>
                   <span className={`text-[9px] font-mono uppercase tracking-wider border rounded-full px-1.5 py-0.5 ${tone}`}>
@@ -192,7 +192,7 @@ export default async function AddOnsPage() {
         </ul>
       )}
 
-      <section className="rounded-2xl border border-white/15 bg-white/[0.04] p-5">
+      <section className="rounded-2xl border border-white/15 bg-white/4 p-5">
         <p className="text-[10px] font-semibold text-zinc-300 uppercase tracking-widest mb-2">{"// how add-ons work"}</p>
         <ul className="text-[12px] text-zinc-300 leading-relaxed list-disc list-inside marker:text-white/70 space-y-1">
           <li>AI credit packs apply to the current month — they roll off at the next billing cycle.</li>
@@ -207,7 +207,7 @@ export default async function AddOnsPage() {
 
 function Stat({ label, value, sub, tone }: { label: string; value: string; sub?: string; tone: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className={`text-2xl font-bold tabular-nums ${tone}`}>{value}</p>
       <p className="text-[11px] text-zinc-400 mt-0.5">{label}</p>
       {sub && <p className="text-[10px] text-zinc-500 mt-1">{sub}</p>}

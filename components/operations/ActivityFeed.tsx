@@ -160,8 +160,8 @@ const EVENT_CONFIG: Record<
   "audit.event": {
     icon: DocumentCheckIcon,
     iconClass: "text-zinc-400",
-    bgClass: "bg-white/[0.04]",
-    borderClass: "border-white/[0.08]",
+    bgClass: "bg-white/4",
+    borderClass: "border-white/8",
   },
   // ReleaseOps event configs
   "release.assessed": {
@@ -291,7 +291,7 @@ const PROVIDER_COLOR: Record<NonNullable<ActivityEvent["provider"]>, string> = {
   aws: "text-zinc-400 bg-white/10 border-white/20",
   azure: "text-blue-400 bg-blue-500/10 border-blue-500/20",
   gcp: "text-red-400 bg-red-500/10 border-red-500/20",
-  system: "text-zinc-400 bg-white/[0.04] border-white/[0.08]",
+  system: "text-zinc-400 bg-white/4 border-white/8",
 };
 
 function timeAgo(iso: string): string {
@@ -371,9 +371,9 @@ export function ActivityFeed({
   const visible = items.slice(0, maxItems);
 
   return (
-    <div className={`relative rounded-2xl border border-white/[0.06] bg-white/[0.02] overflow-hidden ${className}`}>
+    <div className={`relative rounded-2xl border border-white/6 bg-white/2 overflow-hidden ${className}`}>
       {/* Header */}
-      <div className="flex items-center justify-between px-6 py-4 border-b border-white/[0.06] bg-white/[0.01]">
+      <div className="flex items-center justify-between px-6 py-4 border-b border-white/6 bg-white/1">
         <div className="flex items-center gap-3">
           {showLive && <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />}
           <h3 className="text-sm font-semibold text-white">{title}</h3>
@@ -389,12 +389,12 @@ export function ActivityFeed({
           const Icon = config.icon;
           const isLast = idx === visible.length - 1;
           return (
-            <li key={event.id} className="relative px-6 py-4 hover:bg-white/[0.02] transition-colors group">
+            <li key={event.id} className="relative px-6 py-4 hover:bg-white/2 transition-colors group">
               {/* Timeline rail */}
               {!isLast && (
                 <span
                   aria-hidden
-                  className="absolute left-[2.05rem] top-12 bottom-0 w-px bg-gradient-to-b from-white/[0.08] via-white/[0.04] to-transparent"
+                  className="absolute left-[2.05rem] top-12 bottom-0 w-px bg-linear-to-b from-white/8 via-white/4 to-transparent"
                 />
               )}
               <div className="flex items-start gap-3">
@@ -444,14 +444,14 @@ export function ActivityFeed({
       </ol>
 
       {/* Footer */}
-      <div className="px-6 py-3 border-t border-white/[0.06] bg-white/[0.01] flex items-center justify-between text-xs">
+      <div className="px-6 py-3 border-t border-white/6 bg-white/1 flex items-center justify-between text-xs">
         <div className="flex items-center gap-2">
           <span className="text-zinc-500">Showing {visible.length} of {items.length}</span>
           {source === "api" && (
             <span className="text-[9px] font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 rounded-full px-1.5 py-px uppercase tracking-wider">Live data</span>
           )}
           {source === "demo" && (
-            <span className="text-[9px] font-semibold text-zinc-500 bg-white/[0.04] border border-white/[0.08] rounded-full px-1.5 py-px uppercase tracking-wider">Sample</span>
+            <span className="text-[9px] font-semibold text-zinc-500 bg-white/4 border border-white/8 rounded-full px-1.5 py-px uppercase tracking-wider">Sample</span>
           )}
         </div>
         <button className="text-zinc-400 hover:text-white transition-colors font-medium">

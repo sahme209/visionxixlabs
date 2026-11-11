@@ -54,16 +54,16 @@ export function DocsContents() {
   }, [pathname]);
 
   return (
-    <aside onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape" && open) { event.preventDefault(); event.stopPropagation(); close(); } }} className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/[0.04]">
+    <aside onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape" && open) { event.preventDefault(); event.stopPropagation(); close(); } }} className="lg:sticky lg:top-24 lg:self-start lg:max-h-[calc(100vh-7rem)] lg:overflow-y-auto lg:pr-4 lg:border-r lg:border-white/4">
       <button ref={button} type="button" aria-expanded={open} aria-controls="docs-contents-panel"
         onClick={() => setOpen(value => !value)}
-        className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden">
+        className="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-white/10 bg-white/3 px-4 py-3 text-left text-sm font-medium text-zinc-200 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orange-300 lg:hidden">
         Documentation contents
         <ChevronDownIcon aria-hidden="true" className={`h-4 w-4 shrink-0 text-zinc-400 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
       <div ref={panel} id="docs-contents-panel"
-        className={`${open ? "block" : "hidden"} mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/[0.06] p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0`}>
-        <div className="mb-6 border-b border-white/[0.04] pb-4">
+        className={`${open ? "block" : "hidden"} mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/6 p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0`}>
+        <div className="mb-6 border-b border-white/4 pb-4">
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400">Documentation</p>
           <p className="text-sm text-zinc-300">Self-serve guides for the Axiom platform.</p>
         </div>

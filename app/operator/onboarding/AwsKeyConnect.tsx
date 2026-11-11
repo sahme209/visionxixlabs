@@ -264,7 +264,7 @@ export function AwsKeyConnect({
   // ─── Validating (bounce-back from AWS) ──────────────────────────────
   if (phase === "validating") {
     return (
-      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
+      <div className="rounded-[28px] border border-white/6 bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · finalizing</p>
         <h2 className="mt-3 text-[24px] sm:text-[28px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
           Confirming the role.
@@ -380,7 +380,7 @@ export function AwsKeyConnect({
     }
 
     return (
-      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
+      <div className="rounded-[28px] border border-white/6 bg-[#0a0a0c]/70 px-8 sm:px-12 py-12">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · couldn&apos;t finish</p>
         <h2 className="mt-3 text-[24px] sm:text-[28px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
           {isCfnLoadFail ? "Couldn't load the template." : "AWS didn't accept the role yet."}
@@ -412,11 +412,11 @@ export function AwsKeyConnect({
     <div className="relative">
       {/* Soft ambient glow — quiet axiom.io style */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/[0.08] blur-[120px]" />
-        <div className="absolute bottom-0 left-1/3 w-[420px] h-[260px] rounded-full bg-orange-500/[0.05] blur-[100px]" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/8 blur-[120px]" />
+        <div className="absolute bottom-0 left-1/3 w-[420px] h-[260px] rounded-full bg-orange-500/5 blur-[100px]" />
       </div>
 
-      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-16">
+      <div className="rounded-[28px] border border-white/6 bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-16">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · cloud connection</p>
         <h2 className="mt-3 text-[28px] sm:text-[32px] leading-[1.1] font-medium text-white tracking-[-0.02em]">
           One click in AWS Console, one click back.
@@ -475,7 +475,7 @@ export function AwsKeyConnect({
         </div>
 
         {/* Sparse trust line. Three plain facts, no badges, no chips. */}
-        <div className="mt-12 pt-8 border-t border-white/[0.05] grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-10">
+        <div className="mt-12 pt-8 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-y-5 gap-x-10">
           <TrustFact label="Read-only">
             Inventory + posture only. Never your data, never write actions.
           </TrustFact>
@@ -510,17 +510,17 @@ type Tone = "emerald" | "zinc" | "amber" | "neutral";
 const TONES: Record<Tone, { border: string; bg: string; kicker: string }> = {
   emerald: {
     border: "border-emerald-500/25",
-    bg:     "bg-emerald-500/[0.04]",
+    bg:     "bg-emerald-500/4",
     kicker: "text-emerald-300",
   },
   zinc: {
     border: "border-zinc-500/25",
-    bg:     "bg-zinc-500/[0.04]",
+    bg:     "bg-zinc-500/4",
     kicker: "text-zinc-300",
   },
   amber: {
     border: "border-white/25",
-    bg:     "bg-white/[0.04]",
+    bg:     "bg-white/4",
     kicker: "text-zinc-300",
   },
   neutral: {
@@ -551,7 +551,7 @@ function KickerLine({ tone, children }: { tone: Tone; children: React.ReactNode 
 function TimelineStep({ n, title, children }: { n: number; title: string; children: React.ReactNode }) {
   return (
     <li className="flex gap-3">
-      <span className="flex-shrink-0 w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 text-[11px] font-mono text-zinc-300 flex items-center justify-center mt-[1px]">
+      <span className="shrink-0 w-6 h-6 rounded-full bg-zinc-800 border border-zinc-700 text-[11px] font-mono text-zinc-300 flex items-center justify-center mt-px">
         {n}
       </span>
       <div className="flex-1 min-w-0">
@@ -565,7 +565,7 @@ function TimelineStep({ n, title, children }: { n: number; title: string; childr
 function ScopeRow({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex items-center gap-2 text-[12.5px] text-zinc-300">
-      <span aria-hidden className="w-1 h-1 rounded-full bg-emerald-400/70 flex-shrink-0" />
+      <span aria-hidden className="w-1 h-1 rounded-full bg-emerald-400/70 shrink-0" />
       <span>{children}</span>
     </div>
   );
@@ -628,14 +628,14 @@ function PermissionsFixCard({
   return (
     <div className="relative">
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[28px]">
-        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/[0.06] blur-[120px]" />
+        <div className="absolute -top-32 left-1/2 -translate-x-1/2 w-[680px] h-[420px] rounded-full bg-zinc-500/6 blur-[120px]" />
       </div>
 
       {/* Lead — calm hero. Demo is now the PRIMARY action because the
           IAM trust chain keeps breaking and fresh deploys don't fix
           the underlying broker-credential mismatch. Real-AWS retry is
           still here but demoted to secondary. */}
-      <div className="rounded-[28px] border border-white/[0.06] bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-14">
+      <div className="rounded-[28px] border border-white/6 bg-[#0a0a0c]/70 backdrop-blur-sm px-8 sm:px-12 py-12 sm:py-14">
         <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500">aws · couldn&apos;t finish the connection</p>
         <h2 className="mt-3 text-[26px] sm:text-[30px] leading-[1.15] font-medium text-white tracking-[-0.02em]">
           {headline}
@@ -656,7 +656,7 @@ function PermissionsFixCard({
             <button
               type="button"
               onClick={onFreshDeploy}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.10] bg-white/[0.02] text-[13px] text-zinc-300 hover:text-white hover:bg-white/[0.05] transition-colors"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-white/10 bg-white/2 text-[13px] text-zinc-300 hover:text-white hover:bg-white/5 transition-colors"
             >
               Start a fresh AWS deployment
               <span aria-hidden className="opacity-60">→</span>
@@ -697,7 +697,7 @@ function PermissionsFixCard({
         {awsErrorMessage && (
           <>
             <p className="text-[11px] font-mono uppercase tracking-[0.22em] text-zinc-500 mt-5">verbatim error from AWS</p>
-            <pre className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950 p-3 font-mono text-[11px] text-zinc-300 leading-relaxed whitespace-pre-wrap break-words">
+            <pre className="mt-2 rounded-lg border border-zinc-800 bg-zinc-950 p-3 font-mono text-[11px] text-zinc-300 leading-relaxed whitespace-pre-wrap wrap-break-word">
 {awsErrorMessage}
             </pre>
           </>
@@ -737,7 +737,7 @@ function PermissionsFixCard({
           <button
             type="button"
             onClick={onRetry}
-            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-[14px] font-medium shadow-sm transition-colors"
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-zinc-600 hover:bg-zinc-500 text-white text-[14px] font-medium shadow-xs transition-colors"
           >
             Try again
             <span aria-hidden className="opacity-70">→</span>
@@ -859,9 +859,9 @@ function SkipToDemoStrip() {
   }
 
   return (
-    <div className="mt-8 pt-6 border-t border-white/[0.04]">
+    <div className="mt-8 pt-6 border-t border-white/4">
       <div className="flex items-start gap-4">
-        <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/25 flex items-center justify-center flex-shrink-0">
+        <div className="w-9 h-9 rounded-lg bg-orange-500/10 border border-orange-500/25 flex items-center justify-center shrink-0">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden className="h-4 w-4 text-orange-300">
             <polygon points="6 4 20 12 6 20 6 4" />
           </svg>
@@ -877,7 +877,7 @@ function SkipToDemoStrip() {
             type="button"
             onClick={startDemo}
             disabled={busy}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/[0.18] hover:bg-orange-500/[0.28] border border-orange-500/30 text-[12.5px] font-medium text-orange-50 transition-colors disabled:opacity-50 disabled:cursor-wait"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-orange-500/18 hover:bg-orange-500/[0.28] border border-orange-500/30 text-[12.5px] font-medium text-orange-50 transition-colors disabled:opacity-50 disabled:cursor-wait"
           >
             {busy ? (
               <>

@@ -80,7 +80,7 @@ export function AIGovernancePanel() {
     }
   }
 
-  if (!data) return <div className="mt-10 border-y border-white/[0.08] py-6 text-sm text-zinc-500">{error || "Loading verified organization policy…"}</div>;
+  if (!data) return <div className="mt-10 border-y border-white/8 py-6 text-sm text-zinc-500">{error || "Loading verified organization policy…"}</div>;
 
   const selectedModel = data.providerPolicy.modelSelections.vercel_gateway ?? "service-default";
   const identity = data.agentIdentity ?? {
@@ -96,7 +96,7 @@ export function AIGovernancePanel() {
 
   const fieldClass = "mt-2 block h-9 w-full rounded-lg border border-white/10 bg-[#171717] px-3 text-xs text-zinc-100 disabled:opacity-50";
   const buttonClass = "h-8 rounded-lg border border-white/10 px-3 text-xs font-medium text-zinc-200 hover:bg-white/5 disabled:opacity-40";
-  const cardClass = "rounded-xl border border-white/[0.08] bg-white/[0.015] p-5";
+  const cardClass = "rounded-xl border border-white/8 bg-white/1.5 p-5";
   function saveIdentity() {
     const allowedTools = Array.from(document.querySelectorAll<HTMLInputElement>('input[name="agent-tool"]:checked')).map(input => input.value);
     void save("agent_identity", { displayName: (document.getElementById("agent-name") as HTMLInputElement).value, enabled: (document.getElementById("agent-enabled") as HTMLInputElement).checked, allowedTools });
@@ -117,15 +117,15 @@ export function AIGovernancePanel() {
 
   return (
     <div className="mt-6" onChange={() => setNotice("")}>
-      {notice && <p role="status" className="mb-4 rounded-lg border border-emerald-400/20 bg-emerald-400/[0.04] px-4 py-3 text-xs text-emerald-200">{notice}</p>}
+      {notice && <p role="status" className="mb-4 rounded-lg border border-emerald-400/20 bg-emerald-400/4 px-4 py-3 text-xs text-emerald-200">{notice}</p>}
       {error && <div role="alert" className="mb-4 rounded-lg border border-red-400/20 px-4 py-3 text-xs leading-5 text-red-300">{error}</div>}
       {!data.canManage && <p className="mb-4 text-xs leading-5 text-zinc-400">You can inspect this policy. An organization owner or admin must change it.</p>}
-      <div role="tablist" aria-label="Agent settings" className="mb-5 flex gap-5 overflow-x-auto border-b border-white/[0.08]">
+      <div role="tablist" aria-label="Agent settings" className="mb-5 flex gap-5 overflow-x-auto border-b border-white/8">
         {views.map((label, index) => <button key={label} type="button" role="tab" ref={element => { tabRefs.current[index] = element; }} id={`agent-tab-${index}`} aria-controls={`agent-panel-${index}`} aria-selected={view === index} tabIndex={view === index ? 0 : -1} disabled={Boolean(saving)} onClick={() => selectView(index)} onKeyDown={event => {
           if (saving) return;
           const next = event.key === "ArrowRight" ? (index + 1) % views.length : event.key === "ArrowLeft" ? (index + views.length - 1) % views.length : event.key === "Home" ? 0 : event.key === "End" ? views.length - 1 : null;
           if (next !== null) { event.preventDefault(); selectView(next); }
-        }} className={`shrink-0 border-b-2 pb-3 text-[13px] transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-zinc-400 disabled:opacity-50 ${view === index ? "border-zinc-100 text-zinc-100" : "border-transparent text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
+        }} className={`shrink-0 border-b-2 pb-3 text-[13px] transition-colors focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-400 disabled:opacity-50 ${view === index ? "border-zinc-100 text-zinc-100" : "border-transparent text-zinc-500 hover:text-zinc-200"}`}>{label}</button>)}
       </div>
 
       <div role="tabpanel" id="agent-panel-0" aria-labelledby="agent-tab-0" hidden={view !== 0}>
@@ -173,9 +173,9 @@ export function AIGovernancePanel() {
         <section className={cardClass} aria-labelledby="agent-tools-heading">
           <h2 id="agent-tools-heading" className="text-sm font-medium">Tool access</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-500">Select the tools this Agent may request. Write tools still require backend approval. Changes are saved with the Agent identity.</p>
           {identityUnavailable && <p role="alert" className="mt-3 text-xs leading-5 text-amber-300">Saved permissions are unavailable. Editing remains disabled until storage is ready.</p>}
-          <div className="mt-4 space-y-3">{([['low','Read tools'],['medium','Workspace changes'],['high','High-risk tools']] as const).map(([risk,label]) => <details key={risk} className="rounded-lg border border-white/[0.08]">
+          <div className="mt-4 space-y-3">{([['low','Read tools'],['medium','Workspace changes'],['high','High-risk tools']] as const).map(([risk,label]) => <details key={risk} className="rounded-lg border border-white/8">
             <summary className="cursor-pointer px-4 py-3 text-[13px] text-zinc-200"><span>{label}</span><span className="ml-2 text-xs tabular-nums text-zinc-500">{data.tools.filter(tool => tool.riskLevel === risk).length}</span></summary>
-            <div className="divide-y divide-white/[0.05] border-t border-white/[0.06]">{data.tools.filter(tool => tool.riskLevel === risk).map(tool => <label key={tool.name} className="flex cursor-pointer items-start gap-3 px-4 py-3">
+            <div className="divide-y divide-white/5 border-t border-white/6">{data.tools.filter(tool => tool.riskLevel === risk).map(tool => <label key={tool.name} className="flex cursor-pointer items-start gap-3 px-4 py-3">
               <input type="checkbox" name="agent-tool" value={tool.name} aria-label={`${tool.name.replaceAll('_',' ')} ${tool.riskLevel}`} defaultChecked={!identityUnavailable && identity.allowedTools.includes(tool.name)} disabled={identityReadOnly} className="mt-0.5 shrink-0 accent-zinc-200" />
               <span className="min-w-0"><span className="block text-xs font-medium text-zinc-200">{tool.name.replaceAll('_',' ')}</span><span className="mt-1 block text-xs leading-5 text-zinc-500">{tool.description}</span></span>
             </label>)}</div>
@@ -189,7 +189,7 @@ export function AIGovernancePanel() {
           <h2 className="text-sm font-medium">Saved Agent profiles</h2><p className="mt-2 max-w-2xl text-xs leading-5 text-zinc-500">Inspect each Agent’s saved tool scope. Operation modes, authorization, and approvals can restrict it further.</p>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">{AGENT_PROFILES.map(profile => {
             const tools = identity.enabled ? profileToolNames(profile, identity.allowedTools) : [];
-            return <details key={profile.id} className="rounded-lg border border-white/[0.08] p-4 text-xs text-zinc-400"><summary className="cursor-pointer text-zinc-200"><span>{profile.label}</span><span className="mt-1 block pl-4 text-[11px] text-zinc-500">{identityUnavailable ? "Saved permissions unavailable" : `${tools.length} tools in saved policy`}</span></summary><p className="mt-3 leading-5">{profile.description}</p><div className="mt-3 flex flex-wrap gap-2 break-all">{identityUnavailable ? <span>Saved permissions could not be verified.</span> : tools.length ? tools.map(tool => <code key={tool}>{tool}</code>) : <span>No tools currently enabled.</span>}</div></details>;
+            return <details key={profile.id} className="rounded-lg border border-white/8 p-4 text-xs text-zinc-400"><summary className="cursor-pointer text-zinc-200"><span>{profile.label}</span><span className="mt-1 block pl-4 text-[11px] text-zinc-500">{identityUnavailable ? "Saved permissions unavailable" : `${tools.length} tools in saved policy`}</span></summary><p className="mt-3 leading-5">{profile.description}</p><div className="mt-3 flex flex-wrap gap-2 break-all">{identityUnavailable ? <span>Saved permissions could not be verified.</span> : tools.length ? tools.map(tool => <code key={tool}>{tool}</code>) : <span>No tools currently enabled.</span>}</div></details>;
           })}</div>
         </section>
       </div>

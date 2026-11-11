@@ -25,7 +25,7 @@ interface Report { messages: BusMessage[]; total: number }
 
 const SENDER_TONE: Record<string, string> = {
   detector:       "bg-cyan-500/15 text-cyan-300 border-cyan-500/30",
-  reasoner:       "bg-orange-500/15 text-orange-300 border-white/[0.12]",
+  reasoner:       "bg-orange-500/15 text-orange-300 border-white/12",
   simulator:      "bg-sky-500/15 text-sky-300 border-sky-500/30",
   policy_gate:    "bg-white/15 text-zinc-300 border-white/30",
   boundary_gate:  "bg-white/15 text-zinc-300 border-white/30",
@@ -60,9 +60,9 @@ export default function AgentBusPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-orange-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-orange-300">
               Agent Bus
@@ -71,7 +71,7 @@ export default function AgentBusPage() {
           <button
             onClick={() => load(thread || undefined)}
             disabled={loading}
-            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/[0.02] text-zinc-300 border-white/[0.06] hover:text-white disabled:opacity-50"
+            className="ml-2 inline-flex items-center gap-1.5 text-[11px] font-mono px-2.5 py-1 rounded-full border bg-white/2 text-zinc-300 border-white/6 hover:text-white disabled:opacity-50"
           >
             <ArrowPathIcon className={`h-3 w-3 ${loading ? "animate-spin" : ""}`} />
             Refresh
@@ -91,26 +91,26 @@ export default function AgentBusPage() {
             value={thread}
             onChange={(e) => setThread(e.target.value)}
             placeholder="Filter by threadId…"
-            className="flex-1 min-w-[260px] rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-[12px] font-mono text-white focus:border-orange-400/60 focus:outline-none"
+            className="flex-1 min-w-[260px] rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-[12px] font-mono text-white focus:border-orange-400/60 focus:outline-hidden"
           />
         </div>
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {report && (
         report.messages.length === 0 ? (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center text-[13px] text-zinc-400">
+          <div className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center text-[13px] text-zinc-400">
             No messages on the bus yet. Run an autonomy cycle (or wait for the */15 cron) to populate.
           </div>
         ) : (
-          <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] divide-y divide-white/[0.04] overflow-hidden mb-8">
+          <div className="rounded-2xl border border-white/6 bg-white/2 divide-y divide-white/4 overflow-hidden mb-8">
             {report.messages.map((m) => (
-              <div key={m.id} className="px-3 py-2 hover:bg-white/[0.02]">
+              <div key={m.id} className="px-3 py-2 hover:bg-white/2">
                 <div className="flex items-center gap-2 flex-wrap mb-1">
                   <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded border ${
                     SENDER_TONE[m.sender] ?? "bg-zinc-500/15 text-zinc-300 border-zinc-500/30"

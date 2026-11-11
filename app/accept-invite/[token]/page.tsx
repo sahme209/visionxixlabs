@@ -36,7 +36,7 @@ export default async function AcceptInvitePage({
   if (!validation.ok || !validation.payload) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
-        <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-6 text-center">
+        <div className="rounded-md border border-rose-500/20 bg-rose-500/4 p-6 text-center">
           <ExclamationTriangleIcon className="h-8 w-8 text-rose-300 mx-auto mb-3" />
           <p className="text-[14px] text-zinc-100 font-mono mb-2">
             {validation.error === "expired" ? "this invite has expired" :
@@ -59,7 +59,7 @@ export default async function AcceptInvitePage({
   if (revocation) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
-        <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-6 text-center">
+        <div className="rounded-md border border-rose-500/20 bg-rose-500/4 p-6 text-center">
           <ExclamationTriangleIcon className="h-8 w-8 text-rose-300 mx-auto mb-3" />
           <p className="text-[14px] text-zinc-100 font-mono mb-2">{revocation === "unverifiable" ? "this invite could not be verified right now" : "this invite is no longer valid"}</p>
           <p className="text-[12px] text-zinc-400">Ask the workspace admin to send a new invitation.</p>
@@ -79,7 +79,7 @@ export default async function AcceptInvitePage({
   if (ctx.email.toLowerCase() !== email.toLowerCase()) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
-        <div className="rounded-md border border-white/20 bg-white/[0.04] p-6 text-center">
+        <div className="rounded-md border border-white/20 bg-white/4 p-6 text-center">
           <ExclamationTriangleIcon className="h-8 w-8 text-zinc-300 mx-auto mb-3" />
           <p className="text-[14px] text-zinc-100 font-mono mb-2">
             this invite is for <span className="text-emerald-300">{email}</span>
@@ -100,7 +100,7 @@ export default async function AcceptInvitePage({
   if (!await workspaceUnenrolled(organizationId)) {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
-        <div className="rounded-md border border-amber-500/20 bg-amber-500/[0.04] p-6 text-center">
+        <div className="rounded-md border border-amber-500/20 bg-amber-500/4 p-6 text-center">
           <p className="text-sm text-zinc-200">This workspace is enrolled in Governance, so new members are paused until membership changes have reviewed Governance coverage.</p>
           <p className="mt-2 text-xs text-zinc-400">Nothing was changed. Ask a workspace admin when invitations reopen.</p>
         </div>
@@ -136,7 +136,7 @@ export default async function AcceptInvitePage({
   if (result === "error" || result === "seat_limit") {
     return (
       <div className="max-w-xl mx-auto px-4 py-16">
-        <div className="rounded-md border border-rose-500/20 bg-rose-500/[0.04] p-6 text-center">
+        <div className="rounded-md border border-rose-500/20 bg-rose-500/4 p-6 text-center">
           <ExclamationTriangleIcon className="h-8 w-8 text-rose-300 mx-auto mb-3" />
           <p className="text-[14px] text-zinc-100 font-mono mb-2">{result === "seat_limit" ? "workspace seat limit reached" : "membership creation failed"}</p>
           <p className="text-[12px] text-zinc-400">{result === "seat_limit" ? "A workspace owner can add a seat from Plan & Usage, then you can retry this link." : "Retry shortly or ask a workspace owner to review access."}</p>
@@ -148,7 +148,7 @@ export default async function AcceptInvitePage({
   // Success — land them in the workspace dashboard.
   return (
     <div className="max-w-xl mx-auto px-4 py-16">
-      <div className="rounded-md border border-emerald-500/30 bg-emerald-500/[0.06] p-6 text-center">
+      <div className="rounded-md border border-emerald-500/30 bg-emerald-500/6 p-6 text-center">
         <ShieldCheckIcon className="h-8 w-8 text-emerald-300 mx-auto mb-3" />
         <p className="text-[15px] text-zinc-100 font-mono mb-2">
           {result === "created" ? "welcome to the workspace" : "already a workspace member"}

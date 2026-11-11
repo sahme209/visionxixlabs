@@ -62,11 +62,11 @@ interface ReportLite {
 }
 
 const STATUS_VISUAL: Record<ConnectorStatus, { border: string; bg: string; text: string; pill: string }> = {
-  live:                 { border: "border-emerald-500/[0.22]", bg: "bg-emerald-500/[0.04]", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
-  ready_pending_config: { border: "border-white/[0.22]",   bg: "bg-white/[0.04]",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"     },
-  foundation:           { border: "border-cyan-500/[0.22]",    bg: "bg-cyan-500/[0.04]",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"       },
-  blocked:              { border: "border-rose-500/[0.22]",    bg: "bg-rose-500/[0.04]",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"       },
-  disabled:             { border: "border-zinc-700/30",        bg: "bg-white/[0.02]",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300"       },
+  live:                 { border: "border-emerald-500/22", bg: "bg-emerald-500/4", text: "text-emerald-300", pill: "bg-emerald-500/15 text-emerald-300" },
+  ready_pending_config: { border: "border-white/22",   bg: "bg-white/4",   text: "text-zinc-300",   pill: "bg-white/15 text-zinc-300"     },
+  foundation:           { border: "border-cyan-500/22",    bg: "bg-cyan-500/4",    text: "text-cyan-300",    pill: "bg-cyan-500/15 text-cyan-300"       },
+  blocked:              { border: "border-rose-500/22",    bg: "bg-rose-500/4",    text: "text-rose-300",    pill: "bg-rose-500/15 text-rose-300"       },
+  disabled:             { border: "border-zinc-700/30",        bg: "bg-white/2",       text: "text-zinc-400",    pill: "bg-zinc-700/40 text-zinc-300"       },
 };
 
 const CONNECTOR_LABEL: Record<ConnectorStatus, string> = {
@@ -85,10 +85,10 @@ const SIGNAL_LABEL: Record<SignalStatus, string> = {
 };
 
 const SIGNAL_TONE: Record<SignalStatus, { border: string; bg: string; text: string; pill: string }> = {
-  evidence_unavailable:    { border: "border-zinc-700/30",       bg: "bg-white/[0.02]",       text: "text-zinc-400",   pill: "bg-zinc-700/40 text-zinc-300"   },
-  review_recommended:      { border: "border-cyan-500/[0.22]",   bg: "bg-cyan-500/[0.04]",   text: "text-cyan-300",   pill: "bg-cyan-500/15 text-cyan-300"    },
-  potential_savings:       { border: "border-emerald-500/[0.22]",bg: "bg-emerald-500/[0.04]", text: "text-emerald-300",pill: "bg-emerald-500/15 text-emerald-300" },
-  requires_cost_telemetry: { border: "border-white/[0.22]",  bg: "bg-white/[0.04]",   text: "text-zinc-300",  pill: "bg-white/15 text-zinc-300"  },
+  evidence_unavailable:    { border: "border-zinc-700/30",       bg: "bg-white/2",       text: "text-zinc-400",   pill: "bg-zinc-700/40 text-zinc-300"   },
+  review_recommended:      { border: "border-cyan-500/22",   bg: "bg-cyan-500/4",   text: "text-cyan-300",   pill: "bg-cyan-500/15 text-cyan-300"    },
+  potential_savings:       { border: "border-emerald-500/22",bg: "bg-emerald-500/4", text: "text-emerald-300",pill: "bg-emerald-500/15 text-emerald-300" },
+  requires_cost_telemetry: { border: "border-white/22",  bg: "bg-white/4",   text: "text-zinc-300",  pill: "bg-white/15 text-zinc-300"  },
 };
 
 const CONNECTOR_ICON: Record<ConnectorId, typeof CloudIcon> = {
@@ -123,7 +123,7 @@ export default function FinOpsPage() {
   return (
     <div className="relative">
       {/* Hero */}
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -132,10 +132,10 @@ export default function FinOpsPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <CurrencyDollarIcon className="h-3.5 w-3.5 text-emerald-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-emerald-300">
               FinOps · no_fabricated_savings_or_costs
@@ -154,12 +154,12 @@ export default function FinOpsPage() {
       </div>
 
       {loading && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-6">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-500 uppercase tracking-[0.18em]">// loading FinOps state…</p>
         </div>
       )}
       {!loading && error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6">
           <p className="text-[11px] font-mono text-zinc-300/80 uppercase tracking-[0.18em] mb-1">// FinOps unavailable</p>
           <p className="text-[13px] text-zinc-300">{error}</p>
         </div>
@@ -194,14 +194,14 @@ export default function FinOpsPage() {
                           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mt-0.5">{c.sourceMode}</p>
                         </div>
                       </div>
-                      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill}`}>
+                      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill}`}>
                         {CONNECTOR_LABEL[c.status]}
                       </span>
                     </div>
                     <p className="text-[12px] text-zinc-300 leading-relaxed mb-2">{c.headline}</p>
 
                     {c.missingConfig.length > 0 && (
-                      <div className="rounded-md border border-white/[0.18] bg-white/[0.04] p-2 mb-2">
+                      <div className="rounded-md border border-white/18 bg-white/4 p-2 mb-2">
                         <p className="text-[9px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">Setup needed</p>
                         <ul className="space-y-0.5">
                           {c.missingConfig.map((m, i) => (
@@ -214,7 +214,7 @@ export default function FinOpsPage() {
                     <div className="flex items-center gap-2 flex-wrap mb-2">
                       <span className="text-[9px] font-mono text-zinc-500 uppercase tracking-wider">unlocks:</span>
                       {c.unlocks.map((u, i) => (
-                        <span key={i} className="text-[10px] font-mono text-zinc-300 bg-white/[0.04] border border-white/[0.06] rounded px-1.5 py-0.5">{u}</span>
+                        <span key={i} className="text-[10px] font-mono text-zinc-300 bg-white/4 border border-white/6 rounded-sm px-1.5 py-0.5">{u}</span>
                       ))}
                     </div>
 
@@ -241,7 +241,7 @@ export default function FinOpsPage() {
                   <div key={s.id} className={`rounded-2xl border ${v.border} ${v.bg} p-4`}>
                     <div className="flex items-center gap-2 mb-1.5 flex-wrap">
                       <ServerStackIcon className={`h-3.5 w-3.5 ${v.text}`} />
-                      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${v.pill}`}>
+                      <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm ${v.pill}`}>
                         {SIGNAL_LABEL[s.status]}
                       </span>
                       <span className="text-[10px] font-mono text-zinc-500">{s.kind.replace(/_/g, " ")}</span>
@@ -265,12 +265,12 @@ export default function FinOpsPage() {
           </section>
 
           {/* Contract footer */}
-          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/[0.04] p-5 mb-8 flex items-start gap-3">
+          <div className="rounded-2xl border border-emerald-500/15 bg-emerald-500/4 p-5 mb-8 flex items-start gap-3">
             <CheckCircleIcon className="h-5 w-5 text-emerald-300 mt-0.5 shrink-0" />
             <div>
               <p className="text-[11px] font-mono text-emerald-300/80 uppercase tracking-[0.18em] mb-1">// FinOps contract</p>
               <p className="text-[13px] text-emerald-100 font-semibold leading-snug">
-                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/[0.06] rounded px-1.5 py-px">{report.safetyContract}</code>
+                safetyContract = <code className="font-mono text-[12px] bg-black/30 border border-white/6 rounded-sm px-1.5 py-px">{report.safetyContract}</code>
               </p>
               <p className="text-[12px] text-zinc-300 leading-relaxed mt-1">
                 {report.limitations.join(" ")}
@@ -285,7 +285,7 @@ export default function FinOpsPage() {
 
 function SummaryStat({ label, value, tone, extraNote }: { label: string; value: number | string; tone: string; extraNote?: string }) {
   return (
-    <div className="rounded-xl border border-white/[0.06] bg-white/[0.02] p-4">
+    <div className="rounded-xl border border-white/6 bg-white/2 p-4">
       <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">{label}</p>
       <p className={`text-2xl font-bold tracking-tight ${tone}`}>{value}</p>
       {extraNote && <p className="text-[9px] font-mono text-zinc-500 mt-0.5">{extraNote}</p>}

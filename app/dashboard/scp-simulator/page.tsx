@@ -111,7 +111,7 @@ export default function ScpSimulatorPage() {
 
   return (
     <div className="relative">
-      <div className="relative mb-8 rounded-3xl border border-white/[0.05] bg-gradient-to-br from-white/[0.025] via-white/[0.015] to-transparent p-6 md:p-8 overflow-hidden">
+      <div className="relative mb-8 rounded-3xl border border-white/5 bg-linear-to-br from-white/2.5 via-white/1.5 to-transparent p-6 md:p-8 overflow-hidden">
         <div
           className="absolute inset-0 -z-10 opacity-90 pointer-events-none"
           style={{
@@ -120,10 +120,10 @@ export default function ScpSimulatorPage() {
           }}
           aria-hidden
         />
-        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/[0.08] to-transparent" aria-hidden />
+        <div className="absolute top-0 left-0 right-0 h-px bg-linear-to-r from-transparent via-white/8 to-transparent" aria-hidden />
 
         <div className="flex items-center gap-2 mb-3 flex-wrap">
-          <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-2.5 py-1">
+          <span className="inline-flex items-center gap-2 rounded-full border border-white/6 bg-white/2 px-2.5 py-1">
             <BeakerIcon className="h-3.5 w-3.5 text-sky-300" />
             <span className="text-[10px] font-semibold uppercase tracking-widest text-sky-300">
               SCP Simulator · approval_only_no_execution
@@ -140,19 +140,19 @@ export default function ScpSimulatorPage() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-6">
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-4">
           <p className="text-[11px] font-mono text-sky-300/80 uppercase tracking-wider mb-2">// candidate policy</p>
           <textarea
             aria-label="Candidate policy JSON"
             value={policyJson}
             onChange={(e) => setPolicyJson(e.target.value)}
             rows={18}
-            className="w-full font-mono text-[11px] rounded-lg border border-white/[0.08] bg-black/40 px-3 py-2 text-zinc-100 focus:border-sky-400/60 focus:outline-none"
+            className="w-full font-mono text-[11px] rounded-lg border border-white/8 bg-black/40 px-3 py-2 text-zinc-100 focus:border-sky-400/60 focus:outline-hidden"
             spellCheck={false}
           />
         </div>
 
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4 space-y-3">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-4 space-y-3">
           <p className="text-[11px] font-mono text-sky-300/80 uppercase tracking-wider">// synthetic request</p>
           <div>
             <label htmlFor="scp-action" className="block text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1">Action</label>
@@ -161,7 +161,7 @@ export default function ScpSimulatorPage() {
               type="text"
               value={action}
               onChange={(e) => setAction(e.target.value)}
-              className="w-full font-mono text-[12px] rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-white focus:border-sky-400/60 focus:outline-none"
+              className="w-full font-mono text-[12px] rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-white focus:border-sky-400/60 focus:outline-hidden"
             />
           </div>
           <div>
@@ -171,7 +171,7 @@ export default function ScpSimulatorPage() {
               type="text"
               value={resource}
               onChange={(e) => setResource(e.target.value)}
-              className="w-full font-mono text-[12px] rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-white focus:border-sky-400/60 focus:outline-none"
+              className="w-full font-mono text-[12px] rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-white focus:border-sky-400/60 focus:outline-hidden"
             />
           </div>
           <div>
@@ -181,7 +181,7 @@ export default function ScpSimulatorPage() {
               value={principalTagsRaw}
               onChange={(e) => setPrincipalTagsRaw(e.target.value)}
               rows={4}
-              className="w-full font-mono text-[11px] rounded-lg border border-white/[0.08] bg-black/30 px-3 py-2 text-zinc-100 focus:border-sky-400/60 focus:outline-none"
+              className="w-full font-mono text-[11px] rounded-lg border border-white/8 bg-black/30 px-3 py-2 text-zinc-100 focus:border-sky-400/60 focus:outline-hidden"
               spellCheck={false}
             />
           </div>
@@ -197,17 +197,17 @@ export default function ScpSimulatorPage() {
       </div>
 
       {error && (
-        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/[0.18] bg-white/[0.04] p-5 mb-6 text-[13px] text-zinc-300">
+        <div role="alert" aria-live="assertive" className="rounded-2xl border border-white/18 bg-white/4 p-5 mb-6 text-[13px] text-zinc-300">
           {error}
         </div>
       )}
 
       {result && (
-        <div className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-5 mb-8">
+        <div className="rounded-2xl border border-white/6 bg-white/2 p-5 mb-8">
           <div className="flex items-center gap-3 mb-3">
             {Verdict && <Verdict className="h-6 w-6 text-white" />}
             <div>
-              <span className={`text-[12px] font-mono uppercase tracking-wider px-2 py-0.5 rounded border ${VERDICT_TONE[result.verdict]}`}>
+              <span className={`text-[12px] font-mono uppercase tracking-wider px-2 py-0.5 rounded-sm border ${VERDICT_TONE[result.verdict]}`}>
                 {result.verdict}
               </span>
               <p className="text-[13px] text-white mt-1">{result.summary}</p>
@@ -215,9 +215,9 @@ export default function ScpSimulatorPage() {
           </div>
 
           <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-wider mb-1.5">// per-statement</p>
-          <div className="divide-y divide-white/[0.04] border border-white/[0.06] rounded-lg overflow-hidden">
+          <div className="divide-y divide-white/4 border border-white/6 rounded-lg overflow-hidden">
             {result.statements.map((s, i) => (
-              <div key={i} className="px-3 py-2 flex items-start gap-2 hover:bg-white/[0.02]">
+              <div key={i} className="px-3 py-2 flex items-start gap-2 hover:bg-white/2">
                 <span className={`text-[9px] font-mono uppercase tracking-wider px-1.5 py-0.5 rounded ${
                   s.matched
                     ? s.effect === "Deny"
@@ -236,7 +236,7 @@ export default function ScpSimulatorPage() {
           </div>
 
           {result.limitations.length > 0 && (
-            <div className="mt-3 rounded-md border border-white/15 bg-white/[0.04] p-2.5">
+            <div className="mt-3 rounded-md border border-white/15 bg-white/4 p-2.5">
               <p className="text-[10px] font-mono text-zinc-300/80 uppercase tracking-wider mb-1">// simulator limitations</p>
               {result.limitations.map((l, i) => (
                 <p key={i} className="text-[11px] text-zinc-100">· {l}</p>

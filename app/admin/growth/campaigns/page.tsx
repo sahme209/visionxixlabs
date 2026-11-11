@@ -47,10 +47,10 @@ export default async function CampaignsPage() {
           </p>
         </div>
         <form action="/api/admin/growth/campaigns" method="post" className="flex flex-wrap items-center gap-2">
-          <input name="name" placeholder="Campaign name" required className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200 w-48" />
-          <input name="theme" placeholder="theme (e.g. product_education)" defaultValue="product_education" className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200 w-56" />
-          <input type="date" name="startsAt" required className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200" />
-          <input type="date" name="endsAt" required className="text-[11px] bg-transparent border border-white/[0.10] rounded px-2 py-1 text-zinc-200" />
+          <input name="name" placeholder="Campaign name" required className="text-[11px] bg-transparent border border-white/10 rounded-sm px-2 py-1 text-zinc-200 w-48" />
+          <input name="theme" placeholder="theme (e.g. product_education)" defaultValue="product_education" className="text-[11px] bg-transparent border border-white/10 rounded-sm px-2 py-1 text-zinc-200 w-56" />
+          <input type="date" name="startsAt" required className="text-[11px] bg-transparent border border-white/10 rounded-sm px-2 py-1 text-zinc-200" />
+          <input type="date" name="endsAt" required className="text-[11px] bg-transparent border border-white/10 rounded-sm px-2 py-1 text-zinc-200" />
           <button className="inline-flex items-center gap-1 text-[11px] font-medium px-2 py-1 rounded-lg bg-orange-500/15 text-orange-100 border border-orange-500/30 hover:bg-orange-500/25">
             Create campaign
           </button>
@@ -58,14 +58,14 @@ export default async function CampaignsPage() {
       </div>
 
       {campaigns.length === 0 ? (
-        <section className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-8 text-center">
+        <section className="rounded-2xl border border-white/6 bg-white/2 p-8 text-center">
           <p className="text-[14px] font-semibold text-white mb-1">No campaigns yet</p>
           <p className="text-[12px] text-zinc-400 max-w-md mx-auto">Use the form above to create the first campaign theme. Generated drafts can then be attached via the API or post-drafts editor.</p>
         </section>
       ) : (
         <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {campaigns.map((c) => (
-            <li key={c.id} className="rounded-2xl border border-white/[0.06] bg-white/[0.02] p-4">
+            <li key={c.id} className="rounded-2xl border border-white/6 bg-white/2 p-4">
               <header className="flex items-center justify-between gap-2 mb-2">
                 <p className="text-[13px] font-semibold text-white truncate">{c.name}</p>
                 <span className="text-[9.5px] font-mono uppercase tracking-wider text-orange-300 bg-orange-500/10 border border-orange-500/30 rounded-full px-1.5 py-px">

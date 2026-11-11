@@ -47,7 +47,7 @@ const PRINCIPLES: readonly Principle[] = [
     num: "03",
     title: "Materials",
     rule: "Surfaces should feel like they have weight.",
-    detail: "Frosted glass with backdrop-saturate, not flat tints. Top-edge inner highlight on every glass card so the eye reads thickness. Outer shadow that breathes on hover. This is what separates a 2026 product page from a 2018 one.",
+    detail: "Frosted glass with backdrop-saturate, not flat tints. Top-edge inner highlight on every glass card so the eye reads thickness. Outer shadow-sm that breathes on hover. This is what separates a 2026 product page from a 2018 one.",
   },
   {
     num: "04",
@@ -87,8 +87,8 @@ export default function PrinciplesPage() {
       {/* Restrained aurora — quieter than marketing pages */}
       <div aria-hidden className="pointer-events-none absolute inset-0">
         <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/[0.06] blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/[0.04] blur-[120px]" style={{ animationDelay: "-15s" }} />
+        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
+        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
       </div>
 
       <Navigation />
@@ -98,7 +98,7 @@ export default function PrinciplesPage() {
       <main className="relative max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-32">
         <p className="mono-label inline-flex items-center gap-3 mb-6">
           <span className="text-brand-coral/90 tabular-nums">PR</span>
-          <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
           Design principles
         </p>
 
@@ -106,7 +106,7 @@ export default function PrinciplesPage() {
           How we make{" "}
           <span className="relative inline-block">
             visual decisions.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-gradient-to-r from-brand-coral via-amber-400/70 to-transparent" />
+            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
           </span>
         </h1>
 
@@ -126,7 +126,7 @@ export default function PrinciplesPage() {
               <div className="hairline-soft mb-10" />
               <p className="mono-label mb-5 inline-flex items-center gap-3">
                 <span className="text-brand-coral/90 tabular-nums text-[11px]">{p.num}</span>
-                <span className="h-px w-6 bg-gradient-to-r from-brand-coral/60 to-transparent" />
+                <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
                 <span className="text-zinc-500">{p.title}</span>
               </p>
               <h2 className="font-display text-3xl sm:text-4xl font-bold text-white leading-[1.06] tracking-[-0.035em] mb-5">
@@ -139,7 +139,7 @@ export default function PrinciplesPage() {
           ))}
         </div>
 
-        <div className="mt-32 pt-16 border-t border-white/[0.06] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+        <div className="mt-32 pt-16 border-t border-white/6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
           <div>
             <p className="mono-label mb-2">Companion piece</p>
             <p className="font-display text-xl font-semibold text-white">Our manifesto &mdash; what we believe about the product.</p>
