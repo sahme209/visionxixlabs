@@ -1,0 +1,15 @@
+# PR 321 second CI round — unresolved
+
+Candidate `741a230a` fixes missing emitted clients; the actual auth-recovery rehearsal now passes. Type checking and production high-severity audit also pass. Other jobs are tracked on the PR; no merge is authorized while any applicable job fails/pends.
+
+## AWS isolated enrollment failure reproduced locally
+
+CI job `130853264831` reaches the actual serializable last-slot rehearsal but fails its assertion that the loser exposes P2034 or SQLSTATE 40001. Fresh owned local PostgreSQL reproduces exactly that assertion. A separate diagnostic copy (not committed or used for acceptance) shows the losing raw SQL operation throws `DriverAdapterError`, message `TransactionWriteConflict`, with neither top-level `code` nor `meta`. Installed adapter source maps PostgreSQL 40001 and 40P01 to that exact cause kind. The schema/data/transaction assertion must remain; do not accept arbitrary rejections or remove the exactly-one-commit check.
+
+The model-operation concurrency test already passed as P2034, so that narrower proof did not establish raw-SQL conflict-code compatibility. Next: inspect the actual cause and existing production conflict classifiers, preserve legacy and modern abort semantics through a source-reviewed compatibility mechanism, and test actual raw-SQL concurrency. Do not merely make the rehearsal accept any error or claim existing production retry handlers are compatible. No production/provider request occurred. Each diagnostic used a fresh owned local cluster; the diagnostic shell stops that owned server on exit. Files are preserved.
+
+## HTTP acceptance failure
+
+CI job `130853264650` reaches application HTTP acceptance but fails `isolated_next_start_failed` while waiting for the CSRF endpoint. Its existing harness captures stdout/stderr to `/tmp/axiom-isolated-next-http.log`, but the workflow currently does not return that file. Root cause remains unconfirmed. Do not increase the timeout, suppress startup failures or call it a Prisma problem without evidence. Next: reproduce the exact guarded child startup locally or add bounded fixed-category failure observations, retaining the current child environment and no-credential/no-provider guards.
+
+Local full suite/build results are preserved but do not substitute for these actual opt-in CI gates. The PR remains open and production unchanged.
