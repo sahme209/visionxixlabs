@@ -47,7 +47,15 @@ ts-api-utils transitive versions; see `dependency-delta.json`.
 - Living docs updated: handoff, CLAUDE validation commands, master plan, execution log
   and remaining work. No public UI/API/webhook/guide content changes; guide count 31.
 
-Independent final review and green CI remain merge gates. The minimum supported
+Independent final source review found no important issues; reviewer ran no programs/provider calls. Green CI remains a merge gate. The minimum supported
 platform/browser/native installer acceptance and live production are not verified.
 No production activation, database, credentials, signing, installer or provider
 acceptance is included. Existing qualification packets are not renewed.
+
+## Lint observation and limits
+
+ESLint loads with the valid retained compiler API. A 61-file marketing lint sample
+reports 7 errors and 14 warnings; no clean-lint claim or unrelated lint repair is
+included. The baseline comparison using the old original checkout did not finish
+and was stopped; equivalence of those diagnostics is not established. Full lint
+acceptance remains unverified.
