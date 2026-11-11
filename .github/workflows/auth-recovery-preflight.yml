@@ -32,7 +32,7 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Generate database client without database credentials
-        run: npx prisma generate --schema prisma/schema.prisma
+        run: npm run db:generate
 
       - name: Inspect using a read-only transaction and public-safe output
         env:

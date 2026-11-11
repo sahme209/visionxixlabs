@@ -49,7 +49,7 @@ jobs:
       - name: Install locked project dependencies without lifecycle hooks
         run: npm ci --ignore-scripts
       - name: Generate local Prisma client only
-        run: node node_modules/prisma/build/index.js generate --schema prisma/schema.prisma
+        run: npm run db:generate
       - name: Prepare fresh source and runtime manifest
         run: node scripts/run-owned-website-visual.mjs --prepare /tmp/axiom-website-review-ci.json
       - name: Bind review to immutable PR head

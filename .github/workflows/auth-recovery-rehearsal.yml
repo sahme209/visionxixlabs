@@ -51,7 +51,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: npm run db:generate
       - name: Reproduce failed history and rehearse only additive auth recovery
         env:
           AUTH_RECOVERY_TEST_DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/axiom_auth_recovery_rehearsal
@@ -82,7 +82,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: npm run db:generate
       - name: Validate additive storage, tenant constraints and drift refusal
         env:
           AWS_ENROLLMENT_TEST_DATABASE_URL: postgresql://postgres:isolated-fixture-only@127.0.0.1:5432/axiom_aws_enrollment_rehearsal

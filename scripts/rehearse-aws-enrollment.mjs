@@ -27,7 +27,7 @@ export async function rehearseAwsEnrollment(value) {
   function apply(text = sql, success = true, expectedError) {
     const path = join(temp, "fixture.sql");
     writeFileSync(path, text);
-    const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "execute", "--file", path, "--schema", join(root, "prisma/schema.prisma")], {
+    const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "execute", "--file", path, "--config", join(root, "prisma.config.ts")], {
       env: { ...process.env, DATABASE_URL: target, PRISMA_HIDE_UPDATE_MESSAGE: "true" }, encoding: "utf8", timeout: 60_000, maxBuffer: 1024 * 1024,
     });
     assert.equal(result.status === 0, success, "unexpected isolated enrollment SQL outcome");

@@ -43,7 +43,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: npm run db:generate
       # Existing harness creates its own named container, random password and
       # empty loopback-only database; it refuses external URLs and env files.
       # No production environment, secret, Stripe call or provider is loaded.
@@ -77,7 +77,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: npm run db:generate
       - run: docker pull postgres:17-alpine
       # Reuse the portable existing HTTP case, not the separately reviewed
       # environment-bound checkout worker. No live Stripe/provider credentials.

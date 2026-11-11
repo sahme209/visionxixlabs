@@ -80,7 +80,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     const schemaEnvironment = process.env.AXIOM_RUN_OWNED_CHECKOUT_HTTP === "1" || process.env.AXIOM_RUN_OWNED_COMMERCIAL_HTTP === "1"
       ? (await import("./fixtures/ownedCheckoutLaunchPolicy")).ownedCheckoutPrismaEnvironment(process.env, process.execArgv, url)
       : newTestPrismaEnvironment(process.env, process.execArgv, url);
-    execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--skip-generate", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: schemaEnvironment, stdio: "pipe" });
+    execFileSync(process.execPath, [resolve("node_modules/prisma/build/index.js"), "db", "push", "--schema", resolve("prisma/schema.prisma")], { cwd: process.cwd(), env: schemaEnvironment, stdio: "pipe" });
     const sql = [
       'CREATE TABLE "IsolatedTestRuntime" (id text PRIMARY KEY,account text NOT NULL)',
       'CREATE TABLE "RecurringSubscriptionIntent" (id text PRIMARY KEY,org text NOT NULL,body jsonb NOT NULL,UNIQUE(id,org))',
