@@ -295,7 +295,7 @@ November 11 AWS-only batch: no UI, connector workflow, API or guide changes. Doc
 ## 10. What is left — and exactly how to do it
 
 ### 10.1 Code you can do (one PR each, in this order)
-1. **AWS SDK upgrade (beyond 3.1049): local candidate 3.1166.0 under review, not yet merged or deployed.** Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`. Re-lock via `dependency-fix.yml`, then:
+1. **AWS SDK upgrade (beyond 3.1049): implemented in PR #315 (3.1166.0); merge requires all green checks. Not deployed.** Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`. Re-lock via `dependency-fix.yml`, then:
    - **ECS:** regenerate the schema with `scripts/fixtures/generateEcsTaskSchema.mjs` (update its pinned version) and review the diff of generated fields.
    - **S3:** the plan-reader tests (`customerPlanAwsRead.test.ts`) failed on stream/tee and middleware behaviour in the newer SDK. Debug against those tests and keep the security properties: byte budget charged once, abort retained, no leaked body values, fixed version-pinned SSE-KMS objects only. Do not loosen assertions to make them pass.
    - Then remove `@aws-sdk/*` from the Dependabot ignore list.

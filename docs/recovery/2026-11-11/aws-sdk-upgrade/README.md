@@ -1,6 +1,6 @@
 # AWS SDK upgrade review — November 11, 2026
 
-Local candidate; production remains build 4 (`a344f4f6`). No real AWS request,
+Implementation PR #315; merge remains gated on all green CI checks. Production remains build 4 (`a344f4f6`). No real AWS request,
 credential, database change, deployment, feature flag or installer publication.
 
 ## Dependency provenance
@@ -65,7 +65,7 @@ records track this batch. CI and live acceptance are separate gates.
 - Ask Axiom corpus regenerated: 104 sections, no output changes.
 - Exact 24 AWS versions, direct Smithy dependencies, generated lock hash and
   schema generator freshness verified. Independent final diff review: no
-  important remaining findings. CI has not yet run for this candidate.
+  important remaining findings. GitHub PR #315 records CI and merge status for the exact candidate.
 
 Not verified: real AWS credentials, live service reads, production behavior,
 macOS fixture qualification, installed customer applications. No gates enabled.

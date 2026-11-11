@@ -37,7 +37,7 @@ Each needs its own planned PR; Dependabot ignores their major versions until the
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
 - ESLint 10 and Vitest 5 (web): config and API changes.
 - Next.js 16.4.5: done 2026-11-09. All 20 release-closure files, the three owned-website internals and `writeAppTypeDeclarations.js` are byte-identical to 16.4.2; only `package.json` changed and was re-pinned.
-- AWS SDK: local 3.1166.0 candidate is under review; ECS model and S3 collector behavior reviewed. Not yet merged or deployed. Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
+- AWS SDK: 3.1166.0 implementation in PR #315; ECS model and S3 collector behavior reviewed. Merge is gated on all CI checks; not deployed. Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
 - Stripe (any bump; 20.4.1 already moves the pinned API version to `2026-02-25.clover`). Stripe 23: new API version (`2026-10-28.endive`) and non-generic `HttpClient` types; re-review the owned Stripe TEST transport and settlement code.
 - ai 7: AI Gateway endpoint moves from v3 to v4; re-review the pinned dispatch URL in the installed-SDK composition tests.
 - Vitest: 4.1.12 done (preload `suppress-warnings.cjs` byte-identical, sha256 a5012da3…); each later bump repeats that check and updates the version pin.

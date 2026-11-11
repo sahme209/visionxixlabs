@@ -117,4 +117,4 @@ Each reconcile write step (at execution time); a separate Preview DB; UID501 dia
 
 ## November 11 takeover — AWS upgrade candidate
 
-Main green and production build 4 (`a344f4f6`) verified. AWS 3.1166.0 is the first sequential PR candidate; reviewed ECS declaration changes, DynamoDB codec compatibility and actual S3 collector behavior. No provider request, deployment or production change. Evidence: `../recovery/2026-11-11/aws-sdk-upgrade/README.md`. Subsequent ai 7/platform migrations have not started.
+Main green and production build 4 (`a344f4f6`) verified. AWS 3.1166.0 is the first sequential batch (PR #315, merge gated on all CI); reviewed ECS declaration changes, DynamoDB codec compatibility and actual S3 collector behavior. No provider request, deployment or production change. Evidence: `../recovery/2026-11-11/aws-sdk-upgrade/README.md`. Subsequent ai 7/platform migrations have not started.
