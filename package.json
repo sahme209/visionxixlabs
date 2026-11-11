@@ -107,8 +107,8 @@
   },
   "overrides": {
     "@aws-sdk/client-dynamodb": {
-      "@aws-sdk/dynamodb-codec": "3.972.17",
-      "@aws-sdk/middleware-endpoint-discovery": "3.972.6"
+      "@aws-sdk/dynamodb-codec": "3.973.58",
+      "@aws-sdk/middleware-endpoint-discovery": "3.972.39"
     }
   }
 }
