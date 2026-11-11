@@ -180,7 +180,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 - **Vitest pin:** `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts` requires the exact installed Vitest version (now **4.1.12**) and the sha256 `a5012da3…` of `vitest/suppress-warnings.cjs`. On every bump, check that file's hash via jsDelivr, then update the version in the fixture and its test mocks.
 - **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1166.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
 - **Stripe:** `lib/billing/settleAIUsageToStripe.ts` pins API version `2026-01-28.clover`. Even stripe 20.4.1 moves it, so Stripe is fully held.
-- **ai SDK:** v7 moves the AI Gateway URL v3 → v4. The installed-SDK composition tests pin v3.
+- **ai SDK:** v7 moves the AI Gateway URL v3 → v4. PR #317 updated the installed-SDK composition tests to the reviewed v4 endpoint.
 - **Governed AI path:** `lib/axiom/agentRuntime/governedAiCall.ts` is the only place the Agent may call a model, and it is gateway-only. Do not add a fallback provider there (section 10, offline ADR).
 - **Governance native and issuer code:** never flip these.
   - `AX_OWNER_OPERATIONAL=0` (`packages/verified-issuer-runtime/native/owner_config.h`);
