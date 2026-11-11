@@ -10,16 +10,15 @@ updates:
     groups:
       web-minor-patch: { update-types: ["minor", "patch"] }
       web-major: { update-types: ["major"] }
-    # Next.js and the AWS SDK are pinned by reviewed-source checks (owned website
-    # framework pins, pinned ECS/S3 SDK behaviour). Upgrade them in a planned PR
-    # that re-reviews those pins, not in the weekly batch.
+    # Next.js is pinned by reviewed-source checks. Upgrade it in a planned PR
+    # that re-reviews those pins, not in the weekly batch. AWS updates must
+    # still pass the installed ECS snapshot and S3 transport contracts.
     # Platform migrations get their own planned PR (see docs/product/remaining-work.md),
     # so they do not block the weekly major batch.
     ignore:
       # Next.js: each bump re-checks the pinned framework/closure files (16.4.2 -> 16.4.5 unchanged) and re-pins.
       - { dependency-name: "next" }
       - { dependency-name: "eslint-config-next" }
-      - { dependency-name: "@aws-sdk/*" }
       # Vitest minors/patches: the test-child fixture pins the version and preload hash, so
       # each bump re-checks suppress-warnings.cjs (unchanged 4.1.11 -> 4.1.12) and updates the pin.
       - { dependency-name: "vitest" }

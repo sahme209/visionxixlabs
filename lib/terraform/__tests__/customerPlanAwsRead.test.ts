@@ -78,14 +78,14 @@ it("debits actual response bytes and refuses a final observation once the shared
  const budget={remaining:64};expect(await readCustomerPlanAws({...input(),budget})).toMatchObject({kind:"unavailable"});expect(budget.remaining).toBe(0);
  m.native.mockClear();expect(await readCustomerPlanAws({...input(),budget})).toMatchObject({kind:"unavailable"});expect(m.native).not.toHaveBeenCalled();
 });
-it("charges native response bytes once even while actual S3 middleware tees/inspects the body",async()=>{
+it("charges native response bytes once while actual S3 middleware collects/inspects the body",async()=>{
  const budget={remaining:96*1024*1024};expect((await readCustomerPlanAws({...input(),budget})).kind).toBe("observed_customer_backend");expect(budget.remaining).toBe(96*1024*1024-m.bytes);expect(m.destroy).toHaveBeenCalledTimes(2);
 });
 it.each(["sourceError","http200Error"])("retains actual S3 %s failure classification without extra requests or leaked body values",async mode=>{
  m.mode=mode;const budget={remaining:96*1024*1024};const result=await readCustomerPlanAws({...input(),budget});expect(result).toEqual({kind:"unavailable",reason:"customer_plan_backend_unavailable"});
  expect(m.requests).toHaveLength(1);expect(budget.remaining).toBe(96*1024*1024-m.bytes);expect(m.destroy).toHaveBeenCalledTimes(2);expect(m.bodies.every(b=>b.destroyed)).toBe(true);
 });
-it.each(["abort","deadline"])("settles actual S3 split-stream %s and cleans both branches/native ownership",async mode=>{
+it.each(["abort","deadline"])("settles actual S3 collector %s and cleans native ownership",async mode=>{
  m.mode="stall";const parent=new AbortController(),budget={remaining:96*1024*1024};
  const signal=mode==="deadline"?AbortSignal.any([parent.signal,AbortSignal.timeout(100)]):parent.signal;
  const pending=readCustomerPlanAws({...input(),signal,budget});
@@ -93,14 +93,16 @@ it.each(["abort","deadline"])("settles actual S3 split-stream %s and cleans both
  try{expect(await pending).toEqual({kind:"unavailable",reason:"customer_plan_backend_unavailable"});expect(m.requests).toHaveLength(1);expect(m.destroy).toHaveBeenCalledTimes(2);expect(m.bodies.every(b=>b.destroyed)).toBe(true);expect(budget.remaining).toBe(96*1024*1024-m.bytes);}
  finally{parent.abort();}
 });
-it.each(["sourceError","abort"])("retains %s in the unconsumed second real SDK tee branch as well as rejecting its active branch",async mode=>{
- const tees:Array<[ReadableStream<Uint8Array>,ReadableStream<Uint8Array>]>=[],original=ReadableStream.prototype.tee;
- const spy=vi.spyOn(ReadableStream.prototype,"tee").mockImplementation(function(this:ReadableStream<Uint8Array>){const pair=original.call(this) as [ReadableStream<Uint8Array>,ReadableStream<Uint8Array>];tees.push(pair);return pair;});
- const parent=new AbortController();m.mode=mode==="abort"?"stall":"sourceError";
+// Reviewed middleware-sdk-s3 3.972.89 collects once and replays bounded bytes;
+// it no longer creates the second tee branch that the old SDK could orphan.
+it.each(["sourceError","abort"])("retains %s through the actual SDK collector without creating orphan tee branches",async mode=>{
+ const spy=vi.spyOn(ReadableStream.prototype,"tee");
+ const parent=new AbortController(),budget={remaining:96*1024*1024};m.mode=mode==="abort"?"stall":"sourceError";
  try{
-  const pending=readCustomerPlanAws({...input(),signal:parent.signal});if(mode==="abort"){await vi.waitFor(()=>expect(m.requests).toHaveLength(1));parent.abort();}
-  expect((await pending).kind).toBe("unavailable");expect(tees).toHaveLength(1);expect(m.requests).toHaveLength(1);
-  const other=tees[0][1].getReader();try{await expect(other.read()).rejects.toThrow("aws_response_unavailable");}finally{other.releaseLock();}
+  const pending=readCustomerPlanAws({...input(),signal:parent.signal,budget});if(mode==="abort"){await vi.waitFor(()=>expect(m.requests).toHaveLength(1));parent.abort();}
+  expect(await pending).toEqual({kind:"unavailable",reason:"customer_plan_backend_unavailable"});
+  expect(spy).not.toHaveBeenCalled();expect(m.requests).toHaveLength(1);
+  expect(budget.remaining).toBe(96*1024*1024-m.bytes);
   expect(m.bodies.every(b=>b.destroyed)).toBe(true);expect(m.destroy).toHaveBeenCalledTimes(2);
  }finally{parent.abort();spy.mockRestore();}
 });

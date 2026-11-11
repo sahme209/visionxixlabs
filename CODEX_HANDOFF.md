@@ -118,7 +118,7 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 **Dependabot** (`.github/dependabot.yml`) opens grouped PRs weekly per ecosystem (web, desktop, cargo, actions).
 - Its web lockfile changes **always** fail `owned_framework_source_pins`, because Dependabot cannot re-pin the hash. Re-create the same versions via `dependency-fix.yml` and close the Dependabot PR. The owner may need to close Dependabot PRs; the agent was not allowed to.
-- **Held packages** (ignored in `dependabot.yml`, each needs a planned PR — section 10): TypeScript major, Tailwind major, Prisma major, ESLint major, Vitest major, Stripe (all versions), ai major, `next`/`eslint-config-next`, `@aws-sdk/*`.
+- **Held packages** (ignored in `dependabot.yml`, each needs a planned PR — section 10): TypeScript major, Tailwind major, Prisma major, ESLint major, Vitest major, Stripe (all versions), ai major, `next`/`eslint-config-next`. AWS updates still require the ECS/S3 contract checks.
 - When several Dependabot PRs touch the same lockfile, merging one makes the others conflict. Do them one at a time, re-locked on current `main`.
 
 ### 3.4 Delegation and research tools used
@@ -149,6 +149,8 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 Follow the table in `CLAUDE.md`. The ones that bite most often:
 
+November 11 AWS-only batch: no UI, connector workflow, API or guide changes. Documentation applicability is recorded in `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
+
 | You change | You must also |
 |---|---|
 | Any `app/docs/**/page.tsx` | Update **`lib/docs/guide-heading-index.json`**: the `sourceSha256` of that page; `fields` (DocHeader title, summary, then DocSection/Callout titles in page order); `navigationSha256` = sha256 of `components/docs/DocsSidebar.tsx`. Normally `node scripts/generate-docs-heading-index.cjs` (needs TypeScript installed). Without deps, compute sha256 with Python and keep the same JSON shape (2-space indent, non-ASCII unescaped). |
@@ -174,7 +176,7 @@ Follow the table in `CLAUDE.md`. The ones that bite most often:
   3. If any pinned file differs, it needs a human review of that diff.
   4. Leave historical `docs/recovery/**` records unchanged.
 - **Vitest pin:** `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts` requires the exact installed Vitest version (now **4.1.12**) and the sha256 `a5012da3…` of `vitest/suppress-warnings.cjs`. On every bump, check that file's hash via jsDelivr, then update the version in the fixture and its test mocks.
-- **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1049.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
+- **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1166.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
 - **Stripe:** `lib/billing/settleAIUsageToStripe.ts` pins API version `2026-01-28.clover`. Even stripe 20.4.1 moves it, so Stripe is fully held.
 - **ai SDK:** v7 moves the AI Gateway URL v3 → v4. The installed-SDK composition tests pin v3.
 - **Governed AI path:** `lib/axiom/agentRuntime/governedAiCall.ts` is the only place the Agent may call a model, and it is gateway-only. Do not add a fallback provider there (section 10, offline ADR).
@@ -293,7 +295,7 @@ Follow the table in `CLAUDE.md`. The ones that bite most often:
 ## 10. What is left — and exactly how to do it
 
 ### 10.1 Code you can do (one PR each, in this order)
-1. **AWS SDK upgrade (beyond 3.1049).** Re-lock via `dependency-fix.yml`, then:
+1. **AWS SDK upgrade (beyond 3.1049): local candidate 3.1166.0 under review, not yet merged or deployed.** Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`. Re-lock via `dependency-fix.yml`, then:
    - **ECS:** regenerate the schema with `scripts/fixtures/generateEcsTaskSchema.mjs` (update its pinned version) and review the diff of generated fields.
    - **S3:** the plan-reader tests (`customerPlanAwsRead.test.ts`) failed on stream/tee and middleware behaviour in the newer SDK. Debug against those tests and keep the security properties: byte budget charged once, abort retained, no leaked body values, fixed version-pinned SSE-KMS objects only. Do not loosen assertions to make them pass.
    - Then remove `@aws-sdk/*` from the Dependabot ignore list.
