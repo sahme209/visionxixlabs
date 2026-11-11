@@ -15,8 +15,8 @@ This checkpoint supersedes earlier operational instructions, not historical evid
 
 ### Next, in order
 
-1. ~~PR #319 merged only after every applicable check passed.~~ Continue TypeScript 7 native checks as a side-by-side candidate, keeping exact reviewed API 5.9.3 for existing tooling. The direct replacement is incompatible; no forced peers, unstable API substitution or historical packet renewal. [Evidence](../recovery/2026-11-11/typescript7-upgrade/README.md).
-2. Remaining platform migrations, separate sequential PRs: TypeScript 7, Prisma 7, Vitest 5. Verify actual package availability and compatibility before choosing versions. Prisma requires an owner-approved production schema check; the owner runs the SQL. **ESLint remains on 9 by the owner's November 11 decision** until its plugins support 10; do not force peers or disable rules.
+1. ~~PR #319 merged only after every applicable check passed.~~ ~~TypeScript 7 side-by-side checks merged green in PR #320 (`a99c053f`).~~ Exact reviewed API 5.9.3 is retained for existing tooling. The direct replacement is incompatible; no forced peers, unstable API substitution or historical packet renewal. [Evidence](../recovery/2026-11-11/typescript7-upgrade/README.md).
+2. Remaining platform migrations, separate sequential PRs: Prisma 7, then Vitest 5. Initial owner-run Prisma read-only check is [prepared, not executed](../recovery/2026-11-11/prisma7-preflight/README.md). Verify actual package availability and compatibility before choosing versions. Prisma requires an owner-approved production schema check; the owner runs the SQL. **ESLint remains on 9 by the owner's November 11 decision** until its plugins support 10; do not force peers or disable rules.
 3. Fix `privateFixtureJoined.test.ts` only if its actual failure reproduces; capture the failure site, do not guess.
 4. Offline AI only after the owner accepts the ADR and answers its three decisions. No unapproved fallback or inference.
 5. Source-grounded documentation guides: Plugins, Workspaces, MCP and Settings; update navigation, heading hashes, support corpus, guide-count tests and related living docs in the same PR.

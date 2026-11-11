@@ -130,3 +130,7 @@ AWS #315 and AI SDK 7 #317 merged sequentially with green CI. ESLint 10 produced
 ## November 11 TypeScript native transition
 
 Tailwind #319 merged green as `77d932c5` before this next batch. Direct TypeScript 7.0.2 reproduced 50 API-consumer type errors and invalid ESLint peers. The side-by-side candidate retains exact 5.9.3 API and existing evidence pins, while explicit native checks cover root, production source and desktop. No suppressed checks or unstable API rewrite. Root/desktop lockfiles are generated only by the dependency workflow; the fixed alias has registry-only validation. Production remains build 4. Candidate evidence: `../recovery/2026-11-11/typescript7-upgrade/README.md`.
+
+## November 11 TypeScript merge / Prisma gate
+
+PR #320 merged as `a99c053f` after all applicable CI checks passed, including macOS native lint. Terminal GitHub TLS timeouts were handled through the existing GitHub connector with an exact-head merge guard, without bypassing checks. Production unchanged. Prisma 7 is next; owner-run initial read-only catalog/migration query prepared under `../recovery/2026-11-11/prisma7-preflight/`, not executed or permission to modify a database.

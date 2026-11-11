@@ -32,7 +32,7 @@ Support agent governed actions (roadmap step 4: five actions done — support ha
 
 Each needs its own planned PR; Dependabot ignores their major versions until then.
 
-- TypeScript 7 (web + desktop): 7.0.2 native checks are a side-by-side candidate, with exact 5.9.3 compiler API retained for valid ESLint peers and reviewed tools. Full merge/CI evidence pending; this does not remove every older compiler.
+- TypeScript 7 (web + desktop): 7.0.2 native checks merged green in PR #320, with exact 5.9.3 compiler API retained for valid ESLint peers and reviewed tools. Not deployed; this does not remove every older compiler.
 - Tailwind 4.3.5 (web + desktop): merged green in PR #319; source bounds, shared diff and browser dark/light spacing checked. Not deployed or customer-qualified. See `../recovery/2026-11-11/tailwind4-upgrade/README.md`.
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
 - ESLint 10: held at 9 by owner decision November 11; three current plugins reject version 10. No forced peers or disabled rules. Vitest 5 remains planned.
@@ -150,4 +150,4 @@ Narrow AI security activation candidatebf5dbd65 is prepared from recorded produc
 
 ## November 11 dependency sequence
 
-AWS 3.1166.0 merged as PR #315 with every CI check green; production remains build 4. AI 7.0.170 merged green in PR #317 after review of Vercel Gateway v4 and explicit text-only tool choice, preserving admission, routing, caps, redaction and one-attempt guards. Tailwind 4 PR #319 merged green; TypeScript 7 side-by-side tooling is the current candidate. Not deployed. Evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. Platform migrations remain next, each in its own green PR.
+AWS 3.1166.0 merged as PR #315 with every CI check green; production remains build 4. AI 7.0.170 merged green in PR #317 after review of Vercel Gateway v4 and explicit text-only tool choice, preserving admission, routing, caps, redaction and one-attempt guards. Tailwind 4 PR #319 merged green; TypeScript 7 side-by-side tooling merged green as PR #320. Prisma 7 is next, pending the owner-approved production schema check. Not deployed. Evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. Platform migrations remain next, each in its own green PR.

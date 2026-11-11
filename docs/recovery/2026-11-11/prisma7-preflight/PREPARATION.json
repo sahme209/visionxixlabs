@@ -1,0 +1,7 @@
+{
+  "baseMain": "a99c053f7af516c3a870512d461c9fa26422a40d",
+  "schemaSha256": "4a8c274ec951f381a04a2c6e9bbf4d2d2e5f6f98c1054f4c756dac41b6bd202b",
+  "migrationCount": 120,
+  "sqlSha256": "292f691a0b662124d204acf309ccac7092564530312c7993eaf58c24a969439a",
+  "execution": "NOT RUN; owner approval and owner Neon execution required"
+}
