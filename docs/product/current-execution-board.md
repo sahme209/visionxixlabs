@@ -823,3 +823,7 @@ Hairline’s [bounded public-source evaluation](hairline-source-evaluation.md) r
 ## November 11 current sequence and supplemental research
 
 AWS #315, AI #317, Tailwind #319 and native TypeScript transition #320 merged green, not production-deployed. Prisma 7 is next; its live read-only initial check found a discrepancy with the historical deployment receipt (two absent November 9 tables/ledger rows). No write is authorized by that observation. Follow the current master-plan checkpoint and CODEX_HANDOFF.md, not historical “next” operations above. The [future technology assessment](future-technology-deployment-assessment.md) is planned for gaps only, without delaying this sequence; research is not started and no implementation backlog or completion claim is inferred.
+
+## November 11 token-efficiency addition
+
+The owner added a cross-cutting [token-efficiency and useful-tools assessment](token-efficiency-and-tooling-assessment.md). Source-checked repository candidates are planning inputs only. Continue the current Prisma/platform sequence; discovery can use gaps. Measure savings against quality/security and actual provider accounting, with no new paid calls, installations or customer-data grants implied.

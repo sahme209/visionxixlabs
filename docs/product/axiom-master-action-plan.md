@@ -31,6 +31,13 @@ The complete ready-to-paste continuation goal is saved in [codex-resume-goal.md]
 - Deliver verified capabilities, genuine gaps, already-planned coverage, architectural/integration recommendations, prioritized future suggestions, monitoring topics and risks/trade-offs. **Research only:** no automatic implementation, tickets, changes to completed functionality or additional master-plan scope. Recommendations require owner review/approval. Existing production, spending, data and security controls remain in force.
 - This assessment adds no completion claim and no new mandatory technology backlog. A1–A9/B1–B6/C1–C6 retain their existing requirements and acceptance gates.
 
+### Cross-cutting token efficiency and useful repositories/tools
+
+- [ ] [Token-efficiency and tooling assessment](token-efficiency-and-tooling-assessment.md): identify relevant repositories, libraries, plugins and skills that can reduce unnecessary context, repeated work and model usage or improve Axiom. Evaluate broadly; adopt selectively after evidence, security/license review and normal approval/PR gates. No blind “install everything” requirement.
+- Track Axiom runtime AI costs separately from development-assistant usage. Establish a baseline, measure actual provider-reported input/output/cache usage and billed cost where available, and preserve task quality, tenant isolation, source freshness and exact governance boundaries. Token estimates, cache discounts, token counts, latency and subscription credits are different measurements; no invented percentage savings.
+- Prioritize reusing existing retrieval/usage/audit facilities, scoped context and deterministic tools before adding dependencies. Research compression, code-aware context, safe caching, current documentation, evaluation and supply-chain tooling; preserve exact approvals, targets, source hashes and budgets outside lossy compression. Keep the current implementation sequence moving and use gaps for supplemental discovery.
+- The initial source-checked shortlist and adoption gates are recorded in the linked assessment. Candidates are not installed, integrated, qualified or approved for customer-data access; no paid calls, grants, telemetry export, provider routing changes or production actions are implied.
+
 ### Rules and unfinished scope
 
 - Never push main, merge red/pending checks, bypass protection or use admin merge. Work on branches through one PR at a time; keep all applicable checks green.

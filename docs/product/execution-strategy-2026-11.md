@@ -142,3 +142,7 @@ After approving the owner-run query, the user explicitly requested Codex executi
 ## November 11 future-assessment scheduling decision
 
 The owner supplied the full future-technology/deployment assessment and explicitly clarified “During gaps, without delaying current priorities.” This overrides only the brief's original after-master-completion timing. Full brief preserved at `future-technology-deployment-assessment.md`; master/requirements index/board/remaining-work linked consistently. All other research-only and review-before-action limits remain. The current Prisma/platform sequence is unchanged; no assessment or implementation started.
+
+## November 11 token-efficiency/tooling decision
+
+Owner requested repositories, libraries, plugins and skills that reduce token waste or help the project. Added the assessment and source-checked eight-repository shortlist without installing anything. Evaluate broadly/adopt selectively; separate runtime and development usage; measure real costs and answer quality, preserve governance/security and reuse current facilities first. No quantified savings or compatibility qualification claimed. Current work order is unchanged.

@@ -711,3 +711,7 @@ Key fact (L7, L30, L50 and others): **all 21 parents (A1–A9, B1–B6, C1–C6)
 ## November 11 supplemental research item (outside the 21 delivery parents)
 
 - [ ] Future technology and deployment assessment: [full brief](future-technology-deployment-assessment.md), scheduled by explicit owner clarification for gaps without delaying current priorities. All eight technology areas, seven evaluation requirements and seven deliverable groups are preserved. Research/recommendations only; not implementation authority, a mandatory feature backlog or a parent-completion claim. See the master plan's “Gap-time research” subsection. Historical line coordinates above remain the November 8 snapshot.
+
+## November 11 supplemental token-efficiency/tooling requirement
+
+- [ ] Cross-cutting [token efficiency and useful repositories/tools](token-efficiency-and-tooling-assessment.md): evidence-backed selection, actual usage/cost baselines, unchanged quality/security/approval boundaries and no automatic adoption or claimed savings. Separate Axiom runtime usage from development-assistant usage. Linked in the master plan; existing delivery-parent counts and requirements remain intact.

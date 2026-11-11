@@ -159,3 +159,7 @@ The approved, explicitly agent-delegated read-only Prisma preflight ran once on 
 ## Supplemental future-technology assessment (planned research)
 
 [Full supplied brief and owner timing clarification](future-technology-deployment-assessment.md): run during genuine gaps without delaying current priorities. Evaluate all eight areas against actual implementation and the existing integration/plugin roadmap; preserve factual/partial/planned/unsupported distinctions, costs/security/UX and current-source citations. Deliver recommendations for review, not automatic features/tickets or production actions. Not started.
+
+## Token efficiency and useful tools (planned)
+
+[Assessment and initial repository shortlist](token-efficiency-and-tooling-assessment.md): baseline/measure runtime token cost and development-assistant efficiency separately; evaluate bounded retrieval, compression, safe caching, code-aware context, evaluation, observability and source/security tooling. Reuse existing code first. Candidates are not installed or savings-qualified; preserve quality, exact approvals, isolation, gateway policy and spending/production gates.

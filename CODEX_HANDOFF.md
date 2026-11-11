@@ -362,3 +362,7 @@ Status details live in `docs/product/remaining-work.md` and `docs/product/execut
 ## 12. Supplemental future technology assessment — gap-time research only
 
 The owner added `docs/product/future-technology-deployment-assessment.md` on November 11 and clarified “During gaps, without delaying current priorities.” This timing supersedes only the attached original's after-completion timing. Do not interrupt section 10.1, replace unfinished requirements, create a mandatory feature backlog or implement recommendations. Research the full preserved brief against actual source/existing plans during genuine gaps, then present recommendations for owner review. No assessment has started and no additional paid/provider/production authority is granted.
+
+## 13. Token-efficiency and useful tooling
+
+Owner added `docs/product/token-efficiency-and-tooling-assessment.md`: discover relevant repositories/libraries/plugins/skills, prioritize measured token/cost efficiency and project value, and reuse current facilities before adding dependencies. Source-checked candidates remain uninstalled/unqualified. Preserve quality, tenant/data boundaries, exact approvals, gateway-only policy and all spending/production controls; distinguish runtime accounting from development-assistant usage. No current-sequence reprioritization or automatic adoption is authorized.

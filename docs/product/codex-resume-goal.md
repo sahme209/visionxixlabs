@@ -31,3 +31,7 @@ AWS #315, AI 7 #317, Tailwind 4 #319 and TypeScript 7 side-by-side checking #320
 - Continue authorized unblocked work autonomously. Notify only meaningful completions, material failures or necessary owner decisions/actions. If one item awaits approval or external state, do useful independent authorized work while preserving the ordered PR rule. Never manufacture progress or claim the full project/Governance complete without its acceptance evidence.
 
 After every PR report what changed, what CI showed and what is not verified. Stop only when the authorized objective is actually complete, the owner pauses it, or the supported goal mechanism records a genuine blocking condition. Do not treat this goal as blanket approval for held or production actions.
+
+## Additional cross-cutting requirement
+
+Follow `docs/product/token-efficiency-and-tooling-assessment.md`: evaluate useful repositories, libraries, plugins and skills and measure potential token/cost savings without reducing quality, security or governance. Separate Axiom runtime usage from development-assistant usage. Reuse existing facilities; candidates are not automatic dependency/adoption authority. Use gaps without delaying the current sequence; all spending/provider/data/production gates remain.
