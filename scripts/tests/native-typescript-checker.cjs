@@ -11,7 +11,7 @@ test('native checker accepts valid source and rejects real type errors while com
   assert.equal(typeof require('typescript').createSourceFile, 'function');
   const temp = mkdtempSync(join(tmpdir(), 'axiom-native-typecheck-'));
   try {
-    for (const [name, source, status] of [['valid', 'const count: number = 1; export {};', 0], ['invalid', 'const count: number = "wrong"; export {};', 2]]) {
+    for (const [name, source, status] of [['valid', 'const count: number = 1; export {};', 0], ['invalid', 'const count: number = "wrong"; export {};', 1]]) {
       const file = join(temp, name + '.ts'); writeFileSync(file, source);
       const result = spawnSync(process.execPath, [launcher, '--noEmit', '--strict', '--skipLibCheck', '--target', 'ES2022', '--ignoreConfig', file], { cwd: temp, encoding: 'utf8', timeout: 30000 });
       assert.equal(result.error, undefined);

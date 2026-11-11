@@ -48,7 +48,9 @@ jobs:
         env:
           # The generated Prisma/application graph exceeds Node's default heap.
           NODE_OPTIONS: --max-old-space-size=8192
-        run: npx tsc --noEmit
+        run: |
+          npm run test:compiler
+          npm run typecheck
 
   vitest:
     name: Vitest (${{ matrix.shard }}/3)
