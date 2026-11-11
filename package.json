@@ -65,7 +65,7 @@
     "@smithy/core": "3.40.0",
     "@smithy/node-http-handler": "4.14.2",
     "@vercel/analytics": "2.0.1",
-    "ai": "6.0.323",
+    "ai": "7.0.170",
     "archiver": "8.0.0",
     "bcryptjs": "^3.0.3",
     "cheerio": "^1.2.0",
