@@ -4,17 +4,18 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run check:vercel-build && prisma generate && npm run typecheck:production && next build --webpack",
+    "build": "npm run check:vercel-build && npm run db:generate && npm run typecheck:production && next build --webpack",
     "check:vercel-build": "node scripts/check-vercel-build.mjs",
     "db:migrate:deploy": "node scripts/migration-deploy-preflight.mjs && prisma migrate deploy",
-    "postinstall": "prisma generate",
+    "postinstall": "npm run db:generate",
     "migrate:resolve": "npx prisma migrate resolve --applied 20260219120000_add_lead_model",
     "start": "next start",
     "lint": "eslint .",
     "test": "node scripts/run-vitest.mjs",
     "typecheck": "node scripts/run-native-typecheck.mjs --noEmit",
     "typecheck:production": "node scripts/run-native-typecheck.mjs --noEmit -p tsconfig.next.json",
-    "test:compiler": "node --test scripts/tests/test_dependency_package_specs.cjs scripts/tests/native-typescript-checker.cjs"
+    "test:compiler": "node --test scripts/tests/test_dependency_package_specs.cjs scripts/tests/native-typescript-checker.cjs",
+    "db:generate": "prisma generate && node scripts/run-native-typecheck.mjs -p tsconfig.prisma-client.json"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "1.6.0",

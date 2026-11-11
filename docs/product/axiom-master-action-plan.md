@@ -45,7 +45,7 @@ The complete ready-to-paste continuation goal is saved in [codex-resume-goal.md]
 - Production database changes, deployments, feature flags, billing and external posts require explicit owner approval. The owner runs Neon pre-check/apply/verify SQL and clicks every production deployment. Payments stay off; never expose secrets or show demo data in real workspaces.
 - Section 10.2 decisions remain owner-controlled: P01 scope, offline/on-prem policy and custody, held identity/security/billing choices and each production build. Section 10.3 remains separate acceptance: installers, live Governance trials, genuine ServiceNow review/lifecycle/closure, real-app walkthroughs, deferred Windows/Store, independent security assessment, live batch providers and recorded demos. Never resend the already-written ServiceNow note or decide for its human reviewers.
 - All A1–A9, B1–B6 and C1–C6 requirements and the integration/plugin roadmap remain retained below and in the requirements index. Historical counts and statements describe their dated snapshots; this checkpoint does not mark parent requirements complete or authorize C1–C6.
-- **Pinned app goal:** the older goal is still paused. Its text/status could not be edited through the available goal tools; the app also refused automated access to its own controls. The updated goal text above is saved here; do not report the UI goal as updated until its actual state is verified.
+- **Pinned app goal:** the owner replaced its text with the continuation-file reference and activated it November 11. The active objective follows `codex-resume-goal.md`; status was verified through the goal tool. Existing permission/approval limits remain unchanged.
 
 ---
 

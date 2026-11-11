@@ -146,3 +146,7 @@ The owner supplied the full future-technology/deployment assessment and explicit
 ## November 11 token-efficiency/tooling decision
 
 Owner requested repositories, libraries, plugins and skills that reduce token waste or help the project. Added the assessment and source-checked eight-repository shortlist without installing anything. Evaluate broadly/adopt selectively; separate runtime and development usage; measure real costs and answer quality, preserve governance/security and reuse current facilities first. No quantified savings or compatibility qualification claimed. Current work order is unchanged.
+
+## November 11 Prisma generator checkpoint
+
+Workflow-generated Prisma/client/adapter 7.10.1 candidate prepared; new metadata/config validates and generation/strict CommonJS emission passes with no DB URL. Model/enum/relation bodies and migrations remain unchanged. One actual generated-client test proves lazy construction and refusal before network for an unavailable adapter. Application migration/full validation remains incomplete. The private Vercel comparison stopped at metadata, no decrypted read/retry; live-target discrepancy unresolved. See `../recovery/2026-11-11/prisma7-preflight/LOCAL-GENERATOR-PROGRESS.json`.

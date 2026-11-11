@@ -51,4 +51,14 @@ Governance packaging/qualification also binds the old Rust query-engine file and
 `scripts/governance_local_issuer/fixture_delivery_inputs.py`). Prisma 7's new
 client/adapter layout cannot reuse those old receipts or be accepted through blind
 hash replacement. Production schema metadata alone does not resolve that separate
-local compatibility work. No dependency upgrade or qualification change has run.
+local compatibility work. The candidate dependency workflow and local generator/config preparation now ran; no qualification was renewed. See LOCAL-GENERATOR-PROGRESS.json.
+
+## Current implementation checkpoint
+
+Candidate branch `deps/audit-fix-43111724897` uses workflow-generated Prisma/client/adapter 7.10.1. Schema metadata only now uses the new generator and CLI config; all 175 model/enum/relation bodies and migration files are byte-preserved. The client is generated as source, then compiled by the existing explicit native TypeScript checker into ignored CommonJS JS/declarations. This supports existing Node tooling without relying on implicit TypeScript execution. No real DATABASE_URL is needed for generation/validation, and no synthetic datasource is substituted.
+
+The old schema actually failed Prisma 7 validation (P1012); new metadata passed. Compilation first failed with no generated input (TS18003), then db:generate passed. A real generated-client test passed: construction lazy, unconfigured adapter rejects one query attempt before network access (zero Socket.connect calls). Application constructors/imports, driver options/TLS/timeouts, rehearsal/tooling support and full types/tests/builds remain INCOMPLETE; no PR or deployment acceptance is claimed.
+
+The separately approved private Vercel comparison stopped after one metadata call, before any decrypted detail read. It is consumed, not retried. Only a fixed stopped/unverified receipt is saved; no raw value/response/error was written. Current Vercel target mapping and the live schema discrepancy remain unresolved.
+
+Next local steps: migrate actual constructors and 108 typed import consumers to the generated-client boundary, preserving exact private targets, no fallback DB, isolated-marker checks and transaction behavior; adapt ordinary rehearsal callers and source-bound packaging without fabricating historical profile compatibility. Run meaningful regressions and full validation before any PR. Do not re-run the consumed private comparison or apply historical SQL automatically.

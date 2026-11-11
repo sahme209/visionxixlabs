@@ -1,0 +1,22 @@
+{
+  "date": "2026-11-11",
+  "phase": "Local generator/config preparation only; application migration incomplete",
+  "prismaVersion": "7.10.1",
+  "dependencyWorkflow": 43111724897,
+  "originalSchemaSha256": "4a8c274ec951f381a04a2c6e9bbf4d2d2e5f6f98c1054f4c756dac41b6bd202b",
+  "currentSchemaSha256": "3506b845ca355b6485fce4a4600957fc65c7f6b1b2a96ca886e4264d385d21ae",
+  "modelsAndEnumsAndRelationsUnchanged": true,
+  "migrationFilesUnchanged": true,
+  "models": 175,
+  "validation": "Original schema produced P1012 under Prisma 7; new config/schema validated without DATABASE_URL",
+  "generation": "Missing-input TS18003 observed first; db:generate emitted and compiled new client successfully",
+  "actualClientTest": {
+    "passed": 1,
+    "lazyConstruction": true,
+    "unconfiguredQueryRefused": true,
+    "adapterConnectCalls": 1,
+    "networkCalls": 0
+  },
+  "productionWrite": false,
+  "historicalQualificationRenewed": false
+}
