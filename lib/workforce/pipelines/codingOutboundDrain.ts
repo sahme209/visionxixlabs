@@ -1,5 +1,5 @@
 import 'server-only';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@/lib/prismaClient';
 import { z } from 'zod';
 import { sha256ContentHash as hash } from '@/lib/tauri/contentHash';
 import { readEnrollmentDrainBarrierLocked } from '@/lib/governance/intelligence/enrollmentDrainStore';

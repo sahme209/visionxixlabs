@@ -1,6 +1,6 @@
 import "server-only";
 import { effectiveGatewayModel } from "./effectiveGatewayModel";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { normalizeStoredWorkspaceAIProviderPolicy, resolveWorkspaceAIProviderPolicy } from "./workspaceProviderPolicy";
 import { isGatewayModelId, isConcreteGatewayModelId } from "./gatewayModelCatalog";
 

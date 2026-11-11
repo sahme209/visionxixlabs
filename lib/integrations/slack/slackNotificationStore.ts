@@ -1,7 +1,7 @@
 import {assertNoGovernanceEnrollmentForMutation} from '@/lib/governance/intelligence/enrollmentMetadata';
 import {assertBotActionTaskBinding} from '@/lib/axiom/bot/actionTaskBinding';
 import 'server-only';
-import type {Prisma} from '@prisma/client';
+import type {Prisma} from '@/lib/prismaClient';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction as Tx,ReleaseOperationPlanRow as Row} from '@/lib/agent/workflows/releaseOperationPlanStore';

@@ -17,7 +17,7 @@ import {CONVERSATION_PROMPT_LIMITS} from "@/lib/axiom/agentRuntime/conversationP
 import { resolveAgentProfile } from "@/lib/axiom/agentRuntime/agentProfiles";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";
 import { NextResponse, type NextRequest } from "next/server";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { agentMessageHttpStream } from "@/lib/desktop/agentMessageHttpStream";
 import { isAgentMessageIssue, AGENT_STREAM_CONTENT_TYPE, AGENT_TOOL_ACTIVITY_FEATURE, type AgentMessageExecutionStream } from "@/lib/desktop/agentMessageStreamProtocol";

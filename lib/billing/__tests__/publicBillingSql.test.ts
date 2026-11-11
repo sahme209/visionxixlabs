@@ -9,7 +9,7 @@ import { createPublicCheckoutService, type PublicCheckoutProvider } from "../pub
 import { reserveAICredits, claimLegacyAICreditDispatch } from "../aiCreditReservation";
 import { readBillingPlanWithAvailability } from "../tenantBillingStore";
 import { readCurrentAIAllowance } from "../currentAIAllowance";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@/lib/prismaClient";
 import { publicPaymentFixture } from "./fixtures/publicPayment";
 import { observePublicSubscription } from "../publicSubscriptionEvidence";
 import { readPublicCreditAllowance, reservePublicCredits, claimPublicCreditDispatch } from "../publicCreditAuthority";

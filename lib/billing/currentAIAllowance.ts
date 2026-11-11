@@ -5,7 +5,7 @@ import { newTestPlanGuard } from "./newTestSubscription/paidPlan";
 import { isolatedRuntimeRequested } from "./isolatedApplication/runtime";
 import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import { planForStripeTier } from "./planRegistry";
 import { applyAddOnsToEntitlements } from "./applyAddOnsToEntitlements";
 

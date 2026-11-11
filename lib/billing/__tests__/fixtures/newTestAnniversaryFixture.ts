@@ -2,7 +2,7 @@
  * synthetic; no route, credential lookup, transport or clock override exists. */
 import { randomBytes, createHash } from "node:crypto";
 import Stripe from "stripe";
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@/lib/prismaClient";
 import { expect } from "vitest";
 import { createNewTestSubscriptionService, type Intent } from "../../newTestSubscription/service";
 import { postgresFixtureStore } from "../../newTestSubscription/postgresFixtureStore";

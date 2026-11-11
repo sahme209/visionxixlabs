@@ -1,6 +1,6 @@
 import 'server-only';
 import {z} from 'zod';
-import type {Prisma} from '@prisma/client';
+import type {Prisma} from '@/lib/prismaClient';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {readGovernanceEnrollmentMetadata} from '@/lib/governance/intelligence/enrollmentMetadata';
 const id=z.string().min(1).max(240).refine(value=>value===value.trim()&&!/[\x00-\x1f\x7f]/.test(value));

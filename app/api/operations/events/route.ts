@@ -12,7 +12,7 @@
 
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prismaClient";
 import { authOptions } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { composeActivityStream, composeMemoryGroups } from "@/lib/operations/eventStream";

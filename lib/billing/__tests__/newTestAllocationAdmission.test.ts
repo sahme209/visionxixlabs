@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { createAllowanceBasisV2, ANNIVERSARY_POLICY_V2 } from "../newTestSubscription/anniversaryWindow";
 import { createEnrollmentV2 } from "../newTestSubscription/fixtureAllocation";
 import { newTestAllocationPricingPlan, reserveAllocationV2, readAllocationAllowanceV2, lockAllocationAuthorityV2, newTestAllocationGuard, allocationAuthoritySQLV2 } from "../newTestSubscription/allocationPlan";

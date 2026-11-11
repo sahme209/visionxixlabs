@@ -1,11 +1,12 @@
 import { isolatedRuntimeRequested } from "./billing/isolatedApplication/runtime";
 import { validatedIsolatedRuntime } from "./billing/isolatedApplication/databaseTarget";
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
+import { createDatabaseClient } from "./database/createDatabaseClient";
 
 const globalForPrisma = globalThis as unknown as { prisma: PrismaClient };
 const isolated = isolatedRuntimeRequested() ? validatedIsolatedRuntime() : null;
 function isolatedClient(config: NonNullable<typeof isolated>): PrismaClient {
-  const base = new PrismaClient({ datasources: { db: { url: config.target } } });
+  const base = createDatabaseClient(config.target);
   // Verify actual storage identity before even authentication/bootstrap queries.
   // Query the unextended fixed-target client to avoid recursive interception.
   return base.$extends({ name: "owned-isolated-runtime", query: {
@@ -16,5 +17,5 @@ function isolatedClient(config: NonNullable<typeof isolated>): PrismaClient {
     },
   } }) as unknown as PrismaClient;
 }
-export const prisma = isolated ? isolatedClient(isolated) : globalForPrisma.prisma ?? new PrismaClient();
+export const prisma = isolated ? isolatedClient(isolated) : globalForPrisma.prisma ?? createDatabaseClient(process.env.DATABASE_URL);
 if (!isolated && process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma;

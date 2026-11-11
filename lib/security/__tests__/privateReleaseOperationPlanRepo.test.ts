@@ -1,11 +1,12 @@
-import {PrismaClient} from '@prisma/client';
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
+import {PrismaClient} from '@/lib/prismaClient';
 import {describe,it,expect,vi} from 'vitest';
 import type {ReleaseOperationPlanRepo} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {createPrivateReleaseOperationPlanRepo} from '../privateReleaseOperationPlanRepo';
 
 describe('private release plan Prisma adapter (simulated delegates, no SQL)',()=>{
  it('accepts an actual lazy Prisma client and forwards supplied args, results and errors',async()=>{
-  const client=new PrismaClient({datasources:{db:{url:'postgresql://synthetic:synthetic@127.0.0.1:1/private_test'}}});
+  const client=createDatabaseClient('postgresql://synthetic:synthetic@127.0.0.1:1/private_test');
   const repo=createPrivateReleaseOperationPlanRepo(client);
   expect(repo.gitHubInstallation).toBe(client.gitHubInstallation);
   const storeContract:ReleaseOperationPlanRepo=repo;expect(storeContract).toBe(repo);
@@ -26,8 +27,8 @@ describe('private release plan Prisma adapter (simulated delegates, no SQL)',()=
   await client.$disconnect();
  });
  it('uses the supplied transaction delegates and preserves options, raw parameters, result and rejection',async()=>{
-  const client=new PrismaClient({datasources:{db:{url:'postgresql://synthetic:synthetic@127.0.0.1:1/private_test'}}});
-  const tx=new PrismaClient({datasources:{db:{url:'postgresql://synthetic:synthetic@127.0.0.1:1/owned_tx'}}});
+  const client=createDatabaseClient('postgresql://synthetic:synthetic@127.0.0.1:1/private_test');
+  const tx=createDatabaseClient('postgresql://synthetic:synthetic@127.0.0.1:1/owned_tx');
   const rawResult=[{owned:true}],value={nested:true},options={maxWait:17,timeout:29},result={result:true};
   const txRaw=vi.spyOn(tx,'$queryRaw').mockResolvedValue(rawResult);
   const rootRaw=vi.spyOn(client,'$queryRaw').mockRejectedValue(new Error('root must not run inside tx'));

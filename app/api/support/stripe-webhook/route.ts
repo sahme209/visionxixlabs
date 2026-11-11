@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { createBadgeToken } from "@/lib/supporters/core";
 import { sendSupporterConfirmation } from "@/lib/supporters/email";

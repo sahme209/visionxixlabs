@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { realpathSync, statSync } from "node:fs";
 import { randomUUID } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import { createGateway } from "@ai-sdk/gateway";
 import { NextRequest } from "next/server";
 const f = vi.hoisted(() => ({ client: undefined as unknown as PrismaClient, model: undefined as unknown, phase: 0, respondImmediately: false, requests: [] as Record<string, unknown>[], session: null as null | { id: string; organizationId: string; userId: string; credentialKind: string }, beforeResponse: null as null | (() => void) }));
@@ -25,7 +26,7 @@ const model = "anthropic/claude-sonnet-5";
 describe.skipIf(!socket)("desktop HTTP request → actual Agent/database/tool/SDK chain", () => {
  beforeAll(async () => {
   if (!socket || !/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket) || realpathSync(socket) !== socket || (statSync(socket).mode & 0o077) !== 0 || (process.getuid && statSync(socket).uid !== process.getuid())) throw Error("owned_private_socket_required");
-  f.client = new PrismaClient({ datasources: { db: { url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}` } } });
+  f.client = createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
   const [binding] = await f.client.$queryRawUnsafe<Array<{ private: boolean }>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);
   if (!binding?.private) throw Error("owned_fixture_binding_required");
   vi.stubEnv("AXIOM_PUBLIC_BILLING_POLICY", "axiom_public_anniversary_v1"); vi.stubEnv("AXIOM_STRIPE_ACCOUNT_ID", "acct_fixture"); vi.stubEnv("AXIOM_STRIPE_MODE", "test");

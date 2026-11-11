@@ -1,7 +1,7 @@
 import { newTestAllocationPricingPlan } from "../newTestSubscription/allocationPlan";
 import { readFixtureEnrollment } from "../newTestSubscription/fixtureAllocation";
 import "server-only";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { requireIsolatedWorkspaceScope } from "./scope";
 import { readVerifiedNewTestContract } from "../newTestSubscription/verifiedContract";
 import { newTestPricingPlan } from "../newTestSubscription/paidPlan";

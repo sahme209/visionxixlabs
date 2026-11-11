@@ -14,7 +14,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import type { LinkedInPostDraft, LinkedInAccountConnection } from "@prisma/client";
+import type { LinkedInPostDraft, LinkedInAccountConnection } from "@/lib/prismaClient";
 import { isPostingEnabled } from "./oauth";
 import { writeGrowthAudit } from "../audit";
 import { transitionStatus } from "../draftStore";

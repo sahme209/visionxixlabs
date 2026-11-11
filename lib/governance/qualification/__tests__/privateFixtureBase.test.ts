@@ -1,5 +1,5 @@
 import {expect,it,vi} from 'vitest';
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@/lib/prismaClient';
 import {prepareFixedFixtureBase} from '../privateFixtureBase';
 vi.mock('node:crypto',async importOriginal=>({...await importOriginal<typeof import('node:crypto')>(),generateKeyPairSync:()=>({privateKey:'SYNTHETIC_PRIVATE_KEY',publicKey:'SYNTHETIC_PUBLIC_KEY'}),randomUUID:vi.fn().mockImplementation((()=>{let n=0;return()=>`${(++n).toString(16).padStart(8,'0')}-1111-4111-8111-111111111111`})())}));
 vi.mock('@/lib/security/privateCredentialVault',()=>({createPrivateCredentialVault:()=>({encryptScopedCredential:(p:string,c:string)=>'sealed:'+c+':'+p})}));

@@ -2,7 +2,8 @@ import { newTestAllocationPricingPlan, readAllocationAllowanceV2 } from "./alloc
 import { activateFixturePaidBasis, readFixtureEnrollment } from "./fixtureAllocation";
 import { readVerifiedNewTestContract } from "./verifiedContract";
 import { readFixtureCoverage, writeFixtureCoverage } from "./fixtureCoverage";
-import { PrismaClient, type Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
+import { createDatabaseClient } from "../../database/createDatabaseClient";
 import type { Store, Transaction, Intent, Contract, Scope } from "./service";
 import { consumeSubscriptionEventInTransaction, type SubscriptionTransaction } from "../consumeSubscriptionEvent";
 import { reserveAICredits } from "../aiCreditReservation";
@@ -14,7 +15,7 @@ import type { BillingStatus } from "../tierCatalog";
 export function postgresFixtureStore(target: string, runtimeId: string, accountId: string) {
   const url = new URL(target);
   if (!["postgresql:", "postgres:"].includes(url.protocol) || url.hostname !== "127.0.0.1" || url.pathname !== "/axiom_new_test_contract_rehearsal" || url.search || url.hash || !runtimeId || !accountId) throw new Error("isolated_fixture_target_required");
-  const client = new PrismaClient({ datasources: { db: { url: target } } });
+  const client = createDatabaseClient(target);
   const checkMarker = async (tx: Prisma.TransactionClient) => {
     const marker = await tx.$queryRawUnsafe<Array<{ id: string }>>('SELECT id FROM "IsolatedTestRuntime" WHERE id=$1 AND account=$2', runtimeId, accountId);
     if (marker.length !== 1) throw new Error("isolated_fixture_marker_missing");

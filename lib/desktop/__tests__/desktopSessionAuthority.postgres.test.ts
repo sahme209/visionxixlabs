@@ -1,5 +1,6 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import {afterAll,beforeAll,describe,expect,it,vi} from 'vitest';
-import {PrismaClient} from '@prisma/client';
+import {PrismaClient} from '@/lib/prismaClient';
 import {randomBytes,randomUUID} from 'node:crypto';
 import {realpathSync,statSync} from 'node:fs';
 import {NextRequest} from 'next/server';
@@ -15,7 +16,7 @@ const socket=process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
 describe.skipIf(!socket)('actual HMAC → durable paired session → current membership and billing authority',()=>{
  beforeAll(async()=>{
   if(!socket||!/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||(process.getuid&&statSync(socket).uid!==process.getuid()))throw Error('owned_private_socket_required');
-  f.client=new PrismaClient({datasources:{db:{url:`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`}}});
+  f.client=createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
   const [binding]=await f.client.$queryRawUnsafe<Array<{private:boolean}>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);if(!binding?.private)throw Error('owned_fixture_binding_required');
   vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY',randomBytes(32).toString('hex'));vi.stubEnv('AXIOM_PUBLIC_BILLING_POLICY','axiom_public_anniversary_v1');vi.stubEnv('AXIOM_STRIPE_ACCOUNT_ID','acct_fixture');vi.stubEnv('AXIOM_STRIPE_MODE','test');setDesktopSessionStore(prismaDesktopSessionStore);
   vi.stubGlobal('fetch',vi.fn(async()=>{throw Error('unexpected_external_fixture_request');}));

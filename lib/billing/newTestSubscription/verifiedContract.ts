@@ -1,6 +1,6 @@
 import { originalCreateProofDigest, readFixtureEnrollment } from "./fixtureAllocation";
 import "server-only";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import type { Contract, Intent } from "./service";
 import { NEW_TEST_CATALOG_VERSION } from "../newTestSubscriptionContract";
 import { hasOriginalCreateProof } from "./lifecycle";

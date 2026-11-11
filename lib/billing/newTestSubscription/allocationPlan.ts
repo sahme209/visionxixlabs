@@ -1,6 +1,6 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { planForStripeTier, type PricingPlan } from "../planRegistry";
 import { ANNIVERSARY_POLICY_V2, resolveAllowanceWindowV2, type AllowanceBasisV2, type AllowanceWindowV2 } from "./anniversaryWindow";
 import { createEnrollmentV2, readAllocationFactsV2, readFixtureEnrollment, type AllocationScopeV2, type VerifiedEnrollmentV2 } from "./fixtureAllocation";

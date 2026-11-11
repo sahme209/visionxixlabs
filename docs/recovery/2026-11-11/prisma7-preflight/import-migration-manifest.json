@@ -1,0 +1,689 @@
+{
+  "method": "TypeScript 5.9.3 AST-selected import/export/import-type/vi-mock literals only; no executable expressions, fixture data strings or archived receipts changed",
+  "files": [
+    {
+      "path": "app/api/ai/generate/__tests__/durableAdversarial.pg.test.ts",
+      "beforeSha256": "161959bc9a2ef868cb552677e58b499c2fad2f8c1a22b8db6155e07104116b92",
+      "afterSha256": "7c6b4142f2e06d97c61eb524dbfaa0c947091ceaa472120c8a0285df818aa4c6",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/ai/generate/__tests__/durableComposition.pg.test.ts",
+      "beforeSha256": "072aeddabfd7e6761625399f843a746bea5868993b831446dae961e932d5ade2",
+      "afterSha256": "d111f9a1cf7109997e30fb60a3b8246a7561519c75c7f2c554028214710f8491",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/ai/generate/__tests__/policyRevocation.pg.test.ts",
+      "beforeSha256": "9175452daf58d775c447a0a1fc25a4efd4d58d414d7aebce4a2c4b74a0b8b246",
+      "afterSha256": "9acaaa43fe6b427f83387167a195a89a8883a2217a08c51b003135e7ddaa4848",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/auth/verify-email/__tests__/route.pg.test.ts",
+      "beforeSha256": "85d75362bfee7c6f3bde3b8d2c8fdea67651861d46fb207f80c95111243a5e37",
+      "afterSha256": "2241b792f6a0f2d9e8e5b76ae8f6cb0dcf54467b3f0fc57da303c2172da6314f",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/desktop/agent/conversations/[id]/messages/route.ts",
+      "beforeSha256": "dc70194c1e89e27d2311362b5bc4815259e05a97ba82aa533616538cb9e8072c",
+      "afterSha256": "8961225c626ff6808f0df744c4886e50a86560ac5f74d3bbb6e708565429c568",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/desktop/workspace-members/route.ts",
+      "beforeSha256": "3544ed754eeefff30fa09dab1f264e8b2a9ef4866a57cf457d6898f365b99eff",
+      "afterSha256": "866d91350cd1b5d2027d0a01d0fba463fb63399c47d481ea1ca83de8263f7cda",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/leads/[id]/deploy-preview/route.ts",
+      "beforeSha256": "c0dbb2b5272ac765bfb5eb8794bfb7ab15bb498f29354a891dfb261f3e882335",
+      "afterSha256": "66c873562185835f9fb48cabef6cadf4d30e2dfcbab47914d2c999cb0f2c321a",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/leads/[id]/publish/route.ts",
+      "beforeSha256": "4a1b86bc2ea14cc0452255d40d89f6617faa19d998a36d3c0d5058fd2de985b6",
+      "afterSha256": "7d41818856f132c5feea7db08c3eabcc874b1ee99ddecf5e0c66ec2a90a1251c",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/leads/status/route.ts",
+      "beforeSha256": "6ccd4cf788b8e89f10952230cc630929395c42fe2b945b19e1a18ece6b7d0f3f",
+      "afterSha256": "aacccd4e7888793231860610e1b1d8b89bf857bc44d595b711c30fe8dbcd1233",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/operations/events/route.ts",
+      "beforeSha256": "4eb1207d622ae461f6db052a9317be793ab5de54f21c41c9d03c371fa435ce31",
+      "afterSha256": "f9237df651d3810b8ef63d99032edc5afb218edf3bbf04f89e12441ee6151926",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/scheduled-scans/toggle/route.ts",
+      "beforeSha256": "81b4c4b3f87a965ac3747e7e91907c916c24a64125e0271086c95b232668ef3d",
+      "afterSha256": "d9878a3d9dc9632a6400a6be2b2f58dde92eb572bdf5f7705b65d26e4f1a7965",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/support/stripe-webhook/route.ts",
+      "beforeSha256": "add56174205f8bf502e8750f9530d173c3b20b7ad3ac0212b2027b3e66aecc86",
+      "afterSha256": "0da4ceddbc6cb82f1f98a7dff510f983fdbd15faa7e399ccf0adb8d2e027aa7c",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/v1/pipelines/runs/[id]/decide/__tests__/actorBinding.test.ts",
+      "beforeSha256": "d443de3ab3a0a5f26f23e824f6d95359f9ab32fe297d73a9333e906159436623",
+      "afterSha256": "aa84f9f26f519c577d760d1ce2c03486cc50f0356adef8c42c3f07bdb5a6d0e2",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "app/api/workforce/approvals/[id]/execute/route.ts",
+      "beforeSha256": "67140b1d3d9ae7115ed4aa5d7f2637d57092437e0ce681705c05c9d2c3b996c6",
+      "afterSha256": "42769d8e2cf438f2dab6ef9883f6f4ba4cfd3a8c5d31b269743798f3ddb3ee45",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/__tests__/migrationDeployPreflight.postgres.test.ts",
+      "beforeSha256": "cec28bea2af44717d50224fc844fdd4271028598885f0d0e934fa35afc1e9440",
+      "afterSha256": "379cb2d503b90c676fbfa7a276d629b7d76540819dc5d478952e66594775a9cd",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/agent/workflows/__tests__/durableWorkflowStore.pg.test.ts",
+      "beforeSha256": "7d496f304171a99ea22c8680270be32881f717fa739b9202c428f9fb7246f48d",
+      "afterSha256": "f321206032fd574c886d09371dee070fb2c309eb21ea3caa1edf1bf60cbd16ad",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/agent/workflows/durableWorkflowStore.ts",
+      "beforeSha256": "09de646d47aa9b530edf5de0d13cc6f9f27e7ae708a0a115709d20485e3ed8d9",
+      "afterSha256": "a4cd9d89fb8edbcc89da83ed39f944549c7aa2a25acb53f2a8bf6429e8c2446d",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/ai/__tests__/textAdmissionPolicy.test.ts",
+      "beforeSha256": "d6e8047c04b592731d4774a442f7dc1914bdebe7ed1171a0e1f71bfee189ae2c",
+      "afterSha256": "effc2d2165932012ce6ddc6a08ebdef736ba0b818e1e843680aa7f2dc361e8d0",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/ai/textAdmissionPolicy.ts",
+      "beforeSha256": "6aa3daf8c9ff6120abce64381807493933df980a7c89a2f83d54978de508a2b2",
+      "afterSha256": "cda7e1f646b0df6f10d3db99ac9740b5a6785ecbe1f04f448ed162cd829db3f9",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/async/engineRunner.ts",
+      "beforeSha256": "053709b12842582d410440267f6fc4b07ec761fb1318d236fec3fe7736cd880a",
+      "afterSha256": "41de89c4a00216af514d983c9036faa5fed38e519f1daba8b37b9ff35268faa1",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/async/statusBuilder.ts",
+      "beforeSha256": "77018eebe1acee95de930bdd098ccf6e89c2a0021620830c3d0164ad58a4e500",
+      "afterSha256": "0ddcb304eac3affd59d989a43c21417294772b9f7dd98e9c415d0ae73c12fcaf",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/desktopAgentRoute.postgres.test.ts",
+      "beforeSha256": "5b32be9ed7e50c1d8f94531c473358fa41cc1a119d8f5bc46351530c7088a0a7",
+      "afterSha256": "cb304b2379239c7f5a42893417add0f54053523c041744f0393685471b72fdbc",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/governedAgent.postgres.test.ts",
+      "beforeSha256": "b2715a6e9acf8dcf13c8bc4e771a9c28e0b14406a13ca335bf3291a895f46a07",
+      "afterSha256": "8a439eb603911f0476cd93b5aec23db5297400f0f4ac175a27029b6587933ea2",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/axiom/agentRuntime/browserApprovalDecision.ts",
+      "beforeSha256": "ed1f028d771ebe8862cb4aeca95f238bace2d11ac924b6e437b9e1d3941abf93",
+      "afterSha256": "8b2c14eddeadabcfc4ba9c610c3a0885eb5aba0308e6b1883097e50ee01545d1",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/aiCreditReservation.test.ts",
+      "beforeSha256": "17f9252176d35eaaaf9bb28c2ee76524a7ea198eb840ef852873bc7e0f13be3c",
+      "afterSha256": "416f2e6f212e036caec7e78fa62fe82f697711affff273490c10843f7fb98fb5",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestAnniversaryAcceptance.ts",
+      "beforeSha256": "896d04936d133dbff4789bfba3ca64a8d83c89cc3e9a12d776c16ea9df99e575",
+      "afterSha256": "b53f852fa83e8e92bc425d8a005ba16fde6c0287e2d7e0a2e4af2ecc043da44b",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/newTestAnniversaryFixture.ts",
+      "beforeSha256": "376b82d82cde877154c338817a328890449ccb9686c4bca6d8eea4cdf4b259ed",
+      "afterSha256": "725d33f255b71a91a669056105702d5224a90755ce9fa63c9909158d80f907bc",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutHttpAcceptance.ts",
+      "beforeSha256": "9fcbdfdaa332f6926165cca9cfcb95b846e3c8d676a95ea93c14877bcb93a5fc",
+      "afterSha256": "4c44be29dc29af3c66d0402541500ae5b5d6682115c7bd5942d6d12ec516f0c7",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerEntry.ts",
+      "beforeSha256": "bbdffad1b4c3a68d1098c31ad7ac716056cc19077d5c570f7f8066ce04c32ccd",
+      "afterSha256": "fc37fdab8a28ce6d4786eba361749e459ce0c35a21d4f415377c22307ba4141d",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/isolatedAllowance.test.ts",
+      "beforeSha256": "00c8dddd641f3dbf826b0f3cd199cd218f7421e824de05124ada64c02ce2c282",
+      "afterSha256": "b79d3daa082d80a73d4b88f2a8e2c9cca5e7a4b32fd5c8ba05b62f071303f8d3",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/isolatedDatabaseTarget.test.ts",
+      "beforeSha256": "62b24520cae0b9fcbe79f52e7ff0aec2ee6b26101b5e2ca09d3de36c560a1b47",
+      "afterSha256": "c3a90cceb1a077439807b54629e62953ad9e55ec2f2e87616a0027113b5a1fd3",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/newTestAllocationAdmission.test.ts",
+      "beforeSha256": "e92468966898e07afc392a1c20f22e7c94548acab91b145f8fba918935e3b93e",
+      "afterSha256": "d31870e0f56960c033c43eb26ccd48e1fb01eb7076653b46c779e4524d01e727",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/newTestAllocationStore.test.ts",
+      "beforeSha256": "5224d86264aea09ab07527eb5d1a2594d0a9ad03ad243493da43b2ceea3f4c99",
+      "afterSha256": "cf63bc63a9d8be46b39e6c7e62d2560cbd6e65cc18f23e5a1f77a1ce7deca563",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "beforeSha256": "a3cbd70d74ee250ca3d399f38b31e132820a84d936b6b50ab8e252ccd7d399bc",
+      "afterSha256": "e196232042b886bfdd739b629f2268184bcb984a92043ebe4d790e7cbdfe54e7",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/newTestUsageAllocation.test.ts",
+      "beforeSha256": "f8c7d5e0591cc794459badea3968e1ab1c111d5b245a5b49fa98aaee1fb02110",
+      "afterSha256": "e832a89ec718cb232f1d69741ddb90a546a28bc7bf5aacccbaa8c22b8433bf6e",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/__tests__/publicBillingSql.test.ts",
+      "beforeSha256": "d33802cad958bae68219e98ac900aa69f3bc19a80c6a334085f230f50fa890d4",
+      "afterSha256": "29b736f5dcb39b10a0b8b6a5959cf2a0e5e33d6d4eecd23a4f16206f864fe857",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/aiCreditReservation.ts",
+      "beforeSha256": "4a7c27c32f78596944d8afd3d432f4f224e05d3d7a6cbb0aea9ef93da4c3d13d",
+      "afterSha256": "9bc1e54318fd2220859d0184c9e2bdfed8d48d84ebca0fdd90c37d0985ef2f28",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/aiUsageSettlementCandidates.ts",
+      "beforeSha256": "3e8cd97a7c54be034b773a6fa6b4aff947f421736786a4375f4ef320385cabf9",
+      "afterSha256": "2d1c9d5495e092353a51e6ae174ddea566cb7ecd1a8f588cf9059a6cc99e39ab",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/currentAIAllowance.ts",
+      "beforeSha256": "9fec7cbbb610cc578fd66741f4bcb34f3e627a869487d54b8f8a2bf55d1fc381",
+      "afterSha256": "671bb04c2d4446b8dfaf49fdc5bb88ee19a22c2e6016f15b7685ba13aa33e09e",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/governedExtractAdmission.ts",
+      "beforeSha256": "8480a12435cd52052fec3b340a0809e56864293d84921c93d169f5850db0879d",
+      "afterSha256": "5f279eaa1fa3b9703adddc3fc0faeb7d426cd205e184ea4ac150f91de4588877",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/isolatedApplication/plan.ts",
+      "beforeSha256": "643f5afd9b7971c5f6a23446fda981a021804028e5f9fb2d8d675be4163efdf1",
+      "afterSha256": "4de421212a35c79b7e531d00d4bd5655c58605848addee75586a424d28a43e18",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/allocationPlan.ts",
+      "beforeSha256": "bbf78b1e9b0f5684086dbd3a7a717af502025ef44916c75edf445ee87e3a207d",
+      "afterSha256": "efc479f55d7c60df7ab8f73b1eb4ee056d5c7eaf7303b9758c162cf7d63c40bc",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureAllocation.ts",
+      "beforeSha256": "64ba249ce5a3b16478cdc8b4257082e453f9d3ace11e400a6c7323fc0499d73e",
+      "afterSha256": "deea927aa80df689185f78706522ed26efd44290a3312688018d285f15d768d9",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/fixtureCoverage.ts",
+      "beforeSha256": "c436aa287c861e98f56709b90f45d500fb628cbb8e8ca13066c78554b1c3cefb",
+      "afterSha256": "4d879f4f043a577703434c3a767c2fcf333a76e646bc88f1789b80cb7969cfc0",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/paidPlan.ts",
+      "beforeSha256": "e6cb89868ca3ce0eaf6198da3e6426cb84e3295327f580392aa1da9133288d83",
+      "afterSha256": "f736e37db4b2c0cbce54d10d7e9737168279fcd5396e43339fb9c4652354b757",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "beforeSha256": "4d8c44429b5704705fcf1693417ece5beac2354ee0aa924512c079d40a5fb7c5",
+      "afterSha256": "4bd6bc9ddcabf1fe3e3a5d84cbc7c6806191d1964c71a52fa080af2b39f6f7a1",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/usageAllocationIO.ts",
+      "beforeSha256": "aa8a93877533d73ab3369c56b6ad2ba3447319ce10fe5abbd067b7bcddfa8928",
+      "afterSha256": "450ddde72372b1a518ef412ef57c4ae0b51ae019b2710fc3ad2481796847896d",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/newTestSubscription/verifiedContract.ts",
+      "beforeSha256": "f9238dff5852cf45945a8319aa2e1cb00e0d5011923d6bf6b820915c43a08675",
+      "afterSha256": "2a34fca989563d10dc048764c6f225b3788eddcf4bc339fbdefa1c157b335aff",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/reconcileGatewayUsage.ts",
+      "beforeSha256": "0485a0d2e93e98c7da8eea506aba763b3af28524157804fac94480586b67dd18",
+      "afterSha256": "7855a564342dc731def3724623ac58a789a32136a430e10e095e50b4e368b974",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/settleAIUsageToStripe.ts",
+      "beforeSha256": "3e2da01196a5c3130fe29de5539103a3008ae92aa8ad8f15799861e2f99c9689",
+      "afterSha256": "1fa385038237f4d6b5b5c2505d40e843f4790b00a150819f935cddacd58e5b6c",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/billing/tenantBillingReadCore.ts",
+      "beforeSha256": "1be57cb9fd83508e16e704f870d9d5cecf3ad6a048559b71092313b620e2ef26",
+      "afterSha256": "d27c1a8a04510402772883ed9293d8b9889d05a62b5259e695b30ec24a6964c1",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/cloud/aws/enrollment/__tests__/enrollment.postgres.test.ts",
+      "beforeSha256": "8018584e93f653562935c5ca02ba5b5aa8e3b8d36d64a313afd1fdf81eb204c2",
+      "afterSha256": "916321829fc791f8a2df6f62366ef511409daa80e547eaae7bbd42d2cacd8bce",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/cockpit/__tests__/usageAnalytics.database.test.ts",
+      "beforeSha256": "8492ebd23c9c1d4b1b96917a0fef58756fc7dda2a0bec4477d0a9be07a38e694",
+      "afterSha256": "1db9eb750ece379cdb28a60c73f1c99915c140e49343d380b6305b5aff0c1080",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/cockpit/usageAnalytics.ts",
+      "beforeSha256": "4bb588607df1e3828196bdc5a78fbd9748bad0c13a41f58bc54d2e877a99b8aa",
+      "afterSha256": "49ece865c2859169e63979aed647922f6ef5c5a28fbf8ba41e46bf221098910b",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/db.ts",
+      "beforeSha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+      "afterSha256": "9f855e2605adbb8aa74553724959007c84dab72b5b7d98c75d7ba0d766846338",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopSessionAuthority.postgres.test.ts",
+      "beforeSha256": "3db4e4fcad91df8ec1494e8adad1edf118ffa37109682687a9b3edb638d14a17",
+      "afterSha256": "367edb86e2f3bd2757207b9534d231d6584ca77da8cc55cdf37b854424176d16",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/desktop/__tests__/githubInstallationReconnectStore.test.ts",
+      "beforeSha256": "778f3619e4a63d6820627726429e887440c6e1b1c630a3f358212f8260b4352d",
+      "afterSha256": "779fca6caa986b0e21941c10d2bf4c34bba211ca1fb350e8c93d4d15cd456fc1",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/desktop/__tests__/privateDesktopSession.types.ts",
+      "beforeSha256": "c582fba930f2808be92bf069afa71f35f63f963d6ada0dffa2a19c190a29740f",
+      "afterSha256": "44a78f67b7be2ce97d1b551eca570259bbdf604f9454a01dfc4ec7bbfd3dc083",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/desktop/configurationMutationRefusal.ts",
+      "beforeSha256": "0dee3b2bbd96c59337770107a127ee08496022d11b85d0b59e0495919f342135",
+      "afterSha256": "70524f06de346932e2effd9b0b6b3a9a1956f6187279254cc661698a674480de",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/desktop/githubInstallationReconnectStore.ts",
+      "beforeSha256": "0e6318cab5cc864b008d6ed995c5bac40276029e438aa54fc15363d056ced30c",
+      "afterSha256": "f2324f0dd27fe7d7e1f7c455f272349a3ca99973237ee38f1cdcc614aeac7041",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/desktop/privateReleaseMergeComposition.ts",
+      "beforeSha256": "b9d366d0affa449ab9bbc91b3d977334e5d2153c097f84d2d89a0a9bb51fb343",
+      "afterSha256": "18d430c5d15ae5c207af756a869f364251266d6376be63882f0ff94b10567dc9",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureAuthentication.test.ts",
+      "beforeSha256": "6dcc481f0b4c623001d15be21ec1b3ffe65ceca724bf916785d4a82ed8e17e8a",
+      "afterSha256": "29a77bd880fb898682eb27a2ed330c33125de38d790fb4465223364b96a73a6e",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureBase.test.ts",
+      "beforeSha256": "d2a8aabab38f61e2cd83f24de83aaa7725b413e10d8e4ab5f9bcb717046cd0a9",
+      "afterSha256": "6bf7ccfd16c97d0f6d612381a07b13abf7582b309863d67f2503f47016184d12",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureJoined.test.ts",
+      "beforeSha256": "09a86c9f3b9d9a6393107dbb2b6858690a8de290db24c259512d678f4c4ad0aa",
+      "afterSha256": "5d870a6d9c13f3f526f2edb8ee3bba5d8559b9710c6d544bfd4668f5ced98aaa",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/__tests__/privateFixtureSchedule.test.ts",
+      "beforeSha256": "112ef692ec99fb68b9e2f9e43ae3fed1823a32b335ce50e76a72a69fa0a2d1d2",
+      "afterSha256": "d6f86f88aeeed6135e3e7eacb293a84ab19ad982d5e27d2a098c03721bfe19ba",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureAuthentication.ts",
+      "beforeSha256": "1ab6d893cbfc0f8a2b3f4339887b8be43d6572b5e999690531186feee4fff34c",
+      "afterSha256": "08558dcafd96917e7248f977a47199f22dcca0762039383d7564839b9ce52c2d",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureBase.ts",
+      "beforeSha256": "3b6abd76a1a66ac5dcca57463614964a00c22f642ce8e3c8eeff1898564dea11",
+      "afterSha256": "b66ef10191a1d5b7b541ffeaf60a5cc62f3302bc08ca617432aade7081e5208f",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/privateFixtureSchedule.ts",
+      "beforeSha256": "e172b42b2b7d213a8bf23160e9b3a2c5bcd9f7fa0f3ae14edee3ad1dc5bb6290",
+      "afterSha256": "e1e2c90234379f3a67ca4fbbd1340c0616f587f929b5c175c003fd147d051104",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/governance/qualification/privateSyntheticFixtureProducer.ts",
+      "beforeSha256": "87a0a7725634b31e9717627ea54b045e3b337883d1132fe1e97ef1b75f316316",
+      "afterSha256": "4ad195e7e3b4b19a06e6810ccfb1ddf04f7c7d4abf59336704298ed5db96081c",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/growth/draftStore.ts",
+      "beforeSha256": "a88fac2899c367923efa0f4eb201806323fdc2ef135b432c708b47551dee05cb",
+      "afterSha256": "ba07d6a800797e17970dca5753dd88104cda03093f9481fbb600f5e6dd1f0fa9",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/growth/linkedin/posting.ts",
+      "beforeSha256": "74145deda8f5fa261a61b151fa17ad595879176259d7d7e1696567b1c6b91718",
+      "afterSha256": "bf029e2d1c8acc888d9a2146aa997953fa5768a862e872f6591d3059e70b8f3b",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/scheduledAutomation.engine.postgres.test.ts",
+      "beforeSha256": "042dee5ecc513e1600ecae027469d79808e257f1369fd2bb0bcc0063babb396b",
+      "afterSha256": "ed87ca0cfba92aeddfdff74fd5f73e480d034b22a28f932c78a0fadec21aaa48",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/scheduledDispatchFreshness.postgres.test.ts",
+      "beforeSha256": "2753c939cdaf7cedb933adeba323a40b7ddeb4a8baf26bf562429c61967a7e4d",
+      "afterSha256": "501112e8862831cf1c635980cad24d24c005ae9305fb7ee31b1dd05b05992868",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/airflow/restartReviewIO.ts",
+      "beforeSha256": "5c9b2bc413e801f64a46df51fe62a55e9b290af8dc01f00311ad484471515fcc",
+      "afterSha256": "f5f37afbf08b8c9f92d7e1396e1311176c65a973fcf25188eba4f8bdbdbb24a0",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/jira/__tests__/jiraReadActivation.postgres.test.ts",
+      "beforeSha256": "e6493c193a5c2ee805b80583adcec53482530cf680e56206e5e95527705feb2d",
+      "afterSha256": "c3c51b38d4de13444e6d4ba57b8ef49c5b55c81561f0de3573c9838474cacf22",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/jira/__tests__/jiraRefreshPersistence.postgres.test.ts",
+      "beforeSha256": "b988034e85f2e9e591cf9df8465d5566947a6c99e056230fae2e5b4648fdb9da",
+      "afterSha256": "f669fe886c2f12b1888c9e8a4948c8cff917b12ca7f9f46dc09a5a8d01dd5e22",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/slack/__tests__/slackNotificationStore.test.ts",
+      "beforeSha256": "2f0d89f2a8e4cc6213e5acb65c9776cd914873ccdf1b1a99400bfcb9b3048daa",
+      "afterSha256": "7ec6319ab1f8bc462c76bf467c93fa53ecfa0b4e8cac532cf77903bac86fa160",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationApprovalStore.ts",
+      "beforeSha256": "c3b39e248a9d1b656b2f62121dd6485b4da1334215552362df8eee13d5d0e674",
+      "afterSha256": "95d4572262468b1b2f0a0a0685f9caea3629cb05ab6187bf2e58197c4d051511",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/integrations/slack/slackNotificationStore.ts",
+      "beforeSha256": "af32d4c6ea451ef6906503aa8c1857c099a4bd1877a86ef66c85e1b4f0afe908",
+      "afterSha256": "0bbb03527a4d6741dabe9afe00db73ad77ed592ed3498a79b87e295be2028dd8",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/operations/__tests__/agentStorageRecovery.postgres.test.ts",
+      "beforeSha256": "b19ab112436b06caa4152b6ecf5fbd8f37f7561cd5fffe8b0b372c8395bc9da9",
+      "afterSha256": "2729ef28ede80b2f85ca5eb7ce753360e546c93fdbd12fe8e6d92cdde7a737e2",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/operations/eventStream.ts",
+      "beforeSha256": "005afe389cb6ef1a1eec126ce85c1b5bd44bb2be726b4fee395cbb644b935167",
+      "afterSha256": "6d8263a49537488cfc5c0f5a06308a8e55d444ae3d16caf78e34f7216b0d8c6f",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/releaseops/dashboardRestart.ts",
+      "beforeSha256": "b18fc95967755086ce77f79252b2fdfb02a07f56915d8abca82783e230477dec",
+      "afterSha256": "7de435798505d10b946d516a463e7a1fe26264a58a199b9e2d8368faa8602256",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/releaseops/ecsReleaseV2/__tests__/fixtures/admissionInputFixture.ts",
+      "beforeSha256": "b3538a8d0b25f50bf1b48b2af61b4f605ff97bf85c52ce9bec456f35e3c7d7fb",
+      "afterSha256": "b0f7cde4aacea042679d30620794617c24449ec71bf97e6d69e53d3b7bdbdbdc",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/releaseops/ecsReleaseV2/githubBuildSnapshot.ts",
+      "beforeSha256": "4d6aa23921626588a13e52ee082ccd68179d95c14056f6b8cdd1f3a5563dddca",
+      "afterSha256": "5207b08c050eae38f7bd89dcd31d4154edd2427b3f8e95bf5738fc7acc7f79c7",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/releaseops/ecsReleaseV2/postgresReviewStore.ts",
+      "beforeSha256": "f343f7017f02ec742a5641e9a403936a2a6f248c7023a2af55d4f02e4e41cf7a",
+      "afterSha256": "edfb5380c631c04c0ed0813ce172c3e4b136d1c671066b5d9f11a4434dd3fc1f",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/scan/__tests__/persistScanAtomicity.postgres.test.ts",
+      "beforeSha256": "e1e40ce8bd4fd98fdffe4fa022bc0f45055fa494b9c0394bb75b4517d4c81e09",
+      "afterSha256": "9b73b434cc2d2214413bde79e3df1fdfb26cefb545b349e5a7114905f6df1995",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/scan/__tests__/scheduledScanClaim.postgres.test.ts",
+      "beforeSha256": "ef37a1deabe5b5a7b2c2de17db3e4ad0747ce4416e11adb9d6ccdc1a10a1bdc6",
+      "afterSha256": "237a60c6e78e6a096bab115a1a8de891c5494cdd3d8587bf8b82321505e45592",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/scan/persistScanRun.ts",
+      "beforeSha256": "e76bc952e8d57e0667d58cc5f90ea244c94f88a5d685648dcf48af4cb44c09f0",
+      "afterSha256": "a60cab51304bb21b7c95cf6ae189b16e22defa93b4bba7ca1cf95336a4b65ffb",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/security/__tests__/privateReleaseOperationPlanRepo.test.ts",
+      "beforeSha256": "816ba6168dde774febb2081bd343aa2692cf9fd86dff786647689c1f5f31012e",
+      "afterSha256": "62d1ae98771e3d993f087e5e6f3b263787abaa7895eb1bc994ecaa5d1da39d69",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/security/__tests__/privateResourceComposition.types.ts",
+      "beforeSha256": "576e2f13790c2279e4c7b1222544bcaab2f4131d0f5bafd7ed52a9798f8afb7d",
+      "afterSha256": "cbd1cb928e47e9cff658c6fae078a0656728f76f715913be8879e7d173c1d8d4",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/security/__tests__/privateResourceInstances.test.ts",
+      "beforeSha256": "3ffffdc94210ed90fdf11ca1bf73e525a1b73ae0627e4c7589587d0bf4e5e09f",
+      "afterSha256": "fcba0ce1fabf2a57327b1cd82121560df90f1bae7ab4736851cc77142b559293",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/security/privateAuthorityDatabase.ts",
+      "beforeSha256": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
+      "afterSha256": "f668e089e8ec19c2aec4c60f4ef0e4198add17e621dc3772e69b766e5b98495d",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/security/privateReleaseOperationPlanRepo.ts",
+      "beforeSha256": "94baa9a481191127b41edf93cdebb2b9dfed1a325d883e41f540b5ea726d17b5",
+      "afterSha256": "f5de1fd3afef64f36644501673b2c2e6c82eb7119d0ecb58194f839a5bc69335",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/tauri/__tests__/releaseDeploymentExecution.test.ts",
+      "beforeSha256": "7d4d98b05b2c5d4c974ffe37208937e224c10f47e9cb6901f35a4cdd3ae97996",
+      "afterSha256": "3d6e66fffad7c41c40bbabedf6975d190aafcb30fb6c93d2d01b8ed8609d26db",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/tauri/__tests__/releaseResolutionDraft.postgres.test.ts",
+      "beforeSha256": "ed8d8e3c9f346f5e576746a3055d8c2a33168fb64cadc6b12d40cb7744727200",
+      "afterSha256": "43750f1b6f2dfd0a9868caf57ab9216005c89d0e45f4d114f428d5e5d5fbb689",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/tauri/__tests__/releaseWorkflowEvidenceStore.test.ts",
+      "beforeSha256": "3b7a6e33b1f93f946a0a16b5f12824abc465b559fed250770d56062e27bc28ec",
+      "afterSha256": "30da3180bea1e029c964f081cba51b53e2839da5072407f1c874ecd5552fa0f2",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/tauri/releaseDeploymentExecutionStore.ts",
+      "beforeSha256": "062240b5440489c5cddaed26b8387b11fa3885ebfeefe62aad1461cd27d940cd",
+      "afterSha256": "f7398b43dbf8c07874a728d729cd853dd04a47e7c36fc092f46ba377e5a9c1c5",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/tauri/releaseWorkflowEvidenceStore.ts",
+      "beforeSha256": "7a5a72f3dd31295eb120e1acbd723cea13a41a73ac7e5247fd6f3c00d07ad2d3",
+      "afterSha256": "24ecbd2fcfe0a144bcdc9b0d12ec09f3a59288a46cc178e296ad2ffbba390e34",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/__tests__/approvalVote.postgres.test.ts",
+      "beforeSha256": "13828a06563ab521b3d86758660355203a3eadb7d0607126de10f5d1e9021c38",
+      "afterSha256": "b6409ad4eb2d9b7be5918f3673a0bdaf8a872714ee896dc0d960413058a619dc",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/__tests__/approvalWriterGuards.postgres.test.ts",
+      "beforeSha256": "8bccfcd9282c0e334e2c74db3d51bb69f286e58e18e3798df8d10c2f15dcdbb4",
+      "afterSha256": "65119983fd6032e50e971922ffb3871ad14c5a477356ef7e42ef1d7b8ad32397",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/persistApprovalVote.ts",
+      "beforeSha256": "5169ef1fee6940bd8ecfbe7cc3249a884756683dac44f1cf3ca4759dd3d5c14f",
+      "afterSha256": "a19ec988561d2353c9a5b65ff6fd4412d0322493c6ce3042f23a5648a1052499",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts",
+      "beforeSha256": "9e12232d6e87fd1cc2b6256d0c093d0fbe7ec38d6d872105a160d19b4e7c274d",
+      "afterSha256": "178ed764dc66b86ee789637350ebc431df0fbfb93a2e222e5e476fc4b5bb1923",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingArtifact.postgres.test.ts",
+      "beforeSha256": "e0ab528b4e4f5249fa9924a5362e6027809b69e2e09646acc604e4e981b871aa",
+      "afterSha256": "c47a56b58422f93afee0a950e9d4127a9b3e56d1efbdd70225df3fdf2d29a039",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingPolicy.pg.test.ts",
+      "beforeSha256": "4c35f40c25f4edcfc10240fce758b54f2a63e7cbe92d50c86ed6b291fecfd50b",
+      "afterSha256": "775a416175d0e167ffa3192018175811e8515fd536201fc9d9d330570244dd97",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingPolicyExecutor.pg.test.ts",
+      "beforeSha256": "f5abff4cd69145130c0cb3029599b0dc96871fd38f11136fb14c97e47141eb8c",
+      "afterSha256": "6475f6e5b90f26cac7fde1b13d4d5e9495a6094c02d0593d54737b9acf4b9c35",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingPolicySDK.pg.test.ts",
+      "beforeSha256": "eb365e82d77911927160a2233bf9d0844955537f1e7125fc710f66f1d7a1c646",
+      "afterSha256": "1262baf5a30c7b9e405c42d143d4c144502a3086ff7fb174a6c9d13819afe2d3",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts",
+      "beforeSha256": "9f9f2f5fd676eaf02c99232ef56a96608e3ac8ea53718cbd2c89ab4b9df71c47",
+      "afterSha256": "ffb9f7a37819c0b4972ef20fe129fe533332968d0748e7a13062148206c39476",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/pipelineBudgetAuthority.postgres.test.ts",
+      "beforeSha256": "b95454ae5a538dbbc358a26ef500ac6d98a82f3366f54096551d2563f80d049e",
+      "afterSha256": "ccdd4cd4fd715b3989a87ebe7f19d88cc8ecf0523c5894265be031a3761ea89c",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/approvedCodingArtifact.ts",
+      "beforeSha256": "ba892ccfd149f8828f211abd80b1aa17b655c264811a8dd6dff24efa479468af",
+      "afterSha256": "133eb9c860cd30ec7e204c84a98c2837d7f1a245297d94e9d02946a9cdb373ce",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/codingOutboundDrain.ts",
+      "beforeSha256": "b02a61b4472a870b30851a35f40aab615e69143633b1c1a40496aa4542cba293",
+      "afterSha256": "1066cbb6dcd3d60a63d5528e20ea04f493b20454e5e467b133264a29917f8ddf",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/codingRunReservation.ts",
+      "beforeSha256": "f57067373e4fd4912960c908ea24ec3b7ce53f7f7f525cf749cad5d9b43894c7",
+      "afterSha256": "6772e1779f0a1d1eb02a90ac94784c53049163ae63f7ddb964139fa19d575f58",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/codingStageExecutionClaim.ts",
+      "beforeSha256": "735bc0fa9603680444314ee0b4ae63ad96caed2a17eee38933885034655f48e7",
+      "afterSha256": "c6b41fd97bfe06645388829d055e1b5762c6dbeae91ecd186948e5a09c4d4f7c",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/mintCodingArtifactApproval.ts",
+      "beforeSha256": "3e26b7efb81dceddf3ed596abb0980aaf68fa35c2e73403414fb9aef720b5673",
+      "afterSha256": "42f96e54878d09ce4d6c64cfcb446b00ddf6d020131ef34b09f4015957b84942",
+      "moduleLiteralEdits": 1
+    },
+    {
+      "path": "lib/workforce/pipelines/pipelineRunner.ts",
+      "beforeSha256": "fcda7302e01f8e4077551415a7340c4b69ec5c2783622e432017fce895270a4c",
+      "afterSha256": "b19c5637adf015146652729c2da8bf2f085d531acd131b6ac90f1bbd0b58b30c",
+      "moduleLiteralEdits": 1
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { readCurrentAIAllowance } from "../currentAIAllowance";
 import { withIsolatedWorkspaceScope } from "../isolatedApplication/scope";

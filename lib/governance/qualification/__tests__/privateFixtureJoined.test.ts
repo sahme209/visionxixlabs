@@ -4,7 +4,7 @@
 import {expect,it,vi,beforeEach} from 'vitest';
 import {clearRateLimits} from '@/lib/api/rateLimiter';
 beforeEach(()=>{clearRateLimits()});
-import type{PrismaClient}from'@prisma/client';
+import type{PrismaClient}from'@/lib/prismaClient';
 const native=vi.hoisted(()=>({identity:Object.freeze({status:'current',executingIssuerIdentity:'current',issuerArtifactDigest:'d'.repeat(64),executionAuthorized:false})}));
 vi.mock('@axiom/verified-issuer-runtime',()=>({readIssuerIdentity:()=>native.identity}));
 vi.mock('node:crypto',async original=>({...await original<typeof import('node:crypto')>(),generateKeyPairSync:()=>({privateKey:'SYNTHETIC_PRIVATE_KEY',publicKey:'-----BEGIN PUBLIC KEY-----\nSYNTHETIC\n-----END PUBLIC KEY-----'}),createSign:()=>({update(){},end(){},sign:()=>Buffer.from('mock-signature')}),verify:()=>true}));

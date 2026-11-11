@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import type { createEcsCheckedInputReader } from "../../admissionInputs/read";
 import { vi } from "vitest";
 import type { GithubBuildSnapshotClient } from "../../githubBuildSnapshot";

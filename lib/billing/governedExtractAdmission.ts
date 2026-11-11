@@ -6,7 +6,7 @@ import {recordAttributedUsageV2} from "./newTestSubscription/usageAllocationIO";
 import { boundedAIInput, boundedStructuredAIInput } from "@/lib/ai/inputByteBound";
 import "server-only";
 import { createHash } from "node:crypto";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import type { AIStructuredResponse } from "@/lib/ai/AIProvider";
 import { prisma } from "@/lib/db";
 import { claimLegacyAICreditDispatch, releaseAICreditReservation, reserveAICredits, type AICreditReservationResult } from "./aiCreditReservation";

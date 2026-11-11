@@ -1,5 +1,5 @@
 import { prisma } from "@/lib/db";
-import type { Lead } from "@prisma/client";
+import type { Lead } from "@/lib/prismaClient";
 
 type EngineName = "cloud-studio" | "cloud-operator" | "website-builder";
 

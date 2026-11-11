@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
+import { createDatabaseClient } from "../database/createDatabaseClient";
 
 /**
  * Creates one actual lazy Prisma client from an explicit PostgreSQL datasource.
@@ -10,5 +11,5 @@ export function createPrivateAuthorityDatabase(datasource: string): PrismaClient
   let parsed: URL;
   try { parsed = new URL(datasource); } catch { throw new Error("Invalid PostgreSQL datasource"); }
   if (!["postgresql:", "postgres:"].includes(parsed.protocol) || !parsed.hostname || parsed.pathname.length <= 1 || parsed.hash) throw new Error("Invalid PostgreSQL datasource");
-  return new PrismaClient({ datasources: { db: { url: datasource } } });
+  return createDatabaseClient(datasource);
 }

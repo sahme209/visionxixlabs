@@ -19,7 +19,7 @@
 
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { hasPermission } from "@/lib/axiom/agent/rbacEngine";

@@ -5,7 +5,7 @@ import { ANNIVERSARY_POLICY_V2 } from "../newTestSubscription/anniversaryWindow"
 import { collectedEvidenceV2 } from "../newTestSubscription/paidCoverage";
 function evidenceInput() { return { runtimeId: "runtime", accountId: "acct_test", organizationId: "org", originatingIntentId: "intent", sessionId: "cs_test", customerId: "cus_test", subscriptionId: "sub_test", planId: "pro" as const, interval: "monthly" as const, seatQuantity: 3, priceId: "price_test", unitAmountCents: 2900, invoiceId: "in_test", lineId: "il_test", subscriptionItemId: "si_test", paymentId: "inpay_test", paymentIntentId: "pi_test", chargeId: "ch_test", paymentMethodType: "card", currency: "usd" as const, amountCents: 8700, collectedAt: "2026-10-18T14:15:16.000Z", serviceStart: "2026-10-18T14:15:16.000Z", serviceEnd: "2026-11-18T14:15:16.000Z" }; }
 import type { Intent } from "../newTestSubscription/service";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 const scope = { runtimeId: "runtime", accountId: "acct_test", organizationId: "org" };
 function prepared() {
   const enrollment = createEnrollmentV2(scope);

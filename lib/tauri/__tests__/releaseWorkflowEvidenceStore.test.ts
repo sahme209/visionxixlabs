@@ -1,5 +1,5 @@
 import {it,expect,vi} from 'vitest';
-import {Prisma} from '@prisma/client';
+import {Prisma} from '@/lib/prismaClient';
 import {createReleaseWorkflowEvidenceStore} from '../releaseWorkflowEvidenceStore';import {sha256ContentHash} from '../contentHash';
 const scope={organizationId:'org',actorUserId:'user',sessionId:'session'};
 function fixture(){let at=new Date('2030-01-01T00:00:00Z');const binding={organizationId:'org',releaseId:'release',releaseVersion:3,intakeDigest:'a'.repeat(64),planId:'release_plan_'+'b'.repeat(64),planDigest:'c'.repeat(64),connectionId:'connection',connectionRevision:at.toISOString(),repositoryFullName:'team/service',workflowPath:'.github/workflows/deploy.yml',dispatchedRef:'main',sourceCommit:'d'.repeat(40),runId:'12345',runAttempt:2,dispatchEvidenceDigest:'e'.repeat(64),expiresAt:new Date(at.getTime()+60000).toISOString()};const observation={bindingDigest:sha256ContentHash(binding),provenance:'verified_release_dispatch',status:'completed',conclusion:'success',observedAt:at.toISOString()};const rows:any[]=[],events:any[]=[];

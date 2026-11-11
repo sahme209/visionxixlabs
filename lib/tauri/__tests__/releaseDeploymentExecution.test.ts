@@ -1,5 +1,5 @@
 import {it,expect,vi} from 'vitest';
-import {Prisma} from '@prisma/client';
+import {Prisma} from '@/lib/prismaClient';
 import {createReleaseDeploymentExecutionStore} from '../releaseDeploymentExecutionStore';
 import {createReleaseDeploymentExecutor} from '../releaseDeploymentExecutionExecutor';
 import type {DeploymentPlan} from '../releaseDeploymentExecutionContract';

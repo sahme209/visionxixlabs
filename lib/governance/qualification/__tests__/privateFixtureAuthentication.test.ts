@@ -1,5 +1,5 @@
 import {beforeEach,expect,it,vi} from 'vitest';
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@/lib/prismaClient';
 import {mintFixedFixtureAuthorization} from '../privateFixtureAuthentication';
 import {decodeFixtureAuthorizationFrame} from '../fixtureAuthorizationFrame';
 import {createPrivateDesktopTokenCodec} from '@/lib/desktop/privateDesktopToken';

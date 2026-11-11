@@ -1,7 +1,7 @@
 import "server-only";
 import { codingApprovalDigest, isCodingApprovalAction, verifyCodingArtifact } from "./pipelines/codingArtifact";
 import { randomUUID } from "node:crypto";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { planDecideApproval } from "./decideApprovalPlanner";
 

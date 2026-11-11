@@ -1,3 +1,4 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { createServer } from "node:net";
 import { tmpdir } from "node:os";
 import { hash } from "bcryptjs";
@@ -7,7 +8,7 @@ import { spawn, execFileSync } from "node:child_process";
 import { existsSync, mkdtempSync, writeFileSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 import { randomBytes, createHash } from "node:crypto";
-import { PrismaClient, type Prisma } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@/lib/prismaClient";
 import { createNewTestSubscriptionService, type ProviderBoundary } from "../newTestSubscription/service";
 import { reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
 import { applyMargin } from "../aiBillingMargin";
@@ -71,7 +72,7 @@ suite("owned PG17 new TEST subscription service, synthetic provider only", () =>
     const port = execFileSync("docker", ["port", name, "5432/tcp"], { encoding: "utf8" }).trim().split(":").pop();
     url = `postgresql://postgres:${password}@127.0.0.1:${port}/axiom_new_test_contract_rehearsal`;
     newTestPrismaEnvironment(process.env, process.execArgv, url);
-    db = new PrismaClient({ datasources: { db: { url } } });
+    db = createDatabaseClient(url);
     refundBinding.client = db; refundBinding.url = url;
     for (let attempt = 0; ; attempt++) { try { await db.$queryRawUnsafe("SELECT 1"); break; } catch { if (attempt > 40) throw new Error("owned_fixture_not_ready"); await new Promise(resolve => setTimeout(resolve, 100)); } }
     const tables = await db.$queryRawUnsafe<Array<{ count: number }>>("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname='public'"); expect(tables[0].count).toBe(0);

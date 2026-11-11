@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import {afterAll,beforeAll,beforeEach,describe,expect,it} from "vitest";
 import {realpathSync,statSync} from "node:fs";
 import {randomUUID} from "node:crypto";
-import {PrismaClient} from "@prisma/client";
+import {PrismaClient} from "@/lib/prismaClient";
 import {createReleaseResolutionDraft} from "../releaseResolutionDraft";
 import {reviseDeploymentRequest,type DeploymentRequestRepo} from "../deploymentRequestRepo";
 import type {DeploymentIntake} from "../deploymentOperations";
@@ -73,7 +74,7 @@ describe.skipIf(!socket)("ticket resolution drafts on owned PostgreSQL",()=>{
  const input=()=>({organizationId:org,requesterUserId:"owned_user",actorRole:"requester",correlationId:"ticket",draft:{kind:"resolution_draft",schemaVersion:1,id:"owned_draft_"+randomUUID(),tenantId:org,title:"Ticket first",applications:["Checkout"],requestDetails:"Resolve the owning repository."}});
  beforeAll(async()=>{
   if(!socket||!/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||statSync(socket).uid!==process.getuid?.())throw Error("owned_private_socket_required");
-  db=new PrismaClient({datasources:{db:{url:`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`}}});
+  db=createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
   const [binding]=await db.$queryRawUnsafe<Array<{private:boolean}>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);if(!binding?.private)throw Error("owned_fixture_binding_required");
  });
  beforeEach(()=>{org="owned_resolution_"+randomUUID()});

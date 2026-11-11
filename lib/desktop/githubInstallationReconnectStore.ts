@@ -1,6 +1,6 @@
 import 'server-only';
 import {randomUUID} from 'node:crypto';
-import type {Prisma} from '@prisma/client';
+import type {Prisma} from '@/lib/prismaClient';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {GITHUB_INSTALLATION_RECONNECT_KIND,githubReconnectChallengeSchema,githubReconnectConfirmationSchema,githubReconnectChallengeId} from './githubInstallationReconnectContract';

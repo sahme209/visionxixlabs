@@ -9,7 +9,7 @@ import { resolveIsolatedApplicationPlan } from "./isolatedApplication/plan";
 import "server-only";
 import { requestReservationCents } from "./requestReservationCents";
 import { smallSonnetReservation, type SmallSonnetRequest } from "./smallSonnetRequest";
-import type { Prisma, TenantBillingPlan } from "@prisma/client";
+import type { Prisma, TenantBillingPlan } from "@/lib/prismaClient";
 
 import { applyAddOnsToEntitlements } from "./applyAddOnsToEntitlements";
 import type { PricingPlan } from "./planRegistry";

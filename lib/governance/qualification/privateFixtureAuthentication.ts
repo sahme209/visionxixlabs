@@ -1,5 +1,5 @@
 import 'server-only';
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@/lib/prismaClient';
 import {NextRequest} from 'next/server';
 import {createPrivateDesktopTokenCodec} from '@/lib/desktop/privateDesktopToken';
 import {createPrivateDesktopSessionService} from '@/lib/desktop/privateDesktopSession';

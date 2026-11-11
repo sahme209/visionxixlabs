@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import {beforeAll,afterAll,beforeEach,describe,expect,it,vi} from 'vitest';
 import {randomUUID} from 'node:crypto';
 import {realpathSync,statSync} from 'node:fs';
-import {PrismaClient,type Prisma} from '@prisma/client';
+import {PrismaClient,type Prisma} from '@/lib/prismaClient';
 import {execFileSync} from 'node:child_process';
 const f=vi.hoisted(()=>({db:undefined as unknown as PrismaClient,generate:vi.fn()}));
 vi.mock('@/lib/db',()=>({get prisma(){return f.db;}}));
@@ -23,7 +24,7 @@ describe.skipIf(!socket)('owned socket-only coding run ledger',()=>{
 beforeAll(async()=>{
  const root=process.env.AXIOM_BUDGET_PG_ROOT!;
  if(!/^\/private\/tmp\/axiom-budget-pg-[^/]+$/.test(root)||socket!==root+'/socket'||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0)throw Error('owned_fixture_required');
- f.db=new PrismaClient();const rows=await f.db.$queryRawUnsafe<Array<{db:string;role:string;listen:string;data:string}>>(`SELECT current_database() AS db,current_user AS role,current_setting('listen_addresses') AS listen,current_setting('data_directory') AS data`);
+ f.db=createDatabaseClient(process.env.DATABASE_URL);const rows=await f.db.$queryRawUnsafe<Array<{db:string;role:string;listen:string;data:string}>>(`SELECT current_database() AS db,current_user AS role,current_setting('listen_addresses') AS listen,current_setting('data_directory') AS data`);
  expect(rows).toEqual([{db:'axiom_budget_fixture',role:'budget_fixture',listen:'',data:root+'/data'}]);
  execFileSync('/opt/homebrew/opt/postgresql@17/bin/psql',['-X','-w','-v','ON_ERROR_STOP=1','-f','ops/recovery/20261022_public_billing_v1.sql'],{env:{NODE_ENV:'test',PGHOST:socket,PGPORT:'55439',PGUSER:'budget_fixture',PGDATABASE:'axiom_budget_fixture'},stdio:'pipe'});
  for(const statement of [

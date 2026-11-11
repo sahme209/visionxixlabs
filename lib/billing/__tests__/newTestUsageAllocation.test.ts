@@ -3,7 +3,7 @@ import type { RecordAIUsageInput } from "../recordAIUsageEvent";
 import { settleGatewayGenerationInTransaction, type GatewayUsageTransaction } from "../reconcileGatewayUsage";
 vi.mock("@/lib/db", () => ({ prisma: {} }));
 vi.mock("ai", () => ({ gateway: { getGenerationInfo: vi.fn() } }));
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { createEnrollmentV2, originalCreateProofDigest, paidBasisForOriginalCollection, type VerifiedEnrollmentV2 } from "../newTestSubscription/fixtureAllocation";
 import { ANNIVERSARY_POLICY_V2, createAllowanceBasisV2, resolveAllowanceWindowV2 } from "../newTestSubscription/anniversaryWindow";
 import { createReservationAttributionV2, usageAttributionV2, resolveAllocationV2, type HoldV2, type UsageV2 } from "../newTestSubscription/allocationV2";

@@ -1,5 +1,5 @@
 import {it,expect,vi} from 'vitest';
-import {Prisma} from '@prisma/client';
+import {Prisma} from '@/lib/prismaClient';
 import {createSlackNotificationStore} from '../slackNotificationStore';
 import {createSlackNotificationExecutor} from '../slackNotificationExecutor';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';

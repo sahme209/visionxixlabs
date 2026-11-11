@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createHash, createDecipheriv } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import * as privateVault from "../privateCredentialVault";
 import * as privateDatabase from "../privateAuthorityDatabase";
 import { encryptCredential, encryptScopedCredential, decryptScopedCredential } from "../credentialVault";

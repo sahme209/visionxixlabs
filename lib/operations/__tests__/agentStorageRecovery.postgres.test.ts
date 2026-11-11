@@ -1,5 +1,6 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import {afterAll,beforeAll,describe,expect,it} from "vitest";
-import {PrismaClient} from "@prisma/client";
+import {PrismaClient} from "@/lib/prismaClient";
 import {inspectAgentStorageRecovery,type AgentRecoveryRepository} from "../agentStorageRecovery";
 const databaseUrl=process.env.AXIOM_AGENT_RECOVERY_SQL_TEST_DATABASE_URL;
 /** Query/transaction compatibility only. The repository below deliberately uses
@@ -10,7 +11,7 @@ describe.skipIf(!databaseUrl)("Agent recovery metadata query on owned PG17",()=>
  beforeAll(async()=>{
   const target=new URL(databaseUrl!);
   if(target.protocol!=="postgresql:"||target.hostname!=="localhost"||target.password||target.pathname!=="/neondb"||[...target.searchParams.keys()].some(k=>k!=="host")||target.searchParams.getAll("host").length!==1||!/^\/private\/tmp\/axiom-recovery-pg\.[A-Za-z0-9]+\/socket$/.test(target.searchParams.get("host")??""))throw Error("owned_recovery_query_database_required");
-  db=new PrismaClient({datasources:{db:{url:target.toString()}}});
+  db=createDatabaseClient(target.toString());
   const [binding]=await db.$queryRawUnsafe<Array<{database:string;version:number}>>("SELECT current_database() AS database,current_setting('server_version_num')::int AS version");
   expect(binding.database).toBe("neondb");expect(Math.floor(binding.version/10000)).toBe(17);
   const tables=await db.$queryRawUnsafe<Array<{count:number}>>("SELECT count(*)::int AS count FROM pg_tables WHERE schemaname='public'");expect(tables[0].count).toBe(0);

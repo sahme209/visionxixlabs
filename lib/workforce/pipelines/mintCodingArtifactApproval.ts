@@ -1,6 +1,6 @@
 import "server-only";
 import { randomUUID, createHash } from "node:crypto";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { record as recordAudit } from "@/lib/audit/secureAudit";
 import { id as idFactory } from "@/lib/domain/ids";

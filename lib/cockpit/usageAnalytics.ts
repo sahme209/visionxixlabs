@@ -1,4 +1,4 @@
-import { Prisma } from '@prisma/client';
+import { Prisma } from '@/lib/prismaClient';
 import { usageSelection } from './usageRecords';
 export interface UsageTotals { calls: number; inputTokens: number; outputTokens: number; settledCents: number; pendingCalls: number }
 export interface UsageAnalytics { month: string; group: 'model' | 'provider'; totals: UsageTotals; days: Array<UsageTotals & { day: string }>; groups: Array<UsageTotals & { label: string | null }>; groupsLimited: boolean }

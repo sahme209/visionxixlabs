@@ -8,7 +8,7 @@
 import "server-only";
 
 import { prisma } from "@/lib/db";
-import type { LinkedInPostDraft } from "@prisma/client";
+import type { LinkedInPostDraft } from "@/lib/prismaClient";
 import { writeGrowthAudit } from "./audit";
 import type { ContentTopicCategory } from "./growthModels";
 

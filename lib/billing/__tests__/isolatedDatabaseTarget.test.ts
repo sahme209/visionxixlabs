@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 const spy = vi.hoisted(() => ({ construct: vi.fn(), marker: vi.fn(), hook: undefined as undefined | ((input: { args: unknown; query: (args: unknown) => Promise<unknown> }) => Promise<unknown>) }));
-vi.mock("@prisma/client", () => ({ PrismaClient: class { constructor(options?: unknown) { spy.construct(options); } $extends(extension: any) { spy.hook = extension.query.$allOperations; return this; } $queryRawUnsafe(...args: unknown[]) { return spy.marker(...args); } } }));
+vi.mock("@/lib/prismaClient", () => ({ PrismaClient: class { constructor(options?: unknown) { spy.construct(options); } $extends(extension: any) { spy.hook = extension.query.$allOperations; return this; } $queryRawUnsafe(...args: unknown[]) { return spy.marker(...args); } } }));
 function config(target: string) { vi.stubEnv("AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME", "true"); vi.stubEnv("DATABASE_URL", target); vi.stubEnv("DIRECT_URL", ""); vi.stubEnv("AXIOM_ISOLATED_TEST_RUNTIME_ID", "runtime"); vi.stubEnv("AXIOM_ISOLATED_TEST_ACCOUNT_ID", "acct"); vi.stubEnv("AXIOM_ISOLATED_TEST_ORGANIZATIONS", "synthetic"); vi.stubEnv("VERCEL", ""); vi.stubEnv("VERCEL_ENV", ""); }
 afterEach(() => { vi.unstubAllEnvs(); vi.resetModules(); spy.construct.mockClear(); spy.marker.mockReset(); spy.hook = undefined; });
 describe("actual ambient database constructor is guarded before use", () => {

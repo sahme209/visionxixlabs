@@ -1,5 +1,6 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { expect, it } from 'vitest';
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@/lib/prismaClient';
 import { readUsageAnalytics } from '../usageAnalytics';
 import { readUsageRecords } from '../usageRecords';
 const databaseUrl = process.env.AXIOM_COCKPIT_USAGE_TEST_DATABASE_URL;
@@ -9,7 +10,7 @@ it.skipIf(!databaseUrl)('aggregates the real PostgreSQL ledger with tenant and U
   const target = new URL(databaseUrl!);
   if (target.protocol !== 'postgresql:' || target.hostname !== 'localhost' || target.password || [...target.searchParams.keys()].some(key => key !== 'host') || target.searchParams.getAll('host').length !== 1 || !/^(\/private)?\/tmp\/axiom-usage-pg\.[A-Za-z0-9]+\/socket$/.test(target.searchParams.get('host') ?? '')) throw Error('disposable_local_usage_database_required');
   target.searchParams.set('schema', 'pg_temp');
-  const db = new PrismaClient({ datasources: { db: { url: target.toString() } } });
+  const db = createDatabaseClient(target.toString());
   try {
     await db.$transaction(async tx => {
       await tx.$executeRaw`CREATE TEMPORARY TABLE "UsageEvent" (id text PRIMARY KEY, "organizationId" text NOT NULL, "eventKind" text NOT NULL, provider text, model text, "inputTokens" integer NOT NULL, "outputTokens" integer NOT NULL, "billedCents" integer NOT NULL, "billingStatus" text NOT NULL, "createdAt" timestamp(3) NOT NULL) ON COMMIT DROP`;

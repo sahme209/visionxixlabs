@@ -1,5 +1,5 @@
 import 'server-only';
-import type {Prisma} from '@prisma/client';
+import type {Prisma} from '@/lib/prismaClient';
 import {z} from 'zod';
 import {sha256ContentHash} from './contentHash';
 import {RELEASE_DEPLOYMENT_EXECUTION_KIND,deploymentScopeSchema,deploymentPlanSchema,deploymentApprovalSchema,deploymentResultSchema,type DeploymentScope,type DeploymentPlan,type DeploymentApproval,type DeploymentDto,type DeploymentState,type DeploymentResult} from './releaseDeploymentExecutionContract';

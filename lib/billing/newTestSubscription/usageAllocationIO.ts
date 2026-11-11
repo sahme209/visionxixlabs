@@ -1,5 +1,5 @@
 import "server-only";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import type { RecordAIUsageInput, RecordAIUsageResult } from "../recordAIUsageEvent";
 import type { CostBreakdown } from "../computeInvocationCost";
 import { applyMargin } from "../aiBillingMargin";

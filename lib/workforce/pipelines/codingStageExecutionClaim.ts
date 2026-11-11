@@ -1,6 +1,6 @@
 import 'server-only';
 import { randomUUID } from 'node:crypto';
-import type { Prisma, PrismaClient } from '@prisma/client';
+import type { Prisma, PrismaClient } from '@/lib/prismaClient';
 import { assertScope, normalizeScopes } from '@/lib/security/apiKeyScope';
 import { isApproverRole } from '@/lib/auth/platformAdmin';
 import { hasPermission } from '@/lib/axiom/agent/rbacEngine';
