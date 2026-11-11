@@ -30,3 +30,12 @@ test('accepts the explicit env wrapper and refuses changed metadata timestamp',(
  assert.equal(compareTarget({structuredContent:{result:{env}}},fixture.id,100).databaseMatches,true);
  assert.throws(()=>compareTarget(wrap({...env,updatedAt:101}),fixture.id,100),/target_detail_unavailable/);
 });
+test('never treats a changed connection port as the recorded endpoint',()=>{
+ const value='postgresql://synthetic:synthetic@ep-small-mountain-ailw0kvt.c-4.us-east-1.aws.neon.tech:6543/neondb';
+ assert.equal(compareTarget(wrap({...fixture,value}),fixture.id,100).recordedEndpointMatches,false);
+});
+test('refuses query-level target overrides and non-public schema rather than assuming URL hostname wins',()=>{
+ const base='postgresql://synthetic:synthetic@ep-small-mountain-ailw0kvt.c-4.us-east-1.aws.neon.tech/neondb';
+ for(const query of ['host=other.invalid','port=6543','database=other','dbname=other','schema=other','sslmode=require&sslmode=disable'])assert.throws(()=>compareTarget(wrap({...fixture,value:base+'?'+query}),fixture.id,100),/target_detail_unavailable/);
+ assert.equal(compareTarget(wrap({...fixture,value:base+'?sslmode=require&channel_binding=require&schema=public'}),fixture.id,100).recordedEndpointMatches,true);
+});

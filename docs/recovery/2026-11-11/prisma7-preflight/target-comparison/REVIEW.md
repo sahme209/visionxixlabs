@@ -23,5 +23,7 @@ retain the raw responses; explicit owner consent must mention this fact.
 This observes current project production configuration, not necessarily the
 captured environment of an older deployment. Even a match does not prove the
 cause of the historical discrepancy or authorize applying migration SQL.
-Five synthetic tests passed after actual initial missing-module RED; no provider
+Seven synthetic tests passed after actual initial missing-module RED; no provider
 call has been made. Further review and owner approval remain required.
+
+Independent source review found a missing nondefault-port refusal. A new test reproduced it and passed after exact port matching; related query-level host/port/database overrides, duplicate parameters and non-public schemas now refuse explicitly. Both new cases failed first, then all seven passed. Current/historical environment limitation is unchanged. No provider call occurred.

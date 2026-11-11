@@ -27,7 +27,10 @@ function compareTarget(response,expectedId,expectedUpdatedAt){
  const b=outer.env??outer;if(!b||typeof b!=='object'||b.updatedAt!==expectedUpdatedAt||b.id!==expectedId||b.key!=='DATABASE_URL'||!Array.isArray(b.target)||!b.target.includes('production')||!Number.isSafeInteger(b.updatedAt)||b.updatedAt<0||typeof b.value!=='string'||b.value.length>8192)unavailable('detail');
  let url;try{url=new URL(b.value);}catch{unavailable('detail');}
  if(!['postgres:','postgresql:'].includes(url.protocol)||url.hash)unavailable('detail');
- const recordedEndpointMatches=['ep-small-mountain-ailw0kvt.c-4.us-east-1.aws.neon.tech','ep-small-mountain-ailw0kvt-pooler.c-4.us-east-1.aws.neon.tech'].includes(url.hostname.toLowerCase());
+ const allowedQuery=new Set(['sslmode','channel_binding','connect_timeout','pool_timeout','connection_limit','pgbouncer','application_name','statement_cache_size','socket_timeout','schema','sslaccept']);
+ for(const key of url.searchParams.keys())if(!allowedQuery.has(key)||url.searchParams.getAll(key).length!==1)unavailable('detail');
+ if(url.searchParams.has('schema')&&url.searchParams.get('schema')!=='public')unavailable('detail');
+ const recordedEndpointMatches=(!url.port||url.port==='5432')&&['ep-small-mountain-ailw0kvt.c-4.us-east-1.aws.neon.tech','ep-small-mountain-ailw0kvt-pooler.c-4.us-east-1.aws.neon.tech'].includes(url.hostname.toLowerCase());
  return {status:'observed',recordedEndpointMatches,databaseMatches:url.pathname==='/neondb',updatedAt:b.updatedAt,valuesReturned:false};
 }
 module.exports=Object.freeze({selectProductionDatabaseId,compareTarget});
