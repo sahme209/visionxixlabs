@@ -1,0 +1,260 @@
+{
+  "rootVersionChanges": [
+    {
+      "path": "node_modules/@typescript-eslint/eslint-plugin",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/eslint-plugin/node_modules/ignore",
+      "before": "7.0.5",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/parser",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/project-service",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/scope-manager",
+      "before": "8.56.0",
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/@typescript-eslint/tsconfig-utils",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/type-utils",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/types",
+      "before": "8.56.0",
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/@typescript-eslint/typescript-estree",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/brace-expansion",
+      "before": "2.1.7",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/minimatch",
+      "before": "9.0.9",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/typescript-estree/node_modules/semver",
+      "before": "7.7.4",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/utils",
+      "before": "8.56.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/@typescript-eslint/visitor-keys",
+      "before": "8.56.0",
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/@typescript-eslint/visitor-keys/node_modules/eslint-visitor-keys",
+      "before": "5.0.0",
+      "after": "5.0.1"
+    },
+    {
+      "path": "node_modules/@typescript/native",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-aix-ppc64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-darwin-arm64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-darwin-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-freebsd-arm64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-freebsd-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-arm",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-arm64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-loong64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-mips64el",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-ppc64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-riscv64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-s390x",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-linux-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-netbsd-arm64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-netbsd-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-openbsd-arm64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-openbsd-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-sunos-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-win32-arm64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/@typescript/typescript-win32-x64",
+      "before": null,
+      "after": "7.0.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/balanced-match",
+      "before": null,
+      "after": "4.0.4"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/brace-expansion",
+      "before": null,
+      "after": "5.0.13"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/ignore",
+      "before": null,
+      "after": "7.0.14"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/minimatch",
+      "before": null,
+      "after": "10.2.6"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/semver",
+      "before": null,
+      "after": "7.8.6"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/eslint-plugin/node_modules/@typescript-eslint/type-utils",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/parser",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/@typescript-eslint/project-service",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/typescript-estree/node_modules/@typescript-eslint/tsconfig-utils",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/eslint-config-next/node_modules/typescript-eslint/node_modules/@typescript-eslint/utils",
+      "before": null,
+      "after": "8.72.2"
+    },
+    {
+      "path": "node_modules/ts-api-utils",
+      "before": "2.4.0",
+      "after": "2.5.0"
+    },
+    {
+      "path": "node_modules/typescript-eslint",
+      "before": "8.56.0",
+      "after": null
+    }
+  ],
+  "review": "Only the native compiler/platform graph and compatible TypeScript-ESLint/ts-api-utils resolver graph change; original exact compiler API stays 5.9.3. No application/runtime/cloud/billing package version changes."
+}
