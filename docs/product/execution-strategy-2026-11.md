@@ -118,3 +118,7 @@ Each reconcile write step (at execution time); a separate Preview DB; UID501 dia
 ## November 11 takeover — AWS upgrade candidate
 
 Main green and production build 4 (`a344f4f6`) verified. AWS 3.1166.0 is the first sequential batch (PR #315, merge gated on all CI); reviewed ECS declaration changes, DynamoDB codec compatibility and actual S3 collector behavior. No provider request, deployment or production change. Evidence: `../recovery/2026-11-11/aws-sdk-upgrade/README.md`. Subsequent ai 7/platform migrations have not started.
+
+## November 11 AI SDK 7 candidate
+
+AWS PR #315 merged with all checks green before starting this batch. AI 7.0.170 / Gateway 4.0.143 moves the installed transport to the reviewed Vercel v4 URL; the text-only adapter explicitly disables automatic tool choice. Source, wire and streaming review evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. No paid model call, production change or offline provider fallback.

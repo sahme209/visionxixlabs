@@ -1,0 +1,6 @@
+{
+  "node_modules/ai/package.json": "4ebd95ed32620b9682e64a7ca39583fe8d493b384645b4a9faa58aca148b1e0a",
+  "node_modules/ai/dist/index.js": "1e106880888c26f376eaf71115a75ba59fe4d012e6e73bbc08fce06628b63b83",
+  "node_modules/@ai-sdk/gateway/package.json": "b84ea1e7c51a22c298557ed79778ea7270e2d8623b5dfa09349b78fcbf885f9d",
+  "node_modules/@ai-sdk/gateway/dist/index.js": "618e1404607ce89fcd3825690b049e982509b12bbde3be2ea05c8edfdd52547b"
+}

@@ -51,7 +51,7 @@ it('joins actual route/admission/installed SDK/usage code with trusted attributi
   expect(p.events).toEqual(['reserve', 'claim', 'transport', 'usage', 'link']);
   expect(p.fetcher).toHaveBeenCalledTimes(1);
   const [url, init] = p.fetcher.mock.calls[0];
-  expect(String(url)).toBe('https://ai-gateway.vercel.sh/v3/ai/language-model');
+  expect(String(url)).toBe('https://ai-gateway.vercel.sh/v4/ai/language-model');
   const body = JSON.parse(String(init.body));
   expect(new Headers(init.headers).get('ai-language-model-id')).toBe(model);
   expect(body).toMatchObject({ maxOutputTokens: 20, providerOptions: { gateway: { user: scope.organizationId, tags: ['product:axiom-agent', `correlation:${scope.correlationId}`] } } });

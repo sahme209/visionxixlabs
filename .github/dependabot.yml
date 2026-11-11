@@ -23,10 +23,8 @@ updates:
       # each bump re-checks suppress-warnings.cjs (unchanged 4.1.11 -> 4.1.12) and updates the pin.
       - { dependency-name: "vitest" }
       # Stripe 23 also changes HttpClient types;
-      # ai 7 moves the AI Gateway endpoint pinned by the dispatch tests.
       # Stripe: any release can move the pinned API version (billing behaviour).
       - { dependency-name: "stripe" }
-      - { dependency-name: "ai", update-types: ["version-update:semver-major"] }
       - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
       - { dependency-name: "tailwindcss", update-types: ["version-update:semver-major"] }
       - { dependency-name: "prisma", update-types: ["version-update:semver-major"] }

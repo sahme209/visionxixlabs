@@ -32,7 +32,7 @@ describe.skipIf(!root)('fresh owned generic AI durable composition',()=>{
   vi.stubEnv('AXIOM_AI_MAX_REQUEST_CREDITS_CENTS','');
   _resetAIProviderManagerForTests();
   f.fetcher.mockImplementation(async(input:RequestInfo|URL)=>{
-   if(String(input)!=='https://ai-gateway.vercel.sh/v3/ai/language-model')throw Error('unexpected_synthetic_destination');
+   if(String(input)!=='https://ai-gateway.vercel.sh/v4/ai/language-model')throw Error('unexpected_synthetic_destination');
    return new Response(JSON.stringify({content:[{type:'text',text:'Synthetic durable result'}],finishReason:{unified:'stop',raw:'stop'},usage:{inputTokens:{total:5,noCache:5},outputTokens:{total:2,text:2}},providerMetadata:{gateway:{generationId:f.generation}},warnings:[]}),{headers:{'content-type':'application/json'}});
   });
  });
@@ -53,7 +53,7 @@ describe.skipIf(!root)('fresh owned generic AI durable composition',()=>{
   const response=await POST(request(x,key));expect(response.status).toBe(200);
   expect((await response.json()).data).toMatchObject({text:'Synthetic durable result',gatewayGenerationId:f.generation});
   expect(f.fetcher).toHaveBeenCalledTimes(1);
-  const [url,init]=f.fetcher.mock.calls[0];expect(String(url)).toBe('https://ai-gateway.vercel.sh/v3/ai/language-model');
+  const [url,init]=f.fetcher.mock.calls[0];expect(String(url)).toBe('https://ai-gateway.vercel.sh/v4/ai/language-model');
   expect(JSON.parse(String(init.body))).toMatchObject({maxOutputTokens:20,providerOptions:{gateway:{user:x.organizationId,tags:['product:axiom-agent',`correlation:${x.correlationId}`]}}});
   const holds=await f.db.aIUsageReservation.findMany({where:{organizationId:x.organizationId}});expect(holds).toHaveLength(1);
   expect(holds[0]).toMatchObject({idempotencyKey:key,reservedCents:1000,status:'pending_settlement',settledCents:null});
@@ -64,7 +64,7 @@ describe.skipIf(!root)('fresh owned generic AI durable composition',()=>{
  });
  it('retains unknown claimed capacity across failures and refuses replay or excess pool dispatch',async()=>{
   const x=await fixture(),first='generic_'+randomUUID();
-  f.fetcher.mockImplementation(async(input:RequestInfo|URL)=>{if(String(input)!=='https://ai-gateway.vercel.sh/v3/ai/language-model')throw Error('unexpected_synthetic_destination');throw new TypeError('synthetic-network-failure');});
+  f.fetcher.mockImplementation(async(input:RequestInfo|URL)=>{if(String(input)!=='https://ai-gateway.vercel.sh/v4/ai/language-model')throw Error('unexpected_synthetic_destination');throw new TypeError('synthetic-network-failure');});
   expect((await POST(request(x,first))).status).toBeGreaterThanOrEqual(400);expect(f.fetcher).toHaveBeenCalledTimes(1);
   const replay=await POST(request(x,first));expect((await replay.json()).error.code).toBe('ai.request_already_in_progress');expect(f.fetcher).toHaveBeenCalledTimes(1);
   expect((await POST(request(x,'generic_'+randomUUID()))).status).toBeGreaterThanOrEqual(400);expect(f.fetcher).toHaveBeenCalledTimes(2);
