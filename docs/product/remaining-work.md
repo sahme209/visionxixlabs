@@ -6,7 +6,7 @@ Status pointer corrected November 4, 2026; ecosystem entries retain their record
 
 ## Status snapshot — 2026-11-09 (what changed this session, and what is left)
 
-This snapshot complements the detailed index (master-plan-requirements-index.md, not re-scored item by item). Everything below is merged on main unless marked otherwise. None of it is in production until build 3.
+This snapshot complements the detailed index (master-plan-requirements-index.md, not re-scored item by item). Everything below is merged on main unless marked otherwise. Historical snapshot: build 4 at `a344f4f6` is now production (verified November 11); see `CODEX_HANDOFF.md` for the current deployment receipt.
 
 **Done in code (merged)**
 - **A7 security:** workspace-authority fixes on /api/axiom/*; starter-token expiry; consolidated threat model; tamper-evident audit seals; AI context secret redaction in the governed AI path; invite revocation; self-service API keys (scoped, expiring); Dependabot (grouped) plus a weekly dependency audit; the non-breaking vulnerability fix (13 → 6, one high left: @azure/msal-node needs a major upgrade).
@@ -37,7 +37,7 @@ Each needs its own planned PR; Dependabot ignores their major versions until the
 - Prisma 7 (`prisma`, `@prisma/client`): new client generator and config; needs a migration check against production.
 - ESLint 10 and Vitest 5 (web): config and API changes.
 - Next.js 16.4.5: done 2026-11-09. All 20 release-closure files, the three owned-website internals and `writeAppTypeDeclarations.js` are byte-identical to 16.4.2; only `package.json` changed and was re-pinned.
-- The AWS SDK (beyond 3.1049): re-review the owned-website framework source pins and the pinned ECS/S3 SDK behaviour tests, then bump.
+- AWS SDK: 3.1166.0 implementation in PR #315; ECS model and S3 collector behavior reviewed. Merge is gated on all CI checks; not deployed. Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
 - Stripe (any bump; 20.4.1 already moves the pinned API version to `2026-02-25.clover`). Stripe 23: new API version (`2026-10-28.endive`) and non-generic `HttpClient` types; re-review the owned Stripe TEST transport and settlement code.
 - ai 7: AI Gateway endpoint moves from v3 to v4; re-review the pinned dispatch URL in the installed-SDK composition tests.
 - Vitest: 4.1.12 done (preload `suppress-warnings.cjs` byte-identical, sha256 a5012da3…); each later bump repeats that check and updates the version pin.

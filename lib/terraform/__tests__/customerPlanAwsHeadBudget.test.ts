@@ -1,6 +1,6 @@
 import { IncomingMessage } from "node:http";
 import { Socket } from "node:net";
-import { HttpRequest } from "@smithy/protocol-http";
+import { HttpRequest } from "@smithy/core/protocols";
 import type { NodeHttpHandler } from "@smithy/node-http-handler";
 import { expect, it, vi } from "vitest";
 import { boundedAwsHandler } from "@/lib/cloud/aws/ecsObservation/boundedAwsHandler";

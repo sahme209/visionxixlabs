@@ -1,5 +1,5 @@
 {
-  "sdk": "3.1049.0",
+  "sdk": "3.1166.0",
   "root": "RegisterTaskDefinitionRequest",
   "definitions": {
     "RegisterTaskDefinitionRequest": {
@@ -102,6 +102,12 @@
         },
         "enableFaultInjection": {
           "schema": "boolean",
+          "optional": true
+        },
+        "trustedExecutionConfiguration": {
+          "schema": {
+            "ref": "TrustedExecutionConfiguration"
+          },
           "optional": true
         }
       }
@@ -760,22 +766,66 @@
       "fields": {
         "value": {
           "schema": "string",
-          "optional": false
+          "optional": true
         },
         "type": {
           "schema": {
             "ref": "ResourceType"
           },
           "optional": false
+        },
+        "sharingStrategy": {
+          "schema": {
+            "ref": "SharingStrategy"
+          },
+          "optional": true
         }
       }
     },
     "ResourceType": {
       "enum": [
         "GPU",
-        "InferenceAccelerator"
+        "InferenceAccelerator",
+        "NeuronDevice"
       ]
     },
+    "SharingStrategy": {
+      "union": [
+        {
+          "ref": "SharingStrategy.NvidiaMpsMember"
+        },
+        {
+          "ref": "SharingStrategy.$UnknownMember"
+        }
+      ]
+    },
+    "SharingStrategy.NvidiaMpsMember": {
+      "fields": {
+        "nvidiaMps": {
+          "schema": {
+            "ref": "NvidiaMpsAllocation"
+          },
+          "optional": false
+        },
+        "$unknown": {
+          "schema": "never",
+          "optional": true
+        }
+      }
+    },
+    "NvidiaMpsAllocation": {
+      "fields": {
+        "memory": {
+          "schema": "number",
+          "optional": false
+        },
+        "maxComputePercent": {
+          "schema": "number",
+          "optional": true
+        }
+      }
+    },
+    "SharingStrategy.$UnknownMember": "never",
     "FirelensConfiguration": {
       "fields": {
         "type": {
@@ -1121,6 +1171,27 @@
         "WINDOWS_SERVER_2025_CORE",
         "WINDOWS_SERVER_2025_FULL",
         "WINDOWS_SERVER_20H2_CORE"
+      ]
+    },
+    "TrustedExecutionConfiguration": {
+      "fields": {
+        "isolationMode": {
+          "schema": {
+            "ref": "IsolationMode"
+          },
+          "optional": false
+        },
+        "attestationPolicy": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    },
+    "IsolationMode": {
+      "enum": [
+        "CONFIDENTIAL_SANDBOX",
+        "ISOLATED_SANDBOX",
+        "SHARED"
       ]
     }
   }

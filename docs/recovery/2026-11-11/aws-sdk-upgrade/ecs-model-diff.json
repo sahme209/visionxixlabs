@@ -1,0 +1,141 @@
+[
+  {
+    "definition": "IsolationMode",
+    "before": null,
+    "after": {
+      "enum": [
+        "CONFIDENTIAL_SANDBOX",
+        "ISOLATED_SANDBOX",
+        "SHARED"
+      ]
+    }
+  },
+  {
+    "definition": "NvidiaMpsAllocation",
+    "before": null,
+    "after": {
+      "fields": {
+        "memory": {
+          "schema": "number",
+          "optional": false
+        },
+        "maxComputePercent": {
+          "schema": "number",
+          "optional": true
+        }
+      }
+    }
+  },
+  {
+    "definition": "RegisterTaskDefinitionRequest",
+    "fieldsChanged": [
+      {
+        "field": "trustedExecutionConfiguration",
+        "before": null,
+        "after": {
+          "schema": {
+            "ref": "TrustedExecutionConfiguration"
+          },
+          "optional": true
+        }
+      }
+    ]
+  },
+  {
+    "definition": "ResourceRequirement",
+    "fieldsChanged": [
+      {
+        "field": "sharingStrategy",
+        "before": null,
+        "after": {
+          "schema": {
+            "ref": "SharingStrategy"
+          },
+          "optional": true
+        }
+      },
+      {
+        "field": "value",
+        "before": {
+          "schema": "string",
+          "optional": false
+        },
+        "after": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    ]
+  },
+  {
+    "definition": "ResourceType",
+    "before": {
+      "enum": [
+        "GPU",
+        "InferenceAccelerator"
+      ]
+    },
+    "after": {
+      "enum": [
+        "GPU",
+        "InferenceAccelerator",
+        "NeuronDevice"
+      ]
+    }
+  },
+  {
+    "definition": "SharingStrategy",
+    "before": null,
+    "after": {
+      "union": [
+        {
+          "ref": "SharingStrategy.NvidiaMpsMember"
+        },
+        {
+          "ref": "SharingStrategy.$UnknownMember"
+        }
+      ]
+    }
+  },
+  {
+    "definition": "SharingStrategy.$UnknownMember",
+    "before": null,
+    "after": "never"
+  },
+  {
+    "definition": "SharingStrategy.NvidiaMpsMember",
+    "before": null,
+    "after": {
+      "fields": {
+        "nvidiaMps": {
+          "schema": {
+            "ref": "NvidiaMpsAllocation"
+          },
+          "optional": false
+        },
+        "$unknown": {
+          "schema": "never",
+          "optional": true
+        }
+      }
+    }
+  },
+  {
+    "definition": "TrustedExecutionConfiguration",
+    "before": null,
+    "after": {
+      "fields": {
+        "isolationMode": {
+          "schema": {
+            "ref": "IsolationMode"
+          },
+          "optional": false
+        },
+        "attestationPolicy": {
+          "schema": "string",
+          "optional": true
+        }
+      }
+    }
+  }
+]

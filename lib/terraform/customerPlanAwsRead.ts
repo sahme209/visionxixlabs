@@ -40,11 +40,9 @@ export async function readCustomerPlanAws(input:CustomerPlanAwsInput):Promise<Cu
   s3Handler.handle=async(request,call)=>{
    const result=await nativeRead(request,call);
    if(request.method!=="HEAD"){
-    // S3's retained HTTP200-error middleware tees the body. Its Node pipe
-    // splitter does not forward upstream errors to either branch. Web tee
-    // retains/propagates the original bounded failure without disabling that
-    // middleware. Native bytes are charged once before tee; one bounded extra
-    // object copy may remain buffered while the SDK inspects the other branch.
+    // The reviewed SDK HTTP200-error middleware collects before inspection.
+    // Expose the bounded source as a Web stream so collector failures and aborts
+    // propagate; any SDK replay contains only bytes already charged here.
     if(!(result.response.body instanceof Readable))throw Error("unavailable");
     result.response.body=Readable.toWeb(result.response.body);
    }
