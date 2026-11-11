@@ -13,25 +13,26 @@ export async function matchingGeneratedDatamodel(generated: string, source: stri
   return actual.datamodel;
 }
 
+export async function actualGeneratedPrismaSchema() {
+  const client = new PrismaClient({ adapter: {
+    provider: 'postgres', adapterName: 'metadata-only',
+    async connect() { throw new Error('metadata_query_forbidden'); },
+  } });
+  try {
+    const config: unknown = Reflect.get(client, '_engineConfig');
+    const schema: unknown = config && typeof config === 'object'
+      ? Reflect.get(config, 'inlineSchema') : undefined;
+    if (typeof schema !== 'string' || schema.length === 0 || schema.length > 2_000_000) {
+      throw new Error('generated_prisma_metadata_unavailable');
+    }
+    return schema;
+  } finally { await client.$disconnect(); }
+}
 let metadata: ReturnType<typeof matchingGeneratedDatamodel> | undefined;
 export async function generatedPrismaModel(name: string) {
-  metadata ??= (async () => {
-    const client = new PrismaClient({ adapter: {
-      provider: 'postgres', adapterName: 'metadata-only',
-      async connect() { throw new Error('metadata_query_forbidden'); },
-    } });
-    try {
-      const config: unknown = Reflect.get(client, '_engineConfig');
-      const schema: unknown = config && typeof config === 'object'
-        ? Reflect.get(config, 'inlineSchema') : undefined;
-      if (typeof schema !== 'string' || schema.length === 0 || schema.length > 2_000_000) {
-        throw new Error('generated_prisma_metadata_unavailable');
-      }
-      return await matchingGeneratedDatamodel(schema, await readFile('prisma/schema.prisma', 'utf8'));
-    } finally {
-      await client.$disconnect();
-    }
-  })();
+  metadata ??= (async () => matchingGeneratedDatamodel(
+    await actualGeneratedPrismaSchema(), await readFile('prisma/schema.prisma', 'utf8'),
+  ))();
   const model = (await metadata).models.find(model => model.name === name);
   if (!model) throw new Error('generated_prisma_model_missing');
   return model;

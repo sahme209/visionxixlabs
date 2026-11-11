@@ -6,10 +6,10 @@
  * Logs deletions to AuditLog.
  */
 
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 
 const RETENTION_DAYS = parseInt(process.env.LEAD_DATA_RETENTION_DAYS ?? "365", 10);
-const prisma = new PrismaClient();
+const prisma = createDatabaseClient(process.env.DATABASE_URL);
 
 async function main() {
   const cutoff = new Date();

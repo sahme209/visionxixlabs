@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+import { actualGeneratedPrismaSchema } from '@/lib/database/__tests__/fixtures/generatedPrismaModel';
 const names = ["User", "OrgMembership", "TenantBillingPlan", "StripeBillingEvent", "UsageEvent", "AIUsageReservation", "AddOnPurchase", "OrganizationAIProviderPolicy", "SecureAuditRecord"];
 const schema = names.map(name => `model ${name} {\n  id String @id\n  note String @default("a  b")\n  org String\n  @@unique([org, id])\n}`).join("\n");
 describe("used generated schema qualifications do not forgive semantic drift", () => {
@@ -13,7 +14,7 @@ describe("used generated schema qualifications do not forgive semantic drift", (
   });
   it("checks the actual read-only generated cache against all used/conservative source models without generation", async () => {
     const b = await import("./fixtures/ownedCheckoutWorkerBundle"), { readFileSync } = await import("node:fs");
-    expect(b.ownedGeneratedModelFacts(readFileSync("prisma/schema.prisma", "utf8"), readFileSync("node_modules/.prisma/client/schema.prisma", "utf8")).map(r => r.name)).toEqual(names);
+    expect(b.ownedGeneratedModelFacts(readFileSync("prisma/schema.prisma", "utf8"), await actualGeneratedPrismaSchema()).map(r => r.name)).toEqual(names);
   });
 
 });

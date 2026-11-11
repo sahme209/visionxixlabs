@@ -1,6 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
-import { PrismaClient } from "../prismaClient";
-import { postgresConnectionOptions } from "./postgresConnectionPolicy";
+import { PrismaClient } from "../prismaClient.ts";
+import { postgresConnectionOptions } from "./postgresConnectionPolicy.ts";
 
 /** Construction is lazy configuration, never authorization or resource custody.
  * Callers own disconnection and must retain their existing scope/marker checks. */

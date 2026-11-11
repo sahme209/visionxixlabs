@@ -4,7 +4,7 @@ import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 export const enrollmentMigration = "20261016010000_cloud_account_enrollment";
@@ -20,7 +20,7 @@ export function validateAwsEnrollmentRehearsalTarget(value) {
 /** Deliberately synthetic, initially empty fixture; never accepts production targets. */
 export async function rehearseAwsEnrollment(value) {
   const target = validateAwsEnrollmentRehearsalTarget(value);
-  const client = new PrismaClient({ datasources: { db: { url: target } } });
+  const client = createDatabaseClient(target);
   const temp = mkdtempSync(join(tmpdir(), "axiom-aws-enrollment-"));
   const sql = readFileSync(join(root, "prisma/migrations", enrollmentMigration, "migration.sql"), "utf8");
   const revokeSql = readFileSync(join(root, "prisma/migrations", revocationMigration, "migration.sql"), "utf8");
@@ -97,7 +97,7 @@ export async function rehearseAwsEnrollment(value) {
     assert.equal(await client.$executeRawUnsafe(consume), 0);
     // Real SSI predicate test: distinct account keys cannot rely on the
     // existing per-account unique index to arbitrate this last-slot race.
-    const racers = [new PrismaClient({ datasources: { db: { url: target } } }), new PrismaClient({ datasources: { db: { url: target } } })];
+    const racers = [createDatabaseClient(target), createDatabaseClient(target)];
     let arrivals = 0;
     let releaseBarrier;
     let rejectBarrier;

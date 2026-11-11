@@ -5,7 +5,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writ
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 import { inspectAuthRecovery, publicRecoverySummary } from "./auth-recovery-preflight.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -25,7 +25,7 @@ export function validateRehearsalTarget(value) {
 
 export async function rehearseAuthRecovery(connectionString) {
   const target = validateRehearsalTarget(connectionString);
-  const client = new PrismaClient({ datasources: { db: { url: target } } });
+  const client = createDatabaseClient(target);
   const temp = mkdtempSync(join(tmpdir(), "axiom-auth-rehearsal-"));
   const schema = join(temp, "prisma/schema.prisma");
   const fixtureEmail = "fixture-founder@example.test";
