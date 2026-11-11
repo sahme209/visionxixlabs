@@ -126,3 +126,7 @@ AWS PR #315 merged with all checks green before starting this batch. AI 7.0.170 
 ## November 11 Tailwind migration and ESLint hold
 
 AWS #315 and AI SDK 7 #317 merged sequentially with green CI. ESLint 10 produced an invalid peer graph with the latest React/import/accessibility plugins; the owner chose to retain ESLint 9 and continue. Tailwind 4.3.5 now has a CSS-first web/desktop candidate, literal-only template migration, scoped scanners and browser cascade checks. No deployment or installer release. Full evidence and remaining browser/native limits: `../recovery/2026-11-11/tailwind4-upgrade/README.md`.
+
+## November 11 TypeScript native transition
+
+Tailwind #319 merged green as `77d932c5` before this next batch. Direct TypeScript 7.0.2 reproduced 50 API-consumer type errors and invalid ESLint peers. The side-by-side candidate retains exact 5.9.3 API and existing evidence pins, while explicit native checks cover root, production source and desktop. No suppressed checks or unstable API rewrite. Root/desktop lockfiles are generated only by the dependency workflow; the fixed alias has registry-only validation. Production remains build 4. Candidate evidence: `../recovery/2026-11-11/typescript7-upgrade/README.md`.

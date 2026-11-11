@@ -10,12 +10,12 @@ This checkpoint supersedes earlier operational instructions, not historical evid
 
 - ~~AWS SDK 3.1166.0 upgrade: PR #315 merged with green CI.~~ [Evidence](../recovery/2026-11-11/aws-sdk-upgrade/README.md). Not production-deployed.
 - ~~AI SDK 7.0.170 upgrade: PR #317 merged with green CI.~~ [Evidence](../recovery/2026-11-11/ai7-upgrade/README.md). Not production-deployed; production Node >=22 remains a deployment check.
-- **In progress — Tailwind 4.3.5, PR #319:** website and desktop source migration, reviewed cascade/source bounds and responsive browser checks. Latest local suite: 17,809 passed, 893 skipped, one expected failure, no unexpected failures. GitHub checks are queued; not merged, deployed or installer-qualified. [Evidence and limitations](../recovery/2026-11-11/tailwind4-upgrade/README.md). The reviewed current-schema unit-helper repair does not renew historical qualification packets or authorize database work.
+- ~~**Tailwind 4.3.5, PR #319 merged green as `77d932c5`.**~~ website and desktop source migration, reviewed cascade/source bounds and responsive browser checks. Latest local suite: 17,809 passed, 893 skipped, one expected failure, no unexpected failures. All applicable GitHub checks passed; not deployed or installer-qualified. [Evidence and limitations](../recovery/2026-11-11/tailwind4-upgrade/README.md). The reviewed current-schema unit-helper repair does not renew historical qualification packets or authorize database work.
 - **Main verified green** at `172bf5ee3363176f99911f1786b1c15836b90c44`, including Typecheck + Vitest. **Production remains build 4** at `a344f4f601375257b00d75273ed927fd7e080de4`, READY; [production receipt](../recovery/2026-11-09/build-4/RESULT.md). Source merged after that receipt is not automatically live.
 
 ### Next, in order
 
-1. Finish PR #319 only when every applicable check is green. No duplicate retry loop for queued jobs.
+1. ~~PR #319 merged only after every applicable check passed.~~ Continue TypeScript 7 native checks as a side-by-side candidate, keeping exact reviewed API 5.9.3 for existing tooling. The direct replacement is incompatible; no forced peers, unstable API substitution or historical packet renewal. [Evidence](../recovery/2026-11-11/typescript7-upgrade/README.md).
 2. Remaining platform migrations, separate sequential PRs: TypeScript 7, Prisma 7, Vitest 5. Verify actual package availability and compatibility before choosing versions. Prisma requires an owner-approved production schema check; the owner runs the SQL. **ESLint remains on 9 by the owner's November 11 decision** until its plugins support 10; do not force peers or disable rules.
 3. Fix `privateFixtureJoined.test.ts` only if its actual failure reproduces; capture the failure site, do not guess.
 4. Offline AI only after the owner accepts the ADR and answers its three decisions. No unapproved fallback or inference.

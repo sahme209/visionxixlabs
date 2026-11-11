@@ -76,7 +76,7 @@ Axiom (VisionXIXLabs) is a governed control plane for AI agents and cloud/releas
 - **SDKs:** `sdk/` (TS, Swift, Python, Go). The Python CLI is `sdk/python/vxl_cli.py` (`vxl ask`, `vxl outcome`).
 
 **Stack:**
-- Next.js **16.4.5**, React 19.3, TypeScript 5.9, Tailwind **4.3.5** (CSS-first migration; customer engine acceptance remains gated), Prisma **5.22**, Vitest **4.1.12**.
+- Next.js **16.4.5**, React 19.3, TypeScript 7.0.2 native checks plus retained 5.9.3 compiler API (migration candidate), Tailwind **4.3.5** (CSS-first migration; customer engine acceptance remains gated), Prisma **5.22**, Vitest **4.1.12**.
 - Node 24 in CI; ai 7 requires Node 22+. Node 24 is used for this upgrade’s local checks.
 - Desktop: Vite 8, Tauri 2.
 
@@ -149,7 +149,7 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 Follow the table in `CLAUDE.md`. The ones that bite most often:
 
-November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind batch updates styling, the install guide’s engine requirements, generated heading hashes/corpus, three existing ModuleIntro review dates and the internal Desktop Pairing scenario. Guide count remains 31; SDK methods and webhook events are unchanged. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
+November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind batch updates styling, the install guide’s engine requirements, generated heading hashes/corpus, three existing ModuleIntro review dates and the internal Desktop Pairing scenario. Guide count remains 31; SDK methods and webhook events are unchanged. The TypeScript transition changes build/CI tooling only; no module, product flow, API or guide text changes apply. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
 
 | You change | You must also |
 |---|---|
@@ -305,8 +305,8 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 2. **ai 7: DONE, PR #317 merged green (7.0.170). Not deployed.** Evidence: `docs/recovery/2026-11-11/ai7-upgrade/README.md`. Gateway URL v3 → v4. Update the pinned dispatch URL in the installed-SDK composition tests only after confirming the v4 endpoint is the reviewed Vercel AI Gateway. Run the governed-call tests.
 3. **Platform migrations, one PR each, in a branch with CI as the judge:**
    - ESLint 10: HOLD on ESLint 9 by owner decision November 11. Published React/import/accessibility plugins still reject 10; the normal install emits peer conflicts and `npm ls eslint --all` reports ELSPROBLEMS. Do not force or disable rules. Diagnostic: `docs/recovery/2026-11-11/tailwind4-upgrade/eslint10-hold.json`.
-   - Tailwind 4: CSS-first 4.3.5 implementation for web and desktop, merge gated on all green checks. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
-   - TypeScript 7 (native compiler: tooling that loads `node_modules/typescript` breaks, including the owned-website TS API fixture, so re-review those pins);
+   - Tailwind 4: DONE, PR #319 merged green as `77d932c5`; CSS-first 4.3.5 for web and desktop, not deployed or installer-qualified. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
+   - TypeScript 7: native 7.0.2 side-by-side candidate. Keep exact API 5.9.3 and its reviewed pins for Next/ESLint/fixture emitters; use explicit native checks for root, production source and desktop builds. Direct replacement reproduced missing API and invalid peers; never force them. API-major Dependabot holds remain deliberate. See `docs/recovery/2026-11-11/typescript7-upgrade/README.md`.
    - Prisma 7: new client generator and config. **Needs an owner-approved production schema check; no data changes.**
    - Vitest 5.
    - Remove each package's Dependabot ignore line after its PR merges.
