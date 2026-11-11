@@ -207,7 +207,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
   - Build 1, build 2 and build 3 (`61c69e65`, after the AgentGatewayRequest and AuditSeal migrations).
   - **Build 4 (`a344f4f6`)**: no database step; all smoke checks passed. See `docs/recovery/2026-11-09/build-4/RESULT.md`.
   - The owner's original cap was 3 builds; build 4 was explicitly approved. **Ask before each new production build.**
-- **Latest applied migration in production:** `20261109100000_add_audit_seal`, which matches the repo.
+- **Historical build-3 latest-applied receipt:** `20261109100000_add_audit_seal`. **November 11 live read of recorded production branch `br-holy-voice-ai303o8m` / compute `ep-small-mountain-ailw0kvt`: latest is `20261108120000_add_pipeline_ai_call_quote_fields`; both November 9 tables/ledger rows are absent.** This discrepancy is unresolved; do not deploy or repair automatically. See `docs/recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json`.
 - **Migrations must be additive.** Never reverse-migrate; rollback means the previous bundle plus a backup restore.
 - **The Vercel build does not run migrations.** It runs `prisma generate` and `next build` with `NODE_OPTIONS=--max-old-space-size=16384`.
 - **Preview environment shares the production database.** Do not create preview deploys until the owner sets up a separate Neon preview branch.
@@ -307,7 +307,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
    - ESLint 10: HOLD on ESLint 9 by owner decision November 11. Published React/import/accessibility plugins still reject 10; the normal install emits peer conflicts and `npm ls eslint --all` reports ELSPROBLEMS. Do not force or disable rules. Diagnostic: `docs/recovery/2026-11-11/tailwind4-upgrade/eslint10-hold.json`.
    - Tailwind 4: DONE, PR #319 merged green as `77d932c5`; CSS-first 4.3.5 for web and desktop, not deployed or installer-qualified. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
    - TypeScript 7: DONE, PR #320 merged green as `a99c053f`; native 7.0.2 side-by-side checks. Keep exact API 5.9.3 and its reviewed pins for Next/ESLint/fixture emitters; use explicit native checks for root, production source and desktop builds. Direct replacement reproduced missing API and invalid peers; never force them. API-major Dependabot holds remain deliberate. See `docs/recovery/2026-11-11/typescript7-upgrade/README.md`.
-   - Prisma 7: new client generator and config. **Needs an owner-approved production schema check; no data changes.** Prepared owner-run query: `docs/recovery/2026-11-11/prisma7-preflight/1-PRECHECK-READ-ONLY.sql` (owner approved November 11; owner-run result pending).
+   - Prisma 7: new client generator and config. **Needs an owner-approved production schema check; no data changes.** Prepared owner-run query: `docs/recovery/2026-11-11/prisma7-preflight/1-PRECHECK-READ-ONLY.sql` (executed once read-only by Codex after the owner explicitly requested agent execution; mismatch found, see `OBSERVED-RESULT.json`).
    - Vitest 5.
    - Remove each package's Dependabot ignore line after its PR merges.
 4. **Flaky `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`.**

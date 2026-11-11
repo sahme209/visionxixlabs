@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-11-11",
+  "authorization": "User explicitly instructed Codex to run the approved read-only query through the existing connection.",
+  "projectId": "odd-union-57413470",
+  "branchId": "br-holy-voice-ai303o8m",
+  "computeId": "ep-small-mountain-ailw0kvt",
+  "database": "neondb",
+  "sqlSha256": "292f691a0b662124d204acf309ccac7092564530312c7993eaf58c24a969439a",
+  "rows": [
+    {
+      "database_name": "neondb",
+      "server_version_num": 170011,
+      "unfinished_migrations": "0",
+      "latest_applied": "20261108120000_add_pipeline_ai_call_quote_fields",
+      "repo_not_applied": [
+        "20261109090000_add_agent_gateway_request",
+        "20261109100000_add_audit_seal"
+      ],
+      "database_not_in_repo": null,
+      "audit_seal_exists": false,
+      "agent_gateway_exists": false,
+      "reservation_columns": [
+        {
+          "name": "admissionContract",
+          "type": "text",
+          "nullable": "NO"
+        },
+        {
+          "name": "estimatedCents",
+          "type": "integer",
+          "nullable": "NO"
+        },
+        {
+          "name": "quoteEvidence",
+          "type": "jsonb",
+          "nullable": "YES"
+        }
+      ]
+    }
+  ],
+  "readOnly": true,
+  "productionChangeAuthorized": false,
+  "assessment": "Mismatch against historical build-3 receipt: two absent tables and migration records. Reservation columns match; no unfinished/unrecognized migration. No repair applied and no rollback/restoration cause inferred."
+}

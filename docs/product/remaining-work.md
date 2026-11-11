@@ -151,3 +151,7 @@ Narrow AI security activation candidatebf5dbd65 is prepared from recorded produc
 ## November 11 dependency sequence
 
 AWS 3.1166.0 merged as PR #315 with every CI check green; production remains build 4. AI 7.0.170 merged green in PR #317 after review of Vercel Gateway v4 and explicit text-only tool choice, preserving admission, routing, caps, redaction and one-attempt guards. Tailwind 4 PR #319 merged green; TypeScript 7 side-by-side tooling merged green as PR #320. Prisma 7 is next, pending the owner-approved production schema check. Not deployed. Evidence: `../recovery/2026-11-11/ai7-upgrade/README.md`. Platform migrations remain next, each in its own green PR.
+
+## November 11 live schema discrepancy
+
+The approved, explicitly agent-delegated read-only Prisma preflight ran once on the recorded production branch/compute. Both November 9 tables (`AuditSeal`, `AgentGatewayRequest`) and ledger entries are absent; reservation columns match and unfinished migrations are zero. Historical build-3 receipt differs. Reconcile before production changes; no automatic apply, rollback or target-cause claim. [Actual result](../recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json).

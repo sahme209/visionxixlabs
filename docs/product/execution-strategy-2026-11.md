@@ -134,3 +134,7 @@ Tailwind #319 merged green as `77d932c5` before this next batch. Direct TypeScri
 ## November 11 TypeScript merge / Prisma gate
 
 PR #320 merged as `a99c053f` after all applicable CI checks passed, including macOS native lint. Terminal GitHub TLS timeouts were handled through the existing GitHub connector with an exact-head merge guard, without bypassing checks. Production unchanged. Prisma 7 is next; owner-run initial read-only catalog/migration query prepared under `../recovery/2026-11-11/prisma7-preflight/`, not executed or permission to modify a database.
+
+## November 11 agent-run read-only preflight
+
+After approving the owner-run query, the user explicitly requested Codex execution. Existing Neon connector metadata matched the recorded protected main branch and compute; one exact prepared SELECT returned two absent November 9 tables/ledger rows, zero unfinished migrations and correct reservation columns. Source/historical receipt conflict remains unresolved. No secret fetched, database write or deployment. Actual result preserved under `../recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json`; this supersedes the pending-owner-result note above.

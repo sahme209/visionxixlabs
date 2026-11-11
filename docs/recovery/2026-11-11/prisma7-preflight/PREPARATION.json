@@ -3,6 +3,6 @@
   "schemaSha256": "4a8c274ec951f381a04a2c6e9bbf4d2d2e5f6f98c1054f4c756dac41b6bd202b",
   "migrationCount": 120,
   "sqlSha256": "292f691a0b662124d204acf309ccac7092564530312c7993eaf58c24a969439a",
-  "execution": "NOT RUN by Codex; awaiting owner-run result row",
+  "execution": "Executed once read-only by Codex through Neon after the user explicitly requested agent execution; see OBSERVED-RESULT.json",
   "ownerApproval": "2026-11-11: Approve; I\u2019ll run the query in Neon"
 }

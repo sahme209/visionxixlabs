@@ -1,14 +1,22 @@
-# Prisma 7 initial production compatibility gate — approved, result pending
+# Prisma 7 initial production compatibility gate — mismatch observed
 
 TypeScript PR #320 merged green as `a99c053f`. This is the next handoff item.
 This preparation changes no schema, data, migration ledger or runtime setting.
 It authorizes no production query by itself.
 
-The owner approved this read-only check on November 11 and will run it in Neon.
-The result is still pending; approval is not proof that it ran. Select the confirmed production
-Neon branch/database used by Vercel (not a preview or backup), and run only
-`1-PRECHECK-READ-ONLY.sql`. Return its metadata result only, never a connection
-string, password or console screenshot containing one.
+The owner approved the read-only check, then explicitly instructed Codex to run it.
+Codex verified the recorded production branch and its compute through current Neon
+metadata, then executed exactly the prepared SELECT once through the connector.
+No connection string or credential was fetched. See `OBSERVED-RESULT.json`.
+
+**Observed:** PostgreSQL 17.11, zero unfinished migrations, no unrecognized ledger
+names, and all three reservation columns match. However, latest applied migration
+is `20261108120000_add_pipeline_ai_call_quote_fields`; `AuditSeal` and
+`AgentGatewayRequest` are absent along with both November 9 ledger records.
+This contradicts the historical build-3 receipt. Do not infer whether this is a
+restore, target/configuration mismatch or another cause. No repair was applied.
+Current production changes remain blocked pending reconciliation and separate
+explicit authorization for any write. The historical receipt is preserved.
 
 Expected baseline from the accepted build-3 database receipt: database `neondb`,
 zero unfinished migrations, latest `20261109100000_add_audit_seal`, both new tables
