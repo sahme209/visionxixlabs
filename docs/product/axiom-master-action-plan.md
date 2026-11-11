@@ -4,6 +4,8 @@
 
 This checkpoint supersedes earlier operational instructions, not historical evidence or unfinished requirements. **Read root [CODEX_HANDOFF.md](../../CODEX_HANDOFF.md) in full, then [AGENTS.md](../../AGENTS.md) and [CLAUDE.md](../../CLAUDE.md).** The handoff controls execution and permissions; this master plan retains the complete application and website scope. Do not repeat completed operations from the dated checkpoints below.
 
+The complete ready-to-paste continuation goal is saved in [codex-resume-goal.md](codex-resume-goal.md). The pinned app goal still requires a manual text update; available tools cannot replace or resume it.
+
 **Updated goal:** Complete the authorized handoff section 10.1 sequence for Axiom, one fully green PR at a time, keeping the master requirements, remaining-work record and living documentation synchronized. Preserve security, premium visual clarity and ease of use. Ask for the owner decisions in section 10.2 and the real-world steps in section 10.3; their presence in this plan is not authorization. Completion means the required acceptance evidence exists, not merely local code or simulated tests. Continue authorized, unblocked work without routine checkpoints.
 
 ### Verified position
