@@ -58,11 +58,11 @@ See `lib/workspace/workspaceKind.ts`.
 
 ```bash
 # Web
-npx tsc --noEmit
+npm run typecheck
 npx vitest run --reporter=dot
 
 # Desktop
-cd desktop && npx tsc --noEmit && npm run build
+cd desktop && npm run typecheck && npm run build
 
 # Python CLI
 python3 -m unittest sdk.python.__tests__.test_vxl_cli
