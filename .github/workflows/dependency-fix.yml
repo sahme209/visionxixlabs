@@ -36,7 +36,7 @@ jobs:
           PACKAGES: ${{ inputs.packages }}
         run: |
           # Exact registry versions; only the fixed TypeScript native alias is allowed.
-          node --test scripts/tests/dependency-package-specs.test.cjs
+          node --test scripts/tests/test_dependency_package_specs.cjs
           node scripts/validate-dependency-specs.cjs
           if [ "${{ inputs.directory }}" = "desktop" ]; then (cd desktop && npm install --ignore-scripts --save-exact $PACKAGES); else npm install --ignore-scripts --save-exact $PACKAGES; fi
       - name: Apply non-breaking fixes
