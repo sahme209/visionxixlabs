@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import {parseReadinessRunStart,readinessRunId,readinessIntentHash,readinessSnapshotDigest,READINESS_ADAPTER,READINESS_LIMITS,type ReadinessRunStatus} from './readonlyRunContract';
 import {savedBotTaskContentHash,type SavedBotTaskContent} from './savedTaskSchema';
 import type {SavedBotTaskScope} from './savedTaskRepo';
@@ -55,7 +56,7 @@ export async function createReadinessRun(repo:ReadinessRunRepo,scope:SavedBotTas
    const row=await tx.botTaskRun.create({data:{...where,taskId:body.taskId,taskVersion:body.expectedVersion,clientRequestId:body.clientRequestId,adapter:READINESS_ADAPTER,intentHash,snapshotJson,snapshotDigest:readinessSnapshotDigest(scope,body,snapshotJson),status:'queued',revision:0,attemptCount:0,eventCount:1,storedBytes,cancelRequested:false,leaseOwner:null,leaseExpiresAt:null,createdAt:capturedNow,updatedAt:capturedNow,deadlineAt}});
    await tx.botTaskRunEvent.create({data:initialEvent});return row;
   });}catch(error){
-   const code=error&&typeof error==='object'&&'code' in error?error.code:undefined;
+   const code=databaseErrorCode(error);
    if((code==='P2002'||code==='P2034')&&attempt<2)continue;
    if(code==='P2002'||code==='P2034')throw new ReadinessRunConflict();
    throw error;

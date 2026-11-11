@@ -127,7 +127,7 @@ it('collects a failed window as closed public fields without config, logs or pro
   f.put('capture.json', { success: false, timedOutOperation: 'cdp.Page.navigate' });
   f.put('done.json', { success: false, nonce: f.config.nonce });
   writeFileSync(join(f.directory, 'bounded-runtime.log'), 'PRIVATE');
-  expect(f.run().outcome).toBe('failed');
+  const observed=f.run();expect(observed.outcome).toBe('failed');expect(observed.startupDiagnostic.status).toBe('unavailable');
   const output = readFileSync(join(f.destination, 'summary.json'), 'utf8');
   expect(output).toContain('cdp.Page.navigate'); expect(output).not.toContain('PRIVATE'); expect(output).not.toContain(f.directory);
 });
@@ -234,3 +234,11 @@ it('privately collects the final server receipt without publishing its identity 
  let reads = 0; Object.defineProperty(value, 'issued', { enumerable: true, get() { reads++; throw Error('PRIVATE'); } });
  expect(publicInitialNavigation(value)).toBeNull(); expect(reads).toBe(0);
  });
+it('publishes only fixed startup categories from its owned bounded log',()=>{
+ const f=fixture();
+ writeFileSync(join(f.directory,'bounded-runtime.log'),'Cannot find module /PRIVATE_SECRET/generated/prisma/client.js\nSECRET=PRIVATE_SECRET',{mode:0o600});
+ const result=f.run();
+ expect(result.startupDiagnostic).toEqual({status:'observed',categories:['module_missing','generated_prisma']});
+ expect(JSON.stringify(result)).not.toContain('PRIVATE_SECRET');
+ expect(readFileSync(join(f.destination,'summary.json'),'utf8')).not.toContain('PRIVATE_SECRET');
+});

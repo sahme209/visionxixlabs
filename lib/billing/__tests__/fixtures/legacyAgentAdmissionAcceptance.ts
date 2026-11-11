@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 /** Extends the EXISTING opt-in owned PG17 suite. Declaring these cases creates
  * no client/container/connection and has no SDK/provider path. */
 import { expect, it } from "vitest";
@@ -15,7 +16,7 @@ export function legacyClaimOutcome(result: PromiseSettledResult<boolean>): Claim
   const error: unknown = result.reason;
   if (!error || typeof error !== "object") return "unexpected_error";
   const own = (object: object, key: string) => Object.getOwnPropertyDescriptor(object, key)?.value as unknown;
-  const code = own(error, "code"), meta = own(error, "meta");
+  const code = databaseErrorCode(error), meta = own(error, "meta");
   return code === "P2034" || code === "P2010" && !!meta && typeof meta === "object" && own(meta, "code") === "40001" ? "serialization_conflict" : "unexpected_error";
 }
 

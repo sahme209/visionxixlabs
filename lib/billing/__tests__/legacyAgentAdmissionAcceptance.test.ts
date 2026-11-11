@@ -25,6 +25,8 @@ describe("owned legacy PG admission acceptance declarations (not SQL execution)"
     { result: { status: "fulfilled", value: true }, verdict: "claimed" },
     { result: { status: "fulfilled", value: false }, verdict: "refused" },
     { result: { status: "rejected", reason: { code: "P2034" } }, verdict: "serialization_conflict" },
+    { result: { status: "rejected", reason: { name: "DriverAdapterError", cause: { kind: "TransactionWriteConflict" } } }, verdict: "serialization_conflict" },
+    { result: { status: "rejected", reason: { name: "DriverAdapterError", cause: { kind: "UnknownError" } } }, verdict: "unexpected_error" },
     { result: { status: "rejected", reason: { code: "P2010", meta: { code: "40001" } } }, verdict: "serialization_conflict" },
     { result: { status: "rejected", reason: { code: "P2010", meta: { code: "23505" } } }, verdict: "unexpected_error" },
     { result: { status: "rejected", reason: { code: "P1001" } }, verdict: "unexpected_error" },

@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import "server-only";
 import { NextResponse, type NextRequest } from "next/server";
 import { prisma } from "@/lib/db";
@@ -16,7 +17,7 @@ export async function azureEnrollmentPrincipal(request: NextRequest, mode: "read
 }
 export const azureEnrollmentUnauthorized = () => NextResponse.json({ ok: false, error: "desktop_session_required", message: "A currently authorized paired desktop session is required." }, { status: 401 });
 export function azureEnrollmentFailure(error: unknown): Response {
-    const prismaCode = error && typeof error === "object" && "code" in error ? String(error.code) : "";
+    const prismaCode = databaseErrorCode(error) ?? "";
     const code: AzureErrorCode = error instanceof AzureEnrollmentError ? error.code : ["P2002", "P2034"].includes(prismaCode) ? "enrollment_conflict" : "enrollment_unavailable";
     const details: Record<AzureErrorCode, [
         number,

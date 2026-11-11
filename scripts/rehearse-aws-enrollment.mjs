@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "../lib/database/databaseErrorCode.ts";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
@@ -117,8 +118,8 @@ export async function rehearseAwsEnrollment(value) {
       const failures = outcomes.filter(result => result.status === "rejected");
       assert.equal(failures.length, 1);
       const error = failures[0].reason;
-      assert.ok(error?.code === "P2034" || error?.meta?.code === "40001", "the losing transaction must fail with a serialization conflict");
-      lastSlotFailureCode = error.meta?.code ?? error.code;
+      assert.ok(databaseErrorCode(error) === "P2034" || error?.meta?.code === "40001", "the losing transaction must fail with a serialization conflict");
+      lastSlotFailureCode = error.meta?.code ?? databaseErrorCode(error);
       const [finalCount] = await client.$queryRawUnsafe(`SELECT count(*)::int AS count FROM "CloudAccount" WHERE "organizationId"=$1`, "fixture-last-slot-org");
       assert.equal(finalCount.count, 1);
     } finally {

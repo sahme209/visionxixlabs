@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import "server-only";
 import {randomUUID} from "node:crypto";
 import {sha256ContentHash} from "@/lib/tauri/contentHash";
@@ -20,7 +21,7 @@ class Failure extends Error {constructor(readonly kind:CustomerPlanFailure["kind
 function fail(kind:CustomerPlanFailure["kind"],reason:string):never{throw new Failure(kind,reason);}
 function failure(error:unknown):CustomerPlanFailure{
  if(error instanceof Failure)return {kind:error.kind,reason:error.reason};
- if(error&&typeof error==="object"&&"code" in error&&["P2034","P2002"].includes(String(error.code)))return {kind:"conflict",reason:"customer_plan_concurrent_change"};
+ if(["P2034","P2002"].includes(databaseErrorCode(error)??""))return {kind:"conflict",reason:"customer_plan_concurrent_change"};
  return {kind:"unavailable",reason:"customer_plan_unavailable"};
 }
 function exact(value:unknown,keys:string[]):Record<string,unknown>{if(!value||typeof value!=="object"||Array.isArray(value)||Object.keys(value).length!==keys.length||!keys.every(k=>Object.hasOwn(value,k)))fail("invalid","customer_plan_input_invalid");return value as Record<string,unknown>;}

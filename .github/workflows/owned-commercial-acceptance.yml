@@ -90,6 +90,9 @@ jobs:
           npx vitest run lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts
           --testNamePattern 'actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold'
           --reporter=dot --reporter=json --outputFile.json=/tmp/axiom-owned-application-http.json
+      - name: Report fixed startup failure categories only
+        if: failure()
+        run: node scripts/report-isolated-next-startup.mjs
       - name: Require the selected application HTTP case to execute
         run: node scripts/check-owned-commercial-acceptance.mjs /tmp/axiom-owned-application-http.json http
       - name: Verify fixture container cleanup

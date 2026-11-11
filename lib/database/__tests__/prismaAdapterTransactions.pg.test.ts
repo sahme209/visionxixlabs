@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "../databaseErrorCode";
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { realpathSync, statSync } from 'node:fs';
 import { randomUUID } from 'node:crypto';
@@ -51,4 +52,21 @@ describe.skipIf(!socket)('actual Prisma 7 adapter transactions on owned PostgreS
     expect(refused?.status === 'rejected' ? refused.reason : undefined).toMatchObject({ code: 'P2034' });
     expect((await db.durableAgentWorkflow.findUniqueOrThrow({ where: { id } })).version).toBe(1);
   }, 15_000);
+  it('recognizes the actual raw-SQL adapter abort without accepting arbitrary rejection', async () => {
+    const id = randomUUID(); await db.durableAgentWorkflow.create({ data: data(id) });
+    let arrived = 0; let release!: () => void;
+    const barrier = new Promise<void>(resolve => { release = resolve; });
+    const increment = () => db.$transaction(async tx => {
+      const [row] = await tx.$queryRawUnsafe<Array<{ version: number }>>('SELECT version FROM "DurableAgentWorkflow" WHERE id=$1', id);
+      if (++arrived === 2) release();
+      await barrier;
+      return tx.$executeRawUnsafe('UPDATE "DurableAgentWorkflow" SET version=$1 WHERE id=$2', row.version + 1, id);
+    }, { isolationLevel: 'Serializable', timeout: 10_000, maxWait: 3_000 });
+    const results = await Promise.allSettled([increment(), increment()]);
+    expect(results.filter(result => result.status === 'fulfilled')).toHaveLength(1);
+    const refused = results.find(result => result.status === 'rejected');
+    expect(databaseErrorCode(refused?.status === 'rejected' ? refused.reason : undefined)).toBe('P2034');
+    expect((await db.durableAgentWorkflow.findUniqueOrThrow({ where: { id } })).version).toBe(1);
+  }, 15_000);
+
 });
