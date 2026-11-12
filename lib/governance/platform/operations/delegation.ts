@@ -22,6 +22,7 @@ type Identity=Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authent
 type Consumed=Awaited<ReturnType<Identity['consume']>>;
 export interface OperationalCredentialIssuer{
  assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
+ assertSourceCurrent?(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest'],metadata:CustodianCredentialObservation):Promise<void>;
  /** Private fixed issuer; no raw token/role/target from request JSON. */
  issue(manifest:OperationalDelegation['manifest'],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>):Promise<unknown>;
 }
@@ -50,6 +51,13 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
  async function event(tx:OperationalDelegationTransaction,parent:PlatformAction,state:OperationalDelegation,kind:'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'|'credential.source_observed'){
   await tx.event({actionId:state.actionId,state:parent,kind,operationalDigest:sha256ContentHash(state)});
  }
+ async function sourceCurrent(tx:OperationalDelegationTransaction,state:OperationalDelegation){
+  if(!state.manifest.issuerProfileDigest)return;
+  const source=state.sourceCredential;if(!issuer?.assertSourceCurrent||source?.status!=='issued'||source.profileDigest!==state.manifest.issuerProfileDigest)return fail();
+  const before=await tx.now();if(before>=source.expiresAt)return fail();
+  await issuer.assertSourceCurrent(tx,state.manifest,{leaseRef:source.leaseRef,profileDigest:source.profileDigest,expiresAt:source.expiresAt});
+  const after=await tx.now();if(after<before||after>=source.expiresAt)return fail();
+ }
  async function recordCredential(proof:object,rawOutcome:unknown){const pending=issuance.get(proof);if(!pending)return fail();issuance.delete(proof);
    try{const outcome=credentialOutcome.parse(rawOutcome);return await locked(pending.actionId,async(tx,key)=>{
     const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending')return fail();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();
@@ -63,7 +71,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    async function sendCurrent(tx:OperationalDelegationTransaction,key:string,child:boolean){
     const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==held!.value.leaseRef||state.credential.expiresAt!==held!.value.expiresAt||state.executionPrincipal?.replayKey!==held!.identity.replayKey)return fail();
     await current(tx,state,'claimed');await targets!.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,held!.identity,binding(state));await issuer!.assertQualified(tx,state.manifest);await transport!.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets!.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,held!.identity,binding(state));
-    const now=await tx.now();if(now>=held!.value.expiresAt||child&&await tx.readEffect(key,0)!=='claimed')return fail();return state;
+    await sourceCurrent(tx,state);const now=await tx.now();if(now>=held!.value.expiresAt||child&&await tx.readEffect(key,0)!=='claimed')return fail();return state;
    }
    let claimed=false;
    try{
@@ -94,7 +102,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
     const beforeIssue=async()=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
-     const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));
+     const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await sourceCurrent(tx,state);
     });abort.signal.throwIfAborted();authorized=true};
     const recordSource=async(raw:CustodianCredentialObservation)=>{
      abort.signal.throwIfAborted();const metadata=custodianCredentialObservation.parse(raw);
@@ -109,7 +117,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    const history=await recordCredential(observation,{status:'issued',leaseRef:value.leaseRef,expiresAt:value.expiresAt});
    if(!authorized)return fail();
    await locked(pending.actionId,async(tx,key)=>{
-    const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==value.leaseRef||state.credential.expiresAt!==value.expiresAt)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');const now=await tx.now();if(now>=value.expiresAt)return fail();
+    const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==value.leaseRef||state.credential.expiresAt!==value.expiresAt)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await sourceCurrent(tx,state);const now=await tx.now();if(now>=value.expiresAt)return fail();
    });
    const credentialHandle=Object.freeze(Object.create(null)) as object;credentials.set(credentialHandle,{actionId:pending.actionId,identity:pending.identity,value});return {history,credentialHandle};
    }catch{throw Error('operational_credential_issuance_unconfirmed')}

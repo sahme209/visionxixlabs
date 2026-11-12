@@ -8,6 +8,7 @@ import type {OperationalCredentialIssuer} from './delegation';
 interface CustodianCredential{leaseRef:string;profileDigest:string;accessKeyId:string;secretAccessKey:string;sessionToken:string;expiresAt:number}
 export interface PrivateOperationalStsPorts{
  assertQualified:OperationalCredentialIssuer['assertQualified'];
+ assertSourceLeaseCurrent:NonNullable<OperationalCredentialIssuer['assertSourceCurrent']>;
  /** Private supplier only, never request JSON or SDK ambient chain. The source
   * lease MUST already be durably registered and qualified for the exact profile;
   * its lifetime is separate from this action's resulting session liability. */
@@ -20,7 +21,7 @@ const fail=():never=>{throw Error('operational_private_sts_issuance_unavailable'
 /** Prepared private AssumeRole exchange. No GitHub-token input or fallback.
  * Missing issuer profile/registered source custody refuses; no default supplier
  * exists. This transport alone does not prove actual IAM or runtime isolation. */
-export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{return Object.freeze({assertQualified:ports.assertQualified,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?: (metadata:CustodianCredentialObservation)=>Promise<void>){
+export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{return Object.freeze({assertQualified:ports.assertQualified,assertSourceCurrent:ports.assertSourceLeaseCurrent,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?: (metadata:CustodianCredentialObservation)=>Promise<void>){
  let client:STSClient|undefined;
  try{
   const manifest=readOperationalManifest(rawManifest);if(manifest.kind!=='deployment.ecs')return fail();signal.throwIfAborted();
