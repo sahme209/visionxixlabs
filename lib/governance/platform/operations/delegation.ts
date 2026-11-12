@@ -1,3 +1,4 @@
+import {readOperationalFailureHistory} from './failureHistory';
 import type {CustodianIntentStage} from './custodianIntentContract';
 import {custodianCredentialObservation,type CustodianCredentialObservation} from './custodianCredentialContract';
 import {readOperationalStabilityHistory} from './stabilityHistory';
@@ -161,8 +162,10 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    if(parent.status==='confirmed'){
     if(!result||!tx.readOperationalStabilityEvent)return fail();const event=await tx.readOperationalStabilityEvent(key);if(!event||typeof event!=='object')return fail();const receiptId=(event as Record<string,unknown>).operationalStabilityReceiptId;if(typeof receiptId!=='string'||!state.targetReservation)return fail();await tx.lockOperationalTarget(state.targetReservation.nativeKey);stability=readOperationalStabilityHistory(key,parent,result,event,await tx.readOperationalTargetReceipt(receiptId));
    }
+   let failure:ReturnType<typeof readOperationalFailureHistory>|null=null;
+   if(result?.kind==='accepted'){if(!state.targetReservation||!tx.readOperationalFailureReceipt)return fail();await tx.lockOperationalTarget(state.targetReservation.nativeKey);const receipt=await tx.readOperationalFailureReceipt(key,state.targetReservation.generation);if(receipt)failure=readOperationalFailureHistory(key,parent,result,receipt,await tx.now())}
    await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||result&&result.observedAt>now)return fail();await authority.assertCurrent(tx,actor);
-   return Object.freeze({...projection(state,now),parentStatus:parent.status,parentVersion:parent.version,effectStatus,result,stability});
+   return Object.freeze({...projection(state,now),parentStatus:parent.status,parentVersion:parent.version,effectStatus,result,stability,failure});
   })},
   async delegate(id:string,parentVersion:number,parentDigest:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{
    const parent=readPlatformAction(await tx.read(key));if(parent.status!=='approved'||parent.version!==parentVersion||parent.plan.digest!==parentDigest||!same(actor,parent.requester)||await tx.readDelegation(key))return fail();

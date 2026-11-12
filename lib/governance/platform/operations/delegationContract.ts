@@ -33,6 +33,7 @@ export function readOperationalDelegation(raw:unknown){
 export type OperationalDelegation=ReturnType<typeof readOperationalDelegation>;
 export interface OperationalDelegationTransaction extends PlatformTransaction,OperationalWorkloadTransaction,OperationalTargetTransaction{
  writeOperationalSourceCredential?(actionId:string,version:number,state:OperationalDelegation):Promise<void>;
+ readOperationalFailureReceipt?(actionId:string,generation:number):Promise<unknown|null>;
  readOperationalStabilityEvent?(actionId:string):Promise<unknown|null>;
  readEcsManifest(actionId:string):Promise<unknown>;
  readDelegation(actionId:string):Promise<unknown|null>;
