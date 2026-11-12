@@ -66,8 +66,6 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const body = await request.json().catch(() => null) as { enabled?: unknown; allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
   const policy = body ? normalizeWorkspaceAIProviderPolicyUpdate(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
-  const refusal = await providerPolicyChangeRefusal(String(session.organizationId), policy);
-  if (refusal) return NextResponse.json({ ok: false, error: refusal }, { status: refusal === "provider_policy_unavailable" ? 503 : 409 });
   const local = await customerHostedAvailability(String(session.organizationId));
   const availableProviders = serviceEnabledProviders(local);
   if (policy.allowedProviders.some((provider) => !availableProviders.includes(provider))) {
@@ -86,6 +84,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
     }
   }
+  const refusal = await providerPolicyChangeRefusal(String(session.organizationId), policy);
+  if (refusal) return NextResponse.json({ ok: false, error: refusal }, { status: refusal === "provider_policy_unavailable" ? 503 : 409 });
   try {
     await saveWorkspaceAIProviderPolicy({
       organizationId: String(session.organizationId),
