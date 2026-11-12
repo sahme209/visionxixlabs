@@ -1,3 +1,5 @@
+import {OperationalEcsHistoryPanel} from './OperationalEcsHistoryPanel';
+import type {OperationalHistoryClient} from '../lib/operationalReview';
 import {OperationalEcsDelegationPanel} from './OperationalEcsDelegationPanel';
 import type {OperationalDelegationClient} from '../lib/operationalReview';
 import {OperationalEcsReviewPanel} from './OperationalEcsReviewPanel';
@@ -14,7 +16,7 @@ import {PlatformReviewPanel} from './PlatformReviewPanel';
 import {PlatformExecutionPanel} from './PlatformExecutionPanel';
 interface Props{
  currentUserId:string;canPrepare:boolean;canApprove:boolean;canExecute:boolean;
- clients:{operationalDelegation?:OperationalDelegationClient;operational?:OperationalReviewClient;template?:Pick<PlatformTemplateClient,'preview'>&Partial<Pick<PlatformTemplateClient,'prepare'|'lookup'>>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
+ clients:{operationalHistory?:OperationalHistoryClient;operationalDelegation?:OperationalDelegationClient;operational?:OperationalReviewClient;template?:Pick<PlatformTemplateClient,'preview'>&Partial<Pick<PlatformTemplateClient,'prepare'|'lookup'>>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
 }
 function sameLineage(previous:PlatformInspection,next:PlatformInspection){
  return next.actionId===previous.actionId&&JSON.stringify(next.plan)===JSON.stringify(previous.plan)&&next.requesterUserId===previous.requesterUserId&&(!previous.reviewerUserId||next.reviewerUserId===previous.reviewerUserId)&&next.version>=previous.version&&(next.version!==previous.version||next.status===previous.status&&JSON.stringify(next.effects)===JSON.stringify(previous.effects));
@@ -63,6 +65,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
    <details><summary>Prepare a growth proposal</summary><PlatformPreparationPanel sourceClient={clients.sources} client={clients.preparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>
    <details><summary>Find older saved actions</summary><PlatformHistoryPanel client={clients.history} onSelect={id=>void load(id)}/></details>
    <section className="space-y-3" aria-label="Load saved action"><label>Saved action reference<input value={reference} disabled={busy} onChange={e=>setReference(e.target.value)}/></label><button type="button" className="btn-secondary" disabled={busy} onClick={()=>void load(reference)}>Load this saved record</button></section>
+   {action&&first?.kind==='deployment.ecs'&&action.attemptCount===1&&clients.operationalHistory&&<OperationalEcsHistoryPanel key={action.actionId+':history'} actionId={action.actionId} currentUserId={currentUserId} client={clients.operationalHistory}/>}
    {action&&ecsDelegation&&clients.operationalDelegation&&requester&&action.status==='approved'?<OperationalEcsDelegationPanel key={action.actionId+':delegation'} actionId={action.actionId} currentUserId={currentUserId} canDelegate={canExecute} client={clients.operationalDelegation} onDelegationKnown={known=>{if(owns())setDelegationKnown(known?action.actionId:null)}}/>:action&&ecsReview&&clients.operational&&['proposed','approved'].includes(action.status)?<OperationalEcsReviewPanel key={action.actionId+':'+action.version} actionId={action.actionId} currentUserId={currentUserId} canApprove={canApprove} client={clients.operational} onRecorded={()=>void load(action.actionId)}/>:action&&(requester&&action.status!=='proposed'&&growthSupported?<PlatformExecutionPanel action={action} currentUserId={currentUserId} canExecute={canExecute} client={clients.execution} onRecorded={recorded}/>:<PlatformReviewPanel templateClient={clients.template} deploymentClient={clients.deployment} action={action} currentUserId={currentUserId} canApprove={canApprove} client={clients.review} onRecorded={recorded}/>)}
   </>}
   <p role="status" aria-live="polite">{busy?'Loading the original saved action…':message}</p>

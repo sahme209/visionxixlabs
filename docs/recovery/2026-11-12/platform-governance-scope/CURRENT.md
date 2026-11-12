@@ -9,6 +9,10 @@ Active branch: `codex/platform-governance-scope`; all changes remain local/unreg
 - **Other approved local work:** manual owner-click notice/evidence history; private create-only settings artifacts/current review/exact-child execution/typed recovery. Existing-setting updates remain held, not removed from the master scope.
 - **Next:** finish current-history/proof and remaining approved default/workflow integration, qualify actual suppliers only under appropriate authority, and replace unmanaged entrypoints within the complete replacement batch. Other image/template/deployment implementations await their already-pending decisions; do not repeat or infer them. Final whole-source review/one green PR and all real-world/production gates remain.
 
+## Prepared recovery workflow continuation
+
+Original ECS history now has a strict browser-safe client and optional recovery panel for consumed actions. Reader freshness after the final clock await is rechecked. No source preview, renewed approval, provider read, resend or automatic action occurs. Scoped tests/types/frontend build pass; exact immutable stability-proof history, default supplier qualification, registration and full P01 remain incomplete. See LOCAL-PROGRESS.md for exact scopes.
+
 ## Earlier scoped checkpoints — historical
 
 Historical source-selection tranche: existing Lead metadata catalog now populates the unregistered generated-site form. It exposes bounded labels/status/package-presence only, excludes email/full payload/content, and never grants source validation or a save/approval automatically.24focused checks/final root and desktop types/shell-client build PASS.35actual isolated SQL cases PASS/stopped, including25-lead pagination/private-field exclusion and real client/prepared HTTP/current HMAC/SQL. All delivery/provider facts remain synthetic/in-process; no new execution/recovery authority or live acceptance.
