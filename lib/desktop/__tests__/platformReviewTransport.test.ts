@@ -16,3 +16,13 @@ it('lost reads are not labeled uncertain writes; unconfirmed approval is held wi
 it('a server-reported uncertain approval stays uncertain even with a conflict status',async()=>{
  const http=vi.fn(async()=>Response.json({ok:false,error:'platform_decision_outcome_unconfirmed'},{status:409}));vi.stubGlobal('fetch',http);expect(await createPlatformReviewClient(context()).approve(saved())).toMatchObject({ok:false,outcomeUnconfirmed:true});expect(http).toHaveBeenCalledTimes(1);
 });
+it('actual execution client sends only the approved reference and never retries an unknown result',async()=>{
+ const {createPlatformExecutionClient}=await import('../../../desktop/src/lib/platformReview'),approved=platformInspectionSchema.parse({...saved(),version:1,status:'approved',reviewerUserId:'reviewer'}),http=vi.fn(async()=>{throw Error('lost execution response')});vi.stubGlobal('fetch',http);
+ const result=await createPlatformExecutionClient(context()).execute(approved);expect(result).toMatchObject({ok:false,outcomeUnconfirmed:true});expect(http).toHaveBeenCalledExactlyOnceWith('https://example.test/api/desktop/platform-governance/execute',expect.objectContaining({method:'POST',body:JSON.stringify({operation:'execute',actionId:approved.actionId,expectedVersion:1,planDigest:approved.plan.digest})}));
+});
+it('execution accepts only the exact confirmed history and blocks consumed or substituted inputs',async()=>{
+ const {createPlatformExecutionClient}=await import('../../../desktop/src/lib/platformReview'),approved=platformInspectionSchema.parse({...saved(),status:'approved',version:1,reviewerUserId:'reviewer'}),confirmed={...approved,status:'confirmed',version:3,attemptCount:1,effects:[{id:'post',status:'confirmed'}]},http=vi.fn(async()=>Response.json({ok:true,data:confirmed}));vi.stubGlobal('fetch',http);const c=createPlatformExecutionClient(context());
+ expect((await c.execute(approved)).ok).toBe(true);http.mockResolvedValueOnce(Response.json({ok:true,data:{...confirmed,plan:{...confirmed.plan,sourceDigest:'b'.repeat(64)}}}));expect(await c.execute(approved)).toMatchObject({ok:false,outcomeUnconfirmed:true});
+ http.mockClear();expect((await c.execute(confirmed)).ok).toBe(false);expect(http).not.toHaveBeenCalled();expect('approve' in c).toBe(false);
+ for(const body of [{operation:'execute',actionId:approved.actionId,expectedVersion:1,planDigest:digest,connectionId:'other'},{operation:'execute',actionId:approved.actionId,expectedVersion:2,planDigest:digest}])expect((await releaseOperationPlanRequest(context(),'POST','/api/desktop/platform-governance/execute',body,(_raw):_raw is never=>false)).ok).toBe(false);expect(http).not.toHaveBeenCalled();
+});
