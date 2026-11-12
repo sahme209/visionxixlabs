@@ -17,14 +17,14 @@ Source inspected through f0dd0849. This is a requirement/source audit, not autom
 | LinkedIn deletion | Separate exact publication lineage/account/URN plan and permanent delete reservation; direct delete script retired. Prepared requester path and actual SQL with simulated HTTP. | Genuine managed-provider acceptance and qualified protocol/currentness remain; arbitrary historical/external URNs are not qualified. |
 | LinkedIn scheduling/cron | Exact reviewed future time, DB-time/CAS mutation with rollback checks. `linkedin-publish` cron refuses before scan/claim/decryption/provider even with valid CRON_SECRET. Force-publish script retired. | Qualified scheduled execution identity/current authority and its usable workflow remain incomplete; invocation secret is not approval. Do not relabel refusal as scheduled-publication coverage. |
 | Platform default/UI/runtime coverage | Actual paired HMAC/current SQL admin authority, distinct reviewer/original requester, action/event/effect store, source selection/preparation/reference/history, optional review/coordinator panels. | Full inventory/default caller closure, native/issuer/key/host qualification, registered product workflow and all-family composed acceptance remain. No private test supplier or UI hint substitutes for server/native authority. |
-| Final source/PR gate | Accumulated unit tests and actual isolated PG; earlier 18,151-pass full suite and304-page build receipts recorded with exact source limits. | Those broad receipts predate subsequent template changes. Requirement-by-requirement final audit, current full tests/types/builds, fresh whole-source review, one PR and all exact-head applicable CI green before normal merge. No production activation follows automatically. |
+| Final source/PR gate | Accumulated unit tests and actual isolated PG; latest broad checkpoint80a8dfee records18,179ordinary tests passed/951pending and304-page production compilation, with exact source/environment limits. | This local checkpoint covers the current template source, not the still-unimplemented execution/custody/operational families. After those changes: requirement-by-requirement final audit, matching full tests/types/builds, fresh whole-source review, one PR and all exact-head applicable CI green before normal merge. No production activation follows automatically. |
 
 ## Decisions already pending — do not repeat or infer
 
 - Official LinkedIn documentation reads (separate external-read consent).
 - IMAGE-GRANT-CUSTODY-PROPOSAL.md local implementation.
 - DEPLOYMENT-RECOVERY-PROPOSAL.md local implementation.
-- New TEMPLATE-EXECUTION-CUSTODY-PROPOSAL.md has an independently builder-checked design; local authority decision will be requested separately.
+- TEMPLATE-EXECUTION-CUSTODY-PROPOSAL.md local implementation: independently builder-checked; authority requested and still awaiting owner decision.
 
 No source audit implies permission to contact providers, retrieve credentials, run operational workflows, change a production schema/flag, sign/install, spend or deploy. Preserve all original unknown records, production discrepancy, native/Governance activation fences and the complete master scope.
 
