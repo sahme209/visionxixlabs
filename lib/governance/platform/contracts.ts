@@ -1,6 +1,7 @@
 import {z} from 'zod';
 const identifier=z.string().min(1).max(256).refine(s=>s.trim()===s&&!/[\x00-\x1f]/.test(s));
 export const digest=z.string().regex(/^[a-f0-9]{64}$/);
+export const platformCustodianRoleArn=z.string().max(768).regex(/^arn:aws:iam::\d{12}:role\/[A-Za-z0-9+=,.@_\/-]{1,512}$/).refine(value=>value.trim()===value&&!/[\r\n]/.test(value));
 const accountId=z.string().regex(/^\d{12}$/),timestamp=z.string().datetime();
 const cloud={accountId,region:identifier,bucket:identifier};
 const social={connectionId:identifier,connectionRevision:identifier,author:identifier};
@@ -9,7 +10,7 @@ const effect=<K extends string,T extends z.ZodRawShape>(kind:K,target:T)=>z.obje
 export const platformEffectSchema=z.discriminatedUnion('kind',[
  effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),leadId:identifier.optional(),leadRevision:timestamp.optional(),filesDigest:digest,configurationDigest:digest}),
  effect('deployment.ecs',{accountId,region:identifier,cluster:identifier,service:identifier,taskDefinitionArn:identifier,operation:z.enum(['force','rollback']),configurationDigest:digest}),
- effect('custodian.drain',{accountId,roleArn:identifier,nativeKey:digest,issuerProfileDigest:digest,controlDigest:digest,operation:z.enum(['begin','abort'])}),
+ effect('custodian.drain',{accountId,roleArn:platformCustodianRoleArn,nativeKey:digest,issuerProfileDigest:digest,controlDigest:digest,operation:z.enum(['begin','abort'])}),
  effect('settings.vercel',{projectId:identifier,settingsDigest:digest}),
  effect('template.bucket.create',cloud),
  effect('template.object.put',{...cloud,key:identifier,bytesDigest:digest}),

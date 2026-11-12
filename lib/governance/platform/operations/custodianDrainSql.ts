@@ -16,7 +16,7 @@ const fail=():never=>{throw Error('platform_custodian_storage_unavailable')};
 const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private transaction-only adapter. Never opens a database or qualifies a
  * profile/fleet. The SAME physical lock is required for intent admission. */
-export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>PlatformTransaction,check:(id:string)=>void):Pick<CustodianDrainTransaction,'readCustodianControl'|'lockCustodian'|'readCustodianBarrier'|'writeCustodianBarrier'|'assertNoCustodianIntents'> & Pick<CustodianIntentTransaction,'readCustodianIntent'|'insertCustodianIntent'> & Pick<CustodianClosureTransaction,'readCustodianClosureSnapshot'|'readCustodianClosure'>{
+export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>PlatformTransaction,check:(id:string)=>void):Pick<CustodianDrainTransaction,'readCustodianControl'|'lockCustodian'|'readCustodianBarrier'|'writeCustodianBarrier'|'assertNoCustodianIntents'> & Pick<CustodianIntentTransaction,'readCustodianIntent'|'insertCustodianIntent'> & Pick<CustodianClosureTransaction,'readCustodianClosureSnapshot'|'readCustodianClosure'|'readCustodianClosureHistory'>{
  let issuerKey:string|null=null,written:CustodianBarrier|null=null;
  function issuer(raw:string){const key=digest.parse(raw);if(issuerKey!==key)fail();return key}
  async function controlFor(id:string,parent:unknown){
@@ -59,6 +59,10 @@ export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>Platfor
    if(count!==1)fail();written=state;
   },
   readCustodianClosureSnapshot:snapshotFor,
+  async readCustodianClosureHistory(id){
+   check(id);const parent=readPlatformAction(await getTx().read(id)),control=await controlFor(id,parent),rows=await sql.$queryRawUnsafe<Array<{observation:unknown}>>('SELECT "detailJson"->\'custodianClosure\' AS observation FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'custodian.closure_observed\' ORDER BY sequence LIMIT 33',id);if(rows.length>32)fail();
+   return rows.map(row=>{const record=readCustodianClosureObservation(row.observation);if(record.snapshot.barrier.controlActionId!==id||record.snapshot.barrier.controlDigest!==control.digest||record.snapshot.barrier.nativeKey!==control.nativeKey)fail();return record});
+  },
   async readCustodianClosure(raw){const key=issuer(raw),barrier=await readBarrier(key);return barrier===null?null:readClosureFor(barrier)},
   async readCustodianIntent(id){
    if(!/^platform_intent_[a-f0-9]{64}$/.test(id))fail();const rows=await sql.$queryRawUnsafe<Array<{id:string;nativeKey:string;actionId:string;stateJson:unknown}>>('SELECT id,"nativeKey","actionId","stateJson" FROM "PlatformCustodianIntent" WHERE id=$1',id);

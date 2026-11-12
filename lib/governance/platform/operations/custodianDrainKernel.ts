@@ -1,10 +1,10 @@
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-import {digest} from '../contracts';
+import {digest,platformCustodianRoleArn} from '../contracts';
 import {readCustodianDrainPlan} from './custodianDrainContract';
 const revision=z.number().int().nonnegative().max(2147483647),clock=z.number().int().nonnegative().safe();
 const actionId=z.string().regex(/^platform_action_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
-const custodian=z.object({accountId:z.string().regex(/^\d{12}$/),roleArn:z.string().max(768).regex(/^arn:aws:iam::\d{12}:role\/[A-Za-z0-9+=,.@_\/-]{1,512}$/)}).strict();
+const custodian=z.object({accountId:z.string().regex(/^\d{12}$/),roleArn:platformCustodianRoleArn}).strict();
 const barrier=z.object({format:z.literal(1),scope:z.literal('platform'),nativeKey:digest,custodian,issuerProfileDigest:digest,sourceEvidenceDigest:digest,admissionDigest:digest,generation:revision,version:revision,mode:z.enum(['draining','admitting']),controlActionId:actionId,controlDigest:digest,updatedAt:clock,executionAuthorized:z.literal(false),closureObserved:z.literal(false)}).strict();
 const coordinates=z.object({nativeKey:digest,issuerProfileDigest:digest,admissionDigest:digest,generation:revision,version:revision}).strict();
 export type CustodianBarrier=z.infer<typeof barrier>;

@@ -1,3 +1,4 @@
+import {custodianClosureSummary} from './custodianClosureSummary';
 import {readCustodianClosureObservation,type CustodianClosureObservation} from './custodianClosureObservation';
 import 'server-only';
 import type {PlatformAuthority,PlatformTransaction} from '../actionStore';
@@ -12,6 +13,7 @@ export interface CustodianDrainTransaction extends PlatformTransaction{
  readCustodianBarrier(nativeKey:string):Promise<unknown|null>;
  writeCustodianBarrier(nativeKey:string,expectedVersion:number|null,state:CustodianBarrier):Promise<void>;
  /** Must cover ALL original pending/unknown slots, never local expiry cleanup. */
+ readCustodianClosureHistory?(actionId:string):Promise<unknown[]>;
  readCustodianClosure?(nativeKey:string):Promise<unknown|null>;
  assertNoCustodianIntents(nativeKey:string,originalBarrier?:CustodianBarrier):Promise<void>;
 }
@@ -38,6 +40,14 @@ export function createCustodianDrainService(repo:CustodianDrainRepository,author
  async function predecessor(tx:CustodianDrainTransaction,control:CustodianDrainPlan){const raw=await tx.readCustodianBarrier(control.nativeKey);return raw===null?null:readCustodianBarrier(raw)}
  async function locked<T>(id:string,fn:(tx:CustodianDrainTransaction,loaded:Awaited<ReturnType<typeof load>>)=>Promise<T>){if(!actionId.test(id))fail();return repo.transaction(async tx=>{await tx.lock(id);const loaded=await load(tx,id);await tx.lockCustodian(loaded.control.nativeKey);return fn(tx,loaded)})}
  return Object.freeze({
+  async lookup(reference:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(reference,actor,'platform_custodian_drain_preparation_v1');
+   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);if(await tx.read(id)===null){await authority.assertCurrent(tx,actor);return {found:false as const}}const {state}=await load(tx,id);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)return fail();await authority.assertCurrent(tx,actor);return {found:true as const,actionId:id,planDigest:state.plan.digest,authority:'original_reference_only' as const,executionAuthorized:false as const}});
+  },
+  async inspect(id:string,principal:PlatformPrincipal){
+   const reader=platformPrincipalSchema.parse(principal);if(!actionId.test(id))return fail();return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,reader);const {state,control}=await load(tx,id);if(!tx.readCustodianClosureHistory)return fail();const raw=await tx.readCustodianClosureHistory(id);if(!Array.isArray(raw)||raw.length>32)return fail();const closures=raw.map(custodianClosureSummary),now=await tx.now();if(now<state.updatedAt)return fail();await authority.assertCurrent(tx,reader);return {actionId:id,planDigest:state.plan.digest,control,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,expired:now>=Date.parse(control.expiresAt),closures,authority:'control_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const,providerExecution:false as const}});
+  },
+  async preview(id:string,principal:PlatformPrincipal){const reader=platformPrincipalSchema.parse(principal);return locked(id,async(tx,{state,control})=>{if(!['proposed','approved'].includes(state.status))return fail();const now=await current(tx,state,control,reader),prior=await predecessor(tx,control);transitionCustodianBarrier(prior,control,id,now);await current(tx,state,control,reader);return {actionId:id,version:state.version,status:state.status,planDigest:state.plan.digest,control,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,authority:'control_review_preview_only' as const,sourceValidation:'checked_by_private_source' as const,credentialClosureChecked:false as const,executionAuthorized:false as const}})},
   async prepare(raw:unknown,principal:PlatformPrincipal,reference:string){
    const actor=platformPrincipalSchema.parse(principal),control=compileCustodianDrainPlan(raw),plan=compileCustodianDrainPlatformPlan(control),id=preparationActionReference(reference,actor,'platform_custodian_drain_preparation_v1');
    return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
