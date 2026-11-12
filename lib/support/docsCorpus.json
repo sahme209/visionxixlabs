@@ -356,28 +356,42 @@
    "title": "Who can decide",
    "text": "Owners, admins, operators and security reviewers can record an approval. Nobody can approve their own proposal: another authorized reviewer must. The person who proposed an action can always cancel it.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+   "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f"
   },
   {
    "href": "/docs/governance-approvals#review",
    "title": "Review an action",
-   "text": "Each pending action shows its tool, risk level and when it was created. Branch, file-commit and pull-request proposals include their exact changes, for example Review file changes or Review pull request . Read them before deciding. For branch, file and pull-request proposals, approving records your decision only. The requester runs the action separately, and the page says so.",
+   "text": "Each pending action shows its tool, risk level and when it was created. Branch, file-commit and pull-request proposals include their exact changes, for example Review file changes or Review pull request . Read them before deciding. For reviewed branch, file, pull-request and AWS restart proposals, approving records your decision only. The requester runs the action separately, and the page says so.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+   "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f"
   },
   {
    "href": "/docs/governance-approvals#rules",
    "title": "Approval rules",
    "text": "An approval is bound to the exact action, expires after 24 hours and is used once before the action runs. An expired proposal, or one without an integrity binding, cannot be approved: ask for a fresh proposal, because an old approval cannot restore it. Reject means nothing was executed.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+   "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f"
   },
   {
    "href": "/docs/governance-approvals#limits",
    "title": "What this page shows",
    "text": "The inbox shows up to 20 pending actions. It is not a complete approval or outcome history; use the audit log for that.",
    "source": "app/docs/governance-approvals/page.tsx",
-   "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5"
+   "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f"
+  },
+  {
+   "href": "/docs/governance-approvals#scope",
+   "title": "Workspace and platform approvals are different",
+   "text": "This inbox is for your workspace's Agent proposals. Release, ticket and connected-app reviews belong to their own exact workflows; a decision in one does not authorize an action in another. A workspace owner or reviewer is not automatically an Axiom platform administrator. Axiom's own deployment and issuer controls require separate platform authority. The prepared platform-control workflow remains local development work, not a control available from this inbox or proof of complete Governance enforcement.",
+   "source": "app/docs/governance-approvals/page.tsx",
+   "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f"
+  },
+  {
+   "href": "/docs/governance-approvals#outcomes",
+   "title": "Read the result before trying again",
+   "text": "Approval means a decision was recorded; it does not prove an action ran or succeeded. When execution is separate, the original requester must use the exact approved action and the service checks current permissions again. If the result is unknown or a response is lost, retain the original action or request reference and inspect its saved history. Do not automatically resend it, create a replacement, or assume that an expired review means nothing happened. A later observation can add evidence without erasing the original attempt. A provider accepting a command is not proof a deployment is healthy. A recorded issuer drain is not proof existing credentials were revoked or expired. Read the exact workflow's outcome and limitations; a historical record does not grant new permission.",
+   "source": "app/docs/governance-approvals/page.tsx",
+   "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f"
   },
   {
    "href": "/docs/integration-setup#shared",

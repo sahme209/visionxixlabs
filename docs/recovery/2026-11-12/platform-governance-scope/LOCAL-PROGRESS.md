@@ -1145,3 +1145,10 @@ Actual107pass/1fail database RED reproduced the old history409after34observation
 The earlier18,519ordinary suite remains a separate pre-pagination checkpoint; no full-suite or production-build claim is upgraded. Final whole-branch checks/review/green PR, pending other-family designs, actual qualified source/custody/fleet/legacy/runtime and shipping/native/live acceptance remain required. Full P01/Governance remains incomplete and activation unavailable. No schema/pin/dependency/production/provider/credential/service/IAM/deployment/spending changed.
 
 15internal demo checks PASS after page-label wording update. All owned database fixtures are stopped; no active tests/builds remain.
+
+
+### Approvals documentation scope/outcome clarification — source only
+
+The existing Governance approvals guide now distinguishes workspace Agent decisions from separate release/ticket/connected-app workflows and platform-admin authority. Reviewed AWS restart proposals are included in the separate requester-execution explanation. Added explicit approval-versus-outcome, lost-response/original-history/no-replacement guidance and command-acceptance-versus-health/drain-versus-credential-closure distinctions. Prepared platform controls are labeled local development only, not available from that inbox or proof of universal enforcement. Actual page/decision-route/platform-authority/default-refusal sources were read; no new product behavior or availability is claimed.
+
+Regenerated heading hashes and public support corpus (125sections); guide count remains36.23existing navigation/corpus-freshness/answer-evaluation checks PASS. APPROVAL-SCOPE-GUIDE-RECEIPT.json records exact source evidence. No media/rendered/customer acceptance, provider/model read/call, credential, database, native/signing, production or spending action. Pending family decisions/real qualification/final batch review remain unchanged. The owner's hybrid deterministic/tool/AI fulfillment addition was recorded in master/tooling/remaining plans with original-text preservation; it grants no billing, dependency or runtime authority.

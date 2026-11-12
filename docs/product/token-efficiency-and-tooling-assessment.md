@@ -47,3 +47,8 @@ Deliver a scored shortlist (reuse current implementation / adopt / experiment / 
 ## November 11 — first source inventory and offline baseline
 
 [Owner-review assessment](../research/2026-11-11/token-efficiency-assessment.md) records existing facilities, a frozen public-only retrieval baseline and eight public repository HEAD/licence-metadata observations.39/42expected-source agreement; selected-entry serialization772–3,070UTF8bytes, not full SDK payload, token count, cost or savings. No model call or new dependency. Candidate versions/licences/transitives/telemetry/security and paid representative experiments remain unqualified; no adoption follows automatically. The original measurement/quality/authority requirements above remain binding.
+
+
+## Hybrid task fulfillment — owner addition, November 12
+
+Evaluate replacing unnecessary inference with approved deterministic/retrieval/tool implementations while preserving equivalent customer outcomes and all Governance controls. Reuse existing Axiom code first; evaluate public/free repositories, libraries/plugins and verified sources under the adoption gates above, not automatic runtime installs or trusted instructions. Benchmark quality-adjusted actual model/tool/compute cost. Evaluate a consistent disclosed customer service-usage tariff independently of internal fulfillment cost, with real model tokens and service/tool usage recorded separately. No fabricated AI usage or assumed1.5x/2x rate. See [the master-plan requirement](axiom-master-action-plan.md#hybrid-task-fulfillment-and-usage-economics--owner-addition-november-12). Planning only; no price, billing, external-read, dependency or runtime authority changes.

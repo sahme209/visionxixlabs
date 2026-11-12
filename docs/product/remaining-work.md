@@ -975,3 +975,13 @@ Delayed user/token context replacement no longer stores a stale platform history
 ### November12 — local closure history no longer capped at32total records
 
 Explicit keyset paging reads32validated observations at a time and labels partial history; no automatic source/observation/retry occurs.108actual isolated SQL cases pass with synthetic source/fleet/provider evidence, plus67focused checks and corrected root types. See [pagination evidence](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-PAGINATION-PG-RECEIPT.json). Full P01/default/native/live/final-review gates and existing pending designs remain unchanged.
+
+
+### Hybrid task fulfillment and transparent service usage — planned
+
+Owner requested approved reusable code/repositories/libraries/plugins and retrieval alongside AI to reduce unnecessary inference costs. Evaluate consistent disclosed service-usage pricing regardless of fulfillment method, while separately recording actual AI tokens and tool/service usage; no finalized1.5x/2x price or billing activation. [Master requirement](axiom-master-action-plan.md#hybrid-task-fulfillment-and-usage-economics--owner-addition-november-12). Current Governance priority and existing authority gates remain unchanged.
+
+
+### November12 — approvals guide clarified
+
+Existing guide/support knowledge now separates workspace versus platform authority, approval versus outcome, and original-history recovery from retries.23navigation/corpus/evaluation checks pass; guide count36/corpus125sections. Source-only documentation, not new runtime availability, media acceptance or full Governance completion. [Evidence](../recovery/2026-11-12/platform-governance-scope/APPROVAL-SCOPE-GUIDE-RECEIPT.json).
