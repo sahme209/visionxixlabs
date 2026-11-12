@@ -174,3 +174,8 @@ The approved template Task2 now has real parameterized SQL resource holds/CAS, i
 Task3 actual SDK/private observation/atomic parent-child-event integration, Task4 qualified original-session delivery service, Task5 prepared HTTP/client/UI, Task6 caller/batch validation, image custody and whole-three-family independent review/mandatory-green PR remain. No production migration/schema apply, real provider/credential/key/channel action, registration, signing, app restart, push/deployment or spending occurred. Full Governance/P01/master-plan completion remains unproven. Receipt: `docs/recovery/2026-11-12/platform-governance-scope/TEMPLATE-STORAGE-LOCAL-RECEIPT.json`.
 
 Standing acceptance addition: follow the master plan hard rule "A new benchmark beyond Harness" across intended customer workflows; demonstrated capability/security/clarity/value, never unsupported superiority claims. Preserve the current execution order and all existing approval/spending limits.
+
+
+## November 12 — guided CI/CD setup for teams without DevOps staff
+
+Open planned enhancement: [guided CI/CD setup](axiom-master-action-plan.md#guided-cicd-setup-for-teams-without-devops-staff--owner-addition-november-12). Reuse existing capabilities for a plain-language, button-driven repository-to-pipeline journey with optional governed AI help, inspectable branch/PR configuration, explicit permissions/costs/review, staging, separate production approval and clear outcomes/recovery. It is not marked implemented or live. Existing security, tenant, budget, genuine approval, provider/production and manual-deploy rules remain; continue the current Governance work first.

@@ -1,0 +1,38 @@
+{
+  "base": "978ad093",
+  "scope": "Prepared private SDK adapter component of Task3 only; no atomic execution-service composition or live qualification yet.",
+  "red": "/private/tmp/axiom-template-native-red.log",
+  "focused": {
+    "newAdapter": 11,
+    "existingCompatibility": 14,
+    "log": "/private/tmp/axiom-template-native-sdk-final.log",
+    "SDK": "actual installed clients/commands/presigner; native STS/S3 I/O intercepted, credentials/authority/profile/clock suppliers synthetic"
+  },
+  "regression": {
+    "passed": 514,
+    "SQLoptinsSkipped": 157,
+    "log": "/private/tmp/axiom-template-native-regression.log"
+  },
+  "types": {
+    "currentNative": "PASS",
+    "log": "/private/tmp/axiom-template-native-current-native-types.log",
+    "retainedCompiler": "PASS before final test-only case",
+    "retainedCompilerLog": "/private/tmp/axiom-template-native-types.log"
+  },
+  "previousActualSQL": "157cases at05fuy9bq from prior storage/preparation runtime, deliberately not relabeled native-adapter integration acceptance",
+  "sourceHashes": {
+    "lib/cloud/aws/templateHosting.ts": "4543b3228ae20d327557b098c298725467351b27814009112f78e6f2254c07a2",
+    "lib/governance/platform/templateNativeTransport.ts": "feac171146fccd1940cf547db27ee8e2227b7934d2726e1af32179f63939d1b5",
+    "lib/governance/platform/__tests__/templateNativeTransport.test.ts": "0b7dbf00cf23928decbb5c0525ca49e594606eafa9c229cfe00395c8c5b69ea8"
+  },
+  "realDefault": "unavailable; no credentials/environment fallback",
+  "remaining": [
+    "Task3 connected transactional execution and legacy callers",
+    "Task4 qualified one-use output service",
+    "prepared HTTP/client/UI",
+    "family validation/image/whole-batch final independent review/CI",
+    "separate real-world production gates"
+  ],
+  "productionChanged": false,
+  "externalProviderCalls": false
+}

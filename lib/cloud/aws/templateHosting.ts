@@ -65,7 +65,7 @@ async function boundedBody(body:unknown,expected:number,signal:AbortSignal){
   if(size!==expected)fail();complete=true;return Buffer.concat(parts);
  }finally{if(!complete){stream.destroy?.();void Promise.resolve(iterator.return?.()).catch(()=>{})}}
 }
-function validateSignedUrl(raw:string,target:ReturnType<typeof templateAccessEffect>['target'],expectedAccessKey:string|undefined){
+function validateSignedUrl(raw:string,target:ReturnType<typeof templateAccessEffect>['target'],expectedAccessKey:string|undefined,observedNow=Date.now(),clockSkewMs=30000){
  let u:URL;try{u=new URL(raw)}catch{return fail()}
  const hosts=[`${target.bucket}.s3.${target.region}.amazonaws.com`,...(target.region==='us-east-1'?[`${target.bucket}.s3.amazonaws.com`]:[])];
  if(u.protocol!=='https:'||u.username||u.password||u.port||u.hash||!hosts.includes(u.hostname)||u.pathname!=='/'+target.key)fail();
@@ -75,7 +75,7 @@ function validateSignedUrl(raw:string,target:ReturnType<typeof templateAccessEff
  const signature=u.searchParams.get('X-Amz-Signature')??'',date=u.searchParams.get('X-Amz-Date')??'',credential=(u.searchParams.get('X-Amz-Credential')??'').split('/');
  if(!/^[a-f0-9]{64}$/i.test(signature)||!/^\d{8}T\d{6}Z$/.test(date)||!expectedAccessKey||credential.length!==5||credential[0]!==expectedAccessKey||credential[1]!==date.slice(0,8)||credential[2]!==target.region||credential[3]!=='s3'||credential[4]!=='aws4_request'||u.searchParams.get('x-amz-expected-bucket-owner')!==target.accountId)fail();
  const signedAt=Date.parse(date.slice(0,4)+'-'+date.slice(4,6)+'-'+date.slice(6,8)+'T'+date.slice(9,11)+':'+date.slice(11,13)+':'+date.slice(13,15)+'Z');
- if(!Number.isFinite(signedAt)||Math.abs(Date.now()-signedAt)>30000||signedAt+target.ttlSeconds*1000<=Date.now())fail();
+ if(!Number.isFinite(signedAt)||(!Number.isSafeInteger(observedNow)||!Number.isSafeInteger(clockSkewMs)||clockSkewMs<1)||Math.abs(observedNow-signedAt)>clockSkewMs||signedAt+target.ttlSeconds*1000<=observedNow)fail();
  if(u.searchParams.has('x-id')&&u.searchParams.get('x-id')!=='GetObject')fail();
  if(u.searchParams.has('x-amz-checksum-mode')&&u.searchParams.get('x-amz-checksum-mode')!=='ENABLED')fail();
  if(u.searchParams.has('X-Amz-Content-Sha256')&&u.searchParams.get('X-Amz-Content-Sha256')!=='UNSIGNED-PAYLOAD')fail();
@@ -105,3 +105,6 @@ export async function ensureTemplatePublished(opts:{forceRefresh?:boolean;platfo
   return grant;
  }catch{return {available:false,reason:'platform_template_unavailable',detail:'The exact template version, current authority or access outcome could not be verified. No automatic retry was made.'}}
 }
+
+/** Shared private validation only; exports do not grant credentials or authority. */
+export {boundedBody as readBoundedPlatformTemplateBody,validateSignedUrl as validatePlatformTemplateSignedUrl};
