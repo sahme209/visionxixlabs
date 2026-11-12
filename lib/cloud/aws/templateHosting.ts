@@ -3,8 +3,7 @@
  * Existing object versions are observed before a signed bearer URL is granted;
  * intended recipient metadata does not make that URL nontransferable. */
 import 'server-only';
-import {readFile} from 'node:fs/promises';
-import path from 'node:path';
+import {readPlatformTemplateBytes as templateBytes} from './platformTemplateSource';
 import {createHash} from 'node:crypto';
 import {S3Client,CreateBucketCommand,PutObjectCommand,GetObjectCommand,GetBucketVersioningCommand} from '@aws-sdk/client-s3';
 import {STSClient,GetCallerIdentityCommand} from '@aws-sdk/client-sts';
@@ -14,7 +13,6 @@ import {templateBucketEffect,templateObjectEffect,templateAccessEffect,templateR
 const MAX_BYTES=256*1024;
 const fail=():never=>{throw Error('platform_template_unavailable')};
 const sha=(bytes:Uint8Array)=>createHash('sha256').update(bytes).digest('hex');
-async function templateBytes(){const bytes=await readFile(path.join(process.cwd(),'public/aws/axiom-agent-quick-deploy.yaml'));if(!bytes.length||bytes.length>MAX_BYTES)fail();return bytes}
 async function withBroker<T>(accountId:string,rawRegion:string,work:(s3:S3Client,signal:AbortSignal,current:()=>void)=>Promise<T>):Promise<T>{
  const region=templateRegion(rawRegion),accessKeyId=process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim(),secretAccessKey=process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY?.trim();
  if(!accessKeyId||!secretAccessKey)fail();

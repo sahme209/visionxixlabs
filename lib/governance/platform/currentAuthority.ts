@@ -1,4 +1,6 @@
 import 'server-only';
+import {createHash} from 'node:crypto';
+import {readPlatformTemplateBytes} from '@/lib/cloud/aws/platformTemplateSource';
 import {readDeploymentPlatformSource} from './deploymentPreparation';
 import {preparePlatformLinkedInDeletion} from '@/lib/growth/linkedin/platformDeletionPlan';
 import {z} from 'zod';
@@ -20,6 +22,10 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   const row=rowSchema.parse(await tx.readPrincipal(principal));
   if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
  },async assertEffectCurrent(tx,effect){
+  if(effect.kind==='template.object.put'||effect.kind==='template.access.grant'){
+   const bytes=await readPlatformTemplateBytes();
+   if(createHash('sha256').update(bytes).digest('hex')!==effect.target.bytesDigest)fail();return;
+  }
   if(effect.kind==='deployment.vercel'&&effect.target.leadId){
    const prepared=await readDeploymentPlatformSource(tx,{leadId:effect.target.leadId,projectName:effect.target.projectName,environment:effect.target.environment},effect.id);
    if(sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))fail();return;

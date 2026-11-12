@@ -320,3 +320,16 @@ The complete ordinary suite now records18,151pass/0fail/949pending after a revie
 Local production build did not pass: the optimized Webpack worker reached its default approximately4GiB JavaScript heap and aborted. No retry or production action occurred. Preserve the log and diagnose/build with an explicitly recorded local resource configuration before claiming build acceptance; see BROAD-VALIDATION.md.
 
 Subsequent local production compilation PASS on9ee99682: one network-denied clean run used the existing CI8GiB heap setting, completing full build/types and304pages. No code/CI changes were needed; earlier4GiB failure preserved. See BROAD-VALIDATION.md and PRODUCTION-COMPILATION.json. P01/whole-source review/mandatory PR CI/native/live acceptance remain incomplete.
+
+
+### Current template bytes bound at independent review and final send
+
+Source inspection found that the review dispatcher required current source only for growth and Lead-bound deployment. A direct template-source regression reproduced missing reads/acceptance of changed source (2RED), and a store regression reproduced approval with no template source supplier (1RED). This was a local-source defect, not a reported live incident.
+
+The fixed template path and existing nonempty/256KiB content bounds now live in one shared reader used by transport and current authority. Upload/access review and required final-send checks refuse when that source is missing, changed or oversized; no arbitrary path/account/provider read or new permission is accepted. The reviewer still makes the exact independent decision. Bucket creation does not claim file-content validation. Raw filesystem errors are reduced to a fixed unavailable category.
+
+34focused store/current-authority/template/signing checks PASS; final root strict types PASS.36actual isolated PostgreSQL cases PASS at `/private/tmp/axiom-platform-pg-ihh2s4f_` with confirmed stop. The new case uses real paired authentication/current SQL/default service and a simulated changed local-source supplier: review rolls back, parent remains proposed/version0/attempt0, only its proposed event remains and both AWS SDK spies stay unused. Existing positive readback/synthetic signer paths still pass. No real AWS account/key/provider, SQL migration, deployment or native acceptance. Runner now includes the shared source file in its enumerated hashes; this is not transitive issuer qualification.
+
+Preserved intermediate fixture `/private/tmp/axiom-platform-pg-o_c_96cd` failed because the new test hook was inserted into the deployment helper rather than template helper. The test-only location was corrected, strict types rerun, and the fresh36-case run above passed; no product guard or assertion was relaxed. Earlier35-case `/private/tmp/axiom-platform-pg-qn53k9da` passed before the new composed regression/review-dispatch correction. Both clusters are stopped/preserved.
+
+Prior18,151-test full suite and304-page production build predate this narrow runtime change; their receipts are not promoted to current-head whole-batch acceptance. Final whole-branch validation/review/green PR and complete template preparation/workflow, image/deployment recovery decisions and full P01/native/live acceptance remain open. Internal pairing scenario describes the source check without customer availability claims.

@@ -114,11 +114,13 @@ import {S3Client} from '@aws-sdk/client-s3';
 import {STSClient} from '@aws-sdk/client-sts';
 import {templateAccessEffect} from '@/lib/cloud/aws/platformTemplatePlan';
 import {ensureTemplatePublished} from '@/lib/cloud/aws/templateHosting';
-async function templateFixture(){
+import * as templateSource from '@/lib/cloud/aws/platformTemplateSource';
+async function templateFixture(beforeReview?:(id:string)=>void){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');vi.stubEnv('AWS_SHARED_CREDENTIALS_FILE','/private/tmp/axiom-no-synthetic-aws-credentials');vi.stubEnv('AWS_CONFIG_FILE','/private/tmp/axiom-no-synthetic-aws-config');vi.stubEnv('AWS_PROFILE','axiom-synthetic');
  const bytes=readFileSync('public/aws/axiom-agent-quick-deploy.yaml'),accountId='123456789012',input={accountId,region:'us-east-2',objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600};
  const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(bytes).digest('hex')}),raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw);
  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),id=await requester.propose(raw);
+ beforeReview?.(id);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
  vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);
  return {bytes,input,id,binding:await createDefaultPlatformExecution(request,id,1)};
@@ -445,4 +447,16 @@ it.skipIf(!enabled)('changed lead after claim refuses the final default send and
   await db.$executeRawUnsafe('UPDATE "Lead" SET "fullPayload"=jsonb_set("fullPayload",\'{aiPackage,tagline}\',\'"Changed after claim"\'::jsonb),"updatedAt"=clock_timestamp() WHERE id=$1',leadId);
   await expect(deploySite('vercel',pkg,{projectName:'source-reviewed-project',effectId:record.plan.effects[0].id,source:{leadId,leadRevision:rows[0].updatedAt.toISOString()},platformExecution:binding})).rejects.toThrow();expect(http).not.toHaveBeenCalled();expect(await requester.inspect(saved.actionId)).toMatchObject({status:'unknown',attemptCount:1});await expect(requester.claim(saved.actionId,3)).rejects.toThrow();
  }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
+});
+
+it.skipIf(!enabled)('keeps changed-template review proposed with zero attempts or provider calls in actual SQL',async()=>{
+ let id='';
+ try{
+  const sts=vi.spyOn(STSClient.prototype,'send'),s3=vi.spyOn(S3Client.prototype,'send');
+  await expect(templateFixture(saved=>{id=saved;vi.spyOn(templateSource,'readPlatformTemplateBytes').mockResolvedValue(Buffer.from('changed synthetic source'))})).rejects.toThrow();
+  expect(id).not.toBe('');expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;version:number;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',id);
+  expect(rows[0].stateJson).toMatchObject({status:'proposed',version:0,attemptCount:0});
+  const events=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(events).toEqual([{kind:'proposed'}]);
+ }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
 });

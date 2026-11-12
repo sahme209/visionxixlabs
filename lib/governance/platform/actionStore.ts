@@ -161,7 +161,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(state.version!==version)fail();await actors(tx,state);await authority.assertCurrent(tx,actor);
-    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
+    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
     const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state));await tx.replace(id,version,next);
     await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});});
   },
@@ -195,7 +195,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
    await locked(binding.actionId,async(tx,state)=>{
     if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
-    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);

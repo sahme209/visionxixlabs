@@ -117,3 +117,14 @@ it('a source-bound deployment cannot send if its current-source supplier is miss
  const {approvePlatformAction}=await import('../kernel'),f=fixture(undefined,false),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'lead-deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'preview',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:new Date(at-1000).toISOString()}}]}),id=await f.service.propose(p,requester);
  f.rows().set(id,approvePlatformAction(f.rows().get(id)!,{...reviewer,planDigest:p.digest},at));await f.service.claim(id,1,requester);const effect=await f.service.claimNextEffect(id,requester);await expect(f.service.beforeEffectSend(effect.proof,effect.effect,requester)).rejects.toThrow();
 });
+it('requires a current template source supplier before independent upload or access review',async()=>{
+ for(const effect of [
+  {id:'upload',kind:'template.object.put',target:{accountId:'123456789012',region:'us-east-2',bucket:'bucket',key:'template.yaml',bytesDigest:d}},
+  {id:'access',kind:'template.access.grant',target:{accountId:'123456789012',region:'us-east-2',bucket:'bucket',key:'template.yaml',bytesDigest:d,objectVersion:'version-1',recipientDigest:d,ttlSeconds:60}},
+ ]){
+  const f=fixture(undefined,false),templatePlan=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[effect]});
+  const id=await f.service.propose(templatePlan,requester);
+  await expect(f.service.review(id,0,templatePlan.digest,reviewer)).rejects.toThrow();
+  expect(f.rows().get(id)?.status).toBe('proposed');expect(f.events()).toHaveLength(1);
+ }
+});
