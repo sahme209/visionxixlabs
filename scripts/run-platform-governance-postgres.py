@@ -10,7 +10,7 @@ REPO=Path(__file__).resolve().parents[1]
 PG=Path('/opt/homebrew/opt/postgresql@17/bin')
 NODE=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
 TEST='lib/governance/platform/__tests__/sqlRepository.pg.test.ts'
-FILES=[Path(__file__).relative_to(REPO),Path('prisma/schema.prisma')]+sorted(Path('lib/governance/platform').rglob('*.ts'))+[Path('lib/governance/platform/fixtureSchema.sql')]
+FILES=[Path(__file__).relative_to(REPO),Path('prisma/schema.prisma')]+sorted(Path('lib/governance/platform').rglob('*.ts'))+[Path('lib/governance/platform/fixtureSchema.sql'),Path('lib/governance/platform/fixtureIdentity.sql')]
 def hashes():return {str(p):hashlib.sha256((REPO/p).read_bytes()).hexdigest() for p in FILES}
 def main():
  os.umask(0o077)
@@ -34,14 +34,15 @@ def main():
   binding=run('binding',[PG/'psql','-XAtw','-v','ON_ERROR_STOP=1','-c',"SELECT json_build_object('db',current_database(),'role',current_user,'listen',current_setting('listen_addresses'),'data',current_setting('data_directory'),'tables',(SELECT count(*) FROM information_schema.tables WHERE table_schema='public'))"])
   if json.loads(binding)!={'db':'platform_fixture','role':'platform_fixture','listen':'','data':str(root/'data'),'tables':0}:raise RuntimeError('fresh_owned_target_required')
   run('schema',[PG/'psql','-Xw','-v','ON_ERROR_STOP=1','-f',REPO/'lib/governance/platform/fixtureSchema.sql'])
+  run('identity-schema',[PG/'psql','-Xw','-v','ON_ERROR_STOP=1','-f',REPO/'lib/governance/platform/fixtureIdentity.sql'])
   env['DATABASE_URL']='postgresql://platform_fixture@localhost:55497/platform_fixture?host='+quote(str(root/'socket'),safe='')
   config={'root':str(REPO),'envDir':str(root/'empty-env'),'cacheDir':str(root/'cache'),'resolve':{'alias':{'@':str(REPO),'server-only':str(REPO/'test/serverOnlyStub.ts')}},'test':{'environment':'node','include':[TEST],'maxWorkers':1,'fileParallelism':False}}
   (root/'vitest.config.mjs').write_text('export default '+json.dumps(config)+';\n')
   run('tests',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',root/'vitest.config.mjs','--configLoader','native','--reporter=json','--outputFile='+str(root/'result.json')],60)
   result=json.loads((root/'result.json').read_text())
-  if result['numPassedTests']!=3 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('three_actual_non_skipped_tests_required')
+  if result['numPassedTests']!=5 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('five_actual_non_skipped_tests_required')
   if hashes()!=before:raise RuntimeError('sources_changed')
-  (root/'receipt.json').write_text(json.dumps({'tests':3,'database':'actual isolated PostgreSQL','authorityAndProvider':'simulated; no actual provider dispatched','sourceHashes':before,'productionChanged':False},indent=2))
+  (root/'receipt.json').write_text(json.dumps({'tests':5,'database':'actual isolated PostgreSQL','authorityAndProvider':'3 simulated authority tests;2 actual current-identity SQL tests; no provider dispatched','sourceHashes':before,'productionChanged':False},indent=2))
  finally:
   if started:
    run('stop',[PG/'pg_ctl','-D',root/'data','-m','fast','-w','stop'])

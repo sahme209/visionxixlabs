@@ -16,6 +16,11 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readPrincipal(principal){
+    if(!locked)fail();
+    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean}>>('SELECT u.id AS "userId", s.id AS "sessionId", u.email, (s."revokedAt" IS NULL AND s."issuedAt" <= clock_timestamp() AND s."expiresAt" > clock_timestamp() AND m."acceptedAt" IS NOT NULL) AS live FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" JOIN "OrgMembership" m ON m."userId"=s."userId" AND m."organizationId"=s."organizationId" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);
+    if(rows.length!==1)fail();return rows[0];
+   },
    async lock(id){if(locked!==null)fail();await sql.$queryRawUnsafe('SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtextextended($1,0))','axiom-platform-governance:'+id);locked=id},
    async now(){if(!locked)fail();const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1||!Number.isSafeInteger(rows[0].now))fail();return rows[0].now},
    async read(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{stateJson:unknown;planDigest:string;version:number}>>('SELECT "stateJson","planDigest",version FROM "PlatformGovernanceAction" WHERE id=$1',id);

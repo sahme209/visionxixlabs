@@ -4,6 +4,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
  event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed';state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;

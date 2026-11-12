@@ -10,7 +10,7 @@ function fixture(){
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
   const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects);
-  const tx:PlatformTransaction={now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
+  const tx:PlatformTransaction={readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
