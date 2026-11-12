@@ -182,3 +182,8 @@ Required Typecheck + Vitest, production/offline build, desktop/macOS, audit and 
 ### Observed dependency-security follow-up
 
 Web CI on the Prisma candidate reports three moderate archiver/readdir-glob/minimatch findings (GHSA-g3hv-75wg-m249); high/critical threshold passes, desktop audit is clean. Versions match current main, so no new version change in this chain is attributed to Prisma. Compatible repair and actual exposure need targeted review; do not run the suggested force downgrade or weaken audit checks. [Exact observation](../recovery/2026-11-11/prisma7-preflight/AUDIT-OBSERVATION.md).
+
+
+### Prisma startup compiler boundary — source correction, CI pending
+
+Actual Next Webpack compilation of the real instrumentation hook reproduced 17 Edge errors with the early-return form. The Node store-factory import is now enclosed in a positive Node-only condition: Edge excludes the real PostgreSQL adapter graph, Node retains it, and the original Node store/logging/error behavior is unchanged. Implemented source review passes; no emitted application was executed by this regression. [Evidence](../recovery/2026-11-11/prisma7-preflight/INSTRUMENTATION-COMPILER-BOUNDARY.md). Actual HTTP/website CI success remains mandatory; no startup/deployment acceptance is claimed yet. No Next config/hash, authority, timeout, flag, credentials or native dependency changed.

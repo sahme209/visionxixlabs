@@ -30,3 +30,6 @@ test('returns only a package name approved by public dependency metadata, never 
  assert.deepEqual(result.publicMissingPackages,['@prisma/client']);assert.equal(JSON.stringify(result).includes('PRIVATE_SECRET'),false);
  assert.equal(classify("Cannot find module 'unlisted-package'",['@prisma/client']).publicMissingPackages,undefined);
 });
+test('reports a Node builtin only after exact membership in the public Node builtin registry',()=>{
+ const result=classify("Can't resolve 'fs'\nCannot find module 'node:net'\nCannot find module 'node:PRIVATE_SECRET'");assert.deepEqual(result.publicMissingBuiltins,['node:fs','node:net']);assert.equal(JSON.stringify(result).includes('PRIVATE_SECRET'),false);
+});
