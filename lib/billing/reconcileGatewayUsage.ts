@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import {lockCodingFinancial,settleCodingLedger,codingBudgetUnavailable} from "@/lib/workforce/pipelines/codingRunReservation";
 import type { Prisma } from "@/lib/prismaClient";
 import { settleAttributedUsageV2 } from "./newTestSubscription/usageAllocationIO";
@@ -84,6 +85,7 @@ export async function reconcilePendingGatewayUsage(
   lookup: GenerationLookup = (id) => gateway.getGenerationInfo({ id }),
   limit = 100,
 ): Promise<GatewayUsageReconciliationResult> {
+  assertOnlineAIDispatch();
   denyIsolatedUnsupportedOperation();
   const pending = await repository.usageEvent.findMany({
     where: {
@@ -107,6 +109,7 @@ export async function reconcilePendingGatewayUsage(
     }
     try {
       denyIsolatedUnsupportedOperation();
+      assertOnlineAIDispatch();
       const generation = await lookup(event.externalUsageId);
       denyIsolatedUnsupportedOperation();
       // Cost evidence must identify the exact request captured on this event.

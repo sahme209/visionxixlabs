@@ -11,8 +11,8 @@ No complete egress qualification, feature readiness or live acceptance is claime
 | Old direct OpenAI/Anthropic/Gemini SDK adapters | `providers/{openai,anthropic,gemini}.ts` | online gates before key/SDK initialization and after dynamic imports, immediately before SDK call |
 | Brand image generation | `lib/growth/imageGenerator.ts` | online gate before configuration and image SDK call |
 | Gateway model catalog | `lib/ai/gatewayModelCatalog.ts` | online gate before metadata fetch |
-| Sonnet model endpoint metadata | `lib/billing/{smallSonnetRequest,smallSonnet55Request}.ts` | **still needs offline metadata refusal review/tests**; not a prompt send, but offline should not depend on network metadata |
-| Gateway pending-cost reconciliation | `lib/billing/reconcileGatewayUsage.ts` | **still needs offline metadata/refusal handling**; preserve pending liabilities |
+| Sonnet model endpoint metadata | `lib/billing/{smallSonnetRequest,smallSonnet55Request}.ts` | online-only gates before preparation and final metadata fetch; two offline entrypoint tests and existing online tests pass |
+| Gateway pending-cost reconciliation | `lib/billing/reconcileGatewayUsage.ts` | online-only gates before pending read and before lookup after awaited read; tests preserve pending liabilities when mode changes |
 | Public support and coding execution composition | callers in `app/api` and workforce | underlying reviewed provider gates added; **actual route/SDK/held-reservation tests and any independent bypass inventory remain required** |
 | Agent resolver | `lib/axiom/agentRuntime/governedAiCall.ts` | **offline branch before Gateway credit/catalog/manager and default durable accounting remain unmounted** |
 | New customer-hosted transport | `lib/ai/customerHostedTransport.ts` | no online fallback; **must additionally require installation-mode/actual token+policy+qualification composition before use** |
