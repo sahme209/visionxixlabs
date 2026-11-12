@@ -68,6 +68,18 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     await tx.replaceDelegation(key,state.version,next);await event(tx,parent,next,'credential.observed');return projection(next,now);
    })}catch{throw Error('operational_credential_observation_unconfirmed')}
   }
+ async function workloadRead(id:string,rawToken:unknown,expectedVersion?:number){
+  try{return await locked(id,async(tx,key)=>{
+   const state=await load(tx,key),m=state.manifest,admission=expectedVersion!==undefined;
+   if(!issuer||!targets||!m.issuerProfileDigest||!m.workload.environment||!m.workload.protectionRevision)return fail();
+   if(admission&&(state.status!=='delegated'||state.version!==expectedVersion||state.attemptCount!==0||state.executionPrincipal!==null||state.targetReservation!==null||state.credential.status!=='not_requested'))return fail();
+   if(!admission&&state.status!=='delegated'&&state.status!=='claimed')return fail();
+   const parentStatus=state.status==='delegated'?'approved':'claimed',token=rawToken,b=binding(state);
+   await current(tx,state,parentStatus);await identity.authenticate(tx,token,b);await issuer.assertQualified(tx,m);await current(tx,state,parentStatus);
+   await identity.authenticate(tx,token,b);await issuer.assertQualified(tx,m);const {now}=await current(tx,state,parentStatus);
+   return Object.freeze({actionId:key,manifestDigest:m.digest,workload:Object.freeze({...m.workload}),issuerProfileDigest:m.issuerProfileDigest,observedAt:now,expiresAt:m.expiresAt,authority:admission?'handoff_preflight_only' as const:'handoff_source_only' as const,executionAuthorized:false as const});
+  })}catch{throw Error('operational_handoff_preflight_unavailable')}
+ }
  return Object.freeze({
   async executeCredential(handle:object){
    const held=credentials.get(handle);if(!held||!issuer||!transport||!targets)return fail();credentials.delete(handle);
@@ -173,19 +185,11 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    const state=readOperationalDelegation({actionId:key,parentPlanDigest:parent.plan.digest,manifest,requester:parent.requester,reviewer:parent.reviewer,status:'delegated',version:0,attemptCount:0,executionPrincipal:null,targetReservation:null,credential:{status:'not_requested'},createdAt:await tx.now(),updatedAt:await tx.now()});
    await current(tx,state,'approved');await tx.insertDelegation(key,state);await event(tx,parent,state,'workload.delegated');await current(tx,state,'approved');return projection(state,await tx.now());
   })},
-  /** Private signed-workload eligibility read, never a claim/capability. The
-   * same original token must still pass the real claim and final native gates.
-   * No identity consumption, target hold, event or credential side effect. */
-  async preflightWorkload(id:string,expectedVersion:number,rawToken:unknown){
-   try{return await locked(id,async(tx,key)=>{
-    const state=await load(tx,key),m=state.manifest;
-    if(!issuer||!targets||m.kind!=='deployment.ecs'||!m.issuerProfileDigest||!m.workload.environment||!m.workload.protectionRevision||state.status!=='delegated'||state.version!==expectedVersion||state.attemptCount!==0||state.executionPrincipal!==null||state.targetReservation!==null||state.credential.status!=='not_requested')return fail();
-    const token=rawToken,b=binding(state);await current(tx,state,'approved');
-    await identity.authenticate(tx,token,b);await issuer.assertQualified(tx,m);await current(tx,state,'approved');
-    await identity.authenticate(tx,token,b);await issuer.assertQualified(tx,m);const {now}=await current(tx,state,'approved');
-    return Object.freeze({actionId:key,manifestDigest:m.digest,workload:Object.freeze({...m.workload}),issuerProfileDigest:m.issuerProfileDigest,observedAt:now,expiresAt:m.expiresAt,authority:'handoff_preflight_only' as const,executionAuthorized:false as const});
-   })}catch{throw Error('operational_handoff_preflight_unavailable')}
-  },
+  /** Admission metadata only; it cannot claim an action or spend its token. */
+  async preflightWorkload(id:string,expectedVersion:number,token:unknown){return workloadRead(id,token,expectedVersion)},
+  /** Current-source read for the same signed workload, including after claim.
+   * This does not make the consumed action eligible or return a phase proof. */
+  async checkWorkloadSource(id:string,token:unknown){return workloadRead(id,token)},
   async claim(id:string,expectedVersion:number,token:unknown){
    try{const result=await locked(id,async(tx,key)=>{
     const state=await load(tx,key);if(!targets||state.status!=='delegated'||state.version!==expectedVersion)return fail();const {parent}=await current(tx,state,'approved'),b=binding(state);

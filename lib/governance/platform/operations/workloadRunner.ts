@@ -30,6 +30,9 @@ export function createOperationalWorkloadRunner(ports:Ports){
   async preflight(raw:unknown,webIdentityToken:unknown,signal:AbortSignal){try{
    const {selected,token}=select(raw,webIdentityToken,signal),result=await storeFor(signal).preflightWorkload(selected.actionId,selected.delegationVersion,token);signal.throwIfAborted();return result;
   }catch{return fail()}},
+  async sourceCurrent(raw:unknown,webIdentityToken:unknown,signal:AbortSignal){try{
+   const {selected,token}=select(raw,webIdentityToken,signal),result=await storeFor(signal).checkWorkloadSource(selected.actionId,token);signal.throwIfAborted();return result;
+  }catch{return fail()}},
   async run(raw:unknown,webIdentityToken:unknown,signal:AbortSignal){try{
    const {selected,token}=select(raw,webIdentityToken,signal),store=storeFor(signal);
    const claimed=await store.claim(selected.actionId,selected.delegationVersion,token),pending=await store.beginCredential(claimed.proof),issued=await store.issueCredential(pending.proof);
