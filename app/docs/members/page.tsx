@@ -23,6 +23,6 @@ export default function MembersDocsPage() {
   <DocSection id="requests" kicker="04" title="Access requests">
    <p>Members can ask for a higher role through Ask Axiom. Owners and admins see requests from the last 30 days under <em>Access requests</em>, with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.</p>
   </DocSection>
-  <DocFooterNav prev={{href:"/docs/ask-axiom",label:"Ask Axiom"}} next={{href:"/docs/governance-approvals",label:"Governance approvals"}} />
+  <DocFooterNav prev={{href:"/docs/workspaces",label:"Workspaces"}} next={{href:"/docs/governance-approvals",label:"Governance approvals"}} />
  </>;
 }

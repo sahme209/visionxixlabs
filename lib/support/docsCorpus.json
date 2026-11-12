@@ -83,28 +83,28 @@
    "title": "Answers from the docs",
    "text": "Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask Axiom is not confident, it shows the closest guides and offers to send your question to support.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
+   "sourceSha256": "b18468c5d32d537fdec87ca1463a85c01c0598c54e682d73889f35f4a49f3538"
   },
   {
    "href": "/docs/ask-axiom#ai",
    "title": "Fuller AI answers",
    "text": "Signed-in members of a workspace with AI turned on can choose Get a fuller AI answer . It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
+   "sourceSha256": "b18468c5d32d537fdec87ca1463a85c01c0598c54e682d73889f35f4a49f3538"
   },
   {
    "href": "/docs/ask-axiom#workspace",
    "title": "Help with your workspace",
    "text": "When you are signed in, Ask Axiom can tell you what is waiting for approval, which agent requests are pending, which connections are active, when the audit log was last sealed and what happened recently. Every answer is read-only and comes from your current workspace only. Say something is broken or run a health check for a saved-state diagnostic with links to fix each finding. It does not test providers live.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
+   "sourceSha256": "b18468c5d32d537fdec87ca1463a85c01c0598c54e682d73889f35f4a49f3538"
   },
   {
    "href": "/docs/ask-axiom#actions",
    "title": "What it can do for you",
    "text": "It can open a pre-filled support request that you review and send, and it can send an access request to your workspace admins. It never changes roles or approves actions; admins and approvers decide. It can also run three fixed actions, governed like any other agent: seal the audit log (owners and admins), verify the audit log (any member) and list API keys expiring soon (owners and admins; it shows names, prefixes and dates, never secrets). Each shows exactly what it will do and runs only after you confirm that action. The server checks your role again, and every run is recorded in the audit log under your name. Sealing adds a record and never edits or deletes events; the other two are read-only.",
    "source": "app/docs/ask-axiom/page.tsx",
-   "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28"
+   "sourceSha256": "b18468c5d32d537fdec87ca1463a85c01c0598c54e682d73889f35f4a49f3538"
   },
   {
    "href": "/docs/audit-logs#record",
@@ -422,32 +422,53 @@
    "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206"
   },
   {
+   "href": "/docs/mcp-tools#enable",
+   "title": "Prepare Microsoft Learn documentation search",
+   "text": "An owner or admin opens Apps & skills → Developer tools (MCP) , chooses Microsoft Learn and confirms Install or Enable . Open MCP tools . Current membership and workspace access are required for requests; the saved installation must be enabled for search. Choose Check connection to see whether the fixed public server responds and offers documentation search. This checks availability only: it does not install the tool, grant cloud access or authorize Agent tools.",
+   "source": "app/docs/mcp-tools/page.tsx",
+   "sourceSha256": "683a645784bb2729661e6f6607e5ac366655bf2b14c3603cede9c4862e5f2f75"
+  },
+  {
+   "href": "/docs/mcp-tools#search",
+   "title": "Search with a public technical topic",
+   "text": "Enter a short topic, such as Azure App Service managed identity , then choose Search docs . Your topic is sent to Microsoft's public documentation server. Use public terms only; do not paste credentials, private code, personal information or internal incident details. Queries are limited to 300 characters; unsupported or secret-like input is refused. Results show titles, excerpts and links on learn.microsoft.com. They are external reference material, not evidence that your own deployment is configured correctly. Axiom bounds request duration and response size, refuses redirects and rate-limits requests. This page lets Axiom read a reviewed external documentation tool. To let an external agent request Axiom governance decisions, use the separate Agent gateway guide . Neither connection grants the other's permissions.",
+   "source": "app/docs/mcp-tools/page.tsx",
+   "sourceSha256": "683a645784bb2729661e6f6607e5ac366655bf2b14c3603cede9c4862e5f2f75"
+  },
+  {
+   "href": "/docs/mcp-tools#recover",
+   "title": "If a request is unavailable",
+   "text": "Check the workspace's installation state first. Unknown storage state is not an enabled connection. A rate-limit message means wait before trying again. A failed or unconfirmed request is not proof that documentation was read; Axiom requires an audit record before confirming it. Do not repeatedly resend sensitive or unsupported input.",
+   "source": "app/docs/mcp-tools/page.tsx",
+   "sourceSha256": "683a645784bb2729661e6f6607e5ac366655bf2b14c3603cede9c4862e5f2f75"
+  },
+  {
    "href": "/docs/members#roles",
    "title": "Roles",
    "text": "Owner : full control, one per workspace; ownership moves only through an explicit handoff. Admin : manages members, billing, integrations and every engineer setting. Operator : runs scans, approves engineer actions and configures the workforce, but cannot manage billing or members. Security reviewer : reads findings, approvals and the audit trail, and can vote on approvals but not start engineer actions. Finance viewer : reads cost recommendations and panels, with no write access. Read-only : reads dashboards; no vote, run or manage.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "e4d3d027763be8e7a66db40a3ca8205aeb545420fb7b597a8a215e984d47be71"
+   "sourceSha256": "10f88570bc7e328a5c5b34793a62ca4a3a681f4b1e05368fbdf1285b6d5b29fb"
   },
   {
    "href": "/docs/members#invite",
    "title": "Invite a teammate",
    "text": "Enter an email address, choose a role (Operator by default) and choose Create invitation link . Axiom does not email the link: copy it and send it yourself. The owner role cannot be given by invitation. Invitation links expire after 7 days. Removing a member also voids every earlier invitation for that email.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "e4d3d027763be8e7a66db40a3ca8205aeb545420fb7b597a8a215e984d47be71"
+   "sourceSha256": "10f88570bc7e328a5c5b34793a62ca4a3a681f4b1e05368fbdf1285b6d5b29fb"
   },
   {
    "href": "/docs/members#change",
    "title": "Change a role or remove someone",
    "text": "Use Update or Remove on a member's row. You cannot change your own role or the owner's. If Axiom cannot confirm the audit record for a change, it says so; check the member list before trying again, because the change may already have happened. If your workspace is enrolled in Governance, promotions and new invitations wait until membership changes have reviewed Governance coverage. Demoting and removing members always work, so you can reduce access at any time.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "e4d3d027763be8e7a66db40a3ca8205aeb545420fb7b597a8a215e984d47be71"
+   "sourceSha256": "10f88570bc7e328a5c5b34793a62ca4a3a681f4b1e05368fbdf1285b6d5b29fb"
   },
   {
    "href": "/docs/members#requests",
    "title": "Access requests",
    "text": "Members can ask for a higher role through Ask Axiom. Owners and admins see requests from the last 30 days under Access requests , with the reason given. A request never changes anything by itself: if you agree, change the role in the member list.",
    "source": "app/docs/members/page.tsx",
-   "sourceSha256": "e4d3d027763be8e7a66db40a3ca8205aeb545420fb7b597a8a215e984d47be71"
+   "sourceSha256": "10f88570bc7e328a5c5b34793a62ca4a3a681f4b1e05368fbdf1285b6d5b29fb"
   },
   {
    "href": "/docs/oauth-setup#overview",
@@ -518,6 +539,27 @@
    "text": "Axiom dispatches the tenant workflow; GitHub Actions OIDC assumes the environment's configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.",
    "source": "app/docs/permissions-model/page.tsx",
    "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc"
+  },
+  {
+   "href": "/docs/plugins#browse",
+   "title": "Browse the Apps and skills catalog",
+   "text": "Open Apps & skills . Choose Apps , Skills or Developer tools (MCP) , then search by name, description or listed tools. Select an entry's name to inspect its description, status and tools or scopes. Apps are built-in Axiom workflows, grouped by provider. They have no separate installation to remove. Choose Manage access to review the provider in Integrations, then use an available governed workflow to prepare an action.",
+   "source": "app/docs/plugins/page.tsx",
+   "sourceSha256": "ecfddc90e36abee506aad360669bd6961265d314f452e0d46a9871c8f70d033a"
+  },
+  {
+   "href": "/docs/plugins#skills",
+   "title": "Install, disable or remove a skill",
+   "text": "Current workspace members can browse. Owners and admins with current workspace access can choose Install , Enable , Disable or Remove on supported optional entries, then confirm the named change. Installed guidance becomes available on the Agent's next message; it does not rewrite earlier conversations. For example, a repository-review skill helps the Agent inspect source. Its tools still need their own workspace permissions and provider connection. Check these separately in Integrations and AI & Agents. Installing a skill never grants credentials, changes tool risk or bypasses action approval. Built-in availability, enabled guidance and permission to execute are separate states.",
+   "source": "app/docs/plugins/page.tsx",
+   "sourceSha256": "ecfddc90e36abee506aad360669bd6961265d314f452e0d46a9871c8f70d033a"
+  },
+  {
+   "href": "/docs/plugins#uncertain",
+   "title": "When installation state is unknown",
+   "text": "If installation storage is unavailable, Axiom labels the state unknown and does not offer management controls. If an update is not confirmed, refresh the catalog and inspect the saved state before retrying: the change may have completed even if its audit or response failed. For Microsoft Learn, choose Open tools and follow the MCP documentation-search guide . Arbitrary packages and server URLs cannot be installed from this catalog.",
+   "source": "app/docs/plugins/page.tsx",
+   "sourceSha256": "ecfddc90e36abee506aad360669bd6961265d314f452e0d46a9871c8f70d033a"
   },
   {
    "href": "/docs/releaseops#lifecycle",
@@ -602,6 +644,34 @@
    "text": "No SOC 2, ISO 27001, HIPAA, or other independent certification is currently claimed. Control-mapping code is a product feature, not a certification or active audit. No BAA, DPA, data-residency, SSO entitlement, or commercial tier is promised without approved documentation. Customers remain responsible for their own legal, risk, and compliance decisions.",
    "source": "app/docs/security-model/page.tsx",
    "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7"
+  },
+  {
+   "href": "/docs/settings#profile",
+   "title": "Change your display name",
+   "text": "Open Settings & sessions → Profile . Edit Display name , then choose Save profile . Names must contain 1–80 characters; the server trims surrounding whitespace and normalizes repeated spaces. This changes your own account name, not the workspace name. The profile form cannot change your sign-in email or workspace permissions. If saving is not confirmed, refresh to inspect the saved name before trying again; a failed response does not prove that the change was rolled back.",
+   "source": "app/docs/settings/page.tsx",
+   "sourceSha256": "c8c7f4b46721f6cfa96add1703acdcb4ed58e45442b1fdf464fb4e0dbe13bc9e"
+  },
+  {
+   "href": "/docs/settings#security",
+   "title": "Understand the Security tab",
+   "text": "Security shows the sign-in email and browser-session status. It is not a password, MFA or role-management form. Use Members and roles for workspace access. Signing out ends the browser session; paired desktop sessions remain independent.",
+   "source": "app/docs/settings/page.tsx",
+   "sourceSha256": "c8c7f4b46721f6cfa96add1703acdcb4ed58e45442b1fdf464fb4e0dbe13bc9e"
+  },
+  {
+   "href": "/docs/settings#sessions",
+   "title": "Review and revoke a paired device",
+   "text": "Open Sessions . Axiom lists active pairings belonging to your account in the current workspace, with device label, platform, app version when available and last-seen time. It does not show bearer tokens or provider credentials. An unavailable list is not proof that no devices exist. Choose Revoke device , check the named device in the confirmation and confirm. The selected pairing loses access to protected APIs; this does not sign out your browser or revoke other devices. If the result is unconfirmed, refresh the session list before retrying. This revokes the pairing. It does not uninstall the app, erase local files, revoke an independent provider credential or prove that earlier work was cancelled.",
+   "source": "app/docs/settings/page.tsx",
+   "sourceSha256": "c8c7f4b46721f6cfa96add1703acdcb4ed58e45442b1fdf464fb4e0dbe13bc9e"
+  },
+  {
+   "href": "/docs/settings#desktop",
+   "title": "Desktop settings have a different scope",
+   "text": "This guide describes browser account settings. The desktop Agent has its own settings and saved session. Use the desktop installation guide for installation and pairing, and confirm the active account and workspace in the app before acting.",
+   "source": "app/docs/settings/page.tsx",
+   "sourceSha256": "c8c7f4b46721f6cfa96add1703acdcb4ed58e45442b1fdf464fb4e0dbe13bc9e"
   },
   {
    "href": "/docs/source-modes#local-files",
@@ -713,21 +783,42 @@
    "title": "Overview",
    "text": "Shows your plan, the AI allowance remaining, seats, counted deployments and gateway calls, plus AI usage for the current UTC month. AI cost is settled from the gateway's generation cost; calls still awaiting settlement are counted as pending, never as free. Credits increase only from payment records verified by Stripe. Buying AI credit top-ups is currently unavailable while one-time payment fulfillment, refunds and replay handling are verified. The page states this; no charge can start while it is off.",
    "source": "app/docs/usage-billing/page.tsx",
-   "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc"
+   "sourceSha256": "ccdf9fc51dfeaf6cf1967c508e86f121ace621db354d9626f8feae82a968020b"
   },
   {
    "href": "/docs/usage-billing#usage",
    "title": "Usage records",
    "text": "Every member can browse AI usage records for the last 12 months, 50 per page, filter by settled or pending, and export the current page. Times are in UTC.",
    "source": "app/docs/usage-billing/page.tsx",
-   "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc"
+   "sourceSha256": "ccdf9fc51dfeaf6cf1967c508e86f121ace621db354d9626f8feae82a968020b"
   },
   {
    "href": "/docs/usage-billing#invoices",
    "title": "Invoices and payment details",
    "text": "Owners and admins see invoices and can open the secure Stripe billing portal with Manage billing when billing is enabled for the workspace. Other members see who manages billing instead.",
    "source": "app/docs/usage-billing/page.tsx",
-   "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc"
+   "sourceSha256": "ccdf9fc51dfeaf6cf1967c508e86f121ace621db354d9626f8feae82a968020b"
+  },
+  {
+   "href": "/docs/workspaces#choose",
+   "title": "Choose an active workspace",
+   "text": "When more than one workspace is available, use the sidebar's Active workspace selector, choose the intended workspace and select Open workspace . The browser opens Control in that workspace. With one current workspace, the sidebar may show its name without a selector. The server checks your signed-in account and accepted membership before saving the browser selection. Recheck the workspace name and role before preparing any action. Switching does not copy records, create a connection or carry an approval into another workspace.",
+   "source": "app/docs/workspaces/page.tsx",
+   "sourceSha256": "1a1d4495fb6502bf85218729f1edb1da50c261e30cefa020706dff9ab0503ec1"
+  },
+  {
+   "href": "/docs/workspaces#recover",
+   "title": "Recover unavailable workspace access",
+   "text": "Workspaces is a recovery destination that directs you to the sidebar. If the current selection is no longer available, choose another workspace offered to your account and select Open workspace . A pending invitation or workspace identifier alone does not establish accepted membership. If no valid workspace is offered, confirm the signed-in account and ask an owner or admin to review membership. Do not repeatedly submit a removed workspace or treat a cached page as current access. See Members and roles for invitations and access requests.",
+   "source": "app/docs/workspaces/page.tsx",
+   "sourceSha256": "1a1d4495fb6502bf85218729f1edb1da50c261e30cefa020706dff9ab0503ec1"
+  },
+  {
+   "href": "/docs/workspaces#devices",
+   "title": "Browser context and paired devices are separate",
+   "text": "Browser workspace selection does not switch or re-pair the desktop Agent. Check the account and workspace in each surface before continuing. Use Settings and sessions to inspect your paired devices for the current workspace. Every protected operation still needs its own current role, provider access, policy and approval checks. Opening a workspace is not permission to deploy or approve someone else's request.",
+   "source": "app/docs/workspaces/page.tsx",
+   "sourceSha256": "1a1d4495fb6502bf85218729f1edb1da50c261e30cefa020706dff9ab0503ec1"
   }
  ]
 }

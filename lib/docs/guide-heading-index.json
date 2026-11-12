@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "d5f1e84155e376f2f6b3333205395cd40362a4386ca590690c321d9a66dd71ae",
+  "navigationSha256": "421e59b5f090be5d6a858e2e10f6c00d3b6c41e4bfdf2b83c8df5c900facaf0e",
   "guides": [
     {
       "href": "/docs",
@@ -335,7 +335,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "9f1a6e997e37d8e3960617477a25523c2bf17c5607aed45cfe8c1e82e4dfba28",
+      "sourceSha256": "b18468c5d32d537fdec87ca1463a85c01c0598c54e682d73889f35f4a49f3538",
       "fields": [
         "Ask Axiom.",
         "The support chat answers from Axiom's public docs with sources, and can help with your own workspace when you are signed in.",
@@ -347,9 +347,48 @@
       ]
     },
     {
+      "href": "/docs/plugins",
+      "source": "app/docs/plugins/page.tsx",
+      "sourceSha256": "ecfddc90e36abee506aad360669bd6961265d314f452e0d46a9871c8f70d033a",
+      "fields": [
+        "Find a workflow. Add guidance deliberately.",
+        "Control → Apps & skills separates built-in Apps, optional Skills and Developer tools (MCP). A catalog entry does not mean provider access is ready.",
+        "Browse the Apps and skills catalog",
+        "Install, disable or remove a skill",
+        "Guidance is not permission",
+        "When installation state is unknown"
+      ]
+    },
+    {
+      "href": "/docs/mcp-tools",
+      "source": "app/docs/mcp-tools/page.tsx",
+      "sourceSha256": "683a645784bb2729661e6f6607e5ac366655bf2b14c3603cede9c4862e5f2f75",
+      "fields": [
+        "Search official documentation, within a fixed boundary.",
+        "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",
+        "Prepare Microsoft Learn documentation search",
+        "Search with a public technical topic",
+        "Two different MCP directions",
+        "If a request is unavailable"
+      ]
+    },
+    {
+      "href": "/docs/workspaces",
+      "source": "app/docs/workspaces/page.tsx",
+      "sourceSha256": "1a1d4495fb6502bf85218729f1edb1da50c261e30cefa020706dff9ab0503ec1",
+      "fields": [
+        "Choose the workspace before you act.",
+        "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
+        "Choose an active workspace",
+        "Recover unavailable workspace access",
+        "Browser context and paired devices are separate",
+        "Selection is not authorization"
+      ]
+    },
+    {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "e4d3d027763be8e7a66db40a3ca8205aeb545420fb7b597a8a215e984d47be71",
+      "sourceSha256": "10f88570bc7e328a5c5b34793a62ca4a3a681f4b1e05368fbdf1285b6d5b29fb",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -377,7 +416,7 @@
     {
       "href": "/docs/usage-billing",
       "source": "app/docs/usage-billing/page.tsx",
-      "sourceSha256": "6599f0c7b2d45572137ade7e7707140f1324fa68bbd27233de0b867f4f40a2fc",
+      "sourceSha256": "ccdf9fc51dfeaf6cf1967c508e86f121ace621db354d9626f8feae82a968020b",
       "fields": [
         "See what you used and what it cost.",
         "Control → Usage & billing has three tabs: Overview, Usage and Invoices. Missing records are shown as unavailable, never estimated.",
@@ -385,6 +424,20 @@
         "Top-ups are paused",
         "Usage records",
         "Invoices and payment details"
+      ]
+    },
+    {
+      "href": "/docs/settings",
+      "source": "app/docs/settings/page.tsx",
+      "sourceSha256": "c8c7f4b46721f6cfa96add1703acdcb4ed58e45442b1fdf464fb4e0dbe13bc9e",
+      "fields": [
+        "Keep your profile and devices under control.",
+        "Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct.",
+        "Change your display name",
+        "Understand the Security tab",
+        "Review and revoke a paired device",
+        "Revocation is not a remote wipe",
+        "Desktop settings have a different scope"
       ]
     },
     {

@@ -17,13 +17,13 @@ it("filters existing guide titles with trimmed case-insensitive text and retains
   expect(screen.getByText(/Filters guide titles, section names, summaries and headings/)).toBeDefined();
   fireEvent.change(field, { target: { value: "  pErMiSsIoNs  " } });
   const nav = screen.getByRole("navigation", { name: "Documentation navigation" });
-  expect(within(nav).getAllByRole("link").map(link=>link.getAttribute("href"))).toEqual(["/docs/quickstart-checklist", "/docs/security-model", "/docs/permissions-model"]);
+  expect(within(nav).getAllByRole("link").map(link=>link.getAttribute("href"))).toEqual(["/docs/quickstart-checklist", "/docs/security-model", "/docs/permissions-model", "/docs/workspaces"]);
   const link = within(nav).getByRole("link", { name: "Permissions model", current: "page" });
   expect(link.getAttribute("href")).toBe("/docs/permissions-model");
   expect(link.className).toContain("bg-orange-500/10");
   expect(screen.getByText("Trust & security")).toBeDefined();
   expect(screen.queryByText("Configure delivery")).toBeNull();
-  expect(screen.getByRole("status").textContent).toBe("3 guides shown");
+  expect(screen.getByRole("status").textContent).toBe("4 guides shown");
 });
 it("matches existing section names while keeping their guide groups", () => {
   render(createElement(DocsSidebar));
@@ -42,8 +42,8 @@ it("reports an empty title match, then clears the filter and returns focus to it
   clear.focus(); fireEvent.click(clear);
   expect((field as HTMLInputElement).value).toBe("");
   expect(document.activeElement).toBe(field);
-  expect(screen.getAllByRole("link")).toHaveLength(31);
-  expect(screen.getByRole("status").textContent).toBe("31 guides shown");
+  expect(screen.getAllByRole("link")).toHaveLength(35);
+  expect(screen.getByRole("status").textContent).toBe("35 guides shown");
   expect(screen.queryByRole("button", { name: "Clear guide filter" })).toBeNull();
 });
 it("retains mobile Escape and route-change close behavior while filtering", () => {
