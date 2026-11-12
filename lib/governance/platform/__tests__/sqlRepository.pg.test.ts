@@ -2,7 +2,7 @@ import {afterAll,beforeAll,it,expect} from 'vitest';
 import {createDatabaseClient} from '@/lib/database/createDatabaseClient';
 import {createPlatformSqlRepository,type PlatformSqlDatabase} from '../sqlRepository';
 import {createPlatformActionService,type PlatformRepository} from '../actionStore';
-import {compilePlatformPlan} from '../kernel';
+import {compilePlatformPlan,readPlatformAction} from '../kernel';
 const enabled=!!process.env.AXIOM_PLATFORM_PG_ROOT;
 let db:ReturnType<typeof createDatabaseClient>;
 beforeAll(()=>{if(enabled)db=createDatabaseClient(process.env.DATABASE_URL)});
@@ -613,7 +613,7 @@ it.skipIf(!enabled)('requires qualified prior issued-credential closure and pres
 });
 
 import {createSettingsArtifactStore} from '../operations/settingsArtifactStore';
-import {compileOperationalSettingsPlan,openSettingsArtifact} from '../operations/settingsArtifact';
+import {compileOperationalSettingsPlan,openSettingsArtifact,deriveSettingsArtifactBinding} from '../operations/settingsArtifact';
 it.skipIf(!enabled)('stores one exact private settings envelope in actual SQL and excludes duplicate/reviewed replacements',async()=>{
  await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']);
  const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(Date.now()+60000).toISOString(),target:{projectId:'synthetic-project',teamId:'synthetic-team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_'+randomUUID(),current:{kind:'absent',receiptId:'platform_evidence_'+randomUUID()}}]});
@@ -641,4 +641,12 @@ it.skipIf(!enabled)('binds private settings save and genuine independent review 
  const independent=await createSettingsArtifactRequestComposition({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})},ports);await independent.review(id,0,p.digest);expect(source.readKey).toHaveBeenCalledTimes(1);
  headers.delete('authorization');await expect(requester.save(id,0,'replacement')).rejects.toThrow();const state=await db.$queryRawUnsafe<Array<{stateJson:{status:string;reviewer:{userId:string}}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',id);expect(state[0].stateJson).toMatchObject({status:'approved',reviewer:{userId:reviewer.userId}});
  }finally{vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('permanently excludes a cloned settings action from the same native target after an unknown child',async()=>{
+ await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']),name='KEY_'+randomUUID().replaceAll('-','').toUpperCase();
+ async function prepare(){
+ const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(Date.now()+60000).toISOString(),target:{projectId:'synthetic-project',teamId:'synthetic-team'},settings:[{name,environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_'+randomUUID(),current:{kind:'absent',receiptId:'platform_evidence_'+randomUUID()}}]});
+ const p=compileOperationalSettingsPlan(manifest),service=createPlatformActionService(repo,authority),id=await service.propose(p,actor),store=createSettingsArtifactStore(repo,authority,{readManifest:async()=>manifest,assertCurrent:async()=>{},readKey:async()=>new Uint8Array(32).fill(17)});await store.save(id,0,actor,'synthetic');await store.review(id,0,p.digest,reviewer);await service.claim(id,1,actor);const child=await service.claimNextEffect(id,actor);const binding=deriveSettingsArtifactBinding(id,readPlatformAction(await repo.transaction(async tx=>{await tx.lock(id);return tx.read(id)})),manifest,0,actor);return {id,service,child,binding};
+ }
+ const a=await prepare(),reserve=(f:Awaited<ReturnType<typeof prepare>>)=>repo.transaction(async tx=>{await tx.lock(f.id);return tx.reserveSettingsCreation(f.binding)});const key=await reserve(a);await a.service.observeEffect(a.child.proof,'unknown');const b=await prepare();await expect(reserve(b)).rejects.toThrow();await expect(reserve(a)).rejects.toThrow();const rows=await db.$queryRawUnsafe<Array<{publicationKey:string;status:string}>>('SELECT "publicationKey",status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',a.id);expect(rows).toEqual([{publicationKey:key,status:'unknown'}]);
 });

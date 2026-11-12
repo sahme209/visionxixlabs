@@ -1,3 +1,5 @@
+import {z} from 'zod';
+import {nativeSettingsTargetKey} from './operations/settingsReservation';
 import type {SettingsArtifactTransaction} from './operations/settingsArtifactStore';
 import {settingsArtifactBindingSchema} from './operations/settingsArtifact';
 import {operationalArtifactId} from './operations/contracts';
@@ -23,6 +25,13 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
   let locked:string|null=null,nativeLocked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:OperationalDelegationTransaction & SettingsArtifactTransaction={
+   async reserveSettingsCreation(raw){
+    const binding=settingsArtifactBindingSchema.parse(raw);check(binding.actionId);const parent=readPlatformAction(await tx.read(binding.actionId)),effect=parent.plan.effects[binding.effectIndex];
+    if(parent.status!=='claimed'||parent.plan.digest!==binding.planDigest||parent.plan.sourceDigest!==binding.manifestDigest||!effect||effect.kind!=='settings.vercel'||effect.id!==binding.effectId||effect.target.projectId!==binding.target.projectId||parent.requester.userId!==binding.creator.userId||parent.requester.sessionId!==binding.creator.sessionId)fail();
+    const saved=await tx.readSettingsArtifact(binding.artifactId);if(!saved||sha256ContentHash(z.object({binding:settingsArtifactBindingSchema}).parse(saved).binding)!==sha256ContentHash(binding))fail();
+    const {projectId,teamId,name,environment}=binding.target,key=nativeSettingsTargetKey({projectId,teamId,name,environment});
+    const count=await sql.$executeRawUnsafe('UPDATE "PlatformGovernanceEffect" SET "publicationKey"=$1 WHERE "actionId"=$2 AND index=$3 AND status=$4 AND "publicationKey" IS NULL',key,binding.actionId,binding.effectIndex,'claimed');if(count!==1)fail();return key;
+   },
    async readSettingsArtifact(id){if(!locked)fail();operationalArtifactId.parse(id);const rows=await sql.$queryRawUnsafe<Array<{actionId:string;effectIndex:number;bindingJson:unknown;envelope:string;createdAtMs:number}>>('SELECT "actionId","effectIndex","bindingJson",envelope,"createdAtMs" FROM "PlatformSettingsArtifact" WHERE id=$1',id);if(!rows.length)return null;if(rows.length!==1)fail();const row=rows[0],binding=settingsArtifactBindingSchema.parse(row.bindingJson);check(binding.actionId);if(binding.artifactId!==id||row.actionId!==binding.actionId||row.effectIndex!==binding.effectIndex||!Number.isSafeInteger(row.createdAtMs)||typeof row.envelope!=='string')fail();return {binding,envelope:row.envelope,createdAt:row.createdAtMs}},
    async insertSettingsArtifact(id,row){const binding=settingsArtifactBindingSchema.parse(row.binding);check(binding.actionId);if(binding.artifactId!==id||!Number.isSafeInteger(row.createdAt)||row.createdAt>=Date.parse(binding.expiresAt)||typeof row.envelope!=='string'||row.envelope.length>87423||!/^v2\.[A-Za-z0-9_-]+$/.test(row.envelope))fail();const parent=readPlatformAction(await tx.read(binding.actionId));if(parent.status!=='proposed'||parent.plan.digest!==binding.planDigest||parent.requester.userId!==binding.creator.userId||parent.requester.sessionId!==binding.creator.sessionId)fail();await sql.$executeRawUnsafe('INSERT INTO "PlatformSettingsArtifact" (id,"actionId","effectIndex","bindingJson",envelope,"createdAtMs") VALUES ($1,$2,$3,$4::jsonb,$5,$6)',id,binding.actionId,binding.effectIndex,JSON.stringify(binding),row.envelope,row.createdAt)},
    async lockOperationalTarget(key){if(!locked)fail();digest.parse(key);if(nativeLocked!==null){if(nativeLocked!==key)fail();return}await sql.$queryRawUnsafe('SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtextextended($1,0))','axiom-platform-ecs-target:'+key);nativeLocked=key},

@@ -8,6 +8,7 @@ import {readPlatformAction,approvePlatformAction} from '../kernel';
 import {operationalWorkloadBinding} from './workloadIdentity';
 import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
 export interface SettingsArtifactTransaction extends PlatformTransaction{
+ reserveSettingsCreation(binding:SettingsArtifactBinding):Promise<string>;
  readSettingsArtifact(artifactId:string):Promise<unknown|null>;
  /** Insert only; uniqueness on artifactId and (actionId,effectIndex) is mandatory.
   * No update/delete/renew API. Must share the locked parent transaction. */

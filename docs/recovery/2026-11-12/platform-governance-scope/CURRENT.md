@@ -194,3 +194,12 @@ Missing-preview RED and a behavioral source-revocation-during-read RED were repr
 ### Vercel settings provider contract — three public reads consumed
 
 See SETTINGS-VERCEL-SOURCE-REVIEW.md: exact existing-ID PATCH and response updatedAt do not establish request-side compare-and-swap in the inspected docs; no safe default update profile is qualified. POST documents upsert/duplicate behavior but create-only still needs scoped qualification. Setting changes are separate from running deployment updates. No API/account/key/write access occurred. SETTINGS-CONCURRENCY-DECISION.md recommends a locally prepared create-only first stage with updates held and still unfinished, pending owner design choice. Continue independent reservations/workflow work; no invented CAS, provider allow path, retirement or completion.
+
+
+### Create-only scope selected; native settings exclusion — local primitive
+
+Owner approved local create-only settings preparation/implementation; existing-variable updates remain held and explicitly unfinished. Full settings coverage is not narrowed to the create-only stage. No real setting/key/provider authority is granted.
+
+A physical setting key now includes exact project/team/name/environment and excludes action/artifact/profile/value metadata. Actual SQL reuses the existing unique child publicationKey storage for a permanent settings-creation reservation. It requires the locked claimed parent, exact saved artifact binding/plan/source/requester/effect and a claimed child. Unknown retains the key; a cloned action/reference cannot reserve it. There is no reset/release/retry API; even terminal records do not by themselves grant a fresh creation. This storage primitive does not establish current provider absence, custody qualification, claim/decrypt/final-send authority, CAS or prevention of external admin changes. Complete create-only execution composition still remains.
+
+Missing-key-module RED;12focused checks/root strict types PASS.55actual isolated SQL cases PASS, including the new competing/cloned native-setting-after-unknown exclusion case; provider/source/custody remain simulated. Fixture `/private/tmp/axiom-platform-pg-f9b__nrd` stopped; see SETTINGS-RESERVATION-PG-RECEIPT.json. No new model/schema/migration, production/provider action or spending.
