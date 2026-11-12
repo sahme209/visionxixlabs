@@ -320,7 +320,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 6. **Docs coverage (B4):** **DONE source batch: PR #323 merged green as `9decdb28`** (Apps and skills, Workspaces, MCP documentation tools, Settings and sessions); navigation/count35, heading index and support corpus updated. Every applicable check passed on exact head `29989733`; not deployed. Customer screenshots/recordings and comprehensive B4 acceptance remain separate. See `docs/recovery/2026-11-11/workspace-guides/README.md`.
 
 ### 10.2 Owner decisions (ask; do not decide)
-- **P01:** should Governance cover Axiom's own deploys, template hosting and growth publishing?
+- **P01 scope resolved November12:** include Axiom own deploys, template hosting and growth publishing. Local design/implementation approved; managed workflow/enforcement is in progress on the platform branch. This is not deployment/provider/production authority.
 - **Offline-AI ADR: resolved November 11 for local v1 implementation.** Exact choices recorded in the ADR; do not ask again or treat them as production/live authority.
 - **A9 on-prem:** KMS/HSM key custody, offline sign-in, offline licence, and the audit retention default (suggested 400 days).
 - **Earlier holds:**
