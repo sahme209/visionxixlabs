@@ -68,3 +68,8 @@ The independent source review identified three important gaps. They are NOT reso
 3. A released GitHub job possessing a token accepted directly by STS might bypass Axiom entirely. The environment hold does NOT establish exclusive credential custody. A qualified prevention of direct exchange/alternate native writes is a prerequisite, not supplied by job approval, a session policy chosen by Axiom, or local ledger tests. Do not enable this profile until a separately reviewed custody design and actual trust evidence close this gap. No IAM change or new token-broker design is authorized by the present design-only grant.
 
 Review outcome: same-run hold is feasible as an additional human gate, but this connected execution design is NOT ready for implementation approval or live activation. The next design must close the direct-exchange custody boundary rather than claim the GitHub hold completes Governance. Continue other already-approved local workflow work without weakening these blockers.
+
+
+## Subsequent source disposition — local, not live qualification
+
+The separately owner-approved private-issuance and supplier units now address the local environment/protection and JWT-to-STS coupling omissions. Actual native trust/custody/protection/fleet/time remain unavailable. Original review/history above stays intact; source-grounded next local scope is EXACT-RUN-HANDOFF-LOCAL-IMPLEMENTATION-REVIEW.md. No handoff implementation, active workflow replacement or live setup follows from the original design-only permission.

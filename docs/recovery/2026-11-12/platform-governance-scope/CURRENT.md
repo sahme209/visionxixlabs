@@ -2,6 +2,10 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Next connected boundary — exact-run handoff implementation decision
+
+The original handoff review’s local environment/protection and token-forwarding gaps now have separately approved source implementations, but actual native qualification is still absent. EXACT-RUN-HANDOFF-LOCAL-IMPLEMENTATION-REVIEW.md specifies the missing source-only held-job/artifact/current-source handoff without installing or switching any active workflow. Its new gate/profile composition requires owner local-implementation approval; no code or real configuration was started under the original design-only grant. Existing pending other-family requests remain unchanged.
+
 ## Axiom ECS workflow retirement — local only
 
 The approved operational replacement now removes the checked-in Axiom workflow’s OIDC permission, AWS credential action, CLI update/wait and automatic rollback. Its sole step returns an explicit review-required refusal on a standard runner. No workflow was dispatched. The customer-repository template and Agent immutable-template source identity remain byte-identical; the old equality test now explicitly verifies that these are distinct artifacts rather than changing customer behavior or pins.22focused workflow/template/immutable-source checks,15demo checks and root types pass. Full ordinary suite18,566pass/0fail/1,024pending/0failed suites, source unchanged; PLATFORM-ECS-RETIREMENT-RECEIPT.json records exact scope. Actual exact-run hold/release, default private issuer/profile/custody qualification and complete usable replacement remain incomplete; this refusal is not counted as complete P01 enforcement. All prior receipts remain scoped historically.
