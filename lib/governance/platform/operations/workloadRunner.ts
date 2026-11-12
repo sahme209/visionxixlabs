@@ -1,12 +1,10 @@
+import {operationalWorkloadCommand as command} from './workloadCommand';
 import 'server-only';
-import {z} from 'zod';
-import {platformActionId} from '../viewContract';
 import {createOperationalDelegationStore,type OperationalCredentialIssuer} from './delegation';
 import {createOperationalStsIssuer} from './stsIssuer';
 import type {OperationalEcsTransport} from './ecsExecution';
 type StoreArgs=Parameters<typeof createOperationalDelegationStore>;
 interface Ports{repo:StoreArgs[0];authority:StoreArgs[1];source:StoreArgs[2];identity:StoreArgs[3];targets:NonNullable<StoreArgs[4]>;issuerQualification:OperationalCredentialIssuer['assertQualified'];transport:OperationalEcsTransport}
-const command=z.object({actionId:platformActionId,delegationVersion:z.literal(0)}).strict();
 const fail=():never=>{throw Error('operational_workload_result_unconfirmed')};
 /** One private orchestration, not an HTTP/default issuer. Requires explicitly
  * qualified source/workload/native/custody/IAM/transport ports. No prepare,
