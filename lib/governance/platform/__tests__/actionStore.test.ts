@@ -148,3 +148,7 @@ it('saves one server-derived template proposal per exact original requester refe
  await expect(f.service.prepareTemplate({...selection,expiresAt:new Date(at+120000).toISOString()},requester,reference)).rejects.toThrow();expect(f.events()).toHaveLength(1);
  expect(await f.service.lookupTemplatePreparation(reference,reviewer)).toMatchObject({found:false});
 });
+it('previews canonical prepared bucket creation as requested metadata, not account ownership proof or template bytes',async()=>{
+ const f=fixture(),selection={operation:'create_bucket',accountId:'123456789012',region:'us-east-2',expiresAt:new Date(at+60000).toISOString()},saved=await f.service.prepareTemplate(selection,requester,'44444444-4444-4444-8444-444444444444');
+ const preview=await f.service.previewTemplate(saved.actionId,reviewer);expect(preview).toMatchObject({kind:'template.bucket',actionId:saved.actionId,target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'},ownership:'not_observed',authority:'review_preview_only'});expect(preview).not.toHaveProperty('yaml');expect(f.events()).toHaveLength(1);
+});

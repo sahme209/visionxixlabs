@@ -25,3 +25,9 @@ it('refuses changed, missing, empty or oversized template source before approvin
   fixture.read.mockRejectedValue(Error('unavailable'));await expect(authority.assertEffectCurrent!(tx,effect)).rejects.toThrow();
  }
 });
+it('requires canonical us-east-2 bucket creation targets without reading template content',async()=>{
+ const good={id:'bucket',kind:'template.bucket.create' as const,target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'}};
+ await expect(authority.assertEffectCurrent!(tx,good)).resolves.toBeUndefined();
+ for(const target of [{...good.target,region:'us-east-1'},{...good.target,bucket:'other-bucket'}])await expect(authority.assertEffectCurrent!(tx,{...good,target})).rejects.toThrow();
+ expect(fixture.read).not.toHaveBeenCalled();
+});

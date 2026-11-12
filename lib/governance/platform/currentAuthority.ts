@@ -1,4 +1,5 @@
 import 'server-only';
+import {templateBucketEffect} from '@/lib/cloud/aws/platformTemplatePlan';
 import {createHash} from 'node:crypto';
 import {readPlatformTemplateBytes} from '@/lib/cloud/aws/platformTemplateSource';
 import {readDeploymentPlatformSource} from './deploymentPreparation';
@@ -22,6 +23,9 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   const row=rowSchema.parse(await tx.readPrincipal(principal));
   if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
  },async assertEffectCurrent(tx,effect){
+  if(effect.kind==='template.bucket.create'){
+   if(effect.target.region!=='us-east-2'||sha256ContentHash(templateBucketEffect(effect.target.accountId,effect.target.region,effect.id))!==sha256ContentHash(effect))fail();return;
+  }
   if(effect.kind==='template.object.put'||effect.kind==='template.access.grant'){
    const bytes=await readPlatformTemplateBytes();
    if(createHash('sha256').update(bytes).digest('hex')!==effect.target.bytesDigest)fail();return;

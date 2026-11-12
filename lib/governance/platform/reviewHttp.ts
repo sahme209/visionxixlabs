@@ -1,5 +1,5 @@
 import 'server-only';
-import {platformTemplatePreview} from './templateContract';
+import {platformTemplateReviewPreview} from './templateContract';
 import {z} from 'zod';
 import {platformReviewCommandSchema} from './viewContract';
 import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
@@ -20,7 +20,7 @@ export function createPlatformReviewHttp(createService:(request:Request)=>Promis
   if(body.operation==='preview_template'){
    try{
     if(!service.previewTemplate)throw Error('unavailable');request.signal.throwIfAborted();
-    const preview=platformTemplatePreview.parse(await service.previewTemplate(body.actionId));
+    const preview=platformTemplateReviewPreview.parse(await service.previewTemplate(body.actionId));
     if(preview.actionId!==body.actionId)throw Error('mismatch');request.signal.throwIfAborted();
     return reply({ok:true,data:preview});
    }catch{return reply({ok:false,error:'platform_source_preview_unavailable'},409)}

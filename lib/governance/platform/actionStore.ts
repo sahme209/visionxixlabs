@@ -1,7 +1,7 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {readPlatformTemplateBytes} from '@/lib/cloud/aws/platformTemplateSource';
-import {platformTemplatePreview,platformTemplateSelection} from './templateContract';
+import {platformTemplateBucketPreview,platformTemplatePreview,platformTemplateSelection} from './templateContract';
 import {prepareTemplatePlatformPlan,matchesTemplateSelection} from './templatePreparation';
 import {prepareDeploymentPlatformPlan,matchesDeploymentSelection} from './deploymentPreparation';
 import {platformDeploymentSelection,platformDeploymentPreview} from './deploymentContract';
@@ -109,7 +109,13 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const actor=platformPrincipalSchema.parse(principal);
    return locked(id,async(tx,state)=>{
     await authority.assertCurrent(tx,actor);if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
-    const effect=state.plan.effects[0];if(effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return fail();
+    const effect=state.plan.effects[0];
+    if(effect.kind==='template.bucket.create'){
+     const current=await prepareTemplatePlatformPlan({operation:'create_bucket',accountId:effect.target.accountId,region:effect.target.region,expiresAt:state.plan.expiresAt},await tx.now());
+     if(current.digest!==state.plan.digest)fail();await authority.assertCurrent(tx,actor);await timely(tx,state);
+     return platformTemplateBucketPreview.parse({kind:'template.bucket',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,target:effect.target,ownership:'not_observed',authority:'review_preview_only'});
+    }
+    if(effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return fail();
     const bytes=await readPlatformTemplateBytes(),bytesDigest=createHash('sha256').update(bytes).digest('hex');
     if(bytesDigest!==effect.target.bytesDigest)fail();
     const yaml=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes);
@@ -194,7 +200,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(state.version!==version)fail();await actors(tx,state);await authority.assertCurrent(tx,actor);
-    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
+    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
     const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state));await tx.replace(id,version,next);
     await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});});
   },
@@ -228,7 +234,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
    await locked(binding.actionId,async(tx,state)=>{
     if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
-    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);

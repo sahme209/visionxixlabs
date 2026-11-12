@@ -21,3 +21,8 @@ it('keeps template saving and original-reference lookup distinct from read-only 
  expect(await client.prepare({operation:'upload',accountId:'123456789012',region:'us-east-2',expiresAt:'2099-01-01T00:00:00Z'},requestId)).toMatchObject({ok:false,outcomeUnconfirmed:true});
  expect(await client.lookup(requestId)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(http).toHaveBeenCalledTimes(2);expect(http).toHaveBeenCalledWith('https://fixture.test/api/desktop/platform-governance/template',expect.objectContaining({credentials:'omit',redirect:'error'}));
 });
+it('accepts only exact canonical bucket metadata and never treats it as observed ownership',async()=>{
+ const savedBucket=saved();savedBucket.plan.effects=[{id:'bucket',kind:'template.bucket.create',target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'}}];savedBucket.effects=[{id:'bucket',status:'not_started'}];
+ const bucket={kind:'template.bucket',actionId:id,planDigest:d,sourceDigest:d,effectId:'bucket',target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'},ownership:'not_observed',authority:'review_preview_only'},http=vi.fn(async()=>Response.json({ok:true,data:bucket}));vi.stubGlobal('fetch',http);const client=createPlatformTemplateClient(context);expect((await client.preview(savedBucket)).ok).toBe(true);
+ http.mockResolvedValueOnce(Response.json({ok:true,data:{...bucket,ownership:'verified'}}));expect((await client.preview(savedBucket)).ok).toBe(false);http.mockResolvedValueOnce(Response.json({ok:true,data:{...bucket,target:{...bucket.target,accountId:'999999999999',bucket:'axiom-cfn-templates-999999999999'}}}));expect((await client.preview(savedBucket)).ok).toBe(false);
+});

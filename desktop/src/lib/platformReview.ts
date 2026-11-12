@@ -1,4 +1,4 @@
-import {platformTemplatePreparationCommand,platformTemplatePreview,type PlatformTemplatePreview} from '../../../lib/governance/platform/templateContract';
+import {platformTemplatePreparationCommand,platformTemplateReviewPreview,type PlatformTemplateReviewPreview} from '../../../lib/governance/platform/templateContract';
 import {platformDeploymentCommand,platformDeploymentPreview} from '../../../lib/governance/platform/deploymentContract';
 import type {z} from 'zod';
 import {platformSourceCommand,platformSourcePage,type PlatformSourceKind,type PlatformSourcePage} from '../../../lib/governance/platform/sourceCatalog';
@@ -125,14 +125,15 @@ export function createPlatformTemplateClient(context:Context){
    const selected=command.data;
    return releaseOperationPlanRequest(context,'POST',endpoint,selected,(raw):raw is PlatformPreparationLookup=>{const found=platformPreparationLookupSchema.safeParse(raw);return found.success&&found.data.requestId===selected.requestId},signal);
   },
-  preview(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformTemplatePreview>>{
+  preview(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformTemplateReviewPreview>>{
   const parsed=platformInspectionSchema.safeParse(raw);
   if(!parsed.success||!['proposed','approved'].includes(parsed.data.status)||parsed.data.expired||Date.parse(parsed.data.plan.expiresAt)<=Date.now()||parsed.data.plan.effects.length!==1)return Promise.resolve({ok:false,error:'Inspect a supported exact current template action first.',outcomeUnconfirmed:false});
   const saved=parsed.data,effect=saved.plan.effects[0];
-  if(effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return Promise.resolve({ok:false,error:'Template source preview is unavailable for this operation.',outcomeUnconfirmed:false});
-  return releaseOperationPlanRequest(context,'POST',path,{operation:'preview_template',actionId:saved.actionId},(raw):raw is PlatformTemplatePreview=>{
-   const preview=platformTemplatePreview.safeParse(raw);
-   return preview.success&&preview.data.actionId===saved.actionId&&preview.data.planDigest===saved.plan.digest&&preview.data.sourceDigest===saved.plan.sourceDigest&&preview.data.effectId===effect.id&&preview.data.bytesDigest===effect.target.bytesDigest;
+  if(effect.kind!=='template.bucket.create'&&effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return Promise.resolve({ok:false,error:'Template source preview is unavailable for this operation.',outcomeUnconfirmed:false});
+  return releaseOperationPlanRequest(context,'POST',path,{operation:'preview_template',actionId:saved.actionId},(raw):raw is PlatformTemplateReviewPreview=>{
+   const preview=platformTemplateReviewPreview.safeParse(raw);
+   if(!preview.success||preview.data.actionId!==saved.actionId||preview.data.planDigest!==saved.plan.digest||preview.data.sourceDigest!==saved.plan.sourceDigest||preview.data.effectId!==effect.id)return false;
+   return effect.kind==='template.bucket.create'?preview.data.kind==='template.bucket'&&preview.data.target.accountId===effect.target.accountId&&preview.data.target.region===effect.target.region&&preview.data.target.bucket===effect.target.bucket:preview.data.kind==='template.source'&&preview.data.bytesDigest===effect.target.bytesDigest;
   },signal);
  }};
 }

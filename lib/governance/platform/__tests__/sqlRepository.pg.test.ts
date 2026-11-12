@@ -127,7 +127,7 @@ async function templateFixture(beforeReview?:(id:string)=>void){
  expect(saved.ok).toBe(true);if(!saved.ok)throw Error('template_preparation_unavailable');const id=saved.data.actionId,compiled=(await requester.inspect(id)).plan;
  expect(await client.lookup(reference)).toMatchObject({ok:true,data:{found:true,actionId:id}});expect(await client.prepare(selection,reference)).toMatchObject({ok:true,data:{actionId:id,historical:true}});
  const preview=await createPlatformTemplateClient(context(reviewer.sessionId)).preview(await requester.inspect(id));
- expect(preview.ok).toBe(true);if(!preview.ok)throw Error('template_preview_unavailable');expect(preview.data.yaml).toBe(bytes.toString('utf8'));expect(preview.data.bytesDigest).toBe(effect.target.bytesDigest);
+ expect(preview.ok).toBe(true);if(!preview.ok||preview.data.kind!=='template.source')throw Error('template_preview_unavailable');expect(preview.data.yaml).toBe(bytes.toString('utf8'));expect(preview.data.bytesDigest).toBe(effect.target.bytesDigest);
  const previewEvents=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(previewEvents).toEqual([{kind:'proposed'}]);
  beforeReview?.(id);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
@@ -469,4 +469,17 @@ it.skipIf(!enabled)('keeps changed-template review proposed with zero attempts o
   expect(rows[0].stateJson).toMatchObject({status:'proposed',version:0,attemptCount:0});
   const events=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(events).toEqual([{kind:'proposed'}]);
  }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('joins prepared canonical bucket target review with actual HMAC and SQL but no AWS calls',async()=>{
+ try{
+  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');
+  const sts=vi.spyOn(STSClient.prototype,'send'),s3=vi.spyOn(S3Client.prototype,'send'),prepare=createPlatformTemplatePreparationHttp(),review=createPlatformReviewHttp();
+  vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{const url=String(input);if(url==='https://fixture.example.test/api/desktop/platform-governance/template')return prepare(new Request(url,init));if(url==='https://fixture.example.test/api/desktop/platform-governance/review')return review(new Request(url,init));throw Error('unexpected_external_destination')}));
+  function context(sessionId:string){const config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(sessionId)};return {getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}}
+  const owner=context(actor.sessionId),other=context(reviewer.sessionId),saved=await createPlatformTemplateClient(owner).prepare({operation:'create_bucket',accountId:'123456789012',region:'us-east-2',expiresAt:new Date(Date.now()+60000).toISOString()},randomUUID());if(!saved.ok)throw Error('bucket_preparation_unavailable');
+  const record=await createPlatformReviewClient(other).inspect(saved.data.actionId);if(!record.ok)throw Error('bucket_history_unavailable');
+  const preview=await createPlatformTemplateClient(other).preview(record.data);expect(preview).toMatchObject({ok:true,data:{kind:'template.bucket',target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'},ownership:'not_observed'}});
+  const approved=await createPlatformReviewClient(other).approve(record.data);expect(approved).toMatchObject({ok:true,data:{status:'approved',attemptCount:0,reviewerUserId:reviewer.userId}});expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();
+  const effects=await db.$queryRawUnsafe<Array<{count:bigint}>>('SELECT count(*) AS count FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',saved.data.actionId);expect(Number(effects[0].count)).toBe(0);
+ }finally{vi.restoreAllMocks();vi.unstubAllEnvs();vi.unstubAllGlobals()}
 });

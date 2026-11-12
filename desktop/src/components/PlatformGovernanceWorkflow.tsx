@@ -36,7 +36,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   if(!saved.success||!sameLineage(action,saved.data)){setMessage('The response does not match the selected saved action. Inspect the original record.');return}setAction(saved.data);
  }
  const current=revision===owner.revision&&owns(),requester=action?.requesterUserId===currentUserId;
- const first=action?.plan.effects[0],growthSupported=action?.plan.effects.length===1&&Boolean(first&&['growth.post.publish','growth.schedule.change','growth.post.delete'].includes(first.kind)),deploymentReview=action?.plan.effects.length===1&&first?.kind==='deployment.vercel'&&Boolean(first.target.leadId)&&Boolean(first.target.leadRevision)&&Boolean(clients.deployment),templateReview=action?.plan.effects.length===1&&Boolean(first&&(first.kind==='template.object.put'||first.kind==='template.access.grant'))&&Boolean(clients.template);
+ const first=action?.plan.effects[0],growthSupported=action?.plan.effects.length===1&&Boolean(first&&['growth.post.publish','growth.schedule.change','growth.post.delete'].includes(first.kind)),deploymentReview=action?.plan.effects.length===1&&first?.kind==='deployment.vercel'&&Boolean(first.target.leadId)&&Boolean(first.target.leadRevision)&&Boolean(clients.deployment),templateReview=action?.plan.effects.length===1&&Boolean(first&&(first.kind==='template.bucket.create'||first.kind==='template.object.put'||first.kind==='template.access.grant'))&&Boolean(clients.template);
  function nextStep(){
   if(!action)return 'Prepare an exact proposal or load a saved action. Nothing executes on this screen automatically.';
   if(action.status==='confirmed')return 'The recorded action is confirmed. Inspect its evidence; this record cannot execute again.';
