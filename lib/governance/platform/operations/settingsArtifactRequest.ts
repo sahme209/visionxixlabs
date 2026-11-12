@@ -1,3 +1,4 @@
+import {createSettingsPreparationStore,type SettingsPreparationSource} from './settingsPreparation';
 import 'server-only';
 import {bearerFromHeader} from '@/lib/desktop/desktopToken';
 import {platformPrincipalSchema} from '../contracts';
@@ -5,6 +6,7 @@ import {assertCurrentPlatformPrincipal} from '../currentAuthority';
 import {createSettingsArtifactStore,type SettingsArtifactRepository} from './settingsArtifactStore';
 interface Ports{
  repo:SettingsArtifactRepository;
+ preparationSource?:SettingsPreparationSource;
  source:Parameters<typeof createSettingsArtifactStore>[2];
  verifyDesktopToken(token:string):{sessionId:string};
  readAdminEmails():readonly string[];
@@ -20,7 +22,10 @@ export async function createSettingsArtifactRequestComposition(request:{headers:
  });
  const possessed=()=>{if(session()!==principal.sessionId)return fail()};
  const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source);
+ const preparation=ports.preparationSource?createSettingsPreparationStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.preparationSource):null;
  return Object.freeze({
+  async prepare(raw:unknown,requestId:string){possessed();if(!preparation)return fail();return preparation.prepare(raw,requestId,principal)},
+  async lookup(requestId:string){possessed();if(!preparation)return fail();return preparation.lookup(requestId,principal)},
   async inspect(id:string){possessed();return store.inspect(id,principal)},
   async claim(id:string,version:number,planDigest:string){possessed();return store.claim(id,version,planDigest,principal)},
   async preview(id:string){possessed();return store.preview(id,principal)},
