@@ -11,7 +11,7 @@ async function hash(value:unknown){
  return Array.from(new Uint8Array(result),b=>b.toString(16).padStart(2,'0')).join('');
 }
 async function exact(preview:EcsReviewPreview){try{const {digest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,...manifest}=preview.manifest;return await hash({kind:'operational_manifest_v1',manifest})===digest&&await hash({kind:'platform_governance_plan_v1',...operationalEcsPlanInput(preview.manifest)})===preview.planDigest}catch{return false}}
-function owner(context:Context,signal?:AbortSignal){const config=context.getConfig(),revision=context.getRevision();return ()=>!signal?.aborted&&context.getConfig()===config&&context.getRevision()===revision}
+function owner(context:Context,signal?:AbortSignal){const config=context.getConfig(),revision=context.getRevision(),apiBase=config.apiBase,token=config.sessionToken;return ()=>!signal?.aborted&&context.getConfig()===config&&context.getRevision()===revision&&config.apiBase===apiBase&&config.sessionToken===token}
 /** Prepared exact review only, not mounted. No workload claim, credential,
  * execution, delegation, automatic decision or replay operation. */
 export function createOperationalReviewClient(context:Context){return {
@@ -61,3 +61,17 @@ export function createOperationalHistoryClient(context:Context){return {
  },
 }}
 export type OperationalHistoryClient=ReturnType<typeof createOperationalHistoryClient>;
+
+import {operationalCommand} from '../../../lib/governance/platform/operations/operationalCommand';
+import {ecsPreparationReceipt,ecsPreparationLookup} from '../../../lib/governance/platform/operations/ecsPreparationClientContract';
+const preparationUnavailable=()=>({ok:false as const,error:'Keep the exact original run and request reference. No proposal was submitted.',outcomeUnconfirmed:false});
+/** Proposal recording and original-reference recovery only. No decision,
+ * delegation, credential, workflow dispatch or automatic retry. */
+export function createOperationalPreparationClient(context:Context){return {
+ async prepare(selection:unknown,requestId:string,signal?:AbortSignal){
+  const owns=owner(context,signal),command=operationalCommand.safeParse({operation:'prepare',selection,requestId});if(!command.success||command.data.operation!=='prepare'||Date.parse(command.data.selection.expiresAt)<=Date.now())return preparationUnavailable();
+  const reference=command.data.requestId.toLowerCase();try{const manifest=command.data.selection,digest=await hash({kind:'operational_manifest_v1',manifest}),metadata={...manifest,digest,authority:'metadata_only' as const,executionAuthorized:false as const},planDigest=await hash({kind:'platform_governance_plan_v1',...operationalEcsPlanInput(metadata)});if(!owns())return preparationUnavailable();return releaseOperationPlanRequest(context,'POST',path,command.data,(raw):raw is import('zod').infer<typeof ecsPreparationReceipt>=>{const p=ecsPreparationReceipt.safeParse(raw);return p.success&&p.data.requestId===reference&&p.data.planDigest===planDigest},signal)}catch{return preparationUnavailable()}
+ },
+ async lookup(requestId:string,signal?:AbortSignal){const command=operationalCommand.safeParse({operation:'lookup',requestId});if(!command.success||command.data.operation!=='lookup')return preparationUnavailable();const reference=command.data.requestId.toLowerCase();return releaseOperationPlanRequest(context,'POST',path,command.data,(raw):raw is import('zod').infer<typeof ecsPreparationLookup>=>{const p=ecsPreparationLookup.safeParse(raw);return p.success&&p.data.requestId===reference},signal)},
+}}
+export type OperationalPreparationClient=ReturnType<typeof createOperationalPreparationClient>;

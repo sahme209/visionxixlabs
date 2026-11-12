@@ -18,8 +18,8 @@ export function createOperationalHttp(createService:(request:Request)=>Promise<S
   switch(selected.operation){
    case 'preview':data=await service.preview(selected.actionId);break;
    case 'review':data=await service.review(selected.actionId,selected.expectedVersion,selected.planDigest);break;
-   case 'prepare':data=await service.prepare(selected.selection,selected.requestId);break;
-   case 'lookup':data=await service.lookup(selected.requestId);break;
+   case 'prepare':data={...await service.prepare(selected.selection,selected.requestId),requestId:selected.requestId.toLowerCase()};break;
+   case 'lookup':data={...await service.lookup(selected.requestId),requestId:selected.requestId.toLowerCase()};break;
    case 'inspect':data=await service.inspect(selected.actionId);break;
    case 'observe':data=await service.observeTarget(selected.actionId);break;
    case 'delegate':data=await service.delegate(selected.actionId,selected.expectedVersion,selected.planDigest);break;

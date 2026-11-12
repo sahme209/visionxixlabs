@@ -1165,3 +1165,16 @@ Final109actual isolated PostgreSQL cases PASS at /private/tmp/axiom-platform-pg-
 No schema/pin/dependency, real provider/credential/native/IAM/service, production or spending change. Earlier full ordinary/production build evidence retains its older exact source scope. Pending other-family decisions, actual default/source/custody/fleet/workload/native acceptance, complete terminal recovery/legacy replacement and final full-source review/green PR remain. Full P01/Governance remains incomplete and activation unavailable.
 
 15internal demo checks PASS after failure-history wording update. All owned SQL fixtures stopped; no active tests/builds remain.
+
+
+### Exact ECS preparation/reference-recovery client — local only
+
+A dedicated prepared browser client now parses exact already-created-run metadata and computes both manifest and full platform plan digests before one proposal save. Server preparation returns the original saved plan digest, and HTTP echoes the validated original reference; strict acknowledgement contracts reject substituted plan/reference metadata as uncertain. Read-only lookup is a separate command and does not renew source/expiry/approval or prepare automatically. No review, delegation, workflow dispatch, credential or execution method is part of this client. Shared operational client ownership now also captures primitive service/token coordinates across asynchronous hash checks.
+
+Missing-client RED preceded implementation.28focused client/review/preparation/HTTP checks PASS, including lost save/no automatic retry and silent token mutation before dispatch.110actual isolated PostgreSQL cases PASS at /private/tmp/axiom-platform-pg-4ztogux_, stopped: new actual client→in-process HTTP→signed synthetic HMAC/current SQL case commits a save, loses its response, then recovers the same proposed action and sole proposed event using only original reference lookup; unqualified default source still permits authorized historical lookup. Source qualification remains synthetic. No provider/model/workflow was contacted. ECS-PREPARATION-CLIENT-PG-RECEIPT.json records scope.
+
+Initial root/desktop type checks caught a discriminated-union narrowing lost inside asynchronous callbacks; captured validated reference strings correct that without casts/suppression. Final strict root types and desktop frontend types/build PASS after correction; focused checks pass. SQL receipt predates only that type-safe capture, with no SQL/runtime behavior change. Existing frontend warnings remain. No requester preparation form/source picker/native or customer acceptance is claimed yet.
+
+Next: requester metadata intake/original-reference recovery UI and composed workflow, actual source/custody/fleet/default/legacy qualification, pending other-family designs, full current-source validation/final independent review/one all-green PR. Full P01/Governance remains incomplete and activation unavailable. No schema/pin/dependency, credential/provider/IAM/service/native/production/deployment/spending changed.
+
+15internal demo checks PASS after ECS preparation wording update. No active tests/builds/owned PostgreSQL remain.

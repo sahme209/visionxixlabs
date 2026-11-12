@@ -990,3 +990,8 @@ Existing guide/support knowledge now separates workspace versus platform authori
 ### November12 — original ECS failure history
 
 Read-only history/client/panel now show an exact immutable native failure separately from command acceptance, without rollback/replay or parent/liability reconciliation.109actual isolated SQL cases and238focused checks pass with synthetic native/provider qualification; strict types pass. [Evidence](../recovery/2026-11-12/platform-governance-scope/ECS-FAILURE-HISTORY-PG-RECEIPT.json). Complete terminal recovery, genuine source/custody/default qualification, other pending family designs and final batch gates remain.
+
+
+### November12 — exact ECS proposal client
+
+Prepared ECS save/lookup now verifies exact plan/reference and preserves lost-response recovery without automatic resubmission.110actual isolated SQL cases/28focused checks/root+desktop types/frontend build pass within their recorded source scopes; qualification remains synthetic. [Evidence](../recovery/2026-11-12/platform-governance-scope/ECS-PREPARATION-CLIENT-PG-RECEIPT.json). Requester intake UI, actual source/custody/default qualification, pending other-family designs and final whole-branch gates remain.
