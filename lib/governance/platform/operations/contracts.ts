@@ -27,7 +27,7 @@ export const operationalEcsTarget=z.object({accountId:account,region,clusterArn:
  if(!cluster||!service||!task)return;
  if([cluster,service,task].some(a=>a[1]!==v.region||a[2]!==v.accountId)||service[3]&&service[3]!==cluster[3])c.addIssue({code:'custom',message:'Mismatched ECS target'});
 });
-export const operationalWorkloadReference=z.object({repository,ref:z.literal('refs/heads/main'),commit:sha,workflowCommit:sha,workflowPath:z.literal('.github/workflows/axiom-deploy-aws-ecs.yml'),workflowSha256:digest,
+export const operationalWorkloadReference=z.object({environment:z.string().min(1).max(255).refine(v=>v.trim()===v&&!/[\x00-\x1f\x7f]/.test(v)).optional(),protectionRevision:digest.optional(),repository,ref:z.literal('refs/heads/main'),commit:sha,workflowCommit:sha,workflowPath:z.literal('.github/workflows/axiom-deploy-aws-ecs.yml'),workflowSha256:digest,
  runId:z.string().regex(/^[1-9]\d{0,19}$/).refine(v=>/^[1-9]\d{0,19}$/.test(v)&&BigInt(v)<=BigInt('18446744073709551615')),attempt:z.number().int().min(1).max(1000),
 }).strict().refine(v=>v.commit===v.workflowCommit,{message:'Workflow and source commit must match'});
 const ecsBase={...base,kind:z.literal('deployment.ecs'),issuerProfileDigest:digest.optional(),target:operationalEcsTarget,roleArn:z.string().max(768).regex(roleArn),workload:operationalWorkloadReference,sourceEvidenceId:operationalEvidenceId};
