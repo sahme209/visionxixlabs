@@ -256,3 +256,6 @@ Prepared deployment reference/preview transport: local authenticated HTTP and a 
 
 
 Local deployment source review now renders exact files as escaped text in the prepared independent-review panel. It performs no execution and explicitly labels deployment execution unavailable.27focused checks and root/desktop types pass; no native visual, live-provider, route activation or completed-P01 acceptance.
+
+
+Unregistered generated-site proposal form now keeps exact Lead/project/environment/expiry and original reference before its single save, with lookup-only recovery after uncertainty.14focused preparation/coordinator/review checks and root/desktop types pass (simulated clients). It cannot approve or deploy; Lead catalog selection and full provider recovery remain open. The separately builder-checked deployment recovery contract requires a new owner decision before implementation.

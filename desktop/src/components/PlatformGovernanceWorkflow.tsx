@@ -3,6 +3,7 @@ import {desktopClient} from '../lib/desktopClient';
 import type {PlatformDeploymentClient,PlatformSourceClient,PlatformReviewClient,PlatformPreparationClient,PlatformExecutionClient,createPlatformHistoryClient} from '../lib/platformReview';
 import {platformActionId,platformInspectionSchema,type PlatformInspection} from '../../../lib/governance/platform/viewContract';
 import {PlatformHistoryPanel} from './PlatformHistoryPanel';
+import {PlatformDeploymentPreparationPanel} from './PlatformDeploymentPreparationPanel';
 import {PlatformPreparationPanel} from './PlatformPreparationPanel';
 import {PlatformReviewPanel} from './PlatformReviewPanel';
 import {PlatformExecutionPanel} from './PlatformExecutionPanel';
@@ -50,6 +51,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   <header><p className="text-xs uppercase tracking-wider text-zinc-400">Platform operations · local preparation</p><h1 className="mt-2 text-2xl font-semibold">One exact change, a clear record</h1><p className="mt-2 text-sm text-zinc-400">Prepared growth actions and generated-site source review. Deployment execution, template and image workflow coverage remain incomplete; production activation is unavailable.</p></header>
   {!current?<p role="alert">Account context changed. Reopen this workflow in the current session. Prior approvals and attempts were not renewed.</p>:<>
    <aside aria-label="Next step" className="rounded-xl border border-white/10 p-4">{nextStep()}</aside>
+   {clients.deployment&&<details><summary>Prepare a generated-site deployment proposal</summary><PlatformDeploymentPreparationPanel client={clients.deployment} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    <details><summary>Prepare a growth proposal</summary><PlatformPreparationPanel sourceClient={clients.sources} client={clients.preparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>
    <details><summary>Find older saved actions</summary><PlatformHistoryPanel client={clients.history} onSelect={id=>void load(id)}/></details>
    <section className="space-y-3" aria-label="Load saved action"><label>Saved action reference<input value={reference} disabled={busy} onChange={e=>setReference(e.target.value)}/></label><button type="button" className="btn-secondary" disabled={busy} onClick={()=>void load(reference)}>Load this saved record</button></section>
