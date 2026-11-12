@@ -21,9 +21,9 @@ Prepared protected-artifact intake now uses a separate HTTPS-only exact-plan cli
 
 Prepared requester artifact entry now joins the workflow separately from review; submitted text clears and uncertain attempts stay held. Approved public research and a separately approved deterministic native Secret/Config mapping are implemented/tested locally. Actual source completeness/profile/custody and live acceptance remain unavailable; see SETTINGS-CURRENT-SOURCE-REVIEW.md and latest scoped receipt.
 
-Separate prepared requester claim/exact-child clients now join real in-process HTTP/HMAC/SQL tests with simulated writes. No automatic advancement or retry; requester execution panel/default qualification and full P01 still open.
+Separate prepared requester claim/exact-child clients now join real in-process HTTP/HMAC/SQL tests with simulated writes. No automatic advancement or retry; requester panel is now prepared and scoped-tested, while default qualification and full P01 remain open.
 
-Original settings history now carries immutable target names/environments with shared canonical plan and per-result physical-key verification, including browser verification. This is historical clarity, never current source authority; requester execution panel wiring remains next.
+Original settings history now carries immutable target names/environments with shared canonical plan and per-result physical-key verification, including browser verification. This is historical clarity, never current source authority; requester execution-panel source is now connected locally with explicit claim/one-child steps; source/default/real acceptance remain open.
 
 ## Earlier scoped checkpoints — historical
 
