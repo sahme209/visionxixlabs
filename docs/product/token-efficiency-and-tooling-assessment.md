@@ -52,3 +52,8 @@ Deliver a scored shortlist (reuse current implementation / adopt / experiment / 
 ## Hybrid task fulfillment — owner addition, November 12
 
 Evaluate replacing unnecessary inference with approved deterministic/retrieval/tool implementations while preserving equivalent customer outcomes and all Governance controls. Reuse existing Axiom code first; evaluate public/free repositories, libraries/plugins and verified sources under the adoption gates above, not automatic runtime installs or trusted instructions. Benchmark quality-adjusted actual model/tool/compute cost. Evaluate a consistent disclosed customer service-usage tariff independently of internal fulfillment cost, with real model tokens and service/tool usage recorded separately. No fabricated AI usage or assumed1.5x/2x rate. See [the master-plan requirement](axiom-master-action-plan.md#hybrid-task-fulfillment-and-usage-economics--owner-addition-november-12). Planning only; no price, billing, external-read, dependency or runtime authority changes.
+
+
+## November12 — hybrid reuse assessment (no new external reads)
+
+[Source-backed reuse assessment](../research/2026-11-12/hybrid-fulfillment-reuse-assessment.md) traces the default deterministic support path and separate explicit governed AI action, plus existing impact/policy/readiness/drift/proposal kernels. Recommend reuse before dependencies; module-level candidates are not universal availability. Prior frozen baseline remains unchanged. No model/token/cost savings measurement, installation, new provider read, billing or production authority.

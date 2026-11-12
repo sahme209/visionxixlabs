@@ -1,0 +1,22 @@
+{
+  "sourceHead": "0abf9758916f987a9ee12f4979fbe57b0efbb97c",
+  "method": "ordinary local source inspection; current source/caller reads; no runtime execution, model, provider, database or external reads",
+  "sources": {
+    "components/AIChatWidget.tsx": "b7d25f2b7138f8d3200cdab43eb2297ae572e1956ce0de036e32a54c4630e1d6",
+    "app/api/support/answer/route.ts": "70a734d5ed3beda92150b896bab0ebfaeb26de05191dd0466d0dc01ec0ed66b3",
+    "app/api/support/ai-answer/route.ts": "a60979736be0091b40a4689aa2e1017ce7250b504fa9f75968fa4adc7679f06a",
+    "lib/support/answerKernel.ts": "de4d7e38ca750a47b54c4d894991f5e26daa909a20543458983749d1d211685a",
+    "lib/support/aiAnswerKernel.ts": "527f1b50e6180c1e90e49c78455cdc0a87cfc40d51911445f0498aaac70d8220",
+    "lib/support/knowledgeBase.ts": "d271f7fc5b21f857426dc401bd9aebf92b7fcf2f79a1cc23f11d82fcecfe0b8b",
+    "lib/policy/replayKernel.ts": "b536a93ac9e4ae9af8547e389a5e92ff2429e39b4bab04542d38918df1072810",
+    "lib/impact/impactKernel.ts": "52ab862aee273d7a8dd4987608e5525a5814d2da3e301b7d4ccfe151e78c3daa",
+    "lib/releaseops/readinessListResponder.ts": "be04edbd11812bd8452a4ffad9e74b82287e5501958400e8ed94ae5ebe9ef3e7",
+    "lib/governance/intelligence/drift.ts": "7348f3d2b2a2abe2dd420ffa9e87b888d588ec4154b5c52d7905bd2eec81d7a0",
+    "lib/axiom/agentRuntime/governedAiCall.ts": "4fa3a47970503a3c285e4d653c7dd9a94a12018751d1c0d8338b0785d6f7ec31",
+    "lib/governance/platform/operations/ecsPreparation.ts": "4c9d6df74a9f278bf141bf8d1ca9ec29d4b4a1deea57a20644f3fcf551b55b35"
+  },
+  "existingBaseline": "November11 token-efficiency assessment retained; not rerun or replaced",
+  "modelCostMeasured": false,
+  "newDependencyAdopted": false,
+  "productionChanged": false
+}

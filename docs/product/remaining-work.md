@@ -1010,3 +1010,8 @@ Installed credential-provider source inspection found ambient endpoint/token-fil
 ### November12 — fixed native supplier design prepared
 
 Approved3public AWS reads consumed; [supplier design](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-NATIVE-SUPPLIER-DESIGN.md) proposes a dedicated Fargate task and one fixed bounded credential acquisition. Native automatic rotation means admission drain alone cannot qualify closure. Local implementation still needs its distinct boundary approval; actual producer cutoff/lifetime/time/runtime/IAM/custody and costed operator setup remain unqualified. No provider/account/credential/service/production action or spending occurred.
+
+
+### November12 — hybrid task reuse source inventory
+
+Default support already uses deterministic retrieval; the separate Ask AI path is explicit and governed. [Current internal reuse assessment](../research/2026-11-12/hybrid-fulfillment-reuse-assessment.md) maps existing kernels and a finite future comparison. This closes source-inventory work only, not a new dispatcher, cost-savings benchmark, tariff or implementation grant. Main Governance work and all pending authority/real qualification gates remain.
