@@ -63,3 +63,5 @@ Next source work: review/correct this unit, then growth effect boundaries and op
 ### Signed-grant expiry review correction
 
 Independent review found TTL1second could expire during final authorization or outcome recording yet available:true returned. Both delayed-authorization and delayed-observation regressions failed first (2RED/11controls). The exact signedAt+TTL expiry is now validated after final authorization and again after outcome recording before URL return. No automatic resigning/replay;24focused template/signing/quick-create checks pass. If recording finishes after expiry, creation history remains intact and no usable URL is returned; confirmation is not a delivery/current-validity guarantee. Strict final types and re-review remain.
+
+Final500e923e strict root types PASS; independent expiry correction re-review has no further findings. No active build, owned database or reviewer. Compact CURRENT.md advances to growth effects/operational paths; live setup, full workflow and every original master requirement remain open.
