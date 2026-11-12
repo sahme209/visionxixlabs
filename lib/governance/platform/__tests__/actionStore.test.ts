@@ -10,7 +10,7 @@ function fixture(){
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
   const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects);
-  const tx:PlatformTransaction={readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
+  const tx:PlatformTransaction={readSessionPrincipal:async()=>null,readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
@@ -44,8 +44,8 @@ it('claims effects in exact order and confirms parent only after all effects',as
  const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);
  const one=await f.service.claimNextEffect(id,requester);expect(one.effect.id).toBe('one');expect(f.rows().get(id)?.status).toBe('claimed');
  await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();
- await f.service.observeEffect(one.proof,'confirmed');expect(f.rows().get(id)?.status).toBe('claimed');
- const two=await f.service.claimNextEffect(id,requester);expect(two.effect.id).toBe('two');await f.service.observeEffect(two.proof,'confirmed');expect(f.rows().get(id)?.status).toBe('confirmed');
+ await f.service.beforeEffectSend(one.proof,one.effect,requester);await f.service.observeEffect(one.proof,'confirmed');expect(f.rows().get(id)?.status).toBe('claimed');
+ const two=await f.service.claimNextEffect(id,requester);expect(two.effect.id).toBe('two');await f.service.beforeEffectSend(two.proof,two.effect,requester);await f.service.observeEffect(two.proof,'confirmed');expect(f.rows().get(id)?.status).toBe('confirmed');
 });
 it('unknown child consumes proof, stops every later effect and preserves history',async()=>{
  const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);const one=await f.service.claimNextEffect(id,requester);
@@ -59,4 +59,26 @@ it('does not treat a claimed effect without result as retryable',async()=>{
 it('checks current human authority for every child and rejects invented observation proofs',async()=>{
  const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);f.assertCurrent.mockRejectedValue(Error('reviewer_revoked'));
  await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();await expect(f.service.observeEffect({},'confirmed')).rejects.toThrow();
+});
+it('requires final current one-use authorization before a confirmed observation',async()=>{
+ const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);const one=await f.service.claimNextEffect(id,requester);
+ await expect(f.service.observeEffect(one.proof,'confirmed')).rejects.toThrow();
+ // A rejected observation conservatively consumes its private capability.
+ await expect(f.service.beforeEffectSend(one.proof,one.effect,requester)).rejects.toThrow();
+});
+it('binds the final send to exact effect, requester and current reviewer; no second send',async()=>{
+ const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);const one=await f.service.claimNextEffect(id,requester);
+ await f.service.beforeEffectSend(one.proof,one.effect,requester);
+ await expect(f.service.beforeEffectSend(one.proof,one.effect,requester)).rejects.toThrow();
+ await f.service.observeEffect(one.proof,'confirmed');
+});
+it('refuses changed targets or final revoked authority and never restores send capability',async()=>{
+ for(const cause of ['target','reviewer','actor'] as const){
+  const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);const one=await f.service.claimNextEffect(id,requester);
+  if(cause==='reviewer')f.assertCurrent.mockRejectedValueOnce(Error('revoked'));
+  const changed={...one.effect,target:{...one.effect.target,projectId:'changed'}};
+  await expect(f.service.beforeEffectSend(one.proof,cause==='target'?changed:one.effect,cause==='actor'?reviewer:requester)).rejects.toThrow();
+  await expect(f.service.beforeEffectSend(one.proof,one.effect,requester)).rejects.toThrow();
+  await f.service.observeEffect(one.proof,'unknown');expect(f.rows().get(id)?.status).toBe('unknown');
+ }
 });

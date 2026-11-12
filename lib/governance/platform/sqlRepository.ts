@@ -16,6 +16,11 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readSessionPrincipal(sessionId){
+    if(!locked)fail();
+    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string}>>('SELECT u.id AS "userId", s.id AS "sessionId" FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" WHERE s.id=$1 FOR SHARE OF s,u',sessionId);
+    if(rows.length!==1)fail();return rows[0];
+   },
    async readPrincipal(principal){
     if(!locked)fail();
     const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean}>>('SELECT u.id AS "userId", s.id AS "sessionId", u.email, (s."revokedAt" IS NULL AND s."issuedAt" <= clock_timestamp() AND s."expiresAt" > clock_timestamp() AND m."acceptedAt" IS NOT NULL) AS live FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" JOIN "OrgMembership" m ON m."userId"=s."userId" AND m."organizationId"=s."organizationId" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);

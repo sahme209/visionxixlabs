@@ -1,9 +1,11 @@
 import 'server-only';
 import {randomUUID} from 'node:crypto';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPlatformAction,readPlatformAction} from './kernel';
-import {platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
+import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readSessionPrincipal(sessionId:string):Promise<unknown>;
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
@@ -21,7 +23,7 @@ const fail=():never=>{throw Error('platform_governance_action_unavailable')};
 /** Local store composition. No route or provider may accept a client-built
  * authority supplier, claim or observation proof. Default mounting is separate. */
 export function createPlatformActionService(repo:PlatformRepository,authority:PlatformAuthority){
- const observations=new WeakMap<object,{actionId:string;index:number}>();
+ const observations=new WeakMap<object,{actionId:string;index:number;sendUsed:boolean;sendGranted:boolean}>();
  async function load(tx:PlatformTransaction,id:string){const row=await tx.read(id);if(!row)fail();return readPlatformAction(row)}
  async function actors(tx:PlatformTransaction,state:PlatformAction){await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer)}
  async function timely(tx:PlatformTransaction,state:PlatformAction){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
@@ -63,11 +65,25 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     return {index,effect:state.plan.effects[index]};
    });
    // No capability is issued unless the transaction's commit is confirmed.
-   const proof=Object.freeze({});observations.set(proof,{actionId:id,index:result.index});return Object.freeze({effect:result.effect,proof});
+   const proof=Object.freeze({});observations.set(proof,{actionId:id,index:result.index,sendUsed:false,sendGranted:false});return Object.freeze({effect:result.effect,proof});
+  },
+  async beforeEffectSend(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal){
+   const binding=observations.get(proof)??fail();
+   if(binding.sendUsed)fail();binding.sendUsed=true;
+   const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
+   await locked(binding.actionId,async(tx,state)=>{
+    if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
+    await actors(tx,state);await timely(tx,state);
+    // Repeat after awaited authority/clock reads. Final transport calls this
+    // after preparation and directly before its one outbound attempt.
+    await actors(tx,state);await timely(tx,state);
+   });
+   binding.sendGranted=true;
   },
   async observeEffect(proof:object,outcome:'confirmed'|'refused'|'unknown'){
    if(!proof||typeof proof!=='object'||!['confirmed','refused','unknown'].includes(outcome))fail();
    const binding=observations.get(proof)??fail();observations.delete(proof);
+   if(outcome==='confirmed'&&!binding.sendGranted)fail();
    await locked(binding.actionId,async(tx,state)=>{
     if(state.status!=='claimed'||await tx.readEffect(binding.actionId,binding.index)!=='claimed')fail();
     await tx.writeEffect(binding.actionId,binding.index,'claimed',outcome);
