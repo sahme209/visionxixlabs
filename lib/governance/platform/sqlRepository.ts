@@ -1,3 +1,4 @@
+import {readSettingsResult} from './operations/settingsResult';
 import {z} from 'zod';
 import {nativeSettingsTargetKey} from './operations/settingsReservation';
 import type {SettingsArtifactTransaction} from './operations/settingsArtifactStore';
@@ -81,7 +82,9 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     const sequence=await sql.$queryRawUnsafe<Array<{next:number}>>('SELECT COALESCE(max(sequence),-1)+1 AS next FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',event.actionId);
     if(sequence.length!==1||!Number.isSafeInteger(sequence[0].next)||sequence[0].next<0||sequence[0].next>1000)fail();
     if(event.operationalDigest!==undefined)digest.parse(event.operationalDigest);
-    const detail={...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
+    const settingsResult=event.settingsResult===undefined?undefined:readSettingsResult(event.settingsResult);
+    if(settingsResult&&(event.kind!=='effect.observed'||settingsResult.actionId!==event.actionId||settingsResult.effectIndex!==event.effectIndex||settingsResult.outcome!==event.outcome||settingsResult.planDigest!==event.state.plan.digest||settingsResult.manifestDigest!==event.state.plan.sourceDigest))fail();
+    const detail={...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
    },
    async reservePostDeletion(id,index,postUrn){

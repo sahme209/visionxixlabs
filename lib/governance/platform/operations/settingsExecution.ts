@@ -1,3 +1,4 @@
+import {createSettingsResult} from './settingsResult';
 import 'server-only';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -43,11 +44,18 @@ export function createSettingsExecutor(repo:SettingsArtifactRepository,authority
    }
    // Reuse the real child/proof/outcome machinery. The repository wrapper adds
    // reservation in the SAME child-claim transaction, before commit/custody.
+   let resultBinding:SettingsArtifactBinding|undefined,confirmedSettingId:string|null=null;
    const extended=new WeakMap<PlatformTransaction,SettingsArtifactTransaction>();
    const wrapped:PlatformRepository={transaction:fn=>repo.transaction(tx=>{const view:PlatformTransaction={...tx,
+    async event(event){
+     if(event.kind==='effect.observed'){
+      if(!resultBinding||event.actionId!==id||event.effectIndex!==resultBinding.effectIndex||!event.outcome||event.outcome==='claimed')return fail();
+      const settingsResult=createSettingsResult(resultBinding,event.outcome,event.outcome==='confirmed'?confirmedSettingId:null,await tx.now());await tx.event({...event,settingsResult});
+     }else await tx.event(event);
+    },
     async writeEffect(actionId,index,expected,status){
      if(actionId!==id)return fail();if(expected===null&&status==='claimed'){
-      const {binding}=await current(tx,index,false);await tx.writeEffect(actionId,index,expected,status);await tx.reserveSettingsCreation(binding);await current(tx,index,true);
+      const {binding}=await current(tx,index,false);await tx.writeEffect(actionId,index,expected,status);await tx.reserveSettingsCreation(binding);await current(tx,index,true);resultBinding=binding;
      }else await tx.writeEffect(actionId,index,expected,status);
     },
    };extended.set(view,tx);return fn(view)})};
@@ -65,7 +73,7 @@ export function createSettingsExecutor(repo:SettingsArtifactRepository,authority
     try{
      const opened=await repo.transaction(async tx=>{await tx.lock(id);const checked=await current(tx,expectedIndex,true),key=await source.readKey(tx,checked.binding);await current(tx,expectedIndex,true);const plain=openSettingsArtifact(key,checked.binding,checked.record.envelope);await current(tx,expectedIndex,true);return {binding:checked.binding,plain}});
      value=opened.plain;
-     const result=resultSchema.parse(await transport.send(opened.binding,value,beforeSend));
+     const result=resultSchema.parse(await transport.send(opened.binding,value,beforeSend));if(result.outcome==='confirmed')confirmedSettingId=result.settingId;
      return {outcome:result.outcome,value:result.outcome==='confirmed'?Object.freeze({actionId:id,effectIndex:expectedIndex,settingId:result.settingId,status:'provider_confirmed' as const,deploymentPerformed:false as const}):null};
     }finally{value=undefined}
    });
