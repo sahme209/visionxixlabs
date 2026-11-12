@@ -1,3 +1,4 @@
+import {denyIsolatedExternalIO} from "@/lib/billing/isolatedApplication/runtime";
 import 'server-only';
 import {prisma} from '@/lib/db';
 import {createCustomerHostedCurrentReader} from '@/lib/ai/customerHostedCurrentPolicy';
@@ -16,7 +17,7 @@ export async function resolveCustomerHostedGovernedAiCall(organizationId:string,
  if(!userId||readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline')return {ok:false,error:'workspace_ai_provider_unavailable'};
  const scope={organizationId,actorId:userId,preferredProvider,preferredModel};
  const readCurrent=createCustomerHostedCurrentReader(scope,{db:prisma});
- try{await readCurrent()}catch{return {ok:false,error:'workspace_ai_provider_unavailable'}}
+ try{denyIsolatedExternalIO();await readCurrent()}catch{return {ok:false,error:'workspace_ai_provider_unavailable'}}
  const repository=createCustomerHostedTokenRepository(prisma as unknown as CustomerHostedSqlRepository);
  const store=createCustomerHostedTokenStore(repository,async org=>{
   if(readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline'||org!==organizationId)return null;

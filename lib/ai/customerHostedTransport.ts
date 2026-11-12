@@ -1,3 +1,4 @@
+import {denyIsolatedExternalIO} from "@/lib/billing/isolatedApplication/runtime";
 import {lookup} from 'node:dns/promises';
 import {isIP} from 'node:net';
 import {request as httpsRequest,type RequestOptions} from 'node:https';
@@ -9,14 +10,14 @@ interface Input {
  readonly config:CustomerHostedOperatorConfig;readonly modelId:string;readonly prompt:string;
  readonly signal:AbortSignal;
  /** Durable one-attempt claim AND current policy/caller fence; mandatory. */
- readonly beforeSend:()=>Promise<void>;
+ readonly beforeSend:(terminalSignal?:AbortSignal)=>Promise<void>;
 }
 interface Dependencies {
  resolve(hostname:string):Promise<readonly {address:string;family:number}[]>;
  request(options:RequestOptions):ClientRequest;
 }
 const failure=()=>new Error('customer_hosted_transport_unavailable');
-function offline(){if(readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline')throw failure()}
+function offline(){denyIsolatedExternalIO();if(readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline')throw failure()}
 function canonical(ip:string):string {
  if(isIP(ip)===6)return new URL('http://['+ip+']/').hostname;
  return ip;
@@ -36,8 +37,19 @@ export async function sendCustomerHostedCompletion(input:Input,deps?:Dependencie
  if(body.length>262144)throw failure();
  const io=deps??{resolve:(name:string)=>lookup(name,{all:true,verbatim:true}),request:(options:RequestOptions)=>(tls?httpsRequest:httpRequest)(options)};
  return new Promise((resolve,reject)=>{
-  let done=false,request:ClientRequest|undefined;
-  const stop=(error:unknown)=>{if(done)return;done=true;clearTimeout(timer);signal.removeEventListener('abort',abort);request?.destroy();reject(error instanceof CustomerHostedResponseError?error:failure())};
+  let done=false,sent=false,request:ClientRequest|undefined,admissionTask:Promise<void>|undefined;
+  const terminal=new AbortController();
+  const stop=(error:unknown)=>{
+   if(done)return;done=true;terminal.abort();clearTimeout(timer);signal.removeEventListener('abort',abort);request?.destroy();
+   const reason=error instanceof CustomerHostedResponseError?error:failure();
+   if(!admissionTask){reject(reason);return;}
+   // Reconcile in-flight admission before extraction cleanup where possible.
+   // Cancellation fences still forbid a late claim if this bounded drain ends.
+   let finished=false;
+   const finish=()=>{if(finished)return;finished=true;clearTimeout(cleanup);reject(reason)};
+   const cleanup=setTimeout(finish,5000);
+   void admissionTask.then(finish,finish);
+  };
   const abort=()=>stop(failure());
   const timer=setTimeout(abort,10000);timer.unref();signal.addEventListener('abort',abort,{once:true});
   if(signal.aborted){abort();return;}
@@ -52,18 +64,19 @@ export async function sendCustomerHostedCompletion(input:Input,deps?:Dependencie
     headers:{host:url.host,'content-type':'application/json','content-length':body.length,accept:'application/json','accept-encoding':'identity',connection:'close'}});
    request.once('error',()=>stop(failure()));
    request.once('socket',socket=>{
-    socket.once(tls?'secureConnect':'connect',()=>{void(async()=>{
+    socket.once(tls?'secureConnect':'connect',()=>{admissionTask=(async()=>{
      if(done)return;offline();
      const peer=socket.remoteAddress;
      if(!peer||canonical(peer)!==target||!customerHostedPrivateAddress(peer)||tls&&(!('authorized'in socket)||socket.authorized!==true))throw failure();
-     await input.beforeSend();
+     await input.beforeSend(terminal.signal);
      if(done||signal.aborted)return;offline();
      // No body bytes are queued until peer and final claim/policy checks pass.
      if(!socket.remoteAddress||canonical(socket.remoteAddress)!==target)throw failure();
-     request!.end(body);
-    })().catch(stop)});
+     sent=true;request!.end(body);
+    })();void admissionTask.catch(stop)});
    });
    request.once('response',response=>{
+    if(!sent){response.destroy();stop(failure());return;}
     if(done){response.destroy();return;}
     const contentType=response.headers['content-type'],encoding=response.headers['content-encoding'],length=response.headers['content-length'];
     if(response.statusCode!==200||typeof contentType!=='string'||!/^application\/json(?:\s*;\s*charset=utf-8)?$/i.test(contentType)||encoding&&encoding!=='identity'||length!==undefined&&(!/^\d+$/.test(length)||Number(length)>1048576)){

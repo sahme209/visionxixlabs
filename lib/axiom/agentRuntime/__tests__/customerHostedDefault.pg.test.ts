@@ -64,4 +64,10 @@ describe.skipIf(!root)('actual default Agent offline composition; simulated mode
   const row=await prisma.durableAgentWorkflow.findFirstOrThrow({where:{organizationId:f.org}});expect(row.stateJson).toMatchObject({status:'settled',reservedTokens:4608,reportedTokens:220});
  });
 
+ it('refuses isolated-lane default resolution before protected acceptance reads',async()=>{
+  const f=await fixture();vi.stubEnv('AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME','1');
+  expect(await resolveGovernedAiCall(f.org,'customer_hosted',f.actor,'local')).toMatchObject({ok:false});
+  expect(m.limits).not.toHaveBeenCalled();expect(m.send).not.toHaveBeenCalled();expect(m.cloud).not.toHaveBeenCalled();
+ });
+
 });

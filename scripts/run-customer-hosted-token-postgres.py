@@ -45,9 +45,9 @@ def main():
   (root/'vitest.config.mjs').write_text('export default '+json.dumps(config)+';\n')
   run('tests',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',root/'vitest.config.mjs','--configLoader','native','--reporter=json','--outputFile='+str(root/'result.json')],60)
   result=json.loads((root/'result.json').read_text())
-  if result['numPassedTests']!=15 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('fifteen_actual_non_skipped_tests_required')
+  if result['numPassedTests']!=17 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('seventeen_actual_non_skipped_tests_required')
   if hashes()!=before:raise RuntimeError('sources_changed')
-  (root/'receipt.json').write_text(json.dumps({'tests':15,'database':'actual isolated PostgreSQL','provider':'simulated only in composed scenarios','sourceHashes':before,'productionChanged':False},indent=2))
+  (root/'receipt.json').write_text(json.dumps({'tests':17,'database':'actual isolated PostgreSQL','provider':'simulated only in composed scenarios','sourceHashes':before,'productionChanged':False},indent=2))
  finally:
   if started:
    run('stop',[PG/'pg_ctl','-D',root/'data','-m','fast','-w','stop'])

@@ -36,3 +36,7 @@ it('redacts schema and input before hashing and transmitting; audit contains nei
  expect(f.deps.send.mock.calls[0][0].prompt).not.toContain('supersecretvalue');
  expect(JSON.stringify(f.deps.audit.mock.calls)).not.toContain('supersecretvalue');
 });
+it('does not reserve or read private authority in the isolated provider-disabled lane',async()=>{
+ vi.stubEnv('AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME','1');const f=fixture();
+ await expect(f.extract('input','shape','request-1')).rejects.toThrow();expect(f.deps.readCurrent).not.toHaveBeenCalled();expect(f.deps.store.reserveCustomerHostedCall).not.toHaveBeenCalled();expect(f.deps.send).not.toHaveBeenCalled();
+});

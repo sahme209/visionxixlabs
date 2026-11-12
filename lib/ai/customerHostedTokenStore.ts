@@ -45,15 +45,17 @@ export function createCustomerHostedTokenStore(repository:TokenRepository,readCu
     await tx.insert({...bound,id,status:'reserved',reportedTokens:null});return id;
    });
   },
-  async claimCustomerHostedCall(request:TokenRequest,id:string):Promise<object>{
+  async claimCustomerHostedCall(request:TokenRequest,id:string,signal?:AbortSignal):Promise<object>{
+   signal?.throwIfAborted();
    valid(request);const bound=Object.freeze({...request});
    const record=await repository.transaction(async tx=>{
     await tx.lock(bound.organizationId);
     const records=await tx.read(bound.organizationId),budget=await current(bound,tx),record=records.find(r=>r.id===id);
     if(records.some(r=>r.organizationId!==bound.organizationId)||!record||id!==idFor(bound)||!same(record,bound)||record.status!=='reserved')refuse();
+    signal?.throwIfAborted();
     const exposure=customerHostedExposure(bound.windowId,records);
     if(exposure===null||!Number.isSafeInteger(budget.limitTokens)||budget.limitTokens<exposure)refuse();
-    const claimed:TokenCall={...record,status:'dispatched'};await tx.replace(claimed);return claimed;
+    const claimed:TokenCall={...record,status:'dispatched'};signal?.throwIfAborted();await tx.replace(claimed);signal?.throwIfAborted();return claimed;
    });
    const claim=Object.freeze({});claims.set(claim,record);return claim;
   },

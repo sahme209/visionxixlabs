@@ -72,3 +72,27 @@ it('rechecks offline mode after DNS and after awaited final admission',async()=>
  vi.stubEnv('AXIOM_OFFLINE_MODE','true');const g=fixture();g.beforeSend.mockImplementation(async()=>{vi.stubEnv('AXIOM_OFFLINE_MODE','false')});
  await expect(sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:g.signal.signal,beforeSend:g.beforeSend},g.deps)).rejects.toThrow();expect(g.request.end).not.toHaveBeenCalled();
 });
+it('refuses all provider IO in the existing isolated application lane before DNS or admission',async()=>{
+ vi.stubEnv('AXIOM_ISOLATED_PUBLIC_TEST_RUNTIME','1');const f=fixture();
+ await expect(sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:f.signal.signal,beforeSend:f.beforeSend},f.deps)).rejects.toThrow();
+ expect(f.deps.resolve).not.toHaveBeenCalled();expect(f.deps.request).not.toHaveBeenCalled();expect(f.beforeSend).not.toHaveBeenCalled();
+});
+it('cancels and drains delayed final admission on timeout instead of allowing a late claim',async()=>{
+ vi.useFakeTimers();
+ try{
+  const f=fixture();let release!:()=>void,claims=0,entered=false;
+  f.beforeSend.mockImplementation(async(terminalSignal?:AbortSignal)=>{entered=true;await new Promise<void>(r=>{release=r});terminalSignal?.throwIfAborted();claims++});
+  const pending=sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:f.signal.signal,beforeSend:f.beforeSend},f.deps);
+  const rejected=expect(pending).rejects.toThrow();await vi.advanceTimersByTimeAsync(0);expect(entered).toBe(true);
+  await vi.advanceTimersByTimeAsync(10001);release();await rejected;await vi.advanceTimersByTimeAsync(0);
+  expect(claims).toBe(0);expect(f.request.end).not.toHaveBeenCalled();
+ }finally{vi.useRealTimers()}
+});
+it('rejects an unsolicited response before the admitted body send and cancels admission',async()=>{
+ const f=fixture();let release!:()=>void,entered!:()=>void,claims=0;
+ const started=new Promise<void>(r=>{entered=r});
+ f.beforeSend.mockImplementation(async(terminalSignal?:AbortSignal)=>{entered();await new Promise<void>(r=>{release=r});terminalSignal?.throwIfAborted();claims++});
+ const pending=sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:f.signal.signal,beforeSend:f.beforeSend},f.deps);const rejected=expect(pending).rejects.toThrow();await started;
+ f.request.emit('response',f.response);f.response.emit('data',Buffer.from(JSON.stringify({model:'local',choices:[{index:0,finish_reason:'stop',message:{role:'assistant',content:'{}'}}],usage:{prompt_tokens:1,completion_tokens:1,total_tokens:2}})));f.response.emit('end');
+ release();await rejected;expect(claims).toBe(0);expect(f.request.end).not.toHaveBeenCalled();
+});

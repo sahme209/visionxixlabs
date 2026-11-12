@@ -16,12 +16,12 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
   if(!rows[0]?.owned)throw Error('owned_fixture_required');
  });
  afterAll(async()=>{await pool?.end()});
- function fixture(failEvent:boolean|(()=>boolean)=false){
+ function fixture(failEvent:boolean|((eventType:string)=>boolean)=false){
   const org='token-'+randomUUID();
   const db:CustomerHostedSqlRepository={$transaction:async(fn)=>{
    const client=await pool.connect();
    try{await client.query('BEGIN ISOLATION LEVEL READ COMMITTED');await client.query("SET LOCAL statement_timeout='5s'");
-    const value=await fn({$queryRawUnsafe:async<T>(sql:string,...args:unknown[])=>{const result=await client.query(sql,args);return result.rows as T},$executeRawUnsafe:async(sql,...args)=>{if((typeof failEvent==='function'?failEvent():failEvent)&&sql.startsWith('INSERT INTO "DurableAgentWorkflowEvent"'))throw Error('synthetic_event_failure');return (await client.query(sql,args)).rowCount??0}});
+    const value=await fn({$queryRawUnsafe:async<T>(sql:string,...args:unknown[])=>{const result=await client.query(sql,args);return result.rows as T},$executeRawUnsafe:async(sql,...args)=>{if((typeof failEvent==='function'?failEvent(String(args[4])):failEvent)&&sql.startsWith('INSERT INTO "DurableAgentWorkflowEvent"'))throw Error('synthetic_event_failure');return (await client.query(sql,args)).rowCount??0}});
     await client.query('COMMIT');return value;
    }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
   }};
@@ -92,6 +92,13 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
    const row=(await pool.query('SELECT "stateJson" FROM "DurableAgentWorkflow" WHERE "organizationId"=$1',[f.org])).rows[0];expect(row.stateJson).toMatchObject({status:'dispatched',reservedTokens:60,reportedTokens:null});
    expect((await pool.query('SELECT sequence FROM "DurableAgentWorkflowEvent" WHERE "organizationId"=$1 ORDER BY sequence',[f.org])).rows).toEqual([{sequence:0},{sequence:1}]);
   }finally{if(oldMode===undefined)delete process.env.AXIOM_OFFLINE_MODE;else process.env.AXIOM_OFFLINE_MODE=oldMode}
+ });
+
+ it('rolls back an actual dispatch claim when cancellation arrives before commit',async()=>{
+  const controller=new AbortController(),f=fixture(type=>{if(type==='customer_hosted.dispatched')controller.abort();return false});
+  const id=await f.store.reserveCustomerHostedCall(f.request);await expect(f.store.claimCustomerHostedCall(f.request,id,controller.signal)).rejects.toThrow();
+  expect((await pool.query('SELECT "stateJson" FROM "DurableAgentWorkflow" WHERE id=$1',[id])).rows[0].stateJson.status).toBe('reserved');
+  expect((await pool.query('SELECT sequence FROM "DurableAgentWorkflowEvent" WHERE "organizationId"=$1',[f.org])).rows).toEqual([{sequence:0}]);
  });
 
 });

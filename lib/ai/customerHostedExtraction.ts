@@ -1,3 +1,4 @@
+import {denyIsolatedExternalIO} from "@/lib/billing/isolatedApplication/runtime";
 import {createHash} from 'node:crypto';
 import {boundedStructuredAIInput} from './inputByteBound';
 import {redactSecrets} from './contextRedaction';
@@ -20,7 +21,7 @@ interface Dependencies {
  audit(detail:{settlement:'customer_hosted_unpriced';outcome:'confirmed'|'unknown'|'refused';modelId:string;totalTokens:number|null}):Promise<void>;
 }
 const fail=()=>new Error('customer_hosted_governed_call_unavailable');
-function offline(){if(readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline')throw fail()}
+function offline(){denyIsolatedExternalIO();if(readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline')throw fail()}
 function binding(snapshot:CustomerHostedExtractionSnapshot){return JSON.stringify([snapshot.config.digest,snapshot.modelId,snapshot.policyDigest,snapshot.windowId,snapshot.reservedTokens])}
 /** Composed accounting and final-send ordering. Default production authority
  * supplier remains separate; injected tests must not be described as live use. */
@@ -36,11 +37,11 @@ export function createCustomerHostedExtraction(scope:{organizationId:string;acto
    const payload=boundedStructuredAIInput(redactSecrets(rawText).text,redactSecrets(schemaHint).text);
    const prompt=`${payload.system}\n\n${payload.prompt}`;
    if(Buffer.byteLength(prompt)>model.maxInputBytes)throw fail();
-   async function current(){
-    offline();signal.throwIfAborted();
-    await beforeAdmission?.();await deps.assertActor();
-    const latest=await deps.readCurrent();if(binding(latest)!==snapshotBinding)throw fail();
-    offline();signal.throwIfAborted();
+   async function current(checkSignal:AbortSignal=signal){
+    offline();checkSignal.throwIfAborted();
+    await beforeAdmission?.();checkSignal.throwIfAborted();await deps.assertActor();checkSignal.throwIfAborted();
+    const latest=await deps.readCurrent();checkSignal.throwIfAborted();if(binding(latest)!==snapshotBinding)throw fail();
+    offline();checkSignal.throwIfAborted();
    }
    await current();
    const request={installationId:initial.config.installationId,organizationId:scope.organizationId,actorId:scope.actorId,
@@ -48,10 +49,11 @@ export function createCustomerHostedExtraction(scope:{organizationId:string;acto
     configDigest:initial.config.digest,modelId,windowId:initial.windowId,reservedTokens:initial.reservedTokens};
    const id=await deps.store.reserveCustomerHostedCall(request);
    let claimAttempted=false;
-   const result=await deps.send({config:initial.config,modelId,prompt,signal,beforeSend:async()=>{
+   const result=await deps.send({config:initial.config,modelId,prompt,signal,beforeSend:async(terminalSignal=signal)=>{
+    const dispatchSignal=AbortSignal.any([signal,terminalSignal]);
     if(claimAttempted)throw fail();claimAttempted=true;
-    await current();claim=await deps.store.claimCustomerHostedCall(request,id);outcome='unknown';
-    await current();
+    await current(dispatchSignal);outcome='unknown';claim=await deps.store.claimCustomerHostedCall(request,id,dispatchSignal);
+    await current(dispatchSignal);
    }});
    if(!claim)throw fail();
    const consumed=claim;claim=undefined;totalTokens=result.totalTokens;
