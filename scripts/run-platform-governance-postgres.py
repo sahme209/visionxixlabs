@@ -13,7 +13,7 @@ TEST='lib/governance/platform/__tests__/sqlRepository.pg.test.ts'
 FILES=[Path(__file__).relative_to(REPO),Path('prisma/schema.prisma')]+sorted(Path('lib/governance/platform').rglob('*.ts'))+[Path('lib/governance/platform/fixtureSchema.sql'),Path('lib/governance/platform/fixtureIdentity.sql')]
 FILES += [Path(p) for p in ['lib/cloud/aws/templateHosting.ts','lib/cloud/aws/platformTemplateSource.ts','lib/cloud/aws/platformTemplatePlan.ts','public/aws/axiom-agent-quick-deploy.yaml','lib/deploy/provider.ts','lib/deploy/platformLeadSource.ts','lib/deploy/platformDeployment.ts','lib/scaffoldGenerator.ts','lib/desktop/desktopToken.ts','lib/desktop/privateDesktopToken.ts','lib/db.ts','lib/database/createDatabaseClient.ts','lib/database/postgresConnectionPolicy.ts']]
 FILES += [Path(p) for p in ['lib/growth/linkedin/platformDeletion.ts','lib/growth/linkedin/platformDeletionPlan.ts','lib/growth/linkedin/platformDeletionSource.ts','lib/growth/linkedin/platformSchedule.ts','lib/growth/linkedin/posting.ts','lib/growth/linkedin/platformPostingPlan.ts','lib/security/credentialVault.ts','lib/growth/audit.ts','prisma/migrations/20260526190000_add_growth_linkedin_phase1/migration.sql','prisma/migrations/20260526200000_add_growth_autopilot/migration.sql']]
-FILES += [Path(p) for p in ['desktop/src/lib/platformReview.ts','desktop/src/lib/releaseOperationPlanTransport.ts','desktop/src/lib/releaseVerificationRecovery.ts']]
+FILES += [Path(p) for p in ['desktop/src/lib/manualRelease.ts','desktop/src/lib/platformReview.ts','desktop/src/lib/releaseOperationPlanTransport.ts','desktop/src/lib/releaseVerificationRecovery.ts']]
 def hashes():return {str(p):hashlib.sha256((REPO/p).read_bytes()).hexdigest() for p in FILES}
 def main():
  os.umask(0o077)

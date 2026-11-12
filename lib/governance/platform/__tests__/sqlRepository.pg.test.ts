@@ -502,6 +502,7 @@ function manualFixture(repo?:ManualReleaseRepository){
 import {createManualReleaseRequestComposition} from '../operations/manualReleaseRequest';
 import {createDefaultManualReleaseRequestService} from '../operations/manualReleaseRequestService';
 import {createManualReleaseHttp} from '../operations/manualReleaseHttp';
+import {createManualReleaseClient} from '../../../../desktop/src/lib/manualRelease';
 it.skipIf(!enabled)('stores separately reviewed manual notices once with actual current identity SQL and no executable action',async()=>{
  await identityFixtures();const f=manualFixture(),requestId='33333333-3333-4333-8333-333333333333';
  const saved=await Promise.all([f.store.prepare(f.selection,actor,requestId),f.store.prepare(f.selection,actor,requestId)]);expect(saved[0].recordId).toBe(saved[1].recordId);
@@ -514,19 +515,28 @@ it.skipIf(!enabled)('stores separately reviewed manual notices once with actual 
   await expect(defaultReader.prepare(f.selection,'55555555-5555-4555-8555-555555555555')).rejects.toThrow('manual_release_source_qualification_unavailable');
   const http=createManualReleaseHttp(async r=>createManualReleaseRequestComposition(r,{repo:f.repository,source:f.source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']}));
   const command=(body:unknown)=>new Request('http://fixture.invalid/manual-release',{method:'POST',headers:{authorization:headers.get('authorization')!,'content-type':'application/json'},body:JSON.stringify(body)});
-  const notices=await Promise.all([http(command({operation:'recordNotice',recordId:id,expectedVersion:1})),http(command({operation:'recordNotice',recordId:id,expectedVersion:1}))]);
-  expect(notices.map(r=>r.status).sort()).toEqual([200,409]);
-  // Simulate losing the successful mutation response. Recover original history,
-  // never resend, re-prepare or infer owner permission from the notice.
-  const recovered=await http(command({operation:'inspect',recordId:id}));expect(recovered.status).toBe(200);expect(await recovered.json()).toMatchObject({ok:true,data:{status:'notice_recorded',attemptCount:1,version:3,providerExecution:false,ownerAuthorization:'external_not_verified',authority:'history_only'}});
-  const lookup=await http(command({operation:'lookup',requestId}));expect(await lookup.json()).toMatchObject({ok:true,data:{found:true,recordId:id,authority:'history_only'}});
+  const statuses:number[]=[];let dropped=false;
+  vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
+   if(String(input)!=='https://fixture.example.test/api/desktop/platform-governance/manual-release')throw Error('unexpected_external_destination');
+   const response=await http(new Request(String(input),init));
+   if(JSON.parse(String(init?.body)).operation==='recordNotice'){statuses.push(response.status);if(response.status===200&&!dropped){dropped=true;throw Error('synthetic_reply_lost_after_commit')}}
+   return response;
+  }));
+  const config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(actor.sessionId)},client=createManualReleaseClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}});
+  const reviewed=await client.inspect(id);if(!reviewed.ok)throw Error('manual_client_reviewed_history_unavailable');
+  const notices=await Promise.all([client.recordNotice(reviewed.data),client.recordNotice(reviewed.data)]);
+  expect(statuses.sort()).toEqual([200,409]);expect(dropped).toBe(true);expect(notices).toEqual([expect.objectContaining({ok:false,outcomeUnconfirmed:true}),expect.objectContaining({ok:false,outcomeUnconfirmed:true})]);
+  // The successful reply was lost AFTER the actual SQL commit. Recover from the
+  // original client reference/history, with no mutation resubmit or owner claim.
+  expect(await client.inspect(id)).toMatchObject({ok:true,data:{status:'notice_recorded',attemptCount:1,version:3,providerExecution:false,ownerAuthorization:'external_not_verified',authority:'history_only'}});
+  expect(await client.lookup(requestId)).toMatchObject({ok:true,data:{found:true,recordId:id,requestId,authority:'history_only'}});
   const unavailable=createManualReleaseHttp();expect((await unavailable(command({operation:'prepare',selection:f.selection,requestId:'55555555-5555-4555-8555-555555555555'}))).status).toBe(409);
   await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',actor.sessionId);
-  expect((await http(command({operation:'inspect',recordId:id}))).status).toBe(401);
+  expect(await client.inspect(id)).toMatchObject({ok:false,outcomeUnconfirmed:false});
   await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=NULL WHERE id=$1',actor.sessionId);
   expect(await live.inspectResult(id,'dpl_fixture')).toMatchObject({state:'pending',providerExecution:false,executionAuthorized:false,ownerAuthorization:'external_not_verified'});
   await expect(defaultReader.inspectResult(id,'dpl_fixture')).rejects.toThrow();
- }finally{vi.unstubAllEnvs()}
+ }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
  expect(await f.store.inspect(id,actor)).toMatchObject({status:'notice_recorded',attemptCount:1,version:3,providerExecution:false,ownerAuthorization:'external_not_verified'});
  const events=await db.$queryRawUnsafe<Array<{detailJson:unknown}>>('SELECT "detailJson" FROM "PlatformManualReleaseEvent" WHERE "recordId"=$1 ORDER BY sequence',id);expect(events).toHaveLength(4);expect(JSON.stringify(events)).not.toContain(actor.sessionId);
  expect(await db.$queryRawUnsafe('SELECT id FROM "PlatformGovernanceAction" WHERE id=$1',id)).toEqual([]);
