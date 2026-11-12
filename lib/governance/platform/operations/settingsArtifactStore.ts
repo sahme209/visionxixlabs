@@ -8,6 +8,7 @@ import {readPlatformAction,approvePlatformAction,claimPlatformAction} from '../k
 import {operationalWorkloadBinding} from './workloadIdentity';
 import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
 export interface SettingsArtifactTransaction extends PlatformTransaction{
+ assertSettingsCreationHeld(binding:SettingsArtifactBinding):Promise<void>;
  reserveSettingsCreation(binding:SettingsArtifactBinding):Promise<string>;
  readSettingsArtifact(artifactId:string):Promise<unknown|null>;
  /** Insert only; uniqueness on artifactId and (actionId,effectIndex) is mandatory.

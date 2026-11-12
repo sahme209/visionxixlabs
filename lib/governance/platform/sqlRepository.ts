@@ -25,6 +25,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
   let locked:string|null=null,nativeLocked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:OperationalDelegationTransaction & SettingsArtifactTransaction={
+   async assertSettingsCreationHeld(raw){const binding=settingsArtifactBindingSchema.parse(raw);check(binding.actionId);const {projectId,teamId,name,environment}=binding.target,key=nativeSettingsTargetKey({projectId,teamId,name,environment});const rows=await sql.$queryRawUnsafe<Array<{publicationKey:string;status:string}>>('SELECT "publicationKey",status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1 AND index=$2',binding.actionId,binding.effectIndex);if(rows.length!==1||rows[0].publicationKey!==key||rows[0].status!=='claimed')fail()},
    async reserveSettingsCreation(raw){
     const binding=settingsArtifactBindingSchema.parse(raw);check(binding.actionId);const parent=readPlatformAction(await tx.read(binding.actionId)),effect=parent.plan.effects[binding.effectIndex];
     if(parent.status!=='claimed'||parent.plan.digest!==binding.planDigest||parent.plan.sourceDigest!==binding.manifestDigest||!effect||effect.kind!=='settings.vercel'||effect.id!==binding.effectId||effect.target.projectId!==binding.target.projectId||parent.requester.userId!==binding.creator.userId||parent.requester.sessionId!==binding.creator.sessionId)fail();
