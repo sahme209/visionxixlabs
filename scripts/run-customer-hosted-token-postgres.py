@@ -9,7 +9,7 @@ REPO=Path(__file__).resolve().parents[1]
 PG=Path('/opt/homebrew/opt/postgresql@17/bin')
 NODE=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
 TEST='lib/ai/__tests__/customerHostedTokenStore.pg.test.ts'
-FILES=[Path(__file__).relative_to(REPO),Path(TEST),Path('lib/ai/customerHostedTokenStore.ts'),Path('lib/ai/customerHostedTokenBudget.ts'),Path('lib/ai/customerHostedTokenRepository.ts'),Path('prisma/migrations/20261013193000_add_durable_agent_workflow/migration.sql')]
+FILES=[Path(__file__).relative_to(REPO),Path(TEST),Path('lib/ai/customerHostedTokenStore.ts'),Path('lib/ai/customerHostedExtraction.ts'),Path('lib/ai/customerHostedConfig.ts'),Path('lib/ai/inputByteBound.ts'),Path('lib/ai/contextRedaction.ts'),Path('lib/security/redaction.ts'),Path('lib/ai/customerHostedTokenBudget.ts'),Path('lib/ai/customerHostedTokenRepository.ts'),Path('prisma/migrations/20261013193000_add_durable_agent_workflow/migration.sql')]
 def hashes():return {str(p):hashlib.sha256((REPO/p).read_bytes()).hexdigest() for p in FILES}
 def main():
  os.umask(0o077)
@@ -33,13 +33,13 @@ def main():
   binding=run('binding',[PG/'psql','-XAtw','-v','ON_ERROR_STOP=1','-c',"SELECT json_build_object('db',current_database(),'role',current_user,'listen',current_setting('listen_addresses'),'data',current_setting('data_directory'),'tables',(SELECT count(*) FROM information_schema.tables WHERE table_schema='public'))"])
   if json.loads(binding)!={'db':'token_fixture','role':'token_fixture','listen':'','data':str(root/'data'),'tables':0}:raise RuntimeError('fresh_owned_target_required')
   run('schema',[PG/'psql','-Xw','-v','ON_ERROR_STOP=1','-f',REPO/'prisma/migrations/20261013193000_add_durable_agent_workflow/migration.sql'])
-  config={'root':str(REPO),'envDir':str(root/'empty-env'),'cacheDir':str(root/'cache'),'test':{'environment':'node','include':[TEST],'maxWorkers':1,'fileParallelism':False}}
+  config={'root':str(REPO),'envDir':str(root/'empty-env'),'cacheDir':str(root/'cache'),'resolve':{'alias':{'@':str(REPO),'server-only':str(REPO/'test/serverOnlyStub.ts')}},'test':{'environment':'node','include':[TEST],'maxWorkers':1,'fileParallelism':False}}
   (root/'vitest.config.mjs').write_text('export default '+json.dumps(config)+';\n')
   run('tests',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',root/'vitest.config.mjs','--configLoader','native','--reporter=json','--outputFile='+str(root/'result.json')],60)
   result=json.loads((root/'result.json').read_text())
-  if result['numPassedTests']!=5 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('five_actual_non_skipped_tests_required')
+  if result['numPassedTests']!=8 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('eight_actual_non_skipped_tests_required')
   if hashes()!=before:raise RuntimeError('sources_changed')
-  (root/'receipt.json').write_text(json.dumps({'tests':5,'database':'actual isolated PostgreSQL','provider':'none','sourceHashes':before,'productionChanged':False},indent=2))
+  (root/'receipt.json').write_text(json.dumps({'tests':8,'database':'actual isolated PostgreSQL','provider':'simulated only in composed scenarios','sourceHashes':before,'productionChanged':False},indent=2))
  finally:
   if started:
    run('stop',[PG/'pg_ctl','-D',root/'data','-m','fast','-w','stop'])
