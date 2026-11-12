@@ -87,3 +87,5 @@ Task5 metadata closure: offline/invalid mode refuses Sonnet metadata and Gateway
 Composed owned-PG progress: expanded8/8 actual SQL tests PASS, including real coordinator/store success, authority revocation after claim and settlement rollback with no retry. Provider/authority are simulated; cluster stopped. Root types PASS. Trusted acceptance-supplier design still pending; do not claim default/live composition complete.
 
 Transport mode race closure: independent offline checks before/after DNS and final admission;34 focused composition tests/types PASS. Owner approved local protected evidence-supplier design; implement locally next, without live qualification/provisioning/enablement.
+
+Approved supplier source implemented: fixed protected manifest/evidence reads, exact hashes/bounds/model/config and reviewed/observed time checks, conservative root/mode/no-ACL/inode profile. Seven pure/injected-IO tests PASS; default OS IO was NOT run, no live record/provisioning/enablement. Default policy/actor reader and Agent mount remain next. Host no-ACL profile qualification is an explicit real-world gate.
