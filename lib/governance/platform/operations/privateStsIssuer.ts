@@ -21,11 +21,12 @@ const fail=():never=>{throw Error('operational_private_sts_issuance_unavailable'
 /** Prepared private AssumeRole exchange. No GitHub-token input or fallback.
  * Missing issuer profile/registered source custody refuses; no default supplier
  * exists. This transport alone does not prove actual IAM or runtime isolation. */
-export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{return Object.freeze({assertQualified:ports.assertQualified,assertSourceCurrent:ports.assertSourceLeaseCurrent,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?: (metadata:CustodianCredentialObservation)=>Promise<void>){
+export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{return Object.freeze({assertQualified:ports.assertQualified,assertSourceCurrent:ports.assertSourceLeaseCurrent,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?: (metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>){
  let client:STSClient|undefined;
  try{
   const manifest=readOperationalManifest(rawManifest);if(manifest.kind!=='deployment.ecs')return fail();signal.throwIfAborted();
-  if(!manifest.issuerProfileDigest)return fail();
+  if(!manifest.issuerProfileDigest||!beforeSource)return fail();
+  await beforeSource();signal.throwIfAborted();
   const supplied=await ports.readCustodianCredential(manifest,signal);signal.throwIfAborted();
   if(!supplied)return fail();const source=Object.freeze({leaseRef:supplied.leaseRef,profileDigest:supplied.profileDigest,accessKeyId:supplied.accessKeyId,secretAccessKey:supplied.secretAccessKey,sessionToken:supplied.sessionToken,expiresAt:supplied.expiresAt});
   if(!source||source.profileDigest!==manifest.issuerProfileDigest||!/^platform_credential_[a-f0-9-]{36}$/.test(source.leaseRef)||![source.accessKeyId,source.secretAccessKey,source.sessionToken].every(v=>typeof v==='string'&&v.length>0&&v.length<=16384&&!/[\r\n]/.test(v))||!Number.isSafeInteger(source.expiresAt)||source.expiresAt<=Date.now())return fail();

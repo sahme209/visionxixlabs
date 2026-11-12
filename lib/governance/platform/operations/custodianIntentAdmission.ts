@@ -25,7 +25,8 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Called inside the original action transaction AFTER its current human,
  * workload, source and target checks. No public request/default source exists.
  * Returning an intent cannot bypass those caller checks or authorize a send. */
-export function createCustodianIntentAdmission(source:Source){return Object.freeze({async reserve(tx:CustodianIntentTransaction,actionId:string,rawStage:CustodianIntentStage){
+export function createCustodianIntentAdmission(source:Source){return Object.freeze({async reserve(tx:OperationalDelegationTransaction,actionId:string,rawStage:CustodianIntentStage){
+ if(!supportsIntentStorage(tx))return fail();
  const state=readOperationalDelegation(await tx.readDelegation(actionId)),parent=readPlatformAction(await tx.read(actionId)),manifest=state.manifest;
  if(state.actionId!==actionId||manifest.kind!=='deployment.ecs'||!manifest.issuerProfileDigest||state.status!=='claimed'||!state.executionPrincipal||parent.status!=='claimed'||parent.plan.digest!==state.parentPlanDigest||parent.plan.digest!==compileOperationalEcsPlan(manifest).digest||!same(parent.requester,state.requester)||!same(parent.reviewer,state.reviewer))return fail();
  const selected=admission.parse(await source.readAdmission(tx,manifest));if(selected.issuerProfileDigest!==manifest.issuerProfileDigest)return fail();
@@ -45,3 +46,7 @@ export function createCustodianIntentAdmission(source:Source){return Object.free
  const after=await tx.now();if(after<now||after>=Date.parse(manifest.expiresAt)||state.sourceCredential?.status==='issued'&&after>=state.sourceCredential.expiresAt||state.credential.status==='issued'&&after>=state.credential.expiresAt)return fail();return intent;
 }})}
 function intentSelection(intent:CustodianIntent){const {id,digest,status,hold,executionAuthorized,closureObserved,...selected}=intent;return selected}
+
+function supportsIntentStorage(tx:OperationalDelegationTransaction):tx is CustodianIntentTransaction{
+ return 'lockCustodian' in tx&&typeof tx.lockCustodian==='function'&&'readCustodianBarrier' in tx&&typeof tx.readCustodianBarrier==='function'&&'readCustodianIntent' in tx&&typeof tx.readCustodianIntent==='function'&&'insertCustodianIntent' in tx&&typeof tx.insertCustodianIntent==='function';
+}

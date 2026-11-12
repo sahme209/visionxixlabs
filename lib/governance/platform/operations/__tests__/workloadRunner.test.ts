@@ -1,6 +1,13 @@
 import {it,expect,vi} from 'vitest';
 import {createOperationalWorkloadRunner} from '../workloadRunner';
 const id='platform_action_11111111-1111-4111-8111-111111111111';
-function fixture(){const repo={transaction:vi.fn()},authority={assertCurrent:vi.fn()},source={readManifest:vi.fn(),assertCurrent:vi.fn()},identity={authenticate:vi.fn(),consume:vi.fn(),assertConsumedCurrent:vi.fn()},targets={reserve:vi.fn(),assertHeld:vi.fn()},issuerQualification=vi.fn(),transport={assertQualified:vi.fn(),send:vi.fn()};return {repo,issuerQualification,transport,runner:createOperationalWorkloadRunner({repo,authority,source,identity,targets,custodian:{assertQualified:issuerQualification,assertSourceLeaseCurrent:vi.fn(),readCustodianCredential:vi.fn(),assertCustodianCurrent:vi.fn()},transport})}}
+function fixture(){
+ const repo={transaction:vi.fn()},authority={assertCurrent:vi.fn()},source={readManifest:vi.fn(),assertCurrent:vi.fn()},identity={authenticate:vi.fn(),consume:vi.fn(),assertConsumedCurrent:vi.fn()},targets={reserve:vi.fn(),assertHeld:vi.fn()},issuerQualification=vi.fn(),transport={assertQualified:vi.fn(),send:vi.fn()};
+ const config={repo,authority,source,identity,targets,intents:{reserve:vi.fn()},custodian:{assertQualified:issuerQualification,assertSourceLeaseCurrent:vi.fn(),readCustodianCredential:vi.fn(),assertCustodianCurrent:vi.fn()},transport};
+ return {repo,config,issuerQualification,transport,runner:createOperationalWorkloadRunner(config)};
+}
+
 it('rejects malformed workload commands and human/static token inputs before storage or issuance',async()=>{const f=fixture();for(const [command,token] of [[{actionId:id,delegationVersion:0,role:'caller'},'a.b.c'],[{actionId:id,delegationVersion:1},'a.b.c'],[{actionId:id,delegationVersion:0},'axm.desk.synthetic'],[{actionId:id,delegationVersion:0},'static-token']])await expect(f.runner.run(command,token,new AbortController().signal)).rejects.toThrow('operational_workload_result_unconfirmed');expect(f.repo.transaction).not.toHaveBeenCalled();expect(f.issuerQualification).not.toHaveBeenCalled();expect(f.transport.send).not.toHaveBeenCalled()});
 it('does not begin a workload after its controlling request is canceled',async()=>{const f=fixture(),abort=new AbortController();abort.abort();await expect(f.runner.run({actionId:id,delegationVersion:0},'eyJhbGciOiJSUzI1NiJ9.e30.c3ludGhldGlj',abort.signal)).rejects.toThrow();expect(f.repo.transaction).not.toHaveBeenCalled()});
+
+it('refuses an unavailable intent admission component before claiming or opening credentials',async()=>{const f=fixture();Reflect.deleteProperty(f.config,'intents');await expect(f.runner.run({actionId:id,delegationVersion:0},'eyJhbGciOiJSUzI1NiJ9.e30.c3ludGhldGlj',new AbortController().signal)).rejects.toThrow();expect(f.repo.transaction).not.toHaveBeenCalled();expect(f.config.custodian.readCustodianCredential).not.toHaveBeenCalled();expect(f.transport.send).not.toHaveBeenCalled()});
