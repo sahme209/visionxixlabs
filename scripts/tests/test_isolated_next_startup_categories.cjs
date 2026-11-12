@@ -15,3 +15,13 @@ test('identifies only finite public missing-module tokens without returning capt
  }
  const unknown=classify("Cannot find module 'PRIVATE_SECRET_UNKNOWN'");assert.ok(unknown.categories.includes('missing_module_unknown'));assert.equal(JSON.stringify(unknown).includes('PRIVATE_SECRET_UNKNOWN'),false);
 });
+test('distinguishes actual generated enum requests and relative Next output chunks',()=>{
+ for(const[token,label]of[['./enums.js','missing_generated_enums'],['./vendor-chunks/PRIVATE_SECRET.js','missing_next_vendor_chunk'],['pg-native','missing_pg_native']]){
+  const result=classify(`Cannot find module '${token}'`);assert.ok(result.categories.includes(label));assert.equal(JSON.stringify(result).includes('PRIVATE_SECRET'),false);
+ }
+ const result=classify("Cannot find module '/PRIVATE_SECRET/node_modules/unknown/prisma-unknown.node'");
+ assert.ok(result.categories.includes('missing_request_absolute'));assert.ok(result.categories.includes('missing_request_prisma_family'));assert.ok(result.categories.includes('missing_request_native_module'));assert.equal(JSON.stringify(result).includes('PRIVATE_SECRET'),false);
+});
+test('formatting codes cannot hide a whitelisted module token',()=>{
+ assert.ok(classify("Cannot find module '\u001b[31m./enums.js\u001b[0m'").categories.includes('missing_generated_enums'));
+});
