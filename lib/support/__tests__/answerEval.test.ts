@@ -49,10 +49,19 @@ const CASES: readonly Case[] = [
   ["what does the glossary say about evidence", "page:/docs/glossary"],
   ["troubleshooting sign in problems", "page:/docs/troubleshooting"],
   ["how do execution plans work", "page:/docs/execution-plans"],
+  ["Where is the Apps and skills catalog?", "page:/docs/plugins"],
+  ["How do I choose my active workspace?", "page:/docs/workspaces"],
+  ["How does Microsoft Learn documentation search work?", "page:/docs/mcp-tools"],
+  ["Where can I review my paired devices and display name?", "page:/docs/settings"],
 ];
 const BAR = 0.9;
 
 describe("Ask Axiom evaluation set", () => {
+  it.each(CASES.slice(-4))("cites the authored workspace guide for %s", (question, expected) => {
+    const answer = answerQuestion(buildIndex(knowledgeEntries()), question);
+    expect(answer.status).toBe("answered");
+    if (answer.status === "answered") expect(answer.sources[0]?.href.split("#")[0]).toBe(expected.slice(5));
+  });
   it(`routes at least ${BAR * 100}% of ${CASES.length} questions to the expected source`, () => {
     const index = buildIndex(knowledgeEntries());
     const entries = knowledgeEntries();

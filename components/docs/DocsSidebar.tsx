@@ -87,14 +87,18 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs/api-keys", label: "API keys", icon: BookOpenIcon },
       { href: "/docs/batch-providers", label: "Batch providers", icon: BookOpenIcon },
       { href: "/docs/ask-axiom", label: "Ask Axiom", icon: BookOpenIcon },
+      { href: "/docs/plugins", label: "Apps and skills", icon: PuzzlePieceIcon },
+      { href: "/docs/mcp-tools", label: "MCP documentation tools", icon: BookOpenIcon },
     ],
   },
   {
     title: "Workspace",
     items: [
+      { href: "/docs/workspaces", label: "Workspaces", icon: BookOpenIcon },
       { href: "/docs/members", label: "Members and roles", icon: BookOpenIcon },
       { href: "/docs/governance-approvals", label: "Governance approvals", icon: BookOpenIcon },
       { href: "/docs/usage-billing", label: "Usage and billing", icon: BookOpenIcon },
+      { href: "/docs/settings", label: "Settings and sessions", icon: BookOpenIcon },
     ],
   },
   {

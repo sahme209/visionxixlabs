@@ -19,6 +19,6 @@ export default function UsageBillingDocsPage() {
   <DocSection id="invoices" kicker="03" title="Invoices and payment details">
    <p>Owners and admins see invoices and can open the secure Stripe billing portal with <em>Manage billing</em> when billing is enabled for the workspace. Other members see who manages billing instead.</p>
   </DocSection>
-  <DocFooterNav prev={{href:"/docs/governance-approvals",label:"Governance approvals"}} next={{href:"/docs/troubleshooting",label:"Troubleshooting"}} />
+  <DocFooterNav prev={{href:"/docs/governance-approvals",label:"Governance approvals"}} next={{href:"/docs/settings",label:"Settings and sessions"}} />
  </>;
 }

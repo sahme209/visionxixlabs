@@ -1,0 +1,31 @@
+{
+  "purpose": "Current-source evidence for the four workspace guides; no runtime or live acceptance",
+  "base": "a10730caa6318dc34fa1873f96bd5c5de1c88a91",
+  "sources": {
+    "app/control/plugins/page.tsx": "f2b7353226e46e25c6507731a4b869e6153a828a4c7fbc896f2eb308b392a9d7",
+    "app/control/workspaces/page.tsx": "1c95a3f700931ccbda684d8b2310b123114fa9f1e55a8eb7a09d144cc4b61ebc",
+    "app/control/mcp/page.tsx": "d6bb620458663112c23ac059be7e1d6c91d0c98e48ccac599a903d8e9c500900",
+    "app/control/settings/page.tsx": "71ab6657644c834ac9c81f2960cc81aae33a0dab383406375de32b9712266724",
+    "components/cockpit/Catalog.tsx": "577a2fa3da9822fd4a14818a4c7928e70606363649528f6b4b4e035fce13a3bf",
+    "components/cockpit/MicrosoftLearnTools.tsx": "e98ed88004cc80c3d05aa7556157e607f5245cdca4103cb1a47b838bbf6e845d",
+    "app/api/control/skills/route.ts": "da5f0828372bcc5df1914145252ff2f16536ab830e50f940cc5508a7390f2f5f",
+    "app/api/control/mcp/microsoft-learn/route.ts": "427d66311e5814b7bdfc2b9504bc0f8bb4bb929569ec37ae2ae2b5b1578abe5e",
+    "components/cockpit/CockpitShell.tsx": "84ff8d17e81c4679cf680ffa26421cf9819d61d0ae5465ebeaec7cd1793bec3e",
+    "components/auth/AccountSettingsForm.tsx": "a10dd5d76f0ce039e49e2c4373dd7ef4507afe7772a62506906a276e792e1f6f",
+    "components/auth/DesktopSessionsPanel.tsx": "e5a62a2397e573d526320c5e11337b6a02beb84c835fc76f14900da47d1ef0c2",
+    "app/api/account/workspace/route.ts": "16768b9ee50a429dec96da79dff28d78bcb94b639e60c54862fbb60d039d079c",
+    "app/api/account/profile/route.ts": "4e47657b75162dd008b38438f0cee05028d84e0b27fd9124fd354e207a86c9aa",
+    "app/api/desktop/session/route.ts": "f70dde9529908cfbf398868bc49da759acf8354e3b7484abfd69c0fd5f7f41b7",
+    "lib/axiom/agentRuntime/skillManagement.ts": "4b9481f99901d0b69f7777f203f53429c174172501c23e461c66472aa58b24bb"
+  },
+  "facts": [
+    "Plugins page registers AWS/Azure/GitHub workflows and curated skills; membership required; storage failure labels Unknown. Catalog installation/enable/disable/remove is owner/admin, same-origin, commercial-access checked; guidance never grants tool permissions.",
+    "MCP page supports reviewed Microsoft Learn only. Check connection does not install; search requires enabled stored skill, membership/access, public technical query and audited bounded request. No arbitrary server URLs or Azure account access.",
+    "Workspaces page is recovery destination, no tenant reads; directs sidebar selection then Open workspace. Need inspect selector/service before documenting switching.",
+    "Settings web has Profile/Security/Sessions. Sign-in email/roles not edited by profile; paired desktop sessions independent. Need inspect profile API/session revocation and desktop distinction.",
+    "Workspace selector appears with >1 workspace or no current match. POST requires same origin, authenticated session and accepted membership; writes selection cookie, redirects to /control. Selection does not create membership or switch desktop session.",
+    "Profile PUT trims/collapses whitespace; name length1..80; current user only. UI update uncertainty says refresh before retry.",
+    "Web Sessions GET filters current user active sessions to current organization; DELETE rejects pairing not owned by that user/current organization. Browser signout and paired desktop revocation are distinct.",
+    "Skill mutations can write state before required audit fails; unconfirmed UI locks further actions until refresh. Guidance updates next Agent message, not old conversations, and grants no credentials/tool permissions."
+  ]
+}

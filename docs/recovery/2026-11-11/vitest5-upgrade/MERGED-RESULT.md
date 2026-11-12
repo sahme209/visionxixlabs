@@ -1,0 +1,5 @@
+# Vitest 5 merged — November 11
+
+PR https://github.com/sahme209/visionxixlabs/pull/322 merged normally as `a10730caa6318dc34fa1873f96bd5c5de1c88a91`, exact reviewed head `2ecb082f9ce8276a927cfaf44529b28a3bcaf67a`. Every applicable check passed before merge: Typecheck + Vitest, all three shards, typecheck, production/offline build, owned PG17 accounting, actual owned authentication/billing HTTP, isolated website, production high/critical audit and Dependabot configuration. Desktop workflow was not applicable under its unchanged path filter; local desktop types/build passed.
+
+Test run43130248095, owned acceptance43130247895, website43130248038, audit43130248025. Local full suite17,851 passed, existing897 skipped and one expected failure; no new skip/assertion/default relaxation. Preload change comment-only and exact guard retained. No production deployment/config/SQL, real provider call, issuer qualification or security certification. Existing three moderate web findings remain separately recorded.

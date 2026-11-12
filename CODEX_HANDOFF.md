@@ -76,7 +76,7 @@ Axiom (VisionXIXLabs) is a governed control plane for AI agents and cloud/releas
 - **SDKs:** `sdk/` (TS, Swift, Python, Go). The Python CLI is `sdk/python/vxl_cli.py` (`vxl ask`, `vxl outcome`).
 
 **Stack:**
-- Next.js **16.4.5**, React 19.3, TypeScript 7.0.2 native checks plus retained 5.9.3 compiler API (#320 merged green), Tailwind **4.3.5** (CSS-first migration; customer engine acceptance remains gated), Prisma **7.10.1** (#321 merged green; deployment blocked pending target/schema and adapter compatibility), Vitest **4.1.12** (5.1.0 migration in progress).
+- Next.js **16.4.5**, React 19.3, TypeScript 7.0.2 native checks plus retained 5.9.3 compiler API (#320 merged green), Tailwind **4.3.5** (CSS-first migration; customer engine acceptance remains gated), Prisma **7.10.1** (#321 merged green; deployment blocked pending target/schema and adapter compatibility), Vitest **5.1.0** (#322 merged green, not deployed).
 - Node 24 in CI; ai 7 requires Node 22+. Node 24 is used for this upgrade’s local checks.
 - Desktop: Vite 8, Tauri 2.
 
@@ -118,7 +118,7 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 **Dependabot** (`.github/dependabot.yml`) opens grouped PRs weekly per ecosystem (web, desktop, cargo, actions).
 - Its web lockfile changes **always** fail `owned_framework_source_pins`, because Dependabot cannot re-pin the hash. Re-create the same versions via `dependency-fix.yml` and close the Dependabot PR. The owner may need to close Dependabot PRs; the agent was not allowed to.
-- **Held packages** (ignored in `dependabot.yml`, each needs a planned PR — section 10): TypeScript API major, ESLint major, Vitest major, Stripe (all versions), `next`/`eslint-config-next`. AWS updates still require the ECS/S3 contract checks.
+- **Held packages** (ignored in `dependabot.yml`, each needs a planned PR — section 10): TypeScript API major, ESLint major, Stripe (all versions), `next`/`eslint-config-next`. AWS updates still require the ECS/S3 contract checks.
 - When several Dependabot PRs touch the same lockfile, merging one makes the others conflict. Do them one at a time, re-locked on current `main`.
 
 ### 3.4 Delegation and research tools used
@@ -149,13 +149,13 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 Follow the table in `CLAUDE.md`. The ones that bite most often:
 
-November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind batch updates styling, the install guide’s engine requirements, generated heading hashes/corpus, three existing ModuleIntro review dates and the internal Desktop Pairing scenario. Guide count remains 31; SDK methods and webhook events are unchanged. The TypeScript transition changes build/CI tooling only; no module, product flow, API or guide text changes apply. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
+November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind batch updates styling, the install guide’s engine requirements, generated heading hashes/corpus, three existing ModuleIntro review dates and the internal Desktop Pairing scenario. Guide count at the Tailwind checkpoint was 31 (now 35 after the workspace guide batch); SDK methods and webhook events are unchanged. The TypeScript transition changes build/CI tooling only; no module, product flow, API or guide text changes apply. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
 
 | You change | You must also |
 |---|---|
 | Any `app/docs/**/page.tsx` | Update **`lib/docs/guide-heading-index.json`**: the `sourceSha256` of that page; `fields` (DocHeader title, summary, then DocSection/Callout titles in page order); `navigationSha256` = sha256 of `components/docs/DocsSidebar.tsx`. Normally `node scripts/generate-docs-heading-index.cjs` (needs TypeScript installed). Without deps, compute sha256 with Python and keep the same JSON shape (2-space indent, non-ASCII unescaped). |
 | Docs text | Regenerate the Ask Axiom corpus: `node scripts/support/build-docs-corpus.mjs` → `lib/support/docsCorpus.json` (a freshness test enforces it). |
-| Add or remove a docs guide | Add it to `DocsSidebar.tsx`, add the index entry in sidebar order, and bump the guide count in `app/docs/__tests__/guide-navigation-search.test.ts` (it is **31** now). |
+| Add or remove a docs guide | Add it to `DocsSidebar.tsx`, add the index entry in sidebar order, and bump the guide count in `app/docs/__tests__/guide-navigation-search.test.ts` (it is **35** now: four workspace guides added after #322). |
 | Ask Axiom knowledge or ranking | Keep the eval `lib/support/__tests__/answerEval.test.ts` at ≥ 90%. It is 94.7% now; the 2 known misses are CI-gate and GCP setup. |
 | A `/control/*` screen | `<ModuleIntro>` props and `lastReviewed`. |
 | A product flow | The matching scenario in `lib/demo/demoScenarios.ts` (≥ 3 steps, unique ids, valid approval values). |
@@ -177,7 +177,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
   2. If all are identical except `package.json`, update the version and that hash everywhere: the fixture, the closure JSON, the Python packaging script, 2 owned-website tests and 2 script tests.
   3. If any pinned file differs, it needs a human review of that diff.
   4. Leave historical `docs/recovery/**` records unchanged.
-- **Vitest pin:** `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts` requires exact installed/locked version and reviewed `suppress-warnings.cjs` bytes. The 5.1.0 candidate hash is `3f415a8b…`; comparison against 4.1.12 shows only a lint-comment change. Keep substitution/extra-preload refusals. See `docs/recovery/2026-11-11/vitest5-upgrade/README.md`; this is not historical issuer qualification.
+- **Vitest pin:** `lib/billing/__tests__/fixtures/newTestChildEnvironment.ts` requires exact installed/locked version and reviewed `suppress-warnings.cjs` bytes. The merged 5.1.0 hash is `3f415a8b…`; comparison against 4.1.12 shows only a lint-comment change. Keep substitution/extra-preload refusals. See `docs/recovery/2026-11-11/vitest5-upgrade/README.md`; this is not historical issuer qualification.
 - **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1166.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
 - **Stripe:** `lib/billing/settleAIUsageToStripe.ts` pins API version `2026-01-28.clover`. Even stripe 20.4.1 moves it, so Stripe is fully held.
 - **ai SDK:** v7 moves the AI Gateway URL v3 → v4. PR #317 updated the installed-SDK composition tests to the reviewed v4 endpoint.
@@ -308,7 +308,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
    - Tailwind 4: DONE, PR #319 merged green as `77d932c5`; CSS-first 4.3.5 for web and desktop, not deployed or installer-qualified. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
    - TypeScript 7: DONE, PR #320 merged green as `a99c053f`; native 7.0.2 side-by-side checks. Keep exact API 5.9.3 and its reviewed pins for Next/ESLint/fixture emitters; use explicit native checks for root, production source and desktop builds. Direct replacement reproduced missing API and invalid peers; never force them. API-major Dependabot holds remain deliberate. See `docs/recovery/2026-11-11/typescript7-upgrade/README.md`.
    - **Prisma 7: source DONE, PR #321 merged green as `54c0f1c5` (7.10.1). Not deployed.** Exact head `6a4fdb59` passed all applicable checks, including actual owned HTTP/PG acceptance and website/macOS checks. No migration SQL changed. Production target/schema discrepancy and pool/TLS compatibility remain deployment gates; historical issuer qualification is not renewed. See `docs/recovery/2026-11-11/prisma7-preflight/MERGED-RESULT.md`.
-   - Vitest 5.1.0: workflow-generated candidate in progress, after #321; see `docs/recovery/2026-11-11/vitest5-upgrade/README.md`.
+   - **Vitest 5.1.0: DONE, PR #322 merged green as `a10730ca`.** All applicable CI passed on exact head `2ecb082f`; unchanged 17,851-test suite, reviewed exact preload/lock guard, no relaxed defaults/assertions. Not deployed or historically qualified. See `docs/recovery/2026-11-11/vitest5-upgrade/MERGED-RESULT.md`.
    - Remove each package's Dependabot ignore line after its PR merges.
 4. **Flaky `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`.**
    - Not reproduced in 60 failed runs.
@@ -317,7 +317,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
    - implement the `customer_hosted` governed branch exactly as the ADR says;
    - offline mode excludes the gateway; operator-only endpoint; same redaction and admission; configured output bounds; a token budget instead of a price; an audit record per call;
    - kernel tests first.
-6. **Docs coverage (B4):** guides for Plugins, Workspaces, MCP and Settings. Use the same method as #308: gather facts from the real screens and server checks, and write only what the UI actually does.
+6. **Docs coverage (B4):** four source-grounded guides implemented in the current batch (Apps and skills, Workspaces, MCP documentation tools, Settings and sessions); navigation/count 35, heading index and support corpus updated. Mandatory validation/PR merge pending. Customer screenshots/recordings and comprehensive B4 acceptance remain separate. See `docs/recovery/2026-11-11/workspace-guides/README.md`.
 
 ### 10.2 Owner decisions (ask; do not decide)
 - **P01:** should Governance cover Axiom's own deploys, template hosting and growth publishing?

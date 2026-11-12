@@ -8,12 +8,12 @@ Use `/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-insta
 
 ## Completed — do not restart
 
-AWS #315, AI 7 #317, Tailwind 4 #319, TypeScript 7 side-by-side checking #320 and Prisma 7 #321 merged with all applicable CI green. The retained TypeScript 5.9.3 compiler API is deliberate. These upgrades are not production-deployed. Build 4 at `a344f4f6` remains the last verified deployment.
+AWS #315, AI 7 #317, Tailwind 4 #319, TypeScript 7 side-by-side checking #320, Prisma 7 #321 and Vitest 5 #322 merged with all applicable CI green. The retained TypeScript 5.9.3 compiler API is deliberate. These upgrades are not production-deployed. Build 4 at `a344f4f6` remains the last verified deployment.
 
 ## Next work, in order
 
 1. Reconcile the read-only production-schema discrepancy recorded in `docs/recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json`: on the recorded production branch, `AuditSeal` and `AgentGatewayRequest` and their two migration records are absent, contrary to the historical receipt. The owner explicitly delegated this read-only check to Codex; it ran once. No cause or repair is established. Never apply SQL or deploy automatically.
-2. Prisma 7.10.1 source merged green in PR #321 (`54c0f1c5`); do not repeat it. Production target/schema reconciliation, pool/TLS compatibility and historical issuer qualification remain separate gates. Continue Vitest 5 in its own sequential PR, preserving test/child boundaries and reviewed preload provenance. ESLint remains on 9 until compatible plugins exist.
+2. Prisma 7.10.1 source merged green in PR #321 (`54c0f1c5`); do not repeat it. Production target/schema reconciliation, pool/TLS compatibility and historical issuer qualification remain separate gates. Vitest 5.1.0 merged green in PR #322 (`a10730ca`); preserve exact child/preload provenance on future updates. ESLint remains on 9 until compatible plugins exist.
 3. Fix the named flaky Governance test only when an actual failure reproduces and its site is captured; no guessed fix or repeated unchanged qualification runs.
 4. Obtain the offline-AI ADR decisions before implementing customer-hosted AI. Obtain all other owner decisions in handoff 10.2; no silent defaults for held scope.
 5. Complete the source-grounded Plugins, Workspaces, MCP and Settings guides and their living-doc artifacts.
