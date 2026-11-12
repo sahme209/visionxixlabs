@@ -44,7 +44,7 @@ const currentSetting=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('present'),id,updatedAt:z.number().int().nonnegative().safe(),receiptId:operationalEvidenceId}).strict(),
 ]);
 const setting=z.object({name:z.string().regex(/^[A-Z][A-Z0-9_]{0,127}$/),environment:z.enum(['production','preview','development']),type:z.enum(['encrypted','plain']),sensitivity:z.enum(['secret','nonsecret']),artifactId:operationalArtifactId,current:currentSetting}).strict().refine(v=>v.sensitivity!=='secret'||v.type==='encrypted',{message:'Secret settings require encrypted type'});
-export const operationalSettingsManifest=z.object({...base,kind:z.literal('settings.vercel'),target:z.object({projectId:id,teamId:id}).strict(),settings:z.array(setting).min(1).max(32)}).strict().superRefine((value,c)=>{
+export const operationalSettingsManifest=z.object({...base,kind:z.literal('settings.vercel'),artifactProfileId:id,target:z.object({projectId:id,teamId:id}).strict(),settings:z.array(setting).min(1).max(32)}).strict().superRefine((value,c)=>{
  if(new Set(value.settings.map(s=>s.environment+':'+s.name)).size!==value.settings.length)c.addIssue({code:'custom',message:'Duplicate physical setting target'});
 });
 export const operationalManifestSchema=z.union([operationalReleaseManifest,operationalEcsManifest,operationalSettingsManifest]);

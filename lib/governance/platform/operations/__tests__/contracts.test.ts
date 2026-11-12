@@ -20,7 +20,7 @@ it('binds exact ECS account/region/cluster/task/workflow/run and refuses caller 
 });
 it('settings manifest hashes nonsecret references only and refuses duplicate targets or secret-bearing fields',()=>{
  const entry={name:'AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:artifact,current:{kind:'present',id:'env_fixture',updatedAt:123,receiptId:ref}};
- const manifest={...common,kind:'settings.vercel',target:{projectId:'prj_fixture',teamId:'team_fixture'},settings:[entry]};expect(compileOperationalManifest(manifest)).toMatchObject({kind:'settings.vercel',executionAuthorized:false});
+ const manifest={...common,kind:'settings.vercel',artifactProfileId:'synthetic-private-profile',target:{projectId:'prj_fixture',teamId:'team_fixture'},settings:[entry]};expect(compileOperationalManifest(manifest)).toMatchObject({kind:'settings.vercel',executionAuthorized:false});
  for(const input of [{...manifest,settings:[entry,entry]},{...manifest,settings:[{...entry,environment:'all'}]},{...manifest,settings:[{...entry,value:'never included'}]},{...manifest,settings:[{...entry,secretHash:d}]},{...manifest,settings:[{...entry,ciphertext:'never included'}]},{...manifest,settings:[{...entry,type:'plain'}]}])expect(()=>compileOperationalManifest(input)).toThrow();
 });
 it('a rollback condition matches only exact failure receipt lineage; timeout/unknown is never enough',()=>{

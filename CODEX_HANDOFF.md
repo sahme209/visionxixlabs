@@ -427,3 +427,10 @@ Operational local delegation: exact approved parent/requester/run now joins a di
 
 
 Operational target continuation: exact physical-service generation reservations/immutable receipts now join workload claim before credential entry. Unknown/held targets and prior pending/unknown credentials block fresh actions; issued leases require separately qualified closure metadata.116focused checks/root types and51actual isolated PG cases pass; native/provider/closure qualification remains simulated, no qualified default or dispatch. Two proposed models/inverse relations reviewed; current helper/client updated, no historical qualification. See OPERATIONAL-TARGET-PG-RECEIPT.json and CURRENT.md. Protected settings/default effects/UI/full P01 remain incomplete; no production/provider/spending action.
+
+
+### Protected settings codec — local unit, not execution authority
+
+Settings manifests now require an explicit nonsecret artifact profile. The private codec reuses the existing AES-GCM kernel, binding each value to the exact parent action/plan/manifest, effect, original creator/session, target and profile. Public plans and metadata contain no value, ciphertext or secret-dependent hash. Wrong bindings/keys, malformed envelopes and oversized/invalid values refuse with a fixed error; supplied key buffers remain unchanged. The 64 KiB bound is local memory protection, not provider qualification.
+
+Validation:10focused checks across2files and strict root types PASS. Tests use synthetic values and random local keys; no actual secret, key supplier, provider or database was accessed. Durable immutable artifact storage, current-authority/clock checks around custody, settings reservations, final transport, qualified default composition and Task3/P01 completion remain open. No HTTP route, default key lookup, production schema, deployment or spending.
