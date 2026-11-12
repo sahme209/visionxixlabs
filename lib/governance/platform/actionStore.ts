@@ -1,4 +1,5 @@
-import type {TemplateExecutionBinding} from './templateExecutionContract';
+import type {createTemplateStorageSql} from './templateStorageSql';
+import type {TemplateExecutionBinding,TemplateExecutionReceipt} from './templateExecutionContract';
 import type {DeploymentRecoveryPlan} from './deploymentRecoveryContract';
 import type {DeploymentTerminalObservation} from './deploymentLiability';
 import {deploymentHistoryView} from './deploymentHistoryContract';
@@ -30,6 +31,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction extends Partial<DeploymentLiabilityTransaction>{
+ templateStorage?:ReturnType<typeof createTemplateStorageSql>;
  readTemplateBinding?(id:string):Promise<Readonly<TemplateExecutionBinding>|null>;
  readDeploymentSource?(leadId:string):Promise<unknown>;
  readSourcePage?(kind:PlatformSourceKind,cursor:string|null):Promise<unknown>;
@@ -40,7 +42,7 @@ export interface PlatformTransaction extends Partial<DeploymentLiabilityTransact
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
- event(event:{templateBinding?:Readonly<TemplateExecutionBinding>;actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'|'credential.source_observed'|'workload.stable_observed'|'custodian.closure_observed';operationalStabilityReceiptId?:string;operationalObserverUserId?:string;operationalCommandReceiptDigest?:string;operationalDigest?:string;operationalResult?:OperationalEcsResult;settingsResult?:SettingsResult;deploymentReceipt?:DeploymentRequestReceipt;deploymentRecoveryPlan?:DeploymentRecoveryPlan;deploymentReleaseObservation?:DeploymentTerminalObservation;settingsManifest?:SettingsManifest;ecsManifest?:EcsManifest;custodianControl?:CustodianDrainPlan;custodianBarrier?:CustodianBarrier;custodianClosure?:CustodianClosureObservation;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
+ event(event:{templateReceipt?:Readonly<TemplateExecutionReceipt>;templateBinding?:Readonly<TemplateExecutionBinding>;actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'|'credential.source_observed'|'workload.stable_observed'|'custodian.closure_observed';operationalStabilityReceiptId?:string;operationalObserverUserId?:string;operationalCommandReceiptDigest?:string;operationalDigest?:string;operationalResult?:OperationalEcsResult;settingsResult?:SettingsResult;deploymentReceipt?:DeploymentRequestReceipt;deploymentRecoveryPlan?:DeploymentRecoveryPlan;deploymentReleaseObservation?:DeploymentTerminalObservation;settingsManifest?:SettingsManifest;ecsManifest?:EcsManifest;custodianControl?:CustodianDrainPlan;custodianBarrier?:CustodianBarrier;custodianClosure?:CustodianClosureObservation;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
  /** Permanent send reservation. No release/reset API, including unknown outcomes. */
  reservePostDeletion?(id:string,index:number,postUrn:string):Promise<void>;
  reservePublication?(id:string,index:number,draftId:string):Promise<void>;

@@ -1,4 +1,5 @@
-import {templateBindingForParent} from './templateStorageSql';
+import {readTemplateExecutionReceipt} from './templateExecutionContract';
+import {createTemplateStorageSql,templateBindingForParent} from './templateStorageSql';
 import {createDeploymentRecoverySql,deploymentRecoveryEventDetail} from './deploymentRecoverySql';
 import type {DeploymentRecoveryTransaction} from './deploymentRecoveryStore';
 import {createDeploymentLiabilitySql} from './deploymentLiabilitySql';
@@ -39,6 +40,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
   let locked:string|null=null,nativeLocked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction & CustodianDrainTransaction & CustodianIntentTransaction & CustodianClosureTransaction & DeploymentRecoveryTransaction={
+   templateStorage:createTemplateStorageSql(sql,()=>locked),
    ...createCustodianDrainSqlMethods(sql,()=>tx,check),
    ...createDeploymentLiabilitySql(sql,()=>locked),
    ...createDeploymentRecoverySql(sql,()=>tx,check,()=>locked),
@@ -105,6 +107,8 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
    async event(event){check(event.actionId);readPlatformAction(event.state);
     const templateBinding=event.templateBinding===undefined?undefined:templateBindingForParent(event.templateBinding,event.state,event.actionId);
     if(templateBinding&&(event.kind!=='proposed'||event.state.status!=='proposed'||event.state.version!==0))fail();
+    const templateReceipt=event.templateReceipt===undefined?undefined:readTemplateExecutionReceipt(event.templateReceipt);
+    if(templateReceipt){if(event.kind!=='effect.observed'||templateReceipt.actionId!==event.actionId||templateReceipt.planDigest!==event.state.plan.digest||templateReceipt.sourceDigest!==event.state.plan.sourceDigest||templateReceipt.effectIndex!==event.effectIndex||templateReceipt.outcome!==event.outcome)fail();const saved=await tx.templateStorage!.receipts();if(!saved.some(r=>r.receiptDigest===templateReceipt.receiptDigest))fail()}
     const recoveryDetail=await deploymentRecoveryEventDetail(tx,event);
     const custodianDetail=await custodianEventDetail(tx,event);
     const sequence=await sql.$queryRawUnsafe<Array<{next:number}>>('SELECT COALESCE(max(sequence),-1)+1 AS next FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',event.actionId);
@@ -126,7 +130,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     if(settingsResult&&(event.kind!=='effect.observed'||settingsResult.actionId!==event.actionId||settingsResult.effectIndex!==event.effectIndex||settingsResult.outcome!==event.outcome||settingsResult.planDigest!==event.state.plan.digest||settingsResult.manifestDigest!==event.state.plan.sourceDigest))fail();
     const deploymentReceipt=event.deploymentReceipt===undefined?undefined:readDeploymentRequestReceipt(event.deploymentReceipt);
     if(deploymentReceipt){if(event.kind!=='effect.observed'||deploymentReceipt.actionId!==event.actionId||deploymentReceipt.effectIndex!==event.effectIndex||deploymentReceipt.planDigest!==event.state.plan.digest||deploymentReceipt.sourceDigest!==event.state.plan.sourceDigest||event.outcome!==(deploymentReceipt.outcome==='accepted'?'confirmed':deploymentReceipt.outcome))fail();const saved=await tx.readDeploymentRequestReceipts?.(event.actionId);if(!saved?.some(r=>r.receiptDigest===deploymentReceipt.receiptDigest))fail()}
-    const detail={...(templateBinding===undefined?{}:{templateBinding}),...recoveryDetail,...(event.kind==='proposed'&&event.state.plan.effects.some(e=>e.kind==='deployment.vercel')?{deploymentTracking:'platform_deployment_liability_v1'}:{}),...(deploymentReceipt===undefined?{}:{deploymentReceipt}),...custodianDetail,...(event.kind==='workload.stable_observed'?{operationalObserverUserId:event.operationalObserverUserId,operationalStabilityReceiptId:event.operationalStabilityReceiptId,operationalCommandReceiptDigest:event.operationalCommandReceiptDigest}:{}),...(ecsManifest===undefined?{}:{ecsManifest}),...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
+    const detail={...(templateReceipt===undefined?{}:{templateReceipt}),...(templateBinding===undefined?{}:{templateBinding}),...recoveryDetail,...(event.kind==='proposed'&&event.state.plan.effects.some(e=>e.kind==='deployment.vercel')?{deploymentTracking:'platform_deployment_liability_v1'}:{}),...(deploymentReceipt===undefined?{}:{deploymentReceipt}),...custodianDetail,...(event.kind==='workload.stable_observed'?{operationalObserverUserId:event.operationalObserverUserId,operationalStabilityReceiptId:event.operationalStabilityReceiptId,operationalCommandReceiptDigest:event.operationalCommandReceiptDigest}:{}),...(ecsManifest===undefined?{}:{ecsManifest}),...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
    },
    async reservePostDeletion(id,index,postUrn){
