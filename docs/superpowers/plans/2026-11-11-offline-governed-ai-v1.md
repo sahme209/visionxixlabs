@@ -79,3 +79,5 @@ Task4 partial: actual provider union/stored-policy reader accepts exact customer
 Task2 evidence data: bounded operator-attestation parser binds proposed full-limit token hold to config/model/expiry/evidence digest; two tests/types PASS. Parsing is not live qualification or authority, and no new acceptance issuer or dispatch path is enabled. Trusted acceptance provenance and all composed-path requirements remain open.
 
 Task5 partial: inventoried common cloud/legacy direct transports; online-only mode gates added with nine behavioral tests (RED→GREEN). Legacy local adapters also refuse offline to prevent unmetered bypass. Metadata/reconciliation, actual caller tests and default customer-hosted/Agent composition remain gaps in DISPATCH-INVENTORY.md; no Task5 completion claim.
+
+Task4 coordinator: joined redaction/input bound → token reserve → final currentness → one claim → one send → unpriced settlement/audit. Five simulated composition tests/types PASS after stub RED. Actual trusted actor/policy/accepted-limit supplier, real-store composition journey and default Agent mount remain required; this is not a completed injected-port substitute.
