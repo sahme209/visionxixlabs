@@ -21,6 +21,7 @@ export async function createSettingsArtifactRequestComposition(request:{headers:
  const possessed=()=>{if(session()!==principal.sessionId)return fail()};
  const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source);
  return Object.freeze({
+  async inspect(id:string){possessed();return store.inspect(id,principal)},
   async claim(id:string,version:number,planDigest:string){possessed();return store.claim(id,version,planDigest,principal)},
   async preview(id:string){possessed();return store.preview(id,principal)},
   async save(id:string,index:number,value:unknown){possessed();return store.save(id,index,principal,value)},

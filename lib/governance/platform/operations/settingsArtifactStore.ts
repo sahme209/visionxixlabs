@@ -1,3 +1,4 @@
+import {readSettingsResult} from './settingsResult';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {z} from 'zod';
 import {readOperationalManifest} from './kernel';
@@ -8,6 +9,7 @@ import {readPlatformAction,approvePlatformAction,claimPlatformAction} from '../k
 import {operationalWorkloadBinding} from './workloadIdentity';
 import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
 export interface SettingsArtifactTransaction extends PlatformTransaction{
+ readSettingsResults(actionId:string):Promise<unknown[]>;
  assertSettingsCreationHeld(binding:SettingsArtifactBinding):Promise<void>;
  reserveSettingsCreation(binding:SettingsArtifactBinding):Promise<string>;
  readSettingsArtifact(artifactId:string):Promise<unknown|null>;
@@ -32,7 +34,15 @@ function checkedRecord(raw:unknown,binding:SettingsArtifactBinding,earliest:numb
  * Repository implementation must provide transactional rollback and parent locks.
  * The injected authority checks actual current requester permissions/possession. */
 export function createSettingsArtifactStore(repo:SettingsArtifactRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:PrivateSource){
- return Object.freeze({async preview(rawId:string,rawReader:PlatformPrincipal){
+ return Object.freeze({async inspect(rawId:string,rawReader:PlatformPrincipal){
+  try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
+   await tx.lock(id);await authority.assertCurrent(tx,reader);const parent=readPlatformAction(await tx.read(id));if(parent.plan.effects.some(e=>e.kind!=='settings.vercel'))return fail();
+   const raw=await tx.readSettingsResults(id);if(!Array.isArray(raw)||raw.length>32)return fail();const results=raw.map(readSettingsResult),seen=new Set<number>();
+   for(const result of results){if(result.actionId!==id||result.planDigest!==parent.plan.digest||result.manifestDigest!==parent.plan.sourceDigest||result.effectIndex>=parent.plan.effects.length||seen.has(result.effectIndex))return fail();seen.add(result.effectIndex)}
+   await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt)return fail();
+   return Object.freeze({actionId:id,planDigest:parent.plan.digest,status:parent.status,version:parent.version,attemptCount:parent.attemptCount,requesterUserId:parent.requester.userId,reviewerUserId:parent.reviewer?.userId??null,expired:now>=Date.parse(parent.plan.expiresAt),results:Object.freeze(results),authority:'history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const});
+  })}catch{return fail()}
+ },async preview(rawId:string,rawReader:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
    await tx.lock(id);await authority.assertCurrent(tx,reader);const parent=readPlatformAction(await tx.read(id));if(parent.status!=='proposed')return fail();
    const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel')return fail();

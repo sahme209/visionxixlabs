@@ -26,6 +26,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
   let locked:string|null=null,nativeLocked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:OperationalDelegationTransaction & SettingsArtifactTransaction={
+   async readSettingsResults(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{result:unknown}>>('SELECT "detailJson"->\'settingsResult\' AS result FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'effect.observed\' AND "detailJson" ? \'settingsResult\' ORDER BY sequence LIMIT 33',id);if(rows.length>32)fail();return rows.map(row=>{const result=readSettingsResult(row.result);if(result.actionId!==id)fail();return result})},
    async assertSettingsCreationHeld(raw){const binding=settingsArtifactBindingSchema.parse(raw);check(binding.actionId);const {projectId,teamId,name,environment}=binding.target,key=nativeSettingsTargetKey({projectId,teamId,name,environment});const rows=await sql.$queryRawUnsafe<Array<{publicationKey:string;status:string}>>('SELECT "publicationKey",status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1 AND index=$2',binding.actionId,binding.effectIndex);if(rows.length!==1||rows[0].publicationKey!==key||rows[0].status!=='claimed')fail()},
    async reserveSettingsCreation(raw){
     const binding=settingsArtifactBindingSchema.parse(raw);check(binding.actionId);const parent=readPlatformAction(await tx.read(binding.actionId)),effect=parent.plan.effects[binding.effectIndex];
