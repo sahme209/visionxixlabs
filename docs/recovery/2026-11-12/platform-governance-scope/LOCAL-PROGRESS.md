@@ -45,3 +45,5 @@ Nine actual fresh owned PostgreSQL tests passed at `/private/tmp/axiom-platform-
 ### Deployment environment review correction
 
 Review found response validation reread mutable options.target after awaits and did not reject explicit production for a preview approval. Two regressions actually failed (6controls passed). Validation now captures the prepared environment before admission and checks the provider target against that primitive; preview accepts only absent/null/preview, production requires production. GREEN62focused checks across4files. Contradictions remain unknown; no provider retry or readiness claim. Final strict types/re-review remain.
+
+Final086341ed strict types PASS; independent correction re-review has no further findings. Current compact checkpoint/next unit is in CURRENT.md; historical receipts retain their exact scope.
