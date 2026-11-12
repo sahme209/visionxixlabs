@@ -16,7 +16,7 @@ function bind(effect:ReturnType<typeof templateBucketEffect>|ReturnType<typeof t
  const service={claimNextEffect:vi.fn(async()=>({effect,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})};return {binding:bindPlatformExecution(service,'fixture-action'),service};
 }
 beforeEach(()=>{vi.clearAllMocks();m.configs.length=0;vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');m.sts.mockResolvedValue({Account:accountId});m.read.mockResolvedValue(bytes);m.s3.mockResolvedValue({$metadata:{httpStatusCode:200},VersionId:'version-1',Status:'Enabled'});});
-afterEach(()=>vi.unstubAllEnvs());
+afterEach(()=>{vi.unstubAllEnvs();vi.useRealTimers()});
 it('legacy GET/override cannot read credentials or reach AWS without an exact grant',async()=>{
  vi.stubEnv('AWS_CFN_TEMPLATE_S3_URL','https://unreviewed.invalid/template');expect(await ensureTemplatePublished()).toMatchObject({available:false,reason:'platform_review_required'});expect(m.sts).not.toHaveBeenCalled();expect(m.s3).not.toHaveBeenCalled();expect(m.sign).not.toHaveBeenCalled();expect(m.configs).toHaveLength(0);
 });
@@ -35,8 +35,8 @@ it('changed template bytes or broker account cannot reach a write',async()=>{
   await expect(publishPlatformTemplateObject({accountId,region,platformExecution:b.binding})).rejects.toThrow();expect(m.s3).not.toHaveBeenCalled();
  }
 });
-function access(){const input={accountId,region,objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600},effect=templateAccessEffect({...input,bytesDigest:digest}),b=bind(effect);return {input,effect,b}}
-function urlFor(effect:ReturnType<typeof templateAccessEffect>){const date=new Date().toISOString().replace(/[:-]|\.\d{3}/g,'');return `https://${effect.target.bucket}.s3.${region}.amazonaws.com/${effect.target.key}?versionId=version-1&X-Amz-Expires=3600&X-Amz-SignedHeaders=host&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Date=${date}&X-Amz-Credential=${encodeURIComponent('synthetic-key/'+date.slice(0,8)+'/'+region+'/s3/aws4_request')}&X-Amz-Signature=${'a'.repeat(64)}&x-amz-expected-bucket-owner=${accountId}`}
+function access(ttlSeconds=3600){const input={accountId,region,objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds},effect=templateAccessEffect({...input,bytesDigest:digest}),b=bind(effect);return {input,effect,b}}
+function urlFor(effect:ReturnType<typeof templateAccessEffect>){const date=new Date().toISOString().replace(/[:-]|\.\d{3}/g,'');return `https://${effect.target.bucket}.s3.${region}.amazonaws.com/${effect.target.key}?versionId=version-1&X-Amz-Expires=${effect.target.ttlSeconds}&X-Amz-SignedHeaders=host&X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Content-Sha256=UNSIGNED-PAYLOAD&X-Amz-Date=${date}&X-Amz-Credential=${encodeURIComponent('synthetic-key/'+date.slice(0,8)+'/'+region+'/s3/aws4_request')}&X-Amz-Signature=${'a'.repeat(64)}&x-amz-expected-bucket-owner=${accountId}`}
 
 it('grants access only after exact version/bytes observation and a fresh final check',async()=>{
  const {input,effect,b}=access();m.s3.mockImplementation(async()=>({VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()}));m.sign.mockResolvedValue(urlFor(effect));
@@ -67,4 +67,11 @@ it('rechecks authority after asynchronous signing before exposing the URL',async
  m.s3.mockResolvedValueOnce({VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()});
  b.service.beforeEffectSend.mockImplementation(async()=>{if(revoked)throw Error('revoked')});m.sign.mockImplementationOnce(async()=>{revoked=true;return urlFor(effect)});
  expect(await ensureTemplatePublished({platformExecution:b.binding,access:input})).toMatchObject({available:false});expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'unknown');
+});
+
+it.each(['authorization','observation'])('refuses a URL that expires during awaited %s without resigning',async phase=>{
+ vi.useFakeTimers();const start=Date.parse('2026-11-12T00:00:00Z');vi.setSystemTime(start);const {input,effect,b}=access(1);
+ m.s3.mockResolvedValueOnce({VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()});m.sign.mockResolvedValueOnce(urlFor(effect));
+ if(phase==='authorization')b.service.beforeEffectSend.mockImplementation(async()=>{vi.setSystemTime(start+2000)});else b.service.observeEffect.mockImplementation(async()=>{vi.setSystemTime(start+2000)});
+ expect(await ensureTemplatePublished({platformExecution:b.binding,access:input})).toMatchObject({available:false});expect(m.sign).toHaveBeenCalledTimes(1);expect(b.service.observeEffect).toHaveBeenCalledTimes(1);
 });
