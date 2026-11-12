@@ -40,7 +40,7 @@ Files: deploymentRecoveryContract.ts/store.ts/http.ts, prepared desktop client/p
 Interfaces: original receipt/native key/generation selection, source-backed terminal supplier, distinct review and original-requester one-use read-only observation; exact-generation CAS release. Defaults refuse absent native qualification.
 - [x] RED stale/mismatched/pending evidence, self-review/revocation/expiry, event rollback, competing releases and changed generation.
 - [x] Implement through existing platform authority/ledger, no provider write or caller-selected URL. Original unknown-without-reference remains blocked.
-- [ ] Prove genuine synthetic-current SQL lineage and immutable old outcomes; wire prepared source/history UI without public registration; update internal demo/guidance.
+- [x] Prove genuine synthetic-current SQL lineage and immutable old outcomes; wire prepared source/history UI without public registration; update internal demo/guidance.
 
 ### Task4: Complete prepared execution/customer workflow and batch acceptance
 Files: deploymentHttp/requestService/default caller, desktop platform prepared workflow/result metadata, coverage and living docs.
