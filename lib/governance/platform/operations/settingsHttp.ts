@@ -1,16 +1,13 @@
+import {settingsExecutionCommand} from './settingsExecutionContract';
 import {settingsArtifactSaveCommand} from './settingsArtifactClientContract';
 import {settingsReviewCommand} from './settingsReviewContract';
 import 'server-only';
 import {z} from 'zod';
 import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
-import {digest} from '../contracts';
-import {operationalWorkloadBinding} from './workloadIdentity';
 import {createDefaultSettingsRequestService} from './settingsRequestService';
-const actionId=operationalWorkloadBinding.shape.actionId,version=z.number().int().nonnegative(),index=z.number().int().min(0).max(31);
 const command=z.discriminatedUnion('operation',[
  ...settingsReviewCommand.options,
- z.object({operation:z.literal('claim'),actionId,expectedVersion:version,planDigest:digest}).strict(),
- z.object({operation:z.literal('execute'),actionId,expectedVersion:version,planDigest:digest,effectIndex:index}).strict(),
+ ...settingsExecutionCommand.options,
 ]);
 type Service=Awaited<ReturnType<typeof createDefaultSettingsRequestService>>;
 const reply=(body:unknown,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','x-content-type-options':'nosniff'}});

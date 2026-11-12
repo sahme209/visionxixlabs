@@ -21,6 +21,8 @@ Prepared protected-artifact intake now uses a separate HTTPS-only exact-plan cli
 
 Prepared requester artifact entry now joins the workflow separately from review; submitted text clears and uncertain attempts stay held. Approved public research and a separately approved deterministic native Secret/Config mapping are implemented/tested locally. Actual source completeness/profile/custody and live acceptance remain unavailable; see SETTINGS-CURRENT-SOURCE-REVIEW.md and latest scoped receipt.
 
+Separate prepared requester claim/exact-child clients now join real in-process HTTP/HMAC/SQL tests with simulated writes. No automatic advancement or retry; requester execution panel/default qualification and full P01 still open.
+
 ## Earlier scoped checkpoints — historical
 
 Historical source-selection tranche: existing Lead metadata catalog now populates the unregistered generated-site form. It exposes bounded labels/status/package-presence only, excludes email/full payload/content, and never grants source validation or a save/approval automatically.24focused checks/final root and desktop types/shell-client build PASS.35actual isolated SQL cases PASS/stopped, including25-lead pagination/private-field exclusion and real client/prepared HTTP/current HMAC/SQL. All delivery/provider facts remain synthetic/in-process; no new execution/recovery authority or live acceptance.

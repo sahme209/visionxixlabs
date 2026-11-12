@@ -64,3 +64,21 @@ export function createSettingsArtifactClient(context:Context){return {
  },
 }}
 export type SettingsArtifactClient=ReturnType<typeof createSettingsArtifactClient>;
+
+import {platformInspectionSchema} from '../../../lib/governance/platform/viewContract';
+import {settingsClaimReceipt,settingsExecutionReceipt,type SettingsClaimReceipt,type SettingsExecutionReceipt} from '../../../lib/governance/platform/operations/settingsExecutionContract';
+const executionPath='/api/desktop/platform-governance/settings-execution';
+function selectedSettings(raw:unknown){const parsed=platformInspectionSchema.safeParse(raw);return parsed.success&&parsed.data.plan.effects.every(e=>e.kind==='settings.vercel')&&!parsed.data.expired&&Date.parse(parsed.data.plan.expiresAt)>Date.now()?parsed.data:null}
+/** Claim and one exact child are separate deliberate commands. No looping,
+ * automatic continuation, provider credential or secret input is exposed. */
+export function createSettingsExecutionClient(context:Context){return {
+ async claim(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<SettingsClaimReceipt>>{
+  const saved=selectedSettings(raw);if(!saved||saved.status!=='approved'||saved.version!==1||saved.attemptCount!==0||saved.effects.some(e=>e.status!=='not_started'))return {ok:false,error:'Load the exact approved settings action before claiming it.',outcomeUnconfirmed:false};
+  return releaseOperationPlanRequest(context,'POST',executionPath,{operation:'claim',actionId:saved.actionId,expectedVersion:1,planDigest:saved.plan.digest},(raw):raw is SettingsClaimReceipt=>{const p=settingsClaimReceipt.safeParse(raw);return p.success&&p.data.actionId===saved.actionId&&p.data.planDigest===saved.plan.digest},signal);
+ },
+ async execute(raw:unknown,effectIndex:number,signal?:AbortSignal):Promise<ReleasePlanResult<SettingsExecutionReceipt>>{
+  const saved=selectedSettings(raw);if(!saved||saved.status!=='claimed'||saved.version!==2||saved.attemptCount!==1||!Number.isSafeInteger(effectIndex)||effectIndex<0||effectIndex>=saved.effects.length||saved.effects.some(e=>!['confirmed','not_started'].includes(e.status))||saved.effects.findIndex(e=>e.status==='not_started')!==effectIndex)return {ok:false,error:'Inspect the original claimed action and select only its first unfinished setting.',outcomeUnconfirmed:false};
+  return releaseOperationPlanRequest(context,'POST',executionPath,{operation:'execute',actionId:saved.actionId,expectedVersion:2,planDigest:saved.plan.digest,effectIndex},(raw):raw is SettingsExecutionReceipt=>{const p=settingsExecutionReceipt.safeParse(raw);return p.success&&p.data.actionId===saved.actionId&&p.data.effectIndex===effectIndex},signal);
+ },
+}}
+export type SettingsExecutionClient=ReturnType<typeof createSettingsExecutionClient>;
