@@ -2,6 +2,10 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Legacy setup retirement — local source, batch incomplete
+
+The authorized operational-script replacement now retires `scripts/setup-vercel-env.mjs` and `scripts/setup-oauth.sh` before credential/environment reads, CLI lookup, remove/add/upsert, broad environment expansion or redeploy. Original implementations remain in Git history.2behavioral tests run the actual source with denied environment/fetch access or an isolated shell;15demo checks and root types pass. Internal scenario now describes the boundary. Full ordinary regression18,565pass/0fail/1,024pending/0failed suites with unchanged source; see LEGACY-SETUP-RETIREMENT-RECEIPT.json. Managed create-only settings source is prepared/unregistered; existing-setting updates remain held. This does not complete usable replacement/P01 or authorize production rollout. The checked-in ECS workflow is still an unmanaged source gap; the customer template and its existing review identity must be kept separate before changing that workflow. No workflow was run or changed.
+
 ## Latest joined supplier acceptance — local only
 
 The actual fixed supplier/parser now joins the real SQL workload runner in five cases: positive exact STS/ECS execution with original reference recovery, unknown acquisition/no replay, known source lease after lost SQL acknowledgement, drain before source and drain after source/no STS.110actual owned PostgreSQL cases pass; fixture `/private/tmp/axiom-platform-pg-f2hkprmr` is stopped. All source/runtime/custody/time/native evidence and AWS responses remain simulated; no native endpoint was contacted.
