@@ -1,6 +1,6 @@
-# Offline dispatch inventory — source work in progress
+# Offline dispatch inventory — locally validated source
 
-No complete egress qualification, feature readiness or live acceptance is claimed. This is a source review map, not runtime attestation. Every closure below still needs the complete branch suite/review.
+This is a source review map, not runtime attestation or an air-gap guarantee. The full local suite and production build pass; live isolated-network/model acceptance and default protected-file/OS qualification remain unperformed.
 
 | Surface | Source boundary | Current local state |
 |---|---|---|
@@ -13,8 +13,8 @@ No complete egress qualification, feature readiness or live acceptance is claime
 | Gateway model catalog | `lib/ai/gatewayModelCatalog.ts` | online gate before metadata fetch |
 | Sonnet model endpoint metadata | `lib/billing/{smallSonnetRequest,smallSonnet55Request}.ts` | online-only gates before preparation and final metadata fetch; two offline entrypoint tests and existing online tests pass |
 | Gateway pending-cost reconciliation | `lib/billing/reconcileGatewayUsage.ts` | online-only gates before pending read and before lookup after awaited read; tests preserve pending liabilities when mode changes |
-| Public support and coding execution composition | callers in `app/api` and workforce | underlying reviewed provider gates added; **actual route/SDK/held-reservation tests and any independent bypass inventory remain required** |
-| Agent resolver | `lib/axiom/agentRuntime/governedAiCall.ts` | **offline branch before Gateway credit/catalog/manager and default durable accounting remain unmounted** |
-| New customer-hosted transport | `lib/ai/customerHostedTransport.ts` | no online fallback; **must additionally require installation-mode/actual token+policy+qualification composition before use** |
+| Public support and coding execution composition | callers in `app/api` and workforce | underlying shared provider gates refuse offline; full existing route/SDK/reservation suite passes. These operations are not customer-hosted v1 operations; no live route/network acceptance claimed |
+| Agent resolver | `lib/axiom/agentRuntime/governedAiCall.ts` | mounted offline branch before Gateway credit/catalog/manager; actual default Agent/decisionLoop and real ledger/membership SQL pass with simulated model/evidence/audit I/O |
+| New customer-hosted transport | `lib/ai/customerHostedTransport.ts` | offline and isolated-lane checks, final one-use token claim and current policy/accepted-limit composition mounted; cancellation/early-response negatives pass with simulated DNS/socket |
 
 Only the exact mode absence/`false` allows old online dispatch. Explicit `true`, malformed values and an empty value refuse. This is local code, not production settings/flag authority. Existing isolated-application guards are retained. No source hash or historical packet qualification was renewed.

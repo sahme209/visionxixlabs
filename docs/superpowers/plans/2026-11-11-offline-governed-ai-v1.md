@@ -24,34 +24,34 @@ Interface ledger: mode/config → token store/transport uses immutable parsed sn
 
 ## Task 2 — durable token admission, not dollar accounting
 
-- [ ] Define operator-window and reservation records with explicit TOKEN units, config/model/request digests, claim state and reported usage. Use atomic current-window locking and one-attempt claim; no default allowance. Additive LOCAL schema only if existing records cannot represent units safely.
-- [ ] Expose `reserveCustomerHostedCall`, `claimCustomerHostedCall`, `settleCustomerHostedCall`; no serializable authority flag. Preserve unknown holds; quota reduction/revocation/expiry after awaits must refuse before dispatch. Audit success/refusal/unknown without prompt content; settlement label `customer_hosted_unpriced`.
-- [ ] Input reservation uses a qualified per-model maximum input/context bound plus output bound; bytes must never be treated as universally equivalent to tokens. Configuration parsing does not qualify that bound. Positive execution requires trusted server/model limit evidence; missing evidence refuses. Usage exceeding an accepted bound is recorded as an integrity/overrun event, not refunded or reported as successful cap enforcement. Live server-bound qualification remains an enabling gate.
-- [ ] RED→GREEN pure arithmetic/race/one-attempt tests and actual owned-PG transactions with simulated provider: concurrent cap, revision changes, duplicate request, old unknown across windows, settlement and rollback.
+- [x] Define operator-window and reservation records with explicit TOKEN units, config/model/request digests, claim state and reported usage. Use atomic current-window locking and one-attempt claim; no default allowance. Additive LOCAL schema only if existing records cannot represent units safely.
+- [x] Expose `reserveCustomerHostedCall`, `claimCustomerHostedCall`, `settleCustomerHostedCall`; no serializable authority flag. Preserve unknown holds; quota reduction/revocation/expiry after awaits must refuse before dispatch. Audit success/refusal/unknown without prompt content; settlement label `customer_hosted_unpriced`.
+- [x] Input reservation uses a qualified per-model maximum input/context bound plus output bound; bytes must never be treated as universally equivalent to tokens. Configuration parsing does not qualify that bound. Positive execution requires trusted server/model limit evidence; missing evidence refuses. Usage exceeding an accepted bound is recorded as an integrity/overrun event, not refunded or reported as successful cap enforcement. Live server-bound qualification remains an enabling gate.
+- [x] RED→GREEN pure arithmetic/race/one-attempt tests and actual owned-PG transactions with simulated provider: concurrent cap, revision changes, duplicate request, old unknown across windows, settlement and rollback.
 
 ## Task 3 — fixed bounded OpenAI-compatible transport
 
-- [ ] One `/v1/chat/completions` JSON request for each configured vLLM/Ollama/LMStudio profile; no native API, tools, streaming fallback or retry in this v1 structured-extraction path. Same caller-visible structured result/usage contract.
-- [ ] Operator-owned host allowlist checked after resolution, pinned actual dial target and TLS hostname, no redirect or URL substitution. HTTPS/private deployment or explicit loopback HTTP; offline cannot route prompts to public Internet. Bound request/response/header bytes, deadline and cancellation; no endpoint or key from workspace/model output.
-- [ ] Tests: three valid profiles, DNS rebinding/mixed addresses/peer mismatch/redirect, abort before/after claim, malformed/truncated/excessive output, missing usage, exact model mismatch and no second attempt. Inject transport; no actual model/server/network run.
+- [x] One `/v1/chat/completions` JSON request for each configured vLLM/Ollama/LMStudio profile; no native API, tools, streaming fallback or retry in this v1 structured-extraction path. Same caller-visible structured result/usage contract.
+- [x] Operator-owned host allowlist checked after resolution, pinned actual dial target and TLS hostname, no redirect or URL substitution. HTTPS/private deployment or explicit loopback HTTP; offline cannot route prompts to public Internet. Bound request/response/header bytes, deadline and cancellation; no endpoint or key from workspace/model output.
+- [x] Tests: three valid profiles, DNS rebinding/mixed addresses/peer mismatch/redirect, abort before/after claim, malformed/truncated/excessive output, missing usage, exact model mismatch and no second attempt. Inject transport; no actual model/server/network run.
 
 ## Task 4 — real policy/admission composition
 
-- [ ] Extend the actual stored policy and explicit configured model selection for `customer_hosted`, without treating a model ID as an endpoint or allowing UI cap edits. Preserve existing M02 widening refusal and current membership/access requirements.
-- [ ] Branch in `resolveGovernedAiCall` BEFORE Gateway catalog/credit/provider construction in offline mode; compose real token store, validated transport, redaction, current workspace opt-in and caller `beforeAdmission` fences. Preserve online Gateway path and tests unchanged.
-- [ ] Update actual caller result/error handling and content-free usage/audit composition, so unpriced calls cannot enter credit settlement as free dollar events. No omission of durable authority or accounting in the default composition.
-- [ ] Tests with the real composition and simulated I/O: positive valid calls for all profiles; disabled policy, missing caps, changed configuration/policy after await, stale/cross-tenant request, output-bound refusal and unknown-state preservation.
+- [x] Extend the actual stored policy and explicit configured model selection for `customer_hosted`, without treating a model ID as an endpoint or allowing UI cap edits. Preserve existing M02 widening refusal and current membership/access requirements.
+- [x] Branch in `resolveGovernedAiCall` BEFORE Gateway catalog/credit/provider construction in offline mode; compose real token store, validated transport, redaction, current workspace opt-in and caller `beforeAdmission` fences. Preserve online Gateway path and tests unchanged.
+- [x] Update actual caller result/error handling and content-free usage/audit composition, so unpriced calls cannot enter credit settlement as free dollar events. No omission of durable authority or accounting in the default composition.
+- [x] Tests with the real composition and simulated I/O: positive valid calls for all profiles; disabled policy, missing caps, changed configuration/policy after await, stale/cross-tenant request, output-bound refusal and unknown-state preservation.
 
 ## Task 5 — complete offline egress and workflow boundaries
 
-- [ ] Inventory all AI dispatch entrypoints, including generic text/coding/support/direct provider paths. Add the shared mode refusal where necessary so an offline installation cannot call a cloud model or fall back through legacy local adapters. Invalid mode must not default to online.
-- [ ] Prove each inventoried seam refuses before network offline, and online refuses customer-hosted. Keep unrelated tool/connector/execution permissions and approval semantics unchanged. Existing unsafe/unqualified paths stay unavailable rather than becoming a bypass.
-- [ ] Add operator/setup documentation, supported-operation matrix and explicit unqualified/live limitations; update public guide hashes/corpus/counts, ModuleIntro/demo/SDK only where behavior requires. Keep human decisions and native/custody gates visible.
+- [x] Inventory all AI dispatch entrypoints, including generic text/coding/support/direct provider paths. Add the shared mode refusal where necessary so an offline installation cannot call a cloud model or fall back through legacy local adapters. Invalid mode must not default to online.
+- [x] Prove each inventoried seam refuses before network offline, and online refuses customer-hosted. Keep unrelated tool/connector/execution permissions and approval semantics unchanged. Existing unsafe/unqualified paths stay unavailable rather than becoming a bypass.
+- [x] Add operator/setup documentation, supported-operation matrix and explicit unqualified/live limitations; update public guide hashes/corpus/counts, ModuleIntro/demo/SDK only where behavior requires. Keep human decisions and native/custody gates visible.
 
 ## Task 6 — finish the complete source batch
 
-- [ ] Run required full web types/tests/build, desktop types/build and Python; composed isolated tests with simulated providers distinguish real SQL from live inference. No automatic retry after an unknown provider effect.
-- [ ] Fresh independent whole-branch review of source, security, actor/budget/DNS/cancellation races, all inventoried dispatch coverage and faithful ADR scope. Resolve important findings with actual RED→GREEN evidence.
+- [x] Run required full web types/tests/build, desktop types/build and Python; composed isolated tests with simulated providers distinguish real SQL from live inference. No automatic retry after an unknown provider effect.
+- [x] Fresh independent whole-branch review of source, security, actor/budget/DNS/cancellation races, all inventoried dispatch coverage and faithful ADR scope. Resolve important findings with actual RED→GREEN evidence.
 - [ ] One PR, every applicable check green on the exact reviewed head, normal merge only. No production/flag/schema apply/provider call/installer publication. Record source completion separately from real offline isolated-network acceptance and on-prem readiness.
 
 ## Review focus
@@ -103,3 +103,9 @@ Default-path acceptance:15/15 real owned-PG tests PASS including real Prisma/def
 Task4/5 client integration: web offline chooser/no default, desktop one-local-model/no-cloud-fallback transitions, operator-owned cap guidance, stop controls and exact composer/server preference binding implemented.151 UI/transport/route compatibility tests + root types PASS; desktop types/frontend build and demo15 checks PASS after compatible own-property fix. No native visual/live acceptance. Operator docs/support corpus and final source review remain.
 
 Review corrections: P1 isolated-provider guard restored at default/coordinator/transport boundaries; P2 terminal cancellation now propagates through currentness/claim with bounded task drain and actual transaction rollback; early unsolicited responses refuse/cancel too.33 focused tests and17 actual isolated-PG tests PASS after reproductions; no live model/OS qualification. Re-review and final broad checks remain required.
+
+## Final local requirement audit — November 11
+
+Tasks 1–5 and the local-validation/review portions of Task6 are satisfied at source. Evidence: offline-ai-v1/README.md, DISPATCH-INVENTORY.md and the 17-test owned PostgreSQL receipt. All model/server/protected-evidence/audit sinks in those SQL journeys are simulated; default protected OS reads and real inference were not executed. The macOS-only evidence supplier refuses unsupported hosts; Linux/Windows supplier qualification remains separate. Total-token counts are recorded content-free in audit and durable transitions; returned usage additionally splits input/output. No schema migration, dependency, credentials, live endpoint or enablement is introduced.
+
+Final full local suite:17,966 pass/914 skip/one expected failure; production build304pages passes strict types. Desktop types/frontend build and Python36 pass. Independent whole-source review and correction re-review passed; the final route-precedence delta also passed independent review. Task6 PR/CI/merge remains unchecked until exact-head remote checks pass. Source completion is never live offline acceptance, on-prem readiness, full Governance or full master-plan completion.
