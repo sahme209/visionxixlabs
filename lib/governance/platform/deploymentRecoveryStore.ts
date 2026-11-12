@@ -13,6 +13,7 @@ export interface DeploymentRecoveryTransaction extends PlatformTransaction {
  readDeploymentTarget(key:string):Promise<Readonly<DeploymentReservation>|null>;
  readDeploymentRecoveryReceipt(nativeKey:string,receiptId:string):Promise<unknown>;
  readDeploymentRecoveryPlan(id:string):Promise<unknown>;
+ readDeploymentReleaseObservation(id:string):Promise<DeploymentTerminalObservation|null>;
  releaseDeploymentReservation(plan:DeploymentRecoveryPlan,evidence:DeploymentTerminalObservation,next:Readonly<DeploymentReservation>):Promise<void>;
 }
 export interface DeploymentRecoveryRepository {transaction<T>(fn:(tx:DeploymentRecoveryTransaction)=>Promise<T>):Promise<T>}
@@ -39,6 +40,12 @@ export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepositor
  async function original(tx:DeploymentRecoveryTransaction,plan:DeploymentRecoveryPlan){const reservation=await tx.readDeploymentTarget(plan.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(plan.nativeKey,plan.requestReceiptId);if(compileDeploymentRecoveryPlan({reservation,receipt,profileDigest:plan.profileDigest,expiresAt:plan.expiresAt}).digest!==plan.digest)return fail();return {reservation,receipt}}
  async function locked<T>(id:string,fn:(tx:DeploymentRecoveryTransaction,state:PlatformAction,plan:DeploymentRecoveryPlan)=>Promise<T>){platformActionId.parse(id);return repo.transaction(async tx=>{await tx.lock(id);const {state,plan}=await load(tx,id);await tx.lockDeploymentTarget(plan.nativeKey);return fn(tx,state,plan)})}
  return Object.freeze({
+  async inspect(id:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);platformActionId.parse(id);return repo.transaction(async tx=>{
+   await tx.lock(id);await authority.assertCurrent(tx,actor);const {state,plan}=await load(tx,id),observation=await tx.readDeploymentReleaseObservation(id),now=await tx.now();
+   if(!Number.isSafeInteger(now)||now<state.updatedAt||(state.status==='confirmed')!==(observation!==null))return fail();
+   if(observation){const e=deploymentTerminalObservationSchema.parse(observation);if(e.nativeKey!==plan.nativeKey||e.generation!==plan.generation||e.actionId!==plan.originalActionId||e.requestReceiptDigest!==plan.requestReceiptDigest||e.providerDeploymentId!==plan.providerDeploymentId||e.profileDigest!==plan.profileDigest||e.observedAt<state.createdAt||e.observedAt>state.updatedAt)return fail()}
+   await authority.assertCurrent(tx,actor);return {actionId:id,planDigest:state.plan.digest,plan,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,observation,expired:now>=Date.parse(plan.expiresAt),authority:'history_only' as const,sourceValidation:'not_checked' as const,currentTargetChecked:false as const,deploymentReadyChecked:false as const,executionAuthorized:false as const};
+  })},
   async prepare(raw:unknown,principal:PlatformPrincipal,reference:string){const actor=platformPrincipalSchema.parse(principal),selection=deploymentRecoverySelection.parse(raw),id=preparationActionReference(reference,actor,'platform_deployment_recovery_preparation_v1');return repo.transaction(async tx=>{
    await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
    if(existing){const saved=await load(tx,id);if(saved.state.requester.userId!==actor.userId||saved.state.requester.sessionId!==actor.sessionId||saved.plan.nativeKey!==selection.nativeKey||saved.plan.requestReceiptId!==selection.requestReceiptId||saved.plan.profileDigest!==selection.profileDigest||saved.plan.expiresAt!==selection.expiresAt)return fail();await authority.assertCurrent(tx,actor);return {actionId:id,planDigest:saved.state.plan.digest,historical:true as const}}
@@ -54,7 +61,7 @@ export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepositor
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('platform_deployment_recovery_unavailable'))},5000)});
     const raw=await Promise.race([source.readTerminal(claimed.plan,controller.signal),timeout]);if(controller.signal.aborted)return fail();
-    const evidence=deploymentTerminalObservationSchema.parse(raw);
+    const evidence=deploymentTerminalObservationSchema.parse(raw);if(evidence.observedAt<claimed.state.updatedAt)return fail();
     return await locked(id,async(tx,state,plan)=>{
      if(state.status!=='claimed'||state.version!==claimed.state.version||state.plan.digest!==claimed.state.plan.digest||await tx.readEffect(id,0)!=='claimed')return fail();
      const saved=await original(tx,plan);await source.assertEvidenceCurrent(tx,plan,evidence);const now=await current(tx,state,plan,actor),nextTarget=validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,now);

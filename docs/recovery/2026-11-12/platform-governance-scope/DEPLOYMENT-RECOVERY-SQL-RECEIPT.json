@@ -1,0 +1,38 @@
+{
+  "scope": "actual isolated SQL recovery core, prepared UI/HTTP incomplete",
+  "actualSql": {
+    "fixture": "/private/tmp/axiom-platform-pg-l5qfpfgd",
+    "passed": 136,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "providerAndNativeQualification": "simulated",
+    "laterChanges": "test-only parser/title and demo wording; runtime unchanged"
+  },
+  "regression": {
+    "log": "/private/tmp/axiom-deployment-recovery-sql-regression.log",
+    "passed": 510,
+    "skippedOwnedSqlOptIns": 136
+  },
+  "types": {
+    "log": "/private/tmp/axiom-deployment-recovery-sql-final-types.log",
+    "passed": true
+  },
+  "reds": [
+    "/private/tmp/axiom-platform-pg-npmzn5oj/result.json",
+    "/private/tmp/axiom-platform-pg-bjlw2p9s/result.json",
+    "/private/tmp/axiom-platform-pg-jgwq17k3/result.json",
+    "/private/tmp/axiom-deployment-recovery-freshness-red.log"
+  ],
+  "sourceHashes": {
+    "lib/governance/platform/deploymentRecoverySql.ts": "ec0f65e6b9b64db3091224d25c811149f26fea01b961b31358a46472091ff871",
+    "lib/governance/platform/deploymentRecoveryStore.ts": "02f6aed9d87eae3efd39535e929996b425933d5c7fdaf15494402668c394bd6a",
+    "lib/governance/platform/deploymentRecoveryContract.ts": "b4e569e3ac5a902838631950fc8e8b8e33ede98480dfd1d58bbf18edad428565",
+    "lib/governance/platform/sqlRepository.ts": "76b7bf5365172189e8f6eb55b2b4e29e90a00d8112e43aea603ae33e585b701a",
+    "scripts/run-platform-governance-postgres.py": "d14c069561f6b19e5390ae5f73667e4eeb963094580ccf70875905db9007fb28"
+  },
+  "registered": false,
+  "providerRequests": 0,
+  "productionChanged": false,
+  "completeGovernance": false
+}
