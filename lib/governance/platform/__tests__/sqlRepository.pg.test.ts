@@ -323,10 +323,11 @@ it.skipIf(!enabled)('preparation replay cannot renew a consumed unknown or subst
  }finally{vi.unstubAllEnvs()}
 });
 
+import {createPlatformSourceHttp} from '../sourceHttp';
 import {createPlatformHistoryHttp} from '../historyHttp';
 import {createPlatformPreparationHttp} from '../preparationHttp';
 import {createPlatformReviewHttp} from '../reviewHttp';
-import {createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
+import {createPlatformSourceClient,createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
 it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source review, requester execution and SQL history',async()=>{
  try{
   const f=await postFixture(false,30000,false,false),prepare=createPlatformPreparationHttp(),review=createPlatformReviewHttp(),execute=createPlatformExecutionHttp(),history=createPlatformHistoryHttp();let providerCalls=0;
@@ -366,4 +367,31 @@ it.skipIf(!enabled)('paginates actual historical SQL records without restoring t
  expect((await s.inspect(old,newer)).status).toBe('approved');
  await expect(s.claim(old,1,newer)).rejects.toThrow();
  expect((await s.inspect(old,newer)).attemptCount).toBe(0);
+});
+
+it.skipIf(!enabled)('discovers real metadata pages without credential/body exposure or a new platform action',async()=>{
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');
+ const http=vi.fn(async()=>{throw Error('no_external_source_reads')});vi.stubGlobal('fetch',http);
+ try{
+  const ids=Array.from({length:25},(_,i)=>'zzzz-catalog-'+String(i).padStart(3,'0'));
+  for(const id of ids)await db.$executeRawUnsafe('INSERT INTO "LinkedInPostDraft" (id,title,hook,body,category,"updatedAt") VALUES ($1,$2,$3,$4,$5,clock_timestamp())',id,'Metadata label '.repeat(30),'private hook not catalog','private body not catalog','governance');
+  const account=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:catalog-fixture',organizationUrn:'urn:li:organization:catalog-fixture',accessToken:'synthetic-not-used',scopes:'w_organization_social',expiresAt:new Date(Date.now()+60000),status:'connected'}});
+  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},reader=await createDefaultPlatformRequestService(request);
+  const counts=()=>db.$queryRawUnsafe('SELECT (SELECT count(*) FROM "PlatformGovernanceAction")::text AS actions,(SELECT count(*) FROM "PlatformGovernanceEvent")::text AS events');const before=await counts();
+  const seen=new Set<string>();let cursor:string|null=null;
+  for(let i=0;i<10;i++){
+   const page=await reader.sources('drafts',cursor);expect(page.kind).toBe('drafts');
+   for(const entry of page.entries){expect(seen.has(entry.id)).toBe(false);seen.add(entry.id);if(ids.includes(entry.id)){expect(entry.label).toHaveLength(240);expect(entry.labelTruncated).toBe(true)}}
+   expect(JSON.stringify(page)).not.toMatch(/private hook not catalog|private body not catalog/);cursor=page.nextCursor;if(!cursor)break;
+  }
+  expect(cursor).toBeNull();expect(ids.every(id=>seen.has(id))).toBe(true);
+  let accountFound=false;cursor=null;
+  for(let i=0;i<10;i++){const page=await reader.sources('accounts',cursor);expect(page.kind).toBe('accounts');if(page.kind!=='accounts')throw Error('wrong_catalog');const selected=page.entries.find(e=>e.id===account.id);if(selected){expect(selected.author).toBe('urn:li:organization:catalog-fixture');accountFound=true}expect(JSON.stringify(page)).not.toMatch(/accessToken|ownerEmail|synthetic-not-used|refreshToken/);cursor=page.nextCursor;if(!cursor)break}
+  expect(accountFound).toBe(true);
+  const handle=createPlatformSourceHttp(),config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(actor.sessionId)};
+  vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{const url=String(input);if(url==='https://fixture.example.test/api/desktop/platform-governance/sources')return handle(new Request(url,init));return http()}));
+  const client=createPlatformSourceClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}});expect((await client.list('accounts',null)).ok).toBe(true);
+  expect(await counts()).toEqual(before);expect(http).not.toHaveBeenCalled();
+  await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',actor.sessionId);await expect(reader.sources('accounts',null)).rejects.toThrow();expect(await counts()).toEqual(before);
+ }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
 });

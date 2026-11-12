@@ -1,4 +1,5 @@
 import 'server-only';
+import {platformSourceKind,platformSourceId,projectPlatformSources,type PlatformSourceKind} from './sourceCatalog';
 import {projectPlatformHistory} from './historyProjection';
 import {platformHistoryCursor,type PlatformHistoryCursor} from './historyContract';
 import {preparationActionReference,canonicalGrowthSelection,matchesPreparationSelection} from './preparationReference';
@@ -10,6 +11,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readSourcePage?(kind:PlatformSourceKind,cursor:string|null):Promise<unknown>;
  readActionPage?(cursor:PlatformHistoryCursor|null):Promise<unknown>;
  readGrowthDeletionSource?(draftId:string,connectionId:string):Promise<unknown>;
  readGrowthPostingSource(draftId:string,connectionId:string):Promise<unknown>;
@@ -44,6 +46,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,await load(tx,id))});
  }
  return {
+  async sources(rawKind:PlatformSourceKind,rawCursor:string|null,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),kind=platformSourceKind.parse(rawKind),cursor=rawCursor===null?null:platformSourceId.parse(rawCursor);
+   return repo.transaction(async tx=>{
+    await tx.lock('platform-source-directory');await authority.assertCurrent(tx,actor);
+    if(!tx.readSourcePage)return fail();const page=projectPlatformSources(kind,await tx.readSourcePage(kind,cursor),cursor);
+    await authority.assertCurrent(tx,actor);return page;
+   });
+  },
   async history(rawCursor:PlatformHistoryCursor|null,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),cursor=rawCursor===null?null:platformHistoryCursor.parse(rawCursor);
    return repo.transaction(async tx=>{

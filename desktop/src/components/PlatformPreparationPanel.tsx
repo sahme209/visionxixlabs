@@ -1,13 +1,14 @@
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
-import type {PlatformPreparationClient} from '../lib/platformReview';
+import {PlatformSourcePicker} from './PlatformSourcePicker';
+import type {PlatformSourceClient,PlatformPreparationClient} from '../lib/platformReview';
 import {growthPreparationSelection,platformPreparationRequestId,platformPreparationReceiptSchema,platformPreparationLookupSchema} from '../../../lib/governance/platform/preparationContract';
 import type {z} from 'zod';
 type Selection=z.infer<typeof growthPreparationSelection>;
-interface Props{client:PlatformPreparationClient;canPrepare:boolean;onSaved:(id:string)=>void}
+interface Props{sourceClient?:PlatformSourceClient;client:PlatformPreparationClient;canPrepare:boolean;onSaved:(id:string)=>void}
 /** Unregistered proposal surface. Keeps the original reference BEFORE save;
  * a consumed save control has no reset, renewal or automatic retry path. */
-export function PlatformPreparationPanel({client,canPrepare,onSaved}:Props){
+export function PlatformPreparationPanel({sourceClient,client,canPrepare,onSaved}:Props){
  const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision),owner=useRef({revision,config:desktopClient.config}).current;
  const [operation,setOperation]=useState<Selection['operation']>('publish'),[draftId,setDraftId]=useState(''),[connectionId,setConnectionId]=useState(''),[expiresAt,setExpiresAt]=useState(''),[scheduledFor,setScheduledFor]=useState('');
  const [reference,setReference]=useState<{requestId:string;selection:Selection}|null>(null),[submitted,setSubmitted]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
@@ -43,6 +44,7 @@ export function PlatformPreparationPanel({client,canPrepare,onSaved}:Props){
  return <section aria-label="Prepare platform proposal" className="rounded-xl border border-white/10 p-5 space-y-4">
   <header><h2 className="text-lg font-medium">Prepare an exact growth change</h2><p className="text-sm text-zinc-400">Select existing source records. The server derives the content and account revision; no action is approved here.</p></header>
   {!current&&<p role="alert">Account context changed. Retain the original reference; reopen the workflow in the current session.</p>}
+  {sourceClient&&<PlatformSourcePicker client={sourceClient} disabled={locked} onSelect={(kind,id)=>{if(owns()&&!ref.current&&!held.current&&canPrepare){if(kind==='drafts')setDraftId(id);else setConnectionId(id)}}}/>}
   <div className="grid gap-3 sm:grid-cols-2">
    <label>Operation<select value={operation} disabled={locked} onChange={e=>{const op=e.target.value;if(op==='publish'||op==='schedule'||op==='delete')setOperation(op)}}><option value="publish">Publish existing draft</option><option value="schedule">Change schedule only</option><option value="delete">Delete managed published post</option></select></label>
    <label>Draft ID<input value={draftId} disabled={locked} onChange={e=>setDraftId(e.target.value)}/></label>

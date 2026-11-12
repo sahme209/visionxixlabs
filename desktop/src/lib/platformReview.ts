@@ -1,3 +1,4 @@
+import {platformSourceCommand,platformSourcePage,type PlatformSourceKind,type PlatformSourcePage} from '../../../lib/governance/platform/sourceCatalog';
 import {platformHistoryCommand,platformHistoryPage,historyEntryBefore,type PlatformHistoryCursor,type PlatformHistoryPage} from '../../../lib/governance/platform/historyContract';
 import {platformPreparationCommandSchema,platformPreparationReceiptSchema,platformPreparationLookupSchema,type PlatformPreparationReceipt,type PlatformPreparationLookup} from '../../../lib/governance/platform/preparationContract';
 import {platformActionId,platformInspectionSchema,platformGrowthPreviewSchema,type PlatformInspection,type PlatformGrowthPreview} from '../../../lib/governance/platform/viewContract';
@@ -69,3 +70,13 @@ export function createPlatformHistoryClient(context:Context){
   return releaseOperationPlanRequest(context,'POST','/api/desktop/platform-governance/history',selected.data,(raw):raw is PlatformHistoryPage=>{const page=platformHistoryPage.safeParse(raw);return page.success&&(!selected.data.cursor||page.data.entries.every(e=>historyEntryBefore(e,selected.data.cursor!)))},signal);
  }};
 }
+
+/** Read-only discovery; a catalog label never grants execution eligibility. */
+export function createPlatformSourceClient(context:Context){
+ return {list(kind:PlatformSourceKind,cursor:string|null,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformSourcePage>>{
+  const selected=platformSourceCommand.safeParse({operation:'list_sources',kind,cursor});
+  if(!selected.success)return Promise.resolve({ok:false,error:'Select a valid source page.',outcomeUnconfirmed:false});
+  return releaseOperationPlanRequest(context,'POST','/api/desktop/platform-governance/sources',selected.data,(raw):raw is PlatformSourcePage=>{const page=platformSourcePage.safeParse(raw);return page.success&&page.data.kind===selected.data.kind&&(!selected.data.cursor||page.data.entries.every(e=>e.id<selected.data.cursor!))},signal);
+ }};
+}
+export type PlatformSourceClient=ReturnType<typeof createPlatformSourceClient>;

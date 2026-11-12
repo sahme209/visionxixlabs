@@ -2,7 +2,7 @@
 import {createElement} from 'react';
 import {afterEach,it,expect,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react';
-import type {PlatformReviewClient,PlatformExecutionClient,PlatformPreparationClient,createPlatformHistoryClient} from '../../../desktop/src/lib/platformReview';
+import type {PlatformSourceClient,PlatformReviewClient,PlatformExecutionClient,PlatformPreparationClient,createPlatformHistoryClient} from '../../../desktop/src/lib/platformReview';
 import {platformInspectionSchema} from '../../governance/platform/viewContract';
 const context=vi.hoisted(()=>({revision:0,config:{}}));vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{getContextRevision:()=>context.revision,subscribeContext:()=>()=>{},get config(){return context.config}}}));
 import {PlatformGovernanceWorkflow} from '../../../desktop/src/components/PlatformGovernanceWorkflow';
@@ -10,8 +10,9 @@ const d='a'.repeat(64),id='platform_action_11111111-1111-4111-8111-111111111111'
 const action=()=>platformInspectionSchema.parse({actionId:id,version:0,status:'proposed',attemptCount:0,requesterUserId:'requester',reviewerUserId:null,plan:{format:1,scope:'platform',digest:d,sourceDigest:d,expiresAt:'2099-01-01T00:00:00Z',effects:[{id:'post',kind:'growth.post.publish',target:{draftId:'draft',connectionId:'account',connectionRevision:d,author:'urn:li:person:author',renderedPayloadDigest:d}}]},expired:false,effects:[{id:'post',status:'not_started'}],authority:'history_only',sourceValidation:'not_checked'});
 function fixture(user='requester'){
  const review={inspect:vi.fn<PlatformReviewClient['inspect']>().mockResolvedValue({ok:true,data:action()}),preview:vi.fn<PlatformReviewClient['preview']>().mockResolvedValue({ok:true,data:{actionId:id,planDigest:d,sourceDigest:d,effectId:'post',renderedPost:JSON.stringify({author:'urn:li:person:author',commentary:'Exact source',visibility:'PUBLIC'}),authority:'review_preview_only'}}),approve:vi.fn<PlatformReviewClient['approve']>()};
+ const sources={list:vi.fn<PlatformSourceClient['list']>()};
  const execution={inspect:review.inspect,preview:review.preview,execute:vi.fn<PlatformExecutionClient['execute']>()},preparation={prepare:vi.fn<PlatformPreparationClient['prepare']>(),lookup:vi.fn<PlatformPreparationClient['lookup']>()},history={list:vi.fn<ReturnType<typeof createPlatformHistoryClient>['list']>()};
- return {review,execution,preparation,history,props:{currentUserId:user,canPrepare:true,canApprove:true,canExecute:true,clients:{review,execution,preparation,history}}};
+ return {sources,review,execution,preparation,history,props:{currentUserId:user,canPrepare:true,canApprove:true,canExecute:true,clients:{sources,review,execution,preparation,history}}};
 }
 async function load(){fireEvent.change(screen.getByLabelText('Saved action reference'),{target:{value:id}});fireEvent.click(screen.getByRole('button',{name:'Load this saved record'}));await screen.findByText('Publish LinkedIn post');}
 afterEach(()=>{cleanup();vi.unstubAllGlobals();context.revision=0});
@@ -34,4 +35,9 @@ it('preparation saves once then loads only that returned saved action',async()=>
 });
 it('does not replace consumed unknown history with a contradictory confirmed response',async()=>{
  const f=fixture(),unknown=platformInspectionSchema.parse({...action(),status:'unknown',version:3,attemptCount:1,reviewerUserId:'reviewer',effects:[{id:'post',status:'unknown'}]});f.review.inspect.mockResolvedValueOnce({ok:true,data:unknown}).mockResolvedValueOnce({ok:true,data:platformInspectionSchema.parse({...unknown,status:'confirmed',effects:[{id:'post',status:'confirmed'}]})});render(createElement(PlatformGovernanceWorkflow,f.props));await load();fireEvent.click(screen.getByRole('button',{name:'Inspect saved action'}));await screen.findByText(/The response does not match the selected saved action/);expect(screen.getByText(/The attempt is consumed/)).toBeTruthy();expect(screen.queryByText(/The recorded action is confirmed/)).toBeNull();
+});
+
+it('source picker fills exact existing IDs without preparing or approving anything',async()=>{
+ const f=fixture();f.sources.list.mockImplementation(async kind=>kind==='drafts'?{ok:true,data:{kind,entries:[{id:'selected-draft',label:'Existing draft',labelTruncated:false,status:'approved',updatedAt:'2026-11-12T00:00:00Z'}],nextCursor:null,authority:'selection_metadata_only'}}:{ok:true,data:{kind,entries:[{id:'selected-account',label:'Existing account',labelTruncated:false,status:'connected',author:'urn:li:person:author',updatedAt:'2026-11-12T00:00:00Z',expiresAt:'2099-01-01T00:00:00Z'}],nextCursor:null,authority:'selection_metadata_only'}});
+ render(createElement(PlatformGovernanceWorkflow,f.props));expect(f.sources.list).not.toHaveBeenCalled();fireEvent.click(screen.getByText('Prepare a growth proposal'));fireEvent.click(screen.getByRole('button',{name:'Find drafts'}));await screen.findByText('Existing draft');fireEvent.click(screen.getByRole('button',{name:'Select draft'}));expect(screen.getByLabelText('Draft ID')).toHaveProperty('value','selected-draft');fireEvent.click(screen.getByRole('button',{name:'Find accounts'}));await screen.findByText('Existing account');fireEvent.click(screen.getByRole('button',{name:'Select account'}));expect(screen.getByLabelText('Connected account ID')).toHaveProperty('value','selected-account');expect(f.preparation.prepare).not.toHaveBeenCalled();expect(f.review.approve).not.toHaveBeenCalled();expect(f.execution.execute).not.toHaveBeenCalled();
 });

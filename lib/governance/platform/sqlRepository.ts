@@ -17,6 +17,12 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readSourcePage(kind,cursor){
+    check('platform-source-directory');
+    if(kind==='drafts')return sql.$queryRawUnsafe('SELECT id,left(title,240) AS label,(char_length(title)>240) AS "labelTruncated",status,"updatedAt" FROM "LinkedInPostDraft" WHERE ($1::text IS NULL OR id<$1::text) ORDER BY id DESC LIMIT 21',cursor);
+    if(kind==='accounts')return sql.$queryRawUnsafe('SELECT id,left(COALESCE("linkedinName",\'LinkedIn account\'),240) AS label,(char_length(COALESCE("linkedinName",\'LinkedIn account\'))>240) AS "labelTruncated",COALESCE("organizationUrn","linkedinUrn") AS author,status,"updatedAt","expiresAt" FROM "LinkedInAccountConnection" WHERE ($1::text IS NULL OR id<$1::text) ORDER BY id DESC LIMIT 21',cursor);
+    return fail();
+   },
    async readActionPage(cursor){
     check('platform-history-directory');
     return cursor?sql.$queryRawUnsafe('SELECT id,"createdAt","stateJson","planDigest",version FROM "PlatformGovernanceAction" WHERE ("createdAt",id)<($1::timestamp,$2::text) ORDER BY "createdAt" DESC,id DESC LIMIT 21',new Date(cursor.createdAt),cursor.actionId):sql.$queryRawUnsafe('SELECT id,"createdAt","stateJson","planDigest",version FROM "PlatformGovernanceAction" ORDER BY "createdAt" DESC,id DESC LIMIT 21');

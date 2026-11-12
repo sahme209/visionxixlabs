@@ -1,6 +1,6 @@
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
-import type {PlatformReviewClient,PlatformPreparationClient,PlatformExecutionClient,createPlatformHistoryClient} from '../lib/platformReview';
+import type {PlatformSourceClient,PlatformReviewClient,PlatformPreparationClient,PlatformExecutionClient,createPlatformHistoryClient} from '../lib/platformReview';
 import {platformActionId,platformInspectionSchema,type PlatformInspection} from '../../../lib/governance/platform/viewContract';
 import {PlatformHistoryPanel} from './PlatformHistoryPanel';
 import {PlatformPreparationPanel} from './PlatformPreparationPanel';
@@ -8,7 +8,7 @@ import {PlatformReviewPanel} from './PlatformReviewPanel';
 import {PlatformExecutionPanel} from './PlatformExecutionPanel';
 interface Props{
  currentUserId:string;canPrepare:boolean;canApprove:boolean;canExecute:boolean;
- clients:{review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
+ clients:{sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
 }
 function sameLineage(previous:PlatformInspection,next:PlatformInspection){
  return next.actionId===previous.actionId&&JSON.stringify(next.plan)===JSON.stringify(previous.plan)&&next.requesterUserId===previous.requesterUserId&&(!previous.reviewerUserId||next.reviewerUserId===previous.reviewerUserId)&&next.version>=previous.version&&(next.version!==previous.version||next.status===previous.status&&JSON.stringify(next.effects)===JSON.stringify(previous.effects));
@@ -47,7 +47,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   <header><p className="text-xs uppercase tracking-wider text-zinc-400">Platform operations · local preparation</p><h1 className="mt-2 text-2xl font-semibold">One exact change, a clear record</h1><p className="mt-2 text-sm text-zinc-400">Prepared growth workflow only. Deployment, template and image workflow coverage remains incomplete; production activation is unavailable.</p></header>
   {!current?<p role="alert">Account context changed. Reopen this workflow in the current session. Prior approvals and attempts were not renewed.</p>:<>
    <aside aria-label="Next step" className="rounded-xl border border-white/10 p-4">{nextStep()}</aside>
-   <details><summary>Prepare a growth proposal</summary><PlatformPreparationPanel client={clients.preparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>
+   <details><summary>Prepare a growth proposal</summary><PlatformPreparationPanel sourceClient={clients.sources} client={clients.preparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>
    <details><summary>Find older saved actions</summary><PlatformHistoryPanel client={clients.history} onSelect={id=>void load(id)}/></details>
    <section className="space-y-3" aria-label="Load saved action"><label>Saved action reference<input value={reference} disabled={busy} onChange={e=>setReference(e.target.value)}/></label><button type="button" className="btn-secondary" disabled={busy} onClick={()=>void load(reference)}>Load this saved record</button></section>
    {action&&(requester&&action.status!=='proposed'?<PlatformExecutionPanel action={action} currentUserId={currentUserId} canExecute={canExecute} client={clients.execution} onRecorded={recorded}/>:<PlatformReviewPanel action={action} currentUserId={currentUserId} canApprove={canApprove} client={clients.review} onRecorded={recorded}/>)}
