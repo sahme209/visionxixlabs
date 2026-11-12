@@ -1,3 +1,4 @@
+import type {CustodianClosureTransaction} from './operations/custodianClosureSnapshot';
 import type {CustodianIntentTransaction} from './operations/custodianIntentAdmission';
 import {createCustodianDrainSqlMethods,custodianEventDetail} from './operations/custodianDrainSql';
 import type {CustodianDrainTransaction} from './operations/custodianDrainStore';
@@ -28,11 +29,11 @@ export interface PlatformSqlDatabase{$transaction<T>(fn:(tx:PlatformSql)=>Promis
 const fail=():never=>{throw Error('platform_governance_storage_unavailable')};
 /** Dedicated platform tables, never a tenant alias. All values parameterized.
  * No retry; uncertain transaction outcomes cannot issue a send proof. */
-export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction<T>(fn:(tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction & CustodianDrainTransaction & CustodianIntentTransaction)=>Promise<T>):Promise<T>}{
+export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction<T>(fn:(tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction & CustodianDrainTransaction & CustodianIntentTransaction & CustodianClosureTransaction)=>Promise<T>):Promise<T>}{
  return {transaction:fn=>db.$transaction(async sql=>{
   let locked:string|null=null,nativeLocked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
-  const tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction & CustodianDrainTransaction & CustodianIntentTransaction={
+  const tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction & CustodianDrainTransaction & CustodianIntentTransaction & CustodianClosureTransaction={
    ...createCustodianDrainSqlMethods(sql,()=>tx,check),
    async readEcsManifest(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{manifest:unknown}>>('SELECT "detailJson"->\'ecsManifest\' AS manifest FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'proposed\' AND "detailJson" ? \'ecsManifest\' ORDER BY sequence LIMIT 2',id);if(rows.length!==1)fail();const manifest=readOperationalManifest(rows[0].manifest),parent=readPlatformAction(await tx.read(id));if(manifest.kind!=='deployment.ecs'||compileOperationalEcsPlan(manifest).digest!==parent.plan.digest)fail();return manifest},
    async readSettingsManifest(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{manifest:unknown}>>('SELECT "detailJson"->\'settingsManifest\' AS manifest FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'proposed\' AND "detailJson" ? \'settingsManifest\' ORDER BY sequence LIMIT 2',id);if(rows.length!==1)fail();const manifest=readOperationalManifest(rows[0].manifest),parent=readPlatformAction(await tx.read(id));if(manifest.kind!=='settings.vercel'||compileOperationalSettingsPlan(manifest).digest!==parent.plan.digest)fail();return manifest},

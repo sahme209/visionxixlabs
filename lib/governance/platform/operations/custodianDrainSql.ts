@@ -1,3 +1,4 @@
+import {compileCustodianClosureSnapshot,type CustodianClosureTransaction} from './custodianClosureSnapshot';
 import {readCustodianIntent} from './custodianIntentContract';
 import {assertCustodianAdmission} from './custodianDrainKernel';
 import type {CustodianIntentTransaction} from './custodianIntentAdmission';
@@ -14,7 +15,7 @@ const fail=():never=>{throw Error('platform_custodian_storage_unavailable')};
 const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private transaction-only adapter. Never opens a database or qualifies a
  * profile/fleet. The SAME physical lock is required for intent admission. */
-export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>PlatformTransaction,check:(id:string)=>void):Pick<CustodianDrainTransaction,'readCustodianControl'|'lockCustodian'|'readCustodianBarrier'|'writeCustodianBarrier'|'assertNoCustodianIntents'> & Pick<CustodianIntentTransaction,'readCustodianIntent'|'insertCustodianIntent'>{
+export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>PlatformTransaction,check:(id:string)=>void):Pick<CustodianDrainTransaction,'readCustodianControl'|'lockCustodian'|'readCustodianBarrier'|'writeCustodianBarrier'|'assertNoCustodianIntents'> & Pick<CustodianIntentTransaction,'readCustodianIntent'|'insertCustodianIntent'> & Pick<CustodianClosureTransaction,'readCustodianClosureSnapshot'>{
  let issuerKey:string|null=null,written:CustodianBarrier|null=null;
  function issuer(raw:string){const key=digest.parse(raw);if(issuerKey!==key)fail();return key}
  async function controlFor(id:string,parent:unknown){
@@ -40,6 +41,14 @@ export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>Platfor
    const now=await tx.now();if(state.updatedAt>now||!same(transitionCustodianBarrier(prior,control,state.controlActionId,state.updatedAt),state))fail();
    const count=prior===null?await sql.$executeRawUnsafe('INSERT INTO "PlatformCustodianBarrier" ("nativeKey","controlActionId",version,"stateJson") VALUES ($1,$2,$3,$4::jsonb) ON CONFLICT ("nativeKey") DO NOTHING',key,state.controlActionId,state.version,JSON.stringify(state)):await sql.$executeRawUnsafe('UPDATE "PlatformCustodianBarrier" SET "controlActionId"=$1,version=$2,"stateJson"=$3::jsonb WHERE "nativeKey"=$4 AND version=$5 AND "stateJson"=$6::jsonb',state.controlActionId,state.version,JSON.stringify(state),key,expectedVersion,JSON.stringify(prior));
    if(count!==1)fail();written=state;
+  },
+  async readCustodianClosureSnapshot(raw){
+   const key=issuer(raw);await getTx().now();const barrier=await readBarrier(key);if(!barrier)fail();
+   // One statement snapshot; lock each original delegation in the scalar
+   // subquery. A missing delegation remains NULL and REFUSES projection, never
+   // disappears through an inner join. Row locks last to transaction end.
+   const rows=await sql.$queryRawUnsafe<unknown[]>('SELECT i.id,i."nativeKey",i."actionId",i."stateJson" AS "intentJson",a."stateJson" AS "parentJson",(SELECT d."stateJson" FROM "PlatformOperationalDelegation" d WHERE d."actionId"=i."actionId" FOR SHARE) AS "delegationJson" FROM "PlatformCustodianIntent" i JOIN "PlatformGovernanceAction" a ON a.id=i."actionId" WHERE i."nativeKey"=$1 ORDER BY i.id LIMIT 129 FOR SHARE OF i,a',key);
+   return compileCustodianClosureSnapshot(barrier,rows);
   },
   async readCustodianIntent(id){
    if(!/^platform_intent_[a-f0-9]{64}$/.test(id))fail();const rows=await sql.$queryRawUnsafe<Array<{id:string;nativeKey:string;actionId:string;stateJson:unknown}>>('SELECT id,"nativeKey","actionId","stateJson" FROM "PlatformCustodianIntent" WHERE id=$1',id);
