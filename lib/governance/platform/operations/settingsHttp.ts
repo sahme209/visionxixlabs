@@ -1,3 +1,4 @@
+import {settingsReviewCommand} from './settingsReviewContract';
 import 'server-only';
 import {z} from 'zod';
 import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
@@ -10,9 +11,8 @@ const actionId=operationalWorkloadBinding.shape.actionId,version=z.number().int(
 const command=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('prepare'),selection:operationalSettingsManifest,requestId:platformPreparationRequestId}).strict(),
  z.object({operation:z.literal('lookup'),requestId:platformPreparationRequestId}).strict(),
- z.object({operation:z.literal('preview'),actionId}).strict(),z.object({operation:z.literal('inspect'),actionId}).strict(),
+ ...settingsReviewCommand.options,z.object({operation:z.literal('inspect'),actionId}).strict(),
  z.object({operation:z.literal('save'),actionId,effectIndex:index,value:z.string().max(65536).refine(s=>!s.includes('\0')&&Buffer.byteLength(s,'utf8')<=65536)}).strict(),
- z.object({operation:z.literal('review'),actionId,expectedVersion:version,planDigest:digest}).strict(),
  z.object({operation:z.literal('claim'),actionId,expectedVersion:version,planDigest:digest}).strict(),
  z.object({operation:z.literal('execute'),actionId,expectedVersion:version,planDigest:digest,effectIndex:index}).strict(),
 ]);
