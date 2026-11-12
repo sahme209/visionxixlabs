@@ -44,3 +44,20 @@ export function createOperationalDelegationClient(context:Context){const reader=
  },
 }}
 export type OperationalDelegationClient=ReturnType<typeof createOperationalDelegationClient>;
+
+import {ecsHistory,type EcsHistory} from '../../../lib/governance/platform/operations/ecsHistoryContract';
+/** Original history only; expired source never becomes renewed authority. */
+export function createOperationalHistoryClient(context:Context){return {
+ async inspect(actionId:string,signal?:AbortSignal):Promise<ReleasePlanResult<EcsHistory>>{
+  const owns=owner(context,signal);
+  if(!platformActionId.safeParse(actionId).success)return {ok:false,error:'Load the original operational action reference.',outcomeUnconfirmed:false};
+  const response=await releaseOperationPlanRequest(context,'POST',path,{operation:'inspect',actionId},(raw):raw is EcsHistory=>{const p=ecsHistory.safeParse(raw);return p.success&&p.data.actionId===actionId},signal);
+  if(!response.ok)return response;
+  const {digest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,...manifest}=response.data.manifest;
+  const result=response.data.result;let resultMatches=true;
+  if(result){const {receiptDigest,...fields}=result;resultMatches=await hash(fields)===receiptDigest}
+  if(!resultMatches||await hash({kind:'operational_manifest_v1',manifest})!==digest||!owns())return {ok:false,error:'The returned history does not match its original record.',outcomeUnconfirmed:false};
+  return response;
+ },
+}}
+export type OperationalHistoryClient=ReturnType<typeof createOperationalHistoryClient>;
