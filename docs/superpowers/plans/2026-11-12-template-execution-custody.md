@@ -40,9 +40,9 @@ Interfaces: actual existing SDK adapters acquire no credential/issue no grant un
 
 ### Task4: Original-session encrypted one-use delivery
 Interfaces: qualified private key/clock/channel ports, exact stored grant context and locked durable once-only output claim; current requester/reviewer/source/approval/hard-expiry checks.
-- [ ] RED wrong/revoked/expired recipient/session/profile/key/context, concurrent delivery, unknown claim/delivery reply and metadata leak.
-- [ ] Implement authenticated output separately from history. Persist no plaintext; issue no replacement URL on failure. Never label a server output attempt as confirmed client receipt.
-- [ ] Expected: scoped crypto and actual isolated SQL delivery journeys pass with synthetic keys; real delivery/channel defaults refuse.
+- [x] RED wrong/revoked/expired recipient/session/profile/key/context, concurrent delivery, unknown claim/delivery reply and metadata leak.
+- [x] Implement authenticated output separately from history. Persist no plaintext; issue no replacement URL on failure. Never label a server output attempt as confirmed client receipt.
+- [x] Expected: scoped crypto and actual isolated SQL delivery journeys pass with synthetic keys; real delivery/channel defaults refuse.
 
 ### Task5: Complete prepared HTTP/client/UI workflow
 - [ ] Implement separate proposal, genuine review, requester issuance, typed history and one-use delivery; original references survive uncertainty and reload.

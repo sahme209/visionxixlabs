@@ -21,3 +21,6 @@ export function openTemplateGrant(rawKey:unknown,rawContext:unknown,cipher:unkno
 /** Proposed claim only: a real locked store MUST commit before decryption or
  * output and independently recheck current authority around each await. */
 export function claimTemplateGrantDelivery(rawContext:unknown,principal:unknown,now:number,previous:unknown){const c=context(rawContext),p=z.object({userId:z.string(),sessionId:z.string()}).strict().parse(principal),d=c.receipt.detail;z.number().int().nonnegative().safe().parse(now);if(previous!==null||d?.kind!=='access'||p.userId!==c.binding.requester.userId||p.sessionId!==c.binding.requester.sessionId||now<Math.max(c.receipt.observedAt,c.reservation.updatedAt)||now>=d.hardExpiresAt||now>=Date.parse(c.binding.approvalExpiresAt))return fail();return Object.freeze({format:1 as const,purpose:'platform_template_delivery_claim_v1' as const,artifactRef:d.artifactRef,grantId:d.grantId,contextDigest:hash(c),generation:c.generation,attempt:1 as const,phase:'claimed' as const,claimedAt:now,clientReceiptConfirmed:false as const})}
+
+/** Private canonical context reader, not clock/key/channel qualification. */
+export function readTemplateGrantContext(raw:unknown){return context(raw)}

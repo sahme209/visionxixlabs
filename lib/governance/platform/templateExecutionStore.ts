@@ -11,7 +11,7 @@ import {readTemplateExecutionReceipt,createTemplateExecutionReceipt,nativeTempla
 import {templateSelectionFromBinding,templateExecutionProfile,prepareTemplateExecutionPlan} from './templateExecutionPreparation';
 import type {TemplatePreparationProfiles} from './templatePreparationStore';
 import {createTemplateNativeTransport,type TemplateNativePorts,type TemplateNativeObservation} from './templateNativeTransport';
-import {deriveTemplateGrantContext,sealTemplateGrant} from './templateGrantArtifact';
+import {deriveTemplateGrantContext,sealTemplateGrant,openTemplateGrant} from './templateGrantArtifact';
 export interface TemplateExecutionResources{
  profiles:TemplatePreparationProfiles;
  assertQualified(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
@@ -19,6 +19,9 @@ export interface TemplateExecutionResources{
  now():number;
  readArtifactKey?(binding:Readonly<TemplateExecutionBinding>):Uint8Array;
  assertArtifactKeyCurrent?(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
+ /** Must bind the exact live authenticated response/native channel to this
+  * original requester/session and artifact. Missing/unqualified always refuses. */
+ assertDeliveryChannel?(binding:Readonly<TemplateExecutionBinding>,artifactRef:string):Promise<void>;
  expiryQualification?(binding:Readonly<TemplateExecutionBinding>):Promise<TemplateExpiryQualification|undefined>;
 }
 const fail=(code='platform_template_execution_unavailable'):never=>{throw Error(code)};
@@ -33,7 +36,21 @@ export function createTemplateExecutionStore(repo:PlatformRepository,authority:P
  async function timely(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>,b:Readonly<TemplateExecutionBinding>){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();if(b.access&&resources){const native=resources.now();if(!Number.isSafeInteger(native)||Math.abs(native-now)>b.access.clockSkewMs)return fail()}return now}
  async function current(tx:PlatformTransaction,id:string,state:ReturnType<typeof readPlatformAction>,b:Readonly<TemplateExecutionBinding>,actor:PlatformPrincipal){if(!resources||hash(state.requester)!==hash(actor)||hash(await binding(tx,id,state))!==hash(b))return fail();await people(tx,state);await timely(tx,state,b);const selection=templateSelectionFromBinding(b),profile=templateExecutionProfile.parse(await resources.profiles.read(selection));await resources.profiles.assertQualified(profile,selection);const prepared=await prepareTemplateExecutionPlan(selection,await timely(tx,state,b),id,state.requester,profile);if(hash(prepared.binding)!==hash(b))return fail();await resources.assertQualified(b);await resources.profiles.assertQualified(profile,selection);await people(tx,state);await timely(tx,state,b)}
  return {
-  async history(id:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,state)=>{await authority.assertCurrent(tx,actor);const b=await binding(tx,id,state),receipts=(await storage(tx).receipts()).map(readTemplateExecutionReceipt);for(const r of receipts)if(r.bindingDigest!==b.bindingDigest||r.planDigest!==b.planDigest||r.sourceDigest!==b.sourceDigest||r.profileDigest!==b.profileDigest||r.nativeKey!==nativeTemplateKey(b.effect,b.requester)||r.effectIndex!==b.effectIndex)return fail();await authority.assertCurrent(tx,actor);return Object.freeze({actionId:id,status:state.status,attemptCount:state.attemptCount,receipts,authority:'template_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const})})},
+  async history(id:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,state)=>{await authority.assertCurrent(tx,actor);const b=await binding(tx,id,state),receipts=(await storage(tx).receipts()).map(readTemplateExecutionReceipt);for(const r of receipts)if(r.bindingDigest!==b.bindingDigest||r.planDigest!==b.planDigest||r.sourceDigest!==b.sourceDigest||r.profileDigest!==b.profileDigest||r.nativeKey!==nativeTemplateKey(b.effect,b.requester)||r.effectIndex!==b.effectIndex)return fail();const deliveries=(await storage(tx).deliveries()).map(c=>({artifactRef:c.artifactRef,generation:c.generation,phase:'output_attempt_claimed' as const,attempt:c.attempt,claimedAt:c.claimedAt,clientReceiptConfirmed:false as const}));await authority.assertCurrent(tx,actor);return Object.freeze({actionId:id,status:state.status,attemptCount:state.attemptCount,receipts,deliveries,authority:'template_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const})})},
+  /** Separate original-session output. The claim commits before key copying
+   * or decryption. No public history path reads an envelope or bearer URL. */
+  async deliver(id:string,artifactRef:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);if(!resources?.assertDeliveryChannel||!resources.readArtifactKey||!resources.assertArtifactKeyCurrent)return fail('platform_template_delivery_unavailable');const r=resources,channel=resources.assertDeliveryChannel,keyCurrent=resources.assertArtifactKeyCurrent,readKey=resources.readArtifactKey;let key:Buffer|undefined;
+   try{
+    const saved=await locked(id,async(tx,state)=>{if(state.status!=='confirmed')return fail();const b=await binding(tx,id,state);if(!b.access||b.effect.kind!=='template.access.grant')return fail();await current(tx,id,state,b,actor);await channel(b,artifactRef);await keyCurrent(b);await current(tx,id,state,b,actor);return storage(tx).claimDelivery(artifactRef,actor)});
+    // No plaintext/key is copied unless the claim's commit was acknowledged.
+    const b=saved.context.binding,detail=saved.context.receipt.detail;if(detail?.kind!=='access'||detail.artifactRef!==artifactRef||b.actionId!==id)return fail();const hardExpiresAt=detail.hardExpiresAt;
+    async function checkTime(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>){const now=await timely(tx,state,b);if(now<saved.claim.claimedAt||now>=hardExpiresAt)return fail()}
+    async function live(){await locked(id,async(tx,state)=>{if(state.status!=='confirmed')return fail();await current(tx,id,state,b,actor);await checkTime(tx,state)});await channel(b,artifactRef);await keyCurrent(b);await locked(id,async(tx,state)=>{if(state.status!=='confirmed')return fail();await current(tx,id,state,b,actor);await checkTime(tx,state)});await channel(b,artifactRef);await locked(id,async(tx,state)=>{if(state.status!=='confirmed'||hash(await binding(tx,id,state))!==hash(b)||hash(state.requester)!==hash(actor))return fail();await people(tx,state);await checkTime(tx,state);await people(tx,state)})}
+    function sameKey(){if(!key)return fail();const raw=readKey(b);if(!(raw instanceof Uint8Array)||raw.byteLength!==32)return fail();const copy=Buffer.from(raw);try{if(!timingSafeEqual(copy,key))return fail()}finally{copy.fill(0)}}
+    await live();const raw=readKey(b);if(!(raw instanceof Uint8Array)||raw.byteLength!==32)return fail();key=Buffer.from(raw);await live();sameKey();const url=openTemplateGrant(key,saved.context,saved.envelope);await live();sameKey();
+    return Object.freeze({actionId:id,artifactRef,url,hardExpiresAt,serverOutputAttempted:true as const,clientReceiptConfirmed:false as const,authority:'one_use_original_session_output' as const});
+   }catch{return fail('platform_template_delivery_unavailable')}finally{key?.fill(0)}
+  },
   async execute(id:string,version:number,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);if(!resources)return fail();const r=resources;
    const b=await locked(id,async(tx,state)=>{if(state.status!=='approved'||state.version!==version)return fail();const value=await binding(tx,id,state);await current(tx,id,state,value,actor);return value});
    let admitted:ReturnType<typeof readTemplateReservation>|undefined,key:Buffer|undefined,nativeFinished=false;
