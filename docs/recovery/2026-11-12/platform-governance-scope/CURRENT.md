@@ -59,3 +59,10 @@ All source/schema work is local. No production migration/settings/flags, actual 
 New image-custody design is prepared and independently builder-checked: IMAGE-GRANT-CUSTODY-PROPOSAL.md. It proposes one exact two-child review, separate encrypted private artifact/grant records, nonsecret references, clone-resistant reservations and qualified format/destination profiles. No implementation is authorized yet; owner approval and the separately pending public LinkedIn documentation decision are required. No secret/profile/runtime qualification is inferred. Continue independent approved workflow work while awaiting those decisions.
 
 Separate paired requester execution client/strict transport is prepared locally: exact approved reference only, confirmed-history matching, no approval/retry method and same-action inspection after uncertainty.14focused tests, root/desktop types and shell/client build pass. No public endpoint or customer execution button registered; full family/workflow/issuer qualification remains open.
+
+
+### Broad ordinary local validation checkpoint
+
+The complete ordinary suite now records18,151pass/0fail/949pending after a reviewed current-source schema-helper pin correction and ignored generated-client refresh. All175existing model semantics/enums were compared; only three platform models are added. New mocked coverage refuses a missing platform table. Root strict types pass. No tests/assertions/skip policy were weakened; historical issuer packets remain unavailable. Exact receipts and limitations: BROAD-VALIDATION.md. Whole-branch review/green PR CI, deployment recovery/image decisions and complete P01/native/live acceptance remain open. Production is unchanged.
+
+Local production build did not pass: the optimized Webpack worker reached its default approximately4GiB JavaScript heap and aborted. No retry or production action occurred. Preserve the log and diagnose/build with an explicitly recorded local resource configuration before claiming build acceptance; see BROAD-VALIDATION.md.

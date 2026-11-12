@@ -311,3 +311,10 @@ New metadata/picker checks failed RED before implementation; strict types identi
 35actual isolated PostgreSQL cases PASS at `/private/tmp/axiom-platform-pg-pdpj6ony`, stopped. The expanded source case pages25long-label Leads without duplicates/private fields, verifies unchanged platform action/event counts and reads Lead metadata through the actual client/prepared default HTTP/HMAC/current SQL composition. Fixture data/keys/actors are synthetic; delivery is an in-process router, no real provider account/read/write or native acceptance. The receipt also runs the preceding default source-preview path with its current validation; it is still enumerated local evidence, not full artifact/issuer/production qualification.
 
 Deployment recovery approval remains pending; no target reservation/receipt/reconciliation implementation began. Full execution/default-caller/operational/template/image/service coverage, whole-branch checks/review/CI and all owner/native/live gates remain incomplete. No new production/provider/key/grant/spending action occurred.
+
+
+### Broad ordinary local validation checkpoint
+
+The complete ordinary suite now records18,151pass/0fail/949pending after a reviewed current-source schema-helper pin correction and ignored generated-client refresh. All175existing model semantics/enums were compared; only three platform models are added. New mocked coverage refuses a missing platform table. Root strict types pass. No tests/assertions/skip policy were weakened; historical issuer packets remain unavailable. Exact receipts and limitations: BROAD-VALIDATION.md. Whole-branch review/green PR CI, deployment recovery/image decisions and complete P01/native/live acceptance remain open. Production is unchanged.
+
+Local production build did not pass: the optimized Webpack worker reached its default approximately4GiB JavaScript heap and aborted. No retry or production action occurred. Preserve the log and diagnose/build with an explicitly recorded local resource configuration before claiming build acceptance; see BROAD-VALIDATION.md.

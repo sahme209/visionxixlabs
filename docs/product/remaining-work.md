@@ -262,3 +262,5 @@ Unregistered generated-site proposal form now keeps exact Lead/project/environme
 
 
 Prepared Lead catalog supersedes the earlier manual-ID-only limitation: bounded current-admin metadata pages now feed the unregistered generated-site form, without selecting personal email, full payload or package content. Presence is explicitly not validation; the server still derives/reviews exact files.24focused checks, root/desktop types and desktop shell/client build pass;35actual isolated SQL cases include Lead metadata pagination/private-field exclusion and the actual client/prepared HTTP/current HMAC/SQL path. No live/provider/native acceptance, execution enablement or new recovery authority.
+
+November12 platform broad local validation:18,151ordinary tests pass/949pending; root types pass after reviewed schema-helper/generated-client freshness correction. Full P01 and all production/native gates remain open; see `docs/recovery/2026-11-12/platform-governance-scope/BROAD-VALIDATION.md`. No PR/deployment acceptance is implied.

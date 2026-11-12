@@ -166,6 +166,8 @@ November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind ba
 
 ## 6. Pinned and reviewed things — do not break
 
+November12 local platform branch: reviewed current mock-helper schema pin now includes three appended platform models; all175existing model semantics/enums are unchanged. Historical Python packets/qualification remain closed. See `docs/recovery/2026-11-12/platform-governance-scope/SCHEMA-PIN-REVIEW.md` and `BROAD-VALIDATION.md`. No production schema change.
+
 November 11: the synthetic recipe unit helper now binds the current schema after reviewing only the two appended models. See `docs/recovery/2026-11-11/tailwind4-upgrade/current-schema-pin-review.md`. The historical Python packet schema/hash bindings remain unchanged and unavailable for reuse; no qualification/export authority is restored.
 
 - **Owned-website framework pins:** `scripts/fixtures/ownedWebsiteFramework.cjs` pins the hashes of `package-lock.json`, `next.config.ts`, `tsconfig*.json`, `next/package.json` and three Next internals, plus the Next version.
