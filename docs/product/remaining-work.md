@@ -602,3 +602,8 @@ Client/panel missing-feature REDs and actual SQL missing-delegation-state RED (7
 ### November12 integrated operational checkpoint — P01 remains open
 
 Full ordinary suite18,355pass/0fail/989pending and production compilation/types304pages PASS on unchanged runtime c0180a37. Separate75actual SQL journeys use synthetic qualification/provider evidence. See [current compact scope and next steps](../recovery/2026-11-12/platform-governance-scope/CURRENT.md) and [integrated validation](../recovery/2026-11-12/platform-governance-scope/INTEGRATED-VALIDATION.md). Complete family/default/registered workflow, pending image/template/deployment owner decisions, fresh whole-source review/one green PR and all existing production/native/live/master acceptance remain open. Nothing was deployed or enabled.
+
+
+### Operational history final-reader freshness — local only
+
+A synthetic regression reproduced a history response after reader access changed during the last awaited database-time read. `inspect` now repeats the current-reader check after that await, before returning original history. This changes no stored action, credential, approval, provider effect or execution authority. The regression first failed (16 other delegation tests passed), then all26 focused delegation/request/HTTP tests and root strict types passed. No SQL adapter/schema changed; no owned database or provider was accessed. The prior integrated full-suite/build receipt remains scoped to c0180a37 and is not relabeled as validation of this repair. Whole-batch final validation/review and complete workflow/default/live gates remain open.

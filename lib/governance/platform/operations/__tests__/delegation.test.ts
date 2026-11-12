@@ -80,3 +80,10 @@ it('requires one current final issuance callback before returning a credential h
 });
 it('refuses revocation during issuer preparation before a simulated physical mint',async()=>{let physicalMints=0;const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn()},f=fixture(issuer);issuer.issue.mockImplementation(async(_manifest:unknown,beforeIssue:()=>Promise<void>)=>{f.revoked.add(reviewer.userId);await beforeIssue();physicalMints++;throw Error('must not reach')});await f.store.delegate(id,1,f.plan.digest,requester);const claim=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claim.proof);expect(await f.store.issueCredential(pending.proof)).toMatchObject({credentialHandle:null,history:{credential:{status:'unknown'}}});expect(physicalMints).toBe(0)});
 it('retains known issued liability but returns no handle if an issuer omits the final gate',async()=>{const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>({leaseRef:'platform_credential_22222222-2222-4222-8222-222222222222',accessKeyId:'SYNTHETIC_ACCESS',secretAccessKey:'SYNTHETIC_SECRET',sessionToken:'SYNTHETIC_TOKEN',expiresAt:now+900000}))},f=fixture(issuer);await f.store.delegate(id,1,f.plan.digest,requester);const claim=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claim.proof);await expect(f.store.issueCredential(pending.proof)).rejects.toThrow();expect(await f.store.inspect(id,requester)).toMatchObject({credential:{status:'issued'},executionAuthorized:false})});
+
+it('does not release operational history when reader access changes during the final clock read',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);
+ const repo:OperationalDelegationRepository={transaction:fn=>f.repo.transaction(tx=>fn({...tx,now:async()=>{const time=await tx.now();f.revoked.add(requester.userId);return time}}))};
+ const store=createOperationalDelegationStore(repo,{assertCurrent:async(_tx,actor)=>{if(f.revoked.has(actor.userId))throw Error('revoked')}},f.source,f.identity);
+ await expect(store.inspect(id,requester)).rejects.toThrow('revoked');
+});

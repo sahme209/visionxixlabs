@@ -130,7 +130,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     result=readOperationalEcsResult(await tx.readOperationalEcsResult(key));const ref=state.targetReservation;
     if(!ref||state.credential.status!=='issued'||result.actionId!==key||result.manifestDigest!==state.manifest.digest||result.nativeKey!==ref.nativeKey||result.generation!==ref.generation||result.leaseRef!==state.credential.leaseRef||result.observedAt<state.createdAt||effectStatus==='confirmed'&&result.kind!=='accepted'||effectStatus==='unknown'&&result.kind!=='unknown')return fail();
    }
-   await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||result&&result.observedAt>now)return fail();
+   await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||result&&result.observedAt>now)return fail();await authority.assertCurrent(tx,actor);
    return Object.freeze({...projection(state,now),parentStatus:parent.status,parentVersion:parent.version,effectStatus,result});
   })},
   async delegate(id:string,parentVersion:number,parentDigest:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{

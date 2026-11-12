@@ -742,3 +742,8 @@ Client/panel missing-feature REDs and actual SQL missing-delegation-state RED (7
 ### Integrated c0180a37 ordinary suite and production compilation
 
 Full suite18,355pass/0fail/989pending/0todo; source unchanged. Complete cached Prisma/client generation, strict production types and Next304-page build PASS under network denial/no database URL, source/installed engine unchanged. First empty-HOME checksum-cache failure preserved; correction only selects the already-installed byte-identical engine via supported variable. No new dependency/pin/environment setting/provider/production change. See INTEGRATED-VALIDATION.md/json. Coverage matrix/current summary refreshed without deleting prior requirements or evidence. Final whole-batch review/PR/full P01 remain open.
+
+
+### Operational history final-reader freshness — local only
+
+A synthetic regression reproduced a history response after reader access changed during the last awaited database-time read. `inspect` now repeats the current-reader check after that await, before returning original history. This changes no stored action, credential, approval, provider effect or execution authority. The regression first failed (16 other delegation tests passed), then all26 focused delegation/request/HTTP tests and root strict types passed. No SQL adapter/schema changed; no owned database or provider was accessed. The prior integrated full-suite/build receipt remains scoped to c0180a37 and is not relabeled as validation of this repair. Whole-batch final validation/review and complete workflow/default/live gates remain open.
