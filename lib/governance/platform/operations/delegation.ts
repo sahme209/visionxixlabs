@@ -29,7 +29,7 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private server composition. Workload is never relabeled a human. All phase
  * proofs stay in this instance, never in HTTP JSON or durable state. Optional private issuance is bounded and recorded before any later use;
  * source/profile defaults remain closed and no provider send is exposed. */
-export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport){
+export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'> & Partial<Pick<OperationalTargetReservations,'observe'>>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport){
  const claims=new WeakMap<object,{actionId:string;identity:Consumed}>(),issuance=new WeakMap<object,{actionId:string;version:number;identity:Consumed}>(),credentials=new WeakMap<object,{actionId:string;identity:Consumed;value:z.infer<typeof privateCredential>}>();
  const binding=(state:OperationalDelegation)=>({actionId:state.actionId,manifestDigest:state.manifest.digest,workload:state.manifest.workload,expiresAt:state.manifest.expiresAt});
  function match(parent:PlatformAction,state:OperationalDelegation){
@@ -101,6 +101,14 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    });
    const credentialHandle=Object.freeze(Object.create(null)) as object;credentials.set(credentialHandle,{actionId:pending.actionId,identity:pending.identity,value});return {history,credentialHandle};
    }catch{throw Error('operational_credential_issuance_unconfirmed')}
+  },
+  async observeTarget(id:string,rawReader:PlatformPrincipal){
+   try{const reader=platformPrincipalSchema.parse(rawReader);return await locked(id,async(tx,key)=>{
+    await authority.assertCurrent(tx,reader);const state=await load(tx,key),parent=readPlatformAction(await tx.read(key));match(parent,state);
+    if(!targets?.observe||!state.targetReservation)return fail();await tx.lockOperationalTarget(state.targetReservation.nativeKey);const prior=readOperationalTarget(await tx.readOperationalTarget(state.targetReservation.nativeKey)),storedTerminal=['stable','terminal_failure'].includes(prior.phase);const observed=await targets.observe(tx,{actionId:key,manifest:state.manifest},state.targetReservation.generation);
+    await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();
+    return Object.freeze({actionId:key,phase:observed.phase,generation:observed.generation,deploymentId:observed.deploymentId,lastReceiptId:observed.lastReceiptId,credentialStatus:state.credential.status,expired:now>=Date.parse(state.manifest.expiresAt),authority:'native_observation_only' as const,sourceValidation:storedTerminal?'historical_terminal_receipt_only' as const:'checked_by_private_source' as const,parentStatus:parent.status,parentReconciliation:'not_performed' as const,executionAuthorized:false as const,providerWritePerformed:false as const});
+   })}catch{throw Error('operational_observation_unavailable')}
   },
   async inspect(id:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{await authority.assertCurrent(tx,actor);const state=await load(tx,key),now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();await authority.assertCurrent(tx,actor);return projection(state,now)})},
   async delegate(id:string,parentVersion:number,parentDigest:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{
