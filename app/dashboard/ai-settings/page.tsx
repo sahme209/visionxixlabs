@@ -47,6 +47,7 @@ interface GenerateResp {
 }
 
 const LABEL: Record<ProviderName, string> = {
+  customer_hosted: "Customer-hosted (offline only)",
   vercel_gateway: "AI Gateway", xai: "xAI Grok",
   openai: "OpenAI GPT", anthropic: "Anthropic Claude",
   github_models: "GitHub Models", ollama: "Ollama (local)", lm_studio: "LM Studio (local)",

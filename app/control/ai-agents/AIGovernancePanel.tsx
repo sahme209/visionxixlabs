@@ -6,6 +6,8 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type Tool = { name: string; description: string; riskLevel: "low" | "medium" | "high" };
 type GovernanceData = {
   canManage: boolean;
+  installationAIMode?: "online" | "offline" | "unavailable";
+  customerHostedModels?: Array<{id:string;label:string;tier:string}>;
   providerPolicy: { enabled: boolean; allowedProviders: string[]; modelSelections: Record<string, string>; fallbackOrder: string[] };
   availableProviders: string[];
   gatewayModels: Array<{ id: string; label: string; tier: string }> | null;
@@ -47,6 +49,7 @@ export function AIGovernancePanel() {
   const tabRefs = useRef<Array<HTMLButtonElement | null>>([]);
   function selectView(index: number) { setView(index); tabRefs.current[index]?.focus(); }
 
+  const [selectedLocalModel, setSelectedLocalModel] = useState("");
   const [data, setData] = useState<GovernanceData | null>(null);
   const [error, setError] = useState("");
   const [saving, setSaving] = useState("");
@@ -58,6 +61,7 @@ export function AIGovernancePanel() {
     const payload = await response.json().catch(() => null) as { ok?: boolean; data?: GovernanceData; error?: string } | null;
     if (!response.ok || !payload?.data) throw new Error(payload?.error ?? "governance_unavailable");
     setData(payload.data);
+    setSelectedLocalModel(payload.data.providerPolicy.modelSelections.customer_hosted ?? "");
   }, []);
 
   useEffect(() => { void load().catch((cause) => setError(cause instanceof Error ? cause.message : "governance_unavailable")); }, [load]);
@@ -82,6 +86,9 @@ export function AIGovernancePanel() {
 
   if (!data) return <div className="mt-10 border-y border-white/8 py-6 text-sm text-zinc-500">{error || "Loading verified organization policy…"}</div>;
 
+  const offline = data.installationAIMode === "offline";
+  const localModels = data.customerHostedModels ?? [];
+  const localSelectedAvailable = localModels.some(model => model.id === selectedLocalModel);
   const selectedModel = data.providerPolicy.modelSelections.vercel_gateway ?? "service-default";
   const identity = data.agentIdentity ?? {
     displayName: "Axiom Agent",
@@ -143,6 +150,20 @@ export function AIGovernancePanel() {
           </section>
 
           <section className={cardClass} aria-labelledby="agent-model-heading">
+            {offline ? <>
+              <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="agent-model-heading" className="text-sm font-medium">Approved model routing</h2><span className="text-[11px] text-zinc-400">{localModels.length ? "Offline · operator reviewed" : "Offline · setup required"}</span></div>
+              <p className="mt-2 text-xs leading-5 text-zinc-500">Choose an accepted customer-hosted model for this workspace.</p>
+              <label className="mt-4 block text-xs text-zinc-400">Customer-hosted model<select value={selectedLocalModel} onChange={event => setSelectedLocalModel(event.target.value)} disabled={!data.canManage || Boolean(saving) || !localModels.length} className={fieldClass}>
+                <option value="" disabled>Choose a model</option>
+                {selectedLocalModel && !localSelectedAvailable && <option value={selectedLocalModel} disabled>Saved model unavailable</option>}
+                {localModels.map(model => <option key={model.id} value={model.id}>{model.label}</option>)}
+              </select></label>
+              <div className="mt-4 flex flex-wrap justify-end gap-2">
+                {data.providerPolicy.enabled && <button type="button" disabled={!data.canManage || Boolean(saving)} onClick={() => void save("provider_policy", {enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]})} className={buttonClass}>Disable workspace AI</button>}
+                <button type="button" disabled={!data.canManage || Boolean(saving) || !localSelectedAvailable} onClick={() => void save("provider_policy", {enabled:true,allowedProviders:["customer_hosted"],modelSelections:{customer_hosted:selectedLocalModel},fallbackOrder:["customer_hosted"]})} className={buttonClass}>Save model policy</button>
+              </div>
+              <p className="mt-4 text-[11px] leading-5 text-zinc-500">The deployment operator manages the server and token cap. Missing or expired verification blocks calls. No cloud fallback.</p>
+            </> : <>
             <div className="flex flex-wrap items-center justify-between gap-2"><h2 id="agent-model-heading" className="text-sm font-medium">Approved model routing</h2><span className={`text-[11px] ${data.gatewayCatalogLive ? "text-emerald-300" : "text-amber-300"}`}>{data.gatewayCatalogLive ? "Live catalog verified" : "Catalog unavailable"}</span></div>
             <p className="mt-2 text-xs leading-5 text-zinc-500">Choose a service-approved model for this workspace.</p>
             <label className="mt-4 block text-xs text-zinc-400">Gateway model<select id="gateway-model" defaultValue={selectedModel} disabled={!data.canManage || Boolean(saving) || !data.gatewayCatalogLive} className={fieldClass}>
@@ -150,6 +171,7 @@ export function AIGovernancePanel() {
             </select></label>
             <div className="mt-4 flex justify-end"><button type="button" disabled={!data.canManage || Boolean(saving) || !data.gatewayCatalogLive} onClick={() => void save("provider_policy", { enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: (document.getElementById("gateway-model") as HTMLSelectElement).value }, fallbackOrder: ["vercel_gateway"] })} className={buttonClass}>Save model policy</button></div>
             <p className="mt-4 text-[11px] leading-5 text-zinc-500">{data.gatewayCatalogLive ? "Routing and credentials remain managed by the service." : "Model changes require a verified catalog. Your saved policy remains unchanged."}</p>
+            </>}
           </section>
 
           <section className={cardClass} aria-labelledby="agent-autonomy-heading">

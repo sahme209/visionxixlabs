@@ -53,7 +53,7 @@ Add one new governed provider kind, `customer_hosted`. It is a second, separatel
 
 - Kernel tests for mode exclusivity:
   - offline refuses the gateway;
-  - online refuses `customer_hosted` unless enabled.
+  - online refuses `customer_hosted` unconditionally in v1.
 - Kernel tests for the endpoint allowlist: redirect and DNS-rebind refusal.
 - Kernel tests for the output bound and budget fail-closed behaviour.
 - Redaction applied on the new branch (shared test vectors).

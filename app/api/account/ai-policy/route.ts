@@ -1,3 +1,6 @@
+import {customerHostedAvailability,type CustomerHostedAvailability} from "@/lib/ai/customerHostedAvailability";
+import type {AIProviderName} from "@/lib/ai/AIProvider";
+import {providerPolicyChangeRefusal} from "@/lib/ai/workspacePolicyChange";
 import { NextResponse, type NextRequest } from "next/server";
 import { currentContext } from "@/lib/auth/currentContext";
 import { isAdminOrOwner } from "@/lib/auth/platformAdmin";
@@ -18,7 +21,8 @@ import {
 
 export const dynamic = "force-dynamic";
 
-function serviceEnabledProviders() {
+function serviceEnabledProviders(local:CustomerHostedAvailability):AIProviderName[] {
+  if (local.mode !== "online") return local.mode === "offline" && local.models.length ? ["customer_hosted"] : [];
   return getAIProviderManager().status()
     .filter((provider) => provider.provider !== "mock" && provider.configured)
     .map((provider) => provider.provider);
@@ -33,7 +37,8 @@ async function ownerContext(): Promise<{ organizationId: string; userId: string 
 export async function GET(): Promise<NextResponse> {
   const ctx = await ownerContext();
   if (!ctx) return NextResponse.json({ ok: false, error: "workspace_owner_required" }, { status: 403 });
-  const availableProviders = serviceEnabledProviders();
+  const local = await customerHostedAvailability(ctx.organizationId);
+  const availableProviders = serviceEnabledProviders(local);
   const loaded = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId);
   if (loaded.storageState !== "ready") {
     return NextResponse.json({ ok: false, error: loaded.storageState === "migration_pending" ? "provider_policy_migration_pending" : "provider_policy_unavailable" }, { status: 503 });
@@ -47,10 +52,10 @@ export async function GET(): Promise<NextResponse> {
   try {
     const availableModels = Object.fromEntries(await Promise.all(availableProviders.map(async provider => [
       provider,
-      provider === "vercel_gateway" ? await loadGatewayModelCatalog()
+      provider === "customer_hosted" ? local.models : provider === "vercel_gateway" ? await loadGatewayModelCatalog()
         : listModels(provider).map(model => ({ id: model.id, label: model.label })),
     ])));
-    return NextResponse.json({ ok: true, data: { policy, availableProviders, availableModels } });
+    return NextResponse.json({ ok: true, data: { policy, availableProviders, availableModels, installationAIMode: local.mode } });
   } catch {
     return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
   }
@@ -63,9 +68,13 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const body = await request.json().catch(() => null) as { enabled?: unknown; allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
   const policy = body ? normalizeWorkspaceAIProviderPolicyUpdate(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
-  const serviceEnabled = serviceEnabledProviders();
+  const local = await customerHostedAvailability(ctx.organizationId);
+  const serviceEnabled = serviceEnabledProviders(local);
   if (policy.enabled && policy.allowedProviders.some((provider) => !serviceEnabled.includes(provider))) {
     return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
+  }
+  if (policy.enabled && policy.allowedProviders.includes("customer_hosted") && !local.models.some(model => model.id === policy.modelSelections.customer_hosted)) {
+    return NextResponse.json({ ok: false, error: "customer_hosted_model_unavailable" }, { status: 422 });
   }
   if (gatewayPolicyModelIds(policy).length) {
     const catalog = await loadGatewayModelCatalog().catch(() => null);
@@ -74,6 +83,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
       return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
     }
   }
+  const refusal = await providerPolicyChangeRefusal(ctx.organizationId, policy);
+  if (refusal) return NextResponse.json({ ok: false, error: refusal }, { status: refusal === "provider_policy_unavailable" ? 503 : 409 });
   try {
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
     await recordAudit({

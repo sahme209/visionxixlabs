@@ -75,3 +75,17 @@ it("does not report success when the saved policy cannot be read back", async ()
   expect(screen.queryByRole("status")).toBeNull();
   expect(fetcher).toHaveBeenCalledTimes(3);
 });
+it('offers explicit accepted offline selection without a cloud default or endpoint/cap fields',async()=>{
+ const data={...fixture('ready'),installationAIMode:'offline',customerHostedModels:[{id:'local-a',label:'Local A',tier:'balanced'}]};
+ const fetcher=vi.fn().mockResolvedValueOnce(response({ok:true,data})).mockResolvedValueOnce(response({ok:true})).mockResolvedValue(response({ok:true,data}));vi.stubGlobal('fetch',fetcher);render(createElement(AIGovernancePanel));
+ const select=await screen.findByLabelText('Customer-hosted model');const save=screen.getByRole('button',{name:'Save model policy'});
+ expect((save as HTMLButtonElement).disabled).toBe(true);expect(screen.queryByText('Service-managed default')).toBeNull();
+ fireEvent.change(select,{target:{value:'local-a'}});expect((save as HTMLButtonElement).disabled).toBe(false);fireEvent.click(save);
+ await screen.findByText('Model policy saved and reloaded.');const payload=JSON.parse(fetcher.mock.calls[1][1].body);
+ expect(payload).toEqual({section:'provider_policy',enabled:true,allowedProviders:['customer_hosted'],modelSelections:{customer_hosted:'local-a'},fallbackOrder:['customer_hosted']});
+ expect(screen.getByText(/deployment operator manages/)).toBeTruthy();
+});
+it('keeps offline selection disabled when no accepted model is available',async()=>{
+ vi.stubGlobal('fetch',vi.fn().mockResolvedValue(response({ok:true,data:{...fixture('ready'),installationAIMode:'offline',customerHostedModels:[]}})));render(createElement(AIGovernancePanel));
+ expect((await screen.findByRole('button',{name:'Save model policy'}) as HTMLButtonElement).disabled).toBe(true);expect(screen.getByText('Offline · setup required')).toBeTruthy();expect(screen.queryByText('Service-managed default')).toBeNull();
+});

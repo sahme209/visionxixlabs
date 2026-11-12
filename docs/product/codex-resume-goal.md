@@ -35,3 +35,7 @@ After every PR report what changed, what CI showed and what is not verified. Sto
 ## Additional cross-cutting requirement
 
 Follow `docs/product/token-efficiency-and-tooling-assessment.md`: evaluate useful repositories, libraries, plugins and skills and measure potential token/cost savings without reducing quality, security or governance. Separate Axiom runtime usage from development-assistant usage. Reuse existing facilities; candidates are not automatic dependency/adoption authority. Use gaps without delaying the current sequence; all spending/provider/data/production gates remain.
+
+### Active offline-AI checkpoint (November11)
+
+Local default Agent/Prisma composition, token ledger/private transport, protected operator-reviewed limits and web/desktop selection are implemented. Important review corrections are reproduced and tested; full final validation/re-review and one mandatory-green PR remain. Real protected-OS/model acceptance, non-macOS custody qualification, production changes and the complete remaining master plan are not complete or authorized by this checkpoint. Continue against the full six-task plan and explicit evidence, not a smaller guard-only deliverable.

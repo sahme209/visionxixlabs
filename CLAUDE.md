@@ -18,7 +18,7 @@ When you change ANY of the following, update the corresponding artifact in the S
 | A monitoring/security/database surface | The matching demo scenario + `<ModuleIntro>` approval note |
 | The sidebar (`DashboardSidebar.tsx`) | The Setup Guide step deep-links if any moved routes |
 | The desktop app | The Desktop App Pairing demo scenario |
-| Docs guides / public help knowledge | Keep sidebar, heading index, generated support corpus and guide-count checks synchronized (35 guides). Source-ground public claims in current screens and handlers; preserve required support-eval accuracy. |
+| Docs guides / public help knowledge | Keep sidebar, heading index, generated support corpus and guide-count checks synchronized (36 guides). Source-ground public claims in current screens and handlers; preserve required support-eval accuracy. |
 | Compiler tooling | Keep strict native TypeScript checks explicit; retain the pinned JS compiler API for AST/Next/fixture consumers until separately reviewed. No automatic historical packet renewal. |
 | Tailwind styling | CSS-first themes in `app/globals.css` and `desktop/src/styles.css`; retain explicit source globs and the intentional unlayered utilities cascade. Verify compiled shared-diff layout and browser dark/light styling. |
 | **Internal growth automation** | KEEP internal-only (`audience: "internal_only"` in the scenario) |

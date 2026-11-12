@@ -1,3 +1,4 @@
+import {readInstallationAIMode} from "@/lib/ai/customerHostedConfig";
 import { SMALL_SONNET_55_MODEL, SMALL_SONNET_55_OUTPUT_TOKENS } from "@/lib/billing/smallSonnet55Request";
 import { effectiveGatewayModel, gatewayModelOutputBoundVerified } from "@/lib/ai/effectiveGatewayModel";
 import { boundedStructuredAIInput } from "@/lib/ai/inputByteBound";
@@ -90,6 +91,12 @@ async function currentDispatch(organizationId: string, preferredProvider?: strin
 
 export async function resolveGovernedAiCall(organizationId: string, preferredProvider: string | undefined, userId: string, preferredModel?: string, streaming?: { abortSignal: AbortSignal; onDraft: (message: string) => void; beforeAdmission?: () => Promise<void> }): Promise<GovernedAiCallResult> {
   if (!userId) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
+  const installationMode = readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE);
+  if (installationMode === "unavailable" || installationMode === "online" && preferredProvider === "customer_hosted") return { ok: false, error: "workspace_ai_provider_unavailable" };
+  if (installationMode === "offline") {
+    const {resolveCustomerHostedGovernedAiCall} = await import("./customerHostedGovernedAiCall");
+    return resolveCustomerHostedGovernedAiCall(organizationId, preferredProvider, userId, preferredModel, streaming);
+  }
   const creditDecision = await checkWorkspaceAICredits(organizationId, 0, { failClosedOnUsageReadError: true }).catch(() => null);
   if (!creditDecision) return { ok: false, error: "workspace_ai_credit_meter_unavailable" };
   if (creditDecision.kind === "block") return { ok: false, error: "workspace_ai_credit_pool_exhausted" };

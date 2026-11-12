@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import { boundedAIInput } from "./inputByteBound";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
@@ -72,7 +73,7 @@ export class AIProviderManager {
 
   /** Production inference is Gateway-only. Missing configuration fails closed. */
   private chain(opts?: { only?: AIProviderName; allowedProviders?: readonly AIProviderName[]; fallbackOrder?: readonly AIProviderName[] }): AIProvider[] {
-    denyIsolatedExternalIO();
+    denyIsolatedExternalIO();assertOnlineAIDispatch();
     const gateway = this.providers.get("vercel_gateway");
     if (!gateway?.isConfigured()) return [];
     if (opts?.only && opts.only !== "vercel_gateway") return [];
@@ -378,7 +379,7 @@ export class AIProviderManager {
   }
 
   async healthCheckAll(allowedProviders?: readonly AIProviderName[]): Promise<AIHealthCheck[]> {
-    denyIsolatedExternalIO();
+    denyIsolatedExternalIO();assertOnlineAIDispatch();
     const rows: AIHealthCheck[] = [];
     const allowed = allowedProviders ? new Set(allowedProviders) : null;
     for (const name of PROVIDER_PRIORITY) {

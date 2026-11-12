@@ -513,6 +513,48 @@
    "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820"
   },
   {
+   "href": "/docs/offline-ai#operations",
+   "title": "Offline AI operations and cloud fallback",
+   "text": "The v1 model path supports structured Agent decisions through the OpenAI-compatible chat-completions APIs of vLLM, Ollama and LM Studio. Axiom does not bundle, install or run a model server. Native server-specific APIs are outside v1. Agent decisions: locally implemented with current membership and policy checks, token reservation, one dispatch and recorded outcomes. Real server acceptance is still required. Bot AI, generic cloud text/coding calls and image generation: unavailable offline in this v1 path. Older local adapters cannot bypass token admission. Cloud fallback and Gateway discovery: refused offline. Online installations cannot select customer-hosted models. Tools and deployments: retain their own connections, permissions and approval gates. The offline AI setting does not make external tools local or certify that the entire application has no external network traffic.",
+   "source": "app/docs/offline-ai/page.tsx",
+   "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413"
+  },
+  {
+   "href": "/docs/offline-ai#budgets",
+   "title": "Offline customer-hosted models and operator token budgets",
+   "text": "The deployment operator sets each workspace's token cap and explicit start/end window. There is no automatic token allowance; a missing, unreadable, expired or not-yet-started budget blocks calls. A workspace role named Operator cannot edit the installation's cap. Before dispatch, Axiom reserves the full accepted input limit plus output limit, not a guess based on text bytes. Concurrent requests share the durable workspace ledger. Verified usage settles the reservation. Pending, uncertain and overrun liabilities survive configuration and budget-window changes; changing a window does not erase them. Usage is marked customer_hosted_unpriced , not a zero-dollar Gateway bill. Hardware, model licensing and operation can still cost money. If a server misreports usage or violates its accepted limits, Axiom records the failure or larger liability; this is not evidence of an inviolable token cap.",
+   "source": "app/docs/offline-ai/page.tsx",
+   "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413"
+  },
+  {
+   "href": "/docs/offline-ai#operator",
+   "title": "What the deployment operator prepares",
+   "text": "The operator supplies AXIOM_LOCAL_MODEL_CONFIG : installation/revision, exact private server URL and host allowlist, approved model IDs, input/output bounds, input byte bound and explicit per-workspace budget windows. These are installation settings, never model output or workspace form fields. AXIOM_OFFLINE_MODE=true selects offline AI; malformed mode settings refuse instead of silently choosing online. Separate protected acceptance records bind the exact configuration and model to real isolated-test evidence, operator review, enforced input/output limits, verified usage and expiry. A hash or a JSON flag alone does not prove server behavior. Source tests use simulated records; no live eligible record is created automatically. The current protected-file reader has a conservative macOS root-owned, non-writable, no-ACL path profile. Other host profiles are not qualified and refuse. Actual provisioning and filesystem/platform qualification remain separate gates; do not weaken ownership or permissions to make setup pass. Offline sign-in, licensing and enterprise custody are separate on-prem requirements.",
+   "source": "app/docs/offline-ai/page.tsx",
+   "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413"
+  },
+  {
+   "href": "/docs/offline-ai#select",
+   "title": "Choose an accepted local model",
+   "text": "Once an installation is separately qualified, an authorized workspace owner or admin can use AI & Agents → Configuration → Customer-hosted model . Choose an explicitly listed model, then Save model policy . No model is selected automatically. The server rechecks the current accepted model and Governance policy; an enrolled workspace cannot widen AI reach. Desktop Settings → Models offers the same accepted models. Enabling one local model replaces local selection without adding a cloud fallback. The Agent composer sends the exact selected model preference; a changed workspace policy is rechecked by the server. Endpoint and cap changes stay with the deployment operator. Offline · setup required means no accepted model can currently be offered. Ask the deployment operator to inspect the budget, configuration and acceptance expiry. Disable workspace AI remains available to authorized administrators even if no accepted model is listed.",
+   "source": "app/docs/offline-ai/page.tsx",
+   "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413"
+  },
+  {
+   "href": "/docs/offline-ai#network",
+   "title": "Private transport and data boundaries",
+   "text": "Prompts and schema text are redacted and byte-bounded before use. Host resolution must produce only allowed private addresses; HTTP is restricted to actual loopback, and HTTPS retains hostname/certificate verification. Axiom pins the selected address, checks the actual peer and rechecks current admission before sending prompt bytes. One bounded request has a deadline and cancellation. Redirects, public or mixed DNS answers, unexpected models, tool-call responses, missing usage and oversized or malformed responses refuse. No automatic retry or alternate model is used. Your own model-server logging, retention and infrastructure security still need review.",
+   "source": "app/docs/offline-ai/page.tsx",
+   "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413"
+  },
+  {
+   "href": "/docs/offline-ai#recovery",
+   "title": "Inspect outcomes before recovery",
+   "text": "Token transitions and a content-free audit record identify the configured model, usage and outcome. Prompt content is not an accounting field. A response lost after dispatch remains uncertain and retains its allowance; a timeout is not proof that nothing happened. Do not repeatedly resend to clear an unknown result or edit a ledger row. Preserve the original history and have the deployment operator inspect server evidence and current policy. Live recovery, independently required approvals and production changes keep their separate review requirements.",
+   "source": "app/docs/offline-ai/page.tsx",
+   "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413"
+  },
+  {
    "href": "/docs/permissions-model#roles",
    "title": "Workspace roles",
    "text": "Workspace membership establishes the tenant boundary. Each supported action checks its required capability at the server; approval authority is distinct from permission to execute.",

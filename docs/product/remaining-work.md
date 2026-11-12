@@ -220,3 +220,9 @@ Authorized gap-time [technology assessment](../research/2026-11-11/future-techno
 ### Offline-AI v1 owner choices accepted November11
 
 The owner accepted the ADR and explicitly chose OpenAI-compatible vLLM/Ollama/LM Studio only; operator-configured workspace token caps with no default (missing/unreadable refuses), operator-only cap changes, and customer-hosted models disabled online. Local implementation is next after the current research PR; no production settings/schema/enablement, real model/provider action or spending is authorized. Historical pending-decision snapshots above are superseded only for these three choices.
+
+## November11 — offline-AI local candidate, not merged or deployed
+
+Accepted offline-AI v1 is now composed in the default Agent path with explicit workspace opt-in, deployment-operator configuration/caps, durable token accounting and private one-attempt transport. The owner also approved the protected acceptance-file supplier design. Actual owned PostgreSQL/default Prisma/Agent journeys pass with simulated model and protected evidence; real server/OS qualification remains outstanding. Web and desktop controls expose only accepted model IDs, never endpoint/cap edits. No cloud fallback or automatic token allowance. The current protected-file profile supports macOS only; other hosts refuse pending qualification.
+
+Independent review found two important boundary gaps; reproduced corrections now preserve isolated-provider refusal and propagate/drain terminal cancellation through admission/transaction rollback. Final broad checks, re-review, one fully green PR and normal merge remain. Public docs are36guides/123sections with an honest offline preview/operation matrix. This does not complete A9, enable offline AI, activate Governance, provision credentials/resources, resolve the production target/schema discrepancy, or waive any existing owner/live gate. [Current evidence](../recovery/2026-11-11/offline-ai-v1/README.md).

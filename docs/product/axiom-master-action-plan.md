@@ -1230,3 +1230,7 @@ Authorized gap-time [technology assessment](../research/2026-11-11/future-techno
 ### Offline-AI v1 owner choices accepted November11
 
 The owner accepted the ADR and explicitly chose OpenAI-compatible vLLM/Ollama/LM Studio only; operator-configured workspace token caps with no default (missing/unreadable refuses), operator-only cap changes, and customer-hosted models disabled online. Local implementation is next after the current research PR; no production settings/schema/enablement, real model/provider action or spending is authorized. Historical pending-decision snapshots above are superseded only for these three choices.
+
+## November11 continuation — offline-AI candidate checkpoint
+
+The accepted local v1 branch implements the default Agent/customer-hosted composition, operator-only endpoint/caps, token ledger, current workspace policy, private transport and explicit client selection. Source/owned-database tests use simulated models/acceptance; no enabled installation or production release is claimed. The protected supplier currently has a macOS-only conservative profile. Final validation/re-review/green PR merge, real host/model acceptance and broader A9/on-prem requirements remain open. Existing parent acceptance boxes are intentionally not crossed out. See [candidate evidence](../recovery/2026-11-11/offline-ai-v1/README.md) and [continuation goal](codex-resume-goal.md).

@@ -884,3 +884,7 @@ Authorized gap-time [technology assessment](../research/2026-11-11/future-techno
 ### Offline-AI v1 owner choices accepted November11
 
 The owner accepted the ADR and explicitly chose OpenAI-compatible vLLM/Ollama/LM Studio only; operator-configured workspace token caps with no default (missing/unreadable refuses), operator-only cap changes, and customer-hosted models disabled online. Local implementation is next after the current research PR; no production settings/schema/enablement, real model/provider action or spending is authorized. Historical pending-decision snapshots above are superseded only for these three choices.
+
+## November11 — offline-AI final local validation, PR pending
+
+The offline-AI branch now composes the actual default Agent/Prisma/policy/token-ledger/private transport and client controls.17 actual isolated-PG journeys pass with simulated model/protected evidence/audit; full17,966-test suite,304-page production build/types, desktop types/frontend build, Python36 and support guide checks pass. Independent review's isolated-guard/cancellation findings are reproduced and corrected; follow-up finds no important issues. Last route error-ordering compatibility delta retains M02 immediately before save. Main remains3754c049. One PR and exact green CI/normal merge remain; do not deploy or claim real model/host/on-prem readiness. Current evidence is in `docs/recovery/2026-11-11/offline-ai-v1/README.md`.

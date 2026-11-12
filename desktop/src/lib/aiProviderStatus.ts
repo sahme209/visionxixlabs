@@ -23,6 +23,7 @@ export interface ProviderModels {
 }
 
 export interface AiProviderStatus {
+  installationAIMode?: "online" | "offline" | "unavailable";
   providers: ProviderModels[];
   policy: ModelPolicy;
 }
@@ -97,7 +98,15 @@ export function normalizeAiProviderStatus(value: unknown): AiProviderStatus | nu
     if (!metadata || !value.policy.enabled || !allowedProviders.includes("vercel_gateway") || modelSelections.vercel_gateway !== metadata.defaultModelId) return null;
   }
 
+  let installationAIMode: AiProviderStatus["installationAIMode"];
+  const mode = Object.getOwnPropertyDescriptor(value, "installationAIMode");
+  if (mode || "installationAIMode" in value) {
+    if (!mode?.enumerable || !Object.prototype.hasOwnProperty.call(mode, "value") || !["online", "offline", "unavailable"].includes(mode.value)) return null;
+    installationAIMode = mode.value;
+    if (installationAIMode === "offline" && providers.some(provider => provider.provider !== "customer_hosted") || installationAIMode === "online" && providers.some(provider => provider.provider === "customer_hosted")) return null;
+  }
   return {
+    ...(installationAIMode ? { installationAIMode } : {}),
     providers,
     policy: {
       enabled: value.policy.enabled,
@@ -118,6 +127,11 @@ export function isModelApproved(policy: ModelPolicy, provider: string, modelId: 
 export function toggleApprovedModel(input: ModelPolicy, provider: string, modelId: string): ModelPolicy | null {
   const policy = normalizeAiProviderStatus({ providers: [], policy: input })?.policy;
   if (!policy) return null;
+  if (provider === "customer_hosted") {
+    return isModelApproved(policy, provider, modelId)
+      ? { enabled: false, allowedProviders: [], modelSelections: {}, fallbackOrder: [] }
+      : { enabled: true, allowedProviders: [provider], modelSelections: { [provider]: modelId }, fallbackOrder: [provider] };
+  }
   let allowed = [...policy.allowedProviders]; const selections = { ...policy.modelSelections }; let metadata = policy.gatewaySelection;
   const removeProvider = () => { allowed = allowed.filter(item => item !== provider); delete selections[provider]; };
   if (provider === "vercel_gateway" && isConcreteGatewayModelId(modelId)) {

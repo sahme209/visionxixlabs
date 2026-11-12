@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Gemini provider.
@@ -8,7 +9,7 @@ import type { GenerateTextOptions, GenerateTextResult } from "./types";
 export async function generateText(
   opts: GenerateTextOptions
 ): Promise<GenerateTextResult> {
-  denyIsolatedExternalIO();
+  denyIsolatedExternalIO();assertOnlineAIDispatch();
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new Error("GEMINI_API_KEY not set");
 
@@ -23,7 +24,8 @@ export async function generateText(
   const userContent = opts.prompt ?? opts.messages?.filter((m) => m.role === "user").pop()?.content ?? "";
   const fullContent = system ? `${system}\n\n---\n\n${userContent}` : userContent;
 
-  const response = await ai.models.generateContent({
+  assertOnlineAIDispatch();
+      const response = await ai.models.generateContent({
     model,
     contents: fullContent,
     config: {

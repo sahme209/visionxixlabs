@@ -3,6 +3,7 @@ import "server-only";
 import { prisma } from "@/lib/db";
 import { isAIProviderName, type AIProviderName } from "./AIProvider";
 import { defaultModelFor, isKnownModel } from "./AIModelRegistry";
+import { isCustomerHostedModelId } from "./customerHostedConfig";
 import { isGatewayModelId } from "./gatewayModelCatalog";
 
 export interface GatewayModelSelectionV1 {
@@ -63,7 +64,7 @@ function modelSelections(value: unknown, allowedProviders: readonly AIProviderNa
   const selections: Partial<Record<AIProviderName, string>> = {};
   for (const [provider, model] of Object.entries(value)) {
     if (!isAIProviderName(provider) || provider === "mock" || !allowedProviders.includes(provider) || typeof model !== "string") return null;
-    if (provider === "vercel_gateway" ? !isGatewayModelId(model) : !isKnownModel(provider, model)) return null;
+    if (provider === "vercel_gateway" ? !isGatewayModelId(model) : provider === "customer_hosted" ? !isCustomerHostedModelId(model) : !isKnownModel(provider, model)) return null;
     selections[provider] = model;
   }
   return selections;
@@ -205,9 +206,9 @@ export function resolveWorkspaceAIProviderPolicy(input: {
   const allowedProviders = input.stored.allowedProviders.filter((provider) => serviceEnabled.includes(provider));
   const fallbackOrder = input.stored.fallbackOrder.filter((provider) => allowedProviders.includes(provider));
   const selected = Object.fromEntries(
-    Object.entries(input.stored.modelSelections).filter(([provider, model]) => isAIProviderName(provider) && allowedProviders.includes(provider) && (provider === "vercel_gateway" ? isGatewayModelId(model) : isKnownModel(provider, model))),
+    Object.entries(input.stored.modelSelections).filter(([provider, model]) => isAIProviderName(provider) && allowedProviders.includes(provider) && (provider === "vercel_gateway" ? isGatewayModelId(model) : provider === "customer_hosted" ? isCustomerHostedModelId(model) : isKnownModel(provider, model))),
   ) as Partial<Record<AIProviderName, string>>;
-  for (const provider of allowedProviders) selected[provider] ??= defaultModelFor(provider);
+  for (const provider of allowedProviders) if (provider !== "customer_hosted") selected[provider] ??= defaultModelFor(provider);
   return {
     enabled: true,
     allowedProviders,

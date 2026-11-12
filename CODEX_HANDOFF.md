@@ -149,13 +149,13 @@ GitHub Actions cannot open PRs in this repo, so you open the PR (`gh pr create -
 
 Follow the table in `CLAUDE.md`. The ones that bite most often:
 
-November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind batch updates styling, the install guide’s engine requirements, generated heading hashes/corpus, three existing ModuleIntro review dates and the internal Desktop Pairing scenario. Guide count at the Tailwind checkpoint was 31 (now 35 after the workspace guide batch); SDK methods and webhook events are unchanged. The TypeScript transition changes build/CI tooling only; no module, product flow, API or guide text changes apply. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
+November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind batch updates styling, the install guide’s engine requirements, generated heading hashes/corpus, three existing ModuleIntro review dates and the internal Desktop Pairing scenario. Guide count at the Tailwind checkpoint was31 (35 after the workspace batch;36 on the current offline-AI branch); SDK methods and webhook events are unchanged. The TypeScript transition changes build/CI tooling only; no module, product flow, API or guide text changes apply. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
 
 | You change | You must also |
 |---|---|
 | Any `app/docs/**/page.tsx` | Update **`lib/docs/guide-heading-index.json`**: the `sourceSha256` of that page; `fields` (DocHeader title, summary, then DocSection/Callout titles in page order); `navigationSha256` = sha256 of `components/docs/DocsSidebar.tsx`. Normally `node scripts/generate-docs-heading-index.cjs` (needs TypeScript installed). Without deps, compute sha256 with Python and keep the same JSON shape (2-space indent, non-ASCII unescaped). |
 | Docs text | Regenerate the Ask Axiom corpus: `node scripts/support/build-docs-corpus.mjs` → `lib/support/docsCorpus.json` (a freshness test enforces it). |
-| Add or remove a docs guide | Add it to `DocsSidebar.tsx`, add the index entry in sidebar order, and bump the guide count in `app/docs/__tests__/guide-navigation-search.test.ts` (it is **35** now: four workspace guides added after #322). |
+| Add or remove a docs guide | Add it to `DocsSidebar.tsx`, add the index entry in sidebar order, and bump the guide count in `app/docs/__tests__/guide-navigation-search.test.ts` (it is **36** on the current offline-AI branch: four workspace guides plus the offline-AI source-preview guide added after #322). |
 | Ask Axiom knowledge or ranking | Keep the eval `lib/support/__tests__/answerEval.test.ts` at ≥ 90%. It is 94.7% now; the 2 known misses are CI-gate and GCP setup. |
 | A `/control/*` screen | `<ModuleIntro>` props and `lastReviewed`. |
 | A product flow | The matching scenario in `lib/demo/demoScenarios.ts` (≥ 3 steps, unique ids, valid approval values). |
@@ -181,7 +181,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 - **AWS SDK:** `scripts/fixtures/generateEcsTaskSchema.mjs` asserts `@aws-sdk/client-ecs` **3.1166.0** (`pinned_ecs_sdk_changed`). The S3 plan-reader tests (`lib/terraform/__tests__/customerPlanAwsRead.test.ts`) assert exact SDK stream and middleware behaviour.
 - **Stripe:** `lib/billing/settleAIUsageToStripe.ts` pins API version `2026-01-28.clover`. Even stripe 20.4.1 moves it, so Stripe is fully held.
 - **ai SDK:** v7 moves the AI Gateway URL v3 → v4. PR #317 updated the installed-SDK composition tests to the reviewed v4 endpoint.
-- **Governed AI path:** `lib/axiom/agentRuntime/governedAiCall.ts` is the only place the Agent may call a model, and it is gateway-only. Do not add a fallback provider there (section 10, offline ADR).
+- **Governed AI path:** `lib/axiom/agentRuntime/governedAiCall.ts` is the only place the Agent may call a model, and online calls remain Gateway-only. The accepted local offline-AI branch is mutually exclusive, token-admitted and has no fallback; live enablement remains gated (section10, offline ADR).
 - **Governance native and issuer code:** never flip these.
   - `AX_OWNER_OPERATIONAL=0` (`packages/verified-issuer-runtime/native/owner_config.h`);
   - the bootstrap flags in `lib/desktop/privateReleaseMergeBootstrap.ts`;
@@ -313,7 +313,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 4. **Flaky `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`.**
    - Not reproduced in 60 failed runs.
    - When it fails, capture the `fixed_fixture_scenario_unavailable:<site>` code from the log and fix that race. Do not guess.
-5. **Offline AI: ADR accepted and all three v1 choices confirmed November 11. Local implementation is next after the current research PR.** OpenAI-compatible vLLM/Ollama/LM Studio only; operator-set per-workspace caps with no default; missing caps refuse; online customer-hosted disabled. Production/live/spending gates remain.
+5. **Offline AI: ADR accepted and all three v1 choices confirmed November 11. Local source implementation and validation are complete on the current branch; mandatory PR/CI/merge remain.** OpenAI-compatible vLLM/Ollama/LM Studio only; operator-set per-workspace caps with no default; missing caps refuse; online customer-hosted disabled. Production/live/spending gates remain.
    - implement the `customer_hosted` governed branch exactly as the ADR says;
    - offline mode excludes the gateway; operator-only endpoint; same redaction and admission; configured output bounds; a token budget instead of a price; an audit record per call;
    - kernel tests first.
@@ -386,3 +386,7 @@ Required Typecheck + Vitest, production/offline build, desktop/macOS, audit and 
 ### Prisma startup compiler boundary — source correction, CI pending
 
 Actual Next Webpack compilation of the real instrumentation hook reproduced 17 Edge errors with the early-return form. The Node store-factory import is now enclosed in a positive Node-only condition: Edge excludes the real PostgreSQL adapter graph, Node retains it, and the original Node store/logging/error behavior is unchanged. Implemented source review passes; no emitted application was executed by this regression. [Evidence](docs/recovery/2026-11-11/prisma7-preflight/INSTRUMENTATION-COMPILER-BOUNDARY.md). Actual HTTP/website CI success remains mandatory; no startup/deployment acceptance is claimed yet. No Next config/hash, authority, timeout, flag, credentials or native dependency changed.
+
+## November11 — offline AI branch in final validation (not merged/deployed)
+
+Accepted v1 choices and protected evidence-supplier design are implemented locally: token ledger, private transport, default Agent/Prisma/decision-loop composition, mode-aware policy controls and client selection. No default token allowance; operator-only endpoint/caps; unknown liabilities retained. Current public navigation36guides/corpus123sections includes a clearly labeled offline source-preview operation matrix. Existing on-prem/native/Governance, live model/OS qualification and production gates remain. Independent source review found an omitted isolated-provider guard and a terminal-admission race; both are corrected and re-reviewed. Final full local suite17,966pass/914skip/one expected failure, production build304pages, desktop types/build and Python36pass. Exact-head PR checks/merge remain required. [Evidence and explicit limits](docs/recovery/2026-11-11/offline-ai-v1/README.md). Do not call this feature complete or change production.

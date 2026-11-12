@@ -86,3 +86,13 @@ it("bounds large catalog rendering while searching the complete catalog without 
  fireEvent.change(screen.getByRole("textbox",{name:"Search models"}),{target:{value:"vendor/model-124"}});expect(screen.getAllByRole("switch")).toHaveLength(1);expect(screen.getByRole("switch",{name:"Enable Catalog model 124"})).toBeTruthy();
  fireEvent.change(screen.getByRole("textbox",{name:"Search models"}),{target:{value:""}});expect(screen.getAllByRole("switch")).toHaveLength(50);expect(mocks.update).not.toHaveBeenCalled();
 });
+it('offline Settings explains operator-owned caps and selects one accepted local model',async()=>{
+ mocks.status.mockResolvedValue({ok:true,data:{installationAIMode:'offline',providers:[{provider:'customer_hosted',models:[{id:'local-a',label:'Local A',tier:'balanced'},{id:'local-b',label:'Local B',tier:'balanced'}]}],policy:{enabled:true,allowedProviders:['customer_hosted'],modelSelections:{customer_hosted:'local-a'},fallbackOrder:['customer_hosted']}}});
+ render(createElement(SettingsView,{identity:{} as never,initialSection:'models'}));await screen.findByRole('switch',{name:'Enable Local B'});
+ expect(screen.getByText(/deployment operator manages/)).toBeTruthy();fireEvent.click(screen.getByRole('switch',{name:'Enable Local B'}));await screen.findByRole('switch',{name:'Disable Local B'});
+ expect(mocks.update.mock.calls[0][0]).toEqual({enabled:true,allowedProviders:['customer_hosted'],modelSelections:{customer_hosted:'local-b'},fallbackOrder:['customer_hosted']});
+});
+it('offline Settings keeps the stop switch usable when no accepted model is listed',async()=>{
+ mocks.status.mockResolvedValue({ok:true,data:{installationAIMode:'offline',providers:[],policy:{enabled:true,allowedProviders:[],modelSelections:{},fallbackOrder:[]}}});
+ render(createElement(SettingsView,{identity:{} as never,initialSection:'models'}));fireEvent.click(await screen.findByRole('button',{name:'Disable workspace AI'}));await waitFor(()=>expect(mocks.update).toHaveBeenCalledOnce());expect(mocks.update.mock.calls[0][0]).toEqual({enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]});
+});

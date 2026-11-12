@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import "server-only";
 import { readGatewayMetadataText } from "./gatewayMetadataBodyBound";
 import { createHash } from "node:crypto";
@@ -69,6 +70,7 @@ function prices(value: unknown, required: boolean): { input: bigint; output: big
  * Existing settlement caps customer debits and retains platform overrun cost.
  * Every step needs its own ordinary durable reservation and dispatch claim. */
 export async function prepareSmallSonnetRequest(scope: Scope, request: { model: string; text: string; schemaHint: string }, abortSignal?: AbortSignal): Promise<SmallSonnetRequest | undefined> {
+  assertOnlineAIDispatch();
   if (request.model !== SMALL_SONNET_MODEL || !publicBillingPolicyEnabled() || process.env.AXIOM_AI_MAX_REQUEST_CREDITS_CENTS?.trim()) return undefined;
   const payload = smallSonnetPayload(request.text, request.schemaHint);
   const payloadBytes = Buffer.byteLength(payload.prompt) + Buffer.byteLength(payload.system);
@@ -76,7 +78,7 @@ export async function prepareSmallSonnetRequest(scope: Scope, request: { model: 
   // Round upward; price the whole bucket, including the redacted system schema.
   const maximumPayloadBytes = [8192, 16384, SMALL_SONNET_BYTES].find(bytes => payloadBytes <= bytes)!;
   try {
-    denyIsolatedExternalIO();
+    denyIsolatedExternalIO();assertOnlineAIDispatch();
     const metadataSignal = abortSignal ? AbortSignal.any([abortSignal, AbortSignal.timeout(5000)]) : AbortSignal.timeout(5000);
     const response = await fetch(`https://ai-gateway.vercel.sh/v1/models/${SMALL_SONNET_MODEL}/endpoints`, { cache: "no-store", signal: metadataSignal });
     if (!response.ok) return undefined;

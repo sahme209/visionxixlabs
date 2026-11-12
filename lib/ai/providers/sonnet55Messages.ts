@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import 'server-only';
 import {consumeSmallSonnet55Dispatch} from '@/lib/billing/smallSonnet55Request';
 import {denyIsolatedExternalIO} from '@/lib/billing/isolatedApplication/runtime';
@@ -5,7 +6,7 @@ import {redact} from '@/lib/security/redaction';
 import type {AIRequestOptions,AITextResponse} from '../AIProvider';
 /** Native Messages, exact admitted model and bounded total output. No retries/tools. */
 export async function sendSmallSonnet55Messages(prompt:string,options:AIRequestOptions):Promise<AITextResponse>{
- denyIsolatedExternalIO();const started=Date.now();
+ denyIsolatedExternalIO();assertOnlineAIDispatch();const started=Date.now();
  const signal=AbortSignal.any([AbortSignal.timeout(Math.min(options.timeoutMs??30000,30000)),...(options.abortSignal?[options.abortSignal]:[])]);signal.throwIfAborted();
  if(!options.smallAgent55Dispatch)throw Error('sonnet55_dispatch_unavailable');
  const wire=consumeSmallSonnet55Dispatch(options.smallAgent55Dispatch,{...options,model:options.model!,prompt:redact(prompt),system:options.system===undefined?undefined:redact(options.system)});

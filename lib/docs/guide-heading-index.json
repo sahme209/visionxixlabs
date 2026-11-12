@@ -1,7 +1,7 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "421e59b5f090be5d6a858e2e10f6c00d3b6c41e4bfdf2b83c8df5c900facaf0e",
+  "navigationSha256": "1cdd29a6945da5d13431b8f4b2344aa7d52928b764f7a37c9597f6c2bab2f0fa",
   "guides": [
     {
       "href": "/docs",
@@ -291,6 +291,22 @@
         "How requests are decided",
         "Approve or reject",
         "Gate a CI deploy"
+      ]
+    },
+    {
+      "href": "/docs/offline-ai",
+      "source": "app/docs/offline-ai/page.tsx",
+      "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413",
+      "fields": [
+        "Keep model calls inside your private environment.",
+        "Offline customer-hosted AI uses an operator-configured model and a workspace token budget. It is a separate path, with no automatic cloud fallback.",
+        "Source preview, not an enabled service",
+        "Offline AI operations and cloud fallback",
+        "Offline customer-hosted models and operator token budgets",
+        "What the deployment operator prepares",
+        "Choose an accepted local model",
+        "Private transport and data boundaries",
+        "Inspect outcomes before recovery"
       ]
     },
     {

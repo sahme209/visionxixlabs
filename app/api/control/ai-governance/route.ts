@@ -1,3 +1,6 @@
+import {customerHostedAvailability,type CustomerHostedAvailability} from "@/lib/ai/customerHostedAvailability";
+import type {AIProviderName} from "@/lib/ai/AIProvider";
+import {providerPolicyChangeRefusal} from "@/lib/ai/workspacePolicyChange";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { currentContext } from "@/lib/auth/currentContext";
@@ -22,7 +25,7 @@ import {
 } from "@/lib/axiom/agentRuntime/agentIdentityPolicy";
 import { readTenantCharter, upsertTenantCharter } from "@/lib/autonomy/tenantCharterStore";
 import { workspaceUnenrolled } from "@/lib/governance/intelligence/enrolledRefusal";
-import { isAutonomyLoosening, isProviderPolicyLoosening } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
+import { isAutonomyLoosening } from "@/lib/governance/intelligence/enrolledRefusalPolicy";
 import type { AutonomyMode } from "@/lib/autonomy/autonomousLoopModel";
 import { loadBudgetConfig, upsertBudgetConfig } from "@/lib/workforce/pipelines/budgetConfigStore";
 
@@ -48,7 +51,8 @@ async function context() {
   };
 }
 
-function serviceProviders() {
+function serviceProviders(local:CustomerHostedAvailability):AIProviderName[] {
+  if (local.mode !== "online") return local.mode === "offline" && local.models.length ? ["customer_hosted"] : [];
   return getAIProviderManager().status()
     .filter((row) => row.provider !== "mock" && row.configured)
     .map((row) => row.provider);
@@ -58,7 +62,8 @@ export async function GET() {
   const ctx = await context();
   if (!ctx) return NextResponse.json({ ok: false, error: "authentication_required" }, { status: 401 });
 
-  const providers = serviceProviders();
+  const local = await customerHostedAvailability(ctx.organizationId);
+  const providers = serviceProviders(local);
   const [loadedPolicy, identity, autonomy, budget, gatewayModels] = await Promise.all([
     loadWorkspaceAIProviderPolicyWithState(ctx.organizationId),
     readWorkspaceAgentIdentity(ctx.organizationId)
@@ -79,6 +84,8 @@ export async function GET() {
       providerPolicy: resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled: providers }),
       availableProviders: providers,
       gatewayModels,
+      customerHostedModels: local.models,
+      installationAIMode: local.mode,
       gatewayCatalogLive: providers.includes("vercel_gateway") && gatewayModels !== null,
       agentIdentity: identity.value,
       agentIdentityState: identity.state,
@@ -109,9 +116,13 @@ export async function PATCH(request: NextRequest) {
   if (section === "provider_policy") {
     const policy = normalizeWorkspaceAIProviderPolicyUpdate(body ?? {});
     if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
-    const available = serviceProviders();
+    const local = await customerHostedAvailability(ctx.organizationId);
+    const available = serviceProviders(local);
     if (policy.allowedProviders.some((provider) => !available.includes(provider))) {
       return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
+    }
+    if (policy.enabled && policy.allowedProviders.includes("customer_hosted") && !local.models.some(model => model.id === policy.modelSelections.customer_hosted)) {
+      return NextResponse.json({ ok: false, error: "customer_hosted_model_unavailable" }, { status: 422 });
     }
     if (gatewayPolicyModelIds(policy).length) {
       const models = await loadGatewayModelCatalog().catch(() => null);
@@ -120,12 +131,8 @@ export async function PATCH(request: NextRequest) {
         return NextResponse.json({ ok: false, error: "gateway_model_unavailable" }, { status: 422 });
       }
     }
-    // Governance M02: while enrolled, AI reach can be reduced but not widened.
-    const stored = await loadWorkspaceAIProviderPolicyWithState(ctx.organizationId).catch(() => ({ policy: null }));
-    const shape = (p: typeof policy) => ({ enabled: p.enabled, allowedProviders: p.allowedProviders, approvedModels: gatewayPolicyModelIds(p) });
-    if (isProviderPolicyLoosening(stored.policy ? shape(stored.policy) : null, shape(policy)) && !await workspaceUnenrolled(ctx.organizationId)) {
-      return NextResponse.json({ ok: false, error: "governance_enrolled_policy_loosening" }, { status: 409 });
-    }
+    const refusal = await providerPolicyChangeRefusal(ctx.organizationId, policy);
+    if (refusal) return NextResponse.json({ ok: false, error: refusal }, { status: refusal === "provider_policy_unavailable" ? 503 : 409 });
     await saveWorkspaceAIProviderPolicy({ organizationId: ctx.organizationId, policy, updatedBy: ctx.userId });
     try {
       await recordAudit({

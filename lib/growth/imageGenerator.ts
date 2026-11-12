@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Brand image generator through Vercel AI Gateway.
@@ -72,7 +73,7 @@ export function buildImagePrompt(input: GenerateImageInput): string {
 // ---------------------------------------------------------------------------
 
 export async function generateBrandImage(input: GenerateImageInput): Promise<ImageGenResult> {
-  denyIsolatedExternalIO();
+  denyIsolatedExternalIO();assertOnlineAIDispatch();
   const hasGatewayAuth = Boolean(process.env.AI_GATEWAY_API_KEY?.trim() || process.env.VERCEL_OIDC_TOKEN?.trim());
   const model = process.env.AI_GATEWAY_IMAGE_MODEL?.trim();
   if (!hasGatewayAuth || !model) {
@@ -84,7 +85,8 @@ export async function generateBrandImage(input: GenerateImageInput): Promise<Ima
 
   const prompt = buildImagePrompt(input);
   try {
-    const result = await generateImage({
+    assertOnlineAIDispatch();
+      const result = await generateImage({
       model,
       prompt,
       size: "1024x1024",
