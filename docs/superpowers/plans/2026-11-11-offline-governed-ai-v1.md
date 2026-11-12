@@ -89,3 +89,5 @@ Composed owned-PG progress: expanded8/8 actual SQL tests PASS, including real co
 Transport mode race closure: independent offline checks before/after DNS and final admission;34 focused composition tests/types PASS. Owner approved local protected evidence-supplier design; implement locally next, without live qualification/provisioning/enablement.
 
 Approved supplier source implemented: fixed protected manifest/evidence reads, exact hashes/bounds/model/config and reviewed/observed time checks, conservative root/mode/no-ACL/inode profile. Seven pure/injected-IO tests PASS; default OS IO was NOT run, no live record/provisioning/enablement. Default policy/actor reader and Agent mount remain next. Host no-ACL profile qualification is an explicit real-world gate.
+
+Task4 current reader implemented with actual joined membership/policy SQL, protected accepted-limit source, final database-time/config/policy rechecks and explicit budget. Four injected-row/evidence tests/types PASS; actual SQL membership fixture and default Agent mount remain required. No Gateway/currency dependency or live acceptance claim.
