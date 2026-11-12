@@ -1,3 +1,4 @@
+import {settingsNativeProfile} from './settingsNativeProfile';
 import 'server-only';
 import {z} from 'zod';
 import {settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
@@ -22,16 +23,16 @@ export function createSettingsVercelTransport(ports:Ports){return Object.freeze(
  try{
   const expired=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
   return await Promise.race([expired,(async()=>{
-   const binding=settingsArtifactBindingSchema.parse(raw);if(typeof value!=='string'||value.includes('\0')||Buffer.byteLength(value,'utf8')>65536||Buffer.from(value,'utf8').toString('utf8')!==value)return unknown();
+   const binding=settingsArtifactBindingSchema.parse(raw),native=settingsNativeProfile({type:binding.target.type,sensitivity:binding.target.sensitivity});if(typeof value!=='string'||value.includes('\0')||Buffer.byteLength(value,'utf8')>65536||Buffer.from(value,'utf8').toString('utf8')!==value)return unknown();
    await ports.assertQualified(binding);abort.signal.throwIfAborted();const credential=await ports.readCredential(binding);abort.signal.throwIfAborted();if(typeof credential!=='string'||credential.length<1||credential.length>8192||/[\s\x00-\x1f\x7f]/.test(credential))return unknown();
    await ports.assertQualified(binding);abort.signal.throwIfAborted();
    const url=new URL('https://api.vercel.com/v10/projects/'+encodeURIComponent(binding.target.projectId)+'/env');url.searchParams.set('teamId',binding.target.teamId);
-   const body=JSON.stringify({key:binding.target.name,value,type:binding.target.type,target:[binding.target.environment]});
+   const body=JSON.stringify({key:binding.target.name,value,type:native.type,visibility:native.visibility,target:[binding.target.environment]});
    await beforeSend();abort.signal.throwIfAborted();
    const response=await ports.fetch(url.href,{method:'POST',headers:{authorization:'Bearer '+credential,'content-type':'application/json'},body,redirect:'error',cache:'no-store',signal:abort.signal});abort.signal.throwIfAborted();
    if(response.status!==201||response.redirected){void response.body?.cancel().catch(()=>{});return unknown()}
    const parsed=responseSchema.parse(await boundedJson(response,abort.signal)),created=parsed.created;
-   if(created.key!==binding.target.name||created.target[0]!==binding.target.environment||created.type!==binding.target.type||created.gitBranch||binding.target.sensitivity==='secret'&&created.visibility==='config')return unknown();
+   if(created.key!==binding.target.name||created.target[0]!==binding.target.environment||created.type!==native.type||created.visibility!==native.visibility||created.gitBranch)return unknown();
    return {outcome:'confirmed' as const,settingId:created.id};
   })()]);
  }catch{return unknown()}finally{if(timer)clearTimeout(timer);abort.abort()}

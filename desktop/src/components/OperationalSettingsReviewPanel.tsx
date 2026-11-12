@@ -1,3 +1,4 @@
+import {settingsNativeProfile} from '../../../lib/governance/platform/operations/settingsNativeProfile';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import {desktopClient} from '../lib/desktopClient';
 import type {SettingsReviewClient} from '../lib/settingsReview';
@@ -28,7 +29,7 @@ export function OperationalSettingsReviewPanel({actionId,planDigest,requesterUse
   <button type="button" className="btn-secondary" disabled={busy} onClick={()=>void run('load')}>Load exact settings proposal</button>
   {preview&&<>
    <dl className="grid gap-3 sm:grid-cols-2"><div><dt>Project</dt><dd>{preview.target.projectId}</dd></div><div><dt>Team</dt><dd>{preview.target.teamId}</dd></div></dl>
-   <ul className="space-y-3">{preview.settings.map(setting=><li key={setting.environment+':'+setting.name} className="rounded-lg border border-white/10 p-3"><h3 className="font-medium break-all">{setting.name}</h3><p>{setting.environment} · {setting.type} · {setting.sensitivity}</p><p>Current setting: absent · protected artifact: {setting.artifactStatus}</p></li>)}</ul>
+   <ul className="space-y-3">{preview.settings.map(setting=><li key={setting.environment+':'+setting.name} className="rounded-lg border border-white/10 p-3"><h3 className="font-medium break-all">{setting.name}</h3><p>{setting.environment} · {setting.type} · {setting.sensitivity}</p><p>Provider storage: {settingsNativeProfile({type:setting.type,sensitivity:setting.sensitivity}).type} · {settingsNativeProfile({type:setting.type,sensitivity:setting.sensitivity}).visibility}</p><p>Current setting: absent · protected artifact: {setting.artifactStatus}</p></li>)}</ul>
    {!preview.reviewReady&&<p role="alert">A protected artifact is missing. Approval is unavailable until all exact artifacts are saved.</p>}
    {expired&&<p role="alert">The review window expired. Historical metadata grants no new permission.</p>}
    {!independent&&<p>Another authorized person must independently review your proposal.</p>}
