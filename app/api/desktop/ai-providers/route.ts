@@ -1,3 +1,4 @@
+import {providerPolicyChangeRefusal} from "@/lib/ai/workspacePolicyChange";
 import { NextResponse, type NextRequest } from "next/server";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { getAIProviderManager } from "@/lib/ai/AIProviderManager";
@@ -61,6 +62,8 @@ export async function PUT(request: NextRequest): Promise<NextResponse> {
   const body = await request.json().catch(() => null) as { enabled?: unknown; allowedProviders?: unknown; modelSelections?: unknown; fallbackOrder?: unknown } | null;
   const policy = body ? normalizeWorkspaceAIProviderPolicyUpdate(body) : null;
   if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
+  const refusal = await providerPolicyChangeRefusal(String(session.organizationId), policy);
+  if (refusal) return NextResponse.json({ ok: false, error: refusal }, { status: refusal === "provider_policy_unavailable" ? 503 : 409 });
   const availableProviders = serviceEnabledProviders();
   if (policy.allowedProviders.some((provider) => !availableProviders.includes(provider))) {
     return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
