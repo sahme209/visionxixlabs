@@ -2,6 +2,12 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Latest joined supplier acceptance — local only
+
+The actual fixed supplier/parser now joins the real SQL workload runner in five cases: positive exact STS/ECS execution with original reference recovery, unknown acquisition/no replay, known source lease after lost SQL acknowledgement, drain before source and drain after source/no STS.110actual owned PostgreSQL cases pass; fixture `/private/tmp/axiom-platform-pg-f2hkprmr` is stopped. All source/runtime/custody/time/native evidence and AWS responses remain simulated; no native endpoint was contacted.
+
+Full ordinary suite18,563pass/0fail/1,024pending/0failed suites, source unchanged, at `/private/tmp/axiom-native-supplier-full-fcfj7f1v`; root types pass. The first full run had a release-guard beforeAll failure because my isolated PATH omitted installed gpg; the corrected environment passed without a product/test-source change. Pending/opt-in tests are not acceptance. See NATIVE-SUPPLIER-JOINED-RECEIPT.json. The frozen production compilation67936548 below predates supplier runtime5ffe0c33; current production build/final review/complete family coverage and all actual qualification remain required. No PR, deployment, key use or real credential/provider access.
+
 ## Latest supplier work and frozen production compile
 
 Owner approved local native-supplier implementation with intercepted I/O only. The fixed native HTTP primitive now passes16checks (21with the existing private STS tests); root native types pass. It fixes literal link-local origin, narrow private coordinate, no redirect/proxy/environment/file fallback, one request,64KiB and3seconds total, cancellation/destruction and secret-free failures. No actual native endpoint was contacted. Private immutable capture, strict source-role/response/lifetime checks and opaque ownership are now composed into the actual private STS issuer;33focused checks and root types pass. The joined test first reproduced ownership loss from the issuer copy; supplier identity is now retained while signing uses captured primitives, with mutation refusal around awaited checks. Actual runner/SQL source-intent and liability integration tests remain; it is not an issuer or host qualifier and is not registered.
