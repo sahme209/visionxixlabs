@@ -107,3 +107,37 @@ it.skipIf(!enabled)('default deployment transport loss retains unknown parent/ch
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+
+import {readFileSync} from 'node:fs';
+import {createHash} from 'node:crypto';
+import {S3Client} from '@aws-sdk/client-s3';
+import {STSClient} from '@aws-sdk/client-sts';
+import {templateAccessEffect} from '@/lib/cloud/aws/platformTemplatePlan';
+import {ensureTemplatePublished} from '@/lib/cloud/aws/templateHosting';
+async function templateFixture(){
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');vi.stubEnv('AWS_SHARED_CREDENTIALS_FILE','/private/tmp/axiom-no-synthetic-aws-credentials');vi.stubEnv('AWS_CONFIG_FILE','/private/tmp/axiom-no-synthetic-aws-config');vi.stubEnv('AWS_PROFILE','axiom-synthetic');
+ const bytes=readFileSync('public/aws/axiom-agent-quick-deploy.yaml'),accountId='123456789012',input={accountId,region:'us-east-2',objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600};
+ const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(bytes).digest('hex')}),raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw);
+ const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),id=await requester.propose(raw);
+ const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
+ vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);
+ return {bytes,input,id,binding:await createDefaultPlatformExecution(request,id,1)};
+}
+it.skipIf(!enabled)('joins default SQL authority to exact template readback and actual synthetic signing',async()=>{
+ try{
+  const f=await templateFixture(),read=vi.spyOn(S3Client.prototype,'send').mockResolvedValue({VersionId:'version-1',ContentLength:f.bytes.length,Body:(async function*(){yield f.bytes})()} as never);
+  expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:true});
+  expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});expect(read).toHaveBeenCalledTimes(1);
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'confirmed',attemptCount:1});
+ }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('revocation during template readback prevents URL release in the default composed path',async()=>{
+ try{
+  const f=await templateFixture();vi.spyOn(S3Client.prototype,'send').mockImplementation(async()=>{
+   await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);
+   return {VersionId:'version-1',ContentLength:f.bytes.length,Body:(async function*(){yield f.bytes})()};
+  });
+  expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
+ }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
+});
