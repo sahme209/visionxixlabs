@@ -1,0 +1,23 @@
+{
+  "scope": "local private supplier and installed STS, native I/O intercepted",
+  "files": {
+    "lib/governance/platform/operations/nativeCustodianHttp.ts": "7cc82222c0d060eea4f1caa6eeb58352c800e2c12a79aabad2f9ebe1d9ed809e",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "9bcadb6493978e8e6ee9260aad10facd22ca7bf6a937be6bbcc1ed7b5de35853",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "88bd4af4b2223e6eaf96ecaf49f01be625098e10609693e737d0cd5478a3b072",
+    "lib/governance/platform/operations/__tests__/nativeCustodianHttp.test.ts": "b9e47d39fe742081b87b4861663895581df2265262c2787fb35bdc802e0d4b31",
+    "lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts": "09686fadd415e8a85e90fed995907c63b6260bf835f45c8634024969ecd6123f",
+    "lib/governance/platform/operations/__tests__/privateStsIssuer.test.ts": "d0edc69264ccbf6382bff1755dd1c0feee7e540afc1ee803b5b1e59fd0179df1"
+  },
+  "focusedChecks": 33,
+  "rootTypes": "pass before last test-only addition",
+  "sqlSupplierComposition": "not yet run",
+  "actualCredentialRead": false,
+  "productionChanged": false,
+  "wholeGovernanceComplete": false,
+  "frozenPreSupplierProductionBuild": {
+    "source": "67936548",
+    "directory": "/private/tmp/axiom-current-production-_h3i40rk",
+    "exitCode": 0,
+    "sourcesAndEngineUnchanged": true
+  }
+}

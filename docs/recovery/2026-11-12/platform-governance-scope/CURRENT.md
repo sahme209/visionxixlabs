@@ -2,6 +2,12 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Latest supplier work and frozen production compile
+
+Owner approved local native-supplier implementation with intercepted I/O only. The fixed native HTTP primitive now passes16checks (21with the existing private STS tests); root native types pass. It fixes literal link-local origin, narrow private coordinate, no redirect/proxy/environment/file fallback, one request,64KiB and3seconds total, cancellation/destruction and secret-free failures. No actual native endpoint was contacted. Private immutable capture, strict source-role/response/lifetime checks and opaque ownership are now composed into the actual private STS issuer;33focused checks and root types pass. The joined test first reproduced ownership loss from the issuer copy; supplier identity is now retained while signing uses captured primitives, with mutation refusal around awaited checks. Actual runner/SQL source-intent and liability integration tests remain; it is not an issuer or host qualifier and is not registered.
+
+Frozen source67936548 passed the production compilation at `/private/tmp/axiom-current-production-_h3i40rk`; completion records exit0 and unchanged tracked sources/cached engine. It predates the new supplier files. Build log SHA256 `5d50eef43af516c91dba06ac9ebe385789e65e1424c0aa1a8177c1cc25a7ee4c`. The first preparation refused tracked example env templates before compilation; the corrected preparation excludes only actual Next-loaded production env files. Both attempt histories are preserved. No production change.
+
 ## Latest local source — prepared workflows, qualification still open
 
 - Custodian control/reference recovery, separate human review/requester execution, paged original closure history and original ECS failure history are implemented locally. ECS requester intake is now joined to the prepared workflow; all routes/panels remain unregistered.

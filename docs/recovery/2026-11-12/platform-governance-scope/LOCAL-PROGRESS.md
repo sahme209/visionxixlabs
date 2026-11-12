@@ -1212,3 +1212,17 @@ Next local source unit would require approval for the new fixed native acquisiti
 ### Gap-time hybrid reuse inventory while supplier implementation is pending
 
 The new fixed native supplier implementation request remains unanswered; no code was started under its design-only grant. Authorized gap-time tooling research traced current default grounded support versus explicit governed AI and existing deterministic policy/impact/readiness/drift/proposal kernels. Source/head/hash inventory and honest module-versus-customer-surface distinctions are recorded at docs/research/2026-11-12/hybrid-fulfillment-reuse-assessment.md/json companion inventory. No unchanged baseline/test was repeated, no external/provider/model/database/runtime/credential/dependency/billing/production action or spending. This source inventory is not measured savings or a generic autonomous-dispatch implementation. Core pending requests and qualification/default/legacy/final-review/whole-master gates remain.
+
+
+## Fixed native supplier transport — first implementation unit
+
+The owner approved local implementation/tests of CUSTODIAN-NATIVE-SUPPLIER-DESIGN.md. Added nativeCustodianHttp.ts and16intercepted-I/O tests: one literal link-local request, unsupported-coordinate refusal, redirect/error refusal, byte/UTF-8 bounds, total deadline, pre/post-open cancellation, truncated response and late-result suppression. Existing5private STS tests also pass. Root native TypeScript passed before the final2test-only additions. Missing-module RED preceded implementation; the first GREEN attempt exposed an ESM spy harness incompatibility (14test failures), corrected with a hoisted Node HTTP mock. No native transport was opened. Full suite/whole-source review not repeated or claimed for this initial unit.
+
+The transport is not callable from a registered route and confers no qualification. Next implement protected immutable capture/strict response profile and compose into actual private issuer/runner with durable source-intent/lease integration, including owned SQL scenarios. No simulated profile may qualify a real host. Keep all real fleet/time/trust/closure gates closed.
+
+
+## Native supplier private composition — not live qualification
+
+Added nativeCustodianSupplier.ts: independently supplied qualification must establish runtime/profile/source identity and trusted-time interval; capture is copied/frozen before awaits. Exact source account/role differs from target role; strict native response excludes unknown fields, credentials are bounded, expiry must fall within qualified time/profile limits. Supplier ownership uses private WeakMap and cannot be reconstructed from a clone. No default qualifier, route, environment/file source or real native request exists.
+
+The actual installed-STS integration first failed (10pass/1fail) because privateStsIssuer copied the opaque supplied object. The corrected issuer preserves private object identity for custody checks but signs only its captured primitive values, refusing changed suppliers before/after awaited checks.32checks across3files pass; the subsequent mutation regression also passes (6private issuer checks,33distinct focused checks total). Root strict native types pass before that last test-only addition. The installed signer sees a synthetic source key and records source intent→source metadata→role intent in order; no native I/O is opened. Real runner/current SQL/durable acquisition-loss/drain integration tests, whole suite/build/review and all real qualification remain outstanding.

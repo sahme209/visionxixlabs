@@ -1,6 +1,6 @@
 # Fixed native ECS custodian supplier — design for owner review
 
-Status: design prepared under the owner's bounded design/public-documentation approval. Local implementation is NOT approved by that grant. No default issuer or source is qualified or enabled. Public evidence and remaining uncertainty are recorded in CUSTODIAN-NATIVE-SUPPLIER-AWS-SOURCE-REVIEW.md; installed-code hashes are in CUSTODIAN-SUPPLIER-SOURCE-INVENTORY.json.
+Status: the owner subsequently explicitly approved local implementation and isolated tests. This does not authorize actual metadata/credential requests or real runtime qualification. No default issuer or source is qualified or enabled. Public evidence and remaining uncertainty are recorded in CUSTODIAN-NATIVE-SUPPLIER-AWS-SOURCE-REVIEW.md; installed-code hashes are in CUSTODIAN-SUPPLIER-SOURCE-INVENTORY.json.
 
 ## Problem and selected candidate
 

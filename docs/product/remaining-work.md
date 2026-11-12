@@ -1015,3 +1015,10 @@ Approved3public AWS reads consumed; [supplier design](../recovery/2026-11-12/pla
 ### November12 — hybrid task reuse source inventory
 
 Default support already uses deterministic retrieval; the separate Ask AI path is explicit and governed. [Current internal reuse assessment](../research/2026-11-12/hybrid-fulfillment-reuse-assessment.md) maps existing kernels and a finite future comparison. This closes source-inventory work only, not a new dispatcher, cost-savings benchmark, tariff or implementation grant. Main Governance work and all pending authority/real qualification gates remain.
+
+
+### November12 supplier continuation
+
+Approved fixed native credential-supplier local implementation is in progress:16intercepted transport checks plus5existing private-STS checks pass; root types passed. No native credential request or live acceptance. Qualified capture/parser, actual private runner/source-intent/lease SQL integration and complete final validation remain. Frozen pre-supplier source67936548 passed current production compilation without production changes; see platform CURRENT.md for receipt and scope.
+
+Native supplier continuation: immutable private runtime capture/strict response validation now joins actual private STS issuance.33focused checks including installed SDK serialization with intercepted transport; root types pass before the final mutation-only test. Actual joined SQL runner/drain/lost-ack evidence and whole-batch validation remain; no live source/runtime qualification or activation.
