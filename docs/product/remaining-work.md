@@ -1005,3 +1005,8 @@ Prepared target/existing-run/source-reference form and original-reference recove
 ### November12 — native custodian supplier design decision requested
 
 Installed credential-provider source inspection found ambient endpoint/token-file selection and retries; these defaults are not the fixed private one-attempt boundary. Real AWS-hosted supplier/identity/lifetime/isolation qualification remains absent. A new [bounded design/public-documentation request](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-NATIVE-SUPPLIER-DESIGN-REQUEST.md) is pending; no implementation, account/credential read, provisioning or spending authority is inferred. Existing pending family decisions are unchanged and were not re-asked.
+
+
+### November12 — fixed native supplier design prepared
+
+Approved3public AWS reads consumed; [supplier design](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-NATIVE-SUPPLIER-DESIGN.md) proposes a dedicated Fargate task and one fixed bounded credential acquisition. Native automatic rotation means admission drain alone cannot qualify closure. Local implementation still needs its distinct boundary approval; actual producer cutoff/lifetime/time/runtime/IAM/custody and costed operator setup remain unqualified. No provider/account/credential/service/production action or spending occurred.

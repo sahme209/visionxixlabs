@@ -1,0 +1,15 @@
+{
+  "authorization": "owner approved bounded design and up to three official AWS documentation reads",
+  "pagesRead": [
+    "https://docs.aws.amazon.com/sdkref/latest/guide/feature-container-credentials.html",
+    "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html",
+    "https://docs.aws.amazon.com/AmazonECS/latest/developerguide/security-iam-roles.html"
+  ],
+  "count": 3,
+  "allowanceConsumed": true,
+  "externalScope": "public documentation only; no linked pages followed or actual provider/account/metadata calls",
+  "deliverable": "CUSTODIAN-NATIVE-SUPPLIER-DESIGN.md",
+  "keyGap": "automatic native task credential rotation means local supplier drain does not establish a future-issuance cutoff or real closure",
+  "implementationAuthorized": false,
+  "productionChanged": false
+}

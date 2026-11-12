@@ -28,3 +28,8 @@ Record exact URLs, observed facts and unresolved details. Documentation can info
 ## Deliverable and approval scope
 
 Deliver a source-backed supplier/custody qualification design with chosen supported profile, rejected alternatives, data/secret/authority lifecycle, precise local test plan, operator provisioning requirements, real qualification gates and cost implications before any setup. No actual provider endpoint/metadata/API call, role/account inspection, credential/environment-value/key access, native/service/host change, signing, installation, SQL, workflow run, production action, model inference or spending. No new code/default supplier/activation from this design-only grant. Later implementation and actual provisioning each retain their required decisions.
+
+
+## Observed completion of this design-only grant
+
+Owner approved design plus3public AWS pages; all3reads are consumed. Deliverables: CUSTODIAN-NATIVE-SUPPLIER-AWS-SOURCE-REVIEW.md, CUSTODIAN-NATIVE-SUPPLIER-DESIGN.md and CUSTODIAN-NATIVE-SUPPLIER-DOCUMENTATION-RECEIPT.json. No code/provisioning qualification is implied; existing initial status above is historical.
