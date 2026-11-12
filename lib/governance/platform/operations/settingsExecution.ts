@@ -30,8 +30,8 @@ const fail=():never=>{throw Error('settings_execution_unavailable')};
 /** Server-private candidate: no default credential/profile/transport supplier,
  * public HTTP mount or provider qualification. Actual ports remain explicit. */
 export function createSettingsExecutor(repo:SettingsArtifactRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,transport:Transport){
- return Object.freeze({async executeNext(id:string,rawActor:PlatformPrincipal){
-  try{const actor=platformPrincipalSchema.parse(rawActor);
+ return Object.freeze({async executeNext(id:string,rawActor:PlatformPrincipal,expectedEffectIndex:number){
+  try{if(!Number.isSafeInteger(expectedEffectIndex)||expectedEffectIndex<0||expectedEffectIndex>31)return fail();const actor=platformPrincipalSchema.parse(rawActor);
    async function current(tx:SettingsArtifactTransaction,index:number,held:boolean){
     const parent=readPlatformAction(await tx.read(id));if(parent.status!=='claimed'||parent.requester.userId!==actor.userId||parent.requester.sessionId!==actor.sessionId||!parent.reviewer)return fail();
     await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,parent.reviewer);
@@ -54,7 +54,7 @@ export function createSettingsExecutor(repo:SettingsArtifactRepository,authority
      }else await tx.event(event);
     },
     async writeEffect(actionId,index,expected,status){
-     if(actionId!==id)return fail();if(expected===null&&status==='claimed'){
+     if(actionId!==id||index!==expectedEffectIndex)return fail();if(expected===null&&status==='claimed'){
       const {binding}=await current(tx,index,false);await tx.writeEffect(actionId,index,expected,status);await tx.reserveSettingsCreation(binding);await current(tx,index,true);resultBinding=binding;
      }else await tx.writeEffect(actionId,index,expected,status);
     },
@@ -66,7 +66,7 @@ export function createSettingsExecutor(repo:SettingsArtifactRepository,authority
     const actual=extended.get(tx);if(!actual)return fail();await current(actual,index,true);
    }});
    let expectedIndex=-1;
-   const expected=await repo.transaction(async tx=>{await tx.lock(id);const parent=readPlatformAction(await tx.read(id));if(parent.status!=='claimed')return fail();for(let i=0;i<parent.plan.effects.length;i++){const state=await tx.readEffect(id,i);if(state==='confirmed')continue;if(state!==null)return fail();await current(tx,i,false);expectedIndex=i;return parent.plan.effects[i]}return fail()});
+   const expected=await repo.transaction(async tx=>{await tx.lock(id);const parent=readPlatformAction(await tx.read(id));if(parent.status!=='claimed')return fail();for(let i=0;i<parent.plan.effects.length;i++){const state=await tx.readEffect(id,i);if(state==='confirmed')continue;if(state!==null||i!==expectedEffectIndex)return fail();await current(tx,i,false);expectedIndex=i;return parent.plan.effects[i]}return fail()});
    const bound=bindPlatformExecution({claimNextEffect:key=>service.claimNextEffect(key,actor),beforeEffectSend:(proof,effect)=>service.beforeEffectSend(proof,effect,actor),observeEffect:service.observeEffect},id);
    return await runPlatformEffect(bound,expected,async beforeSend=>{
     let value:string|undefined;
