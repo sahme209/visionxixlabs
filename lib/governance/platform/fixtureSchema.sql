@@ -12,5 +12,5 @@ CREATE TABLE "PlatformGovernanceEvent" (
 );
 CREATE TABLE "PlatformGovernanceEffect" (
  "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
- index INTEGER NOT NULL, status TEXT NOT NULL, PRIMARY KEY ("actionId",index)
+ index INTEGER NOT NULL, status TEXT NOT NULL, "publicationKey" TEXT UNIQUE, PRIMARY KEY ("actionId",index)
 );

@@ -6,21 +6,22 @@ const requester={userId:'requester',sessionId:'requester-session'},reviewer={use
 const at=Date.parse('2026-11-12T00:00:00Z');
 const plan=()=>compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'one',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}},{id:'two',kind:'settings.vercel',target:{projectId:'other',settingsDigest:d}}]});
 function fixture(){
- let rows=new Map<string,PlatformAction>(),events:unknown[]=[],effects=new Map<string,unknown>(),queue=Promise.resolve(),now=at,failEvent=false;
+ let rows=new Map<string,PlatformAction>(),events:unknown[]=[],effects=new Map<string,unknown>(),publications=new Map<string,string>(),queue=Promise.resolve(),now=at,failEvent=false;
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
-  const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects);
+  const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects),nextPublications=new Map(publications);
   const tx:PlatformTransaction={readGrowthPostingSource:async()=>null,readSessionPrincipal:async()=>null,readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
+   reservePublication:async(id,index,draftId)=>{if(nextPublications.has(draftId))throw Error('publication_already_reserved');nextPublications.set(draftId,id+':'+index)},
    readEffect:async(id,index)=>nextEffects.get(id+':'+index)??null,
    writeEffect:async(id,index,expected,state)=>{const key=id+':'+index;if((nextEffects.get(key)??null)!==expected)throw Error('stale_effect');nextEffects.set(key,state)},
   };
-  try{const value=await fn(tx);rows=next;events=nextEvents;effects=nextEffects;return value}finally{release()}
+  try{const value=await fn(tx);rows=next;events=nextEvents;effects=nextEffects;publications=nextPublications;return value}finally{release()}
  }};
  const assertCurrent=vi.fn(async(_tx:PlatformTransaction,_actor:typeof requester)=>{});
- const service=createPlatformActionService(repo,{assertCurrent});
+ const service=createPlatformActionService(repo,{assertCurrent,assertEffectCurrent:async()=>{}});
  return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
@@ -94,4 +95,12 @@ it('cannot grant a final send after concurrent outcome observation consumes its 
   const result=await Promise.allSettled([sending,recording]);expect(result[0].status).toBe('rejected');expect(result[1].status).toBe('fulfilled');
   expect(f.rows().get(id)?.status).toBe(outcome);await expect(f.service.beforeEffectSend(one.proof,one.effect,requester)).rejects.toThrow();
  }
+});
+
+it('does not grant another action the same native draft after an unknown publication',async()=>{
+ const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'post',kind:'growth.post.publish',target:{draftId:'same-draft',connectionId:'connection',connectionRevision:'revision',author:'urn:li:person:test',renderedPayloadDigest:d}}]});
+ const ids=[];for(let i=0;i<2;i++){const id=await f.service.propose(p,requester);await f.service.review(id,0,p.digest,reviewer);await f.service.claim(id,1,requester);ids.push(id)}
+ const first=await f.service.claimNextEffect(ids[0],requester);await f.service.beforeEffectSend(first.proof,first.effect,requester);await f.service.observeEffect(first.proof,'unknown');
+ const next=await f.service.claimNextEffect(ids[1],requester);await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
+ expect(f.rows().get(ids[0])?.status).toBe('unknown');await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
 });

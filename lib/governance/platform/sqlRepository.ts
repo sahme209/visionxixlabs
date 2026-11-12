@@ -45,6 +45,12 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
     const detail={planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
    },
+   async reservePublication(id,index,draftId){
+    check(id);if(!Number.isSafeInteger(index)||index<0||index>31||typeof draftId!=='string'||!draftId.length||draftId.length>256)fail();
+    const key=sha256ContentHash({kind:'growth.post.publish',draftId});
+    const count=await sql.$executeRawUnsafe('UPDATE "PlatformGovernanceEffect" SET "publicationKey"=$1 WHERE "actionId"=$2 AND index=$3 AND status=$4 AND "publicationKey" IS NULL',key,id,index,'claimed');
+    if(count!==1)fail();
+   },
    async readEffect(id,index){check(id);if(!Number.isSafeInteger(index)||index<0||index>31)fail();const rows=await sql.$queryRawUnsafe<Array<{status:string}>>('SELECT status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1 AND index=$2',id,index);
     if(!rows.length)return null;if(rows.length!==1||!['claimed','confirmed','refused','unknown'].includes(rows[0].status))fail();return rows[0].status},
    async writeEffect(id,index,expected,status){check(id);if(!Number.isSafeInteger(index)||index<0||index>31||!['claimed','confirmed','refused','unknown'].includes(status))fail();

@@ -11,6 +11,8 @@ export interface PlatformTransaction{
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
  event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed';state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
+ /** Permanent send reservation. No release/reset API, including unknown outcomes. */
+ reservePublication?(id:string,index:number,draftId:string):Promise<void>;
  readEffect(id:string,index:number):Promise<unknown|null>;
  writeEffect(id:string,index:number,expected:unknown|null,status:EffectStatus):Promise<void>;
 }
@@ -79,6 +81,12 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    if(effect.kind==='growth.post.publish'){
+     const reserve=tx.reservePublication??fail();await reserve.call(tx,binding.actionId,binding.index,effect.target.draftId);
+     // Uniqueness can wait on another transaction; authority and expiry must
+     // still hold after that wait before committing any send reservation.
+     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    }
    });
    if(observations.get(proof)!==binding)fail();
    binding.sendGranted=true;

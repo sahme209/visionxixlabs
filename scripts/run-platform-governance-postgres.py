@@ -44,9 +44,9 @@ def main():
   (root/'vitest.config.mjs').write_text('export default '+json.dumps(config)+';\n')
   run('tests',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',root/'vitest.config.mjs','--configLoader','native','--reporter=json','--outputFile='+str(root/'result.json')],60)
   result=json.loads((root/'result.json').read_text())
-  if result['numPassedTests']!=14 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('fourteen_actual_non_skipped_tests_required')
+  if result['numPassedTests']!=16 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('sixteen_actual_non_skipped_tests_required')
   if hashes()!=before:raise RuntimeError('sources_changed')
-  (root/'receipt.json').write_text(json.dumps({'tests':14,'database':'actual isolated PostgreSQL','authorityAndProvider':'3 simulated authority;2 actual identity SQL;2 default actual signed synthetic-token request composition;2 actual default deployment helper journeys with simulated HTTP;2 actual default template reader/signing journeys with simulated SDK I/O; 3 actual default post/source/unknown journeys with simulated HTTP; no real provider dispatched','sourceHashes':before,'productionChanged':False},indent=2))
+  (root/'receipt.json').write_text(json.dumps({'tests':16,'database':'actual isolated PostgreSQL','authorityAndProvider':'3 simulated authority;2 actual identity SQL;2 default actual signed synthetic-token request composition;2 actual default deployment helper journeys with simulated HTTP;2 actual default template reader/signing journeys with simulated SDK I/O; 3 actual default post/source/unknown journeys with simulated HTTP;2 actual SQL cross-action reservation cases with simulated authority; no real provider dispatched','sourceHashes':before,'productionChanged':False},indent=2))
  finally:
   if started:
    run('stop',[PG/'pg_ctl','-D',root/'data','-m','fast','-w','stop'])

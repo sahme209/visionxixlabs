@@ -5184,6 +5184,8 @@ model PlatformGovernanceEffect {
   actionId String
   index    Int
   status   String
+  /// Permanent draft-level publication send reservation; unknown retains it.
+  publicationKey String? @unique
   action   PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@id([actionId, index])
 }

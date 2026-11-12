@@ -179,3 +179,23 @@ it.skipIf(!enabled)('lost post response remains unknown in both ledgers and neve
   const runs=await defaultPrisma.linkedInPostPublishRun.findMany({where:{draftId:f.draft.id}});expect(runs).toHaveLength(1);expect(runs[0].outcome).toBe('unknown');
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+
+async function publicationPair(draftId:string){
+ const s=createPlatformActionService(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),{assertCurrent:async()=>{},assertEffectCurrent:async()=>{}});
+ const p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[{id:'post',kind:'growth.post.publish',target:{draftId,connectionId:'synthetic-connection',connectionRevision:'synthetic-revision',author:'urn:li:person:synthetic',renderedPayloadDigest:d}}]});
+ const effects=[];for(let i=0;i<2;i++){const id=await s.propose(p,actor);await s.review(id,0,p.digest,reviewer);await s.claim(id,1,actor);effects.push(await s.claimNextEffect(id,actor))}return {s,effects};
+}
+it.skipIf(!enabled)('SQL uniqueness grants one native publication across concurrent approved actions',async()=>{
+ const {s,effects}=await publicationPair('concurrent-native-draft');
+ const results=await Promise.allSettled(effects.map(e=>s.beforeEffectSend(e.proof,e.effect,actor)));
+ expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);
+ const rows=await db.$queryRawUnsafe<Array<{count:bigint}>>('SELECT count(*) AS count FROM "PlatformGovernanceEffect" WHERE "publicationKey" IS NOT NULL');expect(Number(rows[0].count)).toBeGreaterThanOrEqual(1);
+ // The losing action cannot recover its consumed proof and send later.
+ const lost=results.findIndex(r=>r.status==='rejected');await expect(s.beforeEffectSend(effects[lost].proof,effects[lost].effect,actor)).rejects.toThrow();
+});
+it.skipIf(!enabled)('SQL unknown publication permanently retains the native draft reservation',async()=>{
+ const {s,effects}=await publicationPair('unknown-native-draft');
+ await s.beforeEffectSend(effects[0].proof,effects[0].effect,actor);await s.observeEffect(effects[0].proof,'unknown');
+ await expect(s.beforeEffectSend(effects[1].proof,effects[1].effect,actor)).rejects.toThrow();
+ const rows=await db.$queryRawUnsafe<Array<{status:string}>>('SELECT status FROM "PlatformGovernanceEffect" WHERE "publicationKey"=$1',(await import('@/lib/tauri/contentHash')).sha256ContentHash({kind:'growth.post.publish',draftId:'unknown-native-draft'}));expect(rows).toEqual([{status:'unknown'}]);
+});
