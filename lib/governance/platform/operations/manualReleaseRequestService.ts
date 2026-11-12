@@ -4,6 +4,7 @@ import {verifyDesktopToken} from '@/lib/desktop/desktopToken';
 import {readConfiguredPlatformAdmins} from '../currentAuthority';
 import type {PlatformSqlDatabase} from '../sqlRepository';
 import {createManualReleaseSqlRepository} from './manualReleaseSqlRepository';
+import {createManualReleaseSource} from './releasePreparation';
 import {createManualReleaseRequestComposition} from './manualReleaseRequest';
 const unavailable=async():Promise<never>=>{throw Error('manual_release_source_qualification_unavailable')};
 /** Not route-registered. Real paired possession/current SQL history works;
@@ -12,6 +13,6 @@ const unavailable=async():Promise<never>=>{throw Error('manual_release_source_qu
 export function createDefaultManualReleaseRequestService(request:{headers:Headers}){
  return createManualReleaseRequestComposition(request,{
   repo:createManualReleaseSqlRepository(prisma as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:readConfiguredPlatformAdmins,
-  source:{buildCurrentManifest:unavailable,assertCurrent:unavailable},
+  source:createManualReleaseSource({readBundle:unavailable,assertQualified:unavailable}),
  });
 }

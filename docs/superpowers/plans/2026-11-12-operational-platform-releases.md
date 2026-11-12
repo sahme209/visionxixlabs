@@ -100,3 +100,6 @@ Spec manual owner/evidence boundary maps Task1/2/5; exact workload/delegation/le
 ### Task2 intermediate evidence (not task completion)
 
 ManualReleaseStore/SqlRepository/Request composition now implement dedicated immutable metadata records, current genuine paired identities, exact independent review, requester one-use notice, historical lookup/inspection and uncertain-claim preservation.27focused checks/root types and39actual isolated SQL cases PASS (synthetic manifest sources). Default private source qualification remains unavailable; no actual CI/build/recovery/result source or route has been qualified. Keep Task2 boxes open until those requirements and composed acceptance are complete. No provider/workflow/production action.
+
+
+Task2 continuation: exact private evidence-bundle reconstruction and read-only exact deployment result supplier/inspector are now implemented/tested locally. Current defaults still refuse unavailable real qualification. Actual SQL39journeys include the strict source composition and bounded read-only result path with synthetic qualification/provider receipts. Actual CI/artifact/schema/recovery/smoke suppliers and owner attestation remain unqualified; leave Task2 completion open. See platform-governance-scope/CURRENT.md.

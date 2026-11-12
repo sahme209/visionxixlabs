@@ -487,11 +487,14 @@ it.skipIf(!enabled)('joins prepared canonical bucket target review with actual H
 import {createManualReleaseStore,type ManualReleaseRepository} from '../operations/manualReleaseStore';
 import {createManualReleaseSqlRepository} from '../operations/manualReleaseSqlRepository';
 import {assertCurrentPlatformPrincipal} from '../currentAuthority';
+import {createManualReleaseSource} from '../operations/releasePreparation';
 function manualFixture(repo?:ManualReleaseRepository){
- const evidence='platform_evidence_11111111-1111-4111-8111-111111111111',expiresAt=new Date(Date.now()+60000).toISOString();
- const source={buildCurrentManifest:async()=>({format:1,scope:'platform',kind:'release.manual',expiresAt,source:{repository:'sahme209/visionxixlabs',branch:'main',commit:'b'.repeat(40)},target:{projectId:'prj_fixture',teamId:'team_fixture',environment:'production'},sourceHashes:{workflow:d,build:d,configuration:d,lock:d,schema:d},artifactEvidenceId:evidence,ciEvidence:[{name:'Typecheck + Vitest',receiptId:evidence,commit:'b'.repeat(40)}],compatibilityEvidenceId:evidence,recoveryEvidenceId:evidence,smokeProfileId:'production-smoke-v1'}),assertCurrent:async()=>{}};
+ const evidenceId='platform_evidence_11111111-1111-4111-8111-111111111111',expiresAt=new Date(Date.now()+60000).toISOString();
+ const manifest={format:1,scope:'platform',kind:'release.manual',expiresAt,source:{repository:'sahme209/visionxixlabs',branch:'main',commit:'b'.repeat(40)},target:{projectId:'prj_fixture',teamId:'team_fixture',environment:'production'},sourceHashes:{workflow:d,build:d,configuration:d,lock:d,schema:d},artifactEvidenceId:evidenceId,ciEvidence:[{name:'Typecheck + Vitest',receiptId:evidenceId,commit:'b'.repeat(40)}],compatibilityEvidenceId:evidenceId,recoveryEvidenceId:evidenceId,smokeProfileId:'production-smoke-v1'};
+ const validity={observedAt:new Date().toISOString(),expiresAt};
+ const source=createManualReleaseSource({readBundle:async()=>({format:1,evidenceId:evidenceId,...validity,currentMainCommit:manifest.source.commit,profile:{id:'synthetic-fixture-profile',revision:d,requiredChecks:['Typecheck + Vitest']},manifest,checks:[{name:'Typecheck + Vitest',receiptId:evidenceId,commit:manifest.source.commit,status:'completed',conclusion:'success'}],artifact:{receiptId:evidenceId,commit:manifest.source.commit,target:manifest.target,sourceHashes:manifest.sourceHashes,artifactSha256:d},compatibility:{receiptId:evidenceId,schemaSha256:d,databaseTargetDigest:d,...validity},recovery:{receiptId:evidenceId,schemaSha256:d,databaseTargetDigest:d,...validity}}),assertQualified:async()=>{}});
  const repository=repo??createManualReleaseSqlRepository(db as unknown as PlatformSqlDatabase);
- return {repository,source,selection:{manifestEvidenceId:evidence,expiresAt},store:createManualReleaseStore(repository,{assertCurrent:(tx,p)=>assertCurrentPlatformPrincipal(tx,p,()=>['requester@example.test','reviewer@example.test'])},source)};
+ return {repository,source,selection:{manifestEvidenceId:evidenceId,expiresAt},store:createManualReleaseStore(repository,{assertCurrent:(tx,p)=>assertCurrentPlatformPrincipal(tx,p,()=>['requester@example.test','reviewer@example.test'])},source)};
 }
 import {createManualReleaseRequestComposition} from '../operations/manualReleaseRequest';
 import {createDefaultManualReleaseRequestService} from '../operations/manualReleaseRequestService';
@@ -503,10 +506,12 @@ it.skipIf(!enabled)('stores separately reviewed manual notices once with actual 
  let outcomes:PromiseSettledResult<unknown>[];
  try{
   const headers=new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)}),request={headers};
-  const live=await createManualReleaseRequestComposition(request,{repo:f.repository,source:f.source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']});
+  const live=await createManualReleaseRequestComposition(request,{repo:f.repository,source:f.source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],resultSupplier:{readExact:async(manifest,deploymentId)=>({deploymentId,receiptId:'platform_evidence_11111111-1111-4111-8111-111111111111',...manifest.target,commit:manifest.source.commit,providerState:'BUILDING',observedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+60000).toISOString()}),assertQualified:async()=>{},assertReadyEvidence:async()=>{throw Error('synthetic smoke unavailable')}}});
   const defaultReader=await createDefaultManualReleaseRequestService(request);expect(await defaultReader.inspect(id)).toMatchObject({status:'reviewed',ownerAuthorization:'external_not_verified'});
   await expect(defaultReader.prepare(f.selection,'55555555-5555-4555-8555-555555555555')).rejects.toThrow('manual_release_source_qualification_unavailable');
   outcomes=await Promise.allSettled([live.recordNotice(id,1),live.recordNotice(id,1)]);
+  expect(await live.inspectResult(id,'dpl_fixture')).toMatchObject({state:'pending',providerExecution:false,executionAuthorized:false,ownerAuthorization:'external_not_verified'});
+  await expect(defaultReader.inspectResult(id,'dpl_fixture')).rejects.toThrow();
  }finally{vi.unstubAllEnvs()}
 expect(outcomes.filter(r=>r.status==='fulfilled')).toHaveLength(1);
  expect(await f.store.inspect(id,actor)).toMatchObject({status:'notice_recorded',attemptCount:1,version:3,providerExecution:false,ownerAuthorization:'external_not_verified'});

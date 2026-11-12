@@ -30,7 +30,7 @@ export interface ManualReleaseSource{
  /** Private server supplier, not caller JSON or a source/CI green boolean.
   * Default qualification must remain unavailable until actual sources qualify. */
  buildCurrentManifest(tx:ManualReleaseTransaction,selection:z.infer<typeof manualReleaseSelection>):Promise<unknown>;
- assertCurrent(tx:ManualReleaseTransaction,manifest:ManualReleaseRecord['manifest']):Promise<void>;
+ assertCurrent(tx:ManualReleaseTransaction,manifest:ManualReleaseRecord['manifest'],selection:z.infer<typeof manualReleaseSelection>):Promise<void>;
 }
 function reference(raw:string,principal:PlatformPrincipal){const requestId=platformPreparationRequestId.parse(raw).toLowerCase(),hex=sha256ContentHash({purpose:'manual_release_preparation_v1',principal,requestId});return 'platform_manual_release_'+hex.slice(0,8)+'-'+hex.slice(8,12)+'-8'+hex.slice(13,16)+'-a'+hex.slice(17,20)+'-'+hex.slice(20,32)}
 /** Notice storage only. No token, provider transport, owner identity supplier,
@@ -39,7 +39,7 @@ export function createManualReleaseStore(repo:ManualReleaseRepository,authority:
  async function load(tx:ManualReleaseTransaction,id:string){const state=readManualReleaseRecord(await tx.read(id));if(state.id!==id)fail();return state}
  async function current(tx:ManualReleaseTransaction,state:ManualReleaseRecord){
   await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);
-  await source.assertCurrent(tx,state.manifest);
+  await source.assertCurrent(tx,state.manifest,state.selection);
   await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);
   const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))fail();return now;
  }
@@ -58,7 +58,7 @@ export function createManualReleaseStore(repo:ManualReleaseRepository,authority:
   async lookup(requestId:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal),id=reference(requestId,actor);return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);if(raw){const state=readManualReleaseRecord(raw);if(state.id!==id||state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}await authority.assertCurrent(tx,actor);return raw?{found:true as const,recordId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const}})},
   async inspect(id:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,state)=>{
    await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();await authority.assertCurrent(tx,actor);
-   return Object.freeze({recordId:state.id,manifest:state.manifest,status:state.status,version:state.version,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,expired:now>=Date.parse(state.manifest.expiresAt),ownerAuthorization:'external_not_verified' as const,providerExecution:false as const,authority:'history_only' as const,sourceValidation:'not_checked' as const});
+   return Object.freeze({recordId:state.id,manifest:state.manifest,inspectedAt:now,status:state.status,version:state.version,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,expired:now>=Date.parse(state.manifest.expiresAt),ownerAuthorization:'external_not_verified' as const,providerExecution:false as const,authority:'history_only' as const,sourceValidation:'not_checked' as const});
   })},
   async review(id:string,version:number,digest:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);await locked(id,async(tx,state)=>{
    if(state.status!=='proposed'||state.version!==version||state.manifest.digest!==digest||actor.userId===state.requester.userId)fail();await authority.assertCurrent(tx,actor);const now=await current(tx,state);

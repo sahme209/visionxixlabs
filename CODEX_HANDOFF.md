@@ -415,3 +415,6 @@ Owner approved the reviewed operational-release design for LOCAL implementation/
 ## November12 — durable manual release notices, local only
 
 Operational Task2 now has dedicated notice/event SQL and current paired possession/admin composition, not owner or provider authority.27focused checks/root types and39actual isolated PG journeys pass (synthetic release evidence; server stopped). Default new preparation/review/notice refuses unqualified sources; current-reader history is available in unregistered source. Two appended local notice models preserve all178prior model bytes; reviewed current mock-helper pin/client refreshed, historical packets unchanged. Full Task2/P01/workflow/CI/production remain open. See platform-governance-scope/CURRENT.md and MANUAL-RELEASE-SCHEMA-REVIEW.md.
+
+
+Manual-release evidence continuation: strict private bundle reconstruction and bounded exact deployment observation now join current paired SQL notice/history composition. Successful tests use synthetic qualification/provider receipts; actual source/profile/smoke qualification remains unavailable and defaults refuse. No owner identity, deployment or rollback authority is inferred.39actual isolated PG cases/root types PASS; see platform-governance-scope/MANUAL-RELEASE-EVIDENCE-PG-RECEIPT.json. Full Task2/P01/CI/live/production remain open.

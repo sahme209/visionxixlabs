@@ -8,6 +8,6 @@ it('refuses invalid possession before SQL and rechecks bound possession around c
  const source={buildCurrentManifest:vi.fn(async()=>{throw Error('unqualified')}),assertCurrent:async()=>{throw Error('unqualified')}};
  const ports={repo,source,verifyDesktopToken,readAdminEmails:()=>['admin@example.test']},headers=new Headers({authorization:'Bearer invalid'});
  await expect(createManualReleaseRequestComposition({headers},ports)).rejects.toThrow();expect(readSessionPrincipal).not.toHaveBeenCalled();
- headers.set('authorization','Bearer valid');const api=await createManualReleaseRequestComposition({headers},ports);headers.delete('authorization');await expect(api.prepare({},'33333333-3333-4333-8333-333333333333')).rejects.toThrow();expect(source.buildCurrentManifest).not.toHaveBeenCalled();
+ headers.set('authorization','Bearer valid');const api=await createManualReleaseRequestComposition({headers},ports);await expect(api.inspectResult('platform_manual_release_11111111-1111-4111-8111-111111111111','dpl_fixture')).rejects.toThrow();headers.delete('authorization');await expect(api.prepare({},'33333333-3333-4333-8333-333333333333')).rejects.toThrow();expect(source.buildCurrentManifest).not.toHaveBeenCalled();
  headers.set('authorization','Bearer valid');readPrincipal.mockImplementation(async p=>{headers.delete('authorization');return {...p,email:'admin@example.test',live:true}});await expect(createManualReleaseRequestComposition({headers},ports)).rejects.toThrow();
 });
