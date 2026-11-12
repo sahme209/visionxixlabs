@@ -203,7 +203,7 @@ it.skipIf(!enabled)('SQL unknown publication permanently retains the native draf
 
 it.skipIf(!enabled)('default schedule execution joins real HMAC/source/SQL without publishing',async()=>{
  try{
-  const f=await postFixture(true),http=vi.fn();vi.stubGlobal('fetch',http);
+  const f=await postFixture(true,30000,true),http=vi.fn();vi.stubGlobal('fetch',http);
   expect(await schedulePlatformLinkedInDraft({draftId:f.draft.id,connectionId:f.connection.id,scheduledFor:f.scheduledFor,platformExecution:f.binding})).toEqual({kind:'scheduled'});
   expect(http).not.toHaveBeenCalled();const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'scheduled',scheduledFor:f.scheduledFor,linkedinPostUrn:null});
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson.status).toBe('confirmed');
@@ -235,11 +235,18 @@ async function deletionFixture(){
  const f=await postFixture();vi.stubGlobal('fetch',vi.fn(async()=>new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:'+f.draft.id.replace(/[^a-zA-Z0-9_-]/g,'')}})));
  expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'fixture'})).toMatchObject({kind:'success'});
  const source=await defaultPrisma.$transaction(tx=>readPlatformDeletionSource(tx,f.draft.id,f.connection.id)),effect=preparePlatformLinkedInDeletion(source,'202605',Date.now()).effect;
- async function approved(){const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw),requester=await createDefaultPlatformRequestService(f.request),id=await requester.propose(raw),independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);return {id,binding:await createDefaultPlatformExecution(f.request,id,1)}}
+ async function approved(serverPrepared=false){
+  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(f.connection.expiresAt.getTime(),Date.now()+20000)).toISOString(),effects:[effect]},requester=await createDefaultPlatformRequestService(f.request);
+  const prepared=serverPrepared?await requester.prepareGrowth({operation:'delete',draftId:f.draft.id,connectionId:f.connection.id,expiresAt:raw.expiresAt}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
+  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});
+  if(serverPrepared)expect(await independent.previewGrowth(id)).toMatchObject({actionId:id,planDigest:saved.plan.digest,authority:'review_preview_only'});
+  await independent.review(id,0,saved.plan.digest);return {id,binding:await createDefaultPlatformExecution(f.request,id,1)};
+ }
+
  return {...f,effect,approved};
 }
 it.skipIf(!enabled)('default delete requires actual confirmed publication lineage and preserves original history',async()=>{
- try{const f=await deletionFixture(),a=await f.approved(),http=vi.fn(async()=>new Response(null,{status:204}));vi.stubGlobal('fetch',http);
+ try{const f=await deletionFixture(),a=await f.approved(true),http=vi.fn(async()=>new Response(null,{status:204}));vi.stubGlobal('fetch',http);
   expect(await deletePlatformLinkedInPost({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:a.binding})).toEqual({kind:'deleted'});expect(http).toHaveBeenCalledTimes(1);
   const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'published',linkedinPostUrn:f.effect.target.postUrn});
   const original=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(original[0].stateJson.status).toBe('confirmed');

@@ -17,3 +17,14 @@ export const platformInspectionSchema=z.object({
  if(v.status==='confirmed'&&v.effects.some(e=>e.status!=='confirmed')||v.status==='unknown'&&!v.effects.some(e=>e.status==='unknown')||v.status==='refused'&&!v.effects.some(e=>e.status==='refused'))bad();
 });
 export type PlatformInspection=z.infer<typeof platformInspectionSchema>;
+/** Ephemeral current review content, never execution authority or a replacement
+ * for the durable action record. Raw payload remains bounded and React-escaped. */
+export const platformGrowthPreviewSchema=z.object({actionId:platformActionId,planDigest:digest,sourceDigest:digest,effectId:z.string().min(1).max(256),renderedPost:z.string().max(65536).optional(),authority:z.literal('review_preview_only')}).strict().superRefine((v,c)=>{
+ if(v.renderedPost!==undefined){try{const p=JSON.parse(v.renderedPost);if(!p||typeof p!=='object'||Array.isArray(p)||typeof p.author!=='string'||typeof p.commentary!=='string'||p.visibility!=='PUBLIC')throw Error('shape')}catch{c.addIssue({code:'custom',message:'Invalid rendered review payload'})}}
+});
+export type PlatformGrowthPreview=z.infer<typeof platformGrowthPreviewSchema>;
+export const platformReviewCommandSchema=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('inspect'),actionId:platformActionId}).strict(),
+ z.object({operation:z.literal('preview'),actionId:platformActionId}).strict(),
+ z.object({operation:z.literal('approve'),actionId:platformActionId,expectedVersion:z.number().int().min(0).max(1000),planDigest:digest}).strict(),
+]);

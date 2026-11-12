@@ -1,6 +1,6 @@
 import 'server-only';
 import {prepareGrowthPlatformPlan} from './growthPreparation';
-import {platformInspectionSchema} from './viewContract';
+import {platformInspectionSchema,platformGrowthPreviewSchema} from './viewContract';
 import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPlatformAction,readPlatformAction} from './kernel';
@@ -68,7 +68,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);
     if(prepared.plan.digest!==state.plan.digest)fail();
     await authority.assertCurrent(tx,actor);await timely(tx,state);
-    return {actionId:id,planDigest:state.plan.digest,...prepared.preview,authority:'review_preview_only' as const};
+    return platformGrowthPreviewSchema.parse({actionId:id,planDigest:state.plan.digest,...prepared.preview,authority:'review_preview_only'});
    });
   },
   async prepareGrowth(raw:unknown,principal:PlatformPrincipal){

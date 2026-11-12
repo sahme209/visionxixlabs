@@ -20,3 +20,10 @@ it('inspect rejects another saved action and accepts no execution-authority labe
  const saved=action();m.request.mockImplementation(async(_context,_method,_path,_body,validate)=>{expect(validate(saved)).toBe(true);expect(validate({...saved,authority:'execution_approved'})).toBe(false);expect(validate({...saved,actionId:'platform_action_22222222-2222-4222-8222-222222222222'})).toBe(false);return {ok:true,data:saved}});
  expect((await client().inspect(saved.actionId)).ok).toBe(true);
 });
+it('source preview must match exact saved plan, effect, source and author',async()=>{
+ const saved=platformInspectionSchema.parse({...action(),plan:{...action().plan,effects:[{id:'post',kind:'growth.post.publish',target:{draftId:'draft',connectionId:'connection',connectionRevision:digest,author:'urn:li:person:author',renderedPayloadDigest:digest}}]},effects:[{id:'post',status:'not_started'}]});
+ const preview={actionId:saved.actionId,planDigest:digest,sourceDigest:digest,effectId:'post',renderedPost:JSON.stringify({author:'urn:li:person:author',commentary:'Exact text',visibility:'PUBLIC'}),authority:'review_preview_only'};
+ m.request.mockImplementation(async(_context,_method,_path,body,validate)=>{expect(body).toEqual({operation:'preview',actionId:saved.actionId});expect(validate(preview)).toBe(true);
+  for(const wrong of [{...preview,sourceDigest:'b'.repeat(64)},{...preview,effectId:'other'},{...preview,renderedPost:JSON.stringify({author:'urn:li:person:other',commentary:'Other author',visibility:'PUBLIC'})},{...preview,renderedPost:undefined}])expect(validate(wrong)).toBe(false);return {ok:true,data:preview};
+ });expect((await client().preview(saved)).ok).toBe(true);
+});
