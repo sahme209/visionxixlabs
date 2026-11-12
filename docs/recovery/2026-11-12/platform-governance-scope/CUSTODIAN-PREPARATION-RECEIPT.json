@@ -1,0 +1,15 @@
+{
+  "scope": "local unregistered preparation and recovery UI",
+  "sourceHashes": {
+    "desktop/src/components/CustodianPreparationPanel.tsx": "2787165c9807c5609c4bbb3f30ae364da553ef566f84dc7daaee51d9f51a7ca7",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "3f3cc8d76f0f2a2e67d629b2b13381d07bff834daac9906d256645683d207fb4",
+    "lib/desktop/__tests__/custodianPreparationPanel.test.ts": "20245088239faf5d846f4985a843000463aeeb400f6544758edab56e7039f153",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "ec411f7455da3ca428ce843f9fc2944b2167edfcd9d7c1dbbaa167a258d671ac"
+  },
+  "composedMockedUiChecks": 36,
+  "nativeAcceptance": false,
+  "qualifiedSourceSupplier": false,
+  "database": "unchanged; prior107 actual isolated SQL cases preserved with synthetic qualification",
+  "rootTypesAndDesktopBuild": "pass before saved-action-display-only correction",
+  "productionChanged": false
+}

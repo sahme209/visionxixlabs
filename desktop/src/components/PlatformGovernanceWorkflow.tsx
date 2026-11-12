@@ -1,3 +1,4 @@
+import {CustodianPreparationPanel} from './CustodianPreparationPanel';
 import {CustodianControlPanel} from './CustodianControlPanel';
 import {CustodianHistoryPanel} from './CustodianHistoryPanel';
 import type {CustodianClient} from '../lib/custodian';
@@ -76,6 +77,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   <header><p className="text-xs uppercase tracking-wider text-zinc-400">Platform operations · local preparation</p><h1 className="mt-2 text-2xl font-semibold">One exact change, a clear record</h1><p className="mt-2 text-sm text-zinc-400">Prepared growth actions, generated-site files, exact template source and independently reviewed ECS proposals. Deployment execution, template and image workflow coverage remain incomplete; production activation is unavailable.</p></header>
   {!current?<p role="alert">Account context changed. Reopen this workflow in the current session. Prior approvals and attempts were not renewed.</p>:<>
    <aside aria-label="Next step" className="rounded-xl border border-white/10 p-4">{nextStep()}</aside>
+   {clients.custodian&&<details><summary>Prepare or recover an issuer control</summary><CustodianPreparationPanel client={clients.custodian} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.manualRelease&&<details><summary>Review a manual production release</summary><OperationalManualReleasePanel client={clients.manualRelease} currentUserId={currentUserId} canApprove={canApprove} canRecordNotice={canExecute}/></details>}
    {clients.template?.prepare&&clients.template.lookup&&<details><summary>Prepare a template proposal</summary><PlatformTemplatePreparationPanel client={{prepare:clients.template.prepare,lookup:clients.template.lookup}} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.deployment&&<details><summary>Prepare a generated-site deployment proposal</summary><PlatformDeploymentPreparationPanel sourceClient={clients.sources} client={clients.deployment} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}

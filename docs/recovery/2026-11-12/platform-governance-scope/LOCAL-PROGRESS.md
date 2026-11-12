@@ -1112,3 +1112,14 @@ Missing-panel and missing-workflow-routing REDs preceded implementation. Initial
 Next: original-reference preparation and composed control/history recovery flow, actual qualified source/custody/fleet/default/legacy coverage, remaining family work and whole-branch validation/one independent review/green PR. Full P01/Governance remains incomplete and activation unavailable. No schema/pin, native/sign/install, credential/provider/service/IAM, production deployment or spending changed.
 
 15internal demo checks PASS after panel wording update. No active tests/builds/owned PostgreSQL remain.
+
+
+### Original-reference issuer preparation and prepared workflow composition — local only
+
+The new explicit metadata form binds exact role/account/profile/source/predecessor, generation/version and future review expiry. Abort restores only its exact predecessor; no automatic generation/profile discovery or native source qualification is invented. An original UUID is kept before saving, shown read-only and retained after uncertainty. Only an unsent selection may be edited. A separate existing-reference recovery entry works without preparation authority and can only perform possessed-session lookup; no result or unavailable lookup unlocks replacement submission. A known saved action remains visible even if the surrounding view callback fails, without relabeling a known save as unknown.
+
+The existing unregistered platform workflow now offers preparation/recovery, original history and separate control decision panels through an optional explicit custodian client. It still has no shipping/default source supplier or actual custody/fleet qualification. Missing-form, missing-routing and known-action-display REDs preceded implementation. Final three-file mocked UI suite36checks PASS (5preparation/9control-history/22workflow); root types and desktop frontend types/build PASS before the final small saved-action-display correction. The latter has its own behavioral RED→GREEN; no native visual/accessibility acceptance claimed. Existing frontend warnings retained. No SQL/server behavior changed; prior107actual isolated SQL receipt is preserved, not repeated or relabeled as UI acceptance.
+
+Next: source-grounded workflow integration review and remaining actual supplier/fleet/default/legacy/all-family qualification, then whole-branch exact-source checks/one independent review/green PR. Full P01/Governance remains incomplete; activation unavailable. No production/schema/pin/dependency, real provider/credential/native/service/IAM/deployment/spending changed.
+
+15internal demo checks PASS after preparation wording update. No active tests/builds/owned PostgreSQL remain.

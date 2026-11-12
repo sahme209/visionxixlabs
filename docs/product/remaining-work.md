@@ -960,3 +960,8 @@ Exact browser digest/account-bound review and separate control execution/history
 ### November12 — local issuer-control workflow panels
 
 Dedicated prepared review/execution/history panels now route saved custodian controls away from generic actions. Personal review, original requester execution and explicit closure observation stay separate; uncertain submissions remain held across reload. Mocked UI checks/types/frontend build pass; no native visual, actual custody/fleet/default or full P01 acceptance. See [current evidence](../recovery/2026-11-12/platform-governance-scope/CURRENT.md). Original-reference preparation/composed recovery and remaining qualification remain.
+
+
+### November12 — local issuer preparation/recovery composed
+
+Exact metadata preparation now retains one original reference and supports explicit existing-reference recovery in the prepared platform workflow; known saved actions remain visible through surrounding-view failures.36mocked UI checks pass, with scoped types/frontend build as recorded in [current evidence](../recovery/2026-11-12/platform-governance-scope/CURRENT.md). No qualified default source, native/live acceptance or full P01 completion. Actual source/fleet/legacy/all-family integration and whole-branch final validation remain.
