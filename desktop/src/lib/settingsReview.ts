@@ -49,3 +49,18 @@ export function createSettingsPreparationClient(context:Context){return {
  },
 }}
 export type SettingsPreparationClient=ReturnType<typeof createSettingsPreparationClient>;
+
+import {settingsArtifactSaveCommand,settingsArtifactReceipt,type SettingsArtifactReceipt} from '../../../lib/governance/platform/operations/settingsArtifactClientContract';
+/** Separate one-attempt intake. No persistence, logging, review or send control.
+ * JavaScript strings cannot promise physical memory zeroization. */
+export function createSettingsArtifactClient(context:Context){return {
+ async save(raw:unknown,effectIndex:number,value:string,signal?:AbortSignal):Promise<ReleasePlanResult<SettingsArtifactReceipt>>{
+  const parsed=settingsReviewPreview.safeParse(raw),config=context.getConfig();let secure=false;try{const u=new URL(config.apiBase);secure=u.protocol==='https:'&&!u.username&&!u.password&&u.origin===config.apiBase}catch{/* unavailable */}
+  const setting=parsed.success?parsed.data.settings[effectIndex]:undefined;
+  if(!secure||!parsed.success||!setting||setting.artifactStatus!=='missing'||Date.parse(parsed.data.expiresAt)<=Date.now())return {ok:false,error:'Load the exact missing artifact on the secure paired service first.',outcomeUnconfirmed:false};
+  const saved=parsed.data,command=settingsArtifactSaveCommand.safeParse({operation:'save',actionId:saved.actionId,expectedVersion:0,planDigest:saved.planDigest,effectIndex,value});
+  if(!command.success)return {ok:false,error:'The protected value is invalid or exceeds its bounded size.',outcomeUnconfirmed:false};
+  return releaseOperationPlanRequest(context,'POST','/api/desktop/platform-governance/settings-artifacts',command.data,(raw):raw is SettingsArtifactReceipt=>{const p=settingsArtifactReceipt.safeParse(raw);return p.success&&p.data.actionId===saved.actionId&&p.data.effectIndex===effectIndex&&p.data.artifactId===setting.artifactId&&p.data.profileId===saved.profileId&&p.data.expiresAt===saved.expiresAt&&p.data.target.projectId===saved.target.projectId&&p.data.target.teamId===saved.target.teamId&&p.data.target.name===setting.name&&p.data.target.environment===setting.environment&&p.data.target.type===setting.type&&p.data.target.sensitivity===setting.sensitivity},signal);
+ },
+}}
+export type SettingsArtifactClient=ReturnType<typeof createSettingsArtifactClient>;
