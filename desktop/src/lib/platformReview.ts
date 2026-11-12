@@ -1,3 +1,5 @@
+import {platformDeploymentCommand,platformDeploymentPreview} from '../../../lib/governance/platform/deploymentContract';
+import type {z} from 'zod';
 import {platformSourceCommand,platformSourcePage,type PlatformSourceKind,type PlatformSourcePage} from '../../../lib/governance/platform/sourceCatalog';
 import {platformHistoryCommand,platformHistoryPage,historyEntryBefore,type PlatformHistoryCursor,type PlatformHistoryPage} from '../../../lib/governance/platform/historyContract';
 import {platformPreparationCommandSchema,platformPreparationReceiptSchema,platformPreparationLookupSchema,type PlatformPreparationReceipt,type PlatformPreparationLookup} from '../../../lib/governance/platform/preparationContract';
@@ -80,3 +82,28 @@ export function createPlatformSourceClient(context:Context){
  }};
 }
 export type PlatformSourceClient=ReturnType<typeof createPlatformSourceClient>;
+
+/** Preparation/recovery/preview only; neither approval nor execution here. */
+export function createPlatformDeploymentClient(context:Context){
+ const endpoint='/api/desktop/platform-governance/deployment';
+ return {
+  prepare(selection:unknown,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformPreparationReceipt>>{
+   const command=platformDeploymentCommand.safeParse({operation:'prepare_deployment',requestId,selection});
+   if(!command.success||command.data.operation!=='prepare_deployment')return Promise.resolve({ok:false,error:'Keep a valid exact deployment selection and original reference.',outcomeUnconfirmed:false});
+   const selected=command.data;
+   return releaseOperationPlanRequest(context,'POST',endpoint,selected,(raw):raw is PlatformPreparationReceipt=>{const saved=platformPreparationReceiptSchema.safeParse(raw);return saved.success&&saved.data.requestId===selected.requestId},signal);
+  },
+  lookup(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformPreparationLookup>>{
+   const command=platformDeploymentCommand.safeParse({operation:'lookup_deployment',requestId});
+   if(!command.success||command.data.operation!=='lookup_deployment')return Promise.resolve({ok:false,error:'Retain the original deployment reference.',outcomeUnconfirmed:false});
+   const selected=command.data;
+   return releaseOperationPlanRequest(context,'POST',endpoint,selected,(raw):raw is PlatformPreparationLookup=>{const saved=platformPreparationLookupSchema.safeParse(raw);return saved.success&&saved.data.requestId===selected.requestId},signal);
+  },
+  preview(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<z.infer<typeof platformDeploymentPreview>>>{
+   const parsed=platformInspectionSchema.safeParse(raw);if(!parsed.success||!['proposed','approved'].includes(parsed.data.status)||parsed.data.expired||parsed.data.plan.effects.length!==1)return Promise.resolve({ok:false,error:'Inspect a supported exact saved deployment first.',outcomeUnconfirmed:false});
+   const saved=parsed.data,effect=saved.plan.effects[0];if(effect.kind!=='deployment.vercel'||!effect.target.leadId||!effect.target.leadRevision)return Promise.resolve({ok:false,error:'This deployment source profile is unavailable.',outcomeUnconfirmed:false});
+   return releaseOperationPlanRequest(context,'POST',endpoint,{operation:'preview_deployment',actionId:saved.actionId},(raw):raw is z.infer<typeof platformDeploymentPreview>=>{const preview=platformDeploymentPreview.safeParse(raw);return preview.success&&preview.data.actionId===saved.actionId&&preview.data.planDigest===saved.plan.digest&&preview.data.sourceDigest===saved.plan.sourceDigest&&preview.data.effectId===effect.id},signal);
+  },
+ };
+}
+export type PlatformDeploymentClient=ReturnType<typeof createPlatformDeploymentClient>;

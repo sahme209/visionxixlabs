@@ -250,3 +250,6 @@ Prepared platform source picker: authenticated metadata-only draft/account pages
 
 
 Prepared generated-site deployment source: the local backend derives exact files from an existing Lead package and binds its revision/project/team/environment through independent review and final-send checks.35actual isolated PostgreSQL cases pass with simulated provider delivery. HTTP/client/UI, durable result/reference recovery, cross-action uncertainty policy, actual provider/READY acceptance and the separate owner-click Axiom production release remain incomplete. P01 stays blocked.
+
+
+Prepared deployment reference/preview transport: local authenticated HTTP and a paired desktop factory now connect the existing Lead-derived source service. Save, original-reference lookup and matching bounded file-text preview only; no decision or execution command/route activation.13focused HTTP/real-transport checks, types and desktop shell build pass;35actual isolated SQL cases include the joined default HMAC/prepared HTTP/client source journey with in-process delivery. Deployment UI/result recovery/all-family acceptance remain incomplete.

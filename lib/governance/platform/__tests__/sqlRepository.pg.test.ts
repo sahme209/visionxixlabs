@@ -323,11 +323,12 @@ it.skipIf(!enabled)('preparation replay cannot renew a consumed unknown or subst
  }finally{vi.unstubAllEnvs()}
 });
 
+import {createPlatformDeploymentHttp} from '../deploymentHttp';
 import {createPlatformSourceHttp} from '../sourceHttp';
 import {createPlatformHistoryHttp} from '../historyHttp';
 import {createPlatformPreparationHttp} from '../preparationHttp';
 import {createPlatformReviewHttp} from '../reviewHttp';
-import {createPlatformSourceClient,createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
+import {createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
 it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source review, requester execution and SQL history',async()=>{
  try{
   const f=await postFixture(false,30000,false,false),prepare=createPlatformPreparationHttp(),review=createPlatformReviewHttp(),execute=createPlatformExecutionHttp(),history=createPlatformHistoryHttp();let providerCalls=0;
@@ -403,16 +404,19 @@ it.skipIf(!enabled)('prepares exact real SQL lead source and refuses source chan
   const leadId='lead-source-'+randomUUID(),pkg={companyName:'Fixture',tagline:'Exact existing source',aboutText:'About',services:['Service'],contactEmail:'fixture@example.test'};
   await db.$executeRawUnsafe('INSERT INTO "Lead" (id,"updatedAt","fullPayload") VALUES ($1,clock_timestamp(),$2::jsonb)',leadId,JSON.stringify({aiPackage:pkg,privateUnrelated:'must-not-enter-plan'}));
   const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),nonce=randomUUID(),selected={leadId,projectName:'source-reviewed-project',environment:'preview',expiresAt:new Date(Date.now()+20000).toISOString()};
-  const saved=await requester.prepareDeployment(selected,nonce),repeated=await requester.prepareDeployment(selected,nonce);expect(repeated).toMatchObject({actionId:saved.actionId,historical:true});
-  const preview=await requester.previewDeployment(saved.actionId);expect(preview.files.some(f=>f.content.includes('Exact existing source'))).toBe(true);expect(JSON.stringify(preview)).not.toContain('must-not-enter-plan');
+  const handle=createPlatformDeploymentHttp(),config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(actor.sessionId)};
+  vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{const url=String(input);if(url!=='https://fixture.example.test/api/desktop/platform-governance/deployment')throw Error('unexpected_external_destination');return handle(new Request(url,init))}));
+  const client=createPlatformDeploymentClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}),receipt=await client.prepare(selected,nonce);expect(receipt.ok).toBe(true);if(!receipt.ok)throw Error('prepared_deployment_failed');const saved=receipt.data,repeated=await requester.prepareDeployment(selected,nonce);expect(repeated).toMatchObject({actionId:saved.actionId,historical:true});
+  const previewResponse=await client.preview(await requester.inspect(saved.actionId));expect(previewResponse.ok).toBe(true);if(!previewResponse.ok)throw Error('deployment_preview_failed');const preview=previewResponse.data;expect(preview.files.some(f=>f.content.includes('Exact existing source'))).toBe(true);expect(JSON.stringify(preview)).not.toContain('must-not-enter-plan');
   const inspected=await requester.inspect(saved.actionId);expect(inspected.plan.effects[0]).toMatchObject({kind:'deployment.vercel',target:{leadId,teamId:'team_fixture',projectName:'source-reviewed-project'}});
   await expect(requester.review(saved.actionId,0,inspected.plan.digest)).rejects.toThrow();
   const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});expect((await independent.previewDeployment(saved.actionId)).planDigest).toBe(preview.planDigest);
   await db.$executeRawUnsafe('UPDATE "Lead" SET "fullPayload"=jsonb_set("fullPayload",\'{aiPackage,tagline}\',\'"Changed after preview"\'::jsonb),"updatedAt"=clock_timestamp() WHERE id=$1',leadId);
   await expect(independent.review(saved.actionId,0,inspected.plan.digest)).rejects.toThrow();expect((await requester.inspect(saved.actionId)).status).toBe('proposed');
+  expect(await client.lookup(nonce)).toMatchObject({ok:true,data:{found:true,actionId:saved.actionId}});
   expect(await requester.lookupDeploymentPreparation(nonce)).toMatchObject({found:true,actionId:saved.actionId});expect(await requester.lookupGrowthPreparation(nonce)).toMatchObject({found:false});
   expect(await requester.prepareDeployment(selected,nonce)).toMatchObject({actionId:saved.actionId,historical:true});await expect(requester.prepareDeployment({...selected,projectName:'substitute'},nonce)).rejects.toThrow();
- }finally{vi.unstubAllEnvs()}
+ }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
 });
 it.skipIf(!enabled)('joins SQL-derived lead review to one default provider effect with simulated HTTP',async()=>{
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');vi.stubEnv('VERCEL_TOKEN','synthetic-token');
