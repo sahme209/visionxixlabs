@@ -272,3 +272,5 @@ Local template upload/access review now refuses changed/missing current template
 Prepared template source review is locally connected through server/paired transport/optional reviewer UI with escaped exact YAML and stale-preview clearing. No template execution, route activation or provider acceptance. Evidence/remaining full-family gates: platform-governance-scope/LOCAL-PROGRESS.md.
 
 Template source preparation/reference recovery now connects local server→prepared HTTP→paired client, with server-derived content and no expiry renewal on reuse. Proposal UI, execution/result/grant delivery and full template/P01 acceptance remain open.49focused checks/types and36isolated SQL cases pass within platform-governance-scope/LOCAL-PROGRESS.md scopes. No route/production activation.
+
+Optional local template proposal form now joins saved history/review with separate bucket/upload/access selections, original-reference recovery and no automatic action.26focused UI checks/types/shell build pass; shipping registration/native visual acceptance, bucket review and all template execution/result/grant delivery remain open. Details: platform-governance-scope/LOCAL-PROGRESS.md.
