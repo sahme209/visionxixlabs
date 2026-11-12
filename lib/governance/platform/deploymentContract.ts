@@ -9,5 +9,6 @@ export const platformDeploymentCommand=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('prepare_deployment'),requestId:platformPreparationRequestId,selection:platformDeploymentSelection}).strict(),
  z.object({operation:z.literal('lookup_deployment'),requestId:platformPreparationRequestId}).strict(),
  z.object({operation:z.literal('preview_deployment'),actionId:platformActionId}).strict(),
+ z.object({operation:z.literal('inspect_deployment'),actionId:platformActionId}).strict(),
 ]);
 export type PlatformDeploymentPreview = z.infer<typeof platformDeploymentPreview>;

@@ -1,7 +1,8 @@
 import type {DeploymentRecoveryPlan} from './deploymentRecoveryContract';
 import type {DeploymentTerminalObservation} from './deploymentLiability';
+import {deploymentHistoryView} from './deploymentHistoryContract';
 import type {DeploymentLiabilityTransaction} from './deploymentLiabilitySql';
-import {nativeDeploymentKey,reserveDeploymentTarget,createDeploymentRequestReceipt,observeDeploymentRequest,deploymentSendObservationSchema,type DeploymentReservation,type DeploymentRequestReceipt} from './deploymentLiability';
+import {nativeDeploymentKey,reserveDeploymentTarget,createDeploymentRequestReceipt,readDeploymentRequestReceipt,observeDeploymentRequest,deploymentSendObservationSchema,type DeploymentReservation,type DeploymentRequestReceipt} from './deploymentLiability';
 import type {CustodianClosureObservation} from './operations/custodianClosureObservation';
 import type {CustodianBarrier} from './operations/custodianDrainKernel';
 import type {CustodianDrainPlan} from './operations/custodianDrainContract';
@@ -135,6 +136,23 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     return platformTemplatePreview.parse({kind:'template.source',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,bytesDigest,yaml,authority:'review_preview_only'});
    });
   },
+  /** Private execution source only. No HTTP command exposes the package or
+   * accepts caller files. Parent claim and final source/send gates stay separate. */
+  async readDeploymentExecutionSource(id:string,expectedPlanDigest:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,state)=>{
+   if(state.status!=='approved'||state.plan.digest!==expectedPlanDigest||state.plan.effects.length!==1||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId)return fail();
+   await actors(tx,state);await timely(tx,state);const effect=state.plan.effects[0];if(effect.kind!=='deployment.vercel'||!effect.target.leadId||!effect.target.leadRevision)return fail();
+   const prepared=await prepareDeploymentPlatformPlan(tx,{leadId:effect.target.leadId,projectName:effect.target.projectName,environment:effect.target.environment,expiresAt:state.plan.expiresAt},effect.id);if(prepared.plan.digest!==state.plan.digest)return fail();
+   await actors(tx,state);if(!authority.assertEffectCurrent)return fail();await authority.assertEffectCurrent(tx,effect);await actors(tx,state);await timely(tx,state);return {effect,package:prepared.package,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest};
+  })},
+  /** Historical reads preserve original uncertainty and do not depend on old
+   * source or former-reviewer authority. Missing old receipts are not backfilled. */
+  async inspectDeployment(id:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,state)=>{
+   await authority.assertCurrent(tx,actor);if(state.plan.effects.some(e=>e.kind!=='deployment.vercel')||!tx.readDeploymentRequestReceipts)return fail();const requests=(await tx.readDeploymentRequestReceipts(id)).map(readDeploymentRequestReceipt),effects=[];
+   for(let index=0;index<state.plan.effects.length;index++){const status=await tx.readEffect(id,index);if(status!==null&&!['claimed','confirmed','refused','unknown'].includes(String(status)))return fail();effects.push({id:state.plan.effects[index].id,status:status===null?'not_started':String(status)})}
+   for(const receipt of requests){const effect=state.plan.effects[receipt.effectIndex];if(!effect||effect.kind!=='deployment.vercel'||nativeDeploymentKey(effect)!==receipt.nativeKey)return fail()}
+   const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();await authority.assertCurrent(tx,actor);
+   return deploymentHistoryView.parse({action:{actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'},requests,authority:'deployment_history_only',sourceValidation:'not_checked',currentTargetChecked:false,deploymentReadyChecked:false,executionAuthorized:false});
+  })},
   async previewDeployment(id:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    return locked(id,async(tx,state)=>{

@@ -40,6 +40,8 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
   async previewTemplate(id:string){assertPossession();return store.previewTemplate(id,principal)},
   async prepareDeployment(raw:unknown,requestId:string){assertPossession();return store.prepareDeployment(raw,principal,requestId)},
   async previewDeployment(id:string){assertPossession();return store.previewDeployment(id,principal)},
+  async readDeploymentExecutionSource(id:string,planDigest:string){assertPossession();const result=await store.readDeploymentExecutionSource(id,planDigest,principal);assertPossession();return result},
+  async inspectDeployment(id:string){assertPossession();const result=await store.inspectDeployment(id,principal);assertPossession();return result},
   async lookupDeploymentPreparation(requestId:string){assertPossession();return store.lookupDeploymentPreparation(requestId,principal)},
   async sources(kind:PlatformSourceKind,cursor:string|null){assertPossession();return store.sources(kind,cursor,principal)},
   async history(cursor:PlatformHistoryCursor|null){assertPossession();return store.history(cursor,principal)},

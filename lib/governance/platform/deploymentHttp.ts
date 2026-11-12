@@ -3,7 +3,8 @@ import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
 import {createDefaultPlatformRequestService} from './requestService';
 import {platformDeploymentCommand,platformDeploymentPreview} from './deploymentContract';
 import {platformPreparationReceiptSchema,platformPreparationLookupSchema} from './preparationContract';
-type Service=Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'prepareDeployment'|'lookupDeploymentPreparation'|'previewDeployment'>;
+import {deploymentHistoryView} from './deploymentHistoryContract';
+type Service=Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'prepareDeployment'|'lookupDeploymentPreparation'|'previewDeployment'>&Partial<Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'inspectDeployment'>>;
 const reply=(body:unknown,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','x-content-type-options':'nosniff'}});
 /** Prepared only, not route-registered. No decision, claim or execution command. */
 export function createPlatformDeploymentHttp(factory:(request:Request)=>Promise<Service>=createDefaultPlatformRequestService){
@@ -13,6 +14,9 @@ export function createPlatformDeploymentHttp(factory:(request:Request)=>Promise<
   let command;try{command=platformDeploymentCommand.parse(await readBoundedRequestJson(request,AbortSignal.any([request.signal,AbortSignal.timeout(5000)]),4096))}catch{return reply({ok:false,error:'invalid_platform_deployment_request'},400)}
   try{
    request.signal.throwIfAborted();
+   if(command.operation==='inspect_deployment'){
+    if(!service.inspectDeployment)throw Error('unavailable');const history=deploymentHistoryView.parse(await service.inspectDeployment(command.actionId));if(history.action.actionId!==command.actionId)throw Error('mismatch');request.signal.throwIfAborted();return reply({ok:true,data:history});
+   }
    if(command.operation==='preview_deployment'){
     const preview=platformDeploymentPreview.parse(await service.previewDeployment(command.actionId));if(preview.actionId!==command.actionId)throw Error('mismatch');request.signal.throwIfAborted();return reply({ok:true,data:preview});
    }
