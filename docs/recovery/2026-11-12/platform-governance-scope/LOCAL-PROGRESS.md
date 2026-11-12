@@ -429,3 +429,10 @@ Ruling: evidence/artifact references have purpose-specific opaque ID namespaces 
 Ruling: these initial ECS metadata contracts describe the existing commercial-ARN source profile only — no other partition is declared covered; actual provider/workload/runtime qualification is still mandatory and not simulated as real acceptance.
 
 Task1 is locally complete; Tasks2–6, full original P01 and the complete master goal remain open.
+
+
+### Operational manual-release notice store — local unit
+
+Separate manual-release records now support original-session preparation/reference lookup, distinct-user exact-manifest review, current-reader historical inspection and one-use requester notice recording. A notice explicitly leaves owner authorization external/unverified and never executes a deployment. State and event writes share transactions; uncertain claim acknowledgement leaves the consumed claim intact with no public finish/reset/retry API. Stored manifests are re-parsed and digest-checked.
+
+Validation: five initial store tests plus five metadata-contract tests passed; root strict types passed. An additional lost-commit-acknowledgement regression then passed in the complete six-test store file. These use an in-memory serialized repository and simulated authority/source checks, not actual SQL or qualified CI/artifact evidence. No schema, production, workflow, credential or provider operation ran. Task2 remains incomplete: durable SQL/default paired identity/source qualification must be connected before this can be presented as a usable release workflow. Existing broad suite/build receipts predate this unit.

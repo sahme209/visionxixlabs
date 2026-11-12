@@ -17,3 +17,11 @@ export function matchesOperationalRollbackFailure(manifest:OperationalManifest,r
  const observed=result.data,condition=manifest.condition,target=manifest.target;
  return observed.actionId===condition.failedActionId&&observed.receiptId===condition.failureReceiptId&&observed.generation===condition.generation&&observed.failedTaskDefinitionArn===condition.failedTaskDefinitionArn&&observed.accountId===target.accountId&&observed.region===target.region&&observed.clusterArn===target.clusterArn&&observed.serviceArn===target.serviceArn;
 }
+/** Validate stored compiled metadata without promoting it to source authority. */
+export function readOperationalManifest(raw:unknown):OperationalManifest{
+ if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('operational_manifest_unavailable');
+ const {digest,authority,executionAuthorized,ownerAuthorization,...input}=raw as Record<string,unknown>;
+ const expected=compileOperationalManifest(input);
+ if(digest!==expected.digest||authority!=='metadata_only'||executionAuthorized!==false||ownerAuthorization!==expected.ownerAuthorization)throw Error('operational_manifest_unavailable');
+ return expected;
+}

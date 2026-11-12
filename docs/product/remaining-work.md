@@ -284,3 +284,10 @@ Platform broad checkpoint80a8dfee:18,179ordinary tests pass/951pending; producti
 Operational release scope now has an independently builder-checked local design (platform-governance-scope/OPERATIONAL-RELEASE-DESIGN-PROPOSAL.md). Original P01 grant excluded changing these scripts/workflow; local implementation needs a new owner decision. No actual workflow, settings, provider or deployment action is authorized/performed.
 
 November12: operational-release design now approved for LOCAL implementation and isolated tests. Initial strict release/ECS/settings metadata contracts and structural rollback matching pass5focused checks/root types; no execution authority, entrypoint replacement or real operation yet. Continue full operational plan; other pending designs and full P01/native/live/PR gates remain open.
+
+
+### Operational manual-release notice store — local unit
+
+Separate manual-release records now support original-session preparation/reference lookup, distinct-user exact-manifest review, current-reader historical inspection and one-use requester notice recording. A notice explicitly leaves owner authorization external/unverified and never executes a deployment. State and event writes share transactions; uncertain claim acknowledgement leaves the consumed claim intact with no public finish/reset/retry API. Stored manifests are re-parsed and digest-checked.
+
+Validation: five initial store tests plus five metadata-contract tests passed; root strict types passed. An additional lost-commit-acknowledgement regression then passed in the complete six-test store file. These use an in-memory serialized repository and simulated authority/source checks, not actual SQL or qualified CI/artifact evidence. No schema, production, workflow, credential or provider operation ran. Task2 remains incomplete: durable SQL/default paired identity/source qualification must be connected before this can be presented as a usable release workflow. Existing broad suite/build receipts predate this unit.
