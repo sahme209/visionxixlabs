@@ -1,3 +1,4 @@
+import {compileOperationalEcsPlan,type EcsPreparationTransaction} from './operations/ecsPreparation';
 import {readOperationalEcsResult} from './operations/ecsExecution';
 import {readOperationalManifest} from './operations/kernel';
 import {compileOperationalSettingsPlan} from './operations/settingsArtifact';
@@ -24,11 +25,12 @@ export interface PlatformSqlDatabase{$transaction<T>(fn:(tx:PlatformSql)=>Promis
 const fail=():never=>{throw Error('platform_governance_storage_unavailable')};
 /** Dedicated platform tables, never a tenant alias. All values parameterized.
  * No retry; uncertain transaction outcomes cannot issue a send proof. */
-export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction<T>(fn:(tx:OperationalDelegationTransaction & SettingsArtifactTransaction)=>Promise<T>):Promise<T>}{
+export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction<T>(fn:(tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction)=>Promise<T>):Promise<T>}{
  return {transaction:fn=>db.$transaction(async sql=>{
   let locked:string|null=null,nativeLocked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
-  const tx:OperationalDelegationTransaction & SettingsArtifactTransaction={
+  const tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction={
+   async readEcsManifest(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{manifest:unknown}>>('SELECT "detailJson"->\'ecsManifest\' AS manifest FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'proposed\' AND "detailJson" ? \'ecsManifest\' ORDER BY sequence LIMIT 2',id);if(rows.length!==1)fail();const manifest=readOperationalManifest(rows[0].manifest),parent=readPlatformAction(await tx.read(id));if(manifest.kind!=='deployment.ecs'||compileOperationalEcsPlan(manifest).digest!==parent.plan.digest)fail();return manifest},
    async readSettingsManifest(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{manifest:unknown}>>('SELECT "detailJson"->\'settingsManifest\' AS manifest FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'proposed\' AND "detailJson" ? \'settingsManifest\' ORDER BY sequence LIMIT 2',id);if(rows.length!==1)fail();const manifest=readOperationalManifest(rows[0].manifest),parent=readPlatformAction(await tx.read(id));if(manifest.kind!=='settings.vercel'||compileOperationalSettingsPlan(manifest).digest!==parent.plan.digest)fail();return manifest},
    async readSettingsResults(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{result:unknown}>>('SELECT "detailJson"->\'settingsResult\' AS result FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'effect.observed\' AND "detailJson" ? \'settingsResult\' ORDER BY sequence LIMIT 33',id);if(rows.length>32)fail();return rows.map(row=>{const result=readSettingsResult(row.result);if(result.actionId!==id)fail();return result})},
    async assertSettingsCreationHeld(raw){const binding=settingsArtifactBindingSchema.parse(raw);check(binding.actionId);const {projectId,teamId,name,environment}=binding.target,key=nativeSettingsTargetKey({projectId,teamId,name,environment});const rows=await sql.$queryRawUnsafe<Array<{publicationKey:string;status:string}>>('SELECT "publicationKey",status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1 AND index=$2',binding.actionId,binding.effectIndex);if(rows.length!==1||rows[0].publicationKey!==key||rows[0].status!=='claimed')fail()},
@@ -90,11 +92,13 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     if(event.operationalDigest!==undefined)digest.parse(event.operationalDigest);
     const operationalResult=event.operationalResult===undefined?undefined:readOperationalEcsResult(event.operationalResult);
     if(operationalResult){if(event.kind!=='effect.observed'||event.effectIndex!==0||operationalResult.actionId!==event.actionId||operationalResult.manifestDigest!==event.state.plan.sourceDigest||event.outcome!==(operationalResult.kind==='accepted'?'confirmed':'unknown'))fail();const record=readOperationalDelegation(await tx.readDelegation(event.actionId));if(record.credential.status!=='issued'||record.credential.leaseRef!==operationalResult.leaseRef||record.targetReservation?.nativeKey!==operationalResult.nativeKey||record.targetReservation.generation!==operationalResult.generation)fail()}
+    const ecsManifest=event.ecsManifest===undefined?undefined:readOperationalManifest(event.ecsManifest);
+    if(ecsManifest&&(event.kind!=='proposed'||event.state.status!=='proposed'||event.state.version!==0||ecsManifest.kind!=='deployment.ecs'||compileOperationalEcsPlan(ecsManifest).digest!==event.state.plan.digest||event.settingsManifest!==undefined))fail();
     const settingsManifest=event.settingsManifest===undefined?undefined:readOperationalManifest(event.settingsManifest);
     if(settingsManifest&&(event.kind!=='proposed'||event.state.status!=='proposed'||event.state.version!==0||settingsManifest.kind!=='settings.vercel'||compileOperationalSettingsPlan(settingsManifest).digest!==event.state.plan.digest))fail();
     const settingsResult=event.settingsResult===undefined?undefined:readSettingsResult(event.settingsResult);
     if(settingsResult&&(event.kind!=='effect.observed'||settingsResult.actionId!==event.actionId||settingsResult.effectIndex!==event.effectIndex||settingsResult.outcome!==event.outcome||settingsResult.planDigest!==event.state.plan.digest||settingsResult.manifestDigest!==event.state.plan.sourceDigest))fail();
-    const detail={...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
+    const detail={...(ecsManifest===undefined?{}:{ecsManifest}),...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
    },
    async reservePostDeletion(id,index,postUrn){

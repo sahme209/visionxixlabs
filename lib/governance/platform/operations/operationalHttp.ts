@@ -1,3 +1,5 @@
+import {operationalEcsManifest} from './contracts';
+import {platformPreparationRequestId} from '../preparationReference';
 import 'server-only';
 import {z} from 'zod';
 import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
@@ -7,6 +9,8 @@ import {createDefaultOperationalRequestService} from './operationalRequestServic
 
 const actionId=operationalWorkloadBinding.shape.actionId;
 const command=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('prepare'),selection:operationalEcsManifest,requestId:platformPreparationRequestId}).strict(),
+ z.object({operation:z.literal('lookup'),requestId:platformPreparationRequestId}).strict(),
  z.object({operation:z.literal('inspect'),actionId}).strict(),
  z.object({operation:z.literal('observe'),actionId}).strict(),
  z.object({operation:z.literal('delegate'),actionId,expectedVersion:z.number().int().nonnegative(),planDigest:digest}).strict(),
@@ -24,6 +28,8 @@ export function createOperationalHttp(createService:(request:Request)=>Promise<S
  try{
   request.signal.throwIfAborted();let data;
   switch(selected.operation){
+   case 'prepare':data=await service.prepare(selected.selection,selected.requestId);break;
+   case 'lookup':data=await service.lookup(selected.requestId);break;
    case 'inspect':data=await service.inspect(selected.actionId);break;
    case 'observe':data=await service.observeTarget(selected.actionId);break;
    case 'delegate':data=await service.delegate(selected.actionId,selected.expectedVersion,selected.planDigest);break;
