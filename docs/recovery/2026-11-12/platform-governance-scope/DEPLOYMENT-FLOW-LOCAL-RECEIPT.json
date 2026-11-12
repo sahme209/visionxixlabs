@@ -1,0 +1,46 @@
+{
+  "scope": "Task4 prepared local desktop deployment\u2192receipt\u2192independent recovery\u2192separate new generation; final compile pending",
+  "actualSql": {
+    "fixture": "/private/tmp/axiom-platform-pg-i88gpqmq",
+    "passed": 144,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "providerRuntimeQualification": "simulated",
+    "newJourney": "actual desktop execution/recovery/review/preparation clients\u2192paired transport\u2192HTTP/current identity SQL\u2192intercepted native requests; generation2 independently approved, original action/receipt unchanged",
+    "nativeProviderRequests": 0
+  },
+  "validation": {
+    "desktopTests": 59,
+    "desktopLog": "/private/tmp/axiom-deployment-complete-desktop-regression.log",
+    "sharedTransportAndDemo": 60,
+    "sharedLog": "/private/tmp/axiom-deployment-flow-shared-regression.log",
+    "rootTypes": "/private/tmp/axiom-deployment-complete-current-types.log",
+    "desktopBuild": "/private/tmp/axiom-deployment-complete-desktop-build.log",
+    "typesAndFrontendPassed": true,
+    "productionCompilePending": true
+  },
+  "redLogs": [
+    "/private/tmp/axiom-deployment-execution-client-red.log",
+    "/private/tmp/axiom-deployment-execution-panel-red.log",
+    "/private/tmp/axiom-deployment-execution-ui-green.log",
+    "/private/tmp/axiom-deployment-recovery-preparation-red.log",
+    "/private/tmp/axiom-deployment-execution-workflow-red.log"
+  ],
+  "corrections": [
+    "Late account change left old disabled source controls rendered; explicit stale display now retires the view",
+    "One initial DOM assertion ambiguously matched duplicate readiness text; corrected to exact status region without dropping the assertion"
+  ],
+  "sourceHashes": {
+    "desktop/src/lib/deploymentExecution.ts": "fb27ff8f18343f76f9d7199ce4033ef6e761dae795b7c4eda31a0501e56e1484",
+    "desktop/src/lib/releaseOperationPlanTransport.ts": "899662836b7c4a367071f1e47174120642ad757693c20039c093c124d40fe764",
+    "desktop/src/components/PlatformDeploymentExecutionPanel.tsx": "0d87758ae3f1af14cfd4a8bf28dc59e52d081f850fc444ef432fefbb84ebee5b",
+    "desktop/src/components/DeploymentRecoveryPreparationPanel.tsx": "b14a6fb54e3715f30ddb5f8c0f1126ba6e7fcc315daa36e9a1cb71128bf063ef",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "4d8a4d8eb63d5445f9ce1506b3e7c89a5fba9801084ad9045a19ef770d653d8a",
+    "scripts/run-platform-governance-postgres.py": "2538979c83fdf719e71361a0086276e67c6b0053dd63764a37bd25cd8fe4e0d0"
+  },
+  "registered": false,
+  "nativeVisualAcceptance": false,
+  "productionChanged": false,
+  "fullGovernanceComplete": false
+}
