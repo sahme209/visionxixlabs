@@ -1,4 +1,5 @@
 import 'server-only';
+import {prepareGrowthPlatformPlan} from './growthPreparation';
 import {platformInspectionSchema} from './viewContract';
 import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -57,6 +58,31 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     return platformInspectionSchema.parse({actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
    });
   },
+  async previewGrowth(id:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal);
+   return locked(id,async(tx,state)=>{
+    await authority.assertCurrent(tx,actor);
+    if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
+    const effect=state.plan.effects[0];if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.post.delete'&&effect.kind!=='growth.schedule.change')return fail();
+    const operation=effect.kind==='growth.post.publish'?'publish':effect.kind==='growth.post.delete'?'delete':'schedule';
+    const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);
+    if(prepared.plan.digest!==state.plan.digest)fail();
+    await authority.assertCurrent(tx,actor);await timely(tx,state);
+    return {actionId:id,planDigest:state.plan.digest,...prepared.preview,authority:'review_preview_only' as const};
+   });
+  },
+  async prepareGrowth(raw:unknown,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),id='platform_action_'+randomUUID();
+   return repo.transaction(async tx=>{
+    await tx.lock(id);await authority.assertCurrent(tx,actor);
+    const prepared=await prepareGrowthPlatformPlan(tx,raw,await tx.now());
+    const state=createPlatformAction(prepared.plan,actor,await tx.now());
+    if(!authority.assertEffectCurrent)fail();
+    await authority.assertEffectCurrent!(tx,state.plan.effects[0]);
+    await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
+    return {actionId:id,preview:prepared.preview};
+   });
+  },
   async propose(plan:PlatformPlan,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id='platform_action_'+randomUUID();
    return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());
@@ -65,6 +91,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(state.version!==version)fail();await actors(tx,state);await authority.assertCurrent(tx,actor);
+    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
     const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state));await tx.replace(id,version,next);
     await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});});
   },
