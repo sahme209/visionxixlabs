@@ -1,6 +1,6 @@
 # ECS credential custody: next design boundary
 
-Status: proposed design preparation only; no implementation or external read authorized by this file.
+Status: owner approved bounded design preparation and three official AWS reads. Research/specification prepared at ECS-PRIVATE-ISSUANCE-DESIGN.md; no implementation or real configuration authorized.
 
 ## Evidence requiring a change
 
