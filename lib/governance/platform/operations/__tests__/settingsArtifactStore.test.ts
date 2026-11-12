@@ -5,8 +5,8 @@ import {createPlatformAction} from '../../kernel';
 import {compileOperationalSettingsPlan} from '../settingsArtifact';
 import {createSettingsArtifactStore} from '../settingsArtifactStore';
 const now=Date.parse('2026-11-12T00:00:00Z'),actor={userId:'creator',sessionId:'session'},id='platform_action_11111111-1111-4111-8111-111111111111';
-function fixture(){
- const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(now+60000).toISOString(),target:{projectId:'project',teamId:'team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_11111111-1111-4111-8111-111111111111',current:{kind:'absent',receiptId:'platform_evidence_11111111-1111-4111-8111-111111111111'}}]});
+function fixture(present=false){
+ const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(now+60000).toISOString(),target:{projectId:'project',teamId:'team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_11111111-1111-4111-8111-111111111111',current:present?{kind:'present',id:'existing-setting',updatedAt:now,receiptId:'platform_evidence_11111111-1111-4111-8111-111111111111'}:{kind:'absent',receiptId:'platform_evidence_11111111-1111-4111-8111-111111111111'}}]});
  let parent=createPlatformAction(compileOperationalSettingsPlan(manifest),actor,now),clock=now,revoked=false;const rows=new Map<string,unknown>();
  const unused=async():Promise<never>=>{throw Error('unused fixture port')};
  const tx={readGrowthPostingSource:unused,readSessionPrincipal:unused,readPrincipal:unused,insert:unused,replace:vi.fn(async(_id:string,_version:number,next:typeof parent)=>{parent=next}),event:vi.fn(async()=>{}),readEffect:unused,writeEffect:unused,lock:vi.fn(async()=>{}),read:async()=>parent,now:async()=>clock,reserveSettingsCreation:unused,readSettingsArtifact:vi.fn(async(key:string)=>rows.get(key)??null),insertSettingsArtifact:vi.fn(async(key:string,row:unknown)=>{if(rows.has(key))throw Error('duplicate');rows.set(key,row)})};
@@ -48,4 +48,12 @@ it('previews exact setting targets and missing/saved artifact status without sec
 
 it('refuses preview when source qualification changes during the artifact read',async()=>{
  const f=fixture();f.tx.readSettingsArtifact.mockImplementation(async()=>{f.source.assertCurrent.mockRejectedValue(Error('synthetic revoked'));return null});await expect(f.store.preview(id,{userId:'reviewer',sessionId:'reviewer-session'})).rejects.toThrow();
+});
+
+it('lets only the original requester claim a fully reviewed create-only action once without reading custody',async()=>{
+ const f=fixture(),reviewer={userId:'reviewer',sessionId:'reviewer-session'};await f.store.save(id,0,actor,'synthetic');await f.store.review(id,0,f.planDigest,reviewer);f.source.readKey.mockClear();await expect(f.store.claim(id,1,f.planDigest,reviewer)).rejects.toThrow();expect(await f.store.claim(id,1,f.planDigest,actor)).toMatchObject({status:'claimed',attemptCount:1,executionAuthorized:false});await expect(f.store.claim(id,1,f.planDigest,actor)).rejects.toThrow();expect(f.source.readKey).not.toHaveBeenCalled();
+});
+
+it('holds existing-setting updates and refuses expired/revoked/missing-artifact claims before custody',async()=>{
+ for(const mode of ['present','expiry','revoked','missing']as const){const f=fixture(mode==='present'),reviewer={userId:'reviewer',sessionId:'reviewer-session'};await f.store.save(id,0,actor,'synthetic');await f.store.review(id,0,f.planDigest,reviewer);f.source.readKey.mockClear();if(mode==='expiry')f.setClock(now+60000);if(mode==='revoked')f.revoke();if(mode==='missing')f.rows.clear();await expect(f.store.claim(id,1,f.planDigest,actor)).rejects.toThrow('settings_artifact_unavailable');expect(f.source.readKey).not.toHaveBeenCalled()}
 });

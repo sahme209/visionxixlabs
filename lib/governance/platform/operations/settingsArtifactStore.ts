@@ -4,7 +4,7 @@ import {readOperationalManifest} from './kernel';
 import 'server-only';
 import type {PlatformTransaction,PlatformAuthority} from '../actionStore';
 import {platformPrincipalSchema,type PlatformPrincipal} from '../contracts';
-import {readPlatformAction,approvePlatformAction} from '../kernel';
+import {readPlatformAction,approvePlatformAction,claimPlatformAction} from '../kernel';
 import {operationalWorkloadBinding} from './workloadIdentity';
 import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
 export interface SettingsArtifactTransaction extends PlatformTransaction{
@@ -62,6 +62,22 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
     return settingsArtifactMetadata(binding);
    });
   }catch{return fail()}
+ },async claim(rawId:string,version:number,planDigest:string,rawRequester:PlatformPrincipal){
+  try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),actor=platformPrincipalSchema.parse(rawRequester);return await repo.transaction(async tx=>{
+   await tx.lock(id);await authority.assertCurrent(tx,actor);const parent=readPlatformAction(await tx.read(id));
+   if(parent.status!=='approved'||parent.version!==version||parent.plan.digest!==planDigest||parent.requester.userId!==actor.userId||parent.requester.sessionId!==actor.sessionId||!parent.reviewer)return fail();
+   const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel'||manifest.settings.some(s=>s.current.kind!=='absent'))return fail();const count=manifest.settings.length,reviewer=parent.reviewer;
+   async function current(){
+    await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);
+    for(let index=0;index<count;index++){
+     const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,actor);await source.assertCurrent(tx,binding);
+     const row=checkedRecord(await tx.readSettingsArtifact(binding.artifactId),binding,0);if(row.createdAt>parent.updatedAt)return fail();await source.assertCurrent(tx,binding);
+    }
+    await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
+   }
+   const next=claimPlatformAction(parent,actor,await current());await tx.replace(id,version,next);await tx.event({actionId:id,kind:'claimed',state:next});await current();
+   return Object.freeze({actionId:id,planDigest,status:next.status,version:next.version,attemptCount:next.attemptCount,authority:'claim_record_only' as const,executionAuthorized:false as const});
+  })}catch{return fail()}
  },async review(rawId:string,version:number,planDigest:string,rawReviewer:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reviewer=platformPrincipalSchema.parse(rawReviewer);
    return await repo.transaction(async tx=>{
