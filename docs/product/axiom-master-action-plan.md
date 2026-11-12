@@ -252,6 +252,8 @@ Backend and frontend work proceed in parallel when file ownership and dependenci
 
 Security, premium visual quality, and clarity/ease apply everywhere. Every flow must explain readiness, the next action and owner, required approvals, the verified outcome, and recovery. Use original Axiom branding and interaction principles inspired by Cursor, Claude, ChatGPT, Codex, Grok and Apple. Never substitute marketing language for tested capabilities. Preserve tenant boundaries, spending limits, genuine human approvals, uncertain outcomes and historical attempts.
 
+**Desktop Apple refinement (owner reaffirmed November 12):** Apply restrained, native-feeling control sizing, consistent spacing and alignment, clear typography, subtle surface separation, coherent light/dark themes, predictable focus and keyboard behavior, and reduced-motion/accessibility support throughout the desktop app. Keep Axiom’s own identity and clear readiness/approval/outcome/recovery flows. Validate representative real app screens and interactions before marking visual acceptance complete; this clarification adds no separate redesign, copied Apple assets, new dependencies or priority change. Continue Governance first.
+
 ### Codex execution contract and plan-quality gates
 
 This master plan is the authoritative requirements and evidence ledger, **not** a blanket permission to perform work. Before starting any unit, read the current prioritized checklist, the relevant detailed parent section, the latest source-bound evidence and applicable authorization/spending/security restrictions. Do not treat a historic receipt, unchecked parent, proposed architecture, copied example, synthetic test or previous human approval as current production authority.
