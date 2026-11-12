@@ -8,9 +8,9 @@ import type {OperationalHandoffSource,OperationalHandoffCapture} from './workloa
 const profileSchema=z.object({endpoint:z.string().max(2048),preflightEndpoint:z.string().max(2048),audience:z.string().regex(/^[-A-Za-z0-9_]{1,256}$/),workload:handoffPreflightMetadata.shape.workload}).strict();
 export type OperationalRemoteHandoffProfile=z.infer<typeof profileSchema>;
 export interface OperationalNativeJobIdentity {
- /** Actual immutable job/native-origin qualification, not caller booleans or
-  * environment-name matching. No default/production qualifier exists. */
- assertQualified(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal):Promise<void>;
+ /** Bootstrap-channel consistency only, never authenticated workload identity.
+  * The backend must verify signed claims and current authority separately. */
+ assertBootstrapCurrent(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal):Promise<void>;
  /** One bounded fresh same-job/audience JWT acquisition; no AWS credential. */
  readToken(audience:string,signal:AbortSignal):Promise<string>;
 }
@@ -31,7 +31,7 @@ export function createRemoteOperationalHandoffSource(raw:unknown,native:Operatio
   const bytes=await readBoundedGithubBody(response,signal,65536),envelope=z.object({ok:z.literal(true),data:z.unknown()}).strict().parse(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes))),metadata=(sourceOnly?handoffSourceMetadata:handoffPreflightMetadata).parse(envelope.data);
   if(metadata.actionId!==command.actionId||!same(metadata.workload,profile.workload))return fail();return metadata;
  }
- async function nativeCurrent(signal:AbortSignal){signal.throwIfAborted();await withGithubAbort(native.assertQualified(profile,signal),signal);signal.throwIfAborted()}
+ async function nativeCurrent(signal:AbortSignal){signal.throwIfAborted();await withGithubAbort(native.assertBootstrapCurrent(profile,signal),signal);signal.throwIfAborted()}
  const source:OperationalHandoffSource={
   async capture(rawCommand,signal){if(used)return fail();used=true;try{
    const command=Object.freeze(operationalWorkloadCommand.parse(rawCommand));await nativeCurrent(signal);

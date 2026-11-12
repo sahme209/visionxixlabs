@@ -5,10 +5,11 @@ import {withGithubAbort,readBoundedGithubBody} from '@/lib/connectors/github/bou
 import type {OperationalNativeJobIdentity,OperationalRemoteHandoffProfile} from './remoteHandoffSource';
 export interface PrivateGithubJobContext {origin:string;requestUrl:string;requestToken:string}
 /** Qualified bootstrap ONLY, never workflow-dispatch JSON or an ambient source.
- * Must establish actual current native job/source/protection before context read.
+ * Must qualify the fixed bootstrap channel before context read.
+ * Does not establish authenticated workload/source/protection authority.
  * No default capture, environment/file fallback or production qualifier exists. */
 export interface PrivateGithubJobSource {
- assertQualified(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal):Promise<void>;
+ assertChannelQualified(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal):Promise<void>;
  capture(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal):Promise<PrivateGithubJobContext>;
  assertCurrent(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal):Promise<void>;
 }
@@ -20,11 +21,11 @@ export function createNativeGithubJobIdentity(source:PrivateGithubJobSource):Ope
  let initialization:Promise<void>|undefined,held:{profile:Readonly<OperationalRemoteHandoffProfile>;hash:string;url:string;requestToken:string}|undefined,failed=false,attempted=false,token:string|undefined;
  async function current(signal:AbortSignal){if(failed||!held)return fail();signal.throwIfAborted();await withGithubAbort(source.assertCurrent(held.profile,signal),signal);signal.throwIfAborted()}
  const native:OperationalNativeJobIdentity={
-  async assertQualified(raw,signal){try{
+  async assertBootstrapCurrent(raw,signal){try{
    if(failed)return fail();
    const profile=Object.freeze({endpoint:raw.endpoint,preflightEndpoint:raw.preflightEndpoint,audience:raw.audience,workload:Object.freeze({...raw.workload})}),hash=sha256ContentHash(profile);
    if(!initialization)initialization=(async()=>{
-    await withGithubAbort(source.assertQualified(profile,signal),signal);signal.throwIfAborted();
+    await withGithubAbort(source.assertChannelQualified(profile,signal),signal);signal.throwIfAborted();
     const captured=await withGithubAbort(source.capture(profile,signal),signal);signal.throwIfAborted();
     const origin=captured.origin,requestUrl=captured.requestUrl,requestToken=captured.requestToken,url=new URL(requestUrl),expected=new URL(origin);
     if(expected.origin!==origin||expected.protocol!=='https:'||expected.username||expected.password||expected.port||!expected.hostname.endsWith('.actions.githubusercontent.com')||url.origin!==origin||url.username||url.password||url.port||url.hash||url.protocol!=='https:'||requestUrl.length>4096||typeof requestToken!=='string'||requestToken.length<1||requestToken.length>16384||/[\s\x00-\x1f\x7f]/.test(requestToken))return fail();

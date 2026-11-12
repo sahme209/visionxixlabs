@@ -1,0 +1,64 @@
+{
+  "scope": "approved local source/compile/intercepted/owned isolated SQL only",
+  "sourceHashes": {
+    "lib/governance/platform/operations/githubBootstrap.ts": "449ce09a0eb0f60664bf3f31c75b2b51fa79fced97e797218b06727673807224",
+    "lib/governance/platform/operations/githubJobEntry.ts": "2125be968cea49dd2af1aab2fa524fb8303d68a4e7aa650088cdd85b5466a2a9",
+    "lib/governance/platform/operations/nativeGithubJobIdentity.ts": "f9694558b3a2d9ebbde53720efb3aad9d1385e1a0afc21a326e1888c02917f02",
+    "lib/governance/platform/operations/remoteHandoffSource.ts": "bef9edbc9f5d66601b531ab3f61cdd95dc3adb55bf94ed2de059ed4ad1547179",
+    "scripts/build-github-handoff-runtime.cjs": "93ef89a1f6fe149c544e3e8166011e6548ef5d78991f93690af828ba3ab1f8cb",
+    "scripts/fixtures/github-handoff-typescript-loader.cjs": "b4195860824812e47c7a726cc4d3f7217d2c067c25e16a92b9f17c0013822bb0"
+  },
+  "fullOrdinarySuite": {
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "counts": {
+      "numPassedTests": 18615,
+      "numFailedTests": 0,
+      "numPendingTests": 1028,
+      "numTodoTests": 0,
+      "numFailedTestSuites": 0
+    },
+    "failedTests": []
+  },
+  "fullOrdinaryEvidence": "/private/tmp/axiom-native-supplier-full-x1h1y2lb",
+  "fullSuiteFinalDifference": "After the full run, test child environment gained explicit NODE_ENV=test and its ProcessEnv annotation; SQL test EOF whitespace trimmed. Runtime source unchanged. Final targeted runtime test passes; final strict types recorded separately.",
+  "isolatedPostgres": {
+    "root": "/private/tmp/axiom-platform-pg-jvxi7y4s",
+    "passed": 114,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "nativeAndQualification": "simulated/intercepted, actual SQL and signed synthetic JWT checks",
+    "compiledArtifacts": [
+      {
+        "path": "/private/tmp/axiom-platform-pg-jvxi7y4s/axiom-handoff-sql-runtime-3DesaD/runner.mjs",
+        "sha256": "755e358a8f0c7aba79ae3fbd2c38fcc8d820868d925dc08802ded16b1bf04de4",
+        "bytes": 409269,
+        "scope": "actual compiled runtime exercised with synthetic native environment and intercepted I/O"
+      },
+      {
+        "path": "/private/tmp/axiom-platform-pg-jvxi7y4s/axiom-handoff-sql-runtime-8hSJeA/runner.mjs",
+        "sha256": "6d09621663d11368c0f24f651338a3253e411f1788061ee022748eb506bcd334",
+        "bytes": 409269,
+        "scope": "actual compiled runtime exercised with synthetic native environment and intercepted I/O"
+      }
+    ]
+  },
+  "focusedAndDemo": {
+    "passed": 45,
+    "failed": 0,
+    "log": "/private/tmp/axiom-github-bootstrap-final-focused.log"
+  },
+  "noActualNativeRead": true,
+  "noRealToken": true,
+  "noProviderAction": true,
+  "productionChanged": false,
+  "activeWorkflowChanged": false,
+  "completeP01": false,
+  "remaining": "real channel/profile/source/protection/key/host/custody qualification; registered shipping workflow/default; other-family decisions and full batch final review/types/build/green PR",
+  "strictTypes": {
+    "exitCode": 0,
+    "log": "/private/tmp/axiom-github-bootstrap-final-types3.log",
+    "correction": "test-only child environment explicit NODE_ENV=test and contextual ProcessEnv type; no suppression"
+  }
+}
