@@ -3,7 +3,7 @@ import {IncomingMessage} from 'node:http';
 import {Socket} from 'node:net';
 import {NodeHttpHandler} from '@smithy/node-http-handler';
 import {compileOperationalManifest} from '../kernel';
-import {createOperationalEcsSdkTransport} from '../ecsSdkTransport';
+import {createOperationalEcsSdkTransport,createOperationalEcsSdkReader} from '../ecsSdkTransport';
 const target={accountId:'123456789012',region:'us-east-2',clusterArn:'arn:aws:ecs:us-east-2:123456789012:cluster/main',serviceArn:'arn:aws:ecs:us-east-2:123456789012:service/main/web',taskDefinitionArn:'arn:aws:ecs:us-east-2:123456789012:task-definition/web:2'};
 const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'deployment.ecs',expiresAt:'2099-01-01T00:00:00Z',operation:'force',target,roleArn:'arn:aws:iam::123456789012:role/deployer',workload:{repository:'sahme209/visionxixlabs',ref:'refs/heads/main',commit:'a'.repeat(40),workflowCommit:'a'.repeat(40),workflowPath:'.github/workflows/axiom-deploy-aws-ecs.yml',workflowSha256:'b'.repeat(64),runId:'1',attempt:1},sourceEvidenceId:'platform_evidence_11111111-1111-4111-8111-111111111111'});
 if(manifest.kind!=='deployment.ecs')throw Error('fixture');
@@ -20,4 +20,8 @@ it('honors cancellation at the last authorization boundary before native dispatc
 it('bounds actual native response streams and never follows a redirect or retries',async()=>{
  const bodies:IncomingMessage[]=[];const native=vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async()=>{const body=new IncomingMessage(new Socket());bodies.push(body);body.push(Buffer.from('x'));body.push(null);return {response:{statusCode:302,headers:{location:'https://must-not-follow.invalid'},body}}});const transport=createOperationalEcsSdkTransport(async()=>{});await expect(transport.send(manifest,credentials(),async()=>{},new AbortController().signal)).rejects.toThrow('operational_ecs_transport_unavailable');expect(native).toHaveBeenCalledOnce();expect(bodies[0].destroyed).toBe(true);
  native.mockImplementation(async()=>{const body=new IncomingMessage(new Socket());bodies.push(body);body.rawHeaders=['content-length','70000'];body.push(Buffer.alloc(70000));body.push(null);return {response:{statusCode:200,headers:{'content-length':'70000'},body}}});await expect(transport.send(manifest,credentials(),async()=>{},new AbortController().signal)).rejects.toThrow('operational_ecs_transport_unavailable');expect(native).toHaveBeenCalledTimes(2);expect(bodies[1].destroyed).toBe(true);
+});
+
+it('uses the installed read-only SDK for only the selected cluster/service after its final read gate',async()=>{
+ let authorized=false;const native=vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async request=>{expect(authorized).toBe(true);expect(request.headers['x-amz-target']).toBe('AmazonEC2ContainerServiceV20141113.DescribeServices');expect(JSON.parse(String(request.body))).toEqual({cluster:target.clusterArn,services:[target.serviceArn]});const body=new IncomingMessage(new Socket());body.push(Buffer.from(JSON.stringify({failures:[],services:[{clusterArn:target.clusterArn,serviceArn:target.serviceArn}]})));body.push(null);return {response:{statusCode:200,headers:{'content-type':'application/x-amz-json-1.1','x-amzn-requestid':'synthetic-read'},body}}});const reader=createOperationalEcsSdkReader();expect(await reader.describe(target,credentials(),async()=>{authorized=true},new AbortController().signal)).toMatchObject({$metadata:{requestId:'synthetic-read'},failures:[]});expect(native).toHaveBeenCalledOnce();
 });
