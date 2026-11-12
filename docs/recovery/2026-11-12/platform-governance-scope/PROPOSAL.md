@@ -57,3 +57,11 @@ Proposed first connected unit (local code/isolated tests only):
 - Reuse existing session/audit and review conventions, not customer-role membership or a synthetic tenant. UI proposal/review/execution must show exact platform target/effect and separate human decision from execution; no generic client approval boolean. Live UI/session/native qualification remains separate.
 
 These are proposed technical choices for owner design review, not an already accepted authority grant. Existing tables/identities/settings remain unchanged.
+
+### Claim-time authorization requirement
+
+The real authority supplier must validate current requester and recorded reviewer independently at review and again within the final claim/currentness sequence: stable User IDs, current admin allowlist membership, real session validity/revocation and action expiry. Read the existing authentication/session mechanisms before selecting storage for session references; never infer an active session from a stored reviewer ID or historical approval. Unreadable/revoked authority refuses before credential/provider access. Any await between claim and dispatch requires a final authority recheck; revocation or uncertain claim prevents send and preserves the consumed/unknown record.
+
+Scheduled jobs require a separately validated service identity bound to the exact approved schedule and current human authority. Until the existing source can genuinely supply those facts, cron execution refuses; a cron secret alone never qualifies. This is an incomplete supported-operation gate, not removal of scheduled growth from the requested scope. Tests must reproduce revocation after review, during claim and before send, including scheduled attempts and unknown transaction outcomes.
+
+Independent builder review of the refined first unit found no important blocker; the claim-time requirement above addresses its remaining specification request. No executable behavior changed.
