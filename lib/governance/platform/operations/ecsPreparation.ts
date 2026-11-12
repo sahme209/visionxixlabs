@@ -1,9 +1,11 @@
+import {compileOperationalEcsPlan} from './ecsPlan';
+export {compileOperationalEcsPlan} from './ecsPlan';
 import {operationalWorkloadBinding} from './workloadIdentity';
 import 'server-only';
 import {platformPrincipalSchema,type PlatformPrincipal} from '../contracts';
 import type {PlatformTransaction,PlatformAuthority} from '../actionStore';
 import {preparationActionReference} from '../preparationReference';
-import {compilePlatformPlan,createPlatformAction,readPlatformAction,approvePlatformAction} from '../kernel';
+import {createPlatformAction,readPlatformAction,approvePlatformAction} from '../kernel';
 import {operationalEcsManifest} from './contracts';
 import {compileOperationalManifest,readOperationalManifest,type OperationalManifest} from './kernel';
 export type EcsManifest=Extract<OperationalManifest,{kind:'deployment.ecs'}>;
@@ -11,12 +13,6 @@ export type EcsPreparationTransaction=PlatformTransaction&{readEcsManifest(actio
 export interface EcsPreparationRepository{transaction<T>(fn:(tx:EcsPreparationTransaction)=>Promise<T>):Promise<T>}
 export interface EcsPreparationSource{assertCurrent(tx:EcsPreparationTransaction,manifest:EcsManifest):Promise<void>}
 const fail=():never=>{throw Error('ecs_preparation_unavailable')};
-/** Metadata compilation does not qualify account/run/source, image immutability,
- * native state or rollback condition. Those require a private current supplier. */
-export function compileOperationalEcsPlan(manifest:EcsManifest){
- const m=readOperationalManifest(manifest);if(m.kind!=='deployment.ecs')return fail();
- return compilePlatformPlan({format:1,scope:'platform',sourceDigest:m.digest,expiresAt:m.expiresAt,effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:m.target.accountId,region:m.target.region,cluster:m.target.clusterArn,service:m.target.serviceArn,taskDefinitionArn:m.target.taskDefinitionArn,operation:m.operation,configurationDigest:m.digest}}]});
-}
 export function createEcsPreparationStore(repo:EcsPreparationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:EcsPreparationSource){
  const current=(tx:EcsPreparationTransaction,principal:PlatformPrincipal)=>authority.assertCurrent(tx,principal);
  async function saved(tx:EcsPreparationTransaction,id:string,actor:PlatformPrincipal){

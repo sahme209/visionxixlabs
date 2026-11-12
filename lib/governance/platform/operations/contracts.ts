@@ -39,6 +39,7 @@ export const operationalEcsManifest=z.discriminatedUnion('operation',[
  const role=roleArn.exec(v.roleArn);if(role&&role[1]!==v.target.accountId)c.addIssue({code:'custom',message:'Mismatched credential account'});
  if(v.operation==='rollback'){const failed=taskArn.exec(v.condition.failedTaskDefinitionArn);if(failed&&(failed[1]!==v.target.region||failed[2]!==v.target.accountId))c.addIssue({code:'custom',message:'Mismatched failed task target'});}
 });
+export type OperationalEcsManifestMetadata=z.infer<typeof operationalEcsManifest>&{digest:string;authority:'metadata_only';executionAuthorized:false};
 const currentSetting=z.discriminatedUnion('kind',[
  z.object({kind:z.literal('absent'),receiptId:operationalEvidenceId}).strict(),
  z.object({kind:z.literal('present'),id,updatedAt:z.number().int().nonnegative().safe(),receiptId:operationalEvidenceId}).strict(),
