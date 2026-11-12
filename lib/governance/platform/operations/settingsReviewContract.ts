@@ -1,8 +1,12 @@
+import {platformPreparationRequestId} from '../preparationContract';
 import {z} from 'zod';
 import {digest} from '../contracts';
 import {platformActionId} from '../viewContract';
 import {operationalSettingsManifest} from './contracts';
+export const settingsCreateSelection=operationalSettingsManifest.refine(v=>v.settings.every(s=>s.current.kind==='absent'));
 export const settingsReviewCommand=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('prepare'),selection:settingsCreateSelection,requestId:platformPreparationRequestId}).strict(),
+ z.object({operation:z.literal('lookup'),requestId:platformPreparationRequestId}).strict(),
  z.object({operation:z.literal('preview'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('inspect'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('review'),actionId:platformActionId,expectedVersion:z.literal(0),planDigest:digest}).strict(),
@@ -20,3 +24,8 @@ export const settingsHistory=z.object({actionId:platformActionId,planDigest:dige
  return new Set(v.results.map(r=>r.effectIndex)).size===v.results.length&&v.results.every(r=>r.actionId===v.actionId&&r.planDigest===v.planDigest&&(r.outcome==='confirmed'?r.settingId!==null:r.settingId===null));
 });
 export type SettingsHistory=z.infer<typeof settingsHistory>;
+
+export const settingsPreparationReceipt=z.object({requestId:platformPreparationRequestId,actionId:platformActionId,historical:z.boolean(),authority:z.literal('proposal_reference_only'),executionAuthorized:z.literal(false)}).strict();
+export const settingsPreparationLookup=z.object({requestId:platformPreparationRequestId,actionId:platformActionId,found:z.boolean(),authority:z.literal('history_only'),executionAuthorized:z.literal(false)}).strict();
+export type SettingsPreparationReceipt=z.infer<typeof settingsPreparationReceipt>;
+export type SettingsPreparationLookup=z.infer<typeof settingsPreparationLookup>;

@@ -33,3 +33,19 @@ export function createSettingsHistoryClient(context:Context){return {
  },
 }}
 export type SettingsHistoryClient=ReturnType<typeof createSettingsHistoryClient>;
+
+import {settingsReviewCommand,settingsPreparationReceipt,settingsPreparationLookup,type SettingsPreparationReceipt,type SettingsPreparationLookup} from '../../../lib/governance/platform/operations/settingsReviewContract';
+/** Caller retains original UUID before save. No automatic save/renew/retry. */
+export function createSettingsPreparationClient(context:Context){return {
+ async prepare(selection:unknown,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<SettingsPreparationReceipt>>{
+  const parsed=settingsReviewCommand.safeParse({operation:'prepare',selection,requestId});
+  if(!parsed.success||parsed.data.operation!=='prepare'||Date.parse(parsed.data.selection.expiresAt)<=Date.now())return {ok:false,error:'Select exact create-only metadata and retain the original request reference.',outcomeUnconfirmed:false};
+  const command=parsed.data;
+  return releaseOperationPlanRequest(context,'POST',path,command,(raw):raw is SettingsPreparationReceipt=>{const p=settingsPreparationReceipt.safeParse(raw);return p.success&&p.data.requestId===command.requestId},signal);
+ },
+ async lookup(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<SettingsPreparationLookup>>{
+  const parsed=settingsReviewCommand.safeParse({operation:'lookup',requestId});if(!parsed.success||parsed.data.operation!=='lookup')return {ok:false,error:'Keep the original settings request reference.',outcomeUnconfirmed:false};const command=parsed.data;
+  return releaseOperationPlanRequest(context,'POST',path,command,(raw):raw is SettingsPreparationLookup=>{const p=settingsPreparationLookup.safeParse(raw);return p.success&&p.data.requestId===command.requestId},signal);
+ },
+}}
+export type SettingsPreparationClient=ReturnType<typeof createSettingsPreparationClient>;

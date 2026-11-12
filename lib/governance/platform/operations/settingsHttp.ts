@@ -3,14 +3,10 @@ import 'server-only';
 import {z} from 'zod';
 import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
 import {digest} from '../contracts';
-import {platformPreparationRequestId} from '../preparationReference';
-import {operationalSettingsManifest} from './contracts';
 import {operationalWorkloadBinding} from './workloadIdentity';
 import {createDefaultSettingsRequestService} from './settingsRequestService';
 const actionId=operationalWorkloadBinding.shape.actionId,version=z.number().int().nonnegative(),index=z.number().int().min(0).max(31);
 const command=z.discriminatedUnion('operation',[
- z.object({operation:z.literal('prepare'),selection:operationalSettingsManifest,requestId:platformPreparationRequestId}).strict(),
- z.object({operation:z.literal('lookup'),requestId:platformPreparationRequestId}).strict(),
  ...settingsReviewCommand.options,
  z.object({operation:z.literal('save'),actionId,effectIndex:index,value:z.string().max(65536).refine(s=>!s.includes('\0')&&Buffer.byteLength(s,'utf8')<=65536)}).strict(),
  z.object({operation:z.literal('claim'),actionId,expectedVersion:version,planDigest:digest}).strict(),
