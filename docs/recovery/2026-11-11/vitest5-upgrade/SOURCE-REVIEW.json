@@ -1,0 +1,226 @@
+{
+  "base": "54c0f1c5ab7cfa033ad2e8c2a75166ac63228b68",
+  "workflowRun": 43129017665,
+  "workflowResult": "success",
+  "generatedCommit": "86eb759ee2a37d78d9bac3541bfe79821fffe7fa",
+  "packageLockSha256": "647eedc543cdd8fbdcfb0513252d31de15d7742819201e48b4369928cf3cd214",
+  "preload": {
+    "oldSha256": "a5012da3d2027007781baecda154d343d8c7ad2327b79bec65b1b60a41f42dd1",
+    "newSha256": "3f415a8b5d53b4262580a8fe99158722cfe0f1514a000a457d1379c96da90f9f",
+    "onlyChange": "eslint-disable-next-line to oxlint-disable-next-line",
+    "installedMatchesPublicDownload": true
+  },
+  "versionDelta": [
+    {
+      "path": "node_modules/@rolldown/binding-android-arm-eabi",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-android-arm64",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-darwin-arm64",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-darwin-x64",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-freebsd-x64",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-arm-gnueabihf",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-arm64-gnu",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-arm64-musl",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-ppc64-gnu",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-s390x-gnu",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-x64-gnu",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-linux-x64-musl",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-openharmony-arm64",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-wasm32-wasi",
+      "before": null,
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-wasm32-wasi/node_modules/@emnapi/core",
+      "before": null,
+      "after": "2.0.0-beta.2"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-wasm32-wasi/node_modules/@emnapi/runtime",
+      "before": null,
+      "after": "2.0.0-beta.2"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-wasm32-wasi/node_modules/@emnapi/wasi-threads",
+      "before": null,
+      "after": "2.2.0"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-wasm32-wasi/node_modules/@napi-rs/wasm-runtime",
+      "before": null,
+      "after": "1.2.6"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-win32-arm64-msvc",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@rolldown/binding-win32-x64-msvc",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/@tailwindcss/node/node_modules/magic-string",
+      "before": "1.4.5",
+      "after": null
+    },
+    {
+      "path": "node_modules/@tybys/wasm-util",
+      "before": "0.10.1",
+      "after": "0.10.4"
+    },
+    {
+      "path": "node_modules/@vitest/expect",
+      "before": "4.1.12",
+      "after": null
+    },
+    {
+      "path": "node_modules/@vitest/mocker",
+      "before": "4.1.12",
+      "after": "5.1.0"
+    },
+    {
+      "path": "node_modules/@vitest/pretty-format",
+      "before": "4.1.12",
+      "after": null
+    },
+    {
+      "path": "node_modules/@vitest/runner",
+      "before": "4.1.12",
+      "after": null
+    },
+    {
+      "path": "node_modules/@vitest/snapshot",
+      "before": "4.1.12",
+      "after": null
+    },
+    {
+      "path": "node_modules/@vitest/spy",
+      "before": "4.1.12",
+      "after": "5.1.0"
+    },
+    {
+      "path": "node_modules/@vitest/utils",
+      "before": "4.1.12",
+      "after": null
+    },
+    {
+      "path": "node_modules/expect-type",
+      "before": "1.3.0",
+      "after": "1.4.0"
+    },
+    {
+      "path": "node_modules/magic-string",
+      "before": "0.30.21",
+      "after": "1.4.5"
+    },
+    {
+      "path": "node_modules/obug",
+      "before": "2.1.1",
+      "after": "3.0.0"
+    },
+    {
+      "path": "node_modules/rolldown",
+      "before": "1.2.18",
+      "after": "1.2.19"
+    },
+    {
+      "path": "node_modules/siginfo",
+      "before": "2.0.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/stackback",
+      "before": "0.0.2",
+      "after": null
+    },
+    {
+      "path": "node_modules/std-env",
+      "before": "4.2.0",
+      "after": "4.3.0"
+    },
+    {
+      "path": "node_modules/tinybench",
+      "before": "2.9.0",
+      "after": "6.2.3"
+    },
+    {
+      "path": "node_modules/tinyexec",
+      "before": "1.0.2",
+      "after": "1.3.1"
+    },
+    {
+      "path": "node_modules/tinyrainbow",
+      "before": "3.2.0",
+      "after": null
+    },
+    {
+      "path": "node_modules/vite",
+      "before": "8.3.7",
+      "after": "8.3.8"
+    },
+    {
+      "path": "node_modules/vitest",
+      "before": "4.1.12",
+      "after": "5.1.0"
+    },
+    {
+      "path": "node_modules/why-is-node-running",
+      "before": "2.3.0",
+      "after": "3.2.1"
+    }
+  ],
+  "qualification": false
+}

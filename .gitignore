@@ -66,3 +66,6 @@ next-env.d.ts
 # Prisma 7 vendor-generated source and compiled client; generated during builds.
 /.prisma/client-source/
 /lib/generated/prisma/
+
+# Vitest 5's shared report/attachment output; never source or release evidence.
+/.vitest/
