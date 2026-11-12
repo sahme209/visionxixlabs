@@ -36,3 +36,11 @@ it('proposal receipts and lookup results stay metadata-only and match the exact 
  http.mockResolvedValueOnce(Response.json({ok:true,data:{requestId,found:false,authority:'history_only'}}));expect(await c.lookup(requestId)).toMatchObject({ok:true,data:{found:false,authority:'history_only'}});expect(http).toHaveBeenCalledTimes(2);
  http.mockResolvedValueOnce(Response.json({ok:true,data:{...data,requestId:'55555555-5555-4555-8555-555555555555'}}));expect(await c.prepare(selection,requestId)).toMatchObject({ok:false,outcomeUnconfirmed:true});expect('execute' in c).toBe(false);expect('approve' in c).toBe(false);
 });
+it('history uses the actual fixed read-only transport and never retries a lost read',async()=>{
+ const {createPlatformHistoryClient}=await import('../../../desktop/src/lib/platformReview');
+ const page={entries:[],nextCursor:null,authority:'history_only',sourceValidation:'not_checked'},http=vi.fn(async()=>Response.json({ok:true,data:page}));vi.stubGlobal('fetch',http);
+ expect((await createPlatformHistoryClient(context()).list(null)).ok).toBe(true);
+ expect(http).toHaveBeenCalledExactlyOnceWith('https://example.test/api/desktop/platform-governance/history',expect.objectContaining({method:'POST',body:JSON.stringify({operation:'list_history',cursor:null}),credentials:'omit',redirect:'error'}));
+ http.mockImplementationOnce(async()=>{throw Error('lost read')});expect(await createPlatformHistoryClient(context()).list(null)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(http).toHaveBeenCalledTimes(2);
+ http.mockClear();expect((await releaseOperationPlanRequest(context(),'POST','/api/desktop/platform-governance/history',{operation:'list_history',cursor:null,claim:true},(_raw):_raw is never=>false)).ok).toBe(false);expect(http).not.toHaveBeenCalled();
+});

@@ -1,5 +1,6 @@
 import 'server-only';
-import {platformHistoryCursor,projectPlatformHistory,type PlatformHistoryCursor} from './historyContract';
+import {projectPlatformHistory} from './historyProjection';
+import {platformHistoryCursor,type PlatformHistoryCursor} from './historyContract';
 import {preparationActionReference,canonicalGrowthSelection,matchesPreparationSelection} from './preparationReference';
 import {prepareGrowthPlatformPlan} from './growthPreparation';
 import {platformInspectionSchema,platformGrowthPreviewSchema} from './viewContract';

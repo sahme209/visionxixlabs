@@ -323,14 +323,16 @@ it.skipIf(!enabled)('preparation replay cannot renew a consumed unknown or subst
  }finally{vi.unstubAllEnvs()}
 });
 
+import {createPlatformHistoryHttp} from '../historyHttp';
 import {createPlatformPreparationHttp} from '../preparationHttp';
 import {createPlatformReviewHttp} from '../reviewHttp';
-import {createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
+import {createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
 it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source review, requester execution and SQL history',async()=>{
  try{
-  const f=await postFixture(false,30000,false,false),prepare=createPlatformPreparationHttp(),review=createPlatformReviewHttp(),execute=createPlatformExecutionHttp();let providerCalls=0;
+  const f=await postFixture(false,30000,false,false),prepare=createPlatformPreparationHttp(),review=createPlatformReviewHttp(),execute=createPlatformExecutionHttp(),history=createPlatformHistoryHttp();let providerCalls=0;
   vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
    const url=typeof input==='string'?input:input instanceof URL?input.href:input.url;
+   if(url==='https://fixture.example.test/api/desktop/platform-governance/history')return history(new Request(url,init));
    if(url==='https://fixture.example.test/api/desktop/platform-governance/prepare')return prepare(new Request(url,init));
    if(url==='https://fixture.example.test/api/desktop/platform-governance/review')return review(new Request(url,init));
    if(url==='https://fixture.example.test/api/desktop/platform-governance/execute')return execute(new Request(url,init));
@@ -344,6 +346,7 @@ it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source r
   expect((await independent.preview(saved.data)).ok).toBe(true);const approved=await independent.approve(saved.data);if(!approved.ok)throw Error('synthetic_independent_review_failed');expect(providerCalls).toBe(0);
   const result=await requester.execute(approved.data);expect(result.ok).toBe(true);if(!result.ok)throw Error('synthetic_execution_failed');expect(result.data).toMatchObject({status:'confirmed',attemptCount:1,requesterUserId:'requester',reviewerUserId:'reviewer'});
   expect((await requester.execute(approved.data)).ok).toBe(false);expect(providerCalls).toBe(1);
+  const page=await createPlatformHistoryClient(owner).list(null);expect(page.ok).toBe(true);if(!page.ok)throw Error('synthetic_directory_failed');expect(page.data.entries.some(e=>e.actionId===receipt.data.actionId&&e.status==='confirmed')).toBe(true);expect(JSON.stringify(page.data)).not.toContain(actor.sessionId);expect(providerCalls).toBe(1);
   const lookup=await proposal.lookup(nonce);expect(lookup).toMatchObject({ok:true,data:{found:true,actionId:receipt.data.actionId,authority:'history_only'}});expect(await f.requester.inspect(receipt.data.actionId)).toMatchObject({status:'confirmed',attemptCount:1});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });

@@ -2,13 +2,15 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+Latest local tranche: bounded historical directory store/SQL plus prepared authenticated HTTP, paired client and unregistered read-only panel.17focused checks/root and desktop types/shell build pass.31actual isolated PostgreSQL cases pass, including real client→prepared handler→HMAC/current SQL directory access; provider and delivery are simulated. Receipt precedes only the final ISO-fraction comparison refinement, covered by its focused test. No production route mounting, native rendering or acceptance. Historical rows never restore original-session execution authority.
+
 Current independent work: finish the supported proposal/review/original-requester execution/history workflow; complete missing image, ECS/settings/operational authority and all coverage/validation before one PR. Image-custody implementation approval and the earlier official LinkedIn documentation decision are pending. Do not infer either or repeat them. No provider/key/schema/flag/deploy/spending authority is added.
 
 Prior prepared requester UI unit: separate requester confirmation panel and read-only shared target/source presentation;16focused checks and final root/desktop types pass. No native/customer registration or visual acceptance. Reviewer approval remains a different panel/client; unknown/consumed execution has inspection, not another send.
 
 Prior request-reference unit: same verified requester/session + request UUID yields one durable save/reference, even concurrently. Replay returns only original historical ID, with no source refresh/expiry renewal/review/claim; changed selectors refuse. Read-only lookup creates no records.22focused checks/root types and29actual isolated PG cases pass (stopped). Future public prepare must require the reference; cross-session history directory remains required, never expired-session authority reuse.
 
-Current completed local tranche: mandatory-reference proposal HTTP/client and strict paired transport, with separate read-only lookup after uncertainty.22focused checks, root/desktop types and shell/client build pass.30actual isolated PG cases pass including a composed real-client/default-handler/HMAC/SQL source-review-execution-history journey, with in-process simulated network delivery and provider response; fixture stopped. All routes/customer entries remain unregistered. Full P01/production/live acceptance is NOT established.
+Prior completed local tranche: mandatory-reference proposal HTTP/client and strict paired transport, with separate read-only lookup after uncertainty.22focused checks, root/desktop types and shell/client build pass.30actual isolated PG cases pass including a composed real-client/default-handler/HMAC/SQL source-review-execution-history journey, with in-process simulated network delivery and provider response; fixture stopped. All routes/customer entries remain unregistered. Full P01/production/live acceptance is NOT established.
 
 ## Accumulated unit checkpoints (historical; preserve their scopes)
 

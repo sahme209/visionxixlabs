@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {projectPlatformHistory} from '../historyContract';
+import {projectPlatformHistory} from '../historyProjection';
 import {createPlatformAction,compilePlatformPlan} from '../kernel';
 const at=Date.parse('2026-11-12T00:00:00Z'),d='a'.repeat(64);
 const state=createPlatformAction(compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:'2026-11-13T00:00:00Z',effects:[{id:'one',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}}]}),{userId:'requester',sessionId:'private-session'},at);
@@ -28,4 +28,12 @@ it('requires current reader both before and after the history read, without writ
  await expect(service.history(null,{userId:'admin',sessionId:'new-session'})).rejects.toThrow();expect(read).not.toHaveBeenCalled();
  current.mockResolvedValueOnce(undefined).mockRejectedValueOnce(Error('revoked-after-read'));
  await expect(service.history(null,{userId:'admin',sessionId:'new-session'})).rejects.toThrow();expect(write).not.toHaveBeenCalled();
+});
+it('rejects inconsistent history pages before desktop presentation',async()=>{
+ const {platformHistoryPage}=await import('../historyContract'),page=projectPlatformHistory([row(2),row(1)],null);
+ for(const bad of [{...page,entries:[{...page.entries[0],status:'confirmed'}]},{...page,entries:[page.entries[0],page.entries[0]]},{...page,nextCursor:{createdAt:page.entries[0].createdAt,actionId:page.entries[0].actionId}}])expect(platformHistoryPage.safeParse(bad).success).toBe(false);
+});
+it('compares cursor instants rather than ISO fractional spelling',()=>{
+ const value=row(1),cursor={createdAt:'2026-11-12T00:00:00.001000Z',actionId:row(2).id};
+ expect(projectPlatformHistory([value],cursor).entries).toHaveLength(1);
 });

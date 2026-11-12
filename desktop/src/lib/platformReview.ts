@@ -1,3 +1,4 @@
+import {platformHistoryCommand,platformHistoryPage,historyEntryBefore,type PlatformHistoryCursor,type PlatformHistoryPage} from '../../../lib/governance/platform/historyContract';
 import {platformPreparationCommandSchema,platformPreparationReceiptSchema,platformPreparationLookupSchema,type PlatformPreparationReceipt,type PlatformPreparationLookup} from '../../../lib/governance/platform/preparationContract';
 import {platformActionId,platformInspectionSchema,platformGrowthPreviewSchema,type PlatformInspection,type PlatformGrowthPreview} from '../../../lib/governance/platform/viewContract';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
@@ -59,3 +60,12 @@ export function createPlatformPreparationClient(context:Context){
  };
 }
 export type PlatformPreparationClient=ReturnType<typeof createPlatformPreparationClient>;
+
+/** Historical discovery only, with fixed page size and no write operation. */
+export function createPlatformHistoryClient(context:Context){
+ return {list(cursor:PlatformHistoryCursor|null,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformHistoryPage>>{
+  const selected=platformHistoryCommand.safeParse({operation:'list_history',cursor});
+  if(!selected.success)return Promise.resolve({ok:false,error:'Select a valid saved history page.',outcomeUnconfirmed:false});
+  return releaseOperationPlanRequest(context,'POST','/api/desktop/platform-governance/history',selected.data,(raw):raw is PlatformHistoryPage=>{const page=platformHistoryPage.safeParse(raw);return page.success&&(!selected.data.cursor||page.data.entries.every(e=>historyEntryBefore(e,selected.data.cursor!)))},signal);
+ }};
+}
