@@ -9,6 +9,8 @@ import {createDefaultOperationalRequestService} from './operationalRequestServic
 
 const actionId=operationalWorkloadBinding.shape.actionId;
 const command=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('preview'),actionId}).strict(),
+ z.object({operation:z.literal('review'),actionId,expectedVersion:z.number().int().nonnegative(),planDigest:digest}).strict(),
  z.object({operation:z.literal('prepare'),selection:operationalEcsManifest,requestId:platformPreparationRequestId}).strict(),
  z.object({operation:z.literal('lookup'),requestId:platformPreparationRequestId}).strict(),
  z.object({operation:z.literal('inspect'),actionId}).strict(),
@@ -28,6 +30,8 @@ export function createOperationalHttp(createService:(request:Request)=>Promise<S
  try{
   request.signal.throwIfAborted();let data;
   switch(selected.operation){
+   case 'preview':data=await service.preview(selected.actionId);break;
+   case 'review':data=await service.review(selected.actionId,selected.expectedVersion,selected.planDigest);break;
    case 'prepare':data=await service.prepare(selected.selection,selected.requestId);break;
    case 'lookup':data=await service.lookup(selected.requestId);break;
    case 'inspect':data=await service.inspect(selected.actionId);break;

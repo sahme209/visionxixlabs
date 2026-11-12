@@ -23,6 +23,8 @@ export async function createOperationalDelegationRequestComposition(request:{hea
  const authority={async assertCurrent(tx:import('../actionStore').PlatformTransaction,p:import('../contracts').PlatformPrincipal){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}};
  const store=createOperationalDelegationStore(ports.repo,authority,ports.source,ports.identity,ports.targets),preparation=createEcsPreparationStore(ports.repo,authority,ports.preparationSource??{assertCurrent:async()=>fail()});
  return Object.freeze({
+  async preview(id:string){possessed();return preparation.preview(id,principal)},
+  async review(id:string,version:number,planDigest:string){possessed();return preparation.review(id,version,planDigest,principal)},
   async prepare(selection:unknown,requestId:string){possessed();return preparation.prepare(selection,requestId,principal)},
   async lookup(requestId:string){possessed();return preparation.lookup(requestId,principal)},
   async inspect(id:string){possessed();return store.inspect(id,principal)},

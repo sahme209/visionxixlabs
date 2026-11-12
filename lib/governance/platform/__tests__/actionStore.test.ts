@@ -1,6 +1,6 @@
 import {it,expect,vi,afterEach} from 'vitest';
 import {createPlatformActionService,type PlatformRepository,type PlatformTransaction} from '../actionStore';
-import {compilePlatformPlan} from '../kernel';
+import {compilePlatformPlan,approvePlatformAction} from '../kernel';
 import type {PlatformAction} from '../contracts';
 const requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'},d='a'.repeat(64);
 const at=Date.parse('2026-11-12T00:00:00Z');
@@ -153,7 +153,9 @@ it('previews canonical prepared bucket creation as requested metadata, not accou
  const preview=await f.service.previewTemplate(saved.actionId,reviewer);expect(preview).toMatchObject({kind:'template.bucket',actionId:saved.actionId,target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'},ownership:'not_observed',authority:'review_preview_only'});expect(preview).not.toHaveProperty('yaml');expect(f.events()).toHaveLength(1);
 });
 it('keeps ECS out of human execution even after a distinct workload parent claim',async()=>{
- const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:'123456789012',region:'us-east-2',cluster:'cluster',service:'service',taskDefinitionArn:'task:1',operation:'force',configurationDigest:d}}]}),id=await f.service.propose(p,requester);await f.service.review(id,0,p.digest,reviewer);
+ const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:'123456789012',region:'us-east-2',cluster:'cluster',service:'service',taskDefinitionArn:'task:1',operation:'force',configurationDigest:d}}]}),id=await f.service.propose(p,requester);f.rows().set(id,approvePlatformAction(f.rows().get(id)!,{...reviewer,planDigest:p.digest},at));
  await expect(f.service.claim(id,1,requester)).rejects.toThrow();expect(f.rows().get(id)?.status).toBe('approved');
- const parent=f.rows().get(id)!;f.rows().set(id,{...parent,status:'claimed',version:2,attemptCount:1});await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();expect(f.events()).toHaveLength(2);
+ const parent=f.rows().get(id)!;f.rows().set(id,{...parent,status:'claimed',version:2,attemptCount:1});await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();expect(f.events()).toHaveLength(1);
 });
+
+it('refuses ECS review through the generic path that has no qualified saved operational source',async()=>{const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:'123456789012',region:'us-east-2',cluster:'cluster',service:'service',taskDefinitionArn:'task:1',operation:'force',configurationDigest:d}}]}),id=await f.service.propose(p,requester);await expect(f.service.review(id,0,p.digest,reviewer)).rejects.toThrow();expect(f.rows().get(id)?.status).toBe('proposed')});
