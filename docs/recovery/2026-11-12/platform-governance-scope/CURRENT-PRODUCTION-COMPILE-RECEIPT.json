@@ -1,0 +1,23 @@
+{
+  "run": {
+    "head": "fac3982c76439f786d228b2042d8135cc5898bc3",
+    "sourceCount": 13151,
+    "sourceManifestSha256": "f914c99aa42e1c8f7b08892f54322bb7c581f37d7c2d0a872e3ee82dd493cfa0",
+    "sourceArchiveSha256": "11c00c6d9cd080e47afb2c055a5f65fed4088504346de347bb378b8d5b6a8c3a",
+    "networkDenied": true,
+    "databaseUrlSupplied": false,
+    "environmentFilesAbsent": true,
+    "cachedEngineSha256": "6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1",
+    "scope": "ordinary isolated current-source production compile; shared installed dependencies; no runtime/native/issuer qualification",
+    "productionChanged": false
+  },
+  "completion": {
+    "exitCode": 0,
+    "sourcesAndEngineUnchanged": true,
+    "buildLogSha256": "55214c25653523a542e81973ecb945c078aa6ec9d98cf026c0274ef4f3cf9411",
+    "productionChanged": false
+  },
+  "directory": "/private/tmp/axiom-current-production-thxkik54",
+  "acceptance": "local production compilation only; no deployed/native/real-source qualification",
+  "supersedesOnly": "older production compilation source scope; no historical qualification renewed"
+}

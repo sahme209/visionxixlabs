@@ -2,6 +2,10 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Current frozen production compilation — fac3982c
+
+Full production types/compilation PASS for frozen sourcefac3982c, no database URL/networking, source/cached engine unchanged. Directory `/private/tmp/axiom-current-production-thxkik54`, build log SHA256 `55214c25653523a542e81973ecb945c078aa6ec9d98cf026c0274ef4f3cf9411`. CURRENT-PRODUCTION-COMPILE-RECEIPT.json binds archive/manifest/head. This replaces only the older compilation scope; all native/live/custody/coverage/review/PR/production gates remain. Master/handoff/board/remaining records now share this checkpoint, with original bytes preserved in the recorded local backup. No deployment.
+
 ## Next connected boundary — exact-run handoff implementation decision
 
 The original handoff review’s local environment/protection and token-forwarding gaps now have separately approved source implementations, but actual native qualification is still absent. EXACT-RUN-HANDOFF-LOCAL-IMPLEMENTATION-REVIEW.md specifies the missing source-only held-job/artifact/current-source handoff without installing or switching any active workflow. Its new gate/profile composition requires owner local-implementation approval; no code or real configuration was started under the original design-only grant. Existing pending other-family requests remain unchanged.
