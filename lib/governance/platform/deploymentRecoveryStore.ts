@@ -1,13 +1,13 @@
 import 'server-only';
-import {z} from 'zod';
-import {platformPrincipalSchema,digest,type PlatformPrincipal,type PlatformAction} from './contracts';
+import {platformPrincipalSchema,type PlatformPrincipal,type PlatformAction} from './contracts';
+import {deploymentRecoverySelection} from './deploymentRecoveryCommand';
+export {deploymentRecoverySelection} from './deploymentRecoveryCommand';
 import {platformActionId} from './viewContract';
 import type {PlatformTransaction,PlatformAuthority} from './actionStore';
 import {createPlatformAction,readPlatformAction,approvePlatformAction,claimPlatformAction,finishPlatformAction} from './kernel';
 import {preparationActionReference} from './preparationReference';
 import {compileDeploymentRecoveryPlan,readDeploymentRecoveryPlan,compileDeploymentRecoveryPlatformPlan,validateDeploymentRecoveryEvidence,type DeploymentRecoveryPlan} from './deploymentRecoveryContract';
 import {deploymentTerminalObservationSchema,type DeploymentReservation,type DeploymentTerminalObservation} from './deploymentLiability';
-export const deploymentRecoverySelection=z.object({nativeKey:digest,requestReceiptId:z.string().regex(/^platform_deployment_receipt_[a-f0-9-]{36}$/),profileDigest:digest,expiresAt:z.string().datetime()}).strict();
 export interface DeploymentRecoveryTransaction extends PlatformTransaction {
  lockDeploymentTarget(key:string):Promise<void>;
  readDeploymentTarget(key:string):Promise<Readonly<DeploymentReservation>|null>;
@@ -40,6 +40,8 @@ export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepositor
  async function original(tx:DeploymentRecoveryTransaction,plan:DeploymentRecoveryPlan){const reservation=await tx.readDeploymentTarget(plan.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(plan.nativeKey,plan.requestReceiptId);if(compileDeploymentRecoveryPlan({reservation,receipt,profileDigest:plan.profileDigest,expiresAt:plan.expiresAt}).digest!==plan.digest)return fail();return {reservation,receipt}}
  async function locked<T>(id:string,fn:(tx:DeploymentRecoveryTransaction,state:PlatformAction,plan:DeploymentRecoveryPlan)=>Promise<T>){platformActionId.parse(id);return repo.transaction(async tx=>{await tx.lock(id);const {state,plan}=await load(tx,id);await tx.lockDeploymentTarget(plan.nativeKey);return fn(tx,state,plan)})}
  return Object.freeze({
+  async lookup(reference:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(reference,actor,'platform_deployment_recovery_preparation_v1');return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);if(await tx.read(id)===null){await authority.assertCurrent(tx,actor);return {found:false as const}}const {state}=await load(tx,id);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)return fail();await authority.assertCurrent(tx,actor);return {found:true as const,actionId:id,planDigest:state.plan.digest,authority:'original_reference_only' as const,executionAuthorized:false as const}})},
+  async preview(id:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,state,plan)=>{if(state.status!=='proposed'&&state.status!=='approved')return fail();await current(tx,state,plan,actor);await original(tx,plan);await current(tx,state,plan,actor);return {actionId:id,planDigest:state.plan.digest,version:state.version,status:state.status,plan,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,authority:'review_preview_only' as const,sourceValidation:'checked_by_private_source' as const,executionAuthorized:false as const}})},
   async inspect(id:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);platformActionId.parse(id);return repo.transaction(async tx=>{
    await tx.lock(id);await authority.assertCurrent(tx,actor);const {state,plan}=await load(tx,id),observation=await tx.readDeploymentReleaseObservation(id),now=await tx.now();
    if(!Number.isSafeInteger(now)||now<state.updatedAt||(state.status==='confirmed')!==(observation!==null))return fail();
@@ -52,11 +54,11 @@ export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepositor
    await tx.lockDeploymentTarget(selection.nativeKey);const reservation=await tx.readDeploymentTarget(selection.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(selection.nativeKey,selection.requestReceiptId),plan=compileDeploymentRecoveryPlan({reservation,receipt,profileDigest:selection.profileDigest,expiresAt:selection.expiresAt}),state=createPlatformAction(compileDeploymentRecoveryPlatformPlan(plan),actor,await tx.now());
    await current(tx,state,plan,actor);await tx.insert(id,state);await tx.event({actionId:id,kind:'proposed',state,deploymentRecoveryPlan:plan});await current(tx,state,plan,actor);return {actionId:id,planDigest:state.plan.digest,historical:false as const};
   })},
-  async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,state,plan)=>{if(state.version!==version||state.plan.digest!==planDigest)return fail();await original(tx,plan);const now=await current(tx,state,plan,actor),next=approvePlatformAction(state,{...actor,planDigest},now);await tx.replace(id,version,next);await tx.event({actionId:id,kind:'approved',state:next});await current(tx,next,plan,actor);return {actionId:id,status:'approved' as const,executionAuthorized:false as const}})},
-  async observe(id:string,version:number,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);
+  async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,state,plan)=>{if(state.version!==version||state.plan.digest!==planDigest)return fail();await original(tx,plan);const now=await current(tx,state,plan,actor),next=approvePlatformAction(state,{...actor,planDigest},now);await tx.replace(id,version,next);await tx.event({actionId:id,kind:'approved',state:next});await current(tx,next,plan,actor);return {actionId:id,planDigest:next.plan.digest,version:next.version,status:'approved' as const,reviewRecorded:true as const,executionAuthorized:false as const}})},
+  async observe(id:string,version:number,principal:PlatformPrincipal,expectedPlanDigest?:string){const actor=platformPrincipalSchema.parse(principal);
    // This await is intentionally outside the catch: an uncertain claim commit
    // grants no lexical permission even to perform the observation.
-   const claimed=await locked(id,async(tx,state,plan)=>{if(state.version!==version)return fail();await original(tx,plan);const now=await current(tx,state,plan,actor),next=claimPlatformAction(state,actor,now);await tx.replace(id,version,next);await tx.event({actionId:id,kind:'claimed',state:next});await tx.writeEffect(id,0,null,'claimed');await tx.event({actionId:id,kind:'effect.claimed',state:next,effectIndex:0});await current(tx,next,plan,actor);return {state:next,plan}});
+   const claimed=await locked(id,async(tx,state,plan)=>{if(state.version!==version||expectedPlanDigest!==undefined&&state.plan.digest!==expectedPlanDigest)return fail();await original(tx,plan);const now=await current(tx,state,plan,actor),next=claimPlatformAction(state,actor,now);await tx.replace(id,version,next);await tx.event({actionId:id,kind:'claimed',state:next});await tx.writeEffect(id,0,null,'claimed');await tx.event({actionId:id,kind:'effect.claimed',state:next,effectIndex:0});await current(tx,next,plan,actor);return {state:next,plan}});
    const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('platform_deployment_recovery_unavailable'))},5000)});
@@ -67,7 +69,7 @@ export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepositor
      const saved=await original(tx,plan);await source.assertEvidenceCurrent(tx,plan,evidence);const now=await current(tx,state,plan,actor),nextTarget=validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,now);
      await tx.releaseDeploymentReservation(plan,evidence,nextTarget);await tx.writeEffect(id,0,'claimed','confirmed');const next=finishPlatformAction(state,'confirmed',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'confirmed',deploymentReleaseObservation:evidence});
      await source.assertEvidenceCurrent(tx,plan,evidence);const finalNow=await current(tx,next,plan,actor);validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,finalNow);
-     return {actionId:id,status:'confirmed' as const,reservationReleased:true as const,providerWritePerformed:false as const,executionAuthorized:false as const};
+     return {actionId:id,planDigest:next.plan.digest,version:next.version,status:'confirmed' as const,reservationReleased:true as const,providerWritePerformed:false as const,executionAuthorized:false as const};
     });
    }catch{
     // Never rewrite a committed confirmation after a lost final acknowledgement.

@@ -1,0 +1,44 @@
+{
+  "scope": "prepared authenticated recovery request/HTTP, unregistered; no desktop completion",
+  "actualSql": {
+    "fixture": "/private/tmp/axiom-platform-pg-26l_tbum",
+    "passed": 138,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "auth": "existing real HMAC with ephemeral synthetic key and actual current identity SQL",
+    "providerNativeQualification": "simulated",
+    "laterChange": "response-only exact planDigest/committed version fields; SQL/claim unchanged"
+  },
+  "checks": {
+    "sharedPassed": 520,
+    "sqlOptInSkippedInSharedRun": 138,
+    "sharedLog": "/private/tmp/axiom-deployment-recovery-http-regression.log",
+    "typesLog": "/private/tmp/axiom-deployment-recovery-request-final-types.log",
+    "typesPassed": true,
+    "requestAndHttpTests": 9,
+    "storeTests": 10
+  },
+  "redLogs": [
+    "/private/tmp/axiom-deployment-recovery-request-red.log",
+    "/private/tmp/axiom-deployment-recovery-reply-red.log"
+  ],
+  "sourceHashes": {
+    "lib/governance/platform/deploymentRecoveryCommand.ts": "7a1695f1ad68ead28a9ac4b1c790947ee539b6ee538b462e8e041545446c0a5a",
+    "lib/governance/platform/deploymentRecoveryRequest.ts": "3ea5c4ebe0a9429c403bc636eb8f1b4c0af777643ce044b7603042becc874e02",
+    "lib/governance/platform/deploymentRecoveryRequestService.ts": "1f00136c841ab1a4e2c007537e298e35186bcdacd963c3a32fd62834ec5540e6",
+    "lib/governance/platform/deploymentRecoveryHttp.ts": "4c1cd08e3e92cecca26fbc6796d43ba3482855c5b3e5b02530f98cfb6d0ce60e",
+    "lib/governance/platform/deploymentRecoveryStore.ts": "3fc87ff85077f51350c6822339e4308edf129ee49786c00417bb6c10d93e5f21",
+    "scripts/run-platform-governance-postgres.py": "9735a4cec5ad897e0458ac21c840fca54548bdbafb4c8ab27eec5aa56c9c37e4"
+  },
+  "publicRouteRegistered": false,
+  "providerWritePerformed": false,
+  "productionChanged": false,
+  "remaining": [
+    "desktop strict DTO/client/context protection",
+    "prepared reviewer/requester/history panels",
+    "complete generated-site execution workflow",
+    "qualified real defaults",
+    "whole-family and whole-batch validation/review/mandatory-green PR"
+  ]
+}

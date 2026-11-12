@@ -1223,3 +1223,27 @@ it.skipIf(!enabled)('a delayed independently approved generation-one observation
 it.skipIf(!enabled)('refuses an altered release timestamp at the SQL boundary without committing a released target',async()=>{
  try{const f=await deploymentRecoveryFixture(base=>({transaction:fn=>base.transaction(tx=>fn({...tx,releaseDeploymentReservation:(plan,evidence,next)=>tx.releaseDeploymentReservation(plan,evidence,{...next,updatedAt:next.updatedAt+3600000})}))}));await expect(f.store.observe(f.prepared.actionId,1,actor)).rejects.toThrow();const rows=await db.$queryRawUnsafe<Array<{stateJson:unknown}>>('SELECT "stateJson" FROM "PlatformDeploymentTarget" WHERE "nativeKey"=$1',f.receipt.nativeKey);expect(rows[0].stateJson).toMatchObject({phase:'held',generation:1,version:1});expect(f.source.readTerminal).toHaveBeenCalledOnce()}finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+
+import {createDeploymentRecoveryRequestComposition} from '../deploymentRecoveryRequest';
+import {createDeploymentRecoveryHttp} from '../deploymentRecoveryHttp';
+it.skipIf(!enabled)('joins exact recovery HTTP, genuine paired HMAC identities and current SQL through independent review, observation and historical recovery',async()=>{
+ try{const f=await deploymentRecoveryFixture(),http=createDeploymentRecoveryHttp(request=>createDeploymentRecoveryRequestComposition(request,{repo:f.repo,source:f.source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']})),requestId=randomUUID(),selection={nativeKey:f.receipt.nativeKey,requestReceiptId:f.receipt.receiptId,profileDigest:d,expiresAt:new Date(Date.now()+60000).toISOString()};
+  const call=(body:unknown,sessionId=actor.sessionId)=>http(new Request('https://fixture.invalid/deployment-recovery',{method:'POST',headers:{authorization:'Bearer '+mintDesktopToken(sessionId)},body:JSON.stringify(body)}));
+  expect((await http(new Request('https://fixture.invalid/deployment-recovery',{method:'POST',body:'{}'}))).status).toBe(401);
+  const saved=await (await call({operation:'prepare',selection,requestId})).json() as {ok:boolean;data:{actionId:string;planDigest:string}};expect(saved.ok).toBe(true);const {actionId,planDigest}=saved.data;
+  expect(await (await call({operation:'lookup',requestId})).json()).toMatchObject({ok:true,data:{found:true,actionId,planDigest}});
+  expect(await (await call({operation:'preview',actionId},reviewer.sessionId)).json()).toMatchObject({ok:true,data:{actionId,planDigest,status:'proposed',sourceValidation:'checked_by_private_source',executionAuthorized:false}});
+  expect((await call({operation:'review',actionId,expectedVersion:0,planDigest})).status).toBe(409);expect((await call({operation:'review',actionId,expectedVersion:0,planDigest},reviewer.sessionId)).status).toBe(200);
+  expect((await call({operation:'observe',actionId,expectedVersion:1,planDigest:d})).status).toBe(409);expect((await call({operation:'observe',actionId,expectedVersion:1,planDigest},reviewer.sessionId)).status).toBe(409);expect(f.source.readTerminal).not.toHaveBeenCalled();
+  expect(await (await call({operation:'observe',actionId,expectedVersion:1,planDigest})).json()).toMatchObject({ok:true,data:{actionId,status:'confirmed',reservationReleased:true,providerWritePerformed:false}});
+  expect(await (await call({operation:'inspect',actionId})).json()).toMatchObject({ok:true,data:{actionId,status:'confirmed',observation:{generation:1},currentTargetChecked:false,sourceValidation:'not_checked',executionAuthorized:false}});
+  expect((await call({operation:'observe',actionId,expectedVersion:1,planDigest})).status).toBe(409);expect(f.source.readTerminal).toHaveBeenCalledOnce();expect(f.http).toHaveBeenCalledOnce();
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('changed request possession during native observation consumes the action without releasing its target or returning a usable result',async()=>{
+ try{const f=await deploymentRecoveryFixture(),request=new Request('https://fixture.invalid/deployment-recovery',{method:'POST',headers:{authorization:'Bearer '+mintDesktopToken(actor.sessionId)},body:JSON.stringify({operation:'observe',actionId:f.prepared.actionId,expectedVersion:1,planDigest:f.prepared.planDigest})}),original=f.source.readTerminal;
+  f.source.readTerminal=vi.fn(async(...args:Parameters<typeof original>)=>{const result=await original(...args);request.headers.set('authorization','Bearer '+mintDesktopToken(reviewer.sessionId));return result});
+  const http=createDeploymentRecoveryHttp(req=>createDeploymentRecoveryRequestComposition(req,{repo:f.repo,source:f.source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']}));expect((await http(request)).status).toBe(409);
+  expect(await f.store.inspect(f.prepared.actionId,actor)).toMatchObject({status:'unknown',attemptCount:1,observation:null});const held=await db.$queryRawUnsafe<Array<{stateJson:unknown}>>('SELECT "stateJson" FROM "PlatformDeploymentTarget" WHERE "nativeKey"=$1',f.receipt.nativeKey);expect(held[0].stateJson).toMatchObject({phase:'held',generation:1,version:1});expect(f.source.readTerminal).toHaveBeenCalledOnce();await expect(f.store.observe(f.prepared.actionId,1,actor)).rejects.toThrow();
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
