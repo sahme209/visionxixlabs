@@ -1,0 +1,25 @@
+import {manualReleaseCommand,manualReleaseId,manualReleaseHistory,manualReleasePreparationReceipt,manualReleaseLookup,manualReleaseReviewReceipt,type ManualReleaseHistory} from '../../../lib/governance/platform/operations/manualReleaseClientContract';
+import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
+type Context=Parameters<typeof releaseOperationPlanRequest>[0];
+const path='/api/desktop/platform-governance/manual-release';
+const fail=()=>({ok:false as const,error:'Load the exact original release record. No deployment was submitted.',outcomeUnconfirmed:false});
+function normalize(v:unknown):unknown{if(Array.isArray(v))return v.map(normalize);if(v&&typeof v==='object')return Object.fromEntries(Object.entries(v).sort(([a],[b])=>a.localeCompare(b)).map(([k,c])=>[k,normalize(c)]));return v}
+async function verified(raw:unknown){const p=manualReleaseHistory.safeParse(raw);if(!p.success)return null;const {digest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,ownerAuthorization:ignoredOwner,...manifest}=p.data.manifest;const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(normalize({kind:'operational_manifest_v1',manifest}))));return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('')===digest?p.data:null}
+/** Prepared manual evidence workflow, not registered. Review and notice are
+ * separate commands. Nothing here clicks Vercel or verifies owner permission. */
+export function createManualReleaseClient(context:Context){
+ async function selected(raw:unknown){const config=context.getConfig(),revision=context.getRevision(),saved=await verified(raw).catch(()=>null);return context.getConfig()===config&&context.getRevision()===revision?saved:null}
+ async function history(operation:'inspect'|'recordNotice',recordId:string,signal?:AbortSignal):Promise<ReleasePlanResult<ManualReleaseHistory>>{
+  if(!manualReleaseId.safeParse(recordId).success)return fail();const config=context.getConfig(),revision=context.getRevision();
+  const result=await releaseOperationPlanRequest(context,'POST',path,{operation,recordId,...(operation==='recordNotice'?{expectedVersion:1}:{})},(v):v is ManualReleaseHistory=>{const p=manualReleaseHistory.safeParse(v);return p.success&&p.data.recordId===recordId&&(operation!=='recordNotice'||p.data.status==='notice_recorded')},signal);
+  if(!result.ok)return result;try{if(!await verified(result.data)||signal?.aborted||context.getConfig()!==config||context.getRevision()!==revision)return {...fail(),outcomeUnconfirmed:operation==='recordNotice'};return result}catch{return {...fail(),outcomeUnconfirmed:operation==='recordNotice'}}
+ }
+ return {
+  inspect:(recordId:string,signal?:AbortSignal)=>history('inspect',recordId,signal),
+  async prepare(selection:unknown,requestId:string,signal?:AbortSignal){const parsed=manualReleaseCommand.safeParse({operation:'prepare',selection,requestId});if(!parsed.success||parsed.data.operation!=='prepare'||Date.parse(parsed.data.selection.expiresAt)<=Date.now())return fail();return releaseOperationPlanRequest(context,'POST',path,parsed.data,(v):v is import('zod').infer<typeof manualReleasePreparationReceipt>=>{const p=manualReleasePreparationReceipt.safeParse(v);return p.success&&p.data.requestId===requestId.toLowerCase()},signal)},
+  async lookup(requestId:string,signal?:AbortSignal){const parsed=manualReleaseCommand.safeParse({operation:'lookup',requestId});if(!parsed.success)return fail();return releaseOperationPlanRequest(context,'POST',path,parsed.data,(v):v is import('zod').infer<typeof manualReleaseLookup>=>{const p=manualReleaseLookup.safeParse(v);return p.success&&p.data.requestId===requestId.toLowerCase()},signal)},
+  async review(raw:unknown,signal?:AbortSignal){const config=context.getConfig(),revision=context.getRevision(),saved=await selected(raw);if(context.getConfig()!==config||context.getRevision()!==revision||!saved||saved.status!=='proposed'||saved.expired||Date.parse(saved.manifest.expiresAt)<=Date.now())return fail();return releaseOperationPlanRequest(context,'POST',path,{operation:'review',recordId:saved.recordId,expectedVersion:0,planDigest:saved.manifest.digest},(v):v is import('zod').infer<typeof manualReleaseReviewReceipt>=>manualReleaseReviewReceipt.safeParse(v).success,signal)},
+  async recordNotice(raw:unknown,signal?:AbortSignal){const config=context.getConfig(),revision=context.getRevision(),saved=await selected(raw);if(context.getConfig()!==config||context.getRevision()!==revision||!saved||saved.status!=='reviewed'||saved.expired||Date.parse(saved.manifest.expiresAt)<=Date.now())return fail();const result=await history('recordNotice',saved.recordId,signal);if(result.ok&&(result.data.manifest.digest!==saved.manifest.digest||result.data.requesterUserId!==saved.requesterUserId||result.data.reviewerUserId!==saved.reviewerUserId))return {...fail(),outcomeUnconfirmed:true};return result},
+ };
+}
+export type ManualReleaseClient=ReturnType<typeof createManualReleaseClient>;
