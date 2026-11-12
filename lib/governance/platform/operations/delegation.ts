@@ -1,3 +1,4 @@
+import {z} from 'zod';
 import 'server-only';
 import type {OperationalTargetReservations} from './reservationStore';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -13,13 +14,19 @@ interface Source{
 }
 type Identity=Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authenticate'|'consume'|'assertConsumedCurrent'>;
 type Consumed=Awaited<ReturnType<Identity['consume']>>;
+export interface OperationalCredentialIssuer{
+ assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
+ /** Private fixed issuer; no raw token/role/target from request JSON. */
+ issue(manifest:OperationalDelegation['manifest'],signal:AbortSignal):Promise<unknown>;
+}
+const privateCredential=z.object({leaseRef:z.string().regex(/^platform_credential_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/),accessKeyId:z.string().min(1).max(128),secretAccessKey:z.string().min(1).max(8192),sessionToken:z.string().min(1).max(16384),expiresAt:z.number().int().nonnegative().safe()}).strict().refine(v=>[v.accessKeyId,v.secretAccessKey,v.sessionToken].every(s=>!/[\s\x00-\x1f\x7f]/.test(s)));
 const fail=():never=>{throw Error('operational_delegation_unavailable')};
 const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private server composition. Workload is never relabeled a human. All phase
- * proofs stay in this instance, never in HTTP JSON or durable state. No provider
- * or credential mint function is accepted; source/profile defaults remain closed. */
-export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'>){
- const claims=new WeakMap<object,{actionId:string;identity:Consumed}>(),issuance=new WeakMap<object,{actionId:string;version:number}>();
+ * proofs stay in this instance, never in HTTP JSON or durable state. Optional private issuance is bounded and recorded before any later use;
+ * source/profile defaults remain closed and no provider send is exposed. */
+export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'>,issuer?:OperationalCredentialIssuer){
+ const claims=new WeakMap<object,{actionId:string;identity:Consumed}>(),issuance=new WeakMap<object,{actionId:string;version:number;identity:Consumed}>(),credentials=new WeakMap<object,{actionId:string;identity:Consumed;value:z.infer<typeof privateCredential>}>();
  const binding=(state:OperationalDelegation)=>({actionId:state.actionId,manifestDigest:state.manifest.digest,workload:state.manifest.workload,expiresAt:state.manifest.expiresAt});
  function match(parent:PlatformAction,state:OperationalDelegation){
   const m=state.manifest,e=parent.plan.effects[0];
@@ -37,7 +44,35 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
  async function event(tx:OperationalDelegationTransaction,parent:PlatformAction,state:OperationalDelegation,kind:'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'){
   await tx.event({actionId:state.actionId,state:parent,kind,operationalDigest:sha256ContentHash(state)});
  }
+ async function recordCredential(proof:object,rawOutcome:unknown){const pending=issuance.get(proof);if(!pending)return fail();issuance.delete(proof);
+   try{const outcome=credentialOutcome.parse(rawOutcome);return await locked(pending.actionId,async(tx,key)=>{
+    const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending')return fail();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();
+    const next=readOperationalDelegation({...state,version:3,credential:{...outcome,requestedAt:state.credential.requestedAt,observedAt:now},updatedAt:now}),parent=readPlatformAction(await tx.read(key));match(parent,state);
+    await tx.replaceDelegation(key,state.version,next);await event(tx,parent,next,'credential.observed');return projection(next,now);
+   })}catch{throw Error('operational_credential_observation_unconfirmed')}
+  }
  return Object.freeze({
+  async issueCredential(proof:object){try{
+   const pending=issuance.get(proof);if(!pending||!issuer||!targets)return fail();issuance.delete(proof);
+   const manifest=await locked(pending.actionId,async(tx,key)=>{
+    const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();
+    await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));return state.manifest;
+   });
+   const observation=Object.freeze(Object.create(null)) as object;issuance.set(observation,pending);
+   const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,value:z.infer<typeof privateCredential>;
+   try{
+    const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
+    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,abort.signal),timeout]));abort.signal.throwIfAborted();
+   }catch{
+    const history=await recordCredential(observation,{status:'unknown'});return {history,credentialHandle:null};
+   }finally{if(timer)clearTimeout(timer);abort.abort()}
+   const history=await recordCredential(observation,{status:'issued',leaseRef:value.leaseRef,expiresAt:value.expiresAt});
+   await locked(pending.actionId,async(tx,key)=>{
+    const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==value.leaseRef||state.credential.expiresAt!==value.expiresAt)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');const now=await tx.now();if(now>=value.expiresAt)return fail();
+   });
+   const credentialHandle=Object.freeze(Object.create(null)) as object;credentials.set(credentialHandle,{actionId:pending.actionId,identity:pending.identity,value});return {history,credentialHandle};
+   }catch{throw Error('operational_credential_issuance_unconfirmed')}
+  },
   async inspect(id:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{await authority.assertCurrent(tx,actor);const state=await load(tx,key),now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();await authority.assertCurrent(tx,actor);return projection(state,now)})},
   async delegate(id:string,parentVersion:number,parentDigest:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{
    const parent=readPlatformAction(await tx.read(key));if(parent.status!=='approved'||parent.version!==parentVersion||parent.plan.digest!==parentDigest||!same(actor,parent.requester)||await tx.readDelegation(key))return fail();
@@ -63,17 +98,11 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     const state=await load(tx,key);if(!targets||state.status!=='claimed'||state.version!==1||state.credential.status!=='not_requested'||state.executionPrincipal?.replayKey!==claimed.identity.replayKey)return fail();
     const {parent,now}=await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,claimed.identity,binding(state));const next=readOperationalDelegation({...state,version:2,credential:{status:'pending',requestedAt:now},updatedAt:now});
     await tx.replaceDelegation(key,state.version,next);await event(tx,parent,next,'credential.pending');await current(tx,next,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:next.manifest},next.targetReservation);await identity.assertConsumedCurrent(tx,claimed.identity,binding(next));return {state:next,now};
-   });const issuanceProof=Object.freeze(Object.create(null)) as object;issuance.set(issuanceProof,{actionId:result.state.actionId,version:result.state.version});return {proof:issuanceProof,history:projection(result.state,result.now)};
+   });const issuanceProof=Object.freeze(Object.create(null)) as object;issuance.set(issuanceProof,{actionId:result.state.actionId,version:result.state.version,identity:claimed.identity});return {proof:issuanceProof,history:projection(result.state,result.now)};
    }catch{throw Error('operational_credential_request_unconfirmed')}
   },
   /** Private observation only, including after human/source expiry or revocation.
    * Never discard knowledge of issued/unknown credentials to claim safety. */
-  async observeCredential(proof:object,rawOutcome:unknown){const pending=issuance.get(proof);if(!pending)return fail();issuance.delete(proof);
-   try{const outcome=credentialOutcome.parse(rawOutcome);return await locked(pending.actionId,async(tx,key)=>{
-    const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending')return fail();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();
-    const next=readOperationalDelegation({...state,version:3,credential:{...outcome,requestedAt:state.credential.requestedAt,observedAt:now},updatedAt:now}),parent=readPlatformAction(await tx.read(key));match(parent,state);
-    await tx.replaceDelegation(key,state.version,next);await event(tx,parent,next,'credential.observed');return projection(next,now);
-   })}catch{throw Error('operational_credential_observation_unconfirmed')}
-  },
+  observeCredential:recordCredential,
  });
 }

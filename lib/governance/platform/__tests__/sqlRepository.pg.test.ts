@@ -527,12 +527,12 @@ it.skipIf(!enabled)('rolls manual review/event back atomically and refuses notic
 
 import {generateKeyPair,exportJWK,SignJWT} from 'jose';
 import {createOperationalWorkloadIdentity} from '../operations/workloadIdentity';
-import {createOperationalDelegationStore} from '../operations/delegation';
+import {createOperationalDelegationStore,type OperationalCredentialIssuer} from '../operations/delegation';
 import type {OperationalDelegationRepository} from '../operations/delegationContract';
 import {compileOperationalManifest} from '../operations/kernel';
 import {createOperationalTargetReservations} from '../operations/reservationStore';
 let operationalKeys:ReturnType<typeof generateKeyPair>|undefined;
-async function operationalFixture(options:{serviceName?:string;short?:boolean;operation?:'force'|'rollback';condition?:unknown;taskDefinitionArn?:string;currentTaskDefinitionArn?:string}={}){
+async function operationalFixture(options:{serviceName?:string;short?:boolean;operation?:'force'|'rollback';condition?:unknown;taskDefinitionArn?:string;currentTaskDefinitionArn?:string;issuer?:OperationalCredentialIssuer}={}){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');
  const serviceName=options.serviceName??'fixture-'+randomUUID(),commit='b'.repeat(40),manifest=compileOperationalManifest({format:1,scope:'platform',kind:'deployment.ecs',operation:options.operation??'force',...(options.operation==='rollback'?{condition:options.condition}:{}),expiresAt:new Date(Date.now()+300000).toISOString(),target:{accountId:'123456789012',region:'us-east-2',clusterArn:'arn:aws:ecs:us-east-2:123456789012:cluster/fixture',serviceArn:'arn:aws:ecs:us-east-2:123456789012:service/'+(options.short?'':'fixture/')+serviceName,taskDefinitionArn:options.taskDefinitionArn??'arn:aws:ecs:us-east-2:123456789012:task-definition/service:2'},roleArn:'arn:aws:iam::123456789012:role/fixture',workload:{repository:'sahme209/visionxixlabs',ref:'refs/heads/main',commit,workflowCommit:commit,workflowPath:'.github/workflows/axiom-deploy-aws-ecs.yml',workflowSha256:d,runId:'12345',attempt:1},sourceEvidenceId:'platform_evidence_'+randomUUID()});if(manifest.kind!=='deployment.ecs')throw Error('fixture');
  const plan=compilePlatformPlan({format:1,scope:'platform',sourceDigest:manifest.digest,expiresAt:manifest.expiresAt,effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:manifest.target.accountId,region:manifest.target.region,cluster:manifest.target.clusterArn,service:manifest.target.serviceArn,taskDefinitionArn:manifest.target.taskDefinitionArn,operation:manifest.operation,configurationDigest:manifest.digest}}]});
@@ -543,7 +543,7 @@ async function operationalFixture(options:{serviceName?:string;short?:boolean;op
  const profiles={readProfile:vi.fn(async()=>profile),assertProfileCurrent:vi.fn(async()=>{})},identity=createOperationalWorkloadIdentity(profiles),source={readManifest:async()=>manifest,assertCurrent:async()=>{}},repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']);
  let nativeOutcome:unknown=null;
  const nativeSource={assertPriorCredentialClosed:vi.fn(async()=>'platform_evidence_'+randomUUID()),readSnapshot:vi.fn(async()=>({receiptId:manifest.sourceEvidenceId,target:{...manifest.target,taskDefinitionArn:options.currentTaskDefinitionArn??'arn:aws:ecs:us-east-2:123456789012:task-definition/service:1'},deploymentId:'ecs-svc/1',observedAt:new Date().toISOString(),expiresAt:new Date(Date.now()+600000).toISOString(),profileDigest:d})),assertSnapshotCurrent:vi.fn(async()=>{}),readOutcome:vi.fn(async()=>nativeOutcome),assertOutcomeCurrent:vi.fn(async()=>{})};
- const targets=createOperationalTargetReservations(nativeSource),store=createOperationalDelegationStore(repo,authority,source,identity,targets);
+ const targets=createOperationalTargetReservations(nativeSource),store=createOperationalDelegationStore(repo,authority,source,identity,targets,options.issuer);
  function setNativeOutcome(kind:string,deploymentId:string|null='ecs-svc/2',generation=1){const receiptId='platform_evidence_'+randomUUID();nativeOutcome={receiptId,actionId:id,manifestDigest:manifest.digest,target:manifest.target,generation,kind,deploymentId,observedAt:new Date().toISOString(),profileDigest:d};return receiptId}
  const targetBinding={actionId:id,manifest};
  const observe=async(generation=1)=>repo.transaction(async tx=>{await tx.lock(id);return targets.observe(tx,targetBinding,generation)});
@@ -690,5 +690,14 @@ it.skipIf(!enabled)('joins exact-child HTTP commands to real HMAC/SQL without ad
  const request=(who:typeof actor,body:unknown)=>new Request('http://fixture.invalid/settings',{method:'POST',headers:{authorization:'Bearer '+mintDesktopToken(who.sessionId),'content-type':'application/json'},body:JSON.stringify(body)});
  const first=await http(request(actor,command));expect(first.status).toBe(200);expect(await first.json()).toMatchObject({ok:true,data:{effectIndex:0,settingId:'http-synthetic-id'}});expect((await http(request(actor,command))).status).toBe(409);expect((await http(request(reviewer,{...command,effectIndex:1}))).status).toBe(409);expect(f.source.readKey).toHaveBeenCalledTimes(1);
  const history=await http(request(actor,{operation:'inspect',actionId:f.id}));expect(history.status).toBe(200);expect(await history.json()).toMatchObject({ok:true,data:{status:'claimed',results:[{effectIndex:0,settingId:'http-synthetic-id'}]}});
+ }finally{vi.unstubAllEnvs()}
+});
+
+it.skipIf(!enabled)('joins one actual durable pending lease to private synthetic credential issuance without storing key material',async()=>{
+ const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>({leaseRef:'platform_credential_'+randomUUID(),accessKeyId:'SYNTHETIC_ACCESS',secretAccessKey:'SYNTHETIC_SECRET',sessionToken:'SYNTHETIC_TOKEN',expiresAt:Date.now()+900000}))};try{const f=await operationalFixture({issuer});await f.store.delegate(f.id,1,f.plan.digest,actor);const claimed=await f.store.claim(f.id,0,await f.token('issued-private-handle')),pending=await f.store.beginCredential(claimed.proof),issued=await f.store.issueCredential(pending.proof);expect(issued.history).toMatchObject({credential:{status:'issued'}});expect(issued.credentialHandle).toBeTruthy();expect(JSON.stringify(issued)).not.toContain('SYNTHETIC_SECRET');await expect(f.store.issueCredential(pending.proof)).rejects.toThrow();expect(issuer.issue).toHaveBeenCalledOnce();const rows=await db.$queryRawUnsafe('SELECT "stateJson" FROM "PlatformOperationalDelegation" WHERE "actionId"=$1',f.id);expect(JSON.stringify(rows)).not.toMatch(/SYNTHETIC_(ACCESS|SECRET|TOKEN)/);
+ }finally{vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('records a private issuer loss as actual unknown credential liability and blocks a second mint',async()=>{
+ const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>{throw Error('PRIVATE issuer loss')})};try{const f=await operationalFixture({issuer});await f.store.delegate(f.id,1,f.plan.digest,actor);const claimed=await f.store.claim(f.id,0,await f.token('unknown-private-issuer')),pending=await f.store.beginCredential(claimed.proof),issued=await f.store.issueCredential(pending.proof);expect(issued).toMatchObject({credentialHandle:null,history:{credential:{status:'unknown'}}});await expect(f.store.issueCredential(pending.proof)).rejects.toThrow();expect(issuer.issue).toHaveBeenCalledOnce();
  }finally{vi.unstubAllEnvs()}
 });

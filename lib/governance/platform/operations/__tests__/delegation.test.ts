@@ -1,12 +1,12 @@
 import {it,expect,vi} from 'vitest';
-import {createOperationalDelegationStore} from '../delegation';
+import {createOperationalDelegationStore,type OperationalCredentialIssuer} from '../delegation';
 import {nativeEcsTargetKey} from '../reservationStore';
 import {compileOperationalManifest} from '../kernel';
 import {compilePlatformPlan,createPlatformAction,approvePlatformAction} from '../../kernel';
 import type {OperationalDelegationRepository,OperationalDelegationTransaction} from '../delegationContract';
 import type {createOperationalWorkloadIdentity} from '../workloadIdentity';
 const now=Date.parse('2026-11-12T00:00:00Z'),d='a'.repeat(64),commit='b'.repeat(40),id='platform_action_11111111-1111-4111-8111-111111111111',requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'};
-function fixture(){
+function fixture(issuer?:OperationalCredentialIssuer){
  const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'deployment.ecs',operation:'force',expiresAt:new Date(now+300000).toISOString(),target:{accountId:'123456789012',region:'us-east-2',clusterArn:'arn:aws:ecs:us-east-2:123456789012:cluster/fixture',serviceArn:'arn:aws:ecs:us-east-2:123456789012:service/fixture/service',taskDefinitionArn:'arn:aws:ecs:us-east-2:123456789012:task-definition/service:2'},roleArn:'arn:aws:iam::123456789012:role/fixture',workload:{repository:'sahme209/visionxixlabs',ref:'refs/heads/main',commit,workflowCommit:commit,workflowPath:'.github/workflows/axiom-deploy-aws-ecs.yml',workflowSha256:d,runId:'12345',attempt:1},sourceEvidenceId:'platform_evidence_11111111-1111-4111-8111-111111111111'});if(manifest.kind!=='deployment.ecs')throw Error('fixture');
  const plan=compilePlatformPlan({format:1,scope:'platform',sourceDigest:manifest.digest,expiresAt:manifest.expiresAt,effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:manifest.target.accountId,region:manifest.target.region,cluster:manifest.target.clusterArn,service:manifest.target.serviceArn,taskDefinitionArn:manifest.target.taskDefinitionArn,operation:'force',configurationDigest:manifest.digest}}]});
  let parent=approvePlatformAction(createPlatformAction(plan,requester,now),{...reviewer,planDigest:plan.digest},now),delegation:unknown=null,events:unknown[]=[],tail=Promise.resolve(),clock=now,failEvent=false,loseAck=false;const revoked=new Set<string>();
@@ -17,7 +17,7 @@ function fixture(){
  }};
  const authority={assertCurrent:vi.fn(async(_tx:unknown,p:typeof requester)=>{if(revoked.has(p.userId))throw Error('revoked')})},source={readManifest:vi.fn(async()=>manifest),assertCurrent:vi.fn(async()=>{})};
  const identity:Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authenticate'|'consume'|'assertConsumedCurrent'>={authenticate:vi.fn(async()=>Object.freeze({})),assertConsumedCurrent:vi.fn(async()=>{}),consume:vi.fn(async(tx,_proof,binding)=>{await tx.reserveWorkloadIdentity(d,id,manifest.digest);return {principalKind:'workload' as const,actionId:id,manifestDigest:manifest.digest,workload:manifest.workload,replayKey:d,profileDigest:d,expiresAt:now+120000,authority:'identity_only' as const,executionAuthorized:false as const}})};
- const store=createOperationalDelegationStore(repo,authority,source,identity,{reserve:async()=>({nativeKey:nativeEcsTargetKey(manifest.target),generation:1}),assertHeld:async()=>{}});
+ const store=createOperationalDelegationStore(repo,authority,source,identity,{reserve:async()=>({nativeKey:nativeEcsTargetKey(manifest.target),generation:1}),assertHeld:async()=>{}},issuer);
  return {store,repo,manifest,plan,identity,source,events:()=>events,parent:()=>parent,record:()=>delegation,revoked,setNow:(v:number)=>{clock=v},failEvents:()=>{failEvent=true},loseClaimAck:()=>{loseAck=true}};
 }
 it('requires original-session delegation and records a distinct one-use workload claim rather than a human execution',async()=>{
@@ -47,4 +47,17 @@ it('refuses malformed lease references and preserves pending liability when obse
 });
 it('checks revoked humans before later workload-profile reads or credential-stage entry',async()=>{
  const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic-jwt');vi.mocked(f.identity.assertConsumedCurrent).mockClear();f.revoked.add(reviewer.userId);await expect(f.store.beginCredential(claimed.proof)).rejects.toThrow();expect(f.identity.assertConsumedCurrent).not.toHaveBeenCalled();expect(f.record()).toMatchObject({version:1,credential:{status:'not_requested'}});
+});
+
+it('issues only from a committed pending proof and returns no raw credential material',async()=>{
+ const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>({leaseRef:'platform_credential_22222222-2222-4222-8222-222222222222',accessKeyId:'SYNTHETIC_ACCESS',secretAccessKey:'SYNTHETIC_SECRET',sessionToken:'SYNTHETIC_TOKEN',expiresAt:now+900000}))},f=fixture(issuer);await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claimed.proof);await expect(f.store.issueCredential({})).rejects.toThrow();const issued=await f.store.issueCredential(pending.proof);expect(issued.history).toMatchObject({credential:{status:'issued'}});expect(issued.credentialHandle).toBeTruthy();expect(JSON.stringify(issued)).not.toMatch(/SYNTHETIC_(ACCESS|SECRET|TOKEN)/);await expect(f.store.issueCredential(pending.proof)).rejects.toThrow();expect(issuer.issue).toHaveBeenCalledTimes(1);
+});
+it('records unknown issuance without returning a handle or allowing another mint',async()=>{
+ const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>{throw Error('PRIVATE provider response')})},f=fixture(issuer);await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claimed.proof),result=await f.store.issueCredential(pending.proof);expect(result).toMatchObject({credentialHandle:null,history:{credential:{status:'unknown'}}});await expect(f.store.issueCredential(pending.proof)).rejects.toThrow();expect(issuer.issue).toHaveBeenCalledTimes(1);
+});
+it('preserves issued liability when reviewer access changes during issuance but returns no usable handle',async()=>{
+ const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn()},f=fixture(issuer);issuer.issue.mockImplementation(async()=>{f.revoked.add(reviewer.userId);return {leaseRef:'platform_credential_22222222-2222-4222-8222-222222222222',accessKeyId:'SYNTHETIC',secretAccessKey:'SYNTHETIC',sessionToken:'SYNTHETIC',expiresAt:now+900000}});await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claimed.proof);await expect(f.store.issueCredential(pending.proof)).rejects.toThrow('operational_credential_issuance_unconfirmed');expect(await f.store.inspect(id,requester)).toMatchObject({credential:{status:'issued'}});expect(issuer.issue).toHaveBeenCalledOnce();
+});
+it('bounds a stalled issuer and retains unknown without another issuance',async()=>{
+ vi.useFakeTimers();try{const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>new Promise(()=>{}))},f=fixture(issuer);await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claimed.proof),result=f.store.issueCredential(pending.proof);await vi.advanceTimersByTimeAsync(10001);expect(await result).toMatchObject({credentialHandle:null,history:{credential:{status:'unknown'}}});expect(issuer.issue).toHaveBeenCalledOnce()}finally{vi.useRealTimers()}
 });
