@@ -1,4 +1,4 @@
-import {platformTemplatePreview,type PlatformTemplatePreview} from '../../../lib/governance/platform/templateContract';
+import {platformTemplatePreparationCommand,platformTemplatePreview,type PlatformTemplatePreview} from '../../../lib/governance/platform/templateContract';
 import {platformDeploymentCommand,platformDeploymentPreview} from '../../../lib/governance/platform/deploymentContract';
 import type {z} from 'zod';
 import {platformSourceCommand,platformSourcePage,type PlatformSourceKind,type PlatformSourcePage} from '../../../lib/governance/platform/sourceCatalog';
@@ -111,7 +111,21 @@ export type PlatformDeploymentClient=ReturnType<typeof createPlatformDeploymentC
 
 /** Read-only exact fixed-template source; no proposal, approval or execution. */
 export function createPlatformTemplateClient(context:Context){
- return {preview(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformTemplatePreview>>{
+ const endpoint='/api/desktop/platform-governance/template';
+ return {
+  prepare(selection:unknown,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformPreparationReceipt>>{
+   const command=platformTemplatePreparationCommand.safeParse({operation:'prepare_template',requestId,selection});
+   if(!command.success||command.data.operation!=='prepare_template')return Promise.resolve({ok:false,error:'Keep an exact template selection and original reference.',outcomeUnconfirmed:false});
+   const selected=command.data;
+   return releaseOperationPlanRequest(context,'POST',endpoint,selected,(raw):raw is PlatformPreparationReceipt=>{const saved=platformPreparationReceiptSchema.safeParse(raw);return saved.success&&saved.data.requestId===selected.requestId},signal);
+  },
+  lookup(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformPreparationLookup>>{
+   const command=platformTemplatePreparationCommand.safeParse({operation:'lookup_template',requestId});
+   if(!command.success)return Promise.resolve({ok:false,error:'Retain the original template reference.',outcomeUnconfirmed:false});
+   const selected=command.data;
+   return releaseOperationPlanRequest(context,'POST',endpoint,selected,(raw):raw is PlatformPreparationLookup=>{const found=platformPreparationLookupSchema.safeParse(raw);return found.success&&found.data.requestId===selected.requestId},signal);
+  },
+  preview(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformTemplatePreview>>{
   const parsed=platformInspectionSchema.safeParse(raw);
   if(!parsed.success||!['proposed','approved'].includes(parsed.data.status)||parsed.data.expired||Date.parse(parsed.data.plan.expiresAt)<=Date.now()||parsed.data.plan.effects.length!==1)return Promise.resolve({ok:false,error:'Inspect a supported exact current template action first.',outcomeUnconfirmed:false});
   const saved=parsed.data,effect=saved.plan.effects[0];

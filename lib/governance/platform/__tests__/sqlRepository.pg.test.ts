@@ -118,11 +118,15 @@ import * as templateSource from '@/lib/cloud/aws/platformTemplateSource';
 async function templateFixture(beforeReview?:(id:string)=>void){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');vi.stubEnv('AWS_SHARED_CREDENTIALS_FILE','/private/tmp/axiom-no-synthetic-aws-credentials');vi.stubEnv('AWS_CONFIG_FILE','/private/tmp/axiom-no-synthetic-aws-config');vi.stubEnv('AWS_PROFILE','axiom-synthetic');
  const bytes=readFileSync('public/aws/axiom-agent-quick-deploy.yaml'),accountId='123456789012',input={accountId,region:'us-east-2',objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600};
- const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(bytes).digest('hex')}),raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw);
- const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),id=await requester.propose(raw);
- const handler=createPlatformReviewHttp(),config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(reviewer.sessionId)};
- vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{const url=String(input);if(url!=='https://fixture.example.test/api/desktop/platform-governance/review')throw Error('unexpected_external_destination');return handler(new Request(url,init))});
- const preview=await createPlatformTemplateClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}).preview(await requester.inspect(id));
+ const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(bytes).digest('hex')});
+ const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request);
+ const handler=createPlatformReviewHttp(),prepareHandler=createPlatformTemplatePreparationHttp();
+ vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{const url=String(input);if(url==='https://fixture.example.test/api/desktop/platform-governance/review')return handler(new Request(url,init));if(url==='https://fixture.example.test/api/desktop/platform-governance/template')return prepareHandler(new Request(url,init));throw Error('unexpected_external_destination')});
+ function context(sessionId:string){const config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(sessionId)};return {getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}}
+ const client=createPlatformTemplateClient(context(actor.sessionId)),reference=randomUUID(),selection={...input,operation:'access',expiresAt:new Date(Date.now()+60000).toISOString()},saved=await client.prepare(selection,reference);
+ expect(saved.ok).toBe(true);if(!saved.ok)throw Error('template_preparation_unavailable');const id=saved.data.actionId,compiled=(await requester.inspect(id)).plan;
+ expect(await client.lookup(reference)).toMatchObject({ok:true,data:{found:true,actionId:id}});expect(await client.prepare(selection,reference)).toMatchObject({ok:true,data:{actionId:id,historical:true}});
+ const preview=await createPlatformTemplateClient(context(reviewer.sessionId)).preview(await requester.inspect(id));
  expect(preview.ok).toBe(true);if(!preview.ok)throw Error('template_preview_unavailable');expect(preview.data.yaml).toBe(bytes.toString('utf8'));expect(preview.data.bytesDigest).toBe(effect.target.bytesDigest);
  const previewEvents=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(previewEvents).toEqual([{kind:'proposed'}]);
  beforeReview?.(id);
@@ -335,6 +339,7 @@ import {createPlatformSourceHttp} from '../sourceHttp';
 import {createPlatformHistoryHttp} from '../historyHttp';
 import {createPlatformPreparationHttp} from '../preparationHttp';
 import {createPlatformReviewHttp} from '../reviewHttp';
+import {createPlatformTemplatePreparationHttp} from '../templatePreparationHttp';
 import {createPlatformTemplateClient,createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
 it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source review, requester execution and SQL history',async()=>{
  try{

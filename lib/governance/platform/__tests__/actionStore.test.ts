@@ -139,3 +139,12 @@ it('previews exact template text read-only and refuses changed source, expiry or
  f.setNow(at+60000);await expect(f.service.previewTemplate(id,reviewer)).rejects.toThrow();f.setNow(at);
  let calls=0;f.assertCurrent.mockImplementation(async()=>{if(++calls===2)throw Error('revoked')});await expect(f.service.previewTemplate(id,reviewer)).rejects.toThrow();
 });
+it('saves one server-derived template proposal per exact original requester reference without expiry renewal',async()=>{
+ const f=fixture(),selection={operation:'upload',accountId:'123456789012',region:'us-east-2',expiresAt:new Date(at+60000).toISOString()},reference='33333333-3333-4333-8333-333333333333';
+ const results=await Promise.all([f.service.prepareTemplate(selection,requester,reference),f.service.prepareTemplate(selection,requester,reference)]);
+ expect(results[0].actionId).toBe(results[1].actionId);expect(results.filter(x=>x.historical)).toHaveLength(1);expect(f.rows().size).toBe(1);expect(f.events()).toHaveLength(1);
+ const saved=f.rows().get(results[0].actionId)!;expect(saved.plan.effects[0].kind).toBe('template.object.put');expect(saved.plan.expiresAt).toBe(selection.expiresAt);f.setNow(at+60000);
+ expect(await f.service.prepareTemplate(selection,requester,reference)).toMatchObject({actionId:results[0].actionId,historical:true});expect(await f.service.lookupTemplatePreparation(reference,requester)).toMatchObject({found:true,actionId:results[0].actionId});
+ await expect(f.service.prepareTemplate({...selection,expiresAt:new Date(at+120000).toISOString()},requester,reference)).rejects.toThrow();expect(f.events()).toHaveLength(1);
+ expect(await f.service.lookupTemplatePreparation(reference,reviewer)).toMatchObject({found:false});
+});

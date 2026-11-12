@@ -9,7 +9,7 @@ import {PlatformReviewPanel} from './PlatformReviewPanel';
 import {PlatformExecutionPanel} from './PlatformExecutionPanel';
 interface Props{
  currentUserId:string;canPrepare:boolean;canApprove:boolean;canExecute:boolean;
- clients:{template?:PlatformTemplateClient;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
+ clients:{template?:Pick<PlatformTemplateClient,'preview'>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
 }
 function sameLineage(previous:PlatformInspection,next:PlatformInspection){
  return next.actionId===previous.actionId&&JSON.stringify(next.plan)===JSON.stringify(previous.plan)&&next.requesterUserId===previous.requesterUserId&&(!previous.reviewerUserId||next.reviewerUserId===previous.reviewerUserId)&&next.version>=previous.version&&(next.version!==previous.version||next.status===previous.status&&JSON.stringify(next.effects)===JSON.stringify(previous.effects));

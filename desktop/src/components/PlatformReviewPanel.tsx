@@ -5,7 +5,7 @@ import {platformDeploymentPreview,type PlatformDeploymentPreview} from '../../..
 import type {PlatformTemplateClient,PlatformDeploymentClient,PlatformReviewClient} from '../lib/platformReview';
 import {platformInspectionSchema,platformGrowthPreviewSchema,type PlatformInspection,type PlatformGrowthPreview} from '../../../lib/governance/platform/viewContract';
 import {PlatformDeploymentSourcePreview,PlatformActionSummary,PlatformSourcePreview} from './PlatformActionSummary';
-interface Props{templateClient?:PlatformTemplateClient;deploymentClient?:Pick<PlatformDeploymentClient,'preview'>;action:PlatformInspection;currentUserId:string;canApprove:boolean;client:PlatformReviewClient;onRecorded:(action:PlatformInspection)=>void}
+interface Props{templateClient?:Pick<PlatformTemplateClient,'preview'>;deploymentClient?:Pick<PlatformDeploymentClient,'preview'>;action:PlatformInspection;currentUserId:string;canApprove:boolean;client:PlatformReviewClient;onRecorded:(action:PlatformInspection)=>void}
 /** Prepared, unregistered panel. It never executes an operation; actual server
  * review and source gates remain authoritative. No live acceptance is implied. */
 export function PlatformReviewPanel(props:Props){

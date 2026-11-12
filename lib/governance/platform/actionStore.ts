@@ -1,7 +1,8 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {readPlatformTemplateBytes} from '@/lib/cloud/aws/platformTemplateSource';
-import {platformTemplatePreview} from './templateContract';
+import {platformTemplatePreview,platformTemplateSelection} from './templateContract';
+import {prepareTemplatePlatformPlan,matchesTemplateSelection} from './templatePreparation';
 import {prepareDeploymentPlatformPlan,matchesDeploymentSelection} from './deploymentPreparation';
 import {platformDeploymentSelection,platformDeploymentPreview} from './deploymentContract';
 import {platformSourceKind,platformSourceId,projectPlatformSources,type PlatformSourceKind} from './sourceCatalog';
@@ -85,6 +86,23 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();
     await authority.assertCurrent(tx,actor);
     return platformInspectionSchema.parse({actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
+   });
+  },
+  async prepareTemplate(raw:unknown,principal:PlatformPrincipal,requestId:string){
+   const actor=platformPrincipalSchema.parse(principal),selected=platformTemplateSelection.parse(raw),id=preparationActionReference(requestId,actor,'platform_template_preparation_v1');
+   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
+    if(existing){const state=readPlatformAction(existing);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId||!matchesTemplateSelection(state.plan,selected))fail();await authority.assertCurrent(tx,actor);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}
+    const plan=await prepareTemplatePlatformPlan(selected,await tx.now()),state=createPlatformAction(plan,actor,await tx.now());
+    const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,state.plan.effects[0]);
+    await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
+    return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const};
+   });
+  },
+  async lookupTemplatePreparation(requestId:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(requestId,actor,'platform_template_preparation_v1');
+   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
+    if(raw){const state=readPlatformAction(raw);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}
+    await authority.assertCurrent(tx,actor);return raw?{found:true as const,actionId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const};
    });
   },
   async previewTemplate(id:string,principal:PlatformPrincipal){

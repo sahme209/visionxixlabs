@@ -270,3 +270,5 @@ Platform local production compilation now passes on9ee99682 with the existing CI
 Local template upload/access review now refuses changed/missing current template bytes and missing source supplier.34focused checks/types and36isolated SQL cases pass with simulated provider/source-change evidence; all template workflow/production/live acceptance remains open. Detailed receipts: platform-governance-scope/LOCAL-PROGRESS.md.
 
 Prepared template source review is locally connected through server/paired transport/optional reviewer UI with escaped exact YAML and stale-preview clearing. No template execution, route activation or provider acceptance. Evidence/remaining full-family gates: platform-governance-scope/LOCAL-PROGRESS.md.
+
+Template source preparation/reference recovery now connects local server→prepared HTTP→paired client, with server-derived content and no expiry renewal on reuse. Proposal UI, execution/result/grant delivery and full template/P01 acceptance remain open.49focused checks/types and36isolated SQL cases pass within platform-governance-scope/LOCAL-PROGRESS.md scopes. No route/production activation.

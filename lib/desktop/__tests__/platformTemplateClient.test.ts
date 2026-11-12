@@ -16,3 +16,8 @@ it('rejects substituted bytes/source/action and treats a lost preview as read-on
  expect((await client.preview(saved())).ok).toBe(false);http.mockImplementation(async()=>{throw Error('lost')});expect(await client.preview(saved())).toMatchObject({ok:false,outcomeUnconfirmed:false});
  const record=saved();record.expired=true;http.mockClear();expect((await client.preview(record)).ok).toBe(false);expect(http).not.toHaveBeenCalled();
 });
+it('keeps template saving and original-reference lookup distinct from read-only preview',async()=>{
+ const http=vi.fn(async()=>{throw Error('lost')});vi.stubGlobal('fetch',http);const client=createPlatformTemplateClient(context),requestId='22222222-2222-4222-8222-222222222222';
+ expect(await client.prepare({operation:'upload',accountId:'123456789012',region:'us-east-2',expiresAt:'2099-01-01T00:00:00Z'},requestId)).toMatchObject({ok:false,outcomeUnconfirmed:true});
+ expect(await client.lookup(requestId)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(http).toHaveBeenCalledTimes(2);expect(http).toHaveBeenCalledWith('https://fixture.test/api/desktop/platform-governance/template',expect.objectContaining({credentials:'omit',redirect:'error'}));
+});
