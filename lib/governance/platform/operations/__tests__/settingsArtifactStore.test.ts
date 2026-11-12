@@ -9,7 +9,7 @@ function fixture(){
  const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(now+60000).toISOString(),target:{projectId:'project',teamId:'team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_11111111-1111-4111-8111-111111111111',current:{kind:'absent',receiptId:'platform_evidence_11111111-1111-4111-8111-111111111111'}}]});
  let parent=createPlatformAction(compileOperationalSettingsPlan(manifest),actor,now),clock=now,revoked=false;const rows=new Map<string,unknown>();
  const unused=async():Promise<never>=>{throw Error('unused fixture port')};
- const tx={readGrowthPostingSource:unused,readSessionPrincipal:unused,readPrincipal:unused,insert:unused,replace:vi.fn(async(_id:string,_version:number,next:typeof parent)=>{parent=next}),event:vi.fn(async()=>{}),readEffect:unused,writeEffect:unused,lock:vi.fn(async()=>{}),read:async()=>parent,now:async()=>clock,readSettingsArtifact:async(key:string)=>rows.get(key)??null,insertSettingsArtifact:vi.fn(async(key:string,row:unknown)=>{if(rows.has(key))throw Error('duplicate');rows.set(key,row)})};
+ const tx={readGrowthPostingSource:unused,readSessionPrincipal:unused,readPrincipal:unused,insert:unused,replace:vi.fn(async(_id:string,_version:number,next:typeof parent)=>{parent=next}),event:vi.fn(async()=>{}),readEffect:unused,writeEffect:unused,lock:vi.fn(async()=>{}),read:async()=>parent,now:async()=>clock,readSettingsArtifact:vi.fn(async(key:string)=>rows.get(key)??null),insertSettingsArtifact:vi.fn(async(key:string,row:unknown)=>{if(rows.has(key))throw Error('duplicate');rows.set(key,row)})};
  const authority={assertCurrent:vi.fn(async()=>{if(revoked)throw Error('private detail')})},key=randomBytes(32),source={readManifest:vi.fn(async()=>manifest),assertCurrent:vi.fn(async()=>{}),readKey:vi.fn(async()=>key)};
  const repo={transaction:async<T>(fn:(t:typeof tx)=>Promise<T>)=>{const before=new Map(rows);try{return await fn(tx)}catch(e){rows.clear();for(const [k,v]of before)rows.set(k,v);throw e}}};
  return {planDigest:parent.plan.digest,store:createSettingsArtifactStore(repo,authority,source),tx,rows,source,key,setClock:(v:number)=>{clock=v},revoke:()=>{revoked=true},approve:()=>{parent={...parent,status:'approved',version:1}}};
@@ -40,4 +40,12 @@ it('rejects substituted saved bindings at review',async()=>{
 
 it('rejects an inexact plan digest and source revocation without reading a key during review',async()=>{
  const f=fixture(),reviewer={userId:'reviewer',sessionId:'reviewer-session'};await f.store.save(id,0,actor,'synthetic');f.source.readKey.mockClear();await expect(f.store.review(id,0,'f'.repeat(64),reviewer)).rejects.toThrow();f.source.assertCurrent.mockRejectedValue(Error('synthetic revoked'));await expect(f.store.review(id,0,f.planDigest,reviewer)).rejects.toThrow();expect(f.source.readKey).not.toHaveBeenCalled();expect(f.tx.replace).not.toHaveBeenCalled();
+});
+it('previews exact setting targets and missing/saved artifact status without secrets, sessions or execution authority',async()=>{
+ const f=fixture(),reviewer={userId:'reviewer',sessionId:'reviewer-session'},before=await f.store.preview(id,reviewer);expect(before).toMatchObject({reviewReady:false,executionAuthorized:false,settings:[{name:'SYNTHETIC',environment:'production',artifactStatus:'missing'}]});
+ await f.store.save(id,0,actor,'PRIVATE SYNTHETIC VALUE');f.source.readKey.mockClear();const after=await f.store.preview(id,reviewer);expect(after).toMatchObject({planDigest:f.planDigest,reviewReady:true,settings:[{artifactStatus:'saved'}]});const text=JSON.stringify(after);expect(text).not.toContain('PRIVATE SYNTHETIC VALUE');expect(text).not.toContain('v2.');expect(text).not.toContain(actor.sessionId);expect(f.source.readKey).not.toHaveBeenCalled();
+});
+
+it('refuses preview when source qualification changes during the artifact read',async()=>{
+ const f=fixture();f.tx.readSettingsArtifact.mockImplementation(async()=>{f.source.assertCurrent.mockRejectedValue(Error('synthetic revoked'));return null});await expect(f.store.preview(id,{userId:'reviewer',sessionId:'reviewer-session'})).rejects.toThrow();
 });

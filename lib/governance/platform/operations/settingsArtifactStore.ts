@@ -21,11 +21,29 @@ interface PrivateSource{
  readKey(tx:SettingsArtifactTransaction,binding:SettingsArtifactBinding):Promise<Uint8Array>;
 }
 const fail=():never=>{throw Error('settings_artifact_unavailable')};
+function checkedRecord(raw:unknown,binding:SettingsArtifactBinding,earliest:number){
+ const row=z.object({binding:settingsArtifactBindingSchema,envelope:z.string().min(1).max(87423),createdAt:z.number().int().nonnegative()}).strict().parse(raw);
+ if(sha256ContentHash(row.binding)!==sha256ContentHash(binding)||!/^v2\.[A-Za-z0-9_-]+$/.test(row.envelope)||row.createdAt<earliest||row.createdAt>=Date.parse(binding.expiresAt))return fail();return row;
+}
+
 /** Private preparation only. No decrypt/export, provider send or default supplier.
  * Repository implementation must provide transactional rollback and parent locks.
  * The injected authority checks actual current requester permissions/possession. */
 export function createSettingsArtifactStore(repo:SettingsArtifactRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:PrivateSource){
- return Object.freeze({async save(rawId:string,index:number,rawActor:PlatformPrincipal,value:unknown){
+ return Object.freeze({async preview(rawId:string,rawReader:PlatformPrincipal){
+  try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
+   await tx.lock(id);await authority.assertCurrent(tx,reader);const parent=readPlatformAction(await tx.read(id));if(parent.status!=='proposed')return fail();
+   const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel')return fail();
+   const settings=[];
+   for(let index=0;index<manifest.settings.length;index++){
+    const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,parent.requester);await source.assertCurrent(tx,binding);
+    const row=await tx.readSettingsArtifact(binding.artifactId);if(row!==null)checkedRecord(row,binding,parent.updatedAt);await source.assertCurrent(tx,binding);
+    const descriptor=manifest.settings[index];settings.push(Object.freeze({name:descriptor.name,environment:descriptor.environment,type:descriptor.type,sensitivity:descriptor.sensitivity,current:descriptor.current,artifactId:binding.artifactId,artifactStatus:row===null?'missing' as const:'saved' as const}));
+   }
+   await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();
+   return Object.freeze({actionId:id,planDigest:parent.plan.digest,version:parent.version,target:manifest.target,profileId:manifest.artifactProfileId,expiresAt:manifest.expiresAt,settings:Object.freeze(settings),reviewReady:settings.every(s=>s.artifactStatus==='saved'),authority:'review_preview_only' as const,executionAuthorized:false as const});
+  })}catch{return fail()}
+ },async save(rawId:string,index:number,rawActor:PlatformPrincipal,value:unknown){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),actor=platformPrincipalSchema.parse(rawActor);
    return await repo.transaction(async tx=>{
     await tx.lock(id);await authority.assertCurrent(tx,actor);
@@ -54,8 +72,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
      for(let index=0;index<settingCount;index++){
       const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,parent.requester);
       await source.assertCurrent(tx,binding);
-      const row=z.object({binding:settingsArtifactBindingSchema,envelope:z.string().min(1).max(87423),createdAt:z.number().int().nonnegative()}).strict().parse(await tx.readSettingsArtifact(binding.artifactId));
-      if(sha256ContentHash(row.binding)!==sha256ContentHash(binding)||!/^v2\.[A-Za-z0-9_-]+$/.test(row.envelope)||row.createdAt<parent.updatedAt||row.createdAt>=Date.parse(binding.expiresAt))return fail();
+      checkedRecord(await tx.readSettingsArtifact(binding.artifactId),binding,parent.updatedAt);await source.assertCurrent(tx,binding);
      }
      await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
     }
