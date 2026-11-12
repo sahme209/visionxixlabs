@@ -57,3 +57,8 @@ Evaluate replacing unnecessary inference with approved deterministic/retrieval/t
 ## November12 — hybrid reuse assessment (no new external reads)
 
 [Source-backed reuse assessment](../research/2026-11-12/hybrid-fulfillment-reuse-assessment.md) traces the default deterministic support path and separate explicit governed AI action, plus existing impact/policy/readiness/drift/proposal kernels. Recommend reuse before dependencies; module-level candidates are not universal availability. Prior frozen baseline remains unchanged. No model/token/cost savings measurement, installation, new provider read, billing or production authority.
+
+
+### November12 existing-context measurement
+
+Source-bound local measurement of existing retrieval/top-five prompt assembly is recorded in ../research/2026-11-12/retrieval-context-byte-measurement.md. Six public questions measure UTF-8bytes only, against a hypothetical all-entry prompt; no current-route improvement, model-token/cost reduction or quality equivalence is claimed. Retain existing facilities before adopting a library. No model/provider/database/billing/production action occurred.

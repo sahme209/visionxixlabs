@@ -45,4 +45,9 @@ Measure successful equivalent outcomes, safety/refusal errors, actual provider-r
 
 ## Commercial separation
 
-The owner's consistent customer service-usage tariff can be evaluated independently of internal fulfillment cost. First define the service unit, quote/disclosure, limits, actual tool/compute/model ledger dimensions and settlement rules. Never invent model tokens or call a service charge provider-token cost. Current1.5x/2x examples are unselected hypotheses; billing/payments remain unchanged/off where currently held. Marketing savings require representative quality-adjusted evidence, not this source inventory.
+The owner's consistent customer service-usage tariff can be evaluated independently of internal fulfillment cost. First define the service unit, quote/disclosure, limits, actual tool/compute/model ledger dimensions and settlement rules. Never invent model tokens or call a service charge provider-token cost. Current source aiRateCard.ts implements a versioned1.5x prepaid-AI design under the November8decision; the older broader2x comparison remains a hypothesis, not the current rate card. A new service/tool tariff is unselected. Real billable qualification and payment activation remain separate; no billing change follows from this assessment. Marketing savings require representative quality-adjusted evidence, not this source inventory.
+
+
+## Subsequent bounded context measurement
+
+See retrieval-context-byte-measurement.md/json: existing top-five prompt assembly uses95.4–97.1%fewer UTF-8bytes than a hypothetical all192-entry prompt across six public questions. This measures existing behavior, not new savings, actual model tokens/cost or answer quality equivalence. No inference/provider/database call or dependency adoption. Exact source and procedure are preserved.
