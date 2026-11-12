@@ -147,13 +147,13 @@ import {encryptCredential} from '@/lib/security/credentialVault';
 import {publishDraft,POST_DRAFT_SELECT,POST_CONNECTION_SELECT} from '@/lib/growth/linkedin/posting';
 import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule} from '@/lib/growth/linkedin/platformPostingPlan';
 import {schedulePlatformLinkedInDraft} from '@/lib/growth/linkedin/platformSchedule';
-async function postFixture(schedule=false,scheduleDelay=30000,serverPrepared=false){
+async function postFixture(schedule=false,scheduleDelay=30000,serverPrepared=false,claimExecution=true){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');vi.stubEnv('CREDENTIAL_ENCRYPTION_KEY','synthetic-credential-key-'.repeat(3));
  const connection=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:fixture',accessToken:encryptCredential('synthetic-linkedin-token'),scopes:'w_member_social',expiresAt:new Date(Date.now()+60000),status:'connected'},select:POST_CONNECTION_SELECT});
  const draft=await defaultPrisma.linkedInPostDraft.create({data:{title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),scheduledFor=new Date(Date.now()+scheduleDelay),effect=schedule?preparePlatformLinkedInSchedule(draft,connection,'202605',Date.now(),scheduledFor).effect:preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(connection.expiresAt.getTime(),Date.now()+30000)).toISOString(),effects:[effect]},request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),prepared=serverPrepared?await requester.prepareGrowth({operation:schedule?'schedule':'publish',draftId:draft.id,connectionId:connection.id,expiresAt:raw.expiresAt,...(schedule?{scheduledFor:scheduledFor.toISOString()}:{})}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});if(serverPrepared)expect((await independent.previewGrowth(id)).renderedPost).toBe(prepared?.preview.renderedPost);await independent.review(id,0,saved.plan.digest);
- return {draft,connection,scheduledFor,effect,id,requester,request,prepared,binding:await createDefaultPlatformExecution(request,id,1)};
+ return {draft,connection,scheduledFor,effect,id,requester,request,prepared,binding:claimExecution?await createDefaultPlatformExecution(request,id,1):undefined};
 }
 it.skipIf(!enabled)('joins actual default post source, credential crypto, human review and SQL ledger with simulated HTTP',async()=>{
  try{
@@ -235,12 +235,12 @@ async function deletionFixture(){
  const f=await postFixture();vi.stubGlobal('fetch',vi.fn(async()=>new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:'+f.draft.id.replace(/[^a-zA-Z0-9_-]/g,'')}})));
  expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'fixture'})).toMatchObject({kind:'success'});
  const source=await defaultPrisma.$transaction(tx=>readPlatformDeletionSource(tx,f.draft.id,f.connection.id)),effect=preparePlatformLinkedInDeletion(source,'202605',Date.now()).effect;
- async function approved(serverPrepared=false){
+ async function approved(serverPrepared=false,claimExecution=true){
   const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(f.connection.expiresAt.getTime(),Date.now()+20000)).toISOString(),effects:[effect]},requester=await createDefaultPlatformRequestService(f.request);
   const prepared=serverPrepared?await requester.prepareGrowth({operation:'delete',draftId:f.draft.id,connectionId:f.connection.id,expiresAt:raw.expiresAt}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
   const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});
   if(serverPrepared)expect(await independent.previewGrowth(id)).toMatchObject({actionId:id,planDigest:saved.plan.digest,authority:'review_preview_only'});
-  await independent.review(id,0,saved.plan.digest);return {id,binding:await createDefaultPlatformExecution(f.request,id,1)};
+  await independent.review(id,0,saved.plan.digest);return {id,binding:claimExecution?await createDefaultPlatformExecution(f.request,id,1):undefined};
  }
 
  return {...f,effect,approved};
@@ -276,4 +276,31 @@ it.skipIf(!enabled)('changed SQL source after reviewer preview refuses the exact
   await expect(independent.review(prepared.actionId,0,preview.planDigest)).rejects.toThrow();await expect(independent.previewGrowth(prepared.actionId)).rejects.toThrow();
   expect(await f.requester.inspect(prepared.actionId)).toMatchObject({status:'proposed',version:0,attemptCount:0,reviewerUserId:null});
  }finally{vi.unstubAllEnvs()}
+});
+
+import {createPlatformExecutionHttp} from '../executionHttp';
+function executionRequest(actionId:string,planDigest:string,sessionId=actor.sessionId){return new Request('https://fixture.example.test/platform/execute',{method:'POST',headers:{authorization:'Bearer '+mintDesktopToken(sessionId),'content-type':'application/json'},body:JSON.stringify({operation:'execute',actionId,expectedVersion:1,planDigest})})}
+it.skipIf(!enabled)('default execution HTTP enforces original requester session then confirms exactly one publication',async()=>{
+ try{const f=await postFixture(false,30000,true,false),saved=await f.requester.inspect(f.id),handle=createPlatformExecutionHttp(),http=vi.fn(async()=>new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:http-fixture'}}));vi.stubGlobal('fetch',http);
+  expect((await handle(executionRequest(f.id,saved.plan.digest,reviewer.sessionId))).status).toBe(409);
+  await db.$executeRawUnsafe('INSERT INTO "DesktopSessionRecord" (id,"userId","organizationId","issuedAt","expiresAt","revokedAt") VALUES ($1,$2,\'actual-pairing-workspace\',clock_timestamp()-interval \'1 minute\',clock_timestamp()+interval \'1 hour\',NULL)','requester-other-session',actor.userId);
+  expect((await handle(executionRequest(f.id,saved.plan.digest,'requester-other-session'))).status).toBe(409);expect(http).not.toHaveBeenCalled();
+  const response=await handle(executionRequest(f.id,saved.plan.digest));expect(response.status).toBe(200);expect(await response.json()).toMatchObject({ok:true,data:{actionId:f.id,status:'confirmed',attemptCount:1}});
+  expect((await handle(executionRequest(f.id,saved.plan.digest))).status).toBe(409);expect(http).toHaveBeenCalledTimes(1);
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('default execution HTTP preserves a lost provider result and never replays it',async()=>{
+ try{const f=await postFixture(false,30000,true,false),saved=await f.requester.inspect(f.id),handle=createPlatformExecutionHttp(),http=vi.fn(async()=>{throw Error('synthetic_lost_http_result')});vi.stubGlobal('fetch',http);
+  for(let attempt=0;attempt<2;attempt++)expect((await handle(executionRequest(f.id,saved.plan.digest))).status).toBe(409);expect(http).toHaveBeenCalledTimes(1);expect(await f.requester.inspect(f.id)).toMatchObject({status:'unknown',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('default execution HTTP applies the exact independently reviewed schedule without provider transport',async()=>{
+ try{const f=await postFixture(true,30000,true,false),saved=await f.requester.inspect(f.id),http=vi.fn();vi.stubGlobal('fetch',http);
+  expect((await createPlatformExecutionHttp()(executionRequest(f.id,saved.plan.digest))).status).toBe(200);expect(http).not.toHaveBeenCalled();expect(await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}})).toMatchObject({status:'scheduled',scheduledFor:f.scheduledFor});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('default execution HTTP deletes only the reviewed recorded publication and preserves its identity',async()=>{
+ try{const f=await deletionFixture(),a=await f.approved(true,false),saved=await f.requester.inspect(a.id),http=vi.fn(async()=>new Response(null,{status:204}));vi.stubGlobal('fetch',http);
+  expect((await createPlatformExecutionHttp()(executionRequest(a.id,saved.plan.digest))).status).toBe(200);expect(http).toHaveBeenCalledTimes(1);expect(await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}})).toMatchObject({status:'published',linkedinPostUrn:f.effect.target.postUrn});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });

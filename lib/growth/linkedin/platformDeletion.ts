@@ -7,15 +7,15 @@ import {readPlatformDeletionSource} from './platformDeletionSource';
 import {currentLinkedInVersion} from './platformPostingPlan';
 import {isPostingEnabled} from './oauth';
 import {writeGrowthAudit} from '../audit';
-export async function deletePlatformLinkedInPost(input:{draftId:string;connectionId:string;platformExecution?:object}):Promise<{kind:'deleted'|'governance_required'|'outcome_unknown'}>{
- const {draftId,connectionId}=input;
+export async function deletePlatformLinkedInPost(input:{draftId:string;connectionId:string;platformExecution?:object;effectId?:string}):Promise<{kind:'deleted'|'governance_required'|'outcome_unknown'}>{
+ const {draftId,connectionId,effectId}=input;
  const execution=input.platformExecution;if(!execution)return {kind:'governance_required'};
  let metadata:ReturnType<typeof describePlatformExecution>;
  try{metadata=describePlatformExecution(execution)}catch{return {kind:'governance_required'}}
  try{
   if(!isPostingEnabled())throw Error('posting_disabled');
   const source=await prisma.$transaction(tx=>readPlatformDeletionSource(tx,draftId,connectionId),{isolationLevel:'ReadCommitted',timeout:10000,maxWait:5000});
-  const prepared=preparePlatformLinkedInDeletion(source,currentLinkedInVersion(),Date.now());
+  const prepared=preparePlatformLinkedInDeletion(source,currentLinkedInVersion(),Date.now(),effectId);
   await runPlatformEffect(execution,prepared.effect,async beforeSend=>{
    const stored=await prisma.linkedInAccountConnection.findUnique({where:{id:prepared.effect.target.connectionId},select:{accessToken:true,updatedAt:true}});
    if(!stored)throw Error('credential_unavailable');

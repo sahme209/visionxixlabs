@@ -5,17 +5,19 @@ import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {describePlatformExecution,runPlatformEffect} from '@/lib/governance/platform/effectExecution';
 import {preparePlatformLinkedInSchedule,currentLinkedInVersion} from './platformPostingPlan';
 import {isPostingEnabled} from './oauth';
-type Input={draftId:string;connectionId:string;scheduledFor:Date;platformExecution?:object};
+type Input={draftId:string;connectionId:string;scheduledFor:Date;platformExecution?:object;effectId?:string};
 export async function schedulePlatformLinkedInDraft(input:Input):Promise<{kind:'scheduled'}|{kind:'governance_required'|'outcome_unknown'}>{
+ const {draftId,connectionId,effectId}=input;
  const execution=input.platformExecution;if(!execution)return {kind:'governance_required'};
  let binding:ReturnType<typeof describePlatformExecution>;
- try{binding=describePlatformExecution(input.platformExecution)}catch{return {kind:'governance_required'}}
+ try{binding=describePlatformExecution(execution)}catch{return {kind:'governance_required'}}
  try{
+  const scheduledFor=new Date(input.scheduledFor.getTime());
   if(!isPostingEnabled())throw Error('posting_disabled');
-  const draft=await prisma.linkedInPostDraft.findUnique({where:{id:input.draftId},select:{id:true,title:true,hook:true,body:true,cta:true,hashtags:true,imageUrn:true,status:true,scheduledFor:true,updatedAt:true}});
-  const connection=await prisma.linkedInAccountConnection.findUnique({where:{id:input.connectionId},select:{id:true,linkedinUrn:true,organizationUrn:true,scopes:true,status:true,expiresAt:true,updatedAt:true}});
+  const draft=await prisma.linkedInPostDraft.findUnique({where:{id:draftId},select:{id:true,title:true,hook:true,body:true,cta:true,hashtags:true,imageUrn:true,status:true,scheduledFor:true,updatedAt:true}});
+  const connection=await prisma.linkedInAccountConnection.findUnique({where:{id:connectionId},select:{id:true,linkedinUrn:true,organizationUrn:true,scopes:true,status:true,expiresAt:true,updatedAt:true}});
   if(!draft||!connection)throw Error('source_unavailable');
-  const prepared=preparePlatformLinkedInSchedule(draft,connection,currentLinkedInVersion(),Date.now(),input.scheduledFor);
+  const prepared=preparePlatformLinkedInSchedule(draft,connection,currentLinkedInVersion(),Date.now(),scheduledFor,effectId);
   await runPlatformEffect(execution,prepared.effect,async beforeSend=>{
    await beforeSend();
    if(!isPostingEnabled()||currentLinkedInVersion()!==prepared.version||Date.parse(prepared.effect.target.scheduledFor)<=Date.now())throw Error('schedule_stale');

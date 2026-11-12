@@ -28,3 +28,4 @@ export const platformReviewCommandSchema=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('preview'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('approve'),actionId:platformActionId,expectedVersion:z.number().int().min(0).max(1000),planDigest:digest}).strict(),
 ]);
+export const platformExecutionCommandSchema=z.object({operation:z.literal('execute'),actionId:platformActionId,expectedVersion:z.literal(1),planDigest:digest}).strict();
