@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * OpenAI provider — uses Responses API.
@@ -8,7 +9,7 @@ import type { GenerateTextOptions, GenerateTextResult } from "./types";
 export async function generateText(
   opts: GenerateTextOptions
 ): Promise<GenerateTextResult> {
-  denyIsolatedExternalIO();
+  denyIsolatedExternalIO();assertOnlineAIDispatch();
   const apiKey = process.env.OPENAI_API_KEY?.trim();
   if (!apiKey) throw new Error("OPENAI_API_KEY not set");
 
@@ -37,7 +38,8 @@ export async function generateText(
     messages.push({ role: "user", content: opts.prompt });
   }
 
-  const completion = await openai.chat.completions.create({
+  assertOnlineAIDispatch();
+      const completion = await openai.chat.completions.create({
     model,
     messages: messages as Parameters<typeof openai.chat.completions.create>[0]["messages"],
     max_tokens: maxTokens,

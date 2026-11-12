@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import { consumeCodingProviderDispatchForRequest } from "@/lib/ai/codingRequestQuote";
 import {sendSmallSonnet55Messages} from "./sonnet55Messages";
 import { boundedAIInput } from "../inputByteBound";
@@ -90,7 +91,7 @@ export class VercelGatewayProvider implements AIProvider {
   }
 
   private async generateTextWithRetries(prompt: string, options?: AIRequestOptions, maxRetries?: 0): Promise<AITextResponse> {
-    denyIsolatedExternalIO();
+    denyIsolatedExternalIO();assertOnlineAIDispatch();
     if (options?.codingDispatch && (options.smallAgentDispatch || options.smallAgent55Dispatch)) {
       throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "coding dispatch cannot be mixed with extraction dispatch" });
     }
@@ -111,6 +112,7 @@ export class VercelGatewayProvider implements AIProvider {
       const bounded = options?.smallAgentDispatch
         ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
         : undefined;
+      assertOnlineAIDispatch();
       const result = await generateText({
         // SDK7 defaults to auto even without tools; this adapter is text-only.
         toolChoice: "none",
@@ -187,7 +189,7 @@ export class VercelGatewayProvider implements AIProvider {
     options?: AIRequestOptions & { abortSignal?: AbortSignal },
     format?: "json",
   ): AsyncGenerator<GatewayAdmittedStreamChunk, void, unknown> {
-    denyIsolatedExternalIO();
+    denyIsolatedExternalIO();assertOnlineAIDispatch();
     if (options?.codingDispatch) throw new AIProviderError({ provider: this.name, kind: "bad_response", message: "coding dispatch does not authorize streaming" });
     if (!this.isConfigured()) {
       throw new AIProviderError({ provider: this.name, kind: "not_configured", message: "AI Gateway is not configured" });
@@ -218,6 +220,7 @@ export class VercelGatewayProvider implements AIProvider {
       const bounded = options?.smallAgentDispatch
         ? consumeSmallSonnetDispatch(options.smallAgentDispatch, { ...options, model, prompt: redact(prompt), system: options.system === undefined ? undefined : redact(options.system) })
         : undefined;
+      assertOnlineAIDispatch();
       const result = streamText({
         toolChoice: "none",
         ...(format === "json" && !bounded ? {output: Output.json()} : {}),

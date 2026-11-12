@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 /** Direct server adapter transport only. This grants no governed admission. */
 import "server-only";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
@@ -9,7 +10,7 @@ import { OpenAICompatProvider } from "./openaiCompat";
  * providers retain their buffered transport and configuration behavior. */
 export class DirectChatStreamProvider extends OpenAICompatProvider {
   override async *streamText(prompt: string, options?: AIRequestOptions): AsyncGenerator<AIStreamChunk> {
-    denyIsolatedExternalIO();
+    denyIsolatedExternalIO();assertOnlineAIDispatch();
     const fail = (message: string) => new AIProviderError({ provider: this.name, kind: "bad_response", message, retryable: false });
     const origin = this.name === "openai" ? "https://api.openai.com/v1" : this.name === "xai" ? "https://api.x.ai/v1" : null;
     if (!origin || this.cfg.baseUrl !== origin) throw fail("unsupported direct stream endpoint");

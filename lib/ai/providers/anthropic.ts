@@ -1,3 +1,4 @@
+import {assertOnlineAIDispatch} from "@/lib/ai/installationDispatchMode";
 import { denyIsolatedExternalIO } from "@/lib/billing/isolatedApplication/runtime";
 /**
  * Anthropic provider.
@@ -8,7 +9,7 @@ import type { GenerateTextOptions, GenerateTextResult } from "./types";
 export async function generateText(
   opts: GenerateTextOptions
 ): Promise<GenerateTextResult> {
-  denyIsolatedExternalIO();
+  denyIsolatedExternalIO();assertOnlineAIDispatch();
   const apiKey = process.env.ANTHROPIC_API_KEY?.trim();
   if (!apiKey) throw new Error("ANTHROPIC_API_KEY not set");
 
@@ -28,7 +29,8 @@ export async function generateText(
       ? msgs.map((m) => ({ role: m.role as "user" | "assistant", content: m.content }))
       : [{ role: "user" as const, content: userContent }];
 
-  const response = await client.messages.create({
+  assertOnlineAIDispatch();
+      const response = await client.messages.create({
     model,
     max_tokens: maxTokens,
     system,
