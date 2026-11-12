@@ -1,0 +1,65 @@
+# Offline governed AI v1 implementation plan
+
+> **For agentic workers:** Use superpowers:executing-plans task by task; one fresh whole-branch review before a PR. The owner authorized continuous local implementation and selected the v1 settings; no redundant execution-method checkpoint. No production/model-server/real-inference authority.
+
+**Goal:** Compose the accepted customer-hosted, token-metered branch into the actual governed AI path, with online behavior preserved and offline cloud leakage refused.
+
+**Spec:** `docs/product/adr/2026-11-09-a9-offline-governed-local-models.md`, accepted November11; deployment operator, not workspace Operator, owns endpoints and caps.
+
+**Architecture:** Separate installation mode/operator configuration, durable token accounting, bounded OpenAI-compatible transport and existing workspace-policy/caller composition. Reuse existing audit/redaction/opt-in boundaries; no currency conversion, generic fallback or parallel permission system. Default configuration grants nothing. Keep the branch open until the composed feature passes, not a guard-only release.
+
+**Stack:** Existing TypeScript/Prisma7/PostgreSQL/Vitest5/Node HTTPS; no added runtime dependency by default.
+
+## Global constraints and interfaces
+
+Local code/mock tests first. Actual isolated SQL tests only on an owned fixture under existing permitted setup; never production SQL, credentials or providers. No server install, inference, flag enablement, deployment or paid workflow. Existing canonical issuer/custody gates remain unchanged. Historical engine/schema receipts are not renewed by re-pinning.
+
+Interface ledger: mode/config → token store/transport uses immutable parsed snapshots and semantic digest, not raw request JSON. Token admission → final transport uses one-use opaque claim bound to organization/actor/request/config/model/window. Transport → accounting uses finite verified usage and exact model; missing, excessive or malformed results preserve unknown exposure. Current workspace opt-in/policy and caller fences are rechecked around awaited work. New budget windows/config revisions cannot erase old unknown holds.
+
+## Task 1 — installation contract and operator configuration
+
+- [x] Write RED tests for exact absent/false/true/invalid mode selection and JSON-only bounded configuration: no defaults, exact hosts/no URL credentials/query/fragment, HTTPS or loopback HTTP, model bounds, unique identities, explicit per-workspace budget windows, immutable digest, expiry/cross-workspace refusal.
+- [x] Implement `lib/ai/customerHostedConfig.ts`: `readInstallationAIMode(raw:unknown)` returns online/offline/unavailable; `parseCustomerHostedOperatorConfig(raw:unknown)` returns parsed data or null; `activeCustomerHostedBudget(config,organizationId,now)` returns the exact active window or null. No environment/DNS/DB/network read, credential field or execution authority.
+- [x] GREEN command: `node scripts/run-vitest.mjs lib/ai/__tests__/customerHostedConfig.test.ts`. Preserve strict negatives and positive configurations for all three server kinds.
+
+## Task 2 — durable token admission, not dollar accounting
+
+- [ ] Define operator-window and reservation records with explicit TOKEN units, config/model/request digests, claim state and reported usage. Use atomic current-window locking and one-attempt claim; no default allowance. Additive LOCAL schema only if existing records cannot represent units safely.
+- [ ] Expose `reserveCustomerHostedCall`, `claimCustomerHostedCall`, `settleCustomerHostedCall`; no serializable authority flag. Preserve unknown holds; quota reduction/revocation/expiry after awaits must refuse before dispatch. Audit success/refusal/unknown without prompt content; settlement label `customer_hosted_unpriced`.
+- [ ] Input reservation uses a qualified per-model maximum input/context bound plus output bound; bytes must never be treated as universally equivalent to tokens. Configuration parsing does not qualify that bound. Positive execution requires trusted server/model limit evidence; missing evidence refuses. Usage exceeding an accepted bound is recorded as an integrity/overrun event, not refunded or reported as successful cap enforcement. Live server-bound qualification remains an enabling gate.
+- [ ] RED→GREEN pure arithmetic/race/one-attempt tests and actual owned-PG transactions with simulated provider: concurrent cap, revision changes, duplicate request, old unknown across windows, settlement and rollback.
+
+## Task 3 — fixed bounded OpenAI-compatible transport
+
+- [ ] One `/v1/chat/completions` JSON request for each configured vLLM/Ollama/LMStudio profile; no native API, tools, streaming fallback or retry in this v1 structured-extraction path. Same caller-visible structured result/usage contract.
+- [ ] Operator-owned host allowlist checked after resolution, pinned actual dial target and TLS hostname, no redirect or URL substitution. HTTPS/private deployment or explicit loopback HTTP; offline cannot route prompts to public Internet. Bound request/response/header bytes, deadline and cancellation; no endpoint or key from workspace/model output.
+- [ ] Tests: three valid profiles, DNS rebinding/mixed addresses/peer mismatch/redirect, abort before/after claim, malformed/truncated/excessive output, missing usage, exact model mismatch and no second attempt. Inject transport; no actual model/server/network run.
+
+## Task 4 — real policy/admission composition
+
+- [ ] Extend the actual stored policy and explicit configured model selection for `customer_hosted`, without treating a model ID as an endpoint or allowing UI cap edits. Preserve existing M02 widening refusal and current membership/access requirements.
+- [ ] Branch in `resolveGovernedAiCall` BEFORE Gateway catalog/credit/provider construction in offline mode; compose real token store, validated transport, redaction, current workspace opt-in and caller `beforeAdmission` fences. Preserve online Gateway path and tests unchanged.
+- [ ] Update actual caller result/error handling and content-free usage/audit composition, so unpriced calls cannot enter credit settlement as free dollar events. No omission of durable authority or accounting in the default composition.
+- [ ] Tests with the real composition and simulated I/O: positive valid calls for all profiles; disabled policy, missing caps, changed configuration/policy after await, stale/cross-tenant request, output-bound refusal and unknown-state preservation.
+
+## Task 5 — complete offline egress and workflow boundaries
+
+- [ ] Inventory all AI dispatch entrypoints, including generic text/coding/support/direct provider paths. Add the shared mode refusal where necessary so an offline installation cannot call a cloud model or fall back through legacy local adapters. Invalid mode must not default to online.
+- [ ] Prove each inventoried seam refuses before network offline, and online refuses customer-hosted. Keep unrelated tool/connector/execution permissions and approval semantics unchanged. Existing unsafe/unqualified paths stay unavailable rather than becoming a bypass.
+- [ ] Add operator/setup documentation, supported-operation matrix and explicit unqualified/live limitations; update public guide hashes/corpus/counts, ModuleIntro/demo/SDK only where behavior requires. Keep human decisions and native/custody gates visible.
+
+## Task 6 — finish the complete source batch
+
+- [ ] Run required full web types/tests/build, desktop types/build and Python; composed isolated tests with simulated providers distinguish real SQL from live inference. No automatic retry after an unknown provider effect.
+- [ ] Fresh independent whole-branch review of source, security, actor/budget/DNS/cancellation races, all inventoried dispatch coverage and faithful ADR scope. Resolve important findings with actual RED→GREEN evidence.
+- [ ] One PR, every applicable check green on the exact reviewed head, normal merge only. No production/flag/schema apply/provider call/installer publication. Record source completion separately from real offline isolated-network acceptance and on-prem readiness.
+
+## Review focus
+
+No byte-to-token heuristic posing as a hard budget; no parsing of config posing as qualified model-limit evidence; no cap reset via revision/window rollover; no mixed provider fallback; no cloud path outside the Agent seam; no policy/caller revocation race across awaits; no unknown-cost release; no constructor-side egress; no workspace Operator role confused with deployment operator; no schema-unit/history laundering.
+
+## Progress ledger
+
+Task1 starting from3754c049. The configuration parser is a data contract only; the deliverable remains all six tasks and actual mounted source composition, not just refusals.
+
+Task1: complete locally. Initial module-absence RED, explicit non-implementing stub RED7fail/2pass, restored implementation GREEN9/9. Root native types pass. Configuration parsing is data only; no model-bound qualification, admission, network or runtime composition is claimed. Remaining Task2–6 are required before a feature PR; no guard-only merge.
