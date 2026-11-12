@@ -17,6 +17,10 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readActionPage(cursor){
+    check('platform-history-directory');
+    return cursor?sql.$queryRawUnsafe('SELECT id,"createdAt","stateJson","planDigest",version FROM "PlatformGovernanceAction" WHERE ("createdAt",id)<($1::timestamp,$2::text) ORDER BY "createdAt" DESC,id DESC LIMIT 21',new Date(cursor.createdAt),cursor.actionId):sql.$queryRawUnsafe('SELECT id,"createdAt","stateJson","planDigest",version FROM "PlatformGovernanceAction" ORDER BY "createdAt" DESC,id DESC LIMIT 21');
+   },
    async readGrowthDeletionSource(draftId,connectionId){if(!locked)fail();return readPlatformDeletionSource(sql,draftId,connectionId)},
    async readGrowthPostingSource(draftId,connectionId){
     if(!locked)fail();

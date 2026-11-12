@@ -5165,6 +5165,7 @@ model PlatformGovernanceAction {
   updatedAt  DateTime @updatedAt
   events     PlatformGovernanceEvent[]
   effects    PlatformGovernanceEffect[]
+  @@index([createdAt, id])
 }
 
 /// Content-free append-only transitions, atomically committed with the action.

@@ -347,3 +347,20 @@ it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source r
   const lookup=await proposal.lookup(nonce);expect(lookup).toMatchObject({ok:true,data:{found:true,actionId:receipt.data.actionId,authority:'history_only'}});expect(await f.requester.inspect(receipt.data.actionId)).toMatchObject({status:'confirmed',attemptCount:1});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+
+it.skipIf(!enabled)('paginates actual historical SQL records without restoring the old session claim',async()=>{
+ const s=service(),old=await ready(s),created=[] as string[];
+ for(let i=0;i<24;i++)created.push(await s.propose(plan(),actor));
+ const newer={userId:actor.userId,sessionId:'new-session'};
+ const found=new Set<string>();let cursor:import('../historyContract').PlatformHistoryCursor|null=null;
+ for(let i=0;i<10;i++){
+  const page=await s.history(cursor,newer);
+  expect(JSON.stringify(page)).not.toContain('requester-session');
+  for(const entry of page.entries){expect(found.has(entry.actionId)).toBe(false);found.add(entry.actionId)}
+  cursor=page.nextCursor;if(!cursor)break;
+ }
+ expect(cursor).toBeNull();expect(found.has(old)).toBe(true);expect(created.every(id=>found.has(id))).toBe(true);
+ expect((await s.inspect(old,newer)).status).toBe('approved');
+ await expect(s.claim(old,1,newer)).rejects.toThrow();
+ expect((await s.inspect(old,newer)).attemptCount).toBe(0);
+});

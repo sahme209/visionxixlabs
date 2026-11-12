@@ -4,6 +4,7 @@ CREATE TABLE "PlatformGovernanceAction" (
  version INTEGER NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
  "updatedAt" TIMESTAMP(3) NOT NULL
 );
+CREATE INDEX "PlatformGovernanceAction_createdAt_id_idx" ON "PlatformGovernanceAction" ("createdAt", id);
 CREATE TABLE "PlatformGovernanceEvent" (
  id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
  sequence INTEGER NOT NULL, kind TEXT NOT NULL, "detailJson" JSONB NOT NULL,

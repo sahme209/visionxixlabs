@@ -1,4 +1,5 @@
 import 'server-only';
+import {platformHistoryCursor,projectPlatformHistory,type PlatformHistoryCursor} from './historyContract';
 import {preparationActionReference,canonicalGrowthSelection,matchesPreparationSelection} from './preparationReference';
 import {prepareGrowthPlatformPlan} from './growthPreparation';
 import {platformInspectionSchema,platformGrowthPreviewSchema} from './viewContract';
@@ -8,6 +9,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readActionPage?(cursor:PlatformHistoryCursor|null):Promise<unknown>;
  readGrowthDeletionSource?(draftId:string,connectionId:string):Promise<unknown>;
  readGrowthPostingSource(draftId:string,connectionId:string):Promise<unknown>;
  readSessionPrincipal(sessionId:string):Promise<unknown>;
@@ -41,6 +43,15 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,await load(tx,id))});
  }
  return {
+  async history(rawCursor:PlatformHistoryCursor|null,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),cursor=rawCursor===null?null:platformHistoryCursor.parse(rawCursor);
+   return repo.transaction(async tx=>{
+    await tx.lock('platform-history-directory');await authority.assertCurrent(tx,actor);
+    if(!tx.readActionPage)return fail();
+    const page=projectPlatformHistory(await tx.readActionPage(cursor),cursor);
+    await authority.assertCurrent(tx,actor);return page;
+   });
+  },
   /** Historical evidence only: current reader authority is required, but a
    * revoked former approver must not make the consumed record disappear.
    * This DTO intentionally excludes session IDs and every capability proof. */

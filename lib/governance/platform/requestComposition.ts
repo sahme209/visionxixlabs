@@ -1,4 +1,5 @@
 import 'server-only';
+import type {PlatformHistoryCursor} from './historyContract';
 import {bearerFromHeader} from '@/lib/desktop/desktopToken';
 import {platformPrincipalSchema,type PlatformEffect} from './contracts';
 import {compilePlatformPlan} from './kernel';
@@ -33,6 +34,7 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
  },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}});
  return Object.freeze({
   actorUserId:principal.userId,
+  async history(cursor:PlatformHistoryCursor|null){assertPossession();return store.history(cursor,principal)},
   async previewGrowth(id:string){assertPossession();return store.previewGrowth(id,principal)},
   async lookupGrowthPreparation(requestId:string){assertPossession();return store.lookupGrowthPreparation(requestId,principal)},
   async prepareGrowth(raw:unknown,requestId?:string){assertPossession();return store.prepareGrowth(raw,principal,requestId)},
