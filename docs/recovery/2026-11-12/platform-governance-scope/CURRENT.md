@@ -23,6 +23,8 @@ Prepared requester artifact entry now joins the workflow separately from review;
 
 Separate prepared requester claim/exact-child clients now join real in-process HTTP/HMAC/SQL tests with simulated writes. No automatic advancement or retry; requester execution panel/default qualification and full P01 still open.
 
+Original settings history now carries immutable target names/environments with shared canonical plan and per-result physical-key verification, including browser verification. This is historical clarity, never current source authority; requester execution panel wiring remains next.
+
 ## Earlier scoped checkpoints — historical
 
 Historical source-selection tranche: existing Lead metadata catalog now populates the unregistered generated-site form. It exposes bounded labels/status/package-presence only, excludes email/full payload/content, and never grants source validation or a save/approval automatically.24focused checks/final root and desktop types/shell-client build PASS.35actual isolated SQL cases PASS/stopped, including25-lead pagination/private-field exclusion and real client/prepared HTTP/current HMAC/SQL. All delivery/provider facts remain synthetic/in-process; no new execution/recovery authority or live acceptance.

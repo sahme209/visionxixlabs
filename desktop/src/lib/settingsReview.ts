@@ -1,3 +1,4 @@
+import {settingsPlanInput,settingsEffectDigestInput,settingsPhysicalTargetInput} from '../../../lib/governance/platform/operations/settingsPlanInput';
 import {settingsReviewPreview,settingsReviewDecision,type SettingsReviewPreview,type SettingsReviewDecision} from '../../../lib/governance/platform/operations/settingsReviewContract';
 import {platformActionId} from '../../../lib/governance/platform/viewContract';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
@@ -28,7 +29,7 @@ export function createSettingsHistoryClient(context:Context){return {
   if(!platformActionId.safeParse(actionId).success)return {ok:false,error:'Load the original settings action reference.',outcomeUnconfirmed:false};
   const response=await releaseOperationPlanRequest(context,'POST',path,{operation:'inspect',actionId},(raw):raw is SettingsHistory=>{const p=settingsHistory.safeParse(raw);return p.success&&p.data.actionId===actionId},signal);
   if(!response.ok)return response;
-  try{for(const result of response.data.results){const {receiptDigest,...fields}=result;if(await hash(fields)!==receiptDigest)throw Error('mismatched')}if(signal?.aborted||context.getConfig()!==config||context.getRevision()!==revision)throw Error('changed');return response}
+  try{if(response.data.manifest){const m=response.data.manifest,{digest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,...manifest}=m;if(await hash({kind:'operational_manifest_v1',manifest})!==digest)throw Error('manifest mismatch');const effects=await Promise.all(m.settings.map((_entry,index)=>hash(settingsEffectDigestInput(m,index))));if(await hash({kind:'platform_governance_plan_v1',...settingsPlanInput(m,effects)})!==response.data.planDigest)throw Error('plan mismatch')}for(const result of response.data.results){if(response.data.manifest&&await hash(settingsPhysicalTargetInput(response.data.manifest,result.effectIndex))!==result.nativeKey)throw Error('target mismatch');const {receiptDigest,...fields}=result;if(await hash(fields)!==receiptDigest)throw Error('mismatched')}if(signal?.aborted||context.getConfig()!==config||context.getRevision()!==revision)throw Error('changed');return response}
   catch{return {ok:false,error:'Original settings history could not be verified. No action was submitted.',outcomeUnconfirmed:false}}
  },
 }}

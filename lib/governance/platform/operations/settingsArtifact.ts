@@ -1,3 +1,4 @@
+import {settingsPlanInput,settingsEffectDigestInput} from './settingsPlanInput';
 import 'server-only';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -14,7 +15,7 @@ const fail=():never=>{throw Error('settings_artifact_unavailable')};
 /** All digests below cover NONSECRET metadata only, never values/envelopes. */
 export function compileOperationalSettingsPlan(raw:unknown){
  const manifest=readOperationalManifest(raw);if(manifest.kind!=='settings.vercel')return fail();
- return compilePlatformPlan({format:1,scope:'platform',sourceDigest:manifest.digest,expiresAt:manifest.expiresAt,effects:manifest.settings.map((setting,index)=>({id:'setting_'+index,kind:'settings.vercel',target:{projectId:manifest.target.projectId,settingsDigest:sha256ContentHash({purpose:'platform_settings_effect_v1',manifestDigest:manifest.digest,target:manifest.target,profileId:manifest.artifactProfileId,index,setting})}}))});
+ return compilePlatformPlan(settingsPlanInput(manifest,manifest.settings.map((_setting,index)=>sha256ContentHash(settingsEffectDigestInput(manifest,index)))));
 }
 export function deriveSettingsArtifactBinding(actionId:string,rawParent:PlatformAction,rawManifest:unknown,index:number,rawCreator:PlatformPrincipal):SettingsArtifactBinding{
  try{const parent=readPlatformAction(rawParent),manifest=readOperationalManifest(rawManifest),creator=platformPrincipalSchema.parse(rawCreator);if(manifest.kind!=='settings.vercel')return fail();

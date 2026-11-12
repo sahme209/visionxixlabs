@@ -1,3 +1,4 @@
+import {settingsPhysicalTargetInput} from './settingsPlanInput';
 import {readSettingsResult} from './settingsResult';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {z} from 'zod';
@@ -7,7 +8,7 @@ import type {PlatformTransaction,PlatformAuthority} from '../actionStore';
 import {platformPrincipalSchema,type PlatformPrincipal} from '../contracts';
 import {readPlatformAction,approvePlatformAction,claimPlatformAction} from '../kernel';
 import {operationalWorkloadBinding} from './workloadIdentity';
-import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
+import {compileOperationalSettingsPlan,deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
 export interface SettingsArtifactTransaction extends PlatformTransaction{
  readSettingsManifest(actionId:string):Promise<unknown>;
  readSettingsResults(actionId:string):Promise<unknown[]>;
@@ -38,10 +39,11 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
  return Object.freeze({async inspect(rawId:string,rawReader:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
    await tx.lock(id);await authority.assertCurrent(tx,reader);const parent=readPlatformAction(await tx.read(id));if(parent.plan.effects.some(e=>e.kind!=='settings.vercel'))return fail();
+   const manifest=readOperationalManifest(await tx.readSettingsManifest(id));if(manifest.kind!=='settings.vercel'||compileOperationalSettingsPlan(manifest).digest!==parent.plan.digest)return fail();
    const raw=await tx.readSettingsResults(id);if(!Array.isArray(raw)||raw.length>32)return fail();const results=raw.map(readSettingsResult),seen=new Set<number>();
-   for(const result of results){if(result.actionId!==id||result.planDigest!==parent.plan.digest||result.manifestDigest!==parent.plan.sourceDigest||result.effectIndex>=parent.plan.effects.length||seen.has(result.effectIndex))return fail();seen.add(result.effectIndex)}
+   for(const result of results){if(result.actionId!==id||result.planDigest!==parent.plan.digest||result.manifestDigest!==parent.plan.sourceDigest||result.effectIndex>=parent.plan.effects.length||result.nativeKey!==sha256ContentHash(settingsPhysicalTargetInput(manifest,result.effectIndex))||seen.has(result.effectIndex))return fail();seen.add(result.effectIndex)}
    await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt)return fail();
-   return Object.freeze({actionId:id,planDigest:parent.plan.digest,status:parent.status,version:parent.version,attemptCount:parent.attemptCount,requesterUserId:parent.requester.userId,reviewerUserId:parent.reviewer?.userId??null,expired:now>=Date.parse(parent.plan.expiresAt),results:Object.freeze(results),authority:'history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const});
+   return Object.freeze({manifest,actionId:id,planDigest:parent.plan.digest,status:parent.status,version:parent.version,attemptCount:parent.attemptCount,requesterUserId:parent.requester.userId,reviewerUserId:parent.reviewer?.userId??null,expired:now>=Date.parse(parent.plan.expiresAt),results:Object.freeze(results),authority:'history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const});
   })}catch{return fail()}
  },async preview(rawId:string,rawReader:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
