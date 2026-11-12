@@ -7,12 +7,13 @@
  * reconnect), not a crash and not a silent pass-through of garbage.
  */
 
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 const mocks = vi.hoisted(() => ({
   findDraft: vi.fn(),
   findConnection: vi.fn(),
   updateConnection: vi.fn(),
+  updateDraft:vi.fn(),
   createRun: vi.fn(),
   isPostingEnabled: vi.fn(() => true),
   writeGrowthAudit: vi.fn(async () => {}),
@@ -21,8 +22,8 @@ const mocks = vi.hoisted(() => ({
 
 vi.mock("@/lib/db", () => ({
   prisma: {
-    linkedInPostDraft: { findUnique: mocks.findDraft },
-    linkedInAccountConnection: { findFirst: mocks.findConnection, update: mocks.updateConnection },
+    linkedInPostDraft: { findUnique: mocks.findDraft,updateMany:mocks.updateDraft },
+    linkedInAccountConnection: { findUnique: mocks.findConnection, updateMany: mocks.updateConnection },
     linkedInPostPublishRun: { create: mocks.createRun },
   },
 }));
@@ -31,19 +32,22 @@ vi.mock("../../audit", () => ({ writeGrowthAudit: mocks.writeGrowthAudit }));
 vi.mock("../../draftStore", () => ({ transitionStatus: vi.fn(async () => {}) }));
 vi.mock("@/lib/security/credentialVault", () => ({ decryptCredential: mocks.decryptCredential }));
 
+import {preparePlatformLinkedInPost} from '../platformPostingPlan';
+import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
+let draftSnapshot:{id:string;title:string;hook:string;body:string;cta:null;imageUrn:null;hashtags:string[];status:string;scheduledFor:null;updatedAt:Date};
+let connectionSnapshot:{id:string;organizationUrn:null;linkedinUrn:string;scopes:string;expiresAt:Date;status:string;updatedAt:Date};
+function grant(){const effect=preparePlatformLinkedInPost(draftSnapshot,connectionSnapshot,'202605',Date.now()).effect;return bindPlatformExecution({actorUserId:'actual-requester',claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{}},'fixture-action')}
+afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs()});
 describe("publishDraft — stored credential decrypt failure", () => {
   beforeEach(() => {
     vi.clearAllMocks();
     mocks.isPostingEnabled.mockReturnValue(true);
-    mocks.findDraft.mockResolvedValue({ id: "draft-1", status: "scheduled", body: "hello", title: "t", imageUrn: null, hashtags: [] });
-    mocks.findConnection.mockResolvedValue({
-      id: "conn-1",
-      accessToken: "not-real-ciphertext",
-      organizationUrn: null,
-      linkedinUrn: "urn:li:person:abc",
-      expiresAt: new Date(Date.now() + 3600_000),
-      status: "connected",
-    });
+    vi.stubEnv('LINKEDIN_REST_VERSION','202605');
+    draftSnapshot={id:'draft-1',status:'approved',hook:'Hook',body:'hello',title:'t',cta:null,imageUrn:null,hashtags:[],scheduledFor:null,updatedAt:new Date(Date.now()-1000)};
+    connectionSnapshot={id:'conn-1',organizationUrn:null,linkedinUrn:'urn:li:person:abc',scopes:'w_member_social',expiresAt:new Date(Date.now()+3600000),status:'connected',updatedAt:new Date(Date.now()-1000)};
+    mocks.findDraft.mockResolvedValue(draftSnapshot);
+    mocks.findConnection.mockImplementation(async args=>args.select?.accessToken?{accessToken:'not-real-ciphertext',updatedAt:connectionSnapshot.updatedAt}:connectionSnapshot);
+    mocks.updateDraft.mockResolvedValue({count:1});mocks.updateConnection.mockResolvedValue({count:1});
     mocks.createRun.mockResolvedValue({ id: "run-1" });
   });
 
@@ -55,11 +59,11 @@ describe("publishDraft — stored credential decrypt failure", () => {
     vi.stubGlobal("fetch", fetchMock);
 
     const { publishDraft } = await import("../posting");
-    const outcome = await publishDraft({ draftId: "draft-1", triggeredBy: "cron:linkedin-publish" });
+    const outcome = await publishDraft({ draftId: "draft-1", triggeredBy: "operator-hint",connectionId:"conn-1",platformExecution:grant() });
 
     expect(outcome.kind).toBe("token_expired");
     expect(mocks.updateConnection).toHaveBeenCalledWith({
-      where: { id: "conn-1" },
+      where: { id: "conn-1",updatedAt:connectionSnapshot.updatedAt,status:"connected" },
       data: { status: "expired", lastError: expect.stringContaining("decrypted") },
     });
     // The fetch to LinkedIn's API must never happen with a bad token.
@@ -69,14 +73,14 @@ describe("publishDraft — stored credential decrypt failure", () => {
   it("posts with the decrypted token when decryption succeeds", async () => {
     mocks.decryptCredential.mockReturnValue("real-access-token");
     const fetchMock = vi.fn().mockResolvedValue({
-      ok: true,
+      ok: true,status:201,
       headers: { get: () => "urn:li:share:123" },
       text: async () => "",
     });
     vi.stubGlobal("fetch", fetchMock);
 
     const { publishDraft } = await import("../posting");
-    const outcome = await publishDraft({ draftId: "draft-1", triggeredBy: "cron:linkedin-publish" });
+    const outcome = await publishDraft({ draftId: "draft-1", triggeredBy: "operator-hint",connectionId:"conn-1",platformExecution:grant() });
 
     expect(outcome.kind).toBe("success");
     const [, init] = fetchMock.mock.calls[0];

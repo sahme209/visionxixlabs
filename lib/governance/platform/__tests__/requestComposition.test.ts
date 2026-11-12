@@ -8,7 +8,7 @@ function fixture(){
  const rows=new Map<string,PlatformAction>(),events:unknown[]=[],identities=new Map([['requester-session','requester'],['reviewer-session','reviewer']]);
  const readSessionPrincipal=vi.fn(async(sessionId:string)=>({sessionId,userId:identities.get(sessionId)}));
  const readPrincipal=vi.fn(async(p:{userId:string;sessionId:string})=>({...p,email:p.userId+'@example.test',live:identities.get(p.sessionId)===p.userId}));
- const tx:PlatformTransaction={readSessionPrincipal,readPrincipal,now:async()=>at,lock:async()=>{},read:async id=>rows.get(id)??null,insert:async(id,state)=>{rows.set(id,state)},replace:async(id,_version,state)=>{rows.set(id,state)},event:async e=>{events.push(e)},readEffect:async()=>null,writeEffect:async()=>{}};
+ const tx:PlatformTransaction={readGrowthPostingSource:async()=>null,readSessionPrincipal,readPrincipal,now:async()=>at,lock:async()=>{},read:async id=>rows.get(id)??null,insert:async(id,state)=>{rows.set(id,state)},replace:async(id,_version,state)=>{rows.set(id,state)},event:async e=>{events.push(e)},readEffect:async()=>null,writeEffect:async()=>{}};
  const repo:PlatformRepository={transaction:fn=>fn(tx)};
  const verify=vi.fn((token:string)=>{if(!token.startsWith('synthetic-valid-'))throw Error('bad_signature');return {sessionId:token.slice('synthetic-valid-'.length)}});
  const headers=new Headers({authorization:'Bearer synthetic-valid-requester-session'});

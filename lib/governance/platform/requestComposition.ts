@@ -30,8 +30,9 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
  function assertPossession(){if(verifiedSession()!==principal.sessionId)fail()}
  const store=createPlatformActionService(ports.repo,{async assertCurrent(tx,actor){
   assertPossession();await currentAuthority.assertCurrent(tx,actor);assertPossession();
- }});
+ },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}});
  return Object.freeze({
+  actorUserId:principal.userId,
   async propose(raw:unknown){assertPossession();return store.propose(compilePlatformPlan(raw),principal)},
   async review(id:string,version:number,planDigest:string){assertPossession();await store.review(id,version,planDigest,principal)},
   async claim(id:string,version:number){assertPossession();await store.claim(id,version,principal)},

@@ -1,5 +1,8 @@
 import 'server-only';
 import {z} from 'zod';
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {preparePlatformLinkedInPost,currentLinkedInVersion,postingDraftSchema,postingConnectionSchema} from '@/lib/growth/linkedin/platformPostingPlan';
+import {isPostingEnabled} from '@/lib/growth/linkedin/oauth';
 import {platformPrincipalSchema} from './contracts';
 import type {PlatformAuthority} from './actionStore';
 const rowSchema=platformPrincipalSchema.extend({email:z.string().email().max(320),live:z.literal(true)}).strict();
@@ -14,6 +17,13 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   if(!allowed().length)fail();
   const row=rowSchema.parse(await tx.readPrincipal(principal));
   if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
+ },async assertEffectCurrent(tx,effect){
+  if(!effect.kind.startsWith('growth.'))return;
+  if(effect.kind!=='growth.post.publish'||!isPostingEnabled())fail();
+  if(effect.kind!=='growth.post.publish')return fail();
+  const source=z.object({draft:postingDraftSchema,connection:postingConnectionSchema}).strict().parse(await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId));
+  const version=currentLinkedInVersion(),now=await tx.now(),prepared=preparePlatformLinkedInPost(source.draft,source.connection,version,now,effect.id);
+  if(!isPostingEnabled()||currentLinkedInVersion()!==version||sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))fail();
  }};
 }
 export function readConfiguredPlatformAdmins():readonly string[]{return (process.env.ADMIN_EMAILS??'').split(',')}

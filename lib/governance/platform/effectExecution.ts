@@ -2,6 +2,7 @@ import 'server-only';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {platformEffectSchema,type PlatformEffect} from './contracts';
 interface Service{
+ readonly actorUserId?:string;
  claimNextEffect(id:string):Promise<{effect:PlatformEffect;proof:object}>;
  beforeEffectSend(proof:object,effect:PlatformEffect):Promise<void>;
  observeEffect(proof:object,outcome:'confirmed'|'refused'|'unknown'):Promise<void>;
@@ -13,6 +14,11 @@ const fail=(code='platform_governance_effect_unavailable'):never=>{throw Error(c
  * authenticated requester/claimed parent. Client JSON cannot recreate a binding. */
 export function bindPlatformExecution(service:Service,actionId:string):object{
  const binding=Object.freeze({});bindings.set(binding,{service,actionId,busy:false,closed:false});return binding;
+}
+/** Metadata only; possession is still enforced by the bound real service. */
+export function describePlatformExecution(value:unknown){
+ if(!value||typeof value!=='object')return fail();const entry=bindings.get(value)??fail();if(entry.busy||entry.closed)fail();
+ return {actionId:entry.actionId,actor:entry.service.actorUserId?'user:'+entry.service.actorUserId:'platform-governance'};
 }
 export async function runPlatformEffect<T>(binding:object,rawEffect:PlatformEffect,prepareAndSend:(beforeSend:()=>Promise<void>)=>Promise<{outcome:'confirmed'|'refused'|'unknown';value:T}>):Promise<T>{
  const entry=bindings.get(binding)??fail();if(entry.busy||entry.closed)fail();entry.busy=true;

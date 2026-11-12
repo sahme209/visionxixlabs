@@ -3301,7 +3301,7 @@ model LinkedInPostPublishRun {
   draftId         String
   /// Operator email that triggered the publish (or "cron" for scheduler).
   triggeredBy     String
-  /// Closed-union: pending | success | failed | skipped_disabled | skipped_not_connected.
+  /// Closed-union: pending | success | failed | unknown | skipped_disabled | skipped_not_connected.
   outcome         String
   /// LinkedIn URN returned on success.
   linkedinPostUrn String?

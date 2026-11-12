@@ -9,7 +9,7 @@ beforeAll(()=>{if(enabled)db=createDatabaseClient(process.env.DATABASE_URL)});
 afterAll(async()=>{if(db)await db.$disconnect()});
 const actor={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'},d='a'.repeat(64);
 function service(repository?:PlatformRepository){return createPlatformActionService(repository??createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),{assertCurrent:async()=>{}})}
-function plan(){return compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[{id:'effect',kind:'growth.post.publish',target:{connectionId:'connection',connectionRevision:'revision',author:'author',draftId:'draft',renderedPayloadDigest:d}}]})}
+function plan(){return compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[{id:'effect',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}}]})}
 async function ready(s:ReturnType<typeof service>){const p=plan(),id=await s.propose(p,actor);await s.review(id,0,p.digest,reviewer);return id}
 it.skipIf(!enabled)('serializes actual duplicate SQL claims and records exactly one attempt',async()=>{
  const s=service(),id=await ready(s),results=await Promise.allSettled([s.claim(id,1,actor),s.claim(id,1,actor)]);
@@ -140,4 +140,42 @@ it.skipIf(!enabled)('revocation during template readback prevents URL release in
   expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
  }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
+});
+
+import {randomUUID} from 'node:crypto';
+import {encryptCredential} from '@/lib/security/credentialVault';
+import {publishDraft,POST_DRAFT_SELECT,POST_CONNECTION_SELECT} from '@/lib/growth/linkedin/posting';
+import {preparePlatformLinkedInPost} from '@/lib/growth/linkedin/platformPostingPlan';
+async function postFixture(){
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');vi.stubEnv('CREDENTIAL_ENCRYPTION_KEY','synthetic-credential-key-'.repeat(3));
+ const connection=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:fixture',accessToken:encryptCredential('synthetic-linkedin-token'),scopes:'w_member_social',expiresAt:new Date(Date.now()+60000),status:'connected'},select:POST_CONNECTION_SELECT});
+ const draft=await defaultPrisma.linkedInPostDraft.create({data:{title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),effect=preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
+ const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw),request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),id=await requester.propose(raw);
+ const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
+ return {draft,connection,effect,id,requester,request,binding:await createDefaultPlatformExecution(request,id,1)};
+}
+it.skipIf(!enabled)('joins actual default post source, credential crypto, human review and SQL ledger with simulated HTTP',async()=>{
+ try{
+  const f=await postFixture(),http=vi.fn(async()=>new Response('',{status:201,headers:{'x-restli-id':'urn:li:share:123'}}));vi.stubGlobal('fetch',http);
+  expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'untrusted-hint'})).toMatchObject({kind:'success',urn:'urn:li:share:123',recordingConfirmed:true});expect(http).toHaveBeenCalledTimes(1);
+  const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'published',linkedinPostUrn:'urn:li:share:123'});
+  const runs=await defaultPrisma.linkedInPostPublishRun.findMany({where:{draftId:f.draft.id}});expect(runs).toHaveLength(1);expect(runs[0].triggeredBy).toBe('user:requester');
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('final default source assertion refuses a draft changed after child claim',async()=>{
+ try{
+  const f=await postFixture(),claim=await f.requester.claimNextEffect(f.id);
+  await defaultPrisma.linkedInPostDraft.update({where:{id:f.draft.id},data:{body:'changed after independent review'}});
+  await expect(f.requester.beforeEffectSend(claim.proof,f.effect)).rejects.toThrow();await f.requester.observeEffect(claim.proof,'unknown');
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson.status).toBe('unknown');
+ }finally{vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('lost post response remains unknown in both ledgers and never redispatches the same binding',async()=>{
+ try{
+  const f=await postFixture(),http=vi.fn(async()=>{throw Error('synthetic_lost_response')});vi.stubGlobal('fetch',http);
+  expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'untrusted-hint'})).toMatchObject({kind:'outcome_unknown'});
+  await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'untrusted-hint'});expect(http).toHaveBeenCalledTimes(1);
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson.status).toBe('unknown');
+  const runs=await defaultPrisma.linkedInPostPublishRun.findMany({where:{draftId:f.draft.id}});expect(runs).toHaveLength(1);expect(runs[0].outcome).toBe('unknown');
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });

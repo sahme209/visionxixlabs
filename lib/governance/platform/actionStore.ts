@@ -5,6 +5,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readGrowthPostingSource(draftId:string,connectionId:string):Promise<unknown>;
  readSessionPrincipal(sessionId:string):Promise<unknown>;
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
@@ -18,6 +19,7 @@ export interface PlatformAuthority{
  /** Trusted server supplier only; validates current stable identity, session and
   * current platform role. A test port is not a production authority source. */
  assertCurrent(tx:PlatformTransaction,principal:PlatformPrincipal):Promise<void>;
+ assertEffectCurrent?(tx:PlatformTransaction,effect:PlatformEffect):Promise<void>;
 }
 const fail=():never=>{throw Error('platform_governance_action_unavailable')};
 /** Local store composition. No route or provider may accept a client-built
@@ -73,10 +75,10 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
    await locked(binding.actionId,async(tx,state)=>{
     if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
-    await actors(tx,state);await timely(tx,state);
+    await actors(tx,state);if(effect.kind.startsWith('growth.')&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
-    await actors(tx,state);await timely(tx,state);
+    await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
    });
    if(observations.get(proof)!==binding)fail();
    binding.sendGranted=true;

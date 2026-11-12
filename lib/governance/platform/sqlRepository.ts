@@ -16,6 +16,12 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readGrowthPostingSource(draftId,connectionId){
+    if(!locked)fail();
+    const drafts=await sql.$queryRawUnsafe<unknown[]>('SELECT id,title,hook,body,cta,hashtags,"imageUrn",status,"scheduledFor","updatedAt" FROM "LinkedInPostDraft" WHERE id=$1 FOR SHARE',draftId);
+    const connections=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"linkedinUrn","organizationUrn",scopes,status,"expiresAt","updatedAt" FROM "LinkedInAccountConnection" WHERE id=$1 FOR SHARE',connectionId);
+    if(drafts.length!==1||connections.length!==1)fail();return {draft:drafts[0],connection:connections[0]};
+   },
    async readSessionPrincipal(sessionId){
     if(!locked)fail();
     const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string}>>('SELECT u.id AS "userId", s.id AS "sessionId" FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" WHERE s.id=$1 FOR SHARE OF s,u',sessionId);

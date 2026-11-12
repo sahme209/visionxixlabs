@@ -12,6 +12,7 @@ NODE=Path('/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node')
 TEST='lib/governance/platform/__tests__/sqlRepository.pg.test.ts'
 FILES=[Path(__file__).relative_to(REPO),Path('prisma/schema.prisma')]+sorted(Path('lib/governance/platform').rglob('*.ts'))+[Path('lib/governance/platform/fixtureSchema.sql'),Path('lib/governance/platform/fixtureIdentity.sql')]
 FILES += [Path(p) for p in ['lib/cloud/aws/templateHosting.ts','lib/cloud/aws/platformTemplatePlan.ts','public/aws/axiom-agent-quick-deploy.yaml','lib/deploy/provider.ts','lib/deploy/platformDeployment.ts','lib/scaffoldGenerator.ts','lib/desktop/desktopToken.ts','lib/desktop/privateDesktopToken.ts','lib/db.ts','lib/database/createDatabaseClient.ts','lib/database/postgresConnectionPolicy.ts']]
+FILES += [Path(p) for p in ['lib/growth/linkedin/posting.ts','lib/growth/linkedin/platformPostingPlan.ts','lib/security/credentialVault.ts','lib/growth/audit.ts','prisma/migrations/20260526190000_add_growth_linkedin_phase1/migration.sql','prisma/migrations/20260526200000_add_growth_autopilot/migration.sql']]
 def hashes():return {str(p):hashlib.sha256((REPO/p).read_bytes()).hexdigest() for p in FILES}
 def main():
  os.umask(0o077)
@@ -36,14 +37,16 @@ def main():
   if json.loads(binding)!={'db':'platform_fixture','role':'platform_fixture','listen':'','data':str(root/'data'),'tables':0}:raise RuntimeError('fresh_owned_target_required')
   run('schema',[PG/'psql','-Xw','-v','ON_ERROR_STOP=1','-f',REPO/'lib/governance/platform/fixtureSchema.sql'])
   run('identity-schema',[PG/'psql','-Xw','-v','ON_ERROR_STOP=1','-f',REPO/'lib/governance/platform/fixtureIdentity.sql'])
+  for index,name in enumerate(['20260526190000_add_growth_linkedin_phase1','20260526200000_add_growth_autopilot']):
+   run('growth-schema-'+str(index),[PG/'psql','-Xw','-v','ON_ERROR_STOP=1','-f',REPO/'prisma/migrations'/name/'migration.sql'])
   env['DATABASE_URL']='postgresql://platform_fixture@localhost:55497/platform_fixture?host='+quote(str(root/'socket'),safe='')
   config={'root':str(REPO),'envDir':str(root/'empty-env'),'cacheDir':str(root/'cache'),'resolve':{'alias':{'@':str(REPO),'server-only':str(REPO/'test/serverOnlyStub.ts')}},'test':{'environment':'node','include':[TEST],'maxWorkers':1,'fileParallelism':False}}
   (root/'vitest.config.mjs').write_text('export default '+json.dumps(config)+';\n')
   run('tests',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',root/'vitest.config.mjs','--configLoader','native','--reporter=json','--outputFile='+str(root/'result.json')],60)
   result=json.loads((root/'result.json').read_text())
-  if result['numPassedTests']!=11 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('eleven_actual_non_skipped_tests_required')
+  if result['numPassedTests']!=14 or result['numFailedTests'] or result['numPendingTests']:raise RuntimeError('fourteen_actual_non_skipped_tests_required')
   if hashes()!=before:raise RuntimeError('sources_changed')
-  (root/'receipt.json').write_text(json.dumps({'tests':11,'database':'actual isolated PostgreSQL','authorityAndProvider':'3 simulated authority;2 actual identity SQL;2 default actual signed synthetic-token request composition;2 actual default deployment helper journeys with simulated HTTP;2 actual default template reader/signing journeys with simulated SDK I/O; no real provider dispatched','sourceHashes':before,'productionChanged':False},indent=2))
+  (root/'receipt.json').write_text(json.dumps({'tests':14,'database':'actual isolated PostgreSQL','authorityAndProvider':'3 simulated authority;2 actual identity SQL;2 default actual signed synthetic-token request composition;2 actual default deployment helper journeys with simulated HTTP;2 actual default template reader/signing journeys with simulated SDK I/O; 3 actual default post/source/unknown journeys with simulated HTTP; no real provider dispatched','sourceHashes':before,'productionChanged':False},indent=2))
  finally:
   if started:
    run('stop',[PG/'pg_ctl','-D',root/'data','-m','fast','-w','stop'])
