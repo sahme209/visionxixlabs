@@ -38,6 +38,24 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,await load(tx,id))});
  }
  return {
+  /** Historical evidence only: current reader authority is required, but a
+   * revoked former approver must not make the consumed record disappear.
+   * This DTO intentionally excludes session IDs and every capability proof. */
+  async inspect(id:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal);
+   return locked(id,async(tx,state)=>{
+    await authority.assertCurrent(tx,actor);
+    const effects=[];
+    for(let index=0;index<state.plan.effects.length;index++){
+     const status=await tx.readEffect(id,index);
+     if(status!==null&&!['claimed','confirmed','refused','unknown'].includes(String(status)))fail();
+     effects.push({id:state.plan.effects[index].id,status:status===null?'not_started':String(status)});
+    }
+    const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();
+    await authority.assertCurrent(tx,actor);
+    return {actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only' as const,sourceValidation:'not_checked' as const};
+   });
+  },
   async propose(plan:PlatformPlan,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id='platform_action_'+randomUUID();
    return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());

@@ -33,6 +33,7 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
  },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}});
  return Object.freeze({
   actorUserId:principal.userId,
+  async inspect(id:string){assertPossession();return store.inspect(id,principal)},
   async propose(raw:unknown){assertPossession();return store.propose(compilePlatformPlan(raw),principal)},
   async review(id:string,version:number,planDigest:string){assertPossession();await store.review(id,version,planDigest,principal)},
   async claim(id:string,version:number){assertPossession();await store.claim(id,version,principal)},

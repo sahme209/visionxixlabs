@@ -252,3 +252,12 @@ it.skipIf(!enabled)('unknown deletion blocks a second independently reviewed act
   const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'published',linkedinPostUrn:f.effect.target.postUrn});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+it.skipIf(!enabled)('current requester reads consumed SQL history after former reviewer revocation without renewed authority',async()=>{
+ try{
+  const f=await postFixture();const claim=await f.requester.claimNextEffect(f.id);await f.requester.observeEffect(claim.proof,'unknown');
+  await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);
+  const result=await f.requester.inspect(f.id);expect(result).toMatchObject({status:'unknown',attemptCount:1,authority:'history_only',sourceValidation:'not_checked',requesterUserId:'requester',reviewerUserId:'reviewer',effects:[{id:f.effect.id,status:'unknown'}]});
+  expect(JSON.stringify(result)).not.toContain('requester-session');expect(JSON.stringify(result)).not.toContain('reviewer-session');
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
+ }finally{vi.unstubAllEnvs()}
+});

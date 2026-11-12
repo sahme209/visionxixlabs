@@ -44,3 +44,11 @@ it('rechecks possession after an awaited current-authority read',async()=>{
  f.readPrincipal.mockImplementation(async p=>{f.headers.delete('authorization');return {...p,email:p.userId+'@example.test',live:true}});
  await expect(request.propose(raw())).rejects.toThrow();expect(f.rows.size).toBe(0);
 });
+
+it('current admin can inspect exact historical state without session identifiers or new execution authority',async()=>{
+ const f=fixture(),request=await createPlatformRequestComposition({headers:f.headers},f.ports),id=await request.propose(raw());
+ const before=f.events.length,reviewer=await createPlatformRequestComposition({headers:new Headers({authorization:'Bearer synthetic-valid-reviewer-session'})},f.ports);
+ const result=await reviewer.inspect(id);expect(result).toMatchObject({actionId:id,status:'proposed',requesterUserId:'requester',reviewerUserId:null,authority:'history_only',sourceValidation:'not_checked',effects:[{id:'one',status:'not_started'}]});
+ expect(JSON.stringify(result)).not.toContain('requester-session');expect(f.events).toHaveLength(before);expect(f.rows.get(id)?.status).toBe('proposed');
+ f.identities.delete('reviewer-session');await expect(reviewer.inspect(id)).rejects.toThrow();
+});

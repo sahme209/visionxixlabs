@@ -10,6 +10,8 @@ Exact scheduling is now implemented locally with separate review-bound future ti
 
 Managed deletion is locally implemented with exact successful-publication lineage, selected account/current source, permanent native-URN send reservation and original-history preservation. Direct deletion script is retired.28focused checks, strict types and independent correction review pass;21actual isolated PostgreSQL cases passed before the narrow input-capture correction, server stopped. Real LinkedIn protocol/ownership is unaccepted.
 
+Shared current-admin history inspection and exact-review HTTP composition are also implemented locally, with explicit history-only/source-unchecked labels and no session IDs/proofs. The HTTP module is NOT route-registered; it does not expose a claim/provider operation.18store/request and4HTTP checks, strict types and independent review pass.22actual isolated PG cases pass including consumed-history access after former reviewer revocation; fixture stopped.
+
 NEXT: growth image initialization/upload boundaries and operational scripts/workflows; then actual prepare/review/execute/history UI+HTTP, source qualification/coverage audit, full required checks and one green PR. Preserve all named effects; do not stop at containment or delete P01. No new PR/push until coherent batch is ready.
 
 All source/schema work is local. No production migration/settings/flags, actual credential/provider access, deployment, spending, independent human impersonation or native issuer enablement. P01 remains uncovered; full master plan/production target-schema/TLS and all live gates remain open.
