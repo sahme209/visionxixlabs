@@ -1,4 +1,4 @@
-import {createOperationalEcsResult,type OperationalEcsTransport} from './ecsExecution';
+import {createOperationalEcsResult,readOperationalEcsResult,type OperationalEcsResult,type OperationalEcsTransport} from './ecsExecution';
 import {projectOperationalEcsAcceptance} from './ecsProtocol';
 import {readOperationalTarget} from './reservationContract';
 import {finishPlatformAction} from '../kernel';
@@ -110,7 +110,16 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     return Object.freeze({actionId:key,phase:observed.phase,generation:observed.generation,deploymentId:observed.deploymentId,lastReceiptId:observed.lastReceiptId,credentialStatus:state.credential.status,expired:now>=Date.parse(state.manifest.expiresAt),authority:'native_observation_only' as const,sourceValidation:storedTerminal?'historical_terminal_receipt_only' as const:'checked_by_private_source' as const,parentStatus:parent.status,parentReconciliation:'not_performed' as const,executionAuthorized:false as const,providerWritePerformed:false as const});
    })}catch{throw Error('operational_observation_unavailable')}
   },
-  async inspect(id:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{await authority.assertCurrent(tx,actor);const state=await load(tx,key),now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();await authority.assertCurrent(tx,actor);return projection(state,now)})},
+  async inspect(id:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{
+   await authority.assertCurrent(tx,actor);const state=await load(tx,key),parent=readPlatformAction(await tx.read(key));match(parent,state);
+   const effectStatus=await tx.readEffect(key,0);let result:OperationalEcsResult|null=null;
+   if(effectStatus==='confirmed'||effectStatus==='unknown'){
+    result=readOperationalEcsResult(await tx.readOperationalEcsResult(key));const ref=state.targetReservation;
+    if(!ref||state.credential.status!=='issued'||result.actionId!==key||result.manifestDigest!==state.manifest.digest||result.nativeKey!==ref.nativeKey||result.generation!==ref.generation||result.leaseRef!==state.credential.leaseRef||result.observedAt<state.createdAt||effectStatus==='confirmed'&&result.kind!=='accepted'||effectStatus==='unknown'&&result.kind!=='unknown')return fail();
+   }
+   await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||result&&result.observedAt>now)return fail();
+   return Object.freeze({...projection(state,now),parentStatus:parent.status,parentVersion:parent.version,effectStatus,result});
+  })},
   async delegate(id:string,parentVersion:number,parentDigest:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor);return locked(id,async(tx,key)=>{
    const parent=readPlatformAction(await tx.read(key));if(parent.status!=='approved'||parent.version!==parentVersion||parent.plan.digest!==parentDigest||!same(actor,parent.requester)||await tx.readDelegation(key))return fail();
    await authority.assertCurrent(tx,actor);const manifest=readOperationalManifest(await source.readManifest(tx,parent));if(manifest.kind!=='deployment.ecs')return fail();

@@ -61,3 +61,16 @@ it('preserves issued liability when reviewer access changes during issuance but 
 it('bounds a stalled issuer and retains unknown without another issuance',async()=>{
  vi.useFakeTimers();try{const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn(async()=>new Promise(()=>{}))},f=fixture(issuer);await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claimed.proof),result=f.store.issueCredential(pending.proof);await vi.advanceTimersByTimeAsync(10001);expect(await result).toMatchObject({credentialHandle:null,history:{credential:{status:'unknown'}}});expect(issuer.issue).toHaveBeenCalledOnce()}finally{vi.useRealTimers()}
 });
+
+it('recovers original command acceptance separately from delegation history without using old source authority',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claimed.proof),leaseRef='platform_credential_22222222-2222-4222-8222-222222222222';await f.store.observeCredential(pending.proof,{status:'issued',leaseRef,expiresAt:now+900000});
+ const result=createOperationalEcsResult({format:1,purpose:'operational_ecs_update_result_v1',actionId:id,manifestDigest:f.manifest.digest,nativeKey:nativeEcsTargetKey(f.manifest.target),generation:1,leaseRef,kind:'accepted',deploymentId:'ecs-svc/2',requestId:'synthetic-result',observedAt:now,stable:false,rollbackAuthorized:false});
+ const repo:OperationalDelegationRepository={transaction:fn=>f.repo.transaction(tx=>fn({...tx,readEffect:async()=> 'confirmed',readOperationalEcsResult:async()=>result}))};
+ f.source.assertCurrent.mockClear();f.source.assertCurrent.mockRejectedValue(Error('old source unavailable'));f.revoked.add(reviewer.userId);f.setNow(now+400000);
+ const store=createOperationalDelegationStore(repo,{assertCurrent:async(_tx,p)=>{if(f.revoked.has(p.userId))throw Error('revoked')}},f.source,f.identity);
+ expect(await store.inspect(id,requester)).toMatchObject({parentStatus:'claimed',effectStatus:'confirmed',result:{kind:'accepted',deploymentId:'ecs-svc/2',stable:false},expired:true,executionAuthorized:false,sourceValidation:'not_checked'});
+ expect(f.source.assertCurrent).not.toHaveBeenCalled();
+ const {receiptDigest:ignoredDigest,...fields}=result;const corrupt=createOperationalEcsResult({...fields,generation:2});const wrong=createOperationalDelegationStore({transaction:fn=>f.repo.transaction(tx=>fn({...tx,readEffect:async()=> 'confirmed',readOperationalEcsResult:async()=>corrupt}))},{assertCurrent:async()=>{}},f.source,f.identity);
+ await expect(wrong.inspect(id,requester)).rejects.toThrow();
+});
+import {createOperationalEcsResult} from '../ecsExecution';
