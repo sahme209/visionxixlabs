@@ -1,6 +1,6 @@
 # Proposed trusted operator model-limit acceptance supplier
 
-Status: owner design decision required before implementing the new authority source. Existing operator-attestation parsing is data only and does not qualify a model or authorize dispatch. Accepted ADR permits offline AI, but does not identify the trusted supplier of verified server-limit acceptance. Do not silently replace verification with a user-editable JSON flag.
+Status: owner approved local evidence-supplier design on November11,2026. Source/isolated tests only; actual qualification, provisioning and enablement remain separately gated. Existing operator-attestation parsing is data only and does not qualify a model or authorize dispatch. Accepted ADR permits offline AI, but does not identify the trusted supplier of verified server-limit acceptance. Do not silently replace verification with a user-editable JSON flag.
 
 ## Proposed local implementation
 

@@ -1,3 +1,5 @@
+import {customerHostedAvailability,type CustomerHostedAvailability} from "@/lib/ai/customerHostedAvailability";
+import type {AIProviderName} from "@/lib/ai/AIProvider";
 import {providerPolicyChangeRefusal} from "@/lib/ai/workspacePolicyChange";
 import { NextResponse, type NextRequest } from "next/server";
 
@@ -49,7 +51,8 @@ async function context() {
   };
 }
 
-function serviceProviders() {
+function serviceProviders(local:CustomerHostedAvailability):AIProviderName[] {
+  if (local.mode !== "online") return local.mode === "offline" && local.models.length ? ["customer_hosted"] : [];
   return getAIProviderManager().status()
     .filter((row) => row.provider !== "mock" && row.configured)
     .map((row) => row.provider);
@@ -59,7 +62,8 @@ export async function GET() {
   const ctx = await context();
   if (!ctx) return NextResponse.json({ ok: false, error: "authentication_required" }, { status: 401 });
 
-  const providers = serviceProviders();
+  const local = await customerHostedAvailability(ctx.organizationId);
+  const providers = serviceProviders(local);
   const [loadedPolicy, identity, autonomy, budget, gatewayModels] = await Promise.all([
     loadWorkspaceAIProviderPolicyWithState(ctx.organizationId),
     readWorkspaceAgentIdentity(ctx.organizationId)
@@ -80,6 +84,7 @@ export async function GET() {
       providerPolicy: resolveWorkspaceAIProviderPolicy({ stored: loadedPolicy.policy, serviceEnabled: providers }),
       availableProviders: providers,
       gatewayModels,
+      customerHostedModels: local.models,
       gatewayCatalogLive: providers.includes("vercel_gateway") && gatewayModels !== null,
       agentIdentity: identity.value,
       agentIdentityState: identity.state,
@@ -110,9 +115,13 @@ export async function PATCH(request: NextRequest) {
   if (section === "provider_policy") {
     const policy = normalizeWorkspaceAIProviderPolicyUpdate(body ?? {});
     if (!policy) return NextResponse.json({ ok: false, error: "invalid_provider_policy" }, { status: 422 });
-    const available = serviceProviders();
+    const local = await customerHostedAvailability(ctx.organizationId);
+    const available = serviceProviders(local);
     if (policy.allowedProviders.some((provider) => !available.includes(provider))) {
       return NextResponse.json({ ok: false, error: "provider_unavailable" }, { status: 422 });
+    }
+    if (policy.enabled && policy.allowedProviders.includes("customer_hosted") && !local.models.some(model => model.id === policy.modelSelections.customer_hosted)) {
+      return NextResponse.json({ ok: false, error: "customer_hosted_model_unavailable" }, { status: 422 });
     }
     if (gatewayPolicyModelIds(policy).length) {
       const models = await loadGatewayModelCatalog().catch(() => null);

@@ -1,7 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { NextRequest } from "next/server";
-const mocks = vi.hoisted(() => ({ admin: vi.fn(), context: vi.fn(), session: vi.fn(), catalog: vi.fn(), save: vi.fn(), audit: vi.fn() }));
+const mocks = vi.hoisted(() => ({ admin: vi.fn(), context: vi.fn(), session: vi.fn(), catalog: vi.fn(), save: vi.fn(), audit: vi.fn(), local: vi.fn() }));
 vi.mock("@/lib/governance/intelligence/enrolledRefusal", () => ({ workspaceUnenrolled: async () => true }));
+vi.mock("@/lib/ai/customerHostedAvailability", () => ({ customerHostedAvailability: mocks.local }));
 vi.mock("@/lib/db", () => ({ prisma: {} }));
 vi.mock("@/lib/auth/currentContext", () => ({ currentContext: mocks.context }));
 vi.mock("@/lib/auth/platformAdmin", () => ({ isAdminOrOwner: mocks.admin }));
@@ -16,12 +17,12 @@ vi.mock("@/lib/axiom/agentRuntime/agentIdentityPolicy", () => ({ agentToolCatalo
 vi.mock("@/lib/autonomy/tenantCharterStore", () => ({ readTenantCharter: vi.fn(), upsertTenantCharter: vi.fn() }));
 vi.mock("@/lib/workforce/pipelines/budgetConfigStore", () => ({ loadBudgetConfig: vi.fn(), upsertBudgetConfig: vi.fn() }));
 import { GET as accountGet, PUT as account } from "@/app/api/account/ai-policy/route";
-import { PUT as desktop } from "@/app/api/desktop/ai-providers/route";
+import { GET as desktopGet, PUT as desktop } from "@/app/api/desktop/ai-providers/route";
 import { PATCH as control } from "@/app/api/control/ai-governance/route";
 const selection = { version: 1, defaultModelId: "xai/grok-4", approvedModelIds: ["xai/grok-4", "openai/gpt-4o"] };
 const body = () => ({ section: "provider_policy", organizationId: "attacker", enabled: true, allowedProviders: ["vercel_gateway"], modelSelections: { vercel_gateway: selection }, fallbackOrder: ["vercel_gateway"] });
 beforeEach(() => {
-  vi.resetAllMocks(); mocks.admin.mockReturnValue(true);
+  vi.resetAllMocks(); mocks.admin.mockReturnValue(true); mocks.local.mockResolvedValue({mode:"online",models:[]});
   mocks.context.mockResolvedValue({ isAuthenticated: true, organizationId: "org-session", userId: "owner", roles: ["owner"] });
   mocks.session.mockResolvedValue({ organizationId: "org-session", userId: "owner" });
   mocks.catalog.mockResolvedValue(selection.approvedModelIds.map(id => ({ id, label: id, tier: "balanced" })));
@@ -83,4 +84,23 @@ it("account audit retains the full bounded approval list as a scalar", async () 
   const recorded = mocks.audit.mock.calls[0][0].detail.approvedGatewayModels;
   expect(typeof recorded).toBe("string"); expect(recorded.length).toBeGreaterThan(512);
   expect(recorded.split(",")).toEqual(ids);
+});
+
+for (const [name, handler, method] of [["account",account,"PUT"],["desktop",desktop,"PUT"],["control",control,"PATCH"]] as const) {
+ it(`${name} saves only an explicitly accepted offline model, never endpoint/cap fields`,async()=>{
+  mocks.local.mockResolvedValue({mode:"offline",models:[{id:"local-model",label:"local-model",tier:"balanced"}]});
+  const request=new NextRequest("https://visionxixlabs.com/api/policy",{method,headers:{origin:"https://visionxixlabs.com","content-type":"application/json"},body:JSON.stringify({section:"provider_policy",enabled:true,allowedProviders:["customer_hosted"],modelSelections:{customer_hosted:"local-model"},fallbackOrder:[],endpoint:"ignored",limitTokens:999999})});
+  expect((await handler(request)).status).toBe(200);expect(mocks.catalog).not.toHaveBeenCalled();
+  const saved=mocks.save.mock.calls[0][0];expect(saved.organizationId).toBe("org-session");expect(saved.policy.modelSelections).toEqual({customer_hosted:"local-model"});expect(saved.policy).not.toHaveProperty("endpoint");expect(saved.policy).not.toHaveProperty("limitTokens");
+ });
+ it(`${name} refuses an unaccepted offline model`,async()=>{
+  mocks.local.mockResolvedValue({mode:"offline",models:[{id:"local-model",label:"local-model",tier:"balanced"}]});
+  const request=new NextRequest("https://visionxixlabs.com/api/policy",{method,headers:{origin:"https://visionxixlabs.com","content-type":"application/json"},body:JSON.stringify({section:"provider_policy",enabled:true,allowedProviders:["customer_hosted"],modelSelections:{customer_hosted:"other"},fallbackOrder:[]})});
+  expect((await handler(request)).status).toBe(422);expect(mocks.save).not.toHaveBeenCalled();expect(mocks.catalog).not.toHaveBeenCalled();
+ });
+}
+it("account and desktop discovery expose only accepted local model IDs offline",async()=>{
+ mocks.local.mockResolvedValue({mode:"offline",models:[{id:"local-model",label:"local-model",tier:"balanced"}]});
+ const accountResult=await (await accountGet()).json();expect(accountResult.data.availableProviders).toEqual(["customer_hosted"]);expect(accountResult.data.availableModels.customer_hosted[0].id).toBe("local-model");
+ const desktopResult=await (await desktopGet(new NextRequest("https://visionxixlabs.com/api/policy"))).json();expect(desktopResult.data.providers[0]).toMatchObject({provider:"customer_hosted",models:[{id:"local-model"}]});expect(mocks.catalog).not.toHaveBeenCalled();
 });
