@@ -178,3 +178,7 @@ The two recipe failures above are resolved by the reviewed current-source `/2` h
 ### PR #321 — deeper CI compatibility repair, not merged
 
 Required Typecheck + Vitest, production/offline build, desktop/macOS, audit and auth recovery passed on the prior head; actual opt-in AWS/PG and HTTP/website acceptance found remaining failures. Raw-SQL conflict compatibility is now repaired locally with exact own-data driver evidence; transaction scopes/retry caps/authority are unchanged. Full local suite 17,850 pass / 897 skip / one expected failure, four actual fresh PG tests and complete AWS enrollment/revocation rehearsal pass; owned servers stopped. Bounded secret-free startup categories are prepared for the still-unconfirmed HTTP/website startup failures. [Evidence and limits](../recovery/2026-11-11/prisma7-preflight/CI-SECOND-ROUND.md). Do not merge pending/failing checks, deploy or equate this with live Governance acceptance.
+
+### Observed dependency-security follow-up
+
+Web CI on the Prisma candidate reports three moderate archiver/readdir-glob/minimatch findings (GHSA-g3hv-75wg-m249); high/critical threshold passes, desktop audit is clean. Versions match current main, so no new version change in this chain is attributed to Prisma. Compatible repair and actual exposure need targeted review; do not run the suggested force downgrade or weaken audit checks. [Exact observation](../recovery/2026-11-11/prisma7-preflight/AUDIT-OBSERVATION.md).
