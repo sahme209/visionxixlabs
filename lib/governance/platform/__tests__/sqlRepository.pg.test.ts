@@ -5,7 +5,7 @@ import {afterAll,beforeAll,it,expect} from 'vitest';
 import {createDatabaseClient} from '@/lib/database/createDatabaseClient';
 import {createPlatformSqlRepository,type PlatformSqlDatabase} from '../sqlRepository';
 import {createPlatformActionService,type PlatformRepository} from '../actionStore';
-import {compilePlatformPlan,readPlatformAction} from '../kernel';
+import {compilePlatformPlan,readPlatformAction,createPlatformAction} from '../kernel';
 const enabled=!!process.env.AXIOM_PLATFORM_PG_ROOT;
 let db:ReturnType<typeof createDatabaseClient>;
 beforeAll(()=>{if(enabled)db=createDatabaseClient(process.env.DATABASE_URL)});
@@ -882,4 +882,10 @@ it.skipIf(!enabled)('persists exact custodian control metadata but refuses gener
  const state=await s.inspect(id,actor);expect(state).toMatchObject({status:'proposed',attemptCount:0,version:0,plan:{sourceDigest:control.digest}});
  const effects=await db.$queryRawUnsafe('SELECT status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',id);expect(effects).toEqual([]);
  const events=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(events).toHaveLength(1);
+});
+
+it.skipIf(!enabled)('refuses unsupported drain manifest persistence atomically instead of discarding control evidence',async()=>{
+ const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),control=compileCustodianDrainPlan({format:1,scope:'platform',operation:'begin',custodian:{accountId:'123456789012',roleArn:'arn:aws:iam::123456789012:role/private'},issuerProfileDigest:d,sourceEvidenceDigest:d,predecessorAdmissionDigest:d,expectedGeneration:0,expectedVersion:null,expiresAt:new Date(Date.now()+60000).toISOString()}),p=compileCustodianDrainPlatformPlan(control),id='platform_action_99999999-9999-4999-8999-999999999999';
+ await expect(repo.transaction(async tx=>{await tx.lock(id);const state=createPlatformAction(p,actor,await tx.now());await tx.insert(id,state);await tx.event({actionId:id,kind:'proposed',state,custodianControl:control})})).rejects.toThrow();
+ expect(await db.$queryRawUnsafe('SELECT id FROM "PlatformGovernanceAction" WHERE id=$1',id)).toEqual([]);expect(await db.$queryRawUnsafe('SELECT id FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id)).toEqual([]);
 });

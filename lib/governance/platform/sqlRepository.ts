@@ -89,6 +89,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
    async replace(id,version,raw){check(id);const state=readPlatformAction(raw);if(state.version!==version+1)fail();
     const count=await sql.$executeRawUnsafe('UPDATE "PlatformGovernanceAction" SET "stateJson"=$1::jsonb,version=$2,"updatedAt"=clock_timestamp() WHERE id=$3 AND version=$4 AND "planDigest"=$5',JSON.stringify(state),state.version,id,version,state.plan.digest);if(count!==1)fail()},
    async event(event){check(event.actionId);readPlatformAction(event.state);
+    if(event.custodianControl!==undefined)fail(); // Dedicated drain persistence is not mounted yet; never discard its manifest.
     const sequence=await sql.$queryRawUnsafe<Array<{next:number}>>('SELECT COALESCE(max(sequence),-1)+1 AS next FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',event.actionId);
     if(sequence.length!==1||!Number.isSafeInteger(sequence[0].next)||sequence[0].next<0||sequence[0].next>1000)fail();
     if(event.operationalDigest!==undefined)digest.parse(event.operationalDigest);
