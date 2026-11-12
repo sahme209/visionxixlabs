@@ -692,3 +692,16 @@ Two behavioral REDs reproduced silent in-place token replacement before hashing 
 Next: custodian panels and composed request/review/closure/history workflow, then actual supplier/fleet/default/legacy/all-family qualification and whole-branch final validation/one independent review/green PR. Full P01/Governance remains incomplete; activation unavailable. No production, schema/pin/dependency, real credentials/provider/IAM/service, deployment or spending change.
 
 15internal demo contract checks PASS after the client wording update. No active tests/builds/owned PostgreSQL remain.
+
+
+### Dedicated issuer-control panels and prepared workflow routing — local only
+
+Explicit-load control and history panels now join the verified custodian client inside the existing unregistered platform workflow. Proposed controls allow only another authorized person to record a genuine decision; approved controls allow only the original requester to apply once. Current capability hints, expiry, exact action/plan acknowledgements and account/client/primitive token context are checked. No automatic preview, approval, execution, observation or retry occurs. Any submitted decision remains held across preview reload; recorded approval never implies execution.
+
+Original history separates consumed control state from historical credential-closure observations. A current authorized reader may deliberately observe or explicitly refresh once; uncertainty stays held across history reload. Failed reload clears stale evidence. The view states that draining is not credential revocation, closure evidence is not provider-outcome reconciliation, and historical summaries are not current source qualification or permission to resume. Consumed controls never render generic execution controls. No shipping mount or new default supplier exists.
+
+Missing-panel and missing-workflow-routing REDs preceded implementation. Initial combined mocked React panel/workflow27checks PASS; expanded panel negatives9checks PASS (overlap with initial6), including self-review, reviewer execution refusal, requester capability removal, substituted acknowledgement, silent token change, unknown attempt reload and failed-history reload. Root types and desktop frontend types/build PASS before the final3test-only additions. Existing chunk-size and shell dynamic/static-import warnings persist. This unit changes no server/SQL path; previous107actual SQL evidence remains preserved without a duplicate database run. No native rendering/visual/accessibility/live acceptance is claimed.
+
+Next: original-reference preparation and composed control/history recovery flow, actual qualified source/custody/fleet/default/legacy coverage, remaining family work and whole-branch validation/one independent review/green PR. Full P01/Governance remains incomplete and activation unavailable. No schema/pin, native/sign/install, credential/provider/service/IAM, production deployment or spending changed.
+
+15internal demo checks PASS after panel wording update. No active tests/builds/owned PostgreSQL remain.

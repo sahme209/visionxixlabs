@@ -955,3 +955,8 @@ Next: strict desktop client with exact digest/account/revision checks and lost-a
 ### November12 — prepared custodian client verified locally
 
 Exact browser digest/account-bound review and separate control execution/history/closure clients pass focused checks, root/desktop types/build and107actual isolated SQL cases (source/native qualification simulated; server stopped). No mounted panel, native acceptance, actual custody/fleet qualification or P01 completion. See [current source evidence](../recovery/2026-11-12/platform-governance-scope/CURRENT.md). Next: panels/composed workflow, then remaining qualification and final batch validation.
+
+
+### November12 — local issuer-control workflow panels
+
+Dedicated prepared review/execution/history panels now route saved custodian controls away from generic actions. Personal review, original requester execution and explicit closure observation stay separate; uncertain submissions remain held across reload. Mocked UI checks/types/frontend build pass; no native visual, actual custody/fleet/default or full P01 acceptance. See [current evidence](../recovery/2026-11-12/platform-governance-scope/CURRENT.md). Original-reference preparation/composed recovery and remaining qualification remain.
