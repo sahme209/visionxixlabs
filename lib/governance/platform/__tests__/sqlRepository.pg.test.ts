@@ -152,12 +152,12 @@ async function postFixture(schedule=false,scheduleDelay=30000,serverPrepared=fal
  const connection=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:fixture',accessToken:encryptCredential('synthetic-linkedin-token'),scopes:'w_member_social',expiresAt:new Date(Date.now()+60000),status:'connected'},select:POST_CONNECTION_SELECT});
  const draft=await defaultPrisma.linkedInPostDraft.create({data:{title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),scheduledFor=new Date(Date.now()+scheduleDelay),effect=schedule?preparePlatformLinkedInSchedule(draft,connection,'202605',Date.now(),scheduledFor).effect:preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(connection.expiresAt.getTime(),Date.now()+30000)).toISOString(),effects:[effect]},request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),prepared=serverPrepared?await requester.prepareGrowth({operation:schedule?'schedule':'publish',draftId:draft.id,connectionId:connection.id,expiresAt:raw.expiresAt,...(schedule?{scheduledFor:scheduledFor.toISOString()}:{})}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
- const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});if(serverPrepared)expect((await independent.previewGrowth(id)).renderedPost).toBe(prepared?.preview.renderedPost);await independent.review(id,0,saved.plan.digest);
+ const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});if(serverPrepared)expect((await independent.previewGrowth(id)).renderedPost).toBe(prepared?.preview?.renderedPost);await independent.review(id,0,saved.plan.digest);
  return {draft,connection,scheduledFor,effect,id,requester,request,prepared,binding:claimExecution?await createDefaultPlatformExecution(request,id,1):undefined};
 }
 it.skipIf(!enabled)('joins actual default post source, credential crypto, human review and SQL ledger with simulated HTTP',async()=>{
  try{
-  const f=await postFixture(false,30000,true),http=vi.fn(async()=>new Response('',{status:201,headers:{'x-restli-id':'urn:li:share:123'}}));expect(f.prepared?.preview.renderedPost).toContain('Hook');expect(f.prepared?.preview.sourceDigest).not.toBe(d);vi.stubGlobal('fetch',http);
+  const f=await postFixture(false,30000,true),http=vi.fn(async()=>new Response('',{status:201,headers:{'x-restli-id':'urn:li:share:123'}}));expect(f.prepared?.preview?.renderedPost).toContain('Hook');expect(f.prepared?.preview?.sourceDigest).not.toBe(d);vi.stubGlobal('fetch',http);
   expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'untrusted-hint'})).toMatchObject({kind:'success',urn:'urn:li:share:123',recordingConfirmed:true});expect(http).toHaveBeenCalledTimes(1);
   const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'published',linkedinPostUrn:'urn:li:share:123'});
   const runs=await defaultPrisma.linkedInPostPublishRun.findMany({where:{draftId:f.draft.id}});expect(runs).toHaveLength(1);expect(runs[0].triggeredBy).toBe('user:requester');
@@ -303,4 +303,22 @@ it.skipIf(!enabled)('default execution HTTP deletes only the reviewed recorded p
  try{const f=await deletionFixture(),a=await f.approved(true,false),saved=await f.requester.inspect(a.id),http=vi.fn(async()=>new Response(null,{status:204}));vi.stubGlobal('fetch',http);
   expect((await createPlatformExecutionHttp()(executionRequest(a.id,saved.plan.digest))).status).toBe(200);expect(http).toHaveBeenCalledTimes(1);expect(await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}})).toMatchObject({status:'published',linkedinPostUrn:f.effect.target.postUrn});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('concurrent actual preparation references create one proposal/event and a read-only recoverable reference',async()=>{
+ try{
+  const f=await postFixture(false,30000,false,false),requestId=randomUUID(),selection={operation:'publish',draftId:f.draft.id,connectionId:f.connection.id,expiresAt:new Date(Date.now()+20000).toISOString()},results=await Promise.all([f.requester.prepareGrowth(selection,requestId),f.requester.prepareGrowth(selection,requestId)]);
+  expect(results[0].actionId).toBe(results[1].actionId);expect(results.map(r=>r.historical).sort()).toEqual([false,true]);
+  const counts=await db.$queryRawUnsafe<Array<{count:bigint}>>('SELECT count(*) AS count FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',results[0].actionId);expect(Number(counts[0].count)).toBe(1);
+  expect(await f.requester.lookupGrowthPreparation(requestId)).toEqual({found:true,actionId:results[0].actionId,authority:'history_only'});
+  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});expect(await independent.lookupGrowthPreparation(requestId)).toEqual({found:false,authority:'history_only'});
+ }finally{vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('preparation replay cannot renew a consumed unknown or substitute changed source/deadline',async()=>{
+ try{
+  const f=await postFixture(false,30000,false,false),requestId=randomUUID(),selection={operation:'publish',draftId:f.draft.id,connectionId:f.connection.id,expiresAt:new Date(Date.now()+20000).toISOString()},prepared=await f.requester.prepareGrowth(selection,requestId),saved=await f.requester.inspect(prepared.actionId),independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});
+  await independent.review(prepared.actionId,0,saved.plan.digest);await f.requester.claim(prepared.actionId,1);const child=await f.requester.claimNextEffect(prepared.actionId);await f.requester.observeEffect(child.proof,'unknown');const original=await f.requester.inspect(prepared.actionId);
+  await defaultPrisma.linkedInPostDraft.update({where:{id:f.draft.id},data:{body:'changed after unknown original'}});
+  const recovered=await f.requester.prepareGrowth(selection,requestId);expect(recovered).toMatchObject({actionId:prepared.actionId,historical:true,authority:'proposal_reference_only'});expect(recovered.preview).toBeUndefined();expect(await f.requester.inspect(prepared.actionId)).toEqual(original);
+  await expect(f.requester.prepareGrowth({...selection,expiresAt:new Date(Date.now()+10000).toISOString()},requestId)).rejects.toThrow();
+ }finally{vi.unstubAllEnvs()}
 });

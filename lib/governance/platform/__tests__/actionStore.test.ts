@@ -1,16 +1,16 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,vi,afterEach} from 'vitest';
 import {createPlatformActionService,type PlatformRepository,type PlatformTransaction} from '../actionStore';
 import {compilePlatformPlan} from '../kernel';
 import type {PlatformAction} from '../contracts';
 const requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'},d='a'.repeat(64);
 const at=Date.parse('2026-11-12T00:00:00Z');
 const plan=()=>compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'one',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}},{id:'two',kind:'settings.vercel',target:{projectId:'other',settingsDigest:d}}]});
-function fixture(){
+function fixture(growthSource?:unknown){
  let rows=new Map<string,PlatformAction>(),events:unknown[]=[],effects=new Map<string,unknown>(),publications=new Map<string,string>(),queue=Promise.resolve(),now=at,failEvent=false;
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
   const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects),nextPublications=new Map(publications);
-  const tx:PlatformTransaction={readGrowthPostingSource:async()=>null,readSessionPrincipal:async()=>null,readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
+  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
@@ -103,4 +103,12 @@ it('does not grant another action the same native draft after an unknown publica
  const first=await f.service.claimNextEffect(ids[0],requester);await f.service.beforeEffectSend(first.proof,first.effect,requester);await f.service.observeEffect(first.proof,'unknown');
  const next=await f.service.claimNextEffect(ids[1],requester);await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
  expect(f.rows().get(ids[0])?.status).toBe('unknown');await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
+});
+
+afterEach(()=>vi.unstubAllEnvs());
+it('the same authenticated preparation reference returns the original record without renewing or reading changed source',async()=>{
+ vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');const source={draft:{id:'draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(at-1000)},connection:{id:'connection',linkedinUrn:'urn:li:person:author',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(at+60000),updatedAt:new Date(at-1000)}},f=fixture(source),selection={operation:'publish',draftId:'draft',connectionId:'connection',expiresAt:new Date(at+30000).toISOString()},nonce='11111111-1111-4111-8111-111111111111';
+ const original=await f.service.prepareGrowth(selection,requester,nonce);source.draft.body='changed';const repeated=await f.service.prepareGrowth(selection,requester,nonce);expect(repeated.actionId).toBe(original.actionId);expect(repeated).toMatchObject({historical:true});expect(repeated.preview).toBeUndefined();expect(f.rows().size).toBe(1);expect(f.events()).toHaveLength(1);
+ await expect(f.service.prepareGrowth({...selection,expiresAt:new Date(at+40000).toISOString()},requester,nonce)).rejects.toThrow();
+ expect(await f.service.lookupGrowthPreparation(nonce,requester)).toMatchObject({found:true,actionId:original.actionId,authority:'history_only'});expect(await f.service.lookupGrowthPreparation(nonce,reviewer)).toMatchObject({found:false,authority:'history_only'});
 });

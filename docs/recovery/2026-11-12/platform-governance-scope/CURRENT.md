@@ -6,6 +6,8 @@ Current independent work: finish the supported proposal/review/original-requeste
 
 Latest local unit: separate requester confirmation panel and read-only shared target/source presentation;16focused checks and final root/desktop types pass. No native/customer registration or visual acceptance. Reviewer approval remains a different panel/client; unknown/consumed execution has inspection, not another send.
 
+Latest proposal-recovery unit: same verified requester/session + request UUID yields one durable save/reference, even concurrently. Replay returns only original historical ID, with no source refresh/expiry renewal/review/claim; changed selectors refuse. Read-only lookup creates no records.22focused checks/root types and29actual isolated PG cases pass (stopped). Future public prepare must require the reference; cross-session history directory remains required, never expired-session authority reuse.
+
 ## Accumulated unit checkpoints (historical; preserve their scopes)
 
 Local branch `codex/platform-governance-scope`, publisher sourcec3551371 plus the reviewed conditional-recording correction. Root strict types pass;62focused deployment/effect/kernel checks and24focused template/signing/quick-create checks pass. Independent review confirms the late-proof, deployment-environment and grant-expiry corrections with no remaining findings in those reviewed units. Eleven real isolated PostgreSQL tests passed before the narrow grant-expiry correction, with synthetic tokens/accounts and simulated HTTP/SDK I/O; preserved receipts distinguish that scope. No active database or build.

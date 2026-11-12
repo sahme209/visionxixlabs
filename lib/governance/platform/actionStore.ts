@@ -1,4 +1,5 @@
 import 'server-only';
+import {preparationActionReference,canonicalGrowthSelection,matchesPreparationSelection} from './preparationReference';
 import {prepareGrowthPlatformPlan} from './growthPreparation';
 import {platformInspectionSchema,platformGrowthPreviewSchema} from './viewContract';
 import {randomUUID} from 'node:crypto';
@@ -71,16 +72,34 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     return platformGrowthPreviewSchema.parse({actionId:id,planDigest:state.plan.digest,...prepared.preview,authority:'review_preview_only'});
    });
   },
-  async prepareGrowth(raw:unknown,principal:PlatformPrincipal){
-   const actor=platformPrincipalSchema.parse(principal),id='platform_action_'+randomUUID();
+  async lookupGrowthPreparation(requestId:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(requestId,actor);
+   return repo.transaction(async tx=>{
+    await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
+    if(raw){const state=readPlatformAction(raw);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}
+    await authority.assertCurrent(tx,actor);
+    return raw?{found:true as const,actionId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const};
+   });
+  },
+  async prepareGrowth(raw:unknown,principal:PlatformPrincipal,requestId?:string){
+   const actor=platformPrincipalSchema.parse(principal),selected=canonicalGrowthSelection(raw),id=requestId===undefined?'platform_action_'+randomUUID():preparationActionReference(requestId,actor);
    return repo.transaction(async tx=>{
     await tx.lock(id);await authority.assertCurrent(tx,actor);
-    const prepared=await prepareGrowthPlatformPlan(tx,raw,await tx.now());
+    const existing=await tx.read(id);
+    if(existing){
+     const original=readPlatformAction(existing);
+     if(requestId===undefined||original.requester.userId!==actor.userId||original.requester.sessionId!==actor.sessionId||!matchesPreparationSelection(original.plan,selected))fail();
+     await authority.assertCurrent(tx,actor);
+     // Return correlation only: no source refresh, new preview, window renewal,
+     // review, claim or execution authority is created by replaying a save.
+     return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const};
+    }
+    const prepared=await prepareGrowthPlatformPlan(tx,selected,await tx.now());
     const state=createPlatformAction(prepared.plan,actor,await tx.now());
     if(!authority.assertEffectCurrent)fail();
     await authority.assertEffectCurrent!(tx,state.plan.effects[0]);
     await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
-    return {actionId:id,preview:prepared.preview};
+    return {actionId:id,preview:prepared.preview,historical:false as const,authority:'proposal_reference_only' as const};
    });
   },
   async propose(plan:PlatformPlan,principal:PlatformPrincipal){
