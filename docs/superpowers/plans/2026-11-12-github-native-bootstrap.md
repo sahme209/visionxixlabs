@@ -48,3 +48,6 @@ Ruling: continue the already selected inline method under the user's explicit im
 - Full source/type validation follows below in the exact receipt; no live qualification or activation claimed.
 
 Local tasks implemented/tested in ad5a7063; complete production-mode build/types passes at that frozen commit, u7d7pwy5. Final whole-branch review remains the established full-batch gate, not a completed review of this branch. No native qualification or activation.
+
+### Task2 completion follow-through: connected preparer
+The compiler/runtime and workflow generator were exercised together in tests but lacked a production source composition function. Under the same approved design, compiledHandoffArtifact.ts now invokes only the fixed CJS compiler, rechecks immutable setup metadata around awaits, forwards exact compilation evidence to the private qualifier and returns the original in-memory artifact. New declaration file types the actual CJS interface.5new RED→GREEN checks and root types pass; no new authority mechanism/default, active route or setup grant is introduced. Source/state receipts remain separate from prior full compilation.
