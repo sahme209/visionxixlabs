@@ -322,3 +322,28 @@ it.skipIf(!enabled)('preparation replay cannot renew a consumed unknown or subst
   await expect(f.requester.prepareGrowth({...selection,expiresAt:new Date(Date.now()+10000).toISOString()},requestId)).rejects.toThrow();
  }finally{vi.unstubAllEnvs()}
 });
+
+import {createPlatformPreparationHttp} from '../preparationHttp';
+import {createPlatformReviewHttp} from '../reviewHttp';
+import {createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
+it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source review, requester execution and SQL history',async()=>{
+ try{
+  const f=await postFixture(false,30000,false,false),prepare=createPlatformPreparationHttp(),review=createPlatformReviewHttp(),execute=createPlatformExecutionHttp();let providerCalls=0;
+  vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{
+   const url=typeof input==='string'?input:input instanceof URL?input.href:input.url;
+   if(url==='https://fixture.example.test/api/desktop/platform-governance/prepare')return prepare(new Request(url,init));
+   if(url==='https://fixture.example.test/api/desktop/platform-governance/review')return review(new Request(url,init));
+   if(url==='https://fixture.example.test/api/desktop/platform-governance/execute')return execute(new Request(url,init));
+   if(url==='https://api.linkedin.com/rest/posts'&&init?.method==='POST'){providerCalls++;return new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:composed-fixture'}})}
+   throw Error('unexpected_simulated_destination');
+  }));
+  function context(sessionId:string){const config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(sessionId)};return {getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}}
+  const owner=context(actor.sessionId),other=context(reviewer.sessionId),proposal=createPlatformPreparationClient(owner),ownerReview=createPlatformReviewClient(owner),independent=createPlatformReviewClient(other),requester=createPlatformExecutionClient(owner),nonce=randomUUID();
+  const receipt=await proposal.prepare({operation:'publish',draftId:f.draft.id,connectionId:f.connection.id,expiresAt:new Date(Date.now()+20000).toISOString()},nonce);expect(receipt.ok).toBe(true);if(!receipt.ok)throw Error('synthetic_preparation_failed');
+  const saved=await ownerReview.inspect(receipt.data.actionId);if(!saved.ok)throw Error('synthetic_read_failed');expect(saved.data.status).toBe('proposed');expect((await ownerReview.approve(saved.data)).ok).toBe(false);
+  expect((await independent.preview(saved.data)).ok).toBe(true);const approved=await independent.approve(saved.data);if(!approved.ok)throw Error('synthetic_independent_review_failed');expect(providerCalls).toBe(0);
+  const result=await requester.execute(approved.data);expect(result.ok).toBe(true);if(!result.ok)throw Error('synthetic_execution_failed');expect(result.data).toMatchObject({status:'confirmed',attemptCount:1,requesterUserId:'requester',reviewerUserId:'reviewer'});
+  expect((await requester.execute(approved.data)).ok).toBe(false);expect(providerCalls).toBe(1);
+  const lookup=await proposal.lookup(nonce);expect(lookup).toMatchObject({ok:true,data:{found:true,actionId:receipt.data.actionId,authority:'history_only'}});expect(await f.requester.inspect(receipt.data.actionId)).toMatchObject({status:'confirmed',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});

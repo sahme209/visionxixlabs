@@ -1,3 +1,4 @@
+import {platformPreparationCommandSchema,platformPreparationReceiptSchema,platformPreparationLookupSchema,type PlatformPreparationReceipt,type PlatformPreparationLookup} from '../../../lib/governance/platform/preparationContract';
 import {platformActionId,platformInspectionSchema,platformGrowthPreviewSchema,type PlatformInspection,type PlatformGrowthPreview} from '../../../lib/governance/platform/viewContract';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
 type Context=Parameters<typeof releaseOperationPlanRequest>[0];
@@ -39,3 +40,22 @@ export function createPlatformExecutionClient(context:Context){
  };
 }
 export type PlatformExecutionClient=ReturnType<typeof createPlatformExecutionClient>;
+/** Proposal-only client. Callers must retain a request UUID BEFORE sending;
+ * uncertainty is recovered with lookup, never an automatic save retry. */
+export function createPlatformPreparationClient(context:Context){
+ return {
+  prepare(raw:unknown,requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformPreparationReceipt>>{
+   const command=platformPreparationCommandSchema.safeParse({operation:'prepare_growth',requestId,selection:raw});
+   if(!command.success)return Promise.resolve({ok:false,error:'Select exact source fields and keep the original request reference.',outcomeUnconfirmed:false});
+   const selected=command.data;
+   return releaseOperationPlanRequest(context,'POST','/api/desktop/platform-governance/prepare',selected,(raw):raw is PlatformPreparationReceipt=>{const parsed=platformPreparationReceiptSchema.safeParse(raw);return parsed.success&&parsed.data.requestId===selected.requestId},signal);
+  },
+  lookup(requestId:string,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformPreparationLookup>>{
+   const command=platformPreparationCommandSchema.safeParse({operation:'lookup_preparation',requestId});
+   if(!command.success)return Promise.resolve({ok:false,error:'Keep the original request reference for read-only lookup.',outcomeUnconfirmed:false});
+   const selected=command.data;
+   return releaseOperationPlanRequest(context,'POST','/api/desktop/platform-governance/prepare',selected,(raw):raw is PlatformPreparationLookup=>{const parsed=platformPreparationLookupSchema.safeParse(raw);return parsed.success&&parsed.data.requestId===selected.requestId},signal);
+  },
+ };
+}
+export type PlatformPreparationClient=ReturnType<typeof createPlatformPreparationClient>;

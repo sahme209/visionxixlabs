@@ -6,12 +6,8 @@ import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule,currentLinke
 import {preparePlatformLinkedInDeletion} from '@/lib/growth/linkedin/platformDeletionPlan';
 import {compilePlatformPlan} from './kernel';
 import type {PlatformTransaction} from './actionStore';
-const identity=z.string().min(1).max(256),common={draftId:identity,connectionId:identity,expiresAt:z.string().datetime()};
-export const growthPreparationSelection=z.discriminatedUnion('operation',[
- z.object({operation:z.literal('publish'),...common}).strict(),
- z.object({operation:z.literal('schedule'),...common,scheduledFor:z.string().datetime()}).strict(),
- z.object({operation:z.literal('delete'),...common}).strict(),
-]);
+import {growthPreparationSelection} from './preparationContract';
+export {growthPreparationSelection} from './preparationContract';
 const fail=():never=>{throw Error('platform_growth_preparation_unavailable')};
 /** Derives data-source identity, not native runtime/issuer qualification.
  * No stored/decrypted credential enters the plan, digest or preview. */

@@ -1,8 +1,7 @@
-import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {platformPrincipalSchema,type PlatformPrincipal,type PlatformPlan} from './contracts';
-import {growthPreparationSelection} from './growthPreparation';
-export const platformPreparationRequestId=z.string().uuid();
+import {growthPreparationSelection,platformPreparationRequestId} from './preparationContract';
+export {platformPreparationRequestId} from './preparationContract';
 /** A public correlation reference, NOT a credential or new authority. Only
  * the actual verified principal is supplied by the private request factory. */
 export function preparationActionReference(raw:string,principal:PlatformPrincipal){
