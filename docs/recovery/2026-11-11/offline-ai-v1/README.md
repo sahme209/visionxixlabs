@@ -7,3 +7,11 @@ Task1 supplies a pure installation-mode/operator-data contract: exact absent/fal
 Tests: module absence first, non-implementing stub7fail/2pass, restored9pass; root strict native types pass. Final test includes valid-but-oversized JSON whitespace, not just invalid JSON. These are ordinary pure local tests, not native/real-provider qualification. Endpoint DNS/dial/redirect guards are NOT implemented by this parser. Atomic token ledger, qualified reservation bounds, actual bounded transport, opt-in/current-policy/caller composition, all cloud-egress seams, unpriced audit and full review/acceptance remain required. No runtime caller changed or feature enabled.
 
 No production/schema/settings/flags/provider/grants/spending or deployment changes. Do not reuse or reset historical ServiceNow/native/issuer evidence. Source acceptance and a genuine isolated-network model run remain distinct.
+
+## Token arithmetic checkpoint (Task2 partial)
+
+Added a pure TOKEN-unit liability kernel, deliberately separate from the existing cents ledgers. Current-window settled usage is charged; pending, dispatched, unknown and overrun liabilities survive window/revision changes. Malformed records, unsafe integers and arithmetic overflow refuse rather than understate exposure. Valid overreported usage retains its full liability. Zero is an explicit valid operator cap, never a default allowance.
+
+Observed stub RED: five assertions failed and one negative passed. Implemented GREEN: six arithmetic tests plus the nine configuration tests passed (15 total). Logs: `/private/tmp/axiom-offline-token-red.log` and `/private/tmp/axiom-offline-token-green.log`. This is not a durable ledger, concurrency test, model-bound qualification or mounted request path. Task2 remains open until the real transaction/store and composed database journeys pass; Tasks3–6 also remain required. No schema, dependency, production, provider or network operation changed.
+
+Root `npm run typecheck` also passed for this checkpoint (`/private/tmp/axiom-offline-token-types.log`). Full-suite/build/independent review remain required for the full feature branch; no broad completion is claimed from these focused checks.

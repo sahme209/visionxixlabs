@@ -63,3 +63,5 @@ No byte-to-token heuristic posing as a hard budget; no parsing of config posing 
 Task1 starting from3754c049. The configuration parser is a data contract only; the deliverable remains all six tasks and actual mounted source composition, not just refusals.
 
 Task1: complete locally. Initial module-absence RED, explicit non-implementing stub RED7fail/2pass, restored implementation GREEN9/9. Root native types pass. Configuration parsing is data only; no model-bound qualification, admission, network or runtime composition is claimed. Remaining Task2–6 are required before a feature PR; no guard-only merge.
+
+Task2 partial: pure token-liability arithmetic implemented after stub RED5fail/1pass; configuration+arithmetic GREEN15/15. Unknown/dispatched/reserved holds and overruns survive window changes; malformed/overflow exposure refuses. No durable store/atomic claim/transport or runtime mounting yet. Task2 remains unchecked; this checkpoint is not a standalone feature PR.
