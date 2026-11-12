@@ -2,6 +2,10 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Next real-runtime gap — GitHub bootstrap trust decision
+
+GITHUB-BOOTSTRAP-TRUST-DESIGN-REQUEST.md records the concrete missing supplier: native channel qualification before acquiring a JWT is not the same as authenticating that signed workload afterward. No default implementation/proof exists, and a synthetic qualified port cannot be turned into one. Recommended next bounded design verifies the standard native GitHub channel contract while retaining all later signed identity/current approval/private AWS gates; alternative keeps the stronger native attestation requirement and this path unavailable. Only design plus3official documentation reads are requested, not implementation or live setup. The original local handoff approval remains active for work genuinely inside its established authority boundaries; this newly uncovered trust choice is not silently assumed.
+
 ## Source-only workflow artifact compiler — not a shipping runtime
 
 Added in-memory artifact preparation for one protected standard-runner job, no early job/token grant, exact original action input, fixed same-origin endpoints/audience/profile, pinned existing checkout action with persisted credentials disabled, and a fixed runtime file SHA256. The verified bytes are imported directly from memory, avoiding a hash-then-reopen path swap. No AWS CLI/credential action, automatic rollback, polling/retry, arbitrary caller shell/endpoint or actual workflow installation occurs.5focused checks/root types pass. Full ordinary suite18,604pass/0fail/1,028pending/0failed suites, source unchanged; HANDOFF-WORKFLOW-ARTIFACT-RECEIPT.json records exact scope. Generated shell executes only an owned synthetic test runtime, and rejects changed fixture bytes before import.
