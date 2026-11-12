@@ -35,3 +35,7 @@ it('local recording failure never erases a known provider result or causes anoth
  const b=binding(),http=vi.fn(async(_url:string,_init?:RequestInit)=>new Response('',{status:201,headers:{'x-restli-id':'urn:li:share:123'}}));vi.stubGlobal('fetch',http);m.updateDraft.mockRejectedValue(Error('local_recording_failure'));
  expect(await publishDraft({draftId:'draft',triggeredBy:'operator',connectionId:'connection',platformExecution:b.value})).toMatchObject({kind:'success',urn:'urn:li:share:123',recordingConfirmed:false});expect(http).toHaveBeenCalledTimes(1);expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'confirmed');
 });
+it('zero-row conditional connection bookkeeping is not reported confirmed',async()=>{
+ const b=binding(),http=vi.fn(async()=>new Response('',{status:201,headers:{'x-restli-id':'urn:li:share:123'}}));vi.stubGlobal('fetch',http);m.updateConnection.mockResolvedValue({count:0});
+ expect(await publishDraft({draftId:'draft',triggeredBy:'operator',connectionId:'connection',platformExecution:b.value})).toMatchObject({kind:'success',urn:'urn:li:share:123',recordingConfirmed:false});expect(http).toHaveBeenCalledTimes(1);expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'confirmed');
+});

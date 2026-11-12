@@ -64,7 +64,7 @@ export async function publishDraft(input:PublishInput):Promise<PublishOutcome>{
   // A known remote post remains known even if local bookkeeping fails.
   let recordingConfirmed=true;
   try{const updated=await prisma.linkedInPostDraft.updateMany({where:{id:draftId,updatedAt:draft.updatedAt,status:{in:['approved','scheduled']}},data:{status:'published',publishedAt:new Date(),linkedinPostUrn:receipt.urn}});if(updated.count!==1)recordingConfirmed=false}catch{recordingConfirmed=false}
-  try{await prisma.linkedInAccountConnection.updateMany({where:{id:connectionId,updatedAt:connection.updatedAt,status:'connected'},data:{lastUsedAt:new Date(),lastError:null}})}catch{recordingConfirmed=false}
+  try{const updated=await prisma.linkedInAccountConnection.updateMany({where:{id:connectionId,updatedAt:connection.updatedAt,status:'connected'},data:{lastUsedAt:new Date(),lastError:null}});if(updated.count!==1)recordingConfirmed=false}catch{recordingConfirmed=false}
   const runId=await recordRun(draftId,binding.actor,'success',{httpStatus:receipt.status,linkedinPostUrn:receipt.urn,diagnosticsJson:{platformActionId:binding.actionId}});if(!runId)recordingConfirmed=false;
   try{await writeGrowthAudit({actor:binding.actor,action:'draft.publish_succeeded',targetKind:'linkedin_draft',targetId:draftId,detail:{urn:receipt.urn,platformActionId:binding.actionId,recordingConfirmed}})}catch{/* platform transition is authoritative */}
   return {kind:'success',urn:receipt.urn,runId,recordingConfirmed};
