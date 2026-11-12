@@ -1,0 +1,12 @@
+{
+  "base": "9decdb2891e89d1fa802cf325a45bd1e0c1e568f",
+  "originalAssessmentBriefSha256": "24e359b03ff67adb43b49846c79aa537e32a6fe8e9921c9c8d298c73d12d4438",
+  "originalAssessmentBriefPreservedVerbatim": true,
+  "originalPlanHeadingsRequirementsLinksPreserved": true,
+  "currentStatusOnlyCheckboxChange": {
+    "before": "- [ ] **Planned, not started:** [complete assessment brief](future-technology-deployment-assessment.md).",
+    "after": "- [ ] **Owner-review draft available; adoption and qualification remain open:** [complete assessment brief](future-technology-deployment-assessment.md), [source-backed results](../research/2026-11-11/future-technology-assessment.md)."
+  },
+  "implementationTicketsCreated": false,
+  "productionChanged": false
+}

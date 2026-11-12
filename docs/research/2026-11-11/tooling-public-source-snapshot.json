@@ -1,0 +1,133 @@
+{
+  "scope": "16 public repository metadata/head reads; no clone/install/execution or security qualification",
+  "repositoryHeads": [
+    {
+      "repo": "microsoft/LLMLingua",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "main",
+        "license": "MIT",
+        "name": "microsoft/LLMLingua",
+        "pushedAt": "2026-11-09T16:46:04Z",
+        "url": "https://github.com/microsoft/LLMLingua"
+      },
+      "head": {
+        "committedAt": "2026-11-06T09:36:47Z",
+        "sha": "01b9e9481d7395e1e83a48df4a062b11f6304325",
+        "url": "https://github.com/microsoft/LLMLingua/commit/01b9e9481d7395e1e83a48df4a062b11f6304325"
+      }
+    },
+    {
+      "repo": "openai/tiktoken",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "main",
+        "license": "MIT",
+        "name": "openai/tiktoken",
+        "pushedAt": "2026-11-08T08:48:20Z",
+        "url": "https://github.com/openai/tiktoken"
+      },
+      "head": {
+        "committedAt": "2026-11-08T08:48:19Z",
+        "sha": "79dc2c0533685b893616c78160b5d9e40876e724",
+        "url": "https://github.com/openai/tiktoken/commit/79dc2c0533685b893616c78160b5d9e40876e724"
+      }
+    },
+    {
+      "repo": "tree-sitter/tree-sitter",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "master",
+        "license": "MIT",
+        "name": "tree-sitter/tree-sitter",
+        "pushedAt": "2026-11-11T07:45:18Z",
+        "url": "https://github.com/tree-sitter/tree-sitter"
+      },
+      "head": {
+        "committedAt": "2026-11-11T03:27:02Z",
+        "sha": "8a476cb87443c11e63b23f797af8927c60755e13",
+        "url": "https://github.com/tree-sitter/tree-sitter/commit/8a476cb87443c11e63b23f797af8927c60755e13"
+      }
+    },
+    {
+      "repo": "yamadashy/repomix",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "main",
+        "license": "MIT",
+        "name": "yamadashy/repomix",
+        "pushedAt": "2026-11-08T08:56:26Z",
+        "url": "https://github.com/yamadashy/repomix"
+      },
+      "head": {
+        "committedAt": "2026-11-08T08:54:08Z",
+        "sha": "758c3d716907abff2b902aff0447c347e455a2da",
+        "url": "https://github.com/yamadashy/repomix/commit/758c3d716907abff2b902aff0447c347e455a2da"
+      }
+    },
+    {
+      "repo": "promptfoo/promptfoo",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "main",
+        "license": "MIT",
+        "name": "promptfoo/promptfoo",
+        "pushedAt": "2026-11-11T23:40:37Z",
+        "url": "https://github.com/promptfoo/promptfoo"
+      },
+      "head": {
+        "committedAt": "2026-11-11T23:38:13Z",
+        "sha": "841036f4fde86b4258b9357cba4288c963b3a647",
+        "url": "https://github.com/promptfoo/promptfoo/commit/841036f4fde86b4258b9357cba4288c963b3a647"
+      }
+    },
+    {
+      "repo": "upstash/context7",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "master",
+        "license": "MIT",
+        "name": "upstash/context7",
+        "pushedAt": "2026-11-11T15:17:53Z",
+        "url": "https://github.com/upstash/context7"
+      },
+      "head": {
+        "committedAt": "2026-11-11T13:31:45Z",
+        "sha": "681554c5d3a688c67879d02d4f01d79ffd15df13",
+        "url": "https://github.com/upstash/context7/commit/681554c5d3a688c67879d02d4f01d79ffd15df13"
+      }
+    },
+    {
+      "repo": "langfuse/langfuse",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "main",
+        "license": "NOASSERTION",
+        "name": "langfuse/langfuse",
+        "pushedAt": "2026-11-11T21:31:58Z",
+        "url": "https://github.com/langfuse/langfuse"
+      },
+      "head": {
+        "committedAt": "2026-11-11T19:53:41Z",
+        "sha": "72399b76e245443f9681ea93b77ca850e1edb55b",
+        "url": "https://github.com/langfuse/langfuse/commit/72399b76e245443f9681ea93b77ca850e1edb55b"
+      }
+    },
+    {
+      "repo": "ossf/scorecard",
+      "metadata": {
+        "archived": false,
+        "defaultBranch": "main",
+        "license": "Apache-2.0",
+        "name": "ossf/scorecard",
+        "pushedAt": "2026-11-12T00:25:54Z",
+        "url": "https://github.com/ossf/scorecard"
+      },
+      "head": {
+        "committedAt": "2026-11-12T00:25:51Z",
+        "sha": "4ddc782c70ebba1d65f0dd1b3470f24ed4ea18b1",
+        "url": "https://github.com/ossf/scorecard/commit/4ddc782c70ebba1d65f0dd1b3470f24ed4ea18b1"
+      }
+    }
+  ]
+}
