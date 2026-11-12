@@ -40,3 +40,15 @@ CREATE TABLE "PlatformOperationalWorkloadUse" (
  "manifestDigest" TEXT NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX "PlatformOperationalWorkloadUse_actionId_idx" ON "PlatformOperationalWorkloadUse" ("actionId");
+
+CREATE TABLE "PlatformOperationalTarget" (
+ "nativeKey" TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ generation INTEGER NOT NULL, version INTEGER NOT NULL, "stateJson" JSONB NOT NULL,
+ "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, "updatedAt" TIMESTAMP(3) NOT NULL
+);
+CREATE TABLE "PlatformOperationalTargetReceipt" (
+ id TEXT PRIMARY KEY, "nativeKey" TEXT NOT NULL REFERENCES "PlatformOperationalTarget"("nativeKey") ON DELETE RESTRICT,
+ generation INTEGER NOT NULL, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ "receiptDigest" TEXT NOT NULL, "receiptJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX "PlatformOperationalTargetReceipt_nativeKey_generation_idx" ON "PlatformOperationalTargetReceipt" ("nativeKey",generation);

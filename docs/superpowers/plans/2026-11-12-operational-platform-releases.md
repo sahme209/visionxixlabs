@@ -111,3 +111,6 @@ Task3 identity subunit:32local checks/root types pass. Actual JOSE verifies synt
 
 
 Task3 delegation/credential subunit:72focused checks/root types and44actual isolated SQL journeys pass. Shared actual platform parent records are reused; delegation/events explicitly retain the distinct workload executor and human ECS claim/child paths refuse. Private pending/issued/unknown credential observation never authorizes a provider send. Profiles/source/issuance remain simulated; no default/requester HTTP/native target or actual credential qualification is claimed. Keep Task3 boxes open for remaining reservations/artifacts and complete composition. See OPERATIONAL-DELEGATION-PG-RECEIPT.json.
+
+
+Task3 target subunit:116focused/root types and51actual isolated SQL journeys PASS/stopped. Current physical-service reservation and credential-liability gates join the same workload claim/credential-stage transaction; immutable receipts preserve prior generations and qualified closure references. Actual native/provider/closure suppliers remain unqualified; default sends and settings artifacts still open. No use/approval of the pending generated-site recovery implementation. See OPERATIONAL-TARGET-PG-RECEIPT.json.

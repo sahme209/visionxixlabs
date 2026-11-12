@@ -30,7 +30,7 @@ it.skipIf(!appleSiliconMac)('refuses CLI version or byte drift before an injecte
   expect(run).not.toHaveBeenCalled();
  }finally{fs.rmSync(parent,{recursive:true,force:true})}
 });
-it.skipIf(!appleSiliconMac).each(['PlatformGovernanceEffect','PlatformManualRelease','PlatformManualReleaseEvent','PlatformOperationalDelegation','PlatformOperationalWorkloadUse'])('refuses a compiler output omitting only approved platform table %s',(missing)=>{
+it.skipIf(!appleSiliconMac).each(['PlatformGovernanceEffect','PlatformManualRelease','PlatformManualReleaseEvent','PlatformOperationalDelegation','PlatformOperationalWorkloadUse','PlatformOperationalTarget','PlatformOperationalTargetReceipt'])('refuses a compiler output omitting only approved platform table %s',(missing)=>{
  const parent=fs.mkdtempSync(path.join(os.tmpdir(),'axiom-recipe-platform-coverage-'));
  try{
   const schema=fs.readFileSync('prisma/schema.prisma','utf8'),models=[...schema.matchAll(/^model ([A-Za-z0-9_]+) \{/gm)].map(m=>m[1]),run=vi.fn(()=>({status:0,stdout:models.filter(name=>name!==missing).map(name=>`CREATE TABLE "${name}" (id text);`).join('\n')}));

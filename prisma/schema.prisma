@@ -5166,6 +5166,8 @@ model PlatformGovernanceAction {
   events     PlatformGovernanceEvent[]
   effects    PlatformGovernanceEffect[]
   operationalDelegation PlatformOperationalDelegation?
+  operationalTargets PlatformOperationalTarget[]
+  operationalTargetReceipts PlatformOperationalTargetReceipt[]
   @@index([createdAt, id])
 }
 
@@ -5238,4 +5240,32 @@ model PlatformOperationalWorkloadUse {
   createdAt      DateTime @default(now())
   delegation     PlatformOperationalDelegation @relation(fields: [actionId], references: [actionId], onDelete: Restrict)
   @@index([actionId])
+}
+
+
+/// LOCAL proposed serialized physical ECS service generation, not provider CAS.
+model PlatformOperationalTarget {
+  nativeKey  String @id
+  actionId   String
+  generation Int
+  version    Int
+  stateJson  Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  action     PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  receipts   PlatformOperationalTargetReceipt[]
+}
+
+/// LOCAL proposed immutable metadata; actual native provenance still needs qualification.
+model PlatformOperationalTargetReceipt {
+  id            String @id
+  nativeKey     String
+  generation    Int
+  actionId      String
+  receiptDigest String
+  receiptJson   Json
+  createdAt     DateTime @default(now())
+  target        PlatformOperationalTarget @relation(fields: [nativeKey], references: [nativeKey], onDelete: Restrict)
+  action        PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([nativeKey, generation])
 }

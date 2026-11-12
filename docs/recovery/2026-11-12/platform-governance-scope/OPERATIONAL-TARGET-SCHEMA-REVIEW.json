@@ -1,0 +1,17 @@
+{
+  "baseCommit": "eddcc98e2b7cc268a946b9735109091414a4501c",
+  "previousSchemaSha256": "8cffc6d8ea735a200f0eba6d41188cbd047159ed44cbe2271f9a2ca1541aa752",
+  "reviewedSchemaSha256": "c7fb63180069e5ade1146c3d4a9aab5f65b93480200c440063d826d94092e2e2",
+  "existingModels": 182,
+  "currentModels": 184,
+  "existingChanges": [
+    "PlatformGovernanceAction operationalTargets/operationalTargetReceipts inverse relations only; no existing data column changed"
+  ],
+  "allOtherExistingModelMetadataAndEnumsUnchanged": true,
+  "added": [
+    "PlatformOperationalTarget",
+    "PlatformOperationalTargetReceipt"
+  ],
+  "productionMigration": false,
+  "historicalQualification": false
+}
