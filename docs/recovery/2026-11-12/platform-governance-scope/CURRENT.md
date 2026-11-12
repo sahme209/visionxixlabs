@@ -11,7 +11,7 @@ Active branch: `codex/platform-governance-scope`; all changes remain local/unreg
 
 ## Prepared recovery workflow continuation
 
-Original ECS history now has a strict browser-safe client and optional recovery panel for consumed actions. Reader freshness after the final clock await is rechecked. No source preview, renewed approval, provider read, resend or automatic action occurs. Scoped tests/types/frontend build pass; exact immutable stability-proof history, default supplier qualification, registration and full P01 remain incomplete. See LOCAL-PROGRESS.md for exact scopes.
+Original ECS history now has a strict browser-safe client and optional recovery panel for consumed actions. Reader freshness after the final clock await is rechecked. No source preview, renewed approval, provider read, resend or automatic action occurs. Scoped tests/types/frontend build pass; Exact immutable stability-proof history now joins the original event/receipt and is SQL-tested with synthetic provider evidence; actual source qualification, default supplier qualification, registration and full P01 remain incomplete. See LOCAL-PROGRESS.md for exact scopes.
 
 ## Earlier scoped checkpoints — historical
 

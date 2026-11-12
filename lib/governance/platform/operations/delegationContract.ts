@@ -28,6 +28,7 @@ export function readOperationalDelegation(raw:unknown){
 }
 export type OperationalDelegation=ReturnType<typeof readOperationalDelegation>;
 export interface OperationalDelegationTransaction extends PlatformTransaction,OperationalWorkloadTransaction,OperationalTargetTransaction{
+ readOperationalStabilityEvent?(actionId:string):Promise<unknown|null>;
  readEcsManifest(actionId:string):Promise<unknown>;
  readDelegation(actionId:string):Promise<unknown|null>;
  insertDelegation(actionId:string,state:OperationalDelegation):Promise<void>;
