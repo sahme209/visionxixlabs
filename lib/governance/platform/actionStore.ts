@@ -1,4 +1,5 @@
 import 'server-only';
+import {platformInspectionSchema} from './viewContract';
 import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPlatformAction,readPlatformAction} from './kernel';
@@ -53,7 +54,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     }
     const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();
     await authority.assertCurrent(tx,actor);
-    return {actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only' as const,sourceValidation:'not_checked' as const};
+    return platformInspectionSchema.parse({actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
    });
   },
   async propose(plan:PlatformPlan,principal:PlatformPrincipal){

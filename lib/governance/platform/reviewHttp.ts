@@ -20,11 +20,11 @@ export function createPlatformReviewHttp(createService:(request:Request)=>Promis
   let body:z.infer<typeof command>;
   try{const signal=AbortSignal.any([request.signal,AbortSignal.timeout(5000)]);body=command.parse(await readBoundedRequestJson(request,signal,4096))}catch{return reply({ok:false,error:'invalid_platform_review_request'},400)}
   if(body.operation==='inspect'){
-   try{return reply({ok:true,action:await service.inspect(body.actionId)})}catch{return reply({ok:false,error:'platform_history_unavailable'},409)}
+   try{return reply({ok:true,data:await service.inspect(body.actionId)})}catch{return reply({ok:false,error:'platform_history_unavailable'},409)}
   }
   try{
    await service.review(body.actionId,body.expectedVersion,body.planDigest);
-   return reply({ok:true,action:await service.inspect(body.actionId)});
+   return reply({ok:true,data:await service.inspect(body.actionId)});
   }catch{
    // A lost commit/response is not proof no decision was recorded. The client
    // must read the same record, never automatically resubmit the decision.
