@@ -35,7 +35,7 @@ Each needs its own planned PR; Dependabot ignores their major versions until the
 - TypeScript 7 (web + desktop): 7.0.2 native checks merged green in PR #320, with exact 5.9.3 compiler API retained for valid ESLint peers and reviewed tools. Not deployed; this does not remove every older compiler.
 - Tailwind 4.3.5 (web + desktop): merged green in PR #319; source bounds, shared diff and browser dark/light spacing checked. Not deployed or customer-qualified. See `../recovery/2026-11-11/tailwind4-upgrade/README.md`.
 - Prisma 7.10.1: merged green in PR #321 (`54c0f1c5`), including owned SQL/HTTP and website/macOS acceptance. Not deployed; the live target/schema discrepancy and adapter pool/TLS compatibility still block publication. Historical issuer qualification is not renewed. See `../recovery/2026-11-11/prisma7-preflight/MERGED-RESULT.md`.
-- ESLint 10: held at 9 by owner decision November 11; three current plugins reject version 10. No forced peers or disabled rules. Vitest 5 remains planned.
+- ESLint 10: held at 9 by owner decision November 11; three current plugins reject version 10. No forced peers or disabled rules. Vitest 5.1.0 source has since merged green in #322.
 - Next.js 16.4.5: done 2026-11-09. All 20 release-closure files, the three owned-website internals and `writeAppTypeDeclarations.js` are byte-identical to 16.4.2; only `package.json` changed and was re-pinned.
 - AWS SDK: 3.1166.0 merged green in PR #315; ECS model and S3 collector behavior reviewed. Not deployed. Evidence: `docs/recovery/2026-11-11/aws-sdk-upgrade/README.md`.
 - Stripe (any bump; 20.4.1 already moves the pinned API version to `2026-02-25.clover`). Stripe 23: new API version (`2026-10-28.endive`) and non-generic `HttpClient` types; re-review the owned Stripe TEST transport and settlement code.
@@ -209,3 +209,14 @@ Four source-grounded guides now describe Apps and skills, Workspaces, Microsoft 
 ### Workspace-guide candidate validation
 
 Final local full suite17,855passes, existing897skips/one expected failure; root/production/desktop strict types, production build303pages, desktop frontend build and Python36tests pass. Independent source review has no important findings; heading index/corpus are current. Exact citations to each new guide pass independently. Mandatory PR CI/merge and rendered/media/customer acceptance remain separate. No deployment or runtime/authority change.
+
+
+## November 11 — workspace guides merged; assessment drafts for review
+
+Source guides PR #323 merged normally as `9decdb2891e89d1fa802cf325a45bd1e0c1e568f` after every applicable check passed on `29989733`: all Vitest shards, strict types, production/offline build, isolated website and required gate. Design screenshots intentionally skipped by existing branch condition.17,855local tests pass;303static pages. No deployment or rendered/live/media acceptance inferred. Original parent requirements remain open.
+
+Authorized gap-time [technology assessment](../research/2026-11-11/future-technology-assessment.md) covers all eight requested areas and named groups; [tooling assessment](../research/2026-11-11/token-efficiency-assessment.md) provides an existing-source baseline and candidate triage. Findings are owner-review drafts, not new implementation tickets, roadmap expansion, installed dependencies or production authority. Exact source and public repository snapshots retained. No inference, SQL/provider mutation, credentials, native qualification or deployment. Baseline source agreement39/42, not token/cost savings. Offline-AI ADR choices remain requested and unanswered; other owner/live gates remain.
+
+### Offline-AI v1 owner choices accepted November11
+
+The owner accepted the ADR and explicitly chose OpenAI-compatible vLLM/Ollama/LM Studio only; operator-configured workspace token caps with no default (missing/unreadable refuses), operator-only cap changes, and customer-hosted models disabled online. Local implementation is next after the current research PR; no production settings/schema/enablement, real model/provider action or spending is authorized. Historical pending-decision snapshots above are superseded only for these three choices.

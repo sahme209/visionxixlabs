@@ -313,15 +313,15 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 4. **Flaky `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`.**
    - Not reproduced in 60 failed runs.
    - When it fails, capture the `fixed_fixture_scenario_unavailable:<site>` code from the log and fix that race. Do not guess.
-5. **Offline AI (only after the ADR is accepted and the owner answers its 3 questions):**
+5. **Offline AI: ADR accepted and all three v1 choices confirmed November 11. Local implementation is next after the current research PR.** OpenAI-compatible vLLM/Ollama/LM Studio only; operator-set per-workspace caps with no default; missing caps refuse; online customer-hosted disabled. Production/live/spending gates remain.
    - implement the `customer_hosted` governed branch exactly as the ADR says;
    - offline mode excludes the gateway; operator-only endpoint; same redaction and admission; configured output bounds; a token budget instead of a price; an audit record per call;
    - kernel tests first.
-6. **Docs coverage (B4):** four source-grounded guides implemented in the current batch (Apps and skills, Workspaces, MCP documentation tools, Settings and sessions); navigation/count 35, heading index and support corpus updated. Mandatory validation/PR merge pending. Customer screenshots/recordings and comprehensive B4 acceptance remain separate. See `docs/recovery/2026-11-11/workspace-guides/README.md`.
+6. **Docs coverage (B4):** **DONE source batch: PR #323 merged green as `9decdb28`** (Apps and skills, Workspaces, MCP documentation tools, Settings and sessions); navigation/count35, heading index and support corpus updated. Every applicable check passed on exact head `29989733`; not deployed. Customer screenshots/recordings and comprehensive B4 acceptance remain separate. See `docs/recovery/2026-11-11/workspace-guides/README.md`.
 
 ### 10.2 Owner decisions (ask; do not decide)
 - **P01:** should Governance cover Axiom's own deploys, template hosting and growth publishing?
-- **Offline-AI ADR:** which model servers first; default token budget; whether online installs may use customer-hosted models.
+- **Offline-AI ADR: resolved November 11 for local v1 implementation.** Exact choices recorded in the ADR; do not ask again or treat them as production/live authority.
 - **A9 on-prem:** KMS/HSM key custody, offline sign-in, offline licence, and the audit retention default (suggested 400 days).
 - **Earlier holds:**
   - Vercel secret fallbacks;
@@ -361,7 +361,7 @@ Status details live in `docs/product/remaining-work.md` and `docs/product/execut
 
 ## 12. Supplemental future technology assessment — gap-time research only
 
-The owner added `docs/product/future-technology-deployment-assessment.md` on November 11 and clarified “During gaps, without delaying current priorities.” This timing supersedes only the attached original's after-completion timing. Do not interrupt section 10.1, replace unfinished requirements, create a mandatory feature backlog or implement recommendations. Research the full preserved brief against actual source/existing plans during genuine gaps, then present recommendations for owner review. No assessment has started and no additional paid/provider/production authority is granted.
+The owner added `docs/product/future-technology-deployment-assessment.md` on November 11 and clarified “During gaps, without delaying current priorities.” This timing supersedes only the attached original's after-completion timing. Do not interrupt section 10.1, replace unfinished requirements, create a mandatory feature backlog or implement recommendations. Research the full preserved brief against actual source/existing plans during genuine gaps, then present recommendations for owner review. The first source-backed owner-review draft is now prepared at `docs/research/2026-11-11/future-technology-assessment.md`; qualification/adoption remain open, no implementation tickets were created and no additional paid/provider/production authority is granted.
 
 ## 13. Token-efficiency and useful tooling
 

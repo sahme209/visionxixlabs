@@ -1,6 +1,6 @@
 # ADR: Governed AI with customer-hosted models in offline mode (A9.8 decision 10)
 
-Status: **proposed** (2026-11-09). This design must be reviewed and accepted before any code changes the governed AI path. Parent: [A9 orchestrator and on-prem ADR](2026-11-09-a9-orchestrator-and-on-prem.md), row 10.
+Status: **accepted for local v1 implementation** (owner decisions November 11, 2026). Original proposal November 9. No production enablement, provider access, model-server installation or spending is granted by acceptance. Parent: [A9 orchestrator and on-prem ADR](2026-11-09-a9-orchestrator-and-on-prem.md), row 10.
 
 ## Problem
 
@@ -12,7 +12,7 @@ Status: **proposed** (2026-11-09). This design must be reviewed and accepted bef
 
 An air-gapped deployment cannot reach the gateway, so offline mode has no governed AI at all. The existing Ollama/LM Studio providers are not on the governed path and must not become a silent bypass.
 
-## Decision (proposed)
+## Decision (accepted v1)
 
 Add one new governed provider kind, `customer_hosted`. It is a second, separately reviewed branch of the governed call, not a fallback.
 
@@ -22,7 +22,7 @@ Add one new governed provider kind, `customer_hosted`. It is a second, separatel
    - Redirects are refused.
 2. **Mutually exclusive modes.**
    - `AXIOM_OFFLINE_MODE=true` makes `customer_hosted` the only provider the policy can allow. The gateway branch refuses (`workspace_ai_provider_unavailable`), so an offline install can never leak a prompt to the internet.
-   - Online installs cannot select `customer_hosted` unless an operator enables it explicitly.
+   - In v1, online installs cannot select `customer_hosted`; there is no online opt-in exception.
 3. **Same admission sequence.** The workspace keeps the same rules:
    - AI is opt-in, and a disabled policy refuses;
    - only allowed providers and models;
@@ -43,7 +43,7 @@ Add one new governed provider kind, `customer_hosted`. It is a second, separatel
 - Fine-tuning, embeddings or retrieval stores.
 - Any change to the online gateway branch's behaviour or tests.
 
-## Owner decisions needed
+## Original owner questions — resolved below
 
 1. Which model servers to support first: OpenAI-compatible APIs (vLLM, Ollama, LM Studio) only, or also native APIs.
 2. Default per-workspace token budget offline, and who can change it (operator only, or workspace owner within an operator cap).
@@ -59,3 +59,15 @@ Add one new governed provider kind, `customer_hosted`. It is a second, separatel
 - Redaction applied on the new branch (shared test vectors).
 - Independent review of the governed-call diff.
 - A live run against a customer-hosted model in an isolated network (A9.7-style acceptance). Mocks prove only the schema.
+
+## Owner decisions recorded — November 11, 2026
+
+The owner accepted this ADR, then explicitly selected “Use these v1 settings”:
+
+1. OpenAI-compatible APIs for vLLM, Ollama and LM Studio only. Native server-specific APIs are outside v1. This is compatibility scope, not permission to install or operate those servers.
+2. No automatic token allowance. An operator must configure each workspace cap; only the operator may change it. Missing/unreadable caps refuse calls. Implementation must retain durable accounting and explicit budget-window semantics; no invented numeric default.
+3. Customer-hosted models are disabled in online installations. Offline installations cannot use the Gateway. No fallback between them.
+
+The “Owner decisions needed” section above is the preserved original question set, now resolved by these recorded choices. Local implementation/tests may proceed under the handoff sequence. Production settings/schema/enablement, real endpoints/inference, live acceptance and spending retain their separate approval gates.
+
+Here “operator” means the deployment operator configuring the installation, not the workspace role named Operator. No new workspace role or UI permission is granted.

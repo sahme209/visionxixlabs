@@ -1,0 +1,46 @@
+{
+  "format": "axiom.public-retrieval-research/1",
+  "scope": "Frozen public evaluation; no model calls; selected-entry research serialization only",
+  "compilerApi": "5.9.3",
+  "sourceSha256": {
+    "lib/support/__tests__/answerEval.test.ts": "5851d4b7f4948bb20a2fce58efa066e0063d385b8f76c9de8e82656e77dedfef",
+    "lib/support/answerKernel.ts": "de4d7e38ca750a47b54c4d894991f5e26daa909a20543458983749d1d211685a",
+    "lib/support/knowledgeBase.ts": "d271f7fc5b21f857426dc401bd9aebf92b7fcf2f79a1cc23f11d82fcecfe0b8b",
+    "lib/docs/guide-heading-index.json": "9e9cbe91fe1412e8f1e7f48abc0fa87f3016b85dd096a0d68d11b78538a84233",
+    "lib/support/docsCorpus.json": "d3fd959420f0fe8d639c1c9ce233f007f153c5c9beb017e1fd9b7bec305c976e",
+    "lib/support/faqData.ts": "734bf5d9f2ec862f75ca25c0869f03a8bc75f3af92dfb813fb32d4902d0bd069"
+  },
+  "knowledgeEntries": 183,
+  "cases": 42,
+  "matched": 39,
+  "misses": [
+    {
+      "caseIndex": 4,
+      "expected": "fact-ci-gate",
+      "cited": "suggestions"
+    },
+    {
+      "caseIndex": 32,
+      "expected": "page:/docs/gcp-setup",
+      "cited": "suggestions"
+    },
+    {
+      "caseIndex": 34,
+      "expected": "page:/docs/rollback",
+      "cited": "/docs/releaseops"
+    }
+  ],
+  "guarded": 7,
+  "nonGuarded": 35,
+  "topK": 5,
+  "selectedUtf8Bytes": {
+    "min": 772,
+    "p50": 1893,
+    "p95": 3025,
+    "max": 3070
+  },
+  "tokensMeasured": false,
+  "costMeasured": false,
+  "savingsClaimed": false,
+  "productionAcceptance": false
+}

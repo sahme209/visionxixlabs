@@ -2,7 +2,7 @@
 
 ## Current continuation — November 11
 
-Prisma #321 merged green as `54c0f1c5`; Vitest 5.1.0 is the next separate source batch. See [current handoff order](../../CODEX_HANDOFF.md#101-code-you-can-do-one-pr-each-in-this-order) and the final checkpoints below. Production target/schema and adapter compatibility remain unresolved; no deploy, live issuer or Governance activation is authorized by this checkpoint. All original acceptance requirements and evidence below are retained.
+Prisma #321, Vitest #322 and workspace guides #323 have merged green; do not repeat those source batches. Gap-time assessment drafts are prepared for owner review, with no adoption or production authority. See [current handoff order](../../CODEX_HANDOFF.md#101-code-you-can-do-one-pr-each-in-this-order) and the final checkpoints below. Production target/schema and adapter compatibility remain unresolved; no deploy, live issuer or Governance activation is authorized by this checkpoint. All original acceptance requirements and evidence below are retained.
 
 ## November6 — deployment constellation and corrected native checkpoint
 
@@ -873,3 +873,14 @@ Four source-grounded guides now describe Apps and skills, Workspaces, Microsoft 
 ### Workspace-guide candidate validation
 
 Final local full suite17,855passes, existing897skips/one expected failure; root/production/desktop strict types, production build303pages, desktop frontend build and Python36tests pass. Independent source review has no important findings; heading index/corpus are current. Exact citations to each new guide pass independently. Mandatory PR CI/merge and rendered/media/customer acceptance remain separate. No deployment or runtime/authority change.
+
+
+## November 11 — workspace guides merged; assessment drafts for review
+
+Source guides PR #323 merged normally as `9decdb2891e89d1fa802cf325a45bd1e0c1e568f` after every applicable check passed on `29989733`: all Vitest shards, strict types, production/offline build, isolated website and required gate. Design screenshots intentionally skipped by existing branch condition.17,855local tests pass;303static pages. No deployment or rendered/live/media acceptance inferred. Original parent requirements remain open.
+
+Authorized gap-time [technology assessment](../research/2026-11-11/future-technology-assessment.md) covers all eight requested areas and named groups; [tooling assessment](../research/2026-11-11/token-efficiency-assessment.md) provides an existing-source baseline and candidate triage. Findings are owner-review drafts, not new implementation tickets, roadmap expansion, installed dependencies or production authority. Exact source and public repository snapshots retained. No inference, SQL/provider mutation, credentials, native qualification or deployment. Baseline source agreement39/42, not token/cost savings. Offline-AI ADR choices remain requested and unanswered; other owner/live gates remain.
+
+### Offline-AI v1 owner choices accepted November11
+
+The owner accepted the ADR and explicitly chose OpenAI-compatible vLLM/Ollama/LM Studio only; operator-configured workspace token caps with no default (missing/unreadable refuses), operator-only cap changes, and customer-hosted models disabled online. Local implementation is next after the current research PR; no production settings/schema/enablement, real model/provider action or spending is authorized. Historical pending-decision snapshots above are superseded only for these three choices.
