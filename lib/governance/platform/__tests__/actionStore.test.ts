@@ -76,9 +76,22 @@ it('refuses changed targets or final revoked authority and never restores send c
  for(const cause of ['target','reviewer','actor'] as const){
   const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);const one=await f.service.claimNextEffect(id,requester);
   if(cause==='reviewer')f.assertCurrent.mockRejectedValueOnce(Error('revoked'));
-  const changed={...one.effect,target:{...one.effect.target,projectId:'changed'}};
+  const original=one.effect;if(original.kind!=='settings.vercel')throw Error('exact_fixture_effect_required');
+  const changed={...original,target:{...original.target,projectId:'changed'}};
   await expect(f.service.beforeEffectSend(one.proof,cause==='target'?changed:one.effect,cause==='actor'?reviewer:requester)).rejects.toThrow();
   await expect(f.service.beforeEffectSend(one.proof,one.effect,requester)).rejects.toThrow();
   await f.service.observeEffect(one.proof,'unknown');expect(f.rows().get(id)?.status).toBe('unknown');
+ }
+});
+it('cannot grant a final send after concurrent outcome observation consumes its proof',async()=>{
+ for(const outcome of ['unknown','refused'] as const){
+  const f=fixture(),id=await ready(f);await f.service.claim(id,1,requester);const one=await f.service.claimNextEffect(id,requester);
+  let release!:()=>void,entered!:()=>void;const waiting=new Promise<void>(r=>{release=r}),started=new Promise<void>(r=>{entered=r});let first=true;
+  f.assertCurrent.mockImplementation(async()=>{if(first){first=false;entered();await waiting}});
+  const sending=f.service.beforeEffectSend(one.proof,one.effect,requester);await started;
+  // observeEffect consumes synchronously, then waits for the held transaction.
+  const recording=f.service.observeEffect(one.proof,outcome);release();
+  const result=await Promise.allSettled([sending,recording]);expect(result[0].status).toBe('rejected');expect(result[1].status).toBe('fulfilled');
+  expect(f.rows().get(id)?.status).toBe(outcome);await expect(f.service.beforeEffectSend(one.proof,one.effect,requester)).rejects.toThrow();
  }
 });

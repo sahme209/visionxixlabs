@@ -78,6 +78,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await timely(tx,state);
    });
+   if(observations.get(proof)!==binding)fail();
    binding.sendGranted=true;
   },
   async observeEffect(proof:object,outcome:'confirmed'|'refused'|'unknown'){
