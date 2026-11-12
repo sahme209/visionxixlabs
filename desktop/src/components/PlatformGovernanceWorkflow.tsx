@@ -1,3 +1,5 @@
+import {OperationalEcsDelegationPanel} from './OperationalEcsDelegationPanel';
+import type {OperationalDelegationClient} from '../lib/operationalReview';
 import {OperationalEcsReviewPanel} from './OperationalEcsReviewPanel';
 import type {OperationalReviewClient} from '../lib/operationalReview';
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
@@ -12,7 +14,7 @@ import {PlatformReviewPanel} from './PlatformReviewPanel';
 import {PlatformExecutionPanel} from './PlatformExecutionPanel';
 interface Props{
  currentUserId:string;canPrepare:boolean;canApprove:boolean;canExecute:boolean;
- clients:{operational?:OperationalReviewClient;template?:Pick<PlatformTemplateClient,'preview'>&Partial<Pick<PlatformTemplateClient,'prepare'|'lookup'>>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
+ clients:{operationalDelegation?:OperationalDelegationClient;operational?:OperationalReviewClient;template?:Pick<PlatformTemplateClient,'preview'>&Partial<Pick<PlatformTemplateClient,'prepare'|'lookup'>>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
 }
 function sameLineage(previous:PlatformInspection,next:PlatformInspection){
  return next.actionId===previous.actionId&&JSON.stringify(next.plan)===JSON.stringify(previous.plan)&&next.requesterUserId===previous.requesterUserId&&(!previous.reviewerUserId||next.reviewerUserId===previous.reviewerUserId)&&next.version>=previous.version&&(next.version!==previous.version||next.status===previous.status&&JSON.stringify(next.effects)===JSON.stringify(previous.effects));
@@ -21,6 +23,7 @@ function sameLineage(previous:PlatformInspection,next:PlatformInspection){
  * props are presentation hints only; server authority always decides. */
 export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,canExecute,clients}:Props){
  const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision),owner=useRef({revision,config:desktopClient.config,userId:currentUserId}).current;
+ const [delegationKnown,setDelegationKnown]=useState<string|null>(null);
  const [reference,setReference]=useState(''),[action,setAction]=useState<PlatformInspection|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const alive=useRef(true),generation=useRef(0),active=useRef<AbortController|null>(null);
  const owns=()=>alive.current&&owner.revision===desktopClient.getContextRevision()&&owner.config===desktopClient.config&&currentUserId===owner.userId;
@@ -38,7 +41,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   if(!saved.success||!sameLineage(action,saved.data)){setMessage('The response does not match the selected saved action. Inspect the original record.');return}setAction(saved.data);
  }
  const current=revision===owner.revision&&owns(),requester=action?.requesterUserId===currentUserId;
- const first=action?.plan.effects[0],ecsReview=action?.plan.effects.length===1&&first?.kind==='deployment.ecs'&&Boolean(clients.operational),growthSupported=action?.plan.effects.length===1&&Boolean(first&&['growth.post.publish','growth.schedule.change','growth.post.delete'].includes(first.kind)),deploymentReview=action?.plan.effects.length===1&&first?.kind==='deployment.vercel'&&Boolean(first.target.leadId)&&Boolean(first.target.leadRevision)&&Boolean(clients.deployment),templateReview=action?.plan.effects.length===1&&Boolean(first&&(first.kind==='template.bucket.create'||first.kind==='template.object.put'||first.kind==='template.access.grant'))&&Boolean(clients.template);
+ const first=action?.plan.effects[0],ecsDelegation=action?.plan.effects.length===1&&first?.kind==='deployment.ecs'&&Boolean(clients.operationalDelegation),ecsReview=action?.plan.effects.length===1&&first?.kind==='deployment.ecs'&&Boolean(clients.operational),growthSupported=action?.plan.effects.length===1&&Boolean(first&&['growth.post.publish','growth.schedule.change','growth.post.delete'].includes(first.kind)),deploymentReview=action?.plan.effects.length===1&&first?.kind==='deployment.vercel'&&Boolean(first.target.leadId)&&Boolean(first.target.leadRevision)&&Boolean(clients.deployment),templateReview=action?.plan.effects.length===1&&Boolean(first&&(first.kind==='template.bucket.create'||first.kind==='template.object.put'||first.kind==='template.access.grant'))&&Boolean(clients.template);
  function nextStep(){
   if(!action)return 'Prepare an exact proposal or load a saved action. Nothing executes on this screen automatically.';
   if(action.status==='confirmed')return 'The recorded action is confirmed. Inspect its evidence; this record cannot execute again.';
@@ -46,6 +49,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   if(action.status==='refused')return 'The recorded attempt was refused. Inspect its evidence; do not reset or resend it.';
   if(action.expired||Date.now()>=Date.parse(action.plan.expiresAt))return 'This review window has expired. Historical approval does not authorize an action.';
   if(action.status==='proposed'&&!growthSupported&&!deploymentReview&&!templateReview&&!ecsReview)return 'Source review for this operation is not available yet. Its saved history remains inspectable.';
+  if(action.status==='approved'&&requester&&ecsDelegation)return delegationKnown===action.actionId?'Delegation is recorded for the exact run. Workload authentication and qualified execution remain required; nothing starts here.':'Inspect the approved run and explicitly confirm only its delegation. This does not start a workflow or deployment.';
   if(action.status==='approved'&&!growthSupported)return 'Independent decision is recorded. Execution for this operation is not available in this prepared workflow.';
   if(action.status==='proposed')return requester?'Ask another authorized person to inspect this exact source and record an independent decision.':'Load the exact source and record your own independent decision. No operation is executed by approval.';
   return requester?'Inspect the approved source and explicitly confirm one execution. The server rechecks current permissions.':'The original requester must execute separately in the original authorized session. Your approval does not execute it.';
@@ -59,7 +63,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
    <details><summary>Prepare a growth proposal</summary><PlatformPreparationPanel sourceClient={clients.sources} client={clients.preparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>
    <details><summary>Find older saved actions</summary><PlatformHistoryPanel client={clients.history} onSelect={id=>void load(id)}/></details>
    <section className="space-y-3" aria-label="Load saved action"><label>Saved action reference<input value={reference} disabled={busy} onChange={e=>setReference(e.target.value)}/></label><button type="button" className="btn-secondary" disabled={busy} onClick={()=>void load(reference)}>Load this saved record</button></section>
-   {action&&ecsReview&&clients.operational&&['proposed','approved'].includes(action.status)?<OperationalEcsReviewPanel key={action.actionId+':'+action.version} actionId={action.actionId} currentUserId={currentUserId} canApprove={canApprove} client={clients.operational} onRecorded={()=>void load(action.actionId)}/>:action&&(requester&&action.status!=='proposed'&&growthSupported?<PlatformExecutionPanel action={action} currentUserId={currentUserId} canExecute={canExecute} client={clients.execution} onRecorded={recorded}/>:<PlatformReviewPanel templateClient={clients.template} deploymentClient={clients.deployment} action={action} currentUserId={currentUserId} canApprove={canApprove} client={clients.review} onRecorded={recorded}/>)}
+   {action&&ecsDelegation&&clients.operationalDelegation&&requester&&action.status==='approved'?<OperationalEcsDelegationPanel key={action.actionId+':delegation'} actionId={action.actionId} currentUserId={currentUserId} canDelegate={canExecute} client={clients.operationalDelegation} onDelegationKnown={known=>{if(owns())setDelegationKnown(known?action.actionId:null)}}/>:action&&ecsReview&&clients.operational&&['proposed','approved'].includes(action.status)?<OperationalEcsReviewPanel key={action.actionId+':'+action.version} actionId={action.actionId} currentUserId={currentUserId} canApprove={canApprove} client={clients.operational} onRecorded={()=>void load(action.actionId)}/>:action&&(requester&&action.status!=='proposed'&&growthSupported?<PlatformExecutionPanel action={action} currentUserId={currentUserId} canExecute={canExecute} client={clients.execution} onRecorded={recorded}/>:<PlatformReviewPanel templateClient={clients.template} deploymentClient={clients.deployment} action={action} currentUserId={currentUserId} canApprove={canApprove} client={clients.review} onRecorded={recorded}/>)}
   </>}
   <p role="status" aria-live="polite">{busy?'Loading the original saved action…':message}</p>
  </main>;

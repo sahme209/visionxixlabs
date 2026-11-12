@@ -1,5 +1,5 @@
 import {operationalEcsPlanInput} from '../../../lib/governance/platform/operations/ecsPlanInput';
-import {ecsReviewPreview,ecsReviewDecision,type EcsReviewPreview,type EcsReviewDecision} from '../../../lib/governance/platform/operations/ecsReviewContract';
+import {ecsReviewPreview,ecsReviewDecision,ecsDelegationReceipt,type EcsDelegationReceipt,type EcsReviewPreview,type EcsReviewDecision} from '../../../lib/governance/platform/operations/ecsReviewContract';
 import {platformActionId} from '../../../lib/governance/platform/viewContract';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
 type Context=Parameters<typeof releaseOperationPlanRequest>[0];
@@ -29,3 +29,18 @@ export function createOperationalReviewClient(context:Context){return {
  },
 }}
 export type OperationalReviewClient=ReturnType<typeof createOperationalReviewClient>;
+
+/** Separate original-requester confirmation. It delegates only to the already
+ * approved exact run; it never dispatches a workflow or issues credentials. */
+export function createOperationalDelegationClient(context:Context){const reader=createOperationalReviewClient(context);return {
+ preview:reader.preview,
+ async delegate(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<EcsDelegationReceipt>>{
+  const owns=owner(context,signal),parsed=ecsReviewPreview.safeParse(raw);
+  if(!parsed.success||!await exact(parsed.data)||!owns()||parsed.data.status!=='approved'||parsed.data.delegationState!=='not_delegated'||Date.parse(parsed.data.manifest.expiresAt)<=Date.now())return {ok:false,error:'Load the exact approved run before confirming delegation.',outcomeUnconfirmed:false};
+  const saved=parsed.data;
+  return releaseOperationPlanRequest(context,'POST',path,{operation:'delegate',actionId:saved.actionId,expectedVersion:saved.version,planDigest:saved.planDigest},(raw):raw is EcsDelegationReceipt=>{
+   const result=ecsDelegationReceipt.safeParse(raw);return result.success&&result.data.actionId===saved.actionId&&result.data.requesterUserId===saved.requesterUserId&&result.data.reviewerUserId===saved.reviewerUserId&&JSON.stringify(normalize(result.data.manifest))===JSON.stringify(normalize(saved.manifest));
+  },signal);
+ },
+}}
+export type OperationalDelegationClient=ReturnType<typeof createOperationalDelegationClient>;

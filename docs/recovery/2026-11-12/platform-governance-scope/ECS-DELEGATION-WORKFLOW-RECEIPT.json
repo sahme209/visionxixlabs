@@ -1,0 +1,29 @@
+{
+  "scope": "Prepared original-requester delegation client/panel and current stored-state recovery; unregistered",
+  "red": [
+    "missing delegation client/panel",
+    "74actual SQL passed;1failed because reloaded preview omitted existing delegation state"
+  ],
+  "focusedChecks": {
+    "client": 6,
+    "reviewPanel": 6,
+    "delegationPanel": 3,
+    "preparation": 6,
+    "workflow": 14
+  },
+  "rootTypes": "PASS after final lost-reply test strengthening",
+  "desktopTypesFrontendBuild": "PASS; prepared workflow remains unmounted/not native visually accepted",
+  "actualPostgresChecks": 75,
+  "fixture": "/private/tmp/axiom-platform-pg-sp2l1w0k",
+  "fixtureReceiptSha256": "4588b5fc408aac5e40bb67c2ba6550a678c166e1098bb077019fc1933d331dc1",
+  "stopped": "pg_ctl: no server running",
+  "preservedRedFixture": "/private/tmp/axiom-platform-pg-8if0q4q7 (stopped)",
+  "sourceHashes": {
+    "lib/governance/platform/operations/ecsPreparation.ts": "1876d3ca01737f5bc3b8b286c41f3ffc4f56894f9b8b9713c32cdd3fcbeebe81",
+    "lib/governance/platform/operations/ecsReviewContract.ts": "eca54fc0f24627e8ac4ebb78030ef96931773517c6a1ac566ff23d58cc4923d6",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "bb520b42ff099cacf7b2b14dedbc0602fd07e91fe7a78a04a1b2cc073f884145"
+  },
+  "qualification": "Actual paired client/HTTP/HMAC/current SQL and original workload JOSE/STSECS; source/credentials/IAM/native/provider qualification synthetic; native network intercepted",
+  "productionChanged": false,
+  "demoChecks": 15
+}

@@ -1,3 +1,4 @@
+import {readOperationalDelegation} from './delegationContract';
 import {compileOperationalEcsPlan} from './ecsPlan';
 export {compileOperationalEcsPlan} from './ecsPlan';
 import {operationalWorkloadBinding} from './workloadIdentity';
@@ -9,7 +10,7 @@ import {createPlatformAction,readPlatformAction,approvePlatformAction} from '../
 import {operationalEcsManifest} from './contracts';
 import {compileOperationalManifest,readOperationalManifest,type OperationalManifest} from './kernel';
 export type EcsManifest=Extract<OperationalManifest,{kind:'deployment.ecs'}>;
-export type EcsPreparationTransaction=PlatformTransaction&{readEcsManifest(actionId:string):Promise<unknown>};
+export type EcsPreparationTransaction=PlatformTransaction&{readEcsManifest(actionId:string):Promise<unknown>;readDelegation(actionId:string):Promise<unknown|null>};
 export interface EcsPreparationRepository{transaction<T>(fn:(tx:EcsPreparationTransaction)=>Promise<T>):Promise<T>}
 export interface EcsPreparationSource{assertCurrent(tx:EcsPreparationTransaction,manifest:EcsManifest):Promise<void>}
 const fail=():never=>{throw Error('ecs_preparation_unavailable')};
@@ -25,8 +26,10 @@ export function createEcsPreparationStore(repo:EcsPreparationRepository,authorit
  }
  return Object.freeze({async preview(rawId:string,rawActor:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),actor=platformPrincipalSchema.parse(rawActor);return await repo.transaction(async tx=>{
-   await tx.lock(id);const {parent,manifest}=await saved(tx,id,actor);if(!['proposed','approved'].includes(parent.status))return fail();await qualify(tx,parent,manifest,actor);await qualify(tx,parent,manifest,actor);
-   return Object.freeze({actionId:id,planDigest:parent.plan.digest,version:parent.version,status:parent.status,requesterUserId:parent.requester.userId,reviewerUserId:parent.reviewer?.userId??null,manifest,authority:'review_preview_only',executionAuthorized:false});
+   await tx.lock(id);const {parent,manifest}=await saved(tx,id,actor);if(!['proposed','approved'].includes(parent.status))return fail();const rawDelegation=await tx.readDelegation(id);let delegationState:'not_delegated'|'delegated'='not_delegated';
+   if(rawDelegation!==null){const delegation=readOperationalDelegation(rawDelegation);if(parent.status!=='approved'||delegation.status!=='delegated'||delegation.parentPlanDigest!==parent.plan.digest||delegation.manifest.digest!==manifest.digest||delegation.requester.userId!==parent.requester.userId||delegation.requester.sessionId!==parent.requester.sessionId||delegation.reviewer.userId!==parent.reviewer?.userId||delegation.reviewer.sessionId!==parent.reviewer?.sessionId)return fail();delegationState='delegated'}
+   await qualify(tx,parent,manifest,actor);await qualify(tx,parent,manifest,actor);
+   return Object.freeze({actionId:id,delegationState,planDigest:parent.plan.digest,version:parent.version,status:parent.status,requesterUserId:parent.requester.userId,reviewerUserId:parent.reviewer?.userId??null,manifest,authority:'review_preview_only',executionAuthorized:false});
   })}catch{return fail()}
  },async review(rawId:string,version:number,planDigest:string,rawActor:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),actor=platformPrincipalSchema.parse(rawActor);return await repo.transaction(async tx=>{
