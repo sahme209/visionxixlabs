@@ -62,3 +62,12 @@ it("explicit batch cleanup removes multiple stale approvals while preserving a s
 it.each(["service-default","vmc/legacy-route"])("batch cleanup preserves legacy managed route %s without creating v1 approvals",model=>{
  const p={enabled:true,allowedProviders:["vercel_gateway"],modelSelections:{vercel_gateway:model},fallbackOrder:["vercel_gateway"]};expect(removeUnavailableGatewayApprovals(p,[])).toEqual(p);expect(removeUnavailableGatewayApprovals(p,[])?.gatewaySelection).toBeUndefined();expect(toggleApprovedModel(p,"vercel_gateway",model)?.enabled).toBe(false);
 });
+it('retains exact installation mode and rejects malformed mode metadata',()=>{
+ const value={providers:[{provider:'customer_hosted',models:[{id:'local',label:'Local',tier:'balanced'}]}],policy:{enabled:true,allowedProviders:['customer_hosted'],modelSelections:{customer_hosted:'local'},fallbackOrder:['customer_hosted']}};
+ expect(normalizeAiProviderStatus({...value,installationAIMode:'offline'})?.installationAIMode).toBe('offline');
+ expect(normalizeAiProviderStatus({...value,installationAIMode:'invalid'})).toBeNull();
+});
+it('selecting a customer-hosted model never retains a cloud fallback or its approvals',()=>{
+ const next=toggleApprovedModel(gatewayStatus().policy,'customer_hosted','local');
+ expect(next).toEqual({enabled:true,allowedProviders:['customer_hosted'],modelSelections:{customer_hosted:'local'},fallbackOrder:['customer_hosted']});
+});

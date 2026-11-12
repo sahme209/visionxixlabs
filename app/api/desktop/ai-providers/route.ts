@@ -57,7 +57,7 @@ export async function GET(request: NextRequest): Promise<NextResponse> {
   } catch {
     return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
   }
-  return NextResponse.json({ ok: true, data: { policy, providers } });
+  return NextResponse.json({ ok: true, data: { policy, providers, installationAIMode: local.mode } });
 }
 
 export async function PUT(request: NextRequest): Promise<NextResponse> {

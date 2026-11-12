@@ -555,6 +555,7 @@ function PermissionsSection({ identity }: { identity: VerifiedDesktopIdentity })
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
+  customer_hosted: "Customer-hosted · offline",
   openai: "OpenAI GPT",
   anthropic: "Anthropic Claude",
   github_models: "GitHub Models",
@@ -569,6 +570,7 @@ const PROVIDER_LABELS: Record<string, string> = {
 };
 
 function ModelsSection() {
+  const [installationMode, setInstallationMode] = useState<string | undefined>(undefined);
   const [providers, setProviders] = useState<ProviderModels[] | null>(null);
   const [policy, setPolicy] = useState<ModelPolicy | null>(null);
   const [query, setQuery] = useState("");
@@ -586,6 +588,7 @@ function ModelsSection() {
     setLoadError(null);
     setProviders(null);
     setPolicy(null);
+    setInstallationMode(undefined);
     const context = desktopClient.config;
     void desktopClient.aiProviderStatus()
       .then((result) => {
@@ -599,6 +602,7 @@ function ModelsSection() {
           }
           policyContext.current = context;
           setProviders(status.providers);
+          setInstallationMode(status.installationAIMode);
           setPolicy(status.policy);
           setLoadError(null);
         } else {
@@ -687,18 +691,19 @@ function ModelsSection() {
         <label htmlFor="model-search" className="sr-only">Search models</label>
         <input data-help-id="settings.workspace.model-search" id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-hidden placeholder:text-zinc-600 focus:border-white/25" />
         <div className="mt-3 flex gap-2" role="group" aria-label="Model catalog filters">{[false, true].map(approved => <button data-help-id="settings.workspace.model-filter" key={String(approved)} type="button" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px] ${approvedOnly === approved ? "bg-white/10 text-zinc-200" : "text-zinc-500 hover:text-zinc-300"}`}>{approved ? "Approved models" : "All models"}</button>)}</div>
-        <p className="mt-2 text-[11px] text-zinc-600">Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model.</p>
+        <p className="mt-2 text-[11px] text-zinc-600">{installationMode === "offline" ? "The deployment operator manages the local server and token cap. Choose one accepted model; missing or expired verification blocks calls. No cloud fallback." : "Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model."}</p>
       </div>
+      {installationMode === "offline" && policy?.enabled && <div className="flex justify-end border-b border-white/6 px-4 py-3"><button type="button" disabled={Boolean(savingModel)} onClick={() => void saveModelPolicy({enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]}, "customer_hosted:disable")} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Disable workspace AI</button></div>}
       {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/6 p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button data-help-id="settings.workspace.model-remove-unavailable" type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
       {providers === null && loadError === null && <p className="p-4 text-sm text-zinc-500">Checking service-configured models…</p>}
       {loadError !== null && <div role="alert" className="flex items-center justify-between gap-4 p-4 text-sm text-rose-300"><p>{loadError}</p><button data-help-id="settings.workspace.model-retry" type="button" onClick={() => setAttempt((current) => current + 1)} className="shrink-0 text-xs text-zinc-300 underline underline-offset-2">Retry models</button></div>}
-      {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
+      {providers !== null && loadError === null && rows.length === 0 && <p className="p-4 text-sm text-zinc-500">{providers.every((provider) => provider.models.length === 0) ? installationMode === "offline" ? "No accepted local models are available. Ask the deployment operator to review verification and the workspace token budget." : "No service-configured models are available. Ask a workspace administrator to review service setup." : "No configured model matches this search."}</p>}
       {rows.slice(catalogOffset, catalogOffset + 50).map((model) => {
         const enabled = Boolean(policy && isModelApproved(policy, model.provider, model.id));
         const gatewayDefault = model.provider === "vercel_gateway" && policy?.enabled && policy.modelSelections.vercel_gateway === model.id;
         const key = `${model.provider}:${model.id}`;
         return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/5.5 px-4 py-3.5 last:border-b-0">
-          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}{gatewayDefault && <span className="ml-2 text-[10px] text-orange-300">Workspace default</span>}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.managed ? "Service-managed legacy route" : model.tier}</p></div>
+          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}{gatewayDefault && <span className="ml-2 text-[10px] text-orange-300">Workspace default</span>}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.provider === "customer_hosted" ? "Operator-reviewed limits" : model.managed ? "Service-managed legacy route" : model.tier}</p></div>
           <div className="flex shrink-0 items-center gap-3">
             {model.provider === "vercel_gateway" && model.available && enabled && !gatewayDefault && <button data-help-id="settings.workspace.model-make-default" type="button" aria-label={`Make ${model.label} workspace default`} disabled={Boolean(savingModel)} onClick={() => void makeDefault(model.id)} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Make default</button>}
           <button data-help-id="settings.workspace.model-approval-toggle" type="button" role="switch" aria-checked={enabled} aria-label={model.available || model.managed ? `${enabled ? "Disable" : "Enable"} ${model.label}` : `Remove unavailable approval ${model.id}`} disabled={!policy || Boolean(savingModel) || model.provider === "vercel_gateway" && !isConcreteGatewayModelId(model.id) && !enabled} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>

@@ -55,7 +55,7 @@ export async function GET(): Promise<NextResponse> {
       provider === "customer_hosted" ? local.models : provider === "vercel_gateway" ? await loadGatewayModelCatalog()
         : listModels(provider).map(model => ({ id: model.id, label: model.label })),
     ])));
-    return NextResponse.json({ ok: true, data: { policy, availableProviders, availableModels } });
+    return NextResponse.json({ ok: true, data: { policy, availableProviders, availableModels, installationAIMode: local.mode } });
   } catch {
     return NextResponse.json({ ok: false, error: "gateway_model_catalog_unavailable" }, { status: 503 });
   }

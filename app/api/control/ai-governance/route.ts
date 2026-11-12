@@ -85,6 +85,7 @@ export async function GET() {
       availableProviders: providers,
       gatewayModels,
       customerHostedModels: local.models,
+      installationAIMode: local.mode,
       gatewayCatalogLive: providers.includes("vercel_gateway") && gatewayModels !== null,
       agentIdentity: identity.value,
       agentIdentityState: identity.state,

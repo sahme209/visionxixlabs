@@ -11,6 +11,7 @@ export interface AgentModelChoice {
 }
 
 const vendorNames: Record<string, string> = {
+  customer_hosted: "Customer-hosted",
   xai: "xAI",
   spacexai: "xAI",
   openai: "OpenAI",
@@ -52,7 +53,7 @@ export function agentModelChoices(status: AiProviderStatus): AgentModelChoice[] 
         ...(provider === "vercel_gateway" && /(?:^|\/)grok-4\.20-multi-agent(?:$|[-:])/.test(modelId)
           ? { unavailableReason: "This model is unavailable because its output budget cannot be enforced. Choose another approved model; your draft is kept." }
           : {}),
-        ...(provider === "vercel_gateway" && isConcreteGatewayModelId(modelId)
+        ...((provider === "vercel_gateway" && isConcreteGatewayModelId(modelId) || provider === "customer_hosted")
           ? { preferredModel: modelId }
           : {}),
       }];

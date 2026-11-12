@@ -36,3 +36,7 @@ it.each(["xai/grok-4.20-multi-agent", "spacexai/grok-4.20-multi-agent", "spacexa
   expect(agentModelChoices(value).find(option => option.modelId === "xai/grok-4")?.unavailableReason).toBeUndefined();
   expect(JSON.stringify(value)).toBe(before);
 });
+it('binds an offline composer choice to its exact approved local model',()=>{
+ const value=normalizeAiProviderStatus({installationAIMode:'offline',providers:[{provider:'customer_hosted',models:[{id:'team/local:1',label:'Local',tier:'balanced'}]}],policy:{enabled:true,allowedProviders:['customer_hosted'],modelSelections:{customer_hosted:'team/local:1'},fallbackOrder:['customer_hosted']}})!;
+ expect(agentModelChoices(value)).toEqual([expect.objectContaining({provider:'customer_hosted',modelId:'team/local:1',preferredModel:'team/local:1',vendor:'Customer-hosted'})]);
+});

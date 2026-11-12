@@ -1,3 +1,4 @@
+import {isCustomerHostedModelId,readInstallationAIMode} from "@/lib/ai/customerHostedConfig";
 /**
  * POST /api/desktop/agent/conversations/[id]/messages
  *
@@ -131,7 +132,10 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   const message = typeof body?.message === "string" ? body.message.trim() : "";
   const preferredProvider = typeof body?.preferredProvider === "string" ? body.preferredProvider : undefined;
   const preferredModel = body?.preferredModel;
-  if (preferredModel !== undefined && (!isConcreteGatewayModelId(preferredModel) || preferredProvider !== "vercel_gateway")) {
+  const validModelPreference = preferredProvider === "customer_hosted"
+    ? readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE) === "offline" && isCustomerHostedModelId(preferredModel)
+    : preferredProvider === "vercel_gateway" && isConcreteGatewayModelId(preferredModel);
+  if (preferredModel !== undefined && !validModelPreference) {
     return NextResponse.json({ ok: false, error: "invalid_preferred_model" }, { status: 400 });
   }
   if (!message || Buffer.byteLength(message, "utf8") > CONVERSATION_PROMPT_LIMITS.currentRequestBytes) {
