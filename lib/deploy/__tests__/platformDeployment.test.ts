@@ -38,3 +38,13 @@ it('does not confirm a production request when the provider reports a different 
  vi.stubEnv('VERCEL_TOKEN','synthetic-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');const p=preparePlatformVercelDeployment(files,context),b=binding(p.effect),fetch=vi.fn(async()=>new Response(JSON.stringify({id:'dpl_fixture',target:'preview'}),{status:200}));vi.stubGlobal('fetch',fetch);
  await expect(deploySite('vercel',{} as never,{projectName:'fixture',target:'production',effectId:'deployment',platformExecution:b.value})).rejects.toThrow();expect(fetch).toHaveBeenCalledTimes(1);expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'unknown');
 });
+it('preview approval cannot confirm a provider-reported production target',async()=>{
+ vi.stubEnv('VERCEL_TOKEN','synthetic-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');const p=preparePlatformVercelDeployment(files,{...context,target:undefined}),b=binding(p.effect);vi.stubGlobal('fetch',vi.fn(async()=>new Response(JSON.stringify({id:'dpl_fixture',target:'production'}),{status:200})));
+ await expect(deploySite('vercel',{} as never,{projectName:'fixture',effectId:'deployment',platformExecution:b.value})).rejects.toThrow();expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'unknown');
+});
+it('option mutation during the request cannot remove the prepared production target check',async()=>{
+ vi.stubEnv('VERCEL_TOKEN','synthetic-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');const p=preparePlatformVercelDeployment(files,context),b=binding(p.effect);
+ const options:{projectName:string;target?:'production';effectId:string;platformExecution:object}={projectName:'fixture',target:'production',effectId:'deployment',platformExecution:b.value};
+ vi.stubGlobal('fetch',vi.fn(async()=>{delete options.target;return new Response(JSON.stringify({id:'dpl_fixture',target:'preview'}),{status:200})}));
+ await expect(deploySite('vercel',{} as never,options)).rejects.toThrow();expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'unknown');
+});

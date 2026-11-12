@@ -63,6 +63,7 @@ async function deployToVercel(
   if(!options.platformExecution||typeof options.platformExecution!=='object')throw Error('platform_governance_effect_unavailable');
   const teamId=process.env.VERCEL_TEAM_ID??'';
   const prepared=preparePlatformVercelDeployment(files,{projectName:options.projectName,teamId,target:options.target,effectId:options.effectId});
+  const expectedEnvironment=prepared.effect.target.environment;
   const data=await runPlatformEffect(options.platformExecution,prepared.effect,async beforeSend=>{
     const token=process.env.VERCEL_TOKEN||options.credentials?.vercelToken;
     if(!token)throw Error('platform_deployment_credentials_unavailable');
@@ -75,7 +76,7 @@ async function deployToVercel(
     const raw=await readPlatformDeploymentResponse(response);
     if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('platform_deployment_result_unconfirmed');
     const result=raw as {url?:unknown;id?:unknown;readyState?:unknown;state?:unknown;target?:unknown;alias?:unknown};
-    if(typeof result.id!=='string'||!/^dpl_[A-Za-z0-9]+$/.test(result.id)||(options.target==='production'&&result.target!=='production'))throw Error('platform_deployment_result_unconfirmed');
+    if(typeof result.id!=='string'||!/^dpl_[A-Za-z0-9]+$/.test(result.id)||(expectedEnvironment==='production'?result.target!=='production':result.target!==undefined&&result.target!==null&&result.target!=='preview'))throw Error('platform_deployment_result_unconfirmed');
     return {outcome:'confirmed',value:result};
   });
   const rawUrl = typeof data.url === "string" ? data.url : Array.isArray(data.alias) && typeof data.alias[0] === "string" ? data.alias[0] : "";
