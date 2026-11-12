@@ -280,3 +280,5 @@ Prepared canonical bucket creation review now shows exact target metadata with o
 P01 requirement/source audit: platform-governance-scope/COVERAGE-ACCEPTANCE-MATRIX.md records every family and completion gate. New template receipt/reservation/recipient-delivery design is independently builder-checked, not implementation-approved. Source comment correction only; legacy Quick-Create GET still returns review-required without AWS access. Full P01/native/live/PR gates remain.
 
 Platform broad checkpoint80a8dfee:18,179ordinary tests pass/951pending; production build/types/304pages pass with CI8GiB heap and no network/database URL. Evidence: platform-governance-scope/TEMPLATE-BATCH-VALIDATION.json. Pending execution/custody designs, full P01, final review/green PR and owner/native/live requirements are unchanged.
+
+Operational release scope now has an independently builder-checked local design (platform-governance-scope/OPERATIONAL-RELEASE-DESIGN-PROPOSAL.md). Original P01 grant excluded changing these scripts/workflow; local implementation needs a new owner decision. No actual workflow, settings, provider or deployment action is authorized/performed.
