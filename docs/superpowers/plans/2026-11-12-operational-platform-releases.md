@@ -27,7 +27,7 @@
 - Secret artifacts or environment lists are substituted: exact manifest/private envelope/child binding refuses without value/hash leakage (Task1/3/4).
 - Role/source revocation or unknown commit during an await: no output/credential/send capability is restored; old history remains inspectable (Task2/3/4/5).
 
-## Task1 — exact operational manifests and pure eligibility
+## Task 1 — exact operational manifests and pure eligibility
 
 **Files:** create lib/governance/platform/operations/contracts.ts, kernel.ts and __tests__/contracts.test.ts, __tests__/kernel.test.ts.
 
@@ -39,7 +39,7 @@
 - [x] Implement only existing Zod/hash/freeze conventions and bounded closed interfaces; compile immutable metadata, never qualify its source or caller.
 - [x] GREEN focused checks/root types; commit source and scoped evidence.
 
-## Task2 — current-source manual release preparation and notice/history
+## Task 2 — current-source manual release preparation and notice/history
 
 **Files:** operations/releasePreparation.ts, releaseService.ts, proposed local schema/fixture additions as needed, platform current authority/repository composition; tests releaseService.test.ts and owned SQL cases.
 
@@ -50,7 +50,7 @@
 - [ ] Add qualified exact-ID read-only deployment result supplier interface; distinguish accepted/pending/verified READY/owner_attested/unknown, refuse unqualified default.
 - [ ] GREEN synthetic composition and actual fresh owned SQL with no production resources; stop fixture. Update evidence/docs; commit.
 
-## Task3 — exact workload delegation, target liabilities and protected settings artifacts
+## Task 3 — exact workload delegation, target liabilities and protected settings artifacts
 
 **Files:** operations/workloadIdentity.ts, delegation.ts, reservationStore.ts, settingsArtifact.ts; proposed local schema/fixtures; tests for private identity/replay/crypto/SQL.
 
@@ -62,7 +62,7 @@
 - [ ] Implement reservation/receipt/artifact SQL and scoped synthetic encryption without actual key access. Do not depend on pending deployment-recovery implementation without its separate approval; keep that integration refused.
 - [ ] GREEN pure/crypto/actual isolated SQL; stop fixture, preserve all unknown history; commit.
 
-## Task4 — real default effect/legacy entrypoint composition
+## Task 4 — real default effect/legacy entrypoint composition
 
 **Files:** operations/ecsExecution.ts, settingsExecution.ts, sourceProfile.ts, typed observation boundary; `.github/workflows/axiom-deploy-aws-ecs.yml`, scripts/setup-vercel-env.mjs, scripts/setup-oauth.sh; actual default/bypass tests.
 
@@ -75,7 +75,7 @@
 - [ ] Retire unmanaged entrypoints within the connected replacement batch. Preserve unrelated CI/free runners/publication checks; no actual workflow run or provider operation.
 - [ ] GREEN default simulations and owned SQL journeys; record explicitly which real suppliers remain unqualified; commit.
 
-## Task5 — joined operational workflow and honest customer evidence
+## Task 5 — joined operational workflow and honest customer evidence
 
 **Files:** prepared operational HTTP/client/panels, existing platform coordinator, internal demo/docs/remaining-work/current coverage; tests and real in-process client→default HTTP→HMAC/SQL journeys.
 
@@ -85,7 +85,7 @@
 - [ ] Connect prepared transports/panels with escaped source and nonsecret artifacts; unavailable suppliers show truthful remaining steps. Owner attestation never means verified provider READY.
 - [ ] GREEN types/component/transport/owned SQL; internal demo and source-backed docs updated without shipping/activation claims; commit.
 
-## Task6 — complete original P01 audit and one green PR
+## Task 6 — complete original P01 audit and one green PR
 
 - [ ] Audit every spec section and managed/default/operational effect, including remaining other-family approval dependencies; never substitute retirement/fail-closed profiles for completed usable coverage.
 - [ ] Run matching full ordinary tests, root/production/desktop types/builds, actual owned SQL and necessary isolated acceptance; preserve scopes/failures; no passing-check repetition without new changes.
@@ -103,3 +103,8 @@ ManualReleaseStore/SqlRepository/Request composition now implement dedicated imm
 
 
 Task2 continuation: exact private evidence-bundle reconstruction and read-only exact deployment result supplier/inspector are now implemented/tested locally. Current defaults still refuse unavailable real qualification. Actual SQL39journeys include the strict source composition and bounded read-only result path with synthetic qualification/provider receipts. Actual CI/artifact/schema/recovery/smoke suppliers and owner attestation remain unqualified; leave Task2 completion open. See platform-governance-scope/CURRENT.md.
+
+
+Task3 Ruling: Task2's real receipt/profile qualification remains unavailable, while the approved local Task3 identity/delegation implementation depends on Task1's exact metadata rather than a qualified live manual release. Continue independent local Task3 without treating Task2 or P01 as complete; no actual source/provider path is enabled. Headings were normalized to the plan tool's Task N form; no scope changed.
+
+Task3 identity subunit:32local checks/root types pass. Actual JOSE verifies synthetic tokens; current profiles/replay storage remain simulated and no default supplier exists. The three official GitHub documentation reads were approved and consumed; see WORKLOAD-IDENTITY-SOURCE-REVIEW.md. Keep Task3 boxes open until durable delegation, leases, reservations, protected artifacts and actual isolated SQL composition are implemented/validated.

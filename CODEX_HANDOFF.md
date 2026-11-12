@@ -418,3 +418,6 @@ Operational Task2 now has dedicated notice/event SQL and current paired possessi
 
 
 Manual-release evidence continuation: strict private bundle reconstruction and bounded exact deployment observation now join current paired SQL notice/history composition. Successful tests use synthetic qualification/provider receipts; actual source/profile/smoke qualification remains unavailable and defaults refuse. No owner identity, deployment or rollback authority is inferred.39actual isolated PG cases/root types PASS; see platform-governance-scope/MANUAL-RELEASE-EVIDENCE-PG-RECEIPT.json. Full Task2/P01/CI/live/production remain open.
+
+
+Operational workload identity candidate:32local synthetic-signature/identity/replay checks/root types pass; actual JOSE crypto, simulated private profile/replay storage. Three approved public GitHub documentation reads consumed; see WORKLOAD-IDENTITY-SOURCE-REVIEW.md. No default supplier or operational allow path, real key/token, workflow/credential/provider or production action. Exact durable delegation/leases/reservations and full P01 remain incomplete.
