@@ -1,10 +1,11 @@
 import 'server-only';
+import {platformTemplatePreview} from './templateContract';
 import {z} from 'zod';
 import {platformReviewCommandSchema} from './viewContract';
 import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
 import {createDefaultPlatformRequestService} from './requestService';
 const command=platformReviewCommandSchema;
-type Service=Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'inspect'|'previewGrowth'|'review'>;
+type Service=Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'inspect'|'previewGrowth'|'review'>&{previewTemplate?:(id:string)=>Promise<unknown>};
 const reply=(body:unknown,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','x-content-type-options':'nosniff'}});
 /** Prepared default HTTP composition, intentionally NOT registered as a route.
  * No proposal/claim/observation/provider operation is accepted here. Enabling
@@ -16,6 +17,14 @@ export function createPlatformReviewHttp(createService:(request:Request)=>Promis
   try{service=await createService(request)}catch{return reply({ok:false,error:'platform_reader_unavailable'},401)}
   let body:z.infer<typeof command>;
   try{const signal=AbortSignal.any([request.signal,AbortSignal.timeout(5000)]);body=command.parse(await readBoundedRequestJson(request,signal,4096))}catch{return reply({ok:false,error:'invalid_platform_review_request'},400)}
+  if(body.operation==='preview_template'){
+   try{
+    if(!service.previewTemplate)throw Error('unavailable');request.signal.throwIfAborted();
+    const preview=platformTemplatePreview.parse(await service.previewTemplate(body.actionId));
+    if(preview.actionId!==body.actionId)throw Error('mismatch');request.signal.throwIfAborted();
+    return reply({ok:true,data:preview});
+   }catch{return reply({ok:false,error:'platform_source_preview_unavailable'},409)}
+  }
   if(body.operation==='preview'){
    try{return reply({ok:true,data:await service.previewGrowth(body.actionId)})}catch{return reply({ok:false,error:'platform_source_preview_unavailable'},409)}
   }

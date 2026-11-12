@@ -24,6 +24,7 @@ export const platformGrowthPreviewSchema=z.object({actionId:platformActionId,pla
 });
 export type PlatformGrowthPreview=z.infer<typeof platformGrowthPreviewSchema>;
 export const platformReviewCommandSchema=z.discriminatedUnion('operation',[
+ z.object({operation:z.literal('preview_template'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('inspect'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('preview'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('approve'),actionId:platformActionId,expectedVersion:z.number().int().min(0).max(1000),planDigest:digest}).strict(),

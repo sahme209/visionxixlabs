@@ -128,3 +128,14 @@ it('requires a current template source supplier before independent upload or acc
   expect(f.rows().get(id)?.status).toBe('proposed');expect(f.events()).toHaveLength(1);
  }
 });
+it('previews exact template text read-only and refuses changed source, expiry or lost reader authority',async()=>{
+ const {readFileSync}=await import('node:fs'),{createHash}=await import('node:crypto');
+ const yaml=readFileSync('public/aws/axiom-agent-quick-deploy.yaml','utf8'),bytesDigest=createHash('sha256').update(yaml).digest('hex');
+ const make=(hash=bytesDigest)=>compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'upload',kind:'template.object.put',target:{accountId:'123456789012',region:'us-east-2',bucket:'bucket',key:'template.yaml',bytesDigest:hash}}]});
+ const f=fixture(),p=make(),id=await f.service.propose(p,requester);
+ expect(await f.service.previewTemplate(id,reviewer)).toMatchObject({actionId:id,planDigest:p.digest,sourceDigest:d,effectId:'upload',bytesDigest,yaml,authority:'review_preview_only'});
+ expect(f.rows().get(id)?.status).toBe('proposed');expect(f.events()).toHaveLength(1);
+ const wrong=make('f'.repeat(64)),wrongId=await f.service.propose(wrong,requester);await expect(f.service.previewTemplate(wrongId,reviewer)).rejects.toThrow();
+ f.setNow(at+60000);await expect(f.service.previewTemplate(id,reviewer)).rejects.toThrow();f.setNow(at);
+ let calls=0;f.assertCurrent.mockImplementation(async()=>{if(++calls===2)throw Error('revoked')});await expect(f.service.previewTemplate(id,reviewer)).rejects.toThrow();
+});

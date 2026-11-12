@@ -268,3 +268,5 @@ November12 platform broad local validation:18,151ordinary tests pass/949pending;
 Platform local production compilation now passes on9ee99682 with the existing CI8GiB memory setting (304pages), no source/CI change or deployment. Earlier default-heap failure is preserved; evidence in `docs/recovery/2026-11-12/platform-governance-scope/PRODUCTION-COMPILATION.json`. This does not complete P01 or native/live acceptance.
 
 Local template upload/access review now refuses changed/missing current template bytes and missing source supplier.34focused checks/types and36isolated SQL cases pass with simulated provider/source-change evidence; all template workflow/production/live acceptance remains open. Detailed receipts: platform-governance-scope/LOCAL-PROGRESS.md.
+
+Prepared template source review is locally connected through server/paired transport/optional reviewer UI with escaped exact YAML and stale-preview clearing. No template execution, route activation or provider acceptance. Evidence/remaining full-family gates: platform-governance-scope/LOCAL-PROGRESS.md.

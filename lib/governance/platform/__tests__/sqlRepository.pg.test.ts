@@ -120,6 +120,11 @@ async function templateFixture(beforeReview?:(id:string)=>void){
  const bytes=readFileSync('public/aws/axiom-agent-quick-deploy.yaml'),accountId='123456789012',input={accountId,region:'us-east-2',objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600};
  const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(bytes).digest('hex')}),raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw);
  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),id=await requester.propose(raw);
+ const handler=createPlatformReviewHttp(),config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(reviewer.sessionId)};
+ vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{const url=String(input);if(url!=='https://fixture.example.test/api/desktop/platform-governance/review')throw Error('unexpected_external_destination');return handler(new Request(url,init))});
+ const preview=await createPlatformTemplateClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}).preview(await requester.inspect(id));
+ expect(preview.ok).toBe(true);if(!preview.ok)throw Error('template_preview_unavailable');expect(preview.data.yaml).toBe(bytes.toString('utf8'));expect(preview.data.bytesDigest).toBe(effect.target.bytesDigest);
+ const previewEvents=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(previewEvents).toEqual([{kind:'proposed'}]);
  beforeReview?.(id);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
  vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);
@@ -330,7 +335,7 @@ import {createPlatformSourceHttp} from '../sourceHttp';
 import {createPlatformHistoryHttp} from '../historyHttp';
 import {createPlatformPreparationHttp} from '../preparationHttp';
 import {createPlatformReviewHttp} from '../reviewHttp';
-import {createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
+import {createPlatformTemplateClient,createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient} from '../../../../desktop/src/lib/platformReview';
 it.skipIf(!enabled)('joins real desktop transport, prepared HTTP, HMAC, source review, requester execution and SQL history',async()=>{
  try{
   const f=await postFixture(false,30000,false,false),prepare=createPlatformPreparationHttp(),review=createPlatformReviewHttp(),execute=createPlatformExecutionHttp(),history=createPlatformHistoryHttp();let providerCalls=0;

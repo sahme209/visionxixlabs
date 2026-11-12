@@ -1,3 +1,4 @@
+import {platformTemplatePreview,type PlatformTemplatePreview} from '../../../lib/governance/platform/templateContract';
 import {platformDeploymentCommand,platformDeploymentPreview} from '../../../lib/governance/platform/deploymentContract';
 import type {z} from 'zod';
 import {platformSourceCommand,platformSourcePage,type PlatformSourceKind,type PlatformSourcePage} from '../../../lib/governance/platform/sourceCatalog';
@@ -107,3 +108,18 @@ export function createPlatformDeploymentClient(context:Context){
  };
 }
 export type PlatformDeploymentClient=ReturnType<typeof createPlatformDeploymentClient>;
+
+/** Read-only exact fixed-template source; no proposal, approval or execution. */
+export function createPlatformTemplateClient(context:Context){
+ return {preview(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<PlatformTemplatePreview>>{
+  const parsed=platformInspectionSchema.safeParse(raw);
+  if(!parsed.success||!['proposed','approved'].includes(parsed.data.status)||parsed.data.expired||Date.parse(parsed.data.plan.expiresAt)<=Date.now()||parsed.data.plan.effects.length!==1)return Promise.resolve({ok:false,error:'Inspect a supported exact current template action first.',outcomeUnconfirmed:false});
+  const saved=parsed.data,effect=saved.plan.effects[0];
+  if(effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return Promise.resolve({ok:false,error:'Template source preview is unavailable for this operation.',outcomeUnconfirmed:false});
+  return releaseOperationPlanRequest(context,'POST',path,{operation:'preview_template',actionId:saved.actionId},(raw):raw is PlatformTemplatePreview=>{
+   const preview=platformTemplatePreview.safeParse(raw);
+   return preview.success&&preview.data.actionId===saved.actionId&&preview.data.planDigest===saved.plan.digest&&preview.data.sourceDigest===saved.plan.sourceDigest&&preview.data.effectId===effect.id&&preview.data.bytesDigest===effect.target.bytesDigest;
+  },signal);
+ }};
+}
+export type PlatformTemplateClient=ReturnType<typeof createPlatformTemplateClient>;

@@ -1,4 +1,7 @@
 import 'server-only';
+import {createHash} from 'node:crypto';
+import {readPlatformTemplateBytes} from '@/lib/cloud/aws/platformTemplateSource';
+import {platformTemplatePreview} from './templateContract';
 import {prepareDeploymentPlatformPlan,matchesDeploymentSelection} from './deploymentPreparation';
 import {platformDeploymentSelection,platformDeploymentPreview} from './deploymentContract';
 import {platformSourceKind,platformSourceId,projectPlatformSources,type PlatformSourceKind} from './sourceCatalog';
@@ -82,6 +85,18 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();
     await authority.assertCurrent(tx,actor);
     return platformInspectionSchema.parse({actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
+   });
+  },
+  async previewTemplate(id:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal);
+   return locked(id,async(tx,state)=>{
+    await authority.assertCurrent(tx,actor);if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
+    const effect=state.plan.effects[0];if(effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return fail();
+    const bytes=await readPlatformTemplateBytes(),bytesDigest=createHash('sha256').update(bytes).digest('hex');
+    if(bytesDigest!==effect.target.bytesDigest)fail();
+    const yaml=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes);
+    await authority.assertCurrent(tx,actor);await timely(tx,state);
+    return platformTemplatePreview.parse({kind:'template.source',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,bytesDigest,yaml,authority:'review_preview_only'});
    });
   },
   async previewDeployment(id:string,principal:PlatformPrincipal){

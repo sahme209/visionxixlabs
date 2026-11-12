@@ -35,6 +35,7 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
  },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}});
  return Object.freeze({
   actorUserId:principal.userId,
+  async previewTemplate(id:string){assertPossession();return store.previewTemplate(id,principal)},
   async prepareDeployment(raw:unknown,requestId:string){assertPossession();return store.prepareDeployment(raw,principal,requestId)},
   async previewDeployment(id:string){assertPossession();return store.previewDeployment(id,principal)},
   async lookupDeploymentPreparation(requestId:string){assertPossession();return store.lookupDeploymentPreparation(requestId,principal)},

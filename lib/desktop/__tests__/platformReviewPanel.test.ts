@@ -28,3 +28,11 @@ it('missing or mismatched source preview cannot enable independent approval',asy
  render(createElement(PlatformReviewPanel,f.props));expect((screen.getByRole('button',{name:'Record independent approval'}) as HTMLButtonElement).disabled).toBe(true);
  fireEvent.click(screen.getByRole('button',{name:'Load exact source preview'}));await waitFor(()=>expect(screen.getByRole('status').textContent).toContain('does not match'));expect((screen.getByRole('button',{name:'Record independent approval'}) as HTMLButtonElement).disabled).toBe(true);expect(f.client.approve).not.toHaveBeenCalled();
 });
+it('renders template source as escaped text before a separate independent decision',async()=>{
+ const f=fixture(),saved=action();saved.plan.effects=[{id:'template',kind:'template.object.put',target:{accountId:'123456789012',region:'us-east-2',bucket:'bucket',key:'template.yaml',bytesDigest:digest}}];saved.effects=[{id:'template',status:'not_started'}];
+ const yaml='Resources: {}\n# <script>not executable</script>',templateClient={preview:vi.fn(async()=>({ok:true as const,data:{kind:'template.source' as const,actionId:saved.actionId,planDigest:digest,sourceDigest:digest,effectId:'template',bytesDigest:digest,yaml,authority:'review_preview_only' as const}}))};
+ const rendered=render(createElement(PlatformReviewPanel,{...f.props,action:saved,templateClient}));fireEvent.click(screen.getByRole('button',{name:'Load exact source preview'}));
+ await screen.findByText((_content,node)=>node?.tagName==='PRE'&&node.textContent===yaml);expect(rendered.container.querySelector('pre')?.textContent).toBe(yaml);expect(rendered.container.querySelector('script')).toBeNull();expect(f.client.approve).not.toHaveBeenCalled();
+ fireEvent.click(screen.getByRole('checkbox'));expect((screen.getByRole('button',{name:'Record independent approval'}) as HTMLButtonElement).disabled).toBe(false);
+ templateClient.preview.mockRejectedValueOnce(Error('unavailable'));fireEvent.click(screen.getByRole('button',{name:'Load exact source preview'}));await screen.findByText('Exact source preview is unavailable or changed. Approval stays unavailable.');expect((screen.getByRole('button',{name:'Record independent approval'}) as HTMLButtonElement).disabled).toBe(true);expect(rendered.container.querySelector('pre')).toBeNull();
+});
