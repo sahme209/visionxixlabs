@@ -1,0 +1,19 @@
+{
+  "scope": "Atomic fresh native stability to original parent confirmation only; not new execution authority",
+  "red": "73actual SQL tests passed;1failed because native stability left original parent claimed",
+  "focusedChecks": 26,
+  "rootTypes": "PASS",
+  "actualPostgresChecks": 75,
+  "fixture": "/private/tmp/axiom-platform-pg-2a1vw6q4",
+  "fixtureReceiptSha256": "22b61945c8c44bd8bf15b35efc2092212c809d4631a906c7c091f6db758f875a",
+  "stopped": "pg_ctl: no server running",
+  "preservedRedFixture": "/private/tmp/axiom-platform-pg-7b7s7cfy (stopped)",
+  "sourceHashes": {
+    "lib/governance/platform/operations/reservationStore.ts": "d04be2f61f802af9a22fb0315746bc5dd24c159268c8c254cc45e6af97f75f45",
+    "lib/governance/platform/operations/delegation.ts": "cddbc3362514988e8970d12128d82d23addfdae7c63447d74ac1516c7a7f8d24",
+    "lib/governance/platform/sqlRepository.ts": "d79ce5acc30ce441f68a00b160333f7bbf839a5620f8c279c8329ee5f4d6e4ee",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "b44cf95947dab62ccdd79c65e74f138558f23c154d3f6b31a4bdde345156f60c"
+  },
+  "qualification": "Actual SQL/HTTP/HMAC and installed intercepted ECS; native qualification/evidence/profile remain synthetic",
+  "productionChanged": false
+}

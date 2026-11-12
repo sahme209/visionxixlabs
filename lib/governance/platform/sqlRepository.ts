@@ -12,7 +12,7 @@ import 'server-only';
 import {readPlatformDeletionSource} from '@/lib/growth/linkedin/platformDeletionSource';
 import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-import {digest} from './contracts';
+import {digest,platformPrincipalSchema} from './contracts';
 import {operationalEvidenceId} from './operations/contracts';
 import {readOperationalTarget,readOperationalTargetReceipt} from './operations/reservationContract';
 import {readOperationalDelegation,type OperationalDelegationRepository,type OperationalDelegationTransaction} from './operations/delegationContract';
@@ -90,6 +90,12 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     const sequence=await sql.$queryRawUnsafe<Array<{next:number}>>('SELECT COALESCE(max(sequence),-1)+1 AS next FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',event.actionId);
     if(sequence.length!==1||!Number.isSafeInteger(sequence[0].next)||sequence[0].next<0||sequence[0].next>1000)fail();
     if(event.operationalDigest!==undefined)digest.parse(event.operationalDigest);
+    if(event.kind==='workload.stable_observed'){
+     platformPrincipalSchema.shape.userId.parse(event.operationalObserverUserId);operationalEvidenceId.parse(event.operationalStabilityReceiptId);digest.parse(event.operationalCommandReceiptDigest);
+     if(event.state.status!=='confirmed'||event.state.plan.effects.length!==1||event.state.plan.effects[0].kind!=='deployment.ecs')fail();
+     const native=readOperationalTargetReceipt(await tx.readOperationalTargetReceipt(event.operationalStabilityReceiptId!)),original=readOperationalEcsResult(await tx.readOperationalEcsResult(event.actionId));
+     if(native.kind!=='stable'||native.actionId!==event.actionId||native.manifestDigest!==event.state.plan.sourceDigest||original.kind!=='accepted'||original.receiptDigest!==event.operationalCommandReceiptDigest||original.nativeKey!==native.nativeKey||original.generation!==native.generation||original.deploymentId!==('deploymentId' in native.detail?native.detail.deploymentId:null))fail();
+    }else if(event.operationalStabilityReceiptId!==undefined||event.operationalCommandReceiptDigest!==undefined||event.operationalObserverUserId!==undefined)fail();
     const operationalResult=event.operationalResult===undefined?undefined:readOperationalEcsResult(event.operationalResult);
     if(operationalResult){if(event.kind!=='effect.observed'||event.effectIndex!==0||operationalResult.actionId!==event.actionId||operationalResult.manifestDigest!==event.state.plan.sourceDigest||event.outcome!==(operationalResult.kind==='accepted'?'confirmed':'unknown'))fail();const record=readOperationalDelegation(await tx.readDelegation(event.actionId));if(record.credential.status!=='issued'||record.credential.leaseRef!==operationalResult.leaseRef||record.targetReservation?.nativeKey!==operationalResult.nativeKey||record.targetReservation.generation!==operationalResult.generation)fail()}
     const ecsManifest=event.ecsManifest===undefined?undefined:readOperationalManifest(event.ecsManifest);
@@ -98,7 +104,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     if(settingsManifest&&(event.kind!=='proposed'||event.state.status!=='proposed'||event.state.version!==0||settingsManifest.kind!=='settings.vercel'||compileOperationalSettingsPlan(settingsManifest).digest!==event.state.plan.digest))fail();
     const settingsResult=event.settingsResult===undefined?undefined:readSettingsResult(event.settingsResult);
     if(settingsResult&&(event.kind!=='effect.observed'||settingsResult.actionId!==event.actionId||settingsResult.effectIndex!==event.effectIndex||settingsResult.outcome!==event.outcome||settingsResult.planDigest!==event.state.plan.digest||settingsResult.manifestDigest!==event.state.plan.sourceDigest))fail();
-    const detail={...(ecsManifest===undefined?{}:{ecsManifest}),...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
+    const detail={...(event.kind==='workload.stable_observed'?{operationalObserverUserId:event.operationalObserverUserId,operationalStabilityReceiptId:event.operationalStabilityReceiptId,operationalCommandReceiptDigest:event.operationalCommandReceiptDigest}:{}),...(ecsManifest===undefined?{}:{ecsManifest}),...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
    },
    async reservePostDeletion(id,index,postUrn){

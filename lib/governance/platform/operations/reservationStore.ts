@@ -52,6 +52,13 @@ export function createOperationalTargetReservations(source:Source){
    if(!state||state.actionId!==b.actionId||state.manifestDigest!==b.manifest.digest||state.generation!==ref.generation||state.phase!=='reserved'||state.bindingDigest!==sha256ContentHash(b))return fail();
    await source.assertSnapshotCurrent(tx,state.snapshotDigest,state.bindingDigest);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.sourceExpiresAt)||now>=Date.parse(b.manifest.expiresAt))return fail();
   },
+  async assertTerminalCurrent(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number,receiptId:string){
+   const b=binding(raw),key=nativeEcsTargetKey(b.manifest.target);await tx.lockOperationalTarget(key);const state=await load(tx,key);
+   if(!state||state.actionId!==b.actionId||state.manifestDigest!==b.manifest.digest||state.generation!==generation||!['stable','terminal_failure'].includes(state.phase)||state.lastReceiptId!==receiptId)return fail();
+   const saved=readOperationalTargetReceipt(await tx.readOperationalTargetReceipt(receiptId)),outcome=operationalNativeOutcome.parse(saved.detail);
+   if(saved.kind!==state.phase||saved.nativeKey!==key||saved.actionId!==b.actionId||saved.manifestDigest!==b.manifest.digest||saved.generation!==generation||outcome.target.taskDefinitionArn!==state.target.taskDefinitionArn||outcome.deploymentId!==state.deploymentId)return fail();
+   const lineage=sha256ContentHash({nativeKey:key,generation,actionId:b.actionId,manifestDigest:b.manifest.digest,snapshotDigest:state.snapshotDigest});await source.assertOutcomeCurrent(tx,lineage,sha256ContentHash(outcome));return saved;
+  },
   async observe(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number){
    const b=binding(raw),key=nativeEcsTargetKey(b.manifest.target);await tx.lockOperationalTarget(key);const previous=await load(tx,key);
    if(!previous||previous.actionId!==b.actionId||previous.manifestDigest!==b.manifest.digest||previous.generation!==generation)return fail();
