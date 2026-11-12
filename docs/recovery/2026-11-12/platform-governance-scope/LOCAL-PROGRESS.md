@@ -1178,3 +1178,16 @@ Initial root/desktop type checks caught a discriminated-union narrowing lost ins
 Next: requester metadata intake/original-reference recovery UI and composed workflow, actual source/custody/fleet/default/legacy qualification, pending other-family designs, full current-source validation/final independent review/one all-green PR. Full P01/Governance remains incomplete and activation unavailable. No schema/pin/dependency, credential/provider/IAM/service/native/production/deployment/spending changed.
 
 15internal demo checks PASS after ECS preparation wording update. No active tests/builds/owned PostgreSQL remain.
+
+
+### Prepared ECS requester intake and original-reference recovery UI
+
+The existing unregistered workflow now includes a dedicated proposal form: exact deployment target, already-created workflow run and protected environment, then supporting source/issuer references in a disclosure. Main/workflow path remain fixed. New requests require the private issuer/environment/protection metadata profile rather than pretending old absent fields qualify. The server still has to validate every requested reference; no live lookup or native proof is fabricated. Force and conditional rollback stay separate selections; rollback requires exact original failed action/receipt/generation/task and prior-deployment reference, never a timeout or unknown label. No workflow starts from preparation.
+
+A reference is retained before saving. The form is frozen afterward; uncertain saves remain held, and only explicit original-reference lookup can recover them. Existing-reference recovery is available without proposal-creation capability and never creates a replacement. Known saved action IDs remain visible even if the surrounding refresh callback fails. Paired service/token/client changes prevent adopting late results. All decisions/delegation/execution remain separate.
+
+Missing-panel and missing-workflow routing REDs preceded implementation.31mocked UI/workflow checks PASS (6requester/25workflow), plus strict root types and desktop frontend types/build PASS. Existing frontend warnings retained. No SQL/server change, so prior110actual isolated SQL receipt is preserved rather than repeated. These are source/component checks, not native rendered/accessibility/customer acceptance or a registered shipping workflow. ECS-PREPARATION-UI-RECEIPT.json records exact source scope.
+
+Next: qualified source/run/image/IAM/custody/fleet/default/workflow/legacy completeness and remaining already-pending family designs, then exact whole-branch validation/one fresh independent review/one green PR. Full operational terminal reconciliation/recovery is still not completed by the historical failure reader. Full P01/Governance remains incomplete; activation unavailable. No schema/pin/dependency, actual provider/credential/workflow/native/service/IAM/production/deployment/spending changed.
+
+15internal demo checks PASS after requester-intake wording update. No active tests/builds/owned PostgreSQL remain.

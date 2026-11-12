@@ -1,3 +1,5 @@
+import {OperationalEcsPreparationPanel} from './OperationalEcsPreparationPanel';
+import type {OperationalPreparationClient} from '../lib/operationalReview';
 import {CustodianPreparationPanel} from './CustodianPreparationPanel';
 import {CustodianControlPanel} from './CustodianControlPanel';
 import {CustodianHistoryPanel} from './CustodianHistoryPanel';
@@ -30,7 +32,7 @@ import {PlatformReviewPanel} from './PlatformReviewPanel';
 import {PlatformExecutionPanel} from './PlatformExecutionPanel';
 interface Props{
  currentUserId:string;canPrepare:boolean;canApprove:boolean;canExecute:boolean;
- clients:{custodian?:CustodianClient;manualRelease?:ManualReleaseClient;settingsExecution?:SettingsExecutionClient;settingsArtifact?:SettingsArtifactClient;settingsHistory?:SettingsHistoryClient;settings?:SettingsReviewClient;operationalHistory?:OperationalHistoryClient;operationalDelegation?:OperationalDelegationClient;operational?:OperationalReviewClient;template?:Pick<PlatformTemplateClient,'preview'>&Partial<Pick<PlatformTemplateClient,'prepare'|'lookup'>>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
+ clients:{operationalPreparation?:OperationalPreparationClient;custodian?:CustodianClient;manualRelease?:ManualReleaseClient;settingsExecution?:SettingsExecutionClient;settingsArtifact?:SettingsArtifactClient;settingsHistory?:SettingsHistoryClient;settings?:SettingsReviewClient;operationalHistory?:OperationalHistoryClient;operationalDelegation?:OperationalDelegationClient;operational?:OperationalReviewClient;template?:Pick<PlatformTemplateClient,'preview'>&Partial<Pick<PlatformTemplateClient,'prepare'|'lookup'>>;deployment?:PlatformDeploymentClient;sources?:PlatformSourceClient;review:PlatformReviewClient;preparation:PlatformPreparationClient;execution:PlatformExecutionClient;history:ReturnType<typeof createPlatformHistoryClient>};
 }
 function sameLineage(previous:PlatformInspection,next:PlatformInspection){
  return next.actionId===previous.actionId&&JSON.stringify(next.plan)===JSON.stringify(previous.plan)&&next.requesterUserId===previous.requesterUserId&&(!previous.reviewerUserId||next.reviewerUserId===previous.reviewerUserId)&&next.version>=previous.version&&(next.version!==previous.version||next.status===previous.status&&JSON.stringify(next.effects)===JSON.stringify(previous.effects));
@@ -79,6 +81,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
   <header><p className="text-xs uppercase tracking-wider text-zinc-400">Platform operations · local preparation</p><h1 className="mt-2 text-2xl font-semibold">One exact change, a clear record</h1><p className="mt-2 text-sm text-zinc-400">Prepared growth actions, generated-site files, exact template source and independently reviewed ECS proposals. Deployment execution, template and image workflow coverage remain incomplete; production activation is unavailable.</p></header>
   {!current?<p role="alert">Account context changed. Reopen this workflow in the current session. Prior approvals and attempts were not renewed.</p>:<>
    <aside aria-label="Next step" className="rounded-xl border border-white/10 p-4">{nextStep()}</aside>
+   {clients.operationalPreparation&&<details><summary>Prepare or recover an ECS proposal</summary><OperationalEcsPreparationPanel client={clients.operationalPreparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.custodian&&<details><summary>Prepare or recover an issuer control</summary><CustodianPreparationPanel client={clients.custodian} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.manualRelease&&<details><summary>Review a manual production release</summary><OperationalManualReleasePanel client={clients.manualRelease} currentUserId={currentUserId} canApprove={canApprove} canRecordNotice={canExecute}/></details>}
    {clients.template?.prepare&&clients.template.lookup&&<details><summary>Prepare a template proposal</summary><PlatformTemplatePreparationPanel client={{prepare:clients.template.prepare,lookup:clients.template.lookup}} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}

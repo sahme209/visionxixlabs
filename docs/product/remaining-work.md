@@ -995,3 +995,8 @@ Read-only history/client/panel now show an exact immutable native failure separa
 ### November12 — exact ECS proposal client
 
 Prepared ECS save/lookup now verifies exact plan/reference and preserves lost-response recovery without automatic resubmission.110actual isolated SQL cases/28focused checks/root+desktop types/frontend build pass within their recorded source scopes; qualification remains synthetic. [Evidence](../recovery/2026-11-12/platform-governance-scope/ECS-PREPARATION-CLIENT-PG-RECEIPT.json). Requester intake UI, actual source/custody/default qualification, pending other-family designs and final whole-branch gates remain.
+
+
+### November12 — ECS requester proposal form joined locally
+
+Prepared target/existing-run/source-reference form and original-reference recovery are now connected to the unregistered platform workflow.31mocked UI checks, strict types and desktop frontend build pass; no native/customer/source qualification claim. [Evidence](../recovery/2026-11-12/platform-governance-scope/ECS-PREPARATION-UI-RECEIPT.json). Current source/default/custody/fleet/legacy, pending other-family designs, complete terminal recovery and final whole-branch review/PR remain.
