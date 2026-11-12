@@ -406,3 +406,7 @@ Owner selected **include Axiom production deployments, template hosting and grow
 ## November12 — platform Governance initial local implementation
 
 Owner approved the platform design for local code/schema definitions/isolated tests. Exact effect contracts and pure plan/review/claim/terminal transitions now pass9tests; transactional action/child-effect service passes7in-memory checks. Three actual isolated PostgreSQL journeys prove one concurrent claim, event rollback and terminal unknown preservation; server stopped. Root strict types pass. Dedicated platform tables are proposed only; no production migration, current-auth default, provider transport, workflow/UI or full P01 coverage is complete. P01 remains blocked. Source plan: `docs/superpowers/plans/2026-11-12-platform-governance.md`.
+
+## November12 — operational platform local scope approved
+
+Owner approved the reviewed operational-release design for LOCAL implementation/schema/synthetic and owned-isolated tests only, superseding the original source-modification exclusion for the named administrative entrypoints within their complete replacement batch. No actual workflow, credentials, grants, provider/production action or spending. Follow `docs/superpowers/plans/2026-11-12-operational-platform-releases.md`; initial metadata contracts pass5focused checks/root types, not complete enforcement. Other pending authority designs are not approved by this decision.

@@ -282,3 +282,5 @@ P01 requirement/source audit: platform-governance-scope/COVERAGE-ACCEPTANCE-MATR
 Platform broad checkpoint80a8dfee:18,179ordinary tests pass/951pending; production build/types/304pages pass with CI8GiB heap and no network/database URL. Evidence: platform-governance-scope/TEMPLATE-BATCH-VALIDATION.json. Pending execution/custody designs, full P01, final review/green PR and owner/native/live requirements are unchanged.
 
 Operational release scope now has an independently builder-checked local design (platform-governance-scope/OPERATIONAL-RELEASE-DESIGN-PROPOSAL.md). Original P01 grant excluded changing these scripts/workflow; local implementation needs a new owner decision. No actual workflow, settings, provider or deployment action is authorized/performed.
+
+November12: operational-release design now approved for LOCAL implementation and isolated tests. Initial strict release/ECS/settings metadata contracts and structural rollback matching pass5focused checks/root types; no execution authority, entrypoint replacement or real operation yet. Continue full operational plan; other pending designs and full P01/native/live/PR gates remain open.

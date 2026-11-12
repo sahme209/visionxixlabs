@@ -1,6 +1,6 @@
 # Platform operational releases — proposed local authority extension
 
-Status: design only. Original P01 local approval explicitly excluded modifying/running the administrative scripts/workflow. This document requests a new LOCAL implementation boundary; it grants no run, credential, production, IAM, flag, deployment or spending authority. Existing root owner-click/cost/PR rules remain.
+Status: owner approved LOCAL implementation and isolated tests November12. This supersedes only the original exclusion on changing these administrative source entrypoints within the complete replacement batch. No actual run, credential, production, IAM, flag, deployment or spending authority is granted. Existing root owner-click/cost/PR rules remain.
 
 ## Source findings
 
@@ -70,3 +70,8 @@ Approve LOCAL source/schema preparation, changing the named administrative sourc
 ## Independent design check
 
 A fresh source/design builder check identified two consequential ambiguities. The revised design explicitly keeps owner authorization external/attested rather than inventing an owner identity from the platform-admin list. It also chooses an already-created exact credential-free run/attempt, with no first-matching-run/public-nonce redemption. These proposed choices preserve existing security/owner boundaries and are part of the requested design approval. Follow-up found nothing important unanswered for planning local implementation. No source implementation, execution, test, database/provider action or authority grant occurred during review.
+
+
+## Owner local implementation decision — November12
+
+Owner selected “Approve local implementation and isolated tests” for this exact reviewed design. Continue inline under docs/superpowers/plans/2026-11-12-operational-platform-releases.md; no redundant execution checkpoint. This does not approve any other pending image/template/deployment design, actual workflow run, credential/grant/provider action or production change.
