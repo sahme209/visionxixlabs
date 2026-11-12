@@ -2,6 +2,8 @@ import { deploySite, deploySiteFromPlan, type DeployProvider } from "./deploy/pr
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 import type { WebsiteBuilderPlan } from "./scaffoldGenerator";
 
+export type PlatformDeploymentExecution = {binding:object;effectId?:string};
+
 export type DeployResult = {
   url: string;
   deploymentId: string;
@@ -17,9 +19,10 @@ export async function deployPreview(
   pkg: AIStarterPackage,
   projectName: string,
   provider: DeployProvider = "vercel",
-  credentials?: Record<string, string>
+  credentials?: Record<string, string>,
+  execution?: PlatformDeploymentExecution
 ): Promise<DeployResult> {
-  return deploySite(provider, pkg, { projectName, credentials });
+  return deploySite(provider, pkg, { projectName, credentials,platformExecution:execution?.binding,effectId:execution?.effectId });
 }
 
 /**
@@ -29,12 +32,13 @@ export async function deployPreviewFromPlan(
   plan: WebsiteBuilderPlan,
   projectName: string,
   provider: DeployProvider = "vercel",
-  credentials?: Record<string, string>
+  credentials?: Record<string, string>,
+  execution?: PlatformDeploymentExecution
 ): Promise<DeployResult> {
-  return deploySiteFromPlan(provider, plan, { projectName, credentials });
+  return deploySiteFromPlan(provider, plan, { projectName, credentials,platformExecution:execution?.binding,effectId:execution?.effectId });
 }
 
 /** Explicit admin publication intent; a project name alone is never a target. */
-export async function deployProduction(pkg: AIStarterPackage, projectName: string): Promise<DeployResult> {
-  return deploySite("vercel", pkg, { projectName, target: "production" });
+export async function deployProduction(pkg: AIStarterPackage, projectName: string,execution?:PlatformDeploymentExecution): Promise<DeployResult> {
+  return deploySite("vercel", pkg, { projectName, target: "production",platformExecution:execution?.binding,effectId:execution?.effectId });
 }

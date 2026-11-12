@@ -7,7 +7,7 @@ const social={connectionId:identifier,connectionRevision:identifier,author:ident
 const origin=z.string().max(2048).refine(value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.origin===value}catch{return false}});
 const effect=<K extends string,T extends z.ZodRawShape>(kind:K,target:T)=>z.object({id:identifier,kind:z.literal(kind),target:z.object(target).strict()}).strict();
 export const platformEffectSchema=z.discriminatedUnion('kind',[
- effect('deployment.vercel',{projectId:identifier,environment:z.enum(['preview','production']),filesDigest:digest,configurationDigest:digest}),
+ effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),filesDigest:digest,configurationDigest:digest}),
  effect('deployment.ecs',{accountId,region:identifier,cluster:identifier,service:identifier,taskDefinitionArn:identifier,operation:z.enum(['force','rollback']),configurationDigest:digest}),
  effect('settings.vercel',{projectId:identifier,settingsDigest:digest}),
  effect('template.bucket.create',cloud),

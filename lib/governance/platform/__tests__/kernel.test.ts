@@ -2,12 +2,12 @@ import {describe,it,expect} from 'vitest';
 import {compilePlatformPlan,createPlatformAction,approvePlatformAction,claimPlatformAction,finishPlatformAction} from '../kernel';
 const d='a'.repeat(64),requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'};
 const at=Date.parse('2026-11-12T00:00:00Z');
-const raw=()=>({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'deploy',kind:'deployment.vercel',target:{projectId:'project',environment:'production',filesDigest:d,configurationDigest:d}}]});
+const raw=()=>({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'production',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d}}]});
 function approved(){return approvePlatformAction(createPlatformAction(compilePlatformPlan(raw()),requester,at),{...reviewer,planDigest:compilePlatformPlan(raw()).digest},at)}
 describe('exact platform plans and lifecycle',()=>{
  it('binds immutable source, exact target/effect, expiry and plan digest',()=>{
   const plan=compilePlatformPlan(raw());expect(plan.digest).toMatch(/^[a-f0-9]{64}$/);expect(Object.isFrozen(plan.effects[0].target)).toBe(true);
-  expect(compilePlatformPlan({...raw(),effects:[{...raw().effects[0],target:{...raw().effects[0].target,projectId:'other'}}]}).digest).not.toBe(plan.digest);
+  expect(compilePlatformPlan({...raw(),effects:[{...raw().effects[0],target:{...raw().effects[0].target,projectName:'other'}}]}).digest).not.toBe(plan.digest);
  });
  it('refuses workspace identity, approval flags and incomplete targets',()=>{
   for(const bad of [{...raw(),organizationId:'fake-tenant'},{...raw(),approved:true},{...raw(),scope:'workspace'},{...raw(),effects:[{id:'deploy',kind:'deployment.vercel',target:{projectId:'project'}}]}])expect(()=>compilePlatformPlan(bad)).toThrow();

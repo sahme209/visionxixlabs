@@ -1,6 +1,9 @@
 import { generateSiteFiles, generateSiteFilesFromPlan, type WebsiteBuilderPlan } from "../scaffoldGenerator";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
+import {runPlatformEffect} from '@/lib/governance/platform/effectExecution';
+import {preparePlatformVercelDeployment,readPlatformDeploymentResponse} from './platformDeployment';
+
 export type DeployProvider = "vercel" | "aws" | "azure" | "gcp";
 export class UnsupportedDeploymentProviderError extends Error {
   readonly code = "deployment_provider_not_supported";
@@ -20,6 +23,8 @@ export type DeployOptions = {
   projectName: string;
   target?: "production";
   credentials?: Record<string, string>;
+  platformExecution?: object;
+  effectId?: string;
 };
 
 /**
@@ -55,42 +60,24 @@ async function deployToVercel(
   files: { path: string; content: string }[],
   options: DeployOptions
 ): Promise<DeployResult> {
-  const token = process.env.VERCEL_TOKEN || options.credentials?.vercelToken;
-  const teamId = process.env.VERCEL_TEAM_ID;
-
-  if (!token) {
-    return {
-      url: "",
-      deploymentId: "managed-pending",
-      state: "PENDING",
-    };
-  }
-
-  const body = {
-    name: options.projectName,
-    ...(options.target ? { target: options.target } : {}),
-    files: files.map((f) => ({
-      file: f.path,
-      data: Buffer.from(f.content, "utf8").toString("base64"),
-      encoding: "base64" as const,
-    })),
-  };
-
-  const headers: Record<string, string> = {
-    Authorization: `Bearer ${token}`,
-    "Content-Type": "application/json",
-  };
-  if (teamId) headers["x-vercel-team-id"] = teamId;
-
-  const res = await fetch("https://api.vercel.com/v13/deployments", {
-    method: "POST",
-    headers,
-    body: JSON.stringify(body),
+  if(!options.platformExecution||typeof options.platformExecution!=='object')throw Error('platform_governance_effect_unavailable');
+  const teamId=process.env.VERCEL_TEAM_ID??'';
+  const prepared=preparePlatformVercelDeployment(files,{projectName:options.projectName,teamId,target:options.target,effectId:options.effectId});
+  const data=await runPlatformEffect(options.platformExecution,prepared.effect,async beforeSend=>{
+    const token=process.env.VERCEL_TOKEN||options.credentials?.vercelToken;
+    if(!token)throw Error('platform_deployment_credentials_unavailable');
+    await beforeSend();
+    if(process.env.VERCEL_TEAM_ID!==teamId||(process.env.VERCEL_TOKEN||options.credentials?.vercelToken)!==token)throw Error('platform_deployment_configuration_changed');
+    const response=await fetch('https://api.vercel.com/v13/deployments',{
+      method:'POST',redirect:'error',signal:AbortSignal.timeout(15000),
+      headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json','x-vercel-team-id':teamId},body:prepared.body,
+    });
+    const raw=await readPlatformDeploymentResponse(response);
+    if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('platform_deployment_result_unconfirmed');
+    const result=raw as {url?:unknown;id?:unknown;readyState?:unknown;state?:unknown;target?:unknown;alias?:unknown};
+    if(typeof result.id!=='string'||!/^dpl_[A-Za-z0-9]+$/.test(result.id)||(options.target==='production'&&result.target!=='production'))throw Error('platform_deployment_result_unconfirmed');
+    return {outcome:'confirmed',value:result};
   });
-
-  if (!res.ok) throw new Error(`Vercel deploy failed: ${res.status} ${await res.text()}`);
-
-  const data = (await res.json()) as { url?: unknown; id?: unknown; readyState?: unknown; state?: unknown; target?: unknown; alias?: unknown };
   const rawUrl = typeof data.url === "string" ? data.url : Array.isArray(data.alias) && typeof data.alias[0] === "string" ? data.alias[0] : "";
   let url = "";
   if (rawUrl) {
