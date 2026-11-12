@@ -1,3 +1,4 @@
+import type {OperationalEcsResult} from './operations/ecsExecution';
 import type {SettingsManifest} from './operations/settingsPreparation';
 import type {SettingsResult} from './operations/settingsResult';
 import 'server-only';
@@ -28,7 +29,7 @@ export interface PlatformTransaction{
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
- event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed';operationalDigest?:string;settingsResult?:SettingsResult;settingsManifest?:SettingsManifest;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
+ event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed';operationalDigest?:string;operationalResult?:OperationalEcsResult;settingsResult?:SettingsResult;settingsManifest?:SettingsManifest;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
  /** Permanent send reservation. No release/reset API, including unknown outcomes. */
  reservePostDeletion?(id:string,index:number,postUrn:string):Promise<void>;
  reservePublication?(id:string,index:number,draftId:string):Promise<void>;

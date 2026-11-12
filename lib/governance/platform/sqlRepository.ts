@@ -1,3 +1,4 @@
+import {readOperationalEcsResult} from './operations/ecsExecution';
 import {readOperationalManifest} from './operations/kernel';
 import {compileOperationalSettingsPlan} from './operations/settingsArtifact';
 import {readSettingsResult} from './operations/settingsResult';
@@ -86,11 +87,13 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     const sequence=await sql.$queryRawUnsafe<Array<{next:number}>>('SELECT COALESCE(max(sequence),-1)+1 AS next FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',event.actionId);
     if(sequence.length!==1||!Number.isSafeInteger(sequence[0].next)||sequence[0].next<0||sequence[0].next>1000)fail();
     if(event.operationalDigest!==undefined)digest.parse(event.operationalDigest);
+    const operationalResult=event.operationalResult===undefined?undefined:readOperationalEcsResult(event.operationalResult);
+    if(operationalResult){if(event.kind!=='effect.observed'||event.effectIndex!==0||operationalResult.actionId!==event.actionId||operationalResult.manifestDigest!==event.state.plan.sourceDigest||event.outcome!==(operationalResult.kind==='accepted'?'confirmed':'unknown'))fail();const record=readOperationalDelegation(await tx.readDelegation(event.actionId));if(record.credential.status!=='issued'||record.credential.leaseRef!==operationalResult.leaseRef||record.targetReservation?.nativeKey!==operationalResult.nativeKey||record.targetReservation.generation!==operationalResult.generation)fail()}
     const settingsManifest=event.settingsManifest===undefined?undefined:readOperationalManifest(event.settingsManifest);
     if(settingsManifest&&(event.kind!=='proposed'||event.state.status!=='proposed'||event.state.version!==0||settingsManifest.kind!=='settings.vercel'||compileOperationalSettingsPlan(settingsManifest).digest!==event.state.plan.digest))fail();
     const settingsResult=event.settingsResult===undefined?undefined:readSettingsResult(event.settingsResult);
     if(settingsResult&&(event.kind!=='effect.observed'||settingsResult.actionId!==event.actionId||settingsResult.effectIndex!==event.effectIndex||settingsResult.outcome!==event.outcome||settingsResult.planDigest!==event.state.plan.digest||settingsResult.manifestDigest!==event.state.plan.sourceDigest))fail();
-    const detail={...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
+    const detail={...(operationalResult===undefined?{}:{operationalResult}),...(settingsManifest===undefined?{}:{settingsManifest}),...(settingsResult===undefined?{}:{settingsResult}),...(event.operationalDigest===undefined?{}:{operationalDigest:event.operationalDigest}),planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
    },
    async reservePostDeletion(id,index,postUrn){

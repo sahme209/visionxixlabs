@@ -1,3 +1,7 @@
+import {createOperationalEcsResult,type OperationalEcsTransport} from './ecsExecution';
+import {projectOperationalEcsAcceptance} from './ecsProtocol';
+import {readOperationalTarget} from './reservationContract';
+import {finishPlatformAction} from '../kernel';
 import {z} from 'zod';
 import 'server-only';
 import type {OperationalTargetReservations} from './reservationStore';
@@ -25,7 +29,7 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private server composition. Workload is never relabeled a human. All phase
  * proofs stay in this instance, never in HTTP JSON or durable state. Optional private issuance is bounded and recorded before any later use;
  * source/profile defaults remain closed and no provider send is exposed. */
-export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'>,issuer?:OperationalCredentialIssuer){
+export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport){
  const claims=new WeakMap<object,{actionId:string;identity:Consumed}>(),issuance=new WeakMap<object,{actionId:string;version:number;identity:Consumed}>(),credentials=new WeakMap<object,{actionId:string;identity:Consumed;value:z.infer<typeof privateCredential>}>();
  const binding=(state:OperationalDelegation)=>({actionId:state.actionId,manifestDigest:state.manifest.digest,workload:state.manifest.workload,expiresAt:state.manifest.expiresAt});
  function match(parent:PlatformAction,state:OperationalDelegation){
@@ -52,6 +56,31 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    })}catch{throw Error('operational_credential_observation_unconfirmed')}
   }
  return Object.freeze({
+  async executeCredential(handle:object){
+   const held=credentials.get(handle);if(!held||!issuer||!transport||!targets)return fail();credentials.delete(handle);
+   async function sendCurrent(tx:OperationalDelegationTransaction,key:string,child:boolean){
+    const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==held!.value.leaseRef||state.credential.expiresAt!==held!.value.expiresAt||state.executionPrincipal?.replayKey!==held!.identity.replayKey)return fail();
+    await current(tx,state,'claimed');await targets!.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,held!.identity,binding(state));await issuer!.assertQualified(tx,state.manifest);await transport!.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets!.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,held!.identity,binding(state));
+    const now=await tx.now();if(now>=held!.value.expiresAt||child&&await tx.readEffect(key,0)!=='claimed')return fail();return state;
+   }
+   let claimed=false;
+   try{
+    const saved=await locked(held.actionId,async(tx,key)=>{
+     const state=await sendCurrent(tx,key,false);if(await tx.readEffect(key,0)!==null)return fail();await tx.writeEffect(key,0,null,'claimed');const parent=readPlatformAction(await tx.read(key));await tx.event({actionId:key,kind:'effect.claimed',state:parent,effectIndex:0});await sendCurrent(tx,key,true);const ref=state.targetReservation;if(!ref)return fail();const native=readOperationalTarget(await tx.readOperationalTarget(ref.nativeKey));if(native.actionId!==key||native.generation!==ref.generation)return fail();return {state,priorDeploymentId:native.priorDeploymentId};
+    });claimed=true;
+    const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,authorized=false,used=false,accepted:ReturnType<typeof projectOperationalEcsAcceptance>|null=null;
+    try{
+     const beforeSend=async()=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(held.actionId,async(tx,key)=>{await sendCurrent(tx,key,true)});abort.signal.throwIfAborted();authorized=true};
+     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
+     const raw=await Promise.race([transport.send(saved.state.manifest,Object.freeze({accessKeyId:held.value.accessKeyId,secretAccessKey:held.value.secretAccessKey,sessionToken:held.value.sessionToken,expiresAt:held.value.expiresAt}),beforeSend,abort.signal),timeout]);abort.signal.throwIfAborted();if(!authorized)return fail();accepted=projectOperationalEcsAcceptance(saved.state.manifest,saved.priorDeploymentId,raw);
+    }catch{accepted=null}finally{if(timer)clearTimeout(timer);abort.abort()}
+    return await locked(held.actionId,async(tx,key)=>{
+     const state=await load(tx,key),parent=readPlatformAction(await tx.read(key));match(parent,state);if(parent.status!=='claimed'||await tx.readEffect(key,0)!=='claimed'||state.credential.status!=='issued'||state.credential.leaseRef!==held.value.leaseRef||!state.targetReservation)return fail();const now=await tx.now(),outcome=accepted?'confirmed' as const:'unknown' as const;
+     const receipt=createOperationalEcsResult({format:1,purpose:'operational_ecs_update_result_v1',actionId:key,manifestDigest:state.manifest.digest,nativeKey:state.targetReservation.nativeKey,generation:state.targetReservation.generation,leaseRef:held.value.leaseRef,kind:accepted?'accepted':'unknown',deploymentId:accepted?.deploymentId??null,requestId:accepted?.requestId??null,observedAt:now,stable:false,rollbackAuthorized:false});
+     await tx.writeEffect(key,0,'claimed',outcome);const next=accepted?parent:finishPlatformAction(parent,'unknown',now);if(!accepted)await tx.replace(key,parent.version,next);await tx.event({actionId:key,kind:'effect.observed',state:next,effectIndex:0,outcome,operationalResult:receipt});return receipt;
+    });
+   }catch{throw Error(claimed?'operational_ecs_outcome_unconfirmed':'operational_ecs_claim_unconfirmed')}
+  },
   async issueCredential(proof:object){try{
    const pending=issuance.get(proof);if(!pending||!issuer||!targets)return fail();issuance.delete(proof);
    const manifest=await locked(pending.actionId,async(tx,key)=>{
