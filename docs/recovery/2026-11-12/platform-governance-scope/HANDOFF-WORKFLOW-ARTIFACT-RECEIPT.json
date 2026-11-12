@@ -1,0 +1,29 @@
+{
+  "scope": "in-memory protected-job artifact compiler; only synthetic runtime executed",
+  "files": {
+    "lib/governance/platform/operations/handoffWorkflowArtifact.ts": "5cfc5f2008fae4a2bfb8cbf7016330900f3c8d62466975b31deda2d69b6fac70",
+    "lib/governance/platform/operations/__tests__/handoffWorkflowArtifact.test.ts": "5d0766e3f02f7e891b33da8a43b7478a158624146ecaadd74f0d05ead0d75a78",
+    "lib/demo/demoScenarios.ts": "ce643c20e22a52ff039a8cb1e492cde76ea494f570eef61203c60c23c7d0d7f1"
+  },
+  "focusedChecks": 5,
+  "rootTypes": "pass",
+  "ordinarySuite": {
+    "directory": "/private/tmp/axiom-native-supplier-full-kjw_xbiw",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "counts": {
+      "numPassedTests": 18604,
+      "numFailedTests": 0,
+      "numPendingTests": 1028,
+      "numTodoTests": 0,
+      "numFailedTestSuites": 0
+    },
+    "failedTests": []
+  },
+  "actualCompiledAxiomRuntimeSupplier": false,
+  "realNativeBootstrapQualification": false,
+  "activeWorkflowInstalledOrDispatched": false,
+  "providerCredentialsOrNetwork": false,
+  "completeHandoff": false,
+  "productionChanged": false
+}
