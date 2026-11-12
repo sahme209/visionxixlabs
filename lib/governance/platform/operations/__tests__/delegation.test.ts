@@ -1,0 +1,49 @@
+import {it,expect,vi} from 'vitest';
+import {createOperationalDelegationStore} from '../delegation';
+import {compileOperationalManifest} from '../kernel';
+import {compilePlatformPlan,createPlatformAction,approvePlatformAction} from '../../kernel';
+import type {OperationalDelegationRepository,OperationalDelegationTransaction} from '../delegationContract';
+import type {createOperationalWorkloadIdentity} from '../workloadIdentity';
+const now=Date.parse('2026-11-12T00:00:00Z'),d='a'.repeat(64),commit='b'.repeat(40),id='platform_action_11111111-1111-4111-8111-111111111111',requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'};
+function fixture(){
+ const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'deployment.ecs',operation:'force',expiresAt:new Date(now+300000).toISOString(),target:{accountId:'123456789012',region:'us-east-2',clusterArn:'arn:aws:ecs:us-east-2:123456789012:cluster/fixture',serviceArn:'arn:aws:ecs:us-east-2:123456789012:service/fixture/service',taskDefinitionArn:'arn:aws:ecs:us-east-2:123456789012:task-definition/service:2'},roleArn:'arn:aws:iam::123456789012:role/fixture',workload:{repository:'sahme209/visionxixlabs',ref:'refs/heads/main',commit,workflowCommit:commit,workflowPath:'.github/workflows/axiom-deploy-aws-ecs.yml',workflowSha256:d,runId:'12345',attempt:1},sourceEvidenceId:'platform_evidence_11111111-1111-4111-8111-111111111111'});if(manifest.kind!=='deployment.ecs')throw Error('fixture');
+ const plan=compilePlatformPlan({format:1,scope:'platform',sourceDigest:manifest.digest,expiresAt:manifest.expiresAt,effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:manifest.target.accountId,region:manifest.target.region,cluster:manifest.target.clusterArn,service:manifest.target.serviceArn,taskDefinitionArn:manifest.target.taskDefinitionArn,operation:'force',configurationDigest:manifest.digest}}]});
+ let parent=approvePlatformAction(createPlatformAction(plan,requester,now),{...reviewer,planDigest:plan.digest},now),delegation:unknown=null,events:unknown[]=[],tail=Promise.resolve(),clock=now,failEvent=false,loseAck=false;const revoked=new Set<string>();
+ const replays=new Map<string,string>();
+ const repo:OperationalDelegationRepository={transaction:async fn=>{const wait=tail;let release!:()=>void;tail=new Promise(r=>{release=r});await wait;let p=parent,record=delegation;const nextEvents=[...events],nextReplays=new Map(replays);
+  const tx:OperationalDelegationTransaction={lock:async()=>{},now:async()=>clock,read:async()=>p,readPrincipal:async()=>null,readSessionPrincipal:async()=>null,insert:async()=>{throw Error('not used')},replace:async(_id,version,state)=>{if(p.version!==version)throw Error('stale');p=state},event:async e=>{if(failEvent)throw Error('event');nextEvents.push(e)},readGrowthPostingSource:async()=>null,readEffect:async()=>null,writeEffect:async()=>{},readDelegation:async()=>record,insertDelegation:async(_id,state)=>{if(record)throw Error('duplicate');record=state},replaceDelegation:async(_id,version,state)=>{if((record as {version:number}).version!==version)throw Error('stale');record=state},reserveWorkloadIdentity:async(key,actionId)=>{if(nextReplays.has(key))throw Error('replay');nextReplays.set(key,actionId)}};
+  try{const result=await fn(tx);parent=p;delegation=record;events=nextEvents;replays.clear();for(const[k,v]of nextReplays)replays.set(k,v);if(loseAck&&(record as {version?:number}|null)?.version===1)throw Error('commit acknowledgement lost');return result}finally{release()}
+ }};
+ const authority={assertCurrent:vi.fn(async(_tx:unknown,p:typeof requester)=>{if(revoked.has(p.userId))throw Error('revoked')})},source={readManifest:vi.fn(async()=>manifest),assertCurrent:vi.fn(async()=>{})};
+ const identity:Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authenticate'|'consume'|'assertConsumedCurrent'>={authenticate:vi.fn(async()=>Object.freeze({})),assertConsumedCurrent:vi.fn(async()=>{}),consume:vi.fn(async(tx,_proof,binding)=>{await tx.reserveWorkloadIdentity(d,id,manifest.digest);return {principalKind:'workload' as const,actionId:id,manifestDigest:manifest.digest,workload:manifest.workload,replayKey:d,profileDigest:d,expiresAt:now+120000,authority:'identity_only' as const,executionAuthorized:false as const}})};
+ const store=createOperationalDelegationStore(repo,authority,source,identity);
+ return {store,repo,manifest,plan,identity,source,events:()=>events,parent:()=>parent,record:()=>delegation,revoked,setNow:(v:number)=>{clock=v},failEvents:()=>{failEvent=true},loseClaimAck:()=>{loseAck=true}};
+}
+it('requires original-session delegation and records a distinct one-use workload claim rather than a human execution',async()=>{
+ const f=fixture();await expect(f.store.delegate(id,1,f.plan.digest,reviewer)).rejects.toThrow();await expect(f.store.delegate(id,1,f.plan.digest,{...requester,sessionId:'other'})).rejects.toThrow();
+ await f.store.delegate(id,1,f.plan.digest,requester);const result=await Promise.allSettled([f.store.claim(id,0,'synthetic-jwt'),f.store.claim(id,0,'synthetic-jwt')]);expect(result.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(f.parent()).toMatchObject({status:'claimed',attemptCount:1});
+ const view=await f.store.inspect(id,requester);expect(view).toMatchObject({version:1,status:'claimed',attemptCount:1,executionPrincipal:{kind:'workload'},credential:{status:'not_requested'},providerExecution:false,executionAuthorized:false});expect(JSON.stringify(view)).not.toContain(requester.sessionId);expect(f.events()).toHaveLength(2);
+});
+it('retains a claimed delegation after lost commit acknowledgement and cannot repeat it',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);f.loseClaimAck();await expect(f.store.claim(id,0,'synthetic-jwt')).rejects.toThrow('operational_delegation_unconfirmed');expect(f.parent()).toMatchObject({status:'claimed',attemptCount:1});await expect(f.store.claim(id,0,'synthetic-jwt')).rejects.toThrow();expect(f.identity.authenticate).toHaveBeenCalledTimes(1);
+});
+it('checks both actual human roles/source/expiry before workload authentication',async()=>{
+ for(const cause of ['reviewer','source','expiry']){const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);if(cause==='reviewer')f.revoked.add(reviewer.userId);if(cause==='source')f.source.assertCurrent.mockRejectedValue(Error('source'));if(cause==='expiry')f.setNow(now+300000);await expect(f.store.claim(id,0,'synthetic-jwt')).rejects.toThrow();expect(f.identity.authenticate).not.toHaveBeenCalled();expect(f.parent()).toMatchObject({status:'approved',attemptCount:0})}
+});
+it('persists credential liability before issuance and accepts one observation without restoring authority after revocation',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic-jwt'),pending=await f.store.beginCredential(claimed.proof);await expect(f.store.beginCredential(claimed.proof)).rejects.toThrow();expect(await f.store.inspect(id,requester)).toMatchObject({version:2,credential:{status:'pending'}});
+ f.revoked.add(reviewer.userId);f.setNow(now+400000);await f.store.observeCredential(pending.proof,{status:'issued',leaseRef:'platform_credential_11111111-1111-4111-8111-111111111111',expiresAt:now+900000});const view=await f.store.inspect(id,requester);expect(view).toMatchObject({version:3,credential:{status:'issued',expiresAt:now+900000},executionAuthorized:false});await expect(f.store.observeCredential(pending.proof,{status:'unknown'})).rejects.toThrow();
+});
+it('refuses forged/serialized phase proofs and keeps unknown credential outcomes as liabilities',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic-jwt');await expect(f.store.beginCredential(structuredClone(claimed.proof))).rejects.toThrow();const pending=await f.store.beginCredential(claimed.proof);await f.store.observeCredential(pending.proof,{status:'unknown'});expect(await f.store.inspect(id,requester)).toMatchObject({credential:{status:'unknown'},executionAuthorized:false});
+});
+it('rolls parent, replay and delegation back together if the claim event fails',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);f.failEvents();await expect(f.store.claim(id,0,'synthetic-jwt')).rejects.toThrow();expect(f.parent()).toMatchObject({status:'approved',attemptCount:0});expect(f.record()).toMatchObject({status:'delegated',version:0});expect(f.events()).toHaveLength(1);
+});
+it('refuses malformed lease references and preserves pending liability when observation cannot be qualified',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic-jwt'),pending=await f.store.beginCredential(claimed.proof);
+ await expect(f.store.observeCredential(pending.proof,{status:'issued',leaseRef:'platform_credential_'+'-'.repeat(36),expiresAt:now+900000})).rejects.toThrow();expect(await f.store.inspect(id,requester)).toMatchObject({version:2,credential:{status:'pending'}});
+});
+it('checks revoked humans before later workload-profile reads or credential-stage entry',async()=>{
+ const f=fixture();await f.store.delegate(id,1,f.plan.digest,requester);const claimed=await f.store.claim(id,0,'synthetic-jwt');vi.mocked(f.identity.assertConsumedCurrent).mockClear();f.revoked.add(reviewer.userId);await expect(f.store.beginCredential(claimed.proof)).rejects.toThrow();expect(f.identity.assertConsumedCurrent).not.toHaveBeenCalled();expect(f.record()).toMatchObject({version:1,credential:{status:'not_requested'}});
+});

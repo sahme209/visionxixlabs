@@ -26,7 +26,7 @@ export interface PlatformTransaction{
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
- event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed';state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
+ event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed';operationalDigest?:string;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
  /** Permanent send reservation. No release/reset API, including unknown outcomes. */
  reservePostDeletion?(id:string,index:number,postUrn:string):Promise<void>;
  reservePublication?(id:string,index:number,draftId:string):Promise<void>;
@@ -206,14 +206,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   },
   async claim(id:string,version:number,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
-   await locked(id,async(tx,state)=>{if(state.version!==version)fail();await actors(tx,state);
+   await locked(id,async(tx,state)=>{if(state.version!==version||state.plan.effects.some(effect=>effect.kind==='deployment.ecs'))fail();await actors(tx,state);
     const next=claimPlatformAction(state,actor,await timely(tx,state));await tx.replace(id,version,next);
     await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});});
   },
   async claimNextEffect(id:string,principal:PlatformPrincipal):Promise<{effect:PlatformEffect;proof:object}>{
    const actor=platformPrincipalSchema.parse(principal);
    const result=await locked(id,async(tx,state)=>{
-    if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId)fail();
+    if(state.plan.effects.some(effect=>effect.kind==='deployment.ecs')||state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId)fail();
     await actors(tx,state);await timely(tx,state);
     let index=-1;
     for(let i=0;i<state.plan.effects.length;i++){
@@ -233,7 +233,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    if(binding.sendUsed)fail();binding.sendUsed=true;
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
    await locked(binding.actionId,async(tx,state)=>{
-    if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
+    if(state.plan.effects.some(effect=>effect.kind==='deployment.ecs')||state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
     await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.

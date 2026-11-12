@@ -5165,6 +5165,7 @@ model PlatformGovernanceAction {
   updatedAt  DateTime @updatedAt
   events     PlatformGovernanceEvent[]
   effects    PlatformGovernanceEffect[]
+  operationalDelegation PlatformOperationalDelegation?
   @@index([createdAt, id])
 }
 
@@ -5213,4 +5214,28 @@ model PlatformManualReleaseEvent {
   occurredAt DateTime @default(now())
   record     PlatformManualRelease @relation(fields: [recordId], references: [id], onDelete: Restrict)
   @@unique([recordId, sequence])
+}
+
+
+/// LOCAL proposed exact human delegation to a distinct workload executor.
+model PlatformOperationalDelegation {
+  actionId         String @id
+  manifestDigest   String
+  parentPlanDigest String
+  stateJson        Json
+  version          Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  action           PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  identities       PlatformOperationalWorkloadUse[]
+}
+
+/// Permanent global replay exclusion; not a token or a renewable send capability.
+model PlatformOperationalWorkloadUse {
+  replayKey      String @id
+  actionId       String
+  manifestDigest String
+  createdAt      DateTime @default(now())
+  delegation     PlatformOperationalDelegation @relation(fields: [actionId], references: [actionId], onDelete: Restrict)
+  @@index([actionId])
 }

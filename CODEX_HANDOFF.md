@@ -421,3 +421,6 @@ Manual-release evidence continuation: strict private bundle reconstruction and b
 
 
 Operational workload identity candidate:32local synthetic-signature/identity/replay checks/root types pass; actual JOSE crypto, simulated private profile/replay storage. Three approved public GitHub documentation reads consumed; see WORKLOAD-IDENTITY-SOURCE-REVIEW.md. No default supplier or operational allow path, real key/token, workflow/credential/provider or production action. Exact durable delegation/leases/reservations and full P01 remain incomplete.
+
+
+Operational local delegation: exact approved parent/requester/run now joins a distinct workload claim, global replay SQL and durable pending/issued/unknown credential metadata.72focused checks/root types and44actual isolated PG journeys pass; real profile/source/credential issuance/provider and requester HTTP binding remain unqualified or simulated. Generic human ECS claims/effects refuse, no operational provider dispatch exists. Two new local tables/one inverse relation were semantically reviewed before current helper pin update; historical packets unchanged. See platform-governance-scope/OPERATIONAL-DELEGATION-PG-RECEIPT.json. Full P01/native/live/production acceptance remains open.

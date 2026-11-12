@@ -1,0 +1,17 @@
+{
+  "baseCommit": "c942238f5090d72f9f9cf3b4f7865a39033f840c",
+  "previousSchemaSha256": "6e7a5b4e988f62bcb2bb475095cf9a5470da2e5afdbabd21b3e7b1cae453abef",
+  "reviewedSchemaSha256": "8cffc6d8ea735a200f0eba6d41188cbd047159ed44cbe2271f9a2ca1541aa752",
+  "existingModels": 180,
+  "currentModels": 182,
+  "existingChanges": [
+    "PlatformGovernanceAction.operationalDelegation: inverse optional relation only, no parent data column"
+  ],
+  "allOtherExistingModelMetadataAndEnumsUnchanged": true,
+  "added": [
+    "PlatformOperationalDelegation",
+    "PlatformOperationalWorkloadUse"
+  ],
+  "productionMigration": false,
+  "historicalQualification": false
+}

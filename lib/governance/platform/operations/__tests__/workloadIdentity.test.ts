@@ -50,3 +50,8 @@ it.each([{repository_id:'999'},{repository_owner_id:'999'},{event_name:'pull_req
 it.each([{x5t:42},{jku:'https://untrusted.example/keys'},{x5u:'https://untrusted.example/cert'}])('rejects malformed thumbprints or unreviewed remote key hints %j',async(header)=>{
  const f=fixture();await expect(f.identity.authenticate(f.tx,await token({},header),binding)).rejects.toThrow('operational_workload_unavailable');expect(f.reserve).not.toHaveBeenCalled();
 });
+it('rechecks the privately consumed identity for later credential phases without accepting serialized metadata',async()=>{
+ const f=fixture(),proof=await f.identity.authenticate(f.tx,await token(),binding),consumed=await f.identity.consume(f.tx,proof,binding);
+ await f.identity.assertConsumedCurrent(f.tx,consumed,binding);await expect(f.identity.assertConsumedCurrent(f.tx,structuredClone(consumed),binding)).rejects.toThrow();
+ f.source.assertProfileCurrent.mockRejectedValueOnce(Error('profile revoked'));await expect(f.identity.assertConsumedCurrent(f.tx,consumed,binding)).rejects.toThrow();
+});

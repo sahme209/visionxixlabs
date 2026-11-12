@@ -32,7 +32,7 @@ interface Verified{binding:OperationalWorkloadBinding;bindingDigest:string;profi
  * Never returns/stores raw tokens or claims, and never trusts process env or a
  * human-session/static-token fallback. Public/default operational use is closed. */
 export function createOperationalWorkloadIdentity(source:OperationalWorkloadProfileSupplier){
- const proofs=new WeakMap<object,Verified>();
+ const proofs=new WeakMap<object,Verified>(),consumed=new WeakMap<object,Verified>();
  async function profile(tx:OperationalWorkloadTransaction,binding:OperationalWorkloadBinding){
   const value=profileSchema.parse(await source.readProfile(tx,binding)),hash=sha256ContentHash(value);
   if(new Set(value.keys.map(k=>k.kid)).size!==value.keys.length||value.repository!==binding.workload.repository||value.workflowCommit!==binding.workload.workflowCommit||value.workflowPath!==binding.workload.workflowPath||value.workflowSha256!==binding.workload.workflowSha256)fail();
@@ -59,11 +59,12 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
     proofs.set(proof,{binding,bindingDigest:sha256ContentHash(binding),profileDigest:p.hash,replayKey:sha256ContentHash({purpose:'platform_workload_replay_v1',issuer:claims.iss,jti:claims.jti}),expiresAt:end});return proof;
    }catch{return fail()}
   },
-  async assertCurrent(tx:OperationalWorkloadTransaction,proof:object,binding:unknown){try{const verified=proofs.get(proof);if(!verified)return fail();await current(tx,verified,binding);if(proofs.get(proof)!==verified)return fail()}catch{return fail()}},
+  async assertCurrent(tx:OperationalWorkloadTransaction,proof:object,binding:unknown):Promise<void>{try{const verified=proofs.get(proof);if(!verified)return fail();await current(tx,verified,binding);if(proofs.get(proof)!==verified)return fail()}catch{return fail()}},
+  async assertConsumedCurrent(tx:OperationalWorkloadTransaction,proof:object,binding:unknown):Promise<void>{try{const verified=consumed.get(proof);if(!verified)return fail();await current(tx,verified,binding)}catch{return fail()}},
   async consume(tx:OperationalWorkloadTransaction,proof:object,binding:unknown){
    const verified=proofs.get(proof);if(!verified)return fail();proofs.delete(proof);
    try{await current(tx,verified,binding);await tx.reserveWorkloadIdentity(verified.replayKey,verified.binding.actionId,verified.binding.manifestDigest);await current(tx,verified,binding);
-    return Object.freeze({principalKind:'workload' as const,actionId:verified.binding.actionId,manifestDigest:verified.binding.manifestDigest,workload:Object.freeze({...verified.binding.workload}),replayKey:verified.replayKey,profileDigest:verified.profileDigest,expiresAt:verified.expiresAt,authority:'identity_only' as const,executionAuthorized:false as const});
+    const result=Object.freeze({principalKind:'workload' as const,actionId:verified.binding.actionId,manifestDigest:verified.binding.manifestDigest,workload:Object.freeze({...verified.binding.workload}),replayKey:verified.replayKey,profileDigest:verified.profileDigest,expiresAt:verified.expiresAt,authority:'identity_only' as const,executionAuthorized:false as const});consumed.set(result,verified);return result;
    }catch{return fail()}
   },
  });
