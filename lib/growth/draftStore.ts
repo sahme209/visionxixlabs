@@ -42,7 +42,8 @@ const VALID_TRANSITIONS: Readonly<Record<LinkedInDraftStatus, ReadonlyArray<Link
 export type TransitionResult =
   | { kind: "ok"; draft: LinkedInPostDraft }
   | { kind: "invalid_transition"; from: string; to: LinkedInDraftStatus }
-  | { kind: "not_found" };
+  | { kind: "not_found" }
+  | { kind: "governance_required" };
 
 // ---------------------------------------------------------------------------
 // Create
@@ -138,6 +139,9 @@ export async function transitionStatus(
   actor: string,
   extras: { scheduledFor?: Date; rejectionReason?: string; linkedinPostUrn?: string; linkedinPostUrl?: string } = {},
 ): Promise<TransitionResult> {
+  // Scheduling and publication are effects, not ordinary content-status edits.
+  // Their dedicated platform executors own exact review and outcome evidence.
+  if (to === "scheduled" || to === "published") return { kind: "governance_required" };
   const existing = await prisma.linkedInPostDraft.findUnique({ where: { id } });
   if (!existing) return { kind: "not_found" };
 
@@ -158,20 +162,9 @@ export async function transitionStatus(
     approvedAt?: Date;
   } = { status: to };
 
-  if (to === "scheduled") {
-    if (!extras.scheduledFor) {
-      return { kind: "invalid_transition", from, to };
-    }
-    data.scheduledFor = extras.scheduledFor;
-  }
   if (to === "approved") {
     data.approvedByEmail = actor;
     data.approvedAt = new Date();
-  }
-  if (to === "published") {
-    data.publishedAt = new Date();
-    if (extras.linkedinPostUrn) data.linkedinPostUrn = extras.linkedinPostUrn;
-    if (extras.linkedinPostUrl) data.linkedinPostUrl = extras.linkedinPostUrl;
   }
   if (to === "rejected") {
     data.rejectionReason = extras.rejectionReason ?? "no reason given";
@@ -182,8 +175,6 @@ export async function transitionStatus(
   const action =
     to === "approved"  ? "draft.approved" :
     to === "rejected"  ? "draft.rejected" :
-    to === "scheduled" ? "draft.scheduled" :
-    to === "published" ? "draft.publish_succeeded" :
     "draft.edited";
 
   await writeGrowthAudit({

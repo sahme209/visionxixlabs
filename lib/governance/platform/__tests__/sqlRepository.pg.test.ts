@@ -145,14 +145,15 @@ it.skipIf(!enabled)('revocation during template readback prevents URL release in
 import {randomUUID} from 'node:crypto';
 import {encryptCredential} from '@/lib/security/credentialVault';
 import {publishDraft,POST_DRAFT_SELECT,POST_CONNECTION_SELECT} from '@/lib/growth/linkedin/posting';
-import {preparePlatformLinkedInPost} from '@/lib/growth/linkedin/platformPostingPlan';
-async function postFixture(){
+import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule} from '@/lib/growth/linkedin/platformPostingPlan';
+import {schedulePlatformLinkedInDraft} from '@/lib/growth/linkedin/platformSchedule';
+async function postFixture(schedule=false,scheduleDelay=30000){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');vi.stubEnv('CREDENTIAL_ENCRYPTION_KEY','synthetic-credential-key-'.repeat(3));
  const connection=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:fixture',accessToken:encryptCredential('synthetic-linkedin-token'),scopes:'w_member_social',expiresAt:new Date(Date.now()+60000),status:'connected'},select:POST_CONNECTION_SELECT});
- const draft=await defaultPrisma.linkedInPostDraft.create({data:{title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),effect=preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
+ const draft=await defaultPrisma.linkedInPostDraft.create({data:{title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),scheduledFor=new Date(Date.now()+scheduleDelay),effect=schedule?preparePlatformLinkedInSchedule(draft,connection,'202605',Date.now(),scheduledFor).effect:preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw),request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),id=await requester.propose(raw);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
- return {draft,connection,effect,id,requester,request,binding:await createDefaultPlatformExecution(request,id,1)};
+ return {draft,connection,scheduledFor,effect,id,requester,request,binding:await createDefaultPlatformExecution(request,id,1)};
 }
 it.skipIf(!enabled)('joins actual default post source, credential crypto, human review and SQL ledger with simulated HTTP',async()=>{
  try{
@@ -198,4 +199,31 @@ it.skipIf(!enabled)('SQL unknown publication permanently retains the native draf
  await s.beforeEffectSend(effects[0].proof,effects[0].effect,actor);await s.observeEffect(effects[0].proof,'unknown');
  await expect(s.beforeEffectSend(effects[1].proof,effects[1].effect,actor)).rejects.toThrow();
  const rows=await db.$queryRawUnsafe<Array<{status:string}>>('SELECT status FROM "PlatformGovernanceEffect" WHERE "publicationKey"=$1',(await import('@/lib/tauri/contentHash')).sha256ContentHash({kind:'growth.post.publish',draftId:'unknown-native-draft'}));expect(rows).toEqual([{status:'unknown'}]);
+});
+
+it.skipIf(!enabled)('default schedule execution joins real HMAC/source/SQL without publishing',async()=>{
+ try{
+  const f=await postFixture(true),http=vi.fn();vi.stubGlobal('fetch',http);
+  expect(await schedulePlatformLinkedInDraft({draftId:f.draft.id,connectionId:f.connection.id,scheduledFor:f.scheduledFor,platformExecution:f.binding})).toEqual({kind:'scheduled'});
+  expect(http).not.toHaveBeenCalled();const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'scheduled',scheduledFor:f.scheduledFor,linkedinPostUrn:null});
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson.status).toBe('confirmed');
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('changed SQL draft invalidates the independently reviewed schedule',async()=>{
+ try{
+  const f=await postFixture(true);await defaultPrisma.linkedInPostDraft.update({where:{id:f.draft.id},data:{body:'changed schedule source'}});
+  expect(await schedulePlatformLinkedInDraft({draftId:f.draft.id,connectionId:f.connection.id,scheduledFor:f.scheduledFor,platformExecution:f.binding})).toEqual({kind:'outcome_unknown'});
+  const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'approved',scheduledFor:null});
+ }finally{vi.unstubAllEnvs()}
+});
+
+it.skipIf(!enabled)('database mutation delay rolls back a schedule whose exact time expires',async()=>{
+ try{
+  const f=await postFixture(true,1000);
+  await db.$executeRawUnsafe(`CREATE FUNCTION platform_fixture_delay_schedule() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN IF NEW.status='scheduled' THEN PERFORM pg_sleep(1.2); END IF; RETURN NEW; END $$`);
+  await db.$executeRawUnsafe('CREATE TRIGGER platform_fixture_schedule_delay BEFORE UPDATE ON "LinkedInPostDraft" FOR EACH ROW EXECUTE FUNCTION platform_fixture_delay_schedule()');
+  expect(await schedulePlatformLinkedInDraft({draftId:f.draft.id,connectionId:f.connection.id,scheduledFor:f.scheduledFor,platformExecution:f.binding})).toEqual({kind:'outcome_unknown'});
+  const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'approved',scheduledFor:null});
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson.status).toBe('unknown');
+ }finally{vi.unstubAllEnvs()}
 });

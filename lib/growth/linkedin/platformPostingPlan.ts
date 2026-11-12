@@ -29,3 +29,11 @@ export function preparePlatformLinkedInPost(draft:PostingDraft,connection:Postin
  const effect=platformEffectSchema.parse({id:effectId,kind:'growth.post.publish',target:{connectionId:connection.id,connectionRevision:linkedInConnectionRevision(connection),author,draftId:draft.id,renderedPayloadDigest}});
  if(effect.kind!=='growth.post.publish')return fail();return Object.freeze({effect,body,version});
 }
+/** A schedule approval binds the old content/revision plus the exact new time.
+ * It does not authorize the later provider post, which needs its own action. */
+export function preparePlatformLinkedInSchedule(draft:PostingDraft,connection:PostingConnection,version:string,now:number,scheduledFor:Date,effectId='platform-linkedin-schedule'){
+ const value=date(scheduledFor);if(scheduledFor.getTime()<=now)fail();
+ const post=preparePlatformLinkedInPost(draft,connection,version,now,effectId);
+ const effect=platformEffectSchema.parse({id:effectId,kind:'growth.schedule.change',target:{...post.effect.target,scheduledFor:value}});
+ if(effect.kind!=='growth.schedule.change')return fail();return Object.freeze({effect,version});
+}

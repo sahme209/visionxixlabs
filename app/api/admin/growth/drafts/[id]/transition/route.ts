@@ -43,6 +43,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
     rejectionReason: body.rejectionReason,
   });
 
+  if (result.kind === "governance_required") return NextResponse.json({ ok: false, error: result.kind }, { status: 409 });
   if (result.kind === "not_found") return NextResponse.json({ ok: false, error: "not_found" }, { status: 404 });
   if (result.kind === "invalid_transition") return NextResponse.json({ ok: false, error: result.kind, from: result.from, to: result.to }, { status: 409 });
 

@@ -1,6 +1,6 @@
 import {afterEach,it,expect,vi} from 'vitest';
 import {createCurrentPlatformAuthority} from '../currentAuthority';
-import {preparePlatformLinkedInPost} from '@/lib/growth/linkedin/platformPostingPlan';
+import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule} from '@/lib/growth/linkedin/platformPostingPlan';
 import type {PlatformTransaction} from '../actionStore';
 const now=Date.parse('2026-11-12T00:00:00Z');
 function fixture(){
@@ -19,4 +19,10 @@ it('changed content, account revision or posting policy refuses the final send',
   vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');const f=fixture();if(cause==='content')f.draft.body='changed';if(cause==='revision')f.connection.updatedAt=new Date(now);if(cause==='disabled')vi.stubEnv('LINKEDIN_POSTING_ENABLED','false');
   await expect(createCurrentPlatformAuthority(()=>[]).assertEffectCurrent!(f.tx,f.effect)).rejects.toThrow();
  }
+});
+
+it('schedule authority binds the current draft and exact future time without authorizing publication',async()=>{
+ vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');const f=fixture(),authority=createCurrentPlatformAuthority(()=>[]);
+ const effect=preparePlatformLinkedInSchedule(f.draft,f.connection,'202605',now,new Date(now+30000)).effect;
+ await authority.assertEffectCurrent!(f.tx,effect);f.draft.body='changed';await expect(authority.assertEffectCurrent!(f.tx,effect)).rejects.toThrow();
 });
