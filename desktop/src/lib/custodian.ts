@@ -13,15 +13,15 @@ function owner(context:Context,signal?:AbortSignal){const config=context.getConf
  * not historical JSON. No issuer/credential/provider send or automatic retry. */
 export function createCustodianClient(context:Context){
  async function load(operation:'preview',id:string,signal?:AbortSignal):Promise<ReleasePlanResult<CustodianPreview>>;
- async function load(operation:'inspect',id:string,signal?:AbortSignal):Promise<ReleasePlanResult<CustodianHistory>>;
- async function load(operation:'preview'|'inspect',id:string,signal?:AbortSignal){
-  const owns=owner(context,signal);if(!platformActionId.safeParse(id).success)return fail();const schema=operation==='preview'?custodianPreview:custodianHistory;
-  const result=await releaseOperationPlanRequest(context,'POST',path,{operation,actionId:id},(raw):raw is CustodianPreview|CustodianHistory=>{const p=schema.safeParse(raw);return p.success&&p.data.actionId===id},signal);if(!result.ok)return result;
+ async function load(operation:'inspect',id:string,signal?:AbortSignal,afterSequence?:number):Promise<ReleasePlanResult<CustodianHistory>>;
+ async function load(operation:'preview'|'inspect',id:string,signal?:AbortSignal,afterSequence?:number){
+  const owns=owner(context,signal);if(!platformActionId.safeParse(id).success||afterSequence!==undefined&&(!Number.isInteger(afterSequence)||afterSequence<0||afterSequence>2147483647))return fail();const schema=operation==='preview'?custodianPreview:custodianHistory;
+  const result=await releaseOperationPlanRequest(context,'POST',path,{operation,actionId:id,...(afterSequence!==undefined?{afterSequence}:{})},(raw):raw is CustodianPreview|CustodianHistory=>{const p=schema.safeParse(raw);return p.success&&p.data.actionId===id&&(operation!=='inspect'||'closurePage' in p.data&&p.data.closurePage.afterSequence===(afterSequence??-1))},signal);if(!result.ok)return result;
   try{if(!await exact(result.data.control,result.data.planDigest)||!owns())return fail();return result}catch{return fail()}
  }
  return {
   preview:(id:string,signal?:AbortSignal)=>load('preview',id,signal),
-  inspect:(id:string,signal?:AbortSignal)=>load('inspect',id,signal),
+  inspect:(id:string,signal?:AbortSignal,afterSequence?:number)=>load('inspect',id,signal,afterSequence),
   async prepare(selection:unknown,requestId:string,signal?:AbortSignal){
    const owns=owner(context,signal),command=custodianCommand.safeParse({operation:'prepare',selection,requestId});if(!command.success||command.data.operation!=='prepare'||Date.parse(command.data.selection.expiresAt)<=Date.now())return fail();
    try{const selected=command.data.selection,nativeKey=await hash({purpose:'platform_custodian_role_v1',custodian:selected.custodian}),digest=await hash({purpose:'platform_custodian_drain_plan_v1',selection:selected}),control=custodianControlView.parse({...selected,nativeKey,digest,authority:'metadata_only',executionAuthorized:false}),planDigest=await hash({kind:'platform_governance_plan_v1',...custodianControlPlanInput(control)});if(!owns())return fail();return releaseOperationPlanRequest(context,'POST',path,command.data,(raw):raw is import('zod').infer<typeof custodianPreparationReceipt>=>{const p=custodianPreparationReceipt.safeParse(raw);return p.success&&p.data.requestId===requestId.toLowerCase()&&p.data.planDigest===planDigest},signal)}catch{return fail()}

@@ -34,7 +34,7 @@ export function compileCustodianClosureSnapshot(rawBarrier:unknown,rawRows:unkno
 export type CustodianClosureSnapshot=ReturnType<typeof compileCustodianClosureSnapshot>;
 
 export interface CustodianClosureTransaction extends CustodianDrainTransaction{
- readCustodianClosureHistory(actionId:string):Promise<unknown[]>;
+ readCustodianClosureHistory:NonNullable<CustodianDrainTransaction['readCustodianClosureHistory']>;
  readCustodianClosure(nativeKey:string):Promise<unknown|null>;
  readCustodianClosureSnapshot(nativeKey:string):Promise<CustodianClosureSnapshot>;
 }

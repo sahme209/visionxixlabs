@@ -970,3 +970,8 @@ Exact metadata preparation now retains one original reference and supports expli
 ### November12 — composed platform regression
 
 Delayed user/token context replacement no longer stores a stale platform history response.38focused UI checks, root types and desktop frontend build pass; complete ordinary suite18,519pass/0fail/1,021pending (not acceptance). See [current regression receipt](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-INTEGRATION-REGRESSION-RECEIPT.json). Actual source/custody/fleet qualification, pending image/template/deployment designs, final review/PR and all native/live/production gates remain.
+
+
+### November12 — local closure history no longer capped at32total records
+
+Explicit keyset paging reads32validated observations at a time and labels partial history; no automatic source/observation/retry occurs.108actual isolated SQL cases pass with synthetic source/fleet/provider evidence, plus67focused checks and corrected root types. See [pagination evidence](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-PAGINATION-PG-RECEIPT.json). Full P01/default/native/live/final-review gates and existing pending designs remain unchanged.

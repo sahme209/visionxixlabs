@@ -32,7 +32,7 @@ export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>Platfor
   if(parent.status!=='confirmed'||!same(readCustodianBarrier(row.receipt),state))fail();return state;
  }
  async function readClosureFor(barrier:CustodianBarrier){
-  const rows=await sql.$queryRawUnsafe<Array<{observation:unknown}>>('SELECT "detailJson"->\'custodianClosure\' AS observation FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'custodian.closure_observed\' ORDER BY sequence DESC LIMIT 1',barrier.controlActionId);
+  const rows=await sql.$queryRawUnsafe<Array<{sequence:number;observation:unknown}>>('SELECT sequence,"detailJson"->\'custodianClosure\' AS observation FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'custodian.closure_observed\' ORDER BY sequence DESC LIMIT 1',barrier.controlActionId);
   if(rows.length===0)return null;const saved=readCustodianClosureObservation(rows[0].observation);if(!same(saved.snapshot.barrier,barrier))fail();return saved;
  }
  async function snapshotFor(raw:string,originalBarrier?:CustodianBarrier){
@@ -59,9 +59,9 @@ export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>Platfor
    if(count!==1)fail();written=state;
   },
   readCustodianClosureSnapshot:snapshotFor,
-  async readCustodianClosureHistory(id){
-   check(id);const parent=readPlatformAction(await getTx().read(id)),control=await controlFor(id,parent),rows=await sql.$queryRawUnsafe<Array<{observation:unknown}>>('SELECT "detailJson"->\'custodianClosure\' AS observation FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'custodian.closure_observed\' ORDER BY sequence LIMIT 33',id);if(rows.length>32)fail();
-   return rows.map(row=>{const record=readCustodianClosureObservation(row.observation);if(record.snapshot.barrier.controlActionId!==id||record.snapshot.barrier.controlDigest!==control.digest||record.snapshot.barrier.nativeKey!==control.nativeKey)fail();return record});
+  async readCustodianClosureHistory(id,afterSequence){
+   check(id);const parent=readPlatformAction(await getTx().read(id)),control=await controlFor(id,parent),rows=await sql.$queryRawUnsafe<Array<{sequence:number;observation:unknown}>>('SELECT sequence,"detailJson"->\'custodianClosure\' AS observation FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind=\'custodian.closure_observed\' AND sequence>$2 ORDER BY sequence LIMIT 33',id,afterSequence);if(!Number.isInteger(afterSequence)||afterSequence< -1||afterSequence>2147483647)fail();
+   let previous=afterSequence;const observations=rows.map(row=>{if(!Number.isInteger(row.sequence)||row.sequence<=previous||row.sequence>2147483647)fail();previous=row.sequence;const record=readCustodianClosureObservation(row.observation);if(record.snapshot.barrier.controlActionId!==id||record.snapshot.barrier.controlDigest!==control.digest||record.snapshot.barrier.nativeKey!==control.nativeKey)fail();return record});return {observations:observations.slice(0,32),nextSequence:rows.length>32?rows[31].sequence:null};
   },
   async readCustodianClosure(raw){const key=issuer(raw),barrier=await readBarrier(key);return barrier===null?null:readClosureFor(barrier)},
   async readCustodianIntent(id){

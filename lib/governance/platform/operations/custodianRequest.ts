@@ -18,7 +18,7 @@ export async function createCustodianRequestComposition(request:{headers:Headers
  return Object.freeze({
   prepare:(selection:unknown,reference:string)=>call(()=>drain.prepare(selection,principal,reference)),
   lookup:(reference:string)=>call(()=>drain.lookup(reference,principal)),
-  inspect:(actionId:string)=>call(()=>drain.inspect(actionId,principal)),
+  inspect:(actionId:string,afterSequence?:number)=>call(()=>drain.inspect(actionId,principal,afterSequence)),
   preview:(actionId:string)=>call(()=>drain.preview(actionId,principal)),
   review:(actionId:string,version:number,digest:string)=>call(()=>drain.review(actionId,version,digest,principal)),
   executeControl:(actionId:string,version:number)=>call(()=>drain.execute(actionId,version,principal)),
