@@ -17,9 +17,12 @@ describe("AWS ECS deployment workflow template", () => {
     expect(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE).not.toContain("Rolling back to \${{ steps.capture.outputs.previous_task_def }}");
   });
 
-  it("matches the checked-in tenant workflow", () => {
+  it("keeps the tenant template separate from the retired Axiom platform entrypoint", () => {
     const checkedInWorkflow = readFileSync(resolve(process.cwd(), ".github/workflows/axiom-deploy-aws-ecs.yml"), "utf8");
-    expect(checkedInWorkflow.trim()).toBe(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE.trim());
+    expect(checkedInWorkflow).toContain("permissions: {}");
+    expect(checkedInWorkflow).toContain("Require managed platform deployment");
+    expect(checkedInWorkflow).not.toContain("configure-aws-credentials@");
+    expect(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE).toContain("id-token: write");
   });
   it("pins the reviewed AWS credential action to the verified full vendor commit",()=>{expect(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE).toContain('aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd');expect(AWS_ECS_DEPLOY_WORKFLOW_TEMPLATE).not.toMatch(/uses:.*@v[0-9]/);});
 
