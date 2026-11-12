@@ -29,3 +29,5 @@ Source inspected through f0dd0849. This is a requirement/source audit, not autom
 No source audit implies permission to contact providers, retrieve credentials, run operational workflows, change a production schema/flag, sign/install, spend or deploy. Preserve all original unknown records, production discrepancy, native/Governance activation fences and the complete master scope.
 
 - Operational source extension: OPERATIONAL-RELEASE-DESIGN-PROPOSAL.md is independently builder-checked and owner-approved for LOCAL implementation/tests; only initial metadata contracts exist so far. Owner authorization stays external/attested; an exact already-created run/attempt is required for any proposed future delegation. No workflow was dispatched.
+
+Manual-release notice delta: dedicated durable store/current paired request composition now tested with actual isolated SQL. This is one-use notice/history only, never permission or a deployment. Default source qualification refuses; actual CI/artifact/schema/recovery/result suppliers remain open, as do workload/settings/operational retirement and final coverage. See CURRENT.md.

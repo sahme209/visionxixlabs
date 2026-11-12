@@ -5190,3 +5190,27 @@ model PlatformGovernanceEffect {
   action   PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@id([actionId, index])
 }
+
+/// LOCAL proposed owner-click notice only; never grants deployment permission.
+model PlatformManualRelease {
+  id             String @id
+  manifestDigest String
+  stateJson      Json
+  version        Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  events         PlatformManualReleaseEvent[]
+  @@index([createdAt, id])
+}
+
+/// Nonsecret transition evidence, committed atomically with the notice record.
+model PlatformManualReleaseEvent {
+  id         String @id
+  recordId   String
+  sequence   Int
+  kind       String
+  detailJson Json
+  occurredAt DateTime @default(now())
+  record     PlatformManualRelease @relation(fields: [recordId], references: [id], onDelete: Restrict)
+  @@unique([recordId, sequence])
+}

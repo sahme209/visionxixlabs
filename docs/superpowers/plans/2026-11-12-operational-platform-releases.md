@@ -95,3 +95,8 @@
 ## Self-review
 
 Spec manual owner/evidence boundary maps Task1/2/5; exact workload/delegation/lease and conditional rollback map Task1/3/4/5; settings private manifest/physical writes map Task1/3/4; retirement and all-family evidence map Task4/6. Five review-focus classes are explicitly tested in their owning tasks. Existing schema/source/receipt dependencies are source-verified during implementation rather than guessed or repinned. No independent subsystem or held real-world requirement is removed from the full goal.
+
+
+### Task2 intermediate evidence (not task completion)
+
+ManualReleaseStore/SqlRepository/Request composition now implement dedicated immutable metadata records, current genuine paired identities, exact independent review, requester one-use notice, historical lookup/inspection and uncertain-claim preservation.27focused checks/root types and39actual isolated SQL cases PASS (synthetic manifest sources). Default private source qualification remains unavailable; no actual CI/build/recovery/result source or route has been qualified. Keep Task2 boxes open until those requirements and composed acceptance are complete. No provider/workflow/production action.

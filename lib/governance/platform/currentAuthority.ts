@@ -17,11 +17,7 @@ const fail=():never=>{throw Error('platform_governance_authority_unavailable')};
  * for its own validity; that workspace is not the platform action's owner. */
 export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly string[]):PlatformAuthority{
  return {async assertCurrent(tx,raw){
-  const principal=platformPrincipalSchema.parse(raw);
-  const allowed=()=>readAdminEmails().map(s=>s.trim().toLowerCase()).filter(Boolean);
-  if(!allowed().length)fail();
-  const row=rowSchema.parse(await tx.readPrincipal(principal));
-  if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
+  await assertCurrentPlatformPrincipal(tx,raw,readAdminEmails);
  },async assertEffectCurrent(tx,effect){
   if(effect.kind==='template.bucket.create'){
    if(effect.target.region!=='us-east-2'||sha256ContentHash(templateBucketEffect(effect.target.accountId,effect.target.region,effect.id))!==sha256ContentHash(effect))fail();return;
@@ -48,3 +44,12 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
  }};
 }
 export function readConfiguredPlatformAdmins():readonly string[]{return (process.env.ADMIN_EMAILS??'').split(',')}
+
+/** Same platform-admin/current paired-session rule for dedicated platform records. */
+export async function assertCurrentPlatformPrincipal(tx:Pick<import('./actionStore').PlatformTransaction,'readPrincipal'>,raw:import('./contracts').PlatformPrincipal,readAdminEmails:()=>readonly string[]){
+  const principal=platformPrincipalSchema.parse(raw);
+  const allowed=()=>readAdminEmails().map(s=>s.trim().toLowerCase()).filter(Boolean);
+  if(!allowed().length)fail();
+  const row=rowSchema.parse(await tx.readPrincipal(principal));
+  if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
+}

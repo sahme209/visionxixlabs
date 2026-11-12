@@ -53,7 +53,7 @@ it.skipIf(!enabled)('revoked genuine reviewer cannot authorize a later SQL claim
 
 import {vi} from 'vitest';
 import {prisma as defaultPrisma} from '@/lib/db';
-import {mintDesktopToken} from '@/lib/desktop/desktopToken';
+import {mintDesktopToken,verifyDesktopToken} from '@/lib/desktop/desktopToken';
 import {createDefaultPlatformRequestService} from '../requestService';
 afterAll(async()=>{if(enabled)await defaultPrisma.$disconnect()});
 it.skipIf(!enabled)('runs default request authentication, independent review and claim with actual signed synthetic tokens and SQL',async()=>{
@@ -482,4 +482,40 @@ it.skipIf(!enabled)('joins prepared canonical bucket target review with actual H
   const approved=await createPlatformReviewClient(other).approve(record.data);expect(approved).toMatchObject({ok:true,data:{status:'approved',attemptCount:0,reviewerUserId:reviewer.userId}});expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();
   const effects=await db.$queryRawUnsafe<Array<{count:bigint}>>('SELECT count(*) AS count FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',saved.data.actionId);expect(Number(effects[0].count)).toBe(0);
  }finally{vi.restoreAllMocks();vi.unstubAllEnvs();vi.unstubAllGlobals()}
+});
+
+import {createManualReleaseStore,type ManualReleaseRepository} from '../operations/manualReleaseStore';
+import {createManualReleaseSqlRepository} from '../operations/manualReleaseSqlRepository';
+import {assertCurrentPlatformPrincipal} from '../currentAuthority';
+function manualFixture(repo?:ManualReleaseRepository){
+ const evidence='platform_evidence_11111111-1111-4111-8111-111111111111',expiresAt=new Date(Date.now()+60000).toISOString();
+ const source={buildCurrentManifest:async()=>({format:1,scope:'platform',kind:'release.manual',expiresAt,source:{repository:'sahme209/visionxixlabs',branch:'main',commit:'b'.repeat(40)},target:{projectId:'prj_fixture',teamId:'team_fixture',environment:'production'},sourceHashes:{workflow:d,build:d,configuration:d,lock:d,schema:d},artifactEvidenceId:evidence,ciEvidence:[{name:'Typecheck + Vitest',receiptId:evidence,commit:'b'.repeat(40)}],compatibilityEvidenceId:evidence,recoveryEvidenceId:evidence,smokeProfileId:'production-smoke-v1'}),assertCurrent:async()=>{}};
+ const repository=repo??createManualReleaseSqlRepository(db as unknown as PlatformSqlDatabase);
+ return {repository,source,selection:{manifestEvidenceId:evidence,expiresAt},store:createManualReleaseStore(repository,{assertCurrent:(tx,p)=>assertCurrentPlatformPrincipal(tx,p,()=>['requester@example.test','reviewer@example.test'])},source)};
+}
+import {createManualReleaseRequestComposition} from '../operations/manualReleaseRequest';
+import {createDefaultManualReleaseRequestService} from '../operations/manualReleaseRequestService';
+it.skipIf(!enabled)('stores separately reviewed manual notices once with actual current identity SQL and no executable action',async()=>{
+ await identityFixtures();const f=manualFixture(),requestId='33333333-3333-4333-8333-333333333333';
+ const saved=await Promise.all([f.store.prepare(f.selection,actor,requestId),f.store.prepare(f.selection,actor,requestId)]);expect(saved[0].recordId).toBe(saved[1].recordId);
+ const id=saved[0].recordId,view=await f.store.inspect(id,reviewer);await expect(f.store.review(id,0,view.manifest.digest,actor)).rejects.toThrow();await f.store.review(id,0,view.manifest.digest,reviewer);
+ vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');
+ let outcomes:PromiseSettledResult<unknown>[];
+ try{
+  const headers=new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)}),request={headers};
+  const live=await createManualReleaseRequestComposition(request,{repo:f.repository,source:f.source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']});
+  const defaultReader=await createDefaultManualReleaseRequestService(request);expect(await defaultReader.inspect(id)).toMatchObject({status:'reviewed',ownerAuthorization:'external_not_verified'});
+  await expect(defaultReader.prepare(f.selection,'55555555-5555-4555-8555-555555555555')).rejects.toThrow('manual_release_source_qualification_unavailable');
+  outcomes=await Promise.allSettled([live.recordNotice(id,1),live.recordNotice(id,1)]);
+ }finally{vi.unstubAllEnvs()}
+expect(outcomes.filter(r=>r.status==='fulfilled')).toHaveLength(1);
+ expect(await f.store.inspect(id,actor)).toMatchObject({status:'notice_recorded',attemptCount:1,version:3,providerExecution:false,ownerAuthorization:'external_not_verified'});
+ const events=await db.$queryRawUnsafe<Array<{detailJson:unknown}>>('SELECT "detailJson" FROM "PlatformManualReleaseEvent" WHERE "recordId"=$1 ORDER BY sequence',id);expect(events).toHaveLength(4);expect(JSON.stringify(events)).not.toContain(actor.sessionId);
+ expect(await db.$queryRawUnsafe('SELECT id FROM "PlatformGovernanceAction" WHERE id=$1',id)).toEqual([]);
+});
+it.skipIf(!enabled)('rolls manual review/event back atomically and refuses notice after actual reviewer revocation',async()=>{
+ await identityFixtures();const f=manualFixture(),{recordId:id}=await f.store.prepare(f.selection,actor,'44444444-4444-4444-8444-444444444444'),view=await f.store.inspect(id,actor);
+ const broken=manualFixture({transaction:fn=>f.repository.transaction(tx=>fn({...tx,event:async()=>{throw Error('synthetic_event_failure')}}))});await expect(broken.store.review(id,0,view.manifest.digest,reviewer)).rejects.toThrow();expect(await f.store.inspect(id,actor)).toMatchObject({status:'proposed',version:0});
+ await f.store.review(id,0,view.manifest.digest,reviewer);await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);await expect(f.store.recordNotice(id,1,actor)).rejects.toThrow();
+ expect(await f.store.inspect(id,actor)).toMatchObject({status:'reviewed',attemptCount:0});await expect(f.store.inspect(id,reviewer)).rejects.toThrow();
 });

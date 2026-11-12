@@ -4,11 +4,11 @@ import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {readPlatformAction} from './kernel';
 import type {PlatformRepository,PlatformTransaction} from './actionStore';
-interface Sql{
+export interface PlatformSql{
  $queryRawUnsafe<T=unknown>(sql:string,...values:unknown[]):Promise<T>;
  $executeRawUnsafe(sql:string,...values:unknown[]):Promise<number>;
 }
-export interface PlatformSqlDatabase{$transaction<T>(fn:(tx:Sql)=>Promise<T>,options:{isolationLevel:'ReadCommitted';timeout:number;maxWait:number}):Promise<T>}
+export interface PlatformSqlDatabase{$transaction<T>(fn:(tx:PlatformSql)=>Promise<T>,options:{isolationLevel:'ReadCommitted';timeout:number;maxWait:number}):Promise<T>}
 const fail=():never=>{throw Error('platform_governance_storage_unavailable')};
 /** Dedicated platform tables, never a tenant alias. All values parameterized.
  * No retry; uncertain transaction outcomes cannot issue a send proof. */
@@ -39,16 +39,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
     const connections=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"linkedinUrn","organizationUrn",scopes,status,"expiresAt","updatedAt" FROM "LinkedInAccountConnection" WHERE id=$1 FOR SHARE',connectionId);
     if(drafts.length!==1||connections.length!==1)fail();return {draft:drafts[0],connection:connections[0]};
    },
-   async readSessionPrincipal(sessionId){
-    if(!locked)fail();
-    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string}>>('SELECT u.id AS "userId", s.id AS "sessionId" FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" WHERE s.id=$1 FOR SHARE OF s,u',sessionId);
-    if(rows.length!==1)fail();return rows[0];
-   },
-   async readPrincipal(principal){
-    if(!locked)fail();
-    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean}>>('SELECT u.id AS "userId", s.id AS "sessionId", u.email, (s."revokedAt" IS NULL AND s."issuedAt" <= clock_timestamp() AND s."expiresAt" > clock_timestamp() AND m."acceptedAt" IS NOT NULL) AS live FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" JOIN "OrgMembership" m ON m."userId"=s."userId" AND m."organizationId"=s."organizationId" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);
-    if(rows.length!==1)fail();return rows[0];
-   },
+   ...createPlatformIdentitySqlReader(sql,()=>{if(!locked)fail()}),
    async lock(id){if(locked!==null)fail();await sql.$queryRawUnsafe('SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtextextended($1,0))','axiom-platform-governance:'+id);locked=id},
    async now(){if(!locked)fail();const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1||!Number.isSafeInteger(rows[0].now))fail();return rows[0].now},
    async read(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{stateJson:unknown;planDigest:string;version:number}>>('SELECT "stateJson","planDigest",version FROM "PlatformGovernanceAction" WHERE id=$1',id);
@@ -84,3 +75,17 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   return fn(tx);
  },{isolationLevel:'ReadCommitted',timeout:10000,maxWait:5000})};
 }
+
+/** Shared current-identity SQL only; every consumer must hold its transaction lock. */
+export function createPlatformIdentitySqlReader(sql:PlatformSql,assertLocked:()=>void){return {
+   async readSessionPrincipal(sessionId:string){
+    assertLocked();
+    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string}>>('SELECT u.id AS "userId", s.id AS "sessionId" FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" WHERE s.id=$1 FOR SHARE OF s,u',sessionId);
+    if(rows.length!==1)fail();return rows[0];
+   },
+   async readPrincipal(principal:import('./contracts').PlatformPrincipal){
+    assertLocked();
+    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean}>>('SELECT u.id AS "userId", s.id AS "sessionId", u.email, (s."revokedAt" IS NULL AND s."issuedAt" <= clock_timestamp() AND s."expiresAt" > clock_timestamp() AND m."acceptedAt" IS NOT NULL) AS live FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" JOIN "OrgMembership" m ON m."userId"=s."userId" AND m."organizationId"=s."organizationId" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);
+    if(rows.length!==1)fail();return rows[0];
+   },
+ };}

@@ -410,3 +410,8 @@ Owner approved the platform design for local code/schema definitions/isolated te
 ## November12 — operational platform local scope approved
 
 Owner approved the reviewed operational-release design for LOCAL implementation/schema/synthetic and owned-isolated tests only, superseding the original source-modification exclusion for the named administrative entrypoints within their complete replacement batch. No actual workflow, credentials, grants, provider/production action or spending. Follow `docs/superpowers/plans/2026-11-12-operational-platform-releases.md`; initial metadata contracts pass5focused checks/root types, not complete enforcement. Other pending authority designs are not approved by this decision.
+
+
+## November12 — durable manual release notices, local only
+
+Operational Task2 now has dedicated notice/event SQL and current paired possession/admin composition, not owner or provider authority.27focused checks/root types and39actual isolated PG journeys pass (synthetic release evidence; server stopped). Default new preparation/review/notice refuses unqualified sources; current-reader history is available in unregistered source. Two appended local notice models preserve all178prior model bytes; reviewed current mock-helper pin/client refreshed, historical packets unchanged. Full Task2/P01/workflow/CI/production remain open. See platform-governance-scope/CURRENT.md and MANUAL-RELEASE-SCHEMA-REVIEW.md.

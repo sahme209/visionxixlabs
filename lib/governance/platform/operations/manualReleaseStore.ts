@@ -18,6 +18,7 @@ export function readManualReleaseRecord(raw:unknown){
 }
 export type ManualReleaseRecord=ReturnType<typeof readManualReleaseRecord>;
 export interface ManualReleaseTransaction{
+ readSessionPrincipal(sessionId:string):Promise<unknown>;readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  lock(id:string):Promise<void>;now():Promise<number>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:ManualReleaseRecord):Promise<void>;
  replace(id:string,version:number,state:ManualReleaseRecord):Promise<void>;

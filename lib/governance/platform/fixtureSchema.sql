@@ -15,3 +15,16 @@ CREATE TABLE "PlatformGovernanceEffect" (
  "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
  index INTEGER NOT NULL, status TEXT NOT NULL, "publicationKey" TEXT UNIQUE, PRIMARY KEY ("actionId",index)
 );
+-- Manual owner-click notices are not executable platform action records.
+CREATE TABLE "PlatformManualRelease" (
+ id TEXT PRIMARY KEY, "manifestDigest" TEXT NOT NULL, "stateJson" JSONB NOT NULL,
+ version INTEGER NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ "updatedAt" TIMESTAMP(3) NOT NULL
+);
+CREATE INDEX "PlatformManualRelease_createdAt_id_idx" ON "PlatformManualRelease" ("createdAt",id);
+CREATE TABLE "PlatformManualReleaseEvent" (
+ id TEXT PRIMARY KEY, "recordId" TEXT NOT NULL REFERENCES "PlatformManualRelease"(id) ON DELETE RESTRICT,
+ sequence INTEGER NOT NULL, kind TEXT NOT NULL, "detailJson" JSONB NOT NULL,
+ "occurredAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE ("recordId",sequence)
+);

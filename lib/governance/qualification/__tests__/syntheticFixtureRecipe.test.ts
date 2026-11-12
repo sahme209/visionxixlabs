@@ -30,10 +30,10 @@ it.skipIf(!appleSiliconMac)('refuses CLI version or byte drift before an injecte
   expect(run).not.toHaveBeenCalled();
  }finally{fs.rmSync(parent,{recursive:true,force:true})}
 });
-it.skipIf(!appleSiliconMac)('refuses a compiler output omitting only a new approved platform table',()=>{
+it.skipIf(!appleSiliconMac).each(['PlatformGovernanceEffect','PlatformManualRelease','PlatformManualReleaseEvent'])('refuses a compiler output omitting only approved platform table %s',(missing)=>{
  const parent=fs.mkdtempSync(path.join(os.tmpdir(),'axiom-recipe-platform-coverage-'));
  try{
-  const schema=fs.readFileSync('prisma/schema.prisma','utf8'),models=[...schema.matchAll(/^model ([A-Za-z0-9_]+) \{/gm)].map(m=>m[1]),run=vi.fn(()=>({status:0,stdout:models.filter(name=>name!=='PlatformGovernanceEffect').map(name=>`CREATE TABLE "${name}" (id text);`).join('\n')}));
-  expect(models).toContain('PlatformGovernanceEffect');expect(()=>prepareSyntheticFixtureRecipe(process.cwd(),path.join(parent,'output'),{run})).toThrow('synthetic_recipe_schema_coverage_unavailable');expect(run).toHaveBeenCalledTimes(1);expect(fs.existsSync(path.join(parent,'output'))).toBe(false);
+  const schema=fs.readFileSync('prisma/schema.prisma','utf8'),models=[...schema.matchAll(/^model ([A-Za-z0-9_]+) \{/gm)].map(m=>m[1]),run=vi.fn(()=>({status:0,stdout:models.filter(name=>name!==missing).map(name=>`CREATE TABLE "${name}" (id text);`).join('\n')}));
+  expect(models).toContain(missing);expect(()=>prepareSyntheticFixtureRecipe(process.cwd(),path.join(parent,'output'),{run})).toThrow('synthetic_recipe_schema_coverage_unavailable');expect(run).toHaveBeenCalledTimes(1);expect(fs.existsSync(path.join(parent,'output'))).toBe(false);
  }finally{fs.rmSync(parent,{recursive:true,force:true})}
 });
