@@ -1,0 +1,17 @@
+/** @vitest-environment jsdom */
+import {createElement} from 'react';
+import {afterEach,it,expect,vi} from 'vitest';
+import {render,screen,fireEvent,cleanup,waitFor} from '@testing-library/react';
+import {platformInspectionSchema} from '../../governance/platform/viewContract';
+const context=vi.hoisted(()=>({revision:0,config:{}}));vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{getContextRevision:()=>context.revision,subscribeContext:()=>()=>{},config:context.config}}));
+import {PlatformReviewPanel} from '../../../desktop/src/components/PlatformReviewPanel';
+const id='platform_action_11111111-1111-4111-8111-111111111111',d='a'.repeat(64),html='<script>window.unapproved=true</script><img src="https://untrusted.test/image">';
+const action=()=>platformInspectionSchema.parse({actionId:id,status:'proposed',version:0,attemptCount:0,requesterUserId:'requester',reviewerUserId:null,expired:false,plan:{format:1,scope:'platform',digest:d,sourceDigest:d,expiresAt:'2099-01-01T00:00:00Z',effects:[{id:'deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'production',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:'2026-11-12T00:00:00Z'}}]},effects:[{id:'deploy',status:'not_started'}],authority:'history_only',sourceValidation:'not_checked'});
+function fixture(){const client={inspect:vi.fn(),preview:vi.fn(),approve:vi.fn(async()=>({ok:true as const,data:platformInspectionSchema.parse({...action(),status:'approved',version:1,reviewerUserId:'reviewer'})}))},deploymentClient={preview:vi.fn(async()=>({ok:true as const,data:{kind:'deployment.vercel' as const,actionId:id,planDigest:d,sourceDigest:d,effectId:'deploy',files:[{path:'index.html',content:html}],authority:'review_preview_only' as const}}))};return {client,deploymentClient,props:{action:action(),currentUserId:'reviewer',canApprove:true,client,deploymentClient,onRecorded:vi.fn()}}}
+afterEach(()=>{cleanup();context.revision=0});
+it('requires the exact source and renders HTML only as text before independent approval',async()=>{
+ const f=fixture();render(createElement(PlatformReviewPanel,f.props));expect((screen.getByRole('button',{name:'Record independent approval'}) as HTMLButtonElement).disabled).toBe(true);fireEvent.click(screen.getByRole('button',{name:'Load exact source preview'}));await screen.findByText(html);expect(document.querySelector('script')).toBeNull();expect(document.querySelector('img')).toBeNull();expect(f.client.preview).not.toHaveBeenCalled();fireEvent.click(screen.getByRole('checkbox'));fireEvent.click(screen.getByRole('button',{name:'Record independent approval'}));await waitFor(()=>expect(f.client.approve).toHaveBeenCalledExactlyOnceWith(action(),expect.any(AbortSignal)));expect(f.props.onRecorded).toHaveBeenCalledTimes(1);
+});
+it('refuses a mismatched source response and does not decide automatically',async()=>{
+ const f=fixture();f.deploymentClient.preview.mockResolvedValueOnce({ok:true,data:{kind:'deployment.vercel',actionId:id,planDigest:'b'.repeat(64),sourceDigest:d,effectId:'deploy',files:[{path:'index.html',content:html}],authority:'review_preview_only'}});render(createElement(PlatformReviewPanel,f.props));fireEvent.click(screen.getByRole('button',{name:'Load exact source preview'}));await screen.findByText(/Source preview does not match/);expect((screen.getByRole('button',{name:'Record independent approval'}) as HTMLButtonElement).disabled).toBe(true);expect(f.client.approve).not.toHaveBeenCalled();
+});

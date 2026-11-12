@@ -253,3 +253,6 @@ Prepared generated-site deployment source: the local backend derives exact files
 
 
 Prepared deployment reference/preview transport: local authenticated HTTP and a paired desktop factory now connect the existing Lead-derived source service. Save, original-reference lookup and matching bounded file-text preview only; no decision or execution command/route activation.13focused HTTP/real-transport checks, types and desktop shell build pass;35actual isolated SQL cases include the joined default HMAC/prepared HTTP/client source journey with in-process delivery. Deployment UI/result recovery/all-family acceptance remain incomplete.
+
+
+Local deployment source review now renders exact files as escaped text in the prepared independent-review panel. It performs no execution and explicitly labels deployment execution unavailable.27focused checks and root/desktop types pass; no native visual, live-provider, route activation or completed-P01 acceptance.

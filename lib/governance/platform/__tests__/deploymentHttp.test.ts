@@ -16,3 +16,8 @@ it('refuses caller authority/files and authenticates before source use',async()=
 it('holds uncertain saves for original-reference lookup without retry or raw error disclosure',async()=>{
  const f=fixture();f.prepareDeployment.mockRejectedValueOnce(Error('possible commit private detail'));const response=await f.handle(request({operation:'prepare_deployment',requestId,selection:selected}));expect(response.status).toBe(409);expect(await response.json()).toEqual({ok:false,error:'platform_deployment_preparation_unconfirmed',recovery:'lookup_original_reference_no_automatic_resubmit'});expect(f.prepareDeployment).toHaveBeenCalledTimes(1);expect(f.lookupDeploymentPreparation).not.toHaveBeenCalled();
 });
+it('refuses duplicate or unsafe preview paths instead of presenting an ambiguous file set',async()=>{
+ for(const files of [[{path:'index.html',content:'one'},{path:'index.html',content:'two'}],[{path:'../outside.html',content:'text'}]]){
+  const f=fixture();f.previewDeployment.mockResolvedValueOnce({kind:'deployment.vercel',actionId:id,planDigest:'a'.repeat(64),sourceDigest:'b'.repeat(64),effectId:'one',files,authority:'review_preview_only'});expect((await f.handle(request({operation:'preview_deployment',actionId:id}))).status).toBe(409);
+ }
+});
