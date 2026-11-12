@@ -114,3 +114,10 @@ Task3 delegation/credential subunit:72focused checks/root types and44actual isol
 
 
 Task3 target subunit:116focused/root types and51actual isolated SQL journeys PASS/stopped. Current physical-service reservation and credential-liability gates join the same workload claim/credential-stage transaction; immutable receipts preserve prior generations and qualified closure references. Actual native/provider/closure suppliers remain unqualified; default sends and settings artifacts still open. No use/approval of the pending generated-site recovery implementation. See OPERATIONAL-TARGET-PG-RECEIPT.json.
+
+
+### Private settings proposed Prisma schema/client — local only
+
+Added PlatformSettingsArtifact and its parent inverse relation. Actual Prisma DMMF comparison verifies all184prior models/enums: only the inverse relation changes existing metadata; no existing data field/default/enum/migration changed. Current185-model mock-helper schema pin updated AFTER semantic review; historical packets and engine/CLI/seed pins unchanged. The existing stale-schema guard first refused as expected;12mocked recipe checks now pass including omission of the new table. Cached client generation ran with network denied and no DATABASE_URL; client compilation, generated metadata guards and strict root types pass. Additional12focused generated-model/codec/intake checks pass.
+
+See SETTINGS-ARTIFACT-SCHEMA-REVIEW.md/json. Prior53actual isolated SQL receipt remains accurately scoped to its earlier enumerated schema hashes, not relabeled as a new runtime attestation. SQL table behavior is unchanged by this source-model addition. Actual protected custody, registered request/reviewer workflow, current artifact presence at review and final execution/settings reservations remain open. No production migration/apply, key/provider action, deployment, spending or historical qualification.

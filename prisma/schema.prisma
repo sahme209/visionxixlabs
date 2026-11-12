@@ -5166,6 +5166,7 @@ model PlatformGovernanceAction {
   events     PlatformGovernanceEvent[]
   effects    PlatformGovernanceEffect[]
   operationalDelegation PlatformOperationalDelegation?
+  settingsArtifacts PlatformSettingsArtifact[]
   operationalTargets PlatformOperationalTarget[]
   operationalTargetReceipts PlatformOperationalTargetReceipt[]
   @@index([createdAt, id])
@@ -5268,4 +5269,17 @@ model PlatformOperationalTargetReceipt {
   target        PlatformOperationalTarget @relation(fields: [nativeKey], references: [nativeKey], onDelete: Restrict)
   action        PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@index([nativeKey, generation])
+}
+
+/// LOCAL proposed private encrypted value; immutable after insertion.
+/// Never expose envelopes through public action/history DTOs.
+model PlatformSettingsArtifact {
+  id String @id
+  actionId String
+  effectIndex Int
+  bindingJson Json
+  envelope String
+  createdAtMs Float
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, effectIndex])
 }
