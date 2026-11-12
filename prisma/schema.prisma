@@ -5153,3 +5153,37 @@ model AgentGatewayRequest {
   @@index([organizationId, status, createdAt])
   @@index([apiKeyId, createdAt])
 }
+
+/// LOCAL proposed platform-only Governance storage. No production migration is
+/// authorized. Never use a fabricated tenant organization for platform actions.
+model PlatformGovernanceAction {
+  id         String @id
+  planDigest String
+  stateJson  Json
+  version    Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  events     PlatformGovernanceEvent[]
+  effects    PlatformGovernanceEffect[]
+}
+
+/// Content-free append-only transitions, atomically committed with the action.
+model PlatformGovernanceEvent {
+  id         String @id
+  actionId   String
+  sequence   Int
+  kind       String
+  detailJson Json
+  occurredAt DateTime @default(now())
+  action     PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, sequence])
+}
+
+/// One claimed effect per exact parent-plan index; unknown never becomes pending.
+model PlatformGovernanceEffect {
+  actionId String
+  index    Int
+  status   String
+  action   PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@id([actionId, index])
+}

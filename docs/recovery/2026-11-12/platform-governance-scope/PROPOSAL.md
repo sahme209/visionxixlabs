@@ -1,4 +1,4 @@
-# P01 platform Governance — scope accepted, implementation proposed
+# P01 platform Governance — scope and local implementation approved
 
 ## Owner decision and authority
 
@@ -65,3 +65,5 @@ The real authority supplier must validate current requester and recorded reviewe
 Scheduled jobs require a separately validated service identity bound to the exact approved schedule and current human authority. Until the existing source can genuinely supply those facts, cron execution refuses; a cron secret alone never qualifies. This is an incomplete supported-operation gate, not removal of scheduled growth from the requested scope. Tests must reproduce revocation after review, during claim and before send, including scheduled attempts and unknown transaction outcomes.
 
 Independent builder review of the refined first unit found no important blocker; the claim-time requirement above addresses its remaining specification request. No executable behavior changed.
+
+Owner approved local implementation and isolated tests after this reviewed proposal. Production migrations, provider actions, credentials, grants, deployment and spending remain excluded.
