@@ -1,0 +1,42 @@
+{
+  "runtimeHead": "c0180a37",
+  "ordinarySuite": {
+    "exitCode": 0,
+    "sourcesUnchanged": true,
+    "numPassedTests": 18355,
+    "numFailedTests": 0,
+    "numPendingTests": 989,
+    "numFailedTestSuites": 0,
+    "directory": "/private/tmp/axiom-platform-integrated-suite-q2dp_3g6",
+    "resultSha256": "b6d0a6b05d89ee9f80467245bf70b5abf9ca91091d40634b04c2a3c9c9e0dd26",
+    "environment": "clean/empty HOME/envDir false/no opt-in external or PG flags/no database URL; four workers"
+  },
+  "productionCompilation": {
+    "exitCode": 0,
+    "sourcesAndEngineUnchanged": true,
+    "buildLogSha256": "a163e7416e9cf76fc18ec92b1bcc027b029e3131cef8c69b36a2d0fe969428fe",
+    "productionChanged": false,
+    "directory": "/private/tmp/axiom-platform-cached-engine-build-1bjmcyz_",
+    "staticPages": 304,
+    "networkDenied": true,
+    "heapMiB": 8192,
+    "databaseUrlSupplied": false,
+    "cachedEngineSha256": "6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1",
+    "scope": "existing ordinary Prisma generation, production types and Next Webpack build only",
+    "buildIdSha256": "aca8ff784bee450c54910ccf9e714f320745a4da8b9ee9cb8c106b5c911a8455"
+  },
+  "preservedFirstBuild": {
+    "directory": "/private/tmp/axiom-platform-integrated-build-pnb1s9a4",
+    "result": "failed before application compilation; empty HOME lacked Prisma checksum cache; network blocked",
+    "retryDifference": "only existing installed cached schema engine path explicitly supplied; no download/pin/config/dependency change"
+  },
+  "warnings": "three existing verified-issuer dynamic-expression import warnings; not silenced",
+  "acceptanceLimits": [
+    "989 pending ordinary tests are not acceptance",
+    "75 actual owned PG journeys have separate scoped receipts; provider/custody/profile data synthetic",
+    "no real provider/credential/workflow/production action",
+    "no native visual/runtime/issuer qualification",
+    "whole-source final review, complete family coverage, one PR and all exact-head CI still required"
+  ],
+  "productionChanged": false
+}

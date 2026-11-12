@@ -1,5 +1,9 @@
 # Axiom current execution board
 
+## Current integrated continuation — November12
+
+Operational runtime c0180a37 passes the complete ordinary suite18,355tests/0fail/989pending and production types/build304pages, with source unchanged. The build stays offline and uses the existing cached Prisma engine; no database URL or production action. Current ECS review/requester delegation/private workload/STS/ECS/result/stability and create-only settings work remains local/unregistered; provider/profile/custody qualification is synthetic. See [current scope and next work](../recovery/2026-11-12/platform-governance-scope/CURRENT.md) and [integrated evidence](../recovery/2026-11-12/platform-governance-scope/INTEGRATED-VALIDATION.md). P01/full Governance is not complete. Finish remaining approved source/default/workflow coverage, preserve pending owner decisions, then whole-source review and one exact-head green PR. All production/schema/live/native/owner gates and every original master requirement below remain.
+
 ## Current continuation — November 11
 
 Prisma #321, Vitest #322 and workspace guides #323 have merged green; do not repeat those source batches. Gap-time assessment drafts are prepared for owner review, with no adoption or production authority. See [current handoff order](../../CODEX_HANDOFF.md#101-code-you-can-do-one-pr-each-in-this-order) and the final checkpoints below. Production target/schema and adapter compatibility remain unresolved; no deploy, live issuer or Governance activation is authorized by this checkpoint. All original acceptance requirements and evidence below are retained.
