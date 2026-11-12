@@ -30,7 +30,7 @@ export const operationalEcsTarget=z.object({accountId:account,region,clusterArn:
 export const operationalWorkloadReference=z.object({repository,ref:z.literal('refs/heads/main'),commit:sha,workflowCommit:sha,workflowPath:z.literal('.github/workflows/axiom-deploy-aws-ecs.yml'),workflowSha256:digest,
  runId:z.string().regex(/^[1-9]\d{0,19}$/).refine(v=>/^[1-9]\d{0,19}$/.test(v)&&BigInt(v)<=BigInt('18446744073709551615')),attempt:z.number().int().min(1).max(1000),
 }).strict().refine(v=>v.commit===v.workflowCommit,{message:'Workflow and source commit must match'});
-const ecsBase={...base,kind:z.literal('deployment.ecs'),target:operationalEcsTarget,roleArn:z.string().max(768).regex(roleArn),workload:operationalWorkloadReference,sourceEvidenceId:operationalEvidenceId};
+const ecsBase={...base,kind:z.literal('deployment.ecs'),issuerProfileDigest:digest.optional(),target:operationalEcsTarget,roleArn:z.string().max(768).regex(roleArn),workload:operationalWorkloadReference,sourceEvidenceId:operationalEvidenceId};
 const rollbackCondition=z.object({kind:z.literal('verified_terminal_failure'),failedActionId:actionId,failureReceiptId:operationalEvidenceId,priorDeploymentReceiptId:operationalEvidenceId,generation:z.number().int().positive().safe(),failedTaskDefinitionArn:z.string().max(512).regex(taskArn)}).strict();
 export const operationalEcsManifest=z.discriminatedUnion('operation',[
  z.object({...ecsBase,operation:z.literal('force')}).strict(),

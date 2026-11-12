@@ -1,6 +1,6 @@
 # ECS private issuance — proposed authority design
 
-Status: bounded design preparation approved November12. Three official AWS pages read; allowance consumed. No account evidence, implementation, IAM change, credential or deployment is authorized by this document.
+Status: bounded design preparation and subsequent local implementation/isolated tests approved November12. Three official AWS pages read; allowance consumed. No account evidence, IAM change, real credential, provisioning or deployment authorized.
 
 ## Verified public contracts
 
