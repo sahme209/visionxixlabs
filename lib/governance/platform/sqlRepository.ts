@@ -24,6 +24,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
    async readSourcePage(kind,cursor){
     check('platform-source-directory');
     if(kind==='drafts')return sql.$queryRawUnsafe('SELECT id,left(title,240) AS label,(char_length(title)>240) AS "labelTruncated",status,"updatedAt" FROM "LinkedInPostDraft" WHERE ($1::text IS NULL OR id<$1::text) ORDER BY id DESC LIMIT 21',cursor);
+    if(kind==='leads')return sql.$queryRawUnsafe(`SELECT id,left(CASE WHEN jsonb_typeof("fullPayload"->'aiPackage'->'companyName')='string' THEN "fullPayload"->'aiPackage'->>'companyName' ELSE 'Lead record' END,240) AS label,(CASE WHEN jsonb_typeof("fullPayload"->'aiPackage'->'companyName')='string' THEN char_length("fullPayload"->'aiPackage'->>'companyName')>240 ELSE false END) AS "labelTruncated",status,"updatedAt",COALESCE(jsonb_typeof("fullPayload"->'aiPackage')='object',false) AS "hasSavedPackage" FROM "Lead" WHERE ($1::text IS NULL OR id<$1::text) ORDER BY id DESC LIMIT 21`,cursor);
     if(kind==='accounts')return sql.$queryRawUnsafe('SELECT id,left(COALESCE("linkedinName",\'LinkedIn account\'),240) AS label,(char_length(COALESCE("linkedinName",\'LinkedIn account\'))>240) AS "labelTruncated",COALESCE("organizationUrn","linkedinUrn") AS author,status,"updatedAt","expiresAt" FROM "LinkedInAccountConnection" WHERE ($1::text IS NULL OR id<$1::text) ORDER BY id DESC LIMIT 21',cursor);
     return fail();
    },

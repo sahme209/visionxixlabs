@@ -12,4 +12,4 @@ CREATE TABLE "OrgMembership" (
 
 -- Minimal existing Lead columns consumed by managed deployment preparation.
 -- Full Prisma model and production compatibility are deliberately not claimed.
-CREATE TABLE "Lead" (id TEXT PRIMARY KEY,"updatedAt" TIMESTAMP(3) NOT NULL,"fullPayload" JSONB NOT NULL);
+CREATE TABLE "Lead" (id TEXT PRIMARY KEY,status TEXT NOT NULL DEFAULT 'created',"updatedAt" TIMESTAMP(3) NOT NULL,"fullPayload" JSONB NOT NULL);

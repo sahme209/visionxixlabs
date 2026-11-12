@@ -44,7 +44,7 @@ export function PlatformPreparationPanel({sourceClient,client,canPrepare,onSaved
  return <section aria-label="Prepare platform proposal" className="rounded-xl border border-white/10 p-5 space-y-4">
   <header><h2 className="text-lg font-medium">Prepare an exact growth change</h2><p className="text-sm text-zinc-400">Select existing source records. The server derives the content and account revision; no action is approved here.</p></header>
   {!current&&<p role="alert">Account context changed. Retain the original reference; reopen the workflow in the current session.</p>}
-  {sourceClient&&<PlatformSourcePicker client={sourceClient} disabled={locked} onSelect={(kind,id)=>{if(owns()&&!ref.current&&!held.current&&canPrepare){if(kind==='drafts')setDraftId(id);else setConnectionId(id)}}}/>}
+  {sourceClient&&<PlatformSourcePicker client={sourceClient} disabled={locked} onSelect={(kind,id)=>{if(owns()&&!ref.current&&!held.current&&canPrepare){if(kind==='drafts')setDraftId(id);else if(kind==='accounts')setConnectionId(id)}}}/>}
   <div className="grid gap-3 sm:grid-cols-2">
    <label>Operation<select value={operation} disabled={locked} onChange={e=>{const op=e.target.value;if(op==='publish'||op==='schedule'||op==='delete')setOperation(op)}}><option value="publish">Publish existing draft</option><option value="schedule">Change schedule only</option><option value="delete">Delete managed published post</option></select></label>
    <label>Draft ID<input value={draftId} disabled={locked} onChange={e=>setDraftId(e.target.value)}/></label>

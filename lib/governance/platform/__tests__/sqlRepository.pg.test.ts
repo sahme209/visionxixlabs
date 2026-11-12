@@ -389,9 +389,13 @@ it.skipIf(!enabled)('discovers real metadata pages without credential/body expos
   let accountFound=false;cursor=null;
   for(let i=0;i<10;i++){const page=await reader.sources('accounts',cursor);expect(page.kind).toBe('accounts');if(page.kind!=='accounts')throw Error('wrong_catalog');const selected=page.entries.find(e=>e.id===account.id);if(selected){expect(selected.author).toBe('urn:li:organization:catalog-fixture');accountFound=true}expect(JSON.stringify(page)).not.toMatch(/accessToken|ownerEmail|synthetic-not-used|refreshToken/);cursor=page.nextCursor;if(!cursor)break}
   expect(accountFound).toBe(true);
+  const leadIds=Array.from({length:25},(_,i)=>'zzzz-catalog-lead-'+String(i).padStart(3,'0'));
+  for(const id of leadIds)await db.$executeRawUnsafe('INSERT INTO "Lead" (id,"updatedAt","fullPayload") VALUES ($1,clock_timestamp(),$2::jsonb)',id,JSON.stringify({aiPackage:{companyName:'Lead company '.repeat(30)},email:'private-lead@example.test',privateToken:'never-in-catalog'}));
+  const leads=new Set<string>();cursor=null;
+  for(let i=0;i<10;i++){const page=await reader.sources('leads',cursor);expect(page.kind).toBe('leads');if(page.kind!=='leads')throw Error('wrong_catalog');for(const e of page.entries){expect(leads.has(e.id)).toBe(false);leads.add(e.id);if(leadIds.includes(e.id)){expect(e.label).toHaveLength(240);expect(e.labelTruncated).toBe(true);expect(e.hasSavedPackage).toBe(true)}}expect(JSON.stringify(page)).not.toMatch(/aiPackage|fullPayload|private-lead|never-in-catalog/);cursor=page.nextCursor;if(!cursor)break}expect(cursor).toBeNull();expect(leadIds.every(id=>leads.has(id))).toBe(true);
   const handle=createPlatformSourceHttp(),config={apiBase:'https://fixture.example.test',sessionToken:mintDesktopToken(actor.sessionId)};
   vi.stubGlobal('fetch',vi.fn(async(input:RequestInfo|URL,init?:RequestInit)=>{const url=String(input);if(url==='https://fixture.example.test/api/desktop/platform-governance/sources')return handle(new Request(url,init));return http()}));
-  const client=createPlatformSourceClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}});expect((await client.list('accounts',null)).ok).toBe(true);
+  const client=createPlatformSourceClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}});expect((await client.list('accounts',null)).ok).toBe(true);expect((await client.list('leads',null)).ok).toBe(true);
   expect(await counts()).toEqual(before);expect(http).not.toHaveBeenCalled();
   await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',actor.sessionId);await expect(reader.sources('accounts',null)).rejects.toThrow();expect(await counts()).toEqual(before);
  }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}

@@ -1,14 +1,15 @@
 import {useEffect,useRef,useState,useSyncExternalStore} from 'react';
 import type {z} from 'zod';
 import {desktopClient} from '../lib/desktopClient';
-import type {PlatformDeploymentClient} from '../lib/platformReview';
+import {PlatformSourcePicker} from './PlatformSourcePicker';
+import type {PlatformSourceClient,PlatformDeploymentClient} from '../lib/platformReview';
 import {platformDeploymentSelection} from '../../../lib/governance/platform/deploymentContract';
 import {platformPreparationRequestId,platformPreparationReceiptSchema,platformPreparationLookupSchema} from '../../../lib/governance/platform/preparationContract';
 type Selection=z.infer<typeof platformDeploymentSelection>;
-interface Props{client:Pick<PlatformDeploymentClient,'prepare'|'lookup'>;canPrepare:boolean;onSaved:(id:string)=>void}
+interface Props{sourceClient?:PlatformSourceClient;client:Pick<PlatformDeploymentClient,'prepare'|'lookup'>;canPrepare:boolean;onSaved:(id:string)=>void}
 /** Local/unregistered proposal UI only. No file upload, AI generation, approval
  * or execution. Uncertain saving never unlocks a fresh reference or resubmit. */
-export function PlatformDeploymentPreparationPanel({client,canPrepare,onSaved}:Props){
+export function PlatformDeploymentPreparationPanel({sourceClient,client,canPrepare,onSaved}:Props){
  const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision),owner=useRef({revision,config:desktopClient.config}).current;
  const [leadId,setLeadId]=useState(''),[projectName,setProjectName]=useState(''),[environment,setEnvironment]=useState<'preview'|'production'>('preview'),[expiresAt,setExpiresAt]=useState('');
  const [reference,setReference]=useState<{requestId:string;selection:Selection}|null>(null),[submitted,setSubmitted]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
@@ -38,6 +39,7 @@ export function PlatformDeploymentPreparationPanel({client,canPrepare,onSaved}:P
  return <section aria-label="Prepare generated-site deployment proposal" className="rounded-xl border border-white/10 p-5 space-y-4">
   <header><h2 className="text-lg font-medium">Prepare existing generated-site content</h2><p className="text-sm text-zinc-400">The server reads the saved Lead package and derives exact files. This is not Axiom's own application release. No AI call or deployment runs here.</p></header>
   {!current&&<p role="alert">Account context changed. Keep the original reference and reopen the workflow.</p>}
+  {sourceClient&&<PlatformSourcePicker mode="leads" client={sourceClient} disabled={locked} onSelect={(kind,id)=>{if(kind==='leads'&&owns()&&!original.current&&!held.current&&canPrepare)setLeadId(id)}}/>}
   <div className="grid gap-3 sm:grid-cols-2">
    <label>Existing lead ID<input value={leadId} disabled={locked} onChange={e=>setLeadId(e.target.value)}/></label>
    <label>Exact Vercel project name<input value={projectName} disabled={locked} onChange={e=>setProjectName(e.target.value)}/></label>
