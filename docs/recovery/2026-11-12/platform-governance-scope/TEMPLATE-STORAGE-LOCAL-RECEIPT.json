@@ -1,0 +1,57 @@
+{
+  "scope": "Approved LOCAL template Task2 storage/preparation only; full execution/delivery/registration/native qualification incomplete.",
+  "base": "82d34ad1",
+  "actualPostgres": {
+    "root": "/private/tmp/axiom-platform-pg-05fuy9bq",
+    "passed": 157,
+    "failed": 0,
+    "pending": 0,
+    "newTemplateCases": 13,
+    "stopped": true,
+    "nativeProviderProfilesKeysClocksChannels": "synthetic/intercepted; storage fixtures construct claimed state explicitly, not default native execution",
+    "currentIdentitySql": "3new actual identity SQL preparation/review/default-refusal cases"
+  },
+  "redEvidence": {
+    "missingModule": "/private/tmp/axiom-platform-pg-_ka5e47y",
+    "schemaPin": "/private/tmp/axiom-template-schema-pin-red.log",
+    "preparationMissingModule": "/private/tmp/axiom-template-preparation-red.log",
+    "testOnlyTypeNarrowingFixed": "/private/tmp/axiom-template-storage-types.log"
+  },
+  "validation": {
+    "sharedPassed": 524,
+    "sqlOptinsSkippedInOrdinaryRun": 157,
+    "sharedLog": "/private/tmp/axiom-template-storage-final-regression.log",
+    "rootTypes": "PASS",
+    "rootTypesLog": "/private/tmp/axiom-template-storage-final-types.log",
+    "clientGeneration": "/private/tmp/axiom-template-storage-client-generation.log",
+    "productionBuild": "not repeated; final complete-family validation still required",
+    "independentFinalReview": "pending complete three-family implementation"
+  },
+  "sourceHashes": {
+    "prisma/schema.prisma": "952c132b2f6ca20fe11dff5c326f20be8775230d581bf7ed6b5485626db5f075",
+    "scripts/prepare-synthetic-fixture-recipe.cjs": "36888f07874fb7516c57c24187f2885b19a9692781da06ecbcdb12d391fa8e53",
+    "scripts/run-platform-governance-postgres.py": "dc3261d2768ada2533574609d2655f163e40da00acf55238bfc29835e0d5c4c2",
+    "lib/governance/platform/actionStore.ts": "010e50023ed22ac6d2ca35a5ad9057d3d3e45e792710746a5d573117db502ddf",
+    "lib/governance/platform/sqlRepository.ts": "9249c735e277b7fb527dc7101b87ad795a2c7de43400ff235ae433b604a0c3c8",
+    "lib/governance/platform/fixtureSchema.sql": "a259f36b3547b22054e5f8ea114f8bf3f790bca8a9163951e282b242241ac0b5",
+    "lib/governance/platform/preparationReference.ts": "0d677a2ca7c3e94c4ad087886fa5af965304eb60e68b2065b9bc763c6343b2ad",
+    "lib/governance/platform/templateStorageSql.ts": "ec10808e6ac875b76daabd26f99da1e2851f40e628ede71795e107e225178b97",
+    "lib/governance/platform/templateExecutionPreparation.ts": "ebad2f6aa963a5170955ac1cc1c53906d0054d6b4155d5316108f8d233d3671c",
+    "lib/governance/platform/templatePreparationStore.ts": "9f60b92489f3ac9ac7307dd279b5f259a011f6968b421fd3e70f3e0ad6174cc5",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "c65c93e381676de394b13336f535a5caa2e57fe8ceb0dbf0f2d7d33e09556f6c",
+    "lib/governance/platform/__tests__/templateExecutionPreparation.test.ts": "688eb0f5f52c36d5f38cef03835df624728ca7c5e9da78db9e465abcc4ee3656",
+    "lib/governance/qualification/__tests__/syntheticFixtureRecipe.test.ts": "6e7e74c2e6303dd8d164a50c24a71451cb81be096afc2f914b22996a055f95f5",
+    "lib/demo/demoScenarios.ts": "fdc3aa04793f4fa220121347dd7f4fcda4171d1f21b242c7eda694eedfe557e2"
+  },
+  "remaining": [
+    "actual SDK/private typed observation and atomic parent/child/event composition",
+    "qualified original-session output service",
+    "prepared authenticated HTTP/client/UI",
+    "caller audit and whole-batch validation",
+    "image custody",
+    "whole-three-family independent source review/mandatory-green PR",
+    "separate real-world/production qualification and owner actions"
+  ],
+  "externalEffects": false,
+  "productionChanged": false
+}

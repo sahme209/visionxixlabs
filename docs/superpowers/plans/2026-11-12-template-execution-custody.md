@@ -28,9 +28,9 @@ Interfaces: actual-principal recipient/grant-reference derivation; exact action/
 
 ### Task2: Actual owned SQL, source definitions and profile-aware preparation/review
 Interfaces: target-wide lock/read/CAS, immutable result/artifact records and separate durable delivery claim; new preparation metadata derived before plan compilation, independently reviewed under existing platform authority.
-- [ ] RED actual cross-action/native uniqueness, rollback/unknown commit, old-plan refusal, genuine review and reference recovery.
-- [ ] Add only required local schema/fixture definitions; semantically compare old Prisma models/enums before updating current helper pin/client. Preserve historical packets.
-- [ ] Expected: actual isolated SQL journeys with simulated qualification pass; no production migration or old-history adoption.
+- [x] RED actual cross-action/native uniqueness, rollback/unknown commit, old-plan refusal, genuine review and reference recovery.
+- [x] Add only required local schema/fixture definitions; semantically compare old Prisma models/enums before updating current helper pin/client. Preserve historical packets.
+- [x] Expected: actual isolated SQL journeys with simulated qualification pass; no production migration or old-history adoption.
 
 ### Task3: Real template adapter/private observation composition
 Interfaces: actual existing SDK adapters acquire no credential/issue no grant until exact durable admission; typed private transport observation; atomic receipt/target/artifact/event/outcome.

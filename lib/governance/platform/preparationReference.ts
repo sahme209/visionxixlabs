@@ -4,7 +4,7 @@ import {growthPreparationSelection,platformPreparationRequestId} from './prepara
 export {platformPreparationRequestId} from './preparationContract';
 /** A public correlation reference, NOT a credential or new authority. Only
  * the actual verified principal is supplied by the private request factory. */
-export function preparationActionReference(raw:string,principal:PlatformPrincipal,purpose:'platform_growth_preparation_v1'|'platform_deployment_preparation_v1'|'platform_template_preparation_v1'|'platform_settings_preparation_v1'|'platform_ecs_preparation_v1'|'platform_custodian_drain_preparation_v1'|'platform_deployment_recovery_preparation_v1'='platform_growth_preparation_v1'){
+export function preparationActionReference(raw:string,principal:PlatformPrincipal,purpose:'platform_growth_preparation_v1'|'platform_deployment_preparation_v1'|'platform_template_preparation_v1'|'platform_template_execution_preparation_v1'|'platform_settings_preparation_v1'|'platform_ecs_preparation_v1'|'platform_custodian_drain_preparation_v1'|'platform_deployment_recovery_preparation_v1'='platform_growth_preparation_v1'){
  const requestId=platformPreparationRequestId.parse(raw).toLowerCase(),actor=platformPrincipalSchema.parse(principal),hex=sha256ContentHash({purpose,actor,requestId});
  return 'platform_action_'+hex.slice(0,8)+'-'+hex.slice(8,12)+'-8'+hex.slice(13,16)+'-a'+hex.slice(17,20)+'-'+hex.slice(20,32);
 }

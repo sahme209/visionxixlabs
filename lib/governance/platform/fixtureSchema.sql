@@ -82,3 +82,27 @@ CREATE TABLE "PlatformDeploymentRequestReceipt" (
  id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT, "effectIndex" INTEGER NOT NULL, "nativeKey" TEXT NOT NULL, generation INTEGER NOT NULL, "receiptDigest" TEXT NOT NULL, "receiptJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE ("actionId","effectIndex")
 );
 CREATE INDEX "PlatformDeploymentRequestReceipt_nativeKey_generation_idx" ON "PlatformDeploymentRequestReceipt" ("nativeKey",generation);
+
+-- Approved LOCAL synthetic template fixture only; never production apply.
+CREATE TABLE "PlatformTemplateResource" (
+ "nativeKey" TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ generation INTEGER NOT NULL CHECK(generation>0), version INTEGER NOT NULL CHECK(version>=0), "stateJson" JSONB NOT NULL, "updatedAt" TIMESTAMP(3) NOT NULL
+);
+CREATE INDEX "PlatformTemplateResource_actionId_idx" ON "PlatformTemplateResource" ("actionId");
+CREATE TABLE "PlatformTemplateReceipt" (
+ id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ "effectIndex" INTEGER NOT NULL CHECK("effectIndex" BETWEEN 0 AND 31), "nativeKey" TEXT NOT NULL, generation INTEGER NOT NULL CHECK(generation>0),
+ "receiptDigest" TEXT NOT NULL UNIQUE, "receiptJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE("actionId","effectIndex"), UNIQUE("nativeKey",generation)
+);
+CREATE TABLE "PlatformTemplateArtifact" (
+ id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ "effectIndex" INTEGER NOT NULL CHECK("effectIndex" BETWEEN 0 AND 31), "nativeKey" TEXT NOT NULL, generation INTEGER NOT NULL CHECK(generation>0),
+ "receiptDigest" TEXT NOT NULL UNIQUE, "contextJson" JSONB NOT NULL, envelope TEXT NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+ UNIQUE("actionId","effectIndex"), UNIQUE("nativeKey",generation)
+);
+CREATE TABLE "PlatformTemplateDelivery" (
+ "artifactId" TEXT PRIMARY KEY REFERENCES "PlatformTemplateArtifact"(id) ON DELETE RESTRICT,
+ "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT, "claimJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX "PlatformTemplateDelivery_actionId_idx" ON "PlatformTemplateDelivery" ("actionId");

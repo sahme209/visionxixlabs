@@ -5173,6 +5173,10 @@ model PlatformGovernanceAction {
   operationalTargetReceipts PlatformOperationalTargetReceipt[]
   deploymentTargets PlatformDeploymentTarget[]
   deploymentRequestReceipts PlatformDeploymentRequestReceipt[]
+  templateResources PlatformTemplateResource[]
+  templateReceipts PlatformTemplateReceipt[]
+  templateArtifacts PlatformTemplateArtifact[]
+  templateDeliveries PlatformTemplateDelivery[]
   @@index([createdAt, id])
 }
 
@@ -5335,4 +5339,59 @@ model PlatformDeploymentRequestReceipt {
   action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@unique([actionId, effectIndex])
   @@index([nativeKey, generation])
+}
+
+/// LOCAL proposed clone-resistant template liability; no expiry cleanup.
+model PlatformTemplateResource {
+  nativeKey String @id
+  actionId String
+  generation Int
+  version Int
+  stateJson Json
+  updatedAt DateTime @updatedAt
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([actionId])
+}
+
+/// LOCAL immutable nonsecret template observation, never a bearer URL.
+model PlatformTemplateReceipt {
+  id String @id
+  actionId String
+  effectIndex Int
+  nativeKey String
+  generation Int
+  receiptDigest String @unique
+  receiptJson Json
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, effectIndex])
+  @@unique([nativeKey, generation])
+}
+
+/// LOCAL immutable scoped ciphertext; excluded from public history.
+model PlatformTemplateArtifact {
+  id String @id
+  actionId String
+  effectIndex Int
+  nativeKey String
+  generation Int
+  receiptDigest String @unique
+  contextJson Json
+  envelope String
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  delivery PlatformTemplateDelivery?
+  @@unique([actionId, effectIndex])
+  @@unique([nativeKey, generation])
+}
+
+/// LOCAL permanent output-attempt claim, not a client receipt or retry ticket.
+model PlatformTemplateDelivery {
+  artifactId String @id
+  actionId String
+  claimJson Json
+  createdAt DateTime @default(now())
+  artifact PlatformTemplateArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([actionId])
 }
