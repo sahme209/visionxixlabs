@@ -1,4 +1,5 @@
 import 'server-only';
+import {readPlatformDeletionSource} from '@/lib/growth/linkedin/platformDeletionSource';
 import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {readPlatformAction} from './kernel';
@@ -16,6 +17,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readGrowthDeletionSource(draftId,connectionId){if(!locked)fail();return readPlatformDeletionSource(sql,draftId,connectionId)},
    async readGrowthPostingSource(draftId,connectionId){
     if(!locked)fail();
     const drafts=await sql.$queryRawUnsafe<unknown[]>('SELECT id,title,hook,body,cta,hashtags,"imageUrn",status,"scheduledFor","updatedAt" FROM "LinkedInPostDraft" WHERE id=$1 FOR SHARE',draftId);
@@ -44,6 +46,12 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
     if(sequence.length!==1||!Number.isSafeInteger(sequence[0].next)||sequence[0].next<0||sequence[0].next>1000)fail();
     const detail={planDigest:event.state.plan.digest,stateDigest:sha256ContentHash(event.state),status:event.state.status,attemptCount:event.state.attemptCount,...(event.effectIndex===undefined?{}:{effectIndex:event.effectIndex}),...(event.outcome?{outcome:event.outcome}:{})};
     await sql.$executeRawUnsafe('INSERT INTO "PlatformGovernanceEvent" (id,"actionId",sequence,kind,"detailJson") VALUES ($1,$2,$3,$4,$5::jsonb)',randomUUID(),event.actionId,sequence[0].next,event.kind,JSON.stringify(detail));
+   },
+   async reservePostDeletion(id,index,postUrn){
+    check(id);if(!Number.isSafeInteger(index)||index<0||index>31||!/^urn:li:(share|ugcPost):[A-Za-z0-9_-]+$/.test(postUrn))fail();
+    const key=sha256ContentHash({kind:'growth.post.delete',postUrn});
+    const count=await sql.$executeRawUnsafe('UPDATE "PlatformGovernanceEffect" SET "publicationKey"=$1 WHERE "actionId"=$2 AND index=$3 AND status=$4 AND "publicationKey" IS NULL',key,id,index,'claimed');
+    if(count!==1)fail();
    },
    async reservePublication(id,index,draftId){
     check(id);if(!Number.isSafeInteger(index)||index<0||index>31||typeof draftId!=='string'||!draftId.length||draftId.length>256)fail();

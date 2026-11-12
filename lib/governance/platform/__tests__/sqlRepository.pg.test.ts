@@ -227,3 +227,28 @@ it.skipIf(!enabled)('database mutation delay rolls back a schedule whose exact t
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson.status).toBe('unknown');
  }finally{vi.unstubAllEnvs()}
 });
+
+import {readPlatformDeletionSource} from '@/lib/growth/linkedin/platformDeletionSource';
+import {preparePlatformLinkedInDeletion} from '@/lib/growth/linkedin/platformDeletionPlan';
+import {deletePlatformLinkedInPost} from '@/lib/growth/linkedin/platformDeletion';
+async function deletionFixture(){
+ const f=await postFixture();vi.stubGlobal('fetch',vi.fn(async()=>new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:'+f.draft.id.replace(/[^a-zA-Z0-9_-]/g,'')}})));
+ expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'fixture'})).toMatchObject({kind:'success'});
+ const source=await defaultPrisma.$transaction(tx=>readPlatformDeletionSource(tx,f.draft.id,f.connection.id)),effect=preparePlatformLinkedInDeletion(source,'202605',Date.now()).effect;
+ async function approved(){const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[effect]},compiled=compilePlatformPlan(raw),requester=await createDefaultPlatformRequestService(f.request),id=await requester.propose(raw),independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);return {id,binding:await createDefaultPlatformExecution(f.request,id,1)}}
+ return {...f,effect,approved};
+}
+it.skipIf(!enabled)('default delete requires actual confirmed publication lineage and preserves original history',async()=>{
+ try{const f=await deletionFixture(),a=await f.approved(),http=vi.fn(async()=>new Response(null,{status:204}));vi.stubGlobal('fetch',http);
+  expect(await deletePlatformLinkedInPost({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:a.binding})).toEqual({kind:'deleted'});expect(http).toHaveBeenCalledTimes(1);
+  const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'published',linkedinPostUrn:f.effect.target.postUrn});
+  const original=await db.$queryRawUnsafe<Array<{stateJson:{status:string}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(original[0].stateJson.status).toBe('confirmed');
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('unknown deletion blocks a second independently reviewed action for the same native post',async()=>{
+ try{const f=await deletionFixture(),one=await f.approved(),two=await f.approved(),http=vi.fn(async()=>{throw Error('synthetic_lost_delete_response')});vi.stubGlobal('fetch',http);
+  for(const action of [one,two])expect(await deletePlatformLinkedInPost({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:action.binding})).toEqual({kind:'outcome_unknown'});
+  expect(http).toHaveBeenCalledTimes(1);
+  const row=await defaultPrisma.linkedInPostDraft.findUnique({where:{id:f.draft.id}});expect(row).toMatchObject({status:'published',linkedinPostUrn:f.effect.target.postUrn});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});

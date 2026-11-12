@@ -13,6 +13,7 @@ import { prisma } from "@/lib/db";
 export type GrowthAuditAction =
   | "draft.created"
   | "draft.edited"
+  | "draft.deleted"
   | "draft.approved"
   | "draft.rejected"
   | "draft.scheduled"

@@ -16,7 +16,7 @@ export const platformEffectSchema=z.discriminatedUnion('kind',[
  effect('growth.image.initialize',{...social,bytesDigest:digest}),
  effect('growth.image.put',{...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,destinationPathDigest:digest}),
  effect('growth.post.publish',{...social,draftId:identifier,renderedPayloadDigest:digest}),
- effect('growth.post.delete',{...social,postUrn:identifier}),
+ effect('growth.post.delete',{...social,draftId:identifier,postUrn:identifier,draftRevision:timestamp,publicationActionId:identifier,publicationPlanDigest:digest,apiVersion:z.string().regex(/^\d{6}$/)}),
  effect('growth.schedule.change',{...social,draftId:identifier,scheduledFor:timestamp,renderedPayloadDigest:digest}),
 ]);
 export const platformPlanSchema=z.object({format:z.literal(1),scope:z.literal('platform'),sourceDigest:digest,expiresAt:timestamp,effects:z.array(platformEffectSchema).min(1).max(32).refine(xs=>new Set(xs.map(x=>x.id)).size===xs.length)}).strict();

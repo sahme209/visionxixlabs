@@ -23,7 +23,7 @@ describe('exact platform plans and lifecycle',()=>{
    {id:'initialize',kind:'growth.image.initialize',target:{...connection,bytesDigest:d}},
    {id:'put',kind:'growth.image.put',target:{...connection,bytesDigest:d,uploadGrantDigest:d,destinationOrigin:'https://uploads.example.test',destinationPathDigest:d}},
    {id:'post',kind:'growth.post.publish',target:{...connection,draftId:'draft',renderedPayloadDigest:d}},
-   {id:'delete',kind:'growth.post.delete',target:{...connection,postUrn:'urn:li:share:1'}},
+   {id:'delete',kind:'growth.post.delete',target:{...connection,draftId:'draft',postUrn:'urn:li:share:1',draftRevision:'2026-11-12T00:00:00.000Z',publicationActionId:'platform_action_11111111-1111-4111-8111-111111111111',publicationPlanDigest:d,apiVersion:'202605'}},
    {id:'schedule',kind:'growth.schedule.change',target:{...connection,draftId:'draft',scheduledFor:new Date(at+1000).toISOString(),renderedPayloadDigest:d}},
   ];
   expect(compilePlatformPlan({...raw(),effects}).effects).toHaveLength(10);

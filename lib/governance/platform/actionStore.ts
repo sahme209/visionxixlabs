@@ -5,6 +5,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readGrowthDeletionSource?(draftId:string,connectionId:string):Promise<unknown>;
  readGrowthPostingSource(draftId:string,connectionId:string):Promise<unknown>;
  readSessionPrincipal(sessionId:string):Promise<unknown>;
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
@@ -12,6 +13,7 @@ export interface PlatformTransaction{
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
  event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed';state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
  /** Permanent send reservation. No release/reset API, including unknown outcomes. */
+ reservePostDeletion?(id:string,index:number,postUrn:string):Promise<void>;
  reservePublication?(id:string,index:number,draftId:string):Promise<void>;
  readEffect(id:string,index:number):Promise<unknown|null>;
  writeEffect(id:string,index:number,expected:unknown|null,status:EffectStatus):Promise<void>;
@@ -81,8 +83,8 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
-    if(effect.kind==='growth.post.publish'){
-     const reserve=tx.reservePublication??fail();await reserve.call(tx,binding.actionId,binding.index,effect.target.draftId);
+    if(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete'){
+     const reserve=(effect.kind==='growth.post.publish'?tx.reservePublication:tx.reservePostDeletion)??fail();await reserve.call(tx,binding.actionId,binding.index,effect.kind==='growth.post.publish'?effect.target.draftId:effect.target.postUrn);
      // Uniqueness can wait on another transaction; authority and expiry must
      // still hold after that wait before committing any send reservation.
      await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);

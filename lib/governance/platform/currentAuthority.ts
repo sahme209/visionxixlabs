@@ -1,4 +1,5 @@
 import 'server-only';
+import {preparePlatformLinkedInDeletion} from '@/lib/growth/linkedin/platformDeletionPlan';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule,currentLinkedInVersion,postingDraftSchema,postingConnectionSchema} from '@/lib/growth/linkedin/platformPostingPlan';
@@ -19,6 +20,11 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
  },async assertEffectCurrent(tx,effect){
   if(!effect.kind.startsWith('growth.'))return;
+  if(effect.kind==='growth.post.delete'){
+   if(!isPostingEnabled())fail();const read=tx.readGrowthDeletionSource??fail(),source=await read.call(tx,effect.target.draftId,effect.target.connectionId),version=currentLinkedInVersion();
+   const prepared=preparePlatformLinkedInDeletion(source,version,await tx.now(),effect.id);
+   if(!isPostingEnabled()||currentLinkedInVersion()!==version||sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))fail();return;
+  }
   if((effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change')||!isPostingEnabled())fail();
   if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change')return fail();
   const source=z.object({draft:postingDraftSchema,connection:postingConnectionSchema}).strict().parse(await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId));
