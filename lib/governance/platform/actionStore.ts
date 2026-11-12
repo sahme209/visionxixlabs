@@ -1,4 +1,6 @@
 import 'server-only';
+import {prepareDeploymentPlatformPlan,matchesDeploymentSelection} from './deploymentPreparation';
+import {platformDeploymentSelection,platformDeploymentPreview} from './deploymentContract';
 import {platformSourceKind,platformSourceId,projectPlatformSources,type PlatformSourceKind} from './sourceCatalog';
 import {projectPlatformHistory} from './historyProjection';
 import {platformHistoryCursor,type PlatformHistoryCursor} from './historyContract';
@@ -11,6 +13,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction{
+ readDeploymentSource?(leadId:string):Promise<unknown>;
  readSourcePage?(kind:PlatformSourceKind,cursor:string|null):Promise<unknown>;
  readActionPage?(cursor:PlatformHistoryCursor|null):Promise<unknown>;
  readGrowthDeletionSource?(draftId:string,connectionId:string):Promise<unknown>;
@@ -81,6 +84,32 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     return platformInspectionSchema.parse({actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
    });
   },
+  async previewDeployment(id:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal);
+   return locked(id,async(tx,state)=>{
+    await authority.assertCurrent(tx,actor);if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
+    const effect=state.plan.effects[0];if(effect.kind!=='deployment.vercel'||!effect.target.leadId||!effect.target.leadRevision)return fail();
+    const prepared=await prepareDeploymentPlatformPlan(tx,{leadId:effect.target.leadId,projectName:effect.target.projectName,environment:effect.target.environment,expiresAt:state.plan.expiresAt},effect.id);
+    if(prepared.plan.digest!==state.plan.digest)fail();await authority.assertCurrent(tx,actor);await timely(tx,state);
+    return platformDeploymentPreview.parse({kind:'deployment.vercel',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,files:prepared.files,authority:'review_preview_only'});
+   });
+  },
+  async lookupDeploymentPreparation(requestId:string,principal:PlatformPrincipal){
+   const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(requestId,actor,'platform_deployment_preparation_v1');
+   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
+    if(raw){const state=readPlatformAction(raw);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}
+    await authority.assertCurrent(tx,actor);return raw?{found:true as const,actionId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const};
+   });
+  },
+  async prepareDeployment(raw:unknown,principal:PlatformPrincipal,requestId:string){
+   const actor=platformPrincipalSchema.parse(principal),selected=platformDeploymentSelection.parse(raw),id=preparationActionReference(requestId,actor,'platform_deployment_preparation_v1');
+   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
+    if(existing){const state=readPlatformAction(existing);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId||!matchesDeploymentSelection(state.plan,selected))fail();await authority.assertCurrent(tx,actor);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}
+    const prepared=await prepareDeploymentPlatformPlan(tx,selected),state=createPlatformAction(prepared.plan,actor,await tx.now());
+    if(!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent!(tx,state.plan.effects[0]);await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
+    return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const};
+   });
+  },
   async previewGrowth(id:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    return locked(id,async(tx,state)=>{
@@ -132,7 +161,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(state.version!==version)fail();await actors(tx,state);await authority.assertCurrent(tx,actor);
-    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
+    for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
     const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state));await tx.replace(id,version,next);
     await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});});
   },
@@ -166,7 +195,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
    await locked(binding.actionId,async(tx,state)=>{
     if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
-    await actors(tx,state);if(effect.kind.startsWith('growth.')&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);

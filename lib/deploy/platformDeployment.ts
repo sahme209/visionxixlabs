@@ -1,11 +1,11 @@
 import 'server-only';
-import type {PlatformEffect} from '@/lib/governance/platform/contracts';
+import {platformEffectSchema} from '@/lib/governance/platform/contracts';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 const fail=():never=>{throw Error('platform_deployment_plan_unavailable')};
 /** Pure preparation binds exact submitted bytes and account/name scope. The
  * existing API's name field may create a project: the plan says so explicitly.
  * This digest is data binding, not verified issuer/runtime qualification. */
-export function preparePlatformVercelDeployment(files:readonly {path:string;content:string}[],options:{projectName:string;teamId:string;target?:'production';effectId?:string}){
+export function preparePlatformVercelDeployment(files:readonly {path:string;content:string}[],options:{projectName:string;teamId:string;target?:'production';effectId?:string;source?:{leadId:string;leadRevision:string}}){
  if(!/^team_[A-Za-z0-9]+$/.test(options.teamId)||! /^[a-z0-9][a-z0-9-]{0,99}$/.test(options.projectName)||!files.length||files.length>1024)fail();
  const seen=new Set<string>();
  const payloadFiles=files.map(file=>{
@@ -15,7 +15,8 @@ export function preparePlatformVercelDeployment(files:readonly {path:string;cont
  const body=JSON.stringify({name:options.projectName,...(options.target?{target:options.target}:{}),files:payloadFiles});
  if(Buffer.byteLength(body)>8*1024*1024)fail();
  const endpoint='https://api.vercel.com/v13/deployments';
- const effect:Extract<PlatformEffect,{kind:'deployment.vercel'}>={id:options.effectId??'platform-vercel-deployment',kind:'deployment.vercel' as const,target:{projectName:options.projectName,teamId:options.teamId,environment:options.target??'preview',projectCreation:'may_create_named_project' as const,filesDigest:sha256ContentHash(payloadFiles),configurationDigest:sha256ContentHash({provider:'vercel',endpoint,teamId:options.teamId})}};
+ const effect=platformEffectSchema.parse({id:options.effectId??'platform-vercel-deployment',kind:'deployment.vercel' as const,target:{projectName:options.projectName,teamId:options.teamId,environment:options.target??'preview',projectCreation:'may_create_named_project' as const,filesDigest:sha256ContentHash(payloadFiles),configurationDigest:sha256ContentHash({provider:'vercel',endpoint,teamId:options.teamId}),...(options.source?{leadId:options.source.leadId,leadRevision:options.source.leadRevision}:{})}});
+ if(effect.kind!=='deployment.vercel')return fail();
  return Object.freeze({body,effect});
 }
 export async function readPlatformDeploymentResponse(response:Response):Promise<unknown>{

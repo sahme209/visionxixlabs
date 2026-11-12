@@ -25,6 +25,7 @@ export type DeployOptions = {
   credentials?: Record<string, string>;
   platformExecution?: object;
   effectId?: string;
+  source?: {leadId:string;leadRevision:string};
 };
 
 /**
@@ -62,7 +63,7 @@ async function deployToVercel(
 ): Promise<DeployResult> {
   if(!options.platformExecution||typeof options.platformExecution!=='object')throw Error('platform_governance_effect_unavailable');
   const teamId=process.env.VERCEL_TEAM_ID??'';
-  const prepared=preparePlatformVercelDeployment(files,{projectName:options.projectName,teamId,target:options.target,effectId:options.effectId});
+  const prepared=preparePlatformVercelDeployment(files,{projectName:options.projectName,teamId,target:options.target,effectId:options.effectId,source:options.source});
   const expectedEnvironment=prepared.effect.target.environment;
   const data=await runPlatformEffect(options.platformExecution,prepared.effect,async beforeSend=>{
     const token=process.env.VERCEL_TOKEN||options.credentials?.vercelToken;

@@ -7,7 +7,7 @@ const social={connectionId:identifier,connectionRevision:identifier,author:ident
 const origin=z.string().max(2048).refine(value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.origin===value}catch{return false}});
 const effect=<K extends string,T extends z.ZodRawShape>(kind:K,target:T)=>z.object({id:identifier,kind:z.literal(kind),target:z.object(target).strict()}).strict();
 export const platformEffectSchema=z.discriminatedUnion('kind',[
- effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),filesDigest:digest,configurationDigest:digest}),
+ effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),leadId:identifier.optional(),leadRevision:timestamp.optional(),filesDigest:digest,configurationDigest:digest}),
  effect('deployment.ecs',{accountId,region:identifier,cluster:identifier,service:identifier,taskDefinitionArn:identifier,operation:z.enum(['force','rollback']),configurationDigest:digest}),
  effect('settings.vercel',{projectId:identifier,settingsDigest:digest}),
  effect('template.bucket.create',cloud),
@@ -18,7 +18,7 @@ export const platformEffectSchema=z.discriminatedUnion('kind',[
  effect('growth.post.publish',{...social,draftId:identifier,renderedPayloadDigest:digest}),
  effect('growth.post.delete',{...social,draftId:identifier,postUrn:identifier,draftRevision:timestamp,publicationActionId:identifier,publicationPlanDigest:digest,apiVersion:z.string().regex(/^\d{6}$/)}),
  effect('growth.schedule.change',{...social,draftId:identifier,scheduledFor:timestamp,renderedPayloadDigest:digest}),
-]);
+]).superRefine((e,c)=>{if(e.kind==='deployment.vercel'&&Boolean(e.target.leadId)!==Boolean(e.target.leadRevision))c.addIssue({code:'custom',message:'Incomplete deployment source reference'})});
 export const platformPlanSchema=z.object({format:z.literal(1),scope:z.literal('platform'),sourceDigest:digest,expiresAt:timestamp,effects:z.array(platformEffectSchema).min(1).max(32).refine(xs=>new Set(xs.map(x=>x.id)).size===xs.length)}).strict();
 export const platformPrincipalSchema=z.object({userId:identifier,sessionId:identifier}).strict();
 export type PlatformPrincipal=z.infer<typeof platformPrincipalSchema>;

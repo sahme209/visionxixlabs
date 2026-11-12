@@ -1,4 +1,5 @@
 import 'server-only';
+import {readDeploymentPlatformSource} from './deploymentPreparation';
 import {preparePlatformLinkedInDeletion} from '@/lib/growth/linkedin/platformDeletionPlan';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -19,6 +20,10 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   const row=rowSchema.parse(await tx.readPrincipal(principal));
   if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||!allowed().includes(row.email.toLowerCase()))fail();
  },async assertEffectCurrent(tx,effect){
+  if(effect.kind==='deployment.vercel'&&effect.target.leadId){
+   const prepared=await readDeploymentPlatformSource(tx,{leadId:effect.target.leadId,projectName:effect.target.projectName,environment:effect.target.environment},effect.id);
+   if(sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))fail();return;
+  }
   if(!effect.kind.startsWith('growth.'))return;
   if(effect.kind==='growth.post.delete'){
    if(!isPostingEnabled())fail();const read=tx.readGrowthDeletionSource??fail(),source=await read.call(tx,effect.target.draftId,effect.target.connectionId),version=currentLinkedInVersion();

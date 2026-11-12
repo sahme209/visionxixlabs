@@ -17,6 +17,10 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):PlatformRepo
   let locked:string|null=null;
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:PlatformTransaction={
+   async readDeploymentSource(leadId){
+    if(!locked)fail();const rows=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"updatedAt","fullPayload"->\'aiPackage\' AS "aiPackage" FROM "Lead" WHERE id=$1 FOR SHARE',leadId);
+    if(rows.length!==1)fail();return rows[0];
+   },
    async readSourcePage(kind,cursor){
     check('platform-source-directory');
     if(kind==='drafts')return sql.$queryRawUnsafe('SELECT id,left(title,240) AS label,(char_length(title)>240) AS "labelTruncated",status,"updatedAt" FROM "LinkedInPostDraft" WHERE ($1::text IS NULL OR id<$1::text) ORDER BY id DESC LIMIT 21',cursor);

@@ -247,3 +247,6 @@ Prepared growth UI now joins exact-source proposal saving, original-reference re
 
 
 Prepared platform source picker: authenticated metadata-only draft/account pages now feed the unregistered growth proposal panel, with no automatic selection, save or provider call. Catalog labels are not source validation or execution authority.29focused checks, strict root/desktop types and the desktop shell/client build pass;32actual isolated PostgreSQL cases use synthetic identities/provider delivery. No live read, credential access, route activation or completed-P01 claim. Detailed evidence: `docs/recovery/2026-11-12/platform-governance-scope/LOCAL-PROGRESS.md`.
+
+
+Prepared generated-site deployment source: the local backend derives exact files from an existing Lead package and binds its revision/project/team/environment through independent review and final-send checks.35actual isolated PostgreSQL cases pass with simulated provider delivery. HTTP/client/UI, durable result/reference recovery, cross-action uncertainty policy, actual provider/READY acceptance and the separate owner-click Axiom production release remain incomplete. P01 stays blocked.

@@ -9,3 +9,7 @@ CREATE TABLE "OrgMembership" (
  "userId" TEXT NOT NULL,"organizationId" TEXT NOT NULL,"acceptedAt" TIMESTAMP(3),
  PRIMARY KEY("userId","organizationId")
 );
+
+-- Minimal existing Lead columns consumed by managed deployment preparation.
+-- Full Prisma model and production compatibility are deliberately not claimed.
+CREATE TABLE "Lead" (id TEXT PRIMARY KEY,"updatedAt" TIMESTAMP(3) NOT NULL,"fullPayload" JSONB NOT NULL);

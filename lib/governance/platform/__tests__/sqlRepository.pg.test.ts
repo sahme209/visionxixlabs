@@ -83,7 +83,7 @@ it.skipIf(!enabled)('default possession refuses wrong signature and revoked revi
 import {createDefaultPlatformExecution} from '../defaultExecution';
 import {preparePlatformVercelDeployment} from '@/lib/deploy/platformDeployment';
 import {generateSiteFilesFromPlan} from '@/lib/scaffoldGenerator';
-import {deploySiteFromPlan} from '@/lib/deploy/provider';
+import {deploySite,deploySiteFromPlan} from '@/lib/deploy/provider';
 async function deploymentFixture(){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TOKEN','synthetic-provider-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');
  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request);
@@ -393,5 +393,48 @@ it.skipIf(!enabled)('discovers real metadata pages without credential/body expos
   const client=createPlatformSourceClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}});expect((await client.list('accounts',null)).ok).toBe(true);
   expect(await counts()).toEqual(before);expect(http).not.toHaveBeenCalled();
   await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',actor.sessionId);await expect(reader.sources('accounts',null)).rejects.toThrow();expect(await counts()).toEqual(before);
+ }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
+});
+
+import {preparePlatformLeadDeployment} from '@/lib/deploy/platformLeadSource';
+it.skipIf(!enabled)('prepares exact real SQL lead source and refuses source changes at independent review',async()=>{
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');
+ try{
+  const leadId='lead-source-'+randomUUID(),pkg={companyName:'Fixture',tagline:'Exact existing source',aboutText:'About',services:['Service'],contactEmail:'fixture@example.test'};
+  await db.$executeRawUnsafe('INSERT INTO "Lead" (id,"updatedAt","fullPayload") VALUES ($1,clock_timestamp(),$2::jsonb)',leadId,JSON.stringify({aiPackage:pkg,privateUnrelated:'must-not-enter-plan'}));
+  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),nonce=randomUUID(),selected={leadId,projectName:'source-reviewed-project',environment:'preview',expiresAt:new Date(Date.now()+20000).toISOString()};
+  const saved=await requester.prepareDeployment(selected,nonce),repeated=await requester.prepareDeployment(selected,nonce);expect(repeated).toMatchObject({actionId:saved.actionId,historical:true});
+  const preview=await requester.previewDeployment(saved.actionId);expect(preview.files.some(f=>f.content.includes('Exact existing source'))).toBe(true);expect(JSON.stringify(preview)).not.toContain('must-not-enter-plan');
+  const inspected=await requester.inspect(saved.actionId);expect(inspected.plan.effects[0]).toMatchObject({kind:'deployment.vercel',target:{leadId,teamId:'team_fixture',projectName:'source-reviewed-project'}});
+  await expect(requester.review(saved.actionId,0,inspected.plan.digest)).rejects.toThrow();
+  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});expect((await independent.previewDeployment(saved.actionId)).planDigest).toBe(preview.planDigest);
+  await db.$executeRawUnsafe('UPDATE "Lead" SET "fullPayload"=jsonb_set("fullPayload",\'{aiPackage,tagline}\',\'"Changed after preview"\'::jsonb),"updatedAt"=clock_timestamp() WHERE id=$1',leadId);
+  await expect(independent.review(saved.actionId,0,inspected.plan.digest)).rejects.toThrow();expect((await requester.inspect(saved.actionId)).status).toBe('proposed');
+  expect(await requester.lookupDeploymentPreparation(nonce)).toMatchObject({found:true,actionId:saved.actionId});expect(await requester.lookupGrowthPreparation(nonce)).toMatchObject({found:false});
+  expect(await requester.prepareDeployment(selected,nonce)).toMatchObject({actionId:saved.actionId,historical:true});await expect(requester.prepareDeployment({...selected,projectName:'substitute'},nonce)).rejects.toThrow();
+ }finally{vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('joins SQL-derived lead review to one default provider effect with simulated HTTP',async()=>{
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');vi.stubEnv('VERCEL_TOKEN','synthetic-token');
+ try{
+  const leadId='lead-effect-'+randomUUID(),pkg={companyName:'Fixture',tagline:'Reviewed',aboutText:'About',services:['Service'],contactEmail:'fixture@example.test'};
+  await db.$executeRawUnsafe('INSERT INTO "Lead" (id,"updatedAt","fullPayload") VALUES ($1,clock_timestamp(),$2::jsonb)',leadId,JSON.stringify({aiPackage:pkg}));
+  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),saved=await requester.prepareDeployment({leadId,projectName:'source-reviewed-project',environment:'preview',expiresAt:new Date(Date.now()+20000).toISOString()},randomUUID()),record=await requester.inspect(saved.actionId);
+  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(saved.actionId,0,record.plan.digest);
+  const rows=await db.$queryRawUnsafe<Array<{id:string;updatedAt:Date;aiPackage:unknown}>>('SELECT id,"updatedAt","fullPayload"->\'aiPackage\' AS "aiPackage" FROM "Lead" WHERE id=$1',leadId),source=preparePlatformLeadDeployment(rows[0],{leadId,projectName:'source-reviewed-project',environment:'preview',expiresAt:record.plan.expiresAt},'team_fixture',Date.now());
+  expect(source.plan.digest).toBe(record.plan.digest);const binding=await createDefaultPlatformExecution(request,saved.actionId,1),http=vi.fn(async()=>Response.json({id:'dpl_leadsource',readyState:'BUILDING'}));vi.stubGlobal('fetch',http);
+  expect(await deploySite('vercel',source.package,{projectName:'source-reviewed-project',effectId:record.plan.effects[0].id,source:{leadId,leadRevision:rows[0].updatedAt.toISOString()},platformExecution:binding})).toMatchObject({deploymentId:'dpl_leadsource',state:'BUILDING'});expect(http).toHaveBeenCalledTimes(1);expect((await requester.inspect(saved.actionId)).status).toBe('confirmed');
+  await expect(deploySite('vercel',source.package,{projectName:'source-reviewed-project',effectId:record.plan.effects[0].id,source:{leadId,leadRevision:rows[0].updatedAt.toISOString()},platformExecution:binding})).rejects.toThrow();expect(http).toHaveBeenCalledTimes(1);
+ }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
+});
+it.skipIf(!enabled)('changed lead after claim refuses the final default send and retains one unknown attempt',async()=>{
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');vi.stubEnv('VERCEL_TOKEN','synthetic-token');
+ try{
+  const leadId='lead-changed-'+randomUUID(),pkg={companyName:'Fixture',tagline:'Reviewed',aboutText:'About',services:['Service'],contactEmail:'fixture@example.test'},expiresAt=new Date(Date.now()+20000).toISOString();
+  await db.$executeRawUnsafe('INSERT INTO "Lead" (id,"updatedAt","fullPayload") VALUES ($1,clock_timestamp(),$2::jsonb)',leadId,JSON.stringify({aiPackage:pkg}));
+  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),saved=await requester.prepareDeployment({leadId,projectName:'source-reviewed-project',environment:'preview',expiresAt},randomUUID()),record=await requester.inspect(saved.actionId),independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(saved.actionId,0,record.plan.digest);
+  const rows=await db.$queryRawUnsafe<Array<{id:string;updatedAt:Date;aiPackage:unknown}>>('SELECT id,"updatedAt","fullPayload"->\'aiPackage\' AS "aiPackage" FROM "Lead" WHERE id=$1',leadId),binding=await createDefaultPlatformExecution(request,saved.actionId,1),http=vi.fn(async()=>Response.json({id:'dpl_never_sent'}));vi.stubGlobal('fetch',http);
+  await db.$executeRawUnsafe('UPDATE "Lead" SET "fullPayload"=jsonb_set("fullPayload",\'{aiPackage,tagline}\',\'"Changed after claim"\'::jsonb),"updatedAt"=clock_timestamp() WHERE id=$1',leadId);
+  await expect(deploySite('vercel',pkg,{projectName:'source-reviewed-project',effectId:record.plan.effects[0].id,source:{leadId,leadRevision:rows[0].updatedAt.toISOString()},platformExecution:binding})).rejects.toThrow();expect(http).not.toHaveBeenCalled();expect(await requester.inspect(saved.actionId)).toMatchObject({status:'unknown',attemptCount:1});await expect(requester.claim(saved.actionId,3)).rejects.toThrow();
  }finally{vi.unstubAllEnvs();vi.unstubAllGlobals()}
 });

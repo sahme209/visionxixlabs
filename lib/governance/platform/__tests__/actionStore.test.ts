@@ -5,7 +5,7 @@ import type {PlatformAction} from '../contracts';
 const requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'},d='a'.repeat(64);
 const at=Date.parse('2026-11-12T00:00:00Z');
 const plan=()=>compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'one',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}},{id:'two',kind:'settings.vercel',target:{projectId:'other',settingsDigest:d}}]});
-function fixture(growthSource?:unknown){
+function fixture(growthSource?:unknown,withSourceAuthority=true){
  let rows=new Map<string,PlatformAction>(),events:unknown[]=[],effects=new Map<string,unknown>(),publications=new Map<string,string>(),queue=Promise.resolve(),now=at,failEvent=false;
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
@@ -21,7 +21,7 @@ function fixture(growthSource?:unknown){
   try{const value=await fn(tx);rows=next;events=nextEvents;effects=nextEffects;publications=nextPublications;return value}finally{release()}
  }};
  const assertCurrent=vi.fn(async(_tx:PlatformTransaction,_actor:typeof requester)=>{});
- const service=createPlatformActionService(repo,{assertCurrent,assertEffectCurrent:async()=>{}});
+ const service=createPlatformActionService(repo,{assertCurrent,...(withSourceAuthority?{assertEffectCurrent:async()=>{}}:{})});
  return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
@@ -111,4 +111,9 @@ it('the same authenticated preparation reference returns the original record wit
  const original=await f.service.prepareGrowth(selection,requester,nonce);source.draft.body='changed';const repeated=await f.service.prepareGrowth(selection,requester,nonce);expect(repeated.actionId).toBe(original.actionId);expect(repeated).toMatchObject({historical:true});expect(repeated.preview).toBeUndefined();expect(f.rows().size).toBe(1);expect(f.events()).toHaveLength(1);
  await expect(f.service.prepareGrowth({...selection,expiresAt:new Date(at+40000).toISOString()},requester,nonce)).rejects.toThrow();
  expect(await f.service.lookupGrowthPreparation(nonce,requester)).toMatchObject({found:true,actionId:original.actionId,authority:'history_only'});expect(await f.service.lookupGrowthPreparation(nonce,reviewer)).toMatchObject({found:false,authority:'history_only'});
+});
+
+it('a source-bound deployment cannot send if its current-source supplier is missing',async()=>{
+ const {approvePlatformAction}=await import('../kernel'),f=fixture(undefined,false),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'lead-deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'preview',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:new Date(at-1000).toISOString()}}]}),id=await f.service.propose(p,requester);
+ f.rows().set(id,approvePlatformAction(f.rows().get(id)!,{...reviewer,planDigest:p.digest},at));await f.service.claim(id,1,requester);const effect=await f.service.claimNextEffect(id,requester);await expect(f.service.beforeEffectSend(effect.proof,effect.effect,requester)).rejects.toThrow();
 });
