@@ -1,6 +1,6 @@
 # Platform custodian drain and closure — proposed local design
 
-Status: specification prepared, implementation approval requested. No action/flag/schema or native provider change performed.
+Status: owner approved LOCAL implementation and isolated tests November12. Implementation in progress; no real action/flag/schema/provider authority.
 
 ## Source finding and scope
 
