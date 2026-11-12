@@ -1069,3 +1069,10 @@ it.skipIf(!enabled)('refuses an early released handoff before original requester
   await expect(sender.submit({actionId:f.id,delegationVersion:0},new AbortController().signal)).rejects.toThrow('operational_handoff_unconfirmed');expect(credentialRead).not.toHaveBeenCalled();expect(native).not.toHaveBeenCalled();expect(await runtimeIntentStages(f.id)).toEqual([]);expect(await f.requester.inspect(f.id)).toMatchObject({status:'approved',attemptCount:0});
  }finally{vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+it.skipIf(!enabled)('checks workload handoff eligibility read-only without consuming identity or creating native holds',async()=>{
+ const f=await operationalFixture({issuerProfileDigest:d}),qualified=vi.fn(async()=>{}),issue=vi.fn(async()=>{throw Error('must not issue')}),store=createOperationalDelegationStore(f.repo,f.authority,f.source,f.identity,f.targets,{assertQualified:qualified,issue});await f.store.delegate(f.id,1,f.plan.digest,actor);const token=await f.token('handoff-preflight-no-claim');
+ const before=await db.$queryRawUnsafe('SELECT "stateJson" FROM "PlatformOperationalDelegation" WHERE "actionId"=$1',f.id);
+ expect(await store.preflightWorkload(f.id,0,token)).toMatchObject({actionId:f.id,manifestDigest:f.manifest.digest,workload:f.manifest.workload,authority:'handoff_preflight_only',executionAuthorized:false});
+ await store.preflightWorkload(f.id,0,token);expect(issue).not.toHaveBeenCalled();expect(await runtimeIntentStages(f.id)).toEqual([]);expect(await db.$queryRawUnsafe('SELECT "stateJson" FROM "PlatformOperationalDelegation" WHERE "actionId"=$1',f.id)).toEqual(before);expect(await f.requester.inspect(f.id)).toMatchObject({status:'approved',attemptCount:0});
+ qualified.mockRejectedValueOnce(Error('profile revoked'));await expect(store.preflightWorkload(f.id,0,token)).rejects.toThrow();await f.store.claim(f.id,0,token);await expect(store.preflightWorkload(f.id,0,token)).rejects.toThrow();expect(issue).not.toHaveBeenCalled();
+});
