@@ -2,6 +2,8 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+Latest broad validation: unchanged80a8dfee passes18,179ordinary tests/0fail/951pending and full production build/types/304pages using CI's existing8GiB heap with network denied/no database URL. The first suite attempt's missing-GPG PATH failure is preserved and resolved without product/test changes; all40isolated signing guards and corrected full run pass. See TEMPLATE-BATCH-VALIDATION.json and LOCAL-PROGRESS.md. Pending authority designs/full P01/whole-source review/PR/native/live gates remain open.
+
 Latest source audit: COVERAGE-ACCEPTANCE-MATRIX.md maps all required families and separates current containment from incomplete usable workflows. New independently builder-checked TEMPLATE-EXECUTION-CUSTODY-PROPOSAL.md requires owner local design authority before typed receipts/reservations/actual-recipient encrypted delivery can be implemented. No implementation or send path was enabled. Legacy GET comments now match review-required behavior; emitted route code is unchanged.
 
 Latest bucket review: a distinct canonical target preview now validates the complete prepared plan, requested account/us-east-2/bucket and explicit ownership:not_observed. No YAML or AWS observation is fabricated.43focused checks/types/shell build and37actual isolated PG cases PASS/stopped; delivery/actors/provider remain simulated. Template execution/result/grant delivery and full P01 remain open. Details in LOCAL-PROGRESS.md.
