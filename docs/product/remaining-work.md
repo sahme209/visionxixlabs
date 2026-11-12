@@ -1000,3 +1000,8 @@ Prepared ECS save/lookup now verifies exact plan/reference and preserves lost-re
 ### November12 — ECS requester proposal form joined locally
 
 Prepared target/existing-run/source-reference form and original-reference recovery are now connected to the unregistered platform workflow.31mocked UI checks, strict types and desktop frontend build pass; no native/customer/source qualification claim. [Evidence](../recovery/2026-11-12/platform-governance-scope/ECS-PREPARATION-UI-RECEIPT.json). Current source/default/custody/fleet/legacy, pending other-family designs, complete terminal recovery and final whole-branch review/PR remain.
+
+
+### November12 — native custodian supplier design decision requested
+
+Installed credential-provider source inspection found ambient endpoint/token-file selection and retries; these defaults are not the fixed private one-attempt boundary. Real AWS-hosted supplier/identity/lifetime/isolation qualification remains absent. A new [bounded design/public-documentation request](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-NATIVE-SUPPLIER-DESIGN-REQUEST.md) is pending; no implementation, account/credential read, provisioning or spending authority is inferred. Existing pending family decisions are unchanged and were not re-asked.

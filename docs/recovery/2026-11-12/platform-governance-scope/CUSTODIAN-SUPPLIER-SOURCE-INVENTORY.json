@@ -1,0 +1,20 @@
+{
+  "scope": "ordinary local source reads only; no imported provider, endpoint, environment value, credential or account read",
+  "versions": {
+    "@aws-sdk/credential-provider-http": "3.972.86",
+    "@smithy/credential-provider-imds": "4.5.2"
+  },
+  "sha256": {
+    "lib/governance/platform/operations/privateStsIssuer.ts": "797375149d0f250201fe59fec52ea8ee7813a2cc4be6cac4cfdd45aa292f5ab1",
+    "lib/governance/platform/operations/workloadRunner.ts": "73fc84cc47241ca0aa683a1dbf2b1caa6a57c103f8de8561b2c3a8b528093256",
+    "node_modules/@aws-sdk/credential-provider-http/dist-cjs/index.js": "ae4626cb8c8948c8c3f4deef29c4db037d2464adcfb88d63ed2eab39f21e9a29",
+    "node_modules/@smithy/credential-provider-imds/dist-cjs/index.js": "b26d7faec162460d7416db210743260b3bd1a6a3f3c565216feb75e9123d5cb7"
+  },
+  "findings": [
+    "Private issuer requires an explicit supplier and qualified current source lease; there is no real default supplier.",
+    "Installed fromHttp selects relative/full credential endpoint and optional authorization-token/file from options or environment, with maxRetries default3.",
+    "Installed container metadata supplier reads environment-selected coordinates and wraps request in retry.",
+    "These SDK source facts do not prove AWS-hosted isolation, native credential lifetime or actual account/IAM configuration."
+  ],
+  "adoptionAuthorized": false
+}

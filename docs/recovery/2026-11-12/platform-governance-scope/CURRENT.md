@@ -791,3 +791,10 @@ Missing-panel and missing-workflow routing REDs preceded implementation.31mocked
 Next: qualified source/run/image/IAM/custody/fleet/default/workflow/legacy completeness and remaining already-pending family designs, then exact whole-branch validation/one fresh independent review/one green PR. Full operational terminal reconciliation/recovery is still not completed by the historical failure reader. Full P01/Governance remains incomplete; activation unavailable. No schema/pin/dependency, actual provider/credential/workflow/native/service/IAM/production/deployment/spending changed.
 
 15internal demo checks PASS after requester-intake wording update. No active tests/builds/owned PostgreSQL remain.
+
+
+### Next core source gap — fixed native credential supplier design
+
+Read-only installed-source inventory confirms the private ECS issuer/runner still require an explicit real supplier. Installed HTTP/container providers have environment-selected endpoint/token-file behavior and retries; their generic defaults are not the approved fixed one-attempt custody boundary. CUSTODIAN-SUPPLIER-SOURCE-INVENTORY.json records exact installed source hashes/versions without executing/importing a provider or reading environment values. No source mechanism, native isolation, actual IAM or credential lifetime was qualified.
+
+CUSTODIAN-NATIVE-SUPPLIER-DESIGN-REQUEST.md prepares a new bounded design decision and up to3official public AWS documentation reads for the concrete AWS-hosted task-credential supplier, supported runtime/isolation limits and native lifetime. This is a genuinely missing real-source composition step, not another pending family prompt or permission to install/provision/use credentials. No code/default/authority/production/spending changed. Existing owner-pending family decisions and all complete-master gates remain.
