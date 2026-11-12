@@ -56,7 +56,7 @@ export function createCustodianDrainService(repo:CustodianDrainRepository,author
    await tx.replace(id,version,claimed);await tx.event({actionId:id,kind:'claimed',state:claimed});
    await tx.writeEffect(id,0,null,'claimed');await tx.event({actionId:id,kind:'effect.claimed',state:claimed,effectIndex:0});
    await tx.writeCustodianBarrier(control.nativeKey,prior?.version??null,nextBarrier);
-   await tx.writeEffect(id,0,'claimed','confirmed');const confirmed=finishPlatformAction(claimed,'confirmed',await tx.now());await tx.replace(id,claimed.version,confirmed);await tx.event({actionId:id,kind:'effect.observed',state:confirmed,effectIndex:0,outcome:'confirmed'});
+   await tx.writeEffect(id,0,'claimed','confirmed');const confirmed=finishPlatformAction(claimed,'confirmed',await tx.now());await tx.replace(id,claimed.version,confirmed);await tx.event({actionId:id,kind:'effect.observed',state:confirmed,effectIndex:0,outcome:'confirmed',custodianBarrier:nextBarrier});
    await current(tx,confirmed,control,actor);
    if(control.operation==='abort'){await source.assertAbortSafe(tx,control,prior!);await tx.assertNoCustodianIntents(control.nativeKey);await current(tx,confirmed,control,actor)}
    return {actionId:id,status:'confirmed' as const,barrier:nextBarrier,executionAuthorized:false as const,closureObserved:false as const};

@@ -5167,6 +5167,8 @@ model PlatformGovernanceAction {
   effects    PlatformGovernanceEffect[]
   operationalDelegation PlatformOperationalDelegation?
   settingsArtifacts PlatformSettingsArtifact[]
+  custodianBarriers PlatformCustodianBarrier[]
+  custodianIntents PlatformCustodianIntent[]
   operationalTargets PlatformOperationalTarget[]
   operationalTargetReceipts PlatformOperationalTargetReceipt[]
   @@index([createdAt, id])
@@ -5282,4 +5284,26 @@ model PlatformSettingsArtifact {
   createdAtMs Float
   action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@unique([actionId, effectIndex])
+}
+
+
+/// LOCAL proposed platform issuer admission barrier, never tenant authority.
+model PlatformCustodianBarrier {
+  nativeKey String @id
+  controlActionId String
+  version Int
+  stateJson Json
+  action PlatformGovernanceAction @relation(fields: [controlActionId], references: [id], onDelete: Restrict)
+  intents PlatformCustodianIntent[]
+}
+
+/// LOCAL proposed permanent in-flight issuer liability; no expiry cleanup.
+model PlatformCustodianIntent {
+  id String @id
+  nativeKey String
+  actionId String
+  stateJson Json
+  barrier PlatformCustodianBarrier @relation(fields: [nativeKey], references: [nativeKey], onDelete: Restrict)
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([nativeKey])
 }

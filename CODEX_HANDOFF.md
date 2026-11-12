@@ -166,6 +166,8 @@ November 11 AWS/AI SDK batches have no UI or public API changes. The Tailwind ba
 
 ## 6. Pinned and reviewed things — do not break
 
+November12 continued local platform source:187models after the two custodian barrier/intent definitions, with only two new parent inverse relations among185existing models. Current mock-schema helper pin was updated after actual DMMF comparison; historical qualification remains closed. See `docs/recovery/2026-11-12/platform-governance-scope/CUSTODIAN-DRAIN-SCHEMA-REVIEW.md`. No production migration/apply.
+
 November12 local platform branch: reviewed current mock-helper schema pin now includes three appended platform models; all175existing model semantics/enums are unchanged. Historical Python packets/qualification remain closed. See `docs/recovery/2026-11-12/platform-governance-scope/SCHEMA-PIN-REVIEW.md` and `BROAD-VALIDATION.md`. No production schema change.
 
 November 11: the synthetic recipe unit helper now binds the current schema after reviewing only the two appended models. See `docs/recovery/2026-11-11/tailwind4-upgrade/current-schema-pin-review.md`. The historical Python packet schema/hash bindings remain unchanged and unavailable for reuse; no qualification/export authority is restored.

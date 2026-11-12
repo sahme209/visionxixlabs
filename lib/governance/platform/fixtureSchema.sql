@@ -60,3 +60,15 @@ CREATE TABLE "PlatformSettingsArtifact" (
  "bindingJson" JSONB NOT NULL, envelope TEXT NOT NULL, "createdAtMs" DOUBLE PRECISION NOT NULL,
  UNIQUE ("actionId","effectIndex")
 );
+
+-- Proposed platform-scoped issuer admission/intent storage; fixture only.
+CREATE TABLE "PlatformCustodianBarrier" (
+ "nativeKey" TEXT PRIMARY KEY, "controlActionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ version INTEGER NOT NULL, "stateJson" JSONB NOT NULL
+);
+CREATE TABLE "PlatformCustodianIntent" (
+ id TEXT PRIMARY KEY, "nativeKey" TEXT NOT NULL REFERENCES "PlatformCustodianBarrier"("nativeKey") ON DELETE RESTRICT,
+ "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ "stateJson" JSONB NOT NULL
+);
+CREATE INDEX "PlatformCustodianIntent_nativeKey_idx" ON "PlatformCustodianIntent" ("nativeKey");
