@@ -28,6 +28,10 @@ Signed installer (A1); live Governance trials (A2); ServiceNow closure (A3); rea
 **Code still open (next candidates)**
 Support agent governed actions (roadmap step 4: five actions done — support hand-off, access request, diagnostic, governed seal/verify, expiring-key list); remaining A2 enforcement composition (readiness read done; enrolled refusal done for notifications, webhooks, membership increases (incl. invite acceptance), new API keys/webhook endpoints, new Airflow/batch connections and autonomy loosening; M02 and M03 complete; P01 platform families remain incomplete after the owner included all three families in scope); A9 orchestrator/on-prem foundations (seal anchors done; offline local-model governed v1 source merged in PR #325 after accepted ADR/settings; protected OS/model and production qualification remain open); B4 coverage of the remaining screens; C1–C6 (not authorized yet).
 
+## Future governed companion enhancement — November 12
+
+Planned **Axiom Companion** (working name): unify and enhance existing Bot/Agent/Ask Axiom/gateway capabilities with context-aware planning, permission-scoped memory, bounded automation and truthful outcome/recovery. Research verified reference products and reusable repositories/libraries/plugins before selecting a design; existing products are not assumed equivalent or adopted. See [the master-plan requirement](axiom-master-action-plan.md#governed-axiom-companion--future-enhancement-owner-request-november-12). Governance remains the current priority; this is not implementation, production or spending authority.
+
 ## Platform migrations (held out of Dependabot major batches)
 
 Each needs its own planned PR; Dependabot ignores their major versions until then.
@@ -946,3 +950,8 @@ An actual contract RED caught the mapper's generic256character identifier limit 
 Next: strict desktop client with exact digest/account/revision checks and lost-attempt recovery, clear request/review/closure/history panels and composed workflow acceptance, then actual private source/fleet/default/legacy/all-family qualification and whole-branch final checks/one independent review/green PR. No customer/API route/SDK method, flag, schema/pin/dependency, native app/build/sign/install, actual credential/provider/IAM/service action, production deployment or spending changed. Full P01/Governance stays incomplete and activation unavailable.
 
 15internal demo checks PASS. No active builds/tests/owned PostgreSQL remain. Prepared clients/panels and actual source/native/fleet qualification remain open; the new HTTP handlers are not registered.
+
+
+### November12 — prepared custodian client verified locally
+
+Exact browser digest/account-bound review and separate control execution/history/closure clients pass focused checks, root/desktop types/build and107actual isolated SQL cases (source/native qualification simulated; server stopped). No mounted panel, native acceptance, actual custody/fleet qualification or P01 completion. See [current source evidence](../recovery/2026-11-12/platform-governance-scope/CURRENT.md). Next: panels/composed workflow, then remaining qualification and final batch validation.

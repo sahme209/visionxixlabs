@@ -1086,3 +1086,16 @@ An actual contract RED caught the mapper's generic256character identifier limit 
 Next: strict desktop client with exact digest/account/revision checks and lost-attempt recovery, clear request/review/closure/history panels and composed workflow acceptance, then actual private source/fleet/default/legacy/all-family qualification and whole-branch final checks/one independent review/green PR. No customer/API route/SDK method, flag, schema/pin/dependency, native app/build/sign/install, actual credential/provider/IAM/service action, production deployment or spending changed. Full P01/Governance stays incomplete and activation unavailable.
 
 15internal demo checks PASS. No active builds/tests/owned PostgreSQL remain. Prepared clients/panels and actual source/native/fleet qualification remain open; the new HTTP handlers are not registered.
+
+
+### Strict prepared custodian desktop client — local only
+
+The fixed-route browser client independently recomputes physical-key, control and complete plan hashes. Strict preview/history/decision/result contracts keep historical metadata distinct from current source-qualified review; preparation retains its exact original reference, independent review and requester execution remain separate, and closure observation/refresh is explicit. Exact action, digest, role/profile, generation and barrier version must match the requested transition. No route is registered, no client supplies native qualification, and no retry or real provider/credential action exists.
+
+Two behavioral REDs reproduced silent in-place token replacement before hashing completed and after a submitted decision. Captured primitive account coordinates now guard both browser hashing and shared paired transport; the URL is captured and ownership repeats immediately before dispatch. Pre-dispatch changes send nothing; post-dispatch changes preserve uncertainty.48focused client/shared-transport checks and26server control/kernel/HTTP checks PASS; root types and desktop frontend types/build PASS. Existing chunk-size and shell dynamic/static-import warnings remain; no native build/sign/relaunch or visual acceptance occurred.
+
+107actual isolated PostgreSQL cases PASS at /private/tmp/axiom-platform-pg-x2sui4yb, server stopped. Two new actual desktop-client→intercepted fetch→in-process HTTP→signed synthetic session/current SQL cases prove separate review/execution/closure history and committed-result loss recovered by original inspection, exactly one execution. Source/fleet/native lifetime evidence remains simulated. See CUSTODIAN-CLIENT-PG-RECEIPT.json. Internal demo wording changed afterward; its separate contract check is recorded below.
+
+Next: custodian panels and composed request/review/closure/history workflow, then actual supplier/fleet/default/legacy/all-family qualification and whole-branch final validation/one independent review/green PR. Full P01/Governance remains incomplete; activation unavailable. No production, schema/pin/dependency, real credentials/provider/IAM/service, deployment or spending change.
+
+15internal demo contract checks PASS after the client wording update. No active tests/builds/owned PostgreSQL remain.

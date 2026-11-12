@@ -1,3 +1,4 @@
+import {custodianControlPlanInput} from './custodianClientContract';
 import {compilePlatformPlan} from '../kernel';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {custodianDrainSelection} from './custodianDrainSelection';
@@ -16,4 +17,4 @@ export function readCustodianDrainPlan(raw:unknown):CustodianDrainPlan{
 
 /** The existing platform action/review/claim ledger owns control decisions. This
  * conversion supplies only the exact immutable effect, never an approval. */
-export function compileCustodianDrainPlatformPlan(raw:unknown){const control=readCustodianDrainPlan(raw);return compilePlatformPlan({format:1,scope:'platform',sourceDigest:control.digest,expiresAt:control.expiresAt,effects:[{id:'custodian-drain',kind:'custodian.drain',target:{accountId:control.custodian.accountId,roleArn:control.custodian.roleArn,nativeKey:control.nativeKey,issuerProfileDigest:control.issuerProfileDigest,controlDigest:control.digest,operation:control.operation}}]})}
+export function compileCustodianDrainPlatformPlan(raw:unknown){const control=readCustodianDrainPlan(raw);return compilePlatformPlan(custodianControlPlanInput(control))}
