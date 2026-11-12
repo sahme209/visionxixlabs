@@ -1,0 +1,7 @@
+# Prisma 7 source merge — November 11, 2026
+
+PR https://github.com/sahme209/visionxixlabs/pull/321 merged normally as `54c0f1c5ab7cfa033ad2e8c2a75166ac63228b68`, after all applicable checks passed on reviewed head `6a4fdb59bebc7e92e6eae5cc371dae40809e7a75`. Required Typecheck + Vitest, all three shards, production/offline build, frontend/native security, macOS transport/policy, actual owned HTTP authentication/billing and PG17 accounting, isolated website, AWS enrollment schema, auth recovery and high/critical audit all passed. Design screenshots skipped under their existing branch condition.
+
+Runs: Test `43128039945`; Desktop `43128039962`; Owned commercial `43128039942`; Auth/AWS `43128039990`; Website `43128039925`; Audit `43128040106`. All checked immediately before exact-head merge. Full local suite: 1,571 files / 17,851 tests passed; 101 files / 897 tests skipped; one expected failure. No new skips or ignored failures introduced. Real isolated SQL is distinct from simulated provider/session evidence.
+
+No production deployment, DB/settings/flag/credential change, provider action or historical qualification renewal. Production remains last verified build 4. `OBSERVED-RESULT.json` and stopped Vercel metadata comparison remain unresolved; no retry or repair authority is implied. Explicit pool/timeout and required-channel-binding compatibility remain deployment gates. Three pre-existing moderate web audit findings remain recorded in `AUDIT-OBSERVATION.md`; no zero-vulnerability claim.

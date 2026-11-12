@@ -26,8 +26,6 @@ updates:
       # Stripe: any release can move the pinned API version (billing behaviour).
       - { dependency-name: "stripe" }
       - { dependency-name: "typescript", update-types: ["version-update:semver-major"] }
-      - { dependency-name: "prisma", update-types: ["version-update:semver-major"] }
-      - { dependency-name: "@prisma/client", update-types: ["version-update:semver-major"] }
       - { dependency-name: "eslint", update-types: ["version-update:semver-major"] }
   - package-ecosystem: npm
     directory: "/desktop"
