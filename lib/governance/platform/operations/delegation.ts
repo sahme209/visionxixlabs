@@ -21,7 +21,7 @@ type Consumed=Awaited<ReturnType<Identity['consume']>>;
 export interface OperationalCredentialIssuer{
  assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
  /** Private fixed issuer; no raw token/role/target from request JSON. */
- issue(manifest:OperationalDelegation['manifest'],signal:AbortSignal):Promise<unknown>;
+ issue(manifest:OperationalDelegation['manifest'],beforeIssue:()=>Promise<void>,signal:AbortSignal):Promise<unknown>;
 }
 const privateCredential=z.object({leaseRef:z.string().regex(/^platform_credential_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/),accessKeyId:z.string().min(1).max(128),secretAccessKey:z.string().min(1).max(8192),sessionToken:z.string().min(1).max(16384),expiresAt:z.number().int().nonnegative().safe()}).strict().refine(v=>[v.accessKeyId,v.secretAccessKey,v.sessionToken].every(s=>!/[\s\x00-\x1f\x7f]/.test(s)));
 const fail=():never=>{throw Error('operational_delegation_unavailable')};
@@ -88,14 +88,18 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));return state.manifest;
    });
    const observation=Object.freeze(Object.create(null)) as object;issuance.set(observation,pending);
-   const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,value:z.infer<typeof privateCredential>;
+   const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,value:z.infer<typeof privateCredential>,authorized=false,used=false;
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
-    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,abort.signal),timeout]));abort.signal.throwIfAborted();
+    const beforeIssue=async()=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
+     const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));
+    });abort.signal.throwIfAborted();authorized=true};
+    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,beforeIssue,abort.signal),timeout]));abort.signal.throwIfAborted();
    }catch{
     const history=await recordCredential(observation,{status:'unknown'});return {history,credentialHandle:null};
    }finally{if(timer)clearTimeout(timer);abort.abort()}
    const history=await recordCredential(observation,{status:'issued',leaseRef:value.leaseRef,expiresAt:value.expiresAt});
+   if(!authorized)return fail();
    await locked(pending.actionId,async(tx,key)=>{
     const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==value.leaseRef||state.credential.expiresAt!==value.expiresAt)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');const now=await tx.now();if(now>=value.expiresAt)return fail();
    });

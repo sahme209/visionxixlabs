@@ -1,0 +1,20 @@
+{
+  "scope": "Private fixed STS exchange and last issuance authorization; unregistered/unqualified default",
+  "red": [
+    "missing STS issuer",
+    "missing final-issuance callback yielded null handle"
+  ],
+  "focusedChecks": 19,
+  "rootTypes": "PASS",
+  "actualPostgresChecks": 72,
+  "fixture": "/private/tmp/axiom-platform-pg-5qocnsns",
+  "fixtureReceiptSha256": "fcc20d7ab40312893352d5cc51fb348e411d49b29779806000643d58793a993e",
+  "stopped": "pg_ctl: no server running",
+  "sourceHashes": {
+    "lib/governance/platform/operations/stsIssuer.ts": "cc2e3f2d1c88a833f94a11ce0b222f0c54c5a9f1c761ca5766fd182b030c46c9",
+    "lib/governance/platform/operations/delegation.ts": "d1a84bbb831a20289b9c6a67ceea1e7ed36820246e69b959f55158aa66176684",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "aa441a76021ba2e8d724a5f898861e123361bec25d831350ab24cad5ee71b99b"
+  },
+  "qualification": "Actual installed STS SDK serialization/deserialization and SQL/JOSE; synthetic token/profile/credential with native network intercepted. No real AWS/IAM/custody acceptance",
+  "productionChanged": false
+}
