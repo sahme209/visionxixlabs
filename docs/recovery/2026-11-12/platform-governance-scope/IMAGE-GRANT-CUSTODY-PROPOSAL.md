@@ -78,3 +78,8 @@ Approve local implementation/schema definitions, synthetic crypto and existing o
 ## Independent design check
 
 Builder review identified artifact/plan context circularity, clone-resistant reservation identity and binary-validation ambiguity. The revisions above purpose-separate contexts, exclude parent digest from precompiled metadata, reserve by external author/exact byte identity, and require a real bounded decoder before intake/rendering. Follow-up found no remaining important design blocker. This is design review only; protocol/decoder/key/host custody and owner implementation approval are NOT established.
+
+
+## Owner decision — November12 local three-family batch
+
+After the three reviewed designs were identified together as the pending local implementation gates, the owner explicitly replied “approved.” This authorizes this design's local source/additive schema definitions/synthetic crypto and isolated tests, retaining every exclusion and condition above. It does not authorize production schema, real credentials/keys/providers, account/service/grant changes, signing/installing, route/flag activation, deployment, paid CI or spending. Image protocol documentation consent and real decoder/profile qualification remain separate; no default image profile is permitted by this decision. Existing unknown histories and genuine independent review requirements remain unchanged.

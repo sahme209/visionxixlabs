@@ -78,7 +78,8 @@ async function deployToVercel(
     if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('platform_deployment_result_unconfirmed');
     const result=raw as {url?:unknown;id?:unknown;readyState?:unknown;state?:unknown;target?:unknown;alias?:unknown};
     if(typeof result.id!=='string'||!/^dpl_[A-Za-z0-9]+$/.test(result.id)||(expectedEnvironment==='production'?result.target!=='production':result.target!==undefined&&result.target!==null&&result.target!=='preview'))throw Error('platform_deployment_result_unconfirmed');
-    return {outcome:'confirmed',value:result};
+    const providerState=(typeof result.readyState==='string'?result.readyState:typeof result.state==='string'?result.state:'UNKNOWN').toUpperCase();
+    return {outcome:'confirmed',value:result,observation:{kind:'deployment.request',providerDeploymentId:result.id,providerState}};
   });
   const rawUrl = typeof data.url === "string" ? data.url : Array.isArray(data.alias) && typeof data.alias[0] === "string" ? data.alias[0] : "";
   let url = "";

@@ -110,3 +110,10 @@ Remaining growth work: image initialization/upload, delete/schedule effects, ope
 ## November12 — dependency-ordered execution
 
 The owner requested a proper sequence. Follow [current execution sequence](current-execution-sequence.md) alongside all existing instructions: release prerequisites; complete Governance source; real qualification/security; operational live acceptance; customer delivery/comprehension; exact reviewed release; retained expansion roadmap. Authorized visual/documentation work runs alongside the critical path. Existing blocked approvals remain pending, all original scope is retained, and this schedule grants no new action/credential/production/spending authority.
+
+
+## November12 — three local family designs approved; deployment liability in progress
+
+Owner explicitly replied “approved” to the consolidated image-upload custody, template-execution/recipient-delivery and deployment-recovery local designs. See [exact local scope](../recovery/2026-11-12/platform-governance-scope/THREE-FAMILY-LOCAL-APPROVAL.md). All earlier pending IMPLEMENTATION labels for those three are historical. Execution order:deployment recovery, template, image. Separate LinkedIn documentation consent and actual decoder/protocol/key/host/source/credential/provider qualification remain held; no real action, new spending or activation is granted.
+
+The first deployment phase now reserves physical targets across actions and atomically records typed accepted/unknown request metadata, retains unknown liability, refuses fresh output after revocation and blocks old untracked uncertainty without backfill.129actual isolated SQL cases with intercepted provider/qualification and scoped types/checks pass; source-only schema definitions reviewed187→189models, existing semantics preserved except two inverse arrays. This is not completed recovery: exact independent terminal observation/release and the usable prepared workflow remain. Other two approved families follow. No full-P01/Governance/production or current whole-branch final-review claim.

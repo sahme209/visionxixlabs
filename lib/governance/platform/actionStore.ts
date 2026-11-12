@@ -1,3 +1,5 @@
+import type {DeploymentLiabilityTransaction} from './deploymentLiabilitySql';
+import {nativeDeploymentKey,reserveDeploymentTarget,createDeploymentRequestReceipt,observeDeploymentRequest,deploymentSendObservationSchema,type DeploymentReservation,type DeploymentRequestReceipt} from './deploymentLiability';
 import type {CustodianClosureObservation} from './operations/custodianClosureObservation';
 import type {CustodianBarrier} from './operations/custodianDrainKernel';
 import type {CustodianDrainPlan} from './operations/custodianDrainContract';
@@ -23,7 +25,7 @@ import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPlatformAction,readPlatformAction} from './kernel';
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
-export interface PlatformTransaction{
+export interface PlatformTransaction extends Partial<DeploymentLiabilityTransaction>{
  readDeploymentSource?(leadId:string):Promise<unknown>;
  readSourcePage?(kind:PlatformSourceKind,cursor:string|null):Promise<unknown>;
  readActionPage?(cursor:PlatformHistoryCursor|null):Promise<unknown>;
@@ -33,7 +35,7 @@ export interface PlatformTransaction{
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
  insert(id:string,state:PlatformAction):Promise<void>;replace(id:string,expectedVersion:number,state:PlatformAction):Promise<void>;
- event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'|'credential.source_observed'|'workload.stable_observed'|'custodian.closure_observed';operationalStabilityReceiptId?:string;operationalObserverUserId?:string;operationalCommandReceiptDigest?:string;operationalDigest?:string;operationalResult?:OperationalEcsResult;settingsResult?:SettingsResult;settingsManifest?:SettingsManifest;ecsManifest?:EcsManifest;custodianControl?:CustodianDrainPlan;custodianBarrier?:CustodianBarrier;custodianClosure?:CustodianClosureObservation;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
+ event(event:{actionId:string;kind:'proposed'|'approved'|'claimed'|'effect.claimed'|'effect.observed'|'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'|'credential.source_observed'|'workload.stable_observed'|'custodian.closure_observed';operationalStabilityReceiptId?:string;operationalObserverUserId?:string;operationalCommandReceiptDigest?:string;operationalDigest?:string;operationalResult?:OperationalEcsResult;settingsResult?:SettingsResult;deploymentReceipt?:DeploymentRequestReceipt;settingsManifest?:SettingsManifest;ecsManifest?:EcsManifest;custodianControl?:CustodianDrainPlan;custodianBarrier?:CustodianBarrier;custodianClosure?:CustodianClosureObservation;state:PlatformAction;effectIndex?:number;outcome?:EffectStatus}):Promise<void>;
  /** Permanent send reservation. No release/reset API, including unknown outcomes. */
  reservePostDeletion?(id:string,index:number,postUrn:string):Promise<void>;
  reservePublication?(id:string,index:number,draftId:string):Promise<void>;
@@ -51,7 +53,8 @@ const fail=():never=>{throw Error('platform_governance_action_unavailable')};
 /** Local store composition. No route or provider may accept a client-built
  * authority supplier, claim or observation proof. Default mounting is separate. */
 export function createPlatformActionService(repo:PlatformRepository,authority:PlatformAuthority){
- const observations=new WeakMap<object,{actionId:string;index:number;sendUsed:boolean;sendGranted:boolean}>();
+ const observations=new WeakMap<object,{actionId:string;index:number;sendUsed:boolean;sendGranted:boolean;deployment?:Readonly<DeploymentReservation>}>();
+ const resultProofs=new WeakMap<object,{actionId:string;index:number}>();
  async function load(tx:PlatformTransaction,id:string){const row=await tx.read(id);if(!row)fail();return readPlatformAction(row)}
  async function actors(tx:PlatformTransaction,state:PlatformAction){await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer)}
  async function timely(tx:PlatformTransaction,state:PlatformAction){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
@@ -239,12 +242,20 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const binding=observations.get(proof)??fail();
    if(binding.sendUsed)fail();binding.sendUsed=true;
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
+   let deployment:Readonly<DeploymentReservation>|undefined;
    await locked(binding.actionId,async(tx,state)=>{
     if(state.plan.effects.some(effect=>effect.kind==='deployment.ecs'||effect.kind==='custodian.drain')||state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
     await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    if(effect.kind==='deployment.vercel'){
+     if(!tx.lockDeploymentTarget||!tx.assertDeploymentTargetAdmission||!tx.readDeploymentTarget||!tx.insertDeploymentTarget||!tx.replaceDeploymentTarget)fail();
+     const key=nativeDeploymentKey(effect);await tx.lockDeploymentTarget!(key);await tx.assertDeploymentTargetAdmission!(key);const previous=await tx.readDeploymentTarget!(key);
+     deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);
+     if(previous)await tx.replaceDeploymentTarget!(previous.version,deployment);else await tx.insertDeploymentTarget!(deployment);
+     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    }
     if(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete'){
      const reserve=(effect.kind==='growth.post.publish'?tx.reservePublication:tx.reservePostDeletion)??fail();await reserve.call(tx,binding.actionId,binding.index,effect.kind==='growth.post.publish'?effect.target.draftId:effect.target.postUrn);
      // Uniqueness can wait on another transaction; authority and expiry must
@@ -253,14 +264,26 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     }
    });
    if(observations.get(proof)!==binding)fail();
-   binding.sendGranted=true;
+   binding.deployment=deployment;binding.sendGranted=true;
   },
-  async observeEffect(proof:object,outcome:'confirmed'|'refused'|'unknown'){
+  async observeEffect(proof:object,outcome:'confirmed'|'refused'|'unknown',rawObservation?:unknown){
    if(!proof||typeof proof!=='object'||!['confirmed','refused','unknown'].includes(outcome))fail();
    const binding=observations.get(proof)??fail();observations.delete(proof);
    if(outcome==='confirmed'&&!binding.sendGranted)fail();
+   let usable=true;
    await locked(binding.actionId,async(tx,state)=>{
+    let deploymentReceipt:DeploymentRequestReceipt|undefined;
     if(state.status!=='claimed'||await tx.readEffect(binding.actionId,binding.index)!=='claimed')fail();
+    if(binding.deployment){
+     if(!tx.lockDeploymentTarget||!tx.readDeploymentTarget||!tx.insertDeploymentRequestReceipt||!tx.replaceDeploymentTarget)fail();
+     await tx.lockDeploymentTarget!(binding.deployment.nativeKey);const current=await tx.readDeploymentTarget!(binding.deployment.nativeKey);
+     if(!current||sha256ContentHash(current)!==sha256ContentHash(binding.deployment))fail();
+     const parsed=deploymentSendObservationSchema.safeParse(rawObservation);
+     if(outcome==='confirmed'&&!parsed.success){outcome='unknown';usable=false}
+     const observedAt=await tx.now();
+     deploymentReceipt=createDeploymentRequestReceipt({format:1,purpose:'platform_deployment_request_receipt_v1',receiptId:'platform_deployment_receipt_'+randomUUID(),nativeKey:current!.nativeKey,generation:current!.generation,actionId:binding.actionId,effectIndex:binding.index,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,providerDeploymentId:outcome==='confirmed'&&parsed.success?parsed.data.providerDeploymentId:null,providerState:outcome==='confirmed'&&parsed.success?parsed.data.providerState:null,outcome:outcome==='confirmed'?'accepted':outcome,observedAt,ready:false});
+     await tx.insertDeploymentRequestReceipt!(deploymentReceipt);await tx.replaceDeploymentTarget!(current!.version,observeDeploymentRequest(current,deploymentReceipt,observedAt));
+    }else if(rawObservation!==undefined)fail();
     await tx.writeEffect(binding.actionId,binding.index,'claimed',outcome);
     let final:'confirmed'|'refused'|'unknown'|null=outcome==='confirmed'?null:outcome;
     if(outcome==='confirmed'){
@@ -269,8 +292,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     }
     const next=final?finishPlatformAction(state,final,await tx.now()):state;
     if(final)await tx.replace(binding.actionId,state.version,next);
-    await tx.event({actionId:binding.actionId,kind:'effect.observed',state:next,effectIndex:binding.index,outcome});
+    await tx.event({actionId:binding.actionId,kind:'effect.observed',state:next,effectIndex:binding.index,outcome,...(deploymentReceipt?{deploymentReceipt}:{})});
    });
+   if(!usable)fail();
+   if(binding.deployment&&outcome==='confirmed')resultProofs.set(proof,{actionId:binding.actionId,index:binding.index});
+  },
+  async beforeEffectResult(proof:object,principal:PlatformPrincipal){
+   const result=resultProofs.get(proof)??fail();resultProofs.delete(proof);const actor=platformPrincipalSchema.parse(principal);
+   await locked(result.actionId,async(tx,state)=>{if(actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(result.actionId,result.index)!=='confirmed')fail();await actors(tx,state);await timely(tx,state);const effect=state.plan.effects[result.index];if(effect.kind!=='deployment.vercel')fail();await authority.assertEffectCurrent?.(tx,effect);await actors(tx,state);await timely(tx,state)});
   },
  };
 }

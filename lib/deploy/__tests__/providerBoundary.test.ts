@@ -12,7 +12,7 @@ const files = [{ path: "index.html", content: "<h1>test</h1>" }];
 const fetchMock = vi.fn();
 function grant(projectName='fixture',target?:'production'){
  const effect=preparePlatformVercelDeployment(files,{projectName,target,teamId:'team_fixture'}).effect;
- return {binding:bindPlatformExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{}},'fixture-action')};
+ return {binding:bindPlatformExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{},beforeEffectResult:async()=>{}},'fixture-action')};
 }
 function response(value:unknown){return new Response(JSON.stringify(value),{status:200})}
 beforeEach(() => {

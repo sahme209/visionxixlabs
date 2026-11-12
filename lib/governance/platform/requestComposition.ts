@@ -55,5 +55,6 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
   // Private transport observation may outlive session expiry after a send.
   // No public endpoint may accept a caller's invented outcome/proof.
   observeEffect:store.observeEffect,
+  async beforeEffectResult(proof:object){assertPossession();await store.beforeEffectResult(proof,principal);assertPossession()},
  });
 }

@@ -72,3 +72,13 @@ CREATE TABLE "PlatformCustodianIntent" (
  "stateJson" JSONB NOT NULL
 );
 CREATE INDEX "PlatformCustodianIntent_nativeKey_idx" ON "PlatformCustodianIntent" ("nativeKey");
+
+-- Approved LOCAL deployment liability fixture only; never production apply.
+CREATE TABLE "PlatformDeploymentTarget" (
+ "nativeKey" TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT, generation INTEGER NOT NULL, version INTEGER NOT NULL, "stateJson" JSONB NOT NULL, "updatedAt" TIMESTAMP(3) NOT NULL
+);
+CREATE INDEX "PlatformDeploymentTarget_actionId_idx" ON "PlatformDeploymentTarget" ("actionId");
+CREATE TABLE "PlatformDeploymentRequestReceipt" (
+ id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT, "effectIndex" INTEGER NOT NULL, "nativeKey" TEXT NOT NULL, generation INTEGER NOT NULL, "receiptDigest" TEXT NOT NULL, "receiptJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP, UNIQUE ("actionId","effectIndex")
+);
+CREATE INDEX "PlatformDeploymentRequestReceipt_nativeKey_generation_idx" ON "PlatformDeploymentRequestReceipt" ("nativeKey",generation);

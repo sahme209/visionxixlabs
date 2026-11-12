@@ -1,3 +1,5 @@
+import {bindPlatformExecution} from '../effectExecution';
+import {createPlatformRequestComposition} from '../requestComposition';
 import {createRequire} from 'node:module';
 import {mkdtemp,readFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
@@ -95,18 +97,20 @@ import {createDefaultPlatformExecution} from '../defaultExecution';
 import {preparePlatformVercelDeployment} from '@/lib/deploy/platformDeployment';
 import {generateSiteFilesFromPlan} from '@/lib/scaffoldGenerator';
 import {deploySite,deploySiteFromPlan} from '@/lib/deploy/provider';
-async function deploymentFixture(){
+async function deploymentFixture(options:{projectName?:string;html?:string;executionRepo?:(base:PlatformRepository)=>PlatformRepository}={}){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TOKEN','synthetic-provider-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');
  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request);
- const website={siteName:'fixture',fullPageHtml:'<h1>fixture</h1>'},prepared=preparePlatformVercelDeployment(generateSiteFilesFromPlan(website),{projectName:'fixture',teamId:'team_fixture'});
+ const projectName=options.projectName??'fixture-'+randomUUID(),website={siteName:'fixture',fullPageHtml:options.html??'<h1>fixture</h1>'},prepared=preparePlatformVercelDeployment(generateSiteFilesFromPlan(website),{projectName,teamId:'team_fixture'});
  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[prepared.effect]},compiled=compilePlatformPlan(raw),id=await requester.propose(raw);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
- return {website,prepared,id,binding:await createDefaultPlatformExecution(request,id,1)};
+ let binding:object;
+ if(options.executionRepo){const service=await createPlatformRequestComposition(request,{repo:options.executionRepo(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase)),verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']});await service.claim(id,1);binding=bindPlatformExecution(service,id)}else binding=await createDefaultPlatformExecution(request,id,1);
+ return {website,projectName,prepared,id,requester,binding};
 }
 it.skipIf(!enabled)('joins default possessed requester, SQL review/claims and actual deployment helper with simulated HTTP',async()=>{
  try{
   const f=await deploymentFixture(),http=vi.fn(async()=>new Response(JSON.stringify({id:'dpl_fixture',readyState:'BUILDING'}),{status:200}));vi.stubGlobal('fetch',http);
-  expect(await deploySiteFromPlan('vercel',f.website,{projectName:'fixture',platformExecution:f.binding})).toMatchObject({deploymentId:'dpl_fixture',state:'BUILDING'});
+  expect(await deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).toMatchObject({deploymentId:'dpl_fixture',state:'BUILDING'});
   expect(http).toHaveBeenCalledTimes(1);
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'confirmed',attemptCount:1});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
@@ -114,7 +118,7 @@ it.skipIf(!enabled)('joins default possessed requester, SQL review/claims and ac
 it.skipIf(!enabled)('default deployment transport loss retains unknown parent/child and refuses replay',async()=>{
  try{
   const f=await deploymentFixture(),http=vi.fn(async()=>{throw Error('synthetic_lost_response')});vi.stubGlobal('fetch',http);
-  for(let i=0;i<2;i++)await expect(deploySiteFromPlan('vercel',f.website,{projectName:'fixture',platformExecution:f.binding})).rejects.toThrow();expect(http).toHaveBeenCalledTimes(1);
+  for(let i=0;i<2;i++)await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();expect(http).toHaveBeenCalledTimes(1);
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
@@ -1128,4 +1132,54 @@ it.skipIf(!enabled).each(['wrong-run','wrong-attempt','wrong-environment','expir
   expect(await db.$queryRawUnsafe('SELECT "replayKey" FROM "PlatformOperationalWorkloadUse" WHERE "actionId"=$1',f.id)).toEqual([]);
   expect(await f.repo.transaction(async tx=>{await tx.lock(f.id);return tx.read(f.id)})).toMatchObject({status:'approved',attemptCount:0});
  }finally{native.mockRestore();credentialRead.mockRestore();vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+
+it.skipIf(!enabled)('serializes distinct approved deployments for one physical target and atomically retains accepted request evidence',async()=>{
+ try{
+  const projectName='collision-'+randomUUID(),first=await deploymentFixture({projectName}),second=await deploymentFixture({projectName,html:'<h1>different reviewed files</h1>'}),http=vi.fn(async()=>Response.json({id:'dpl_collision',readyState:'BUILDING'}));vi.stubGlobal('fetch',http);
+  const outcomes=await Promise.allSettled([first,second].map(f=>deploySiteFromPlan('vercel',f.website,{projectName,platformExecution:f.binding})));
+  expect(outcomes.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(outcomes.filter(r=>r.status==='rejected')).toHaveLength(1);expect(http).toHaveBeenCalledOnce();
+  const rows=await db.$queryRawUnsafe<Array<{stateJson:{phase:string;generation:number;requestReceiptDigest:string}}>>(`SELECT "stateJson" FROM "PlatformDeploymentTarget" WHERE "stateJson"->'target'->>'projectName'=$1`,projectName);expect(rows).toHaveLength(1);expect(rows[0].stateJson).toMatchObject({phase:'held',generation:1});
+  const receipts=await db.$queryRawUnsafe<Array<{receiptJson:unknown}>>('SELECT "receiptJson" FROM "PlatformDeploymentRequestReceipt" WHERE "actionId" IN ($1,$2)',first.id,second.id);expect(receipts).toHaveLength(1);expect(receipts[0].receiptJson).toMatchObject({outcome:'accepted',providerDeploymentId:'dpl_collision',providerState:'BUILDING',ready:false,receiptDigest:rows[0].stateJson.requestReceiptDigest});expect(JSON.stringify(receipts)).not.toMatch(/synthetic-provider-token|https:/);
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('holds an unknown deployment across new reviewed action/file/request identities without another provider attempt',async()=>{
+ try{
+  const projectName='unknown-target-'+randomUUID(),first=await deploymentFixture({projectName}),http=vi.fn(async()=>{throw Error('synthetic lost reply')});vi.stubGlobal('fetch',http);
+  await expect(deploySiteFromPlan('vercel',first.website,{projectName,platformExecution:first.binding})).rejects.toThrow();const second=await deploymentFixture({projectName,html:'<h1>new files cannot recover old unknown</h1>'});await expect(deploySiteFromPlan('vercel',second.website,{projectName,platformExecution:second.binding})).rejects.toThrow();expect(http).toHaveBeenCalledOnce();
+  const receipts=await db.$queryRawUnsafe<Array<{receiptJson:unknown}>>('SELECT "receiptJson" FROM "PlatformDeploymentRequestReceipt" WHERE "actionId"=$1',first.id);expect(receipts).toHaveLength(1);expect(receipts[0].receiptJson).toMatchObject({outcome:'unknown',providerDeploymentId:null,providerState:null,ready:false});expect(await first.requester.inspect(first.id)).toMatchObject({status:'unknown',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('preserves accepted deployment receipt after reviewer revocation but refuses returning a fresh usable result',async()=>{
+ try{
+  const f=await deploymentFixture(),http=vi.fn(async()=>{await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);return Response.json({id:'dpl_revoked',readyState:'BUILDING'})});vi.stubGlobal('fetch',http);
+  await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();expect(http).toHaveBeenCalledOnce();
+  const receipts=await db.$queryRawUnsafe<Array<{receiptJson:unknown}>>('SELECT "receiptJson" FROM "PlatformDeploymentRequestReceipt" WHERE "actionId"=$1',f.id);expect(receipts).toHaveLength(1);expect(receipts[0].receiptJson).toMatchObject({outcome:'accepted',providerDeploymentId:'dpl_revoked',ready:false});expect(await f.requester.inspect(f.id)).toMatchObject({status:'confirmed',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+
+it.skipIf(!enabled)('rolls deployment receipt, target observation and terminal action back together on event failure while holding the original target',async()=>{
+ try{
+  const f=await deploymentFixture({executionRepo:base=>({transaction:fn=>base.transaction(tx=>fn({...tx,event:async event=>{if(event.kind==='effect.observed')throw Error('synthetic event failure after receipt insertion');await tx.event(event)}}))})}),http=vi.fn(async()=>Response.json({id:'dpl_eventfail',readyState:'BUILDING'}));vi.stubGlobal('fetch',http);
+  await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow('platform_governance_outcome_unconfirmed');await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();expect(http).toHaveBeenCalledOnce();
+  expect(await db.$queryRawUnsafe('SELECT id FROM "PlatformDeploymentRequestReceipt" WHERE "actionId"=$1',f.id)).toEqual([]);
+  const held=await db.$queryRawUnsafe<Array<{stateJson:unknown}>>('SELECT "stateJson" FROM "PlatformDeploymentTarget" WHERE "actionId"=$1',f.id);expect(held).toHaveLength(1);expect(held[0].stateJson).toMatchObject({phase:'held',version:0,requestReceiptDigest:null});expect(await f.requester.inspect(f.id)).toMatchObject({status:'claimed',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('retains one accepted deployment receipt after a lost observation acknowledgement without returning or repeating the send',async()=>{
+ try{
+  let lose=true;
+  const f=await deploymentFixture({executionRepo:base=>({transaction:async fn=>{let observation=false;const result=await base.transaction(tx=>fn({...tx,event:async event=>{await tx.event(event);if(event.kind==='effect.observed')observation=true}}));if(observation&&lose){lose=false;throw Error('synthetic committed observation acknowledgement lost')}return result}})}),http=vi.fn(async()=>Response.json({id:'dpl_acklost',readyState:'BUILDING'}));vi.stubGlobal('fetch',http);
+  await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow('platform_governance_outcome_unconfirmed');await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();expect(http).toHaveBeenCalledOnce();
+  const rows=await db.$queryRawUnsafe<Array<{receiptJson:unknown}>>('SELECT "receiptJson" FROM "PlatformDeploymentRequestReceipt" WHERE "actionId"=$1',f.id);expect(rows).toHaveLength(1);expect(rows[0].receiptJson).toMatchObject({outcome:'accepted',providerDeploymentId:'dpl_acklost',ready:false});expect(await f.requester.inspect(f.id)).toMatchObject({status:'confirmed',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+it.skipIf(!enabled)('blocks untracked legacy unknown deployment history without backfilling or adopting it into the new target ledger',async()=>{
+ try{
+  const projectName='legacy-unknown-'+randomUUID(),old=await deploymentFixture({projectName}),claim=await old.requester.claimNextEffect(old.id);await old.requester.observeEffect(claim.proof,'unknown');
+  // Owned synthetic fixture models a pre-liability proposed event, never a real history repair.
+  await db.$executeRawUnsafe(`UPDATE "PlatformGovernanceEvent" SET "detailJson"="detailJson"-'deploymentTracking' WHERE "actionId"=$1 AND kind='proposed'`,old.id);
+  const original=await old.requester.inspect(old.id),fresh=await deploymentFixture({projectName,html:'<h1>a new source cannot erase legacy uncertainty</h1>'}),http=vi.fn(async()=>Response.json({id:'dpl_notallowed',readyState:'BUILDING'}));vi.stubGlobal('fetch',http);
+  await expect(deploySiteFromPlan('vercel',fresh.website,{projectName,platformExecution:fresh.binding})).rejects.toThrow();expect(http).not.toHaveBeenCalled();expect(await old.requester.inspect(old.id)).toEqual(original);expect(await db.$queryRawUnsafe('SELECT id FROM "PlatformDeploymentRequestReceipt" WHERE "actionId"=$1',old.id)).toEqual([]);
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });

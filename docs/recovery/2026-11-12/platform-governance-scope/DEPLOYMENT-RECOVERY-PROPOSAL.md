@@ -56,3 +56,8 @@ Local implementation/additive local schema and isolated tests of the reviewed re
 ## Independent builder check
 
 A fresh design-only builder read this proposal and existing store/repository/effect/provider source and reported nothing important left unanswered for local implementation. It confirmed that real provider terminal/identity profiles and unknown-without-reference discovery are explicit later unavailable gates. No file edits, test, provider or database operation occurred during the check. This is design review, not implementation or real-world qualification.
+
+
+## Owner decision — November12 local three-family batch
+
+After the three reviewed designs were identified together as the pending local implementation gates, the owner explicitly replied “approved.” This authorizes this design's local source/additive schema definitions/synthetic crypto and isolated tests, retaining every exclusion and condition above. It does not authorize production schema, real credentials/keys/providers, account/service/grant changes, signing/installing, route/flag activation, deployment, paid CI or spending. Image protocol documentation consent and real decoder/profile qualification remain separate; no default image profile is permitted by this decision. Existing unknown histories and genuine independent review requirements remain unchanged.

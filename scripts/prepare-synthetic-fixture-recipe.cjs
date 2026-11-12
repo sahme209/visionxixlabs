@@ -3,10 +3,10 @@
 // invocation requires the separately authorized artifact-generation packet.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),child=require('node:child_process'),os=require('node:os');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-// Reviewed two appended custodian models and parent inverse relations; no existing data column changed.
-// See docs/recovery/2026-11-12/platform-governance-scope/CUSTODIAN-DRAIN-SCHEMA-REVIEW.md.
+// Reviewed two appended deployment models and parent inverse relations; existing model semantics are unchanged.
+// See docs/recovery/2026-11-12/platform-governance-scope/DEPLOYMENT-LIABILITY-SCHEMA-REVIEW.md.
 // Historical packet authority intentionally retains its original schema/source pins.
-const SCHEMA='452ae9e687d3099b05eeb2271f8267cf1034a0060f4f97ed02d74b2c0605fbfe';
+const SCHEMA='95a56e40ecfac78c6ddb1d2c1ec685c4c9c3151c50e08b7c75daa3c783445ea5';
 const ENGINE='6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1';
 const CLI_VERSION='7.10.1',ENGINE_VERSION='d1b3f377ca835d73fd50954a5e22128b9ebdd6b8';
 const CLI_ENTRY='763611d694b08952ced7c5abb3b9d61906fed0a8997d9214ac918a43928e0fc8',CLI_BODY='4ab8a95f0072dfa7c3db869a5ff8f775499f22c346a4556991c0ae28eb1220fd';

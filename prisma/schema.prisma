@@ -5171,6 +5171,8 @@ model PlatformGovernanceAction {
   custodianIntents PlatformCustodianIntent[]
   operationalTargets PlatformOperationalTarget[]
   operationalTargetReceipts PlatformOperationalTargetReceipt[]
+  deploymentTargets PlatformDeploymentTarget[]
+  deploymentRequestReceipts PlatformDeploymentRequestReceipt[]
   @@index([createdAt, id])
 }
 
@@ -5306,4 +5308,31 @@ model PlatformCustodianIntent {
   barrier PlatformCustodianBarrier @relation(fields: [nativeKey], references: [nativeKey], onDelete: Restrict)
   action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@index([nativeKey])
+}
+
+/// LOCAL proposed target liability; held acceptance/unknown is not readiness.
+model PlatformDeploymentTarget {
+  nativeKey String @id
+  actionId String
+  generation Int
+  version Int
+  stateJson Json
+  updatedAt DateTime @updatedAt
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([actionId])
+}
+
+/// LOCAL immutable content-free request evidence; never a signed URL or token.
+model PlatformDeploymentRequestReceipt {
+  id String @id
+  actionId String
+  effectIndex Int
+  nativeKey String
+  generation Int
+  receiptDigest String
+  receiptJson Json
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, effectIndex])
+  @@index([nativeKey, generation])
 }

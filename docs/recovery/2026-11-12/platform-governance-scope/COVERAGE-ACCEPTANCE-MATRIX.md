@@ -19,12 +19,12 @@ Current source reconciliation through030efaa1; original source matrix began atf0
 | Platform default/UI/runtime coverage | Actual paired HMAC/current SQL platform authority, separate reviewer/requester/workload and prepared panels exist. Actual fixed job runtime/generated step and connected setup/build-qualified artifact preparation are tested; no caller JavaScript/compiler selection, private database/AWS code in job bundle or production default. See GITHUB-BOOTSTRAP and CONNECTED-HANDOFF receipts. | All-family default caller closure and qualified native/issuer/host/credential/profile suppliers remain incomplete. Prepared routes/panels/artifacts stay unregistered. Shipping usable workflow, real runtime and live acceptance are separate; synthetic callbacks and metadata are not authority. |
 | Final source/PR gate | Runtimead5a7063 passed18,615ordinary tests/0fail/1,028pending and offline production build/types. Subsequent connected preparer1542949a passed21focused/demo checks/types. Latest test-only matrix030efaa1 passed123actual isolated SQL cases/types. Historical receipts retain exact source scope; no current full-build claim spans these later additions. | Held family scope and all remaining defaults/qualification/workflows must complete before final requirement audit, fresh whole-source review, current whole validation and one exact-green PR/normal merge. No PR/push, CI, deployment or production acceptance is inferred. |
 
-## Decisions already pending — do not repeat or infer
+## Owner decisions and still-held authority — current status
 
 - Official LinkedIn documentation reads (separate external-read consent).
-- IMAGE-GRANT-CUSTODY-PROPOSAL.md local implementation.
-- DEPLOYMENT-RECOVERY-PROPOSAL.md local implementation.
-- TEMPLATE-EXECUTION-CUSTODY-PROPOSAL.md local implementation: independently builder-checked; authority requested and still awaiting owner decision.
+- IMAGE-GRANT-CUSTODY-PROPOSAL.md local implementation now owner-approved; protocol documentation and decoder/profile qualification remain separate.
+- DEPLOYMENT-RECOVERY-PROPOSAL.md local implementation now owner-approved; target/receipt phase implemented, observation/release/workflow still in progress.
+- TEMPLATE-EXECUTION-CUSTODY-PROPOSAL.md local implementation now owner-approved; source/schema/isolated tests only. Real grant/key/channel qualification remains held.
 
 No source audit implies permission to contact providers, retrieve credentials, run operational workflows, change a production schema/flag, sign/install, spend or deploy. Preserve all original unknown records, production discrepancy, native/Governance activation fences and the complete master scope.
 
@@ -72,3 +72,6 @@ These four original row wordings are historical, not remaining instructions. The
 | Platform default/UI/runtime coverage | Actual paired HMAC/current SQL admin authority, distinct reviewer/requester/workload, prepared source/proposal/review/delegation/history panels and connected synthetic execution journeys. | All-family default caller closure, qualified native/issuer/host/credentials and registered usable customer workflow remain incomplete. Test profiles/UI hints are never authority. |
 | Final source/PR gate | Current c0180a37 complete ordinary suite18,355pass/0fail/989pending and production build/types304pages PASS; separate75owned SQL journeys with simulated qualification/provider. INTEGRATED-VALIDATION.md records exact source/environment, preserved first build failure and cached-engine correction. | Required family coverage/default/workflow remains incomplete. Final requirement audit, fresh whole-source review, one coherent PR and all applicable exact-head CI remain mandatory; no production/live qualification follows automatically. |
 ```
+
+
+Latest deployment source increment: see DEPLOYMENT-LIABILITY-LOCAL-RECEIPT.json and THREE-FAMILY-LOCAL-APPROVAL.md. The earlier table remains scoped historical implementation status where superseded. New reservations/request receipts/output gate have128actual SQL passes with simulated provider; exact reviewed terminal release and prepared usable execution workflow remain in progress. No standalone containment completion or P01 activation follows.
