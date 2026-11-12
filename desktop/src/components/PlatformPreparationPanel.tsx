@@ -33,7 +33,7 @@ export function PlatformPreparationPanel({client,canPrepare,onSaved}:Props){
     setMessage('Saved reference found. Inspect its exact recorded plan; no approval or operation occurred.');onSaved(receipt.data.actionId);
    }else{
     const lookup=platformPreparationLookupSchema.safeParse(result.data);if(!lookup.success||lookup.data.requestId!==original.requestId)throw Error('unconfirmed');
-    if(lookup.data.found){setMessage('Original saved action found. Its recorded history does not renew authority.');onSaved(lookup.data.actionId)}
+    if(lookup.data.found){held.current=true;setSubmitted(true);setMessage('Original saved action found. Its recorded history does not renew authority.');onSaved(lookup.data.actionId)}
     else setMessage('No saved reference was found for this session. Do not resubmit automatically; inspect saved history and retain this reference.');
    }
   }catch{if(owns())setMessage(kind==='save'?'Saving is unconfirmed. Look up this original reference; do not save again or create a replacement.':'Lookup is unavailable. Retain the original reference and inspect saved history; no save was repeated.')}
@@ -53,7 +53,7 @@ export function PlatformPreparationPanel({client,canPrepare,onSaved}:Props){
   {!reference?<button type="button" className="btn-secondary" disabled={locked} onClick={keep}>Keep exact proposal reference</button>:<>
    <label>Original proposal reference<input readOnly value={reference.requestId}/></label>
    <p className="text-xs text-zinc-400">Keep this reference until the saved action is confirmed. Lookup is read-only and never renews a review window.</p>
-   <div className="flex flex-wrap gap-3"><button type="button" className="btn-primary" disabled={!current||busy||submitted||!canPrepare} onClick={()=>void run('save')}>Save this exact proposal</button><button type="button" className="btn-secondary" disabled={!current||busy} onClick={()=>void run('lookup')}>Look up this original reference</button></div>
+   <div className="flex flex-wrap gap-3">{!submitted&&<button type="button" className="btn-secondary" disabled={!current||busy||!canPrepare} onClick={()=>{if(owns()&&!running.current&&!held.current){ref.current=null;setReference(null);setMessage('Unsent selection reopened. Nothing was saved.')}}}>Edit unsent selection</button>}<button type="button" className="btn-primary" disabled={!current||busy||submitted||!canPrepare} onClick={()=>void run('save')}>Save this exact proposal</button><button type="button" className="btn-secondary" disabled={!current||busy} onClick={()=>void run('lookup')}>Look up this original reference</button></div>
   </>}
   <p role="status" aria-live="polite">{busy?'Checking the original proposal reference…':message}</p>
  </section>;
