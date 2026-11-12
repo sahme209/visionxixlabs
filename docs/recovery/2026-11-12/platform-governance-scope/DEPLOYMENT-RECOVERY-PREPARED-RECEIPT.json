@@ -1,0 +1,34 @@
+{
+  "scope": "prepared local deployment recovery, not complete Task3",
+  "sourceHashes": {
+    "lib/governance/platform/deploymentRecoveryContract.ts": "b4e569e3ac5a902838631950fc8e8b8e33ede98480dfd1d58bbf18edad428565",
+    "lib/governance/platform/deploymentRecoveryStore.ts": "14c8bc9e05f1fc7eb8e3198f4c141e5b8f72f923a3f19045d25a879c0bc534b3",
+    "lib/governance/platform/contracts.ts": "910fcd9e60681b133af6fadcf46e59f46bf568a6bf5a132d0ca2153af62a3b0d",
+    "lib/governance/platform/actionStore.ts": "e1c8c268e6493f8d34cb08994a3d6a1dcddb65d5d831ced0edbaf388abc49395",
+    "lib/governance/platform/currentAuthority.ts": "1124840a8bba21a20bf0c6d7f7fedb90ab13be1306cd4b5ed0dbad6f871d6f1a",
+    "lib/governance/platform/preparationReference.ts": "39b82d1715df6017915ac1781cdeae31719f0aa62a73813022c02ad02156f637",
+    "lib/governance/platform/sqlRepository.ts": "a8725fb563a902b925bf72e3a4ce7aba2050ef8ca36eb71068b60df2c91274db",
+    "desktop/src/components/PlatformActionSummary.tsx": "dfd934724a3dfa6099457235795e1b76cc9a38eb35cad5502a5393d6c976545b"
+  },
+  "checks": {
+    "contract": 18,
+    "serviceSimulatedStorage": 8,
+    "sharedPlatformDeploy": {
+      "passed": 493,
+      "skippedOwnedSqlOptIns": 129,
+      "log": "/private/tmp/axiom-deployment-recovery-platform.log"
+    },
+    "explicitSqlBoundary": 1,
+    "rootTypes": "/private/tmp/axiom-deployment-recovery-final-types.log"
+  },
+  "actualSqlRecoveryAccepted": false,
+  "providerReadPerformed": false,
+  "registered": false,
+  "productionChanged": false,
+  "remaining": [
+    "SQL immutable recovery plan and release-CAS adapter",
+    "actual isolated SQL authority/concurrency/rollback/lost-ack cases",
+    "authenticated HTTP/client/panel/history",
+    "complete prepared deployment workflow and full batch acceptance"
+  ]
+}

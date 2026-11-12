@@ -1,6 +1,6 @@
 import {it,expect,vi,afterEach} from 'vitest';
 import {createPlatformActionService,type PlatformRepository,type PlatformTransaction} from '../actionStore';
-import {compilePlatformPlan,approvePlatformAction} from '../kernel';
+import {compilePlatformPlan,approvePlatformAction,createPlatformAction,claimPlatformAction} from '../kernel';
 import type {PlatformAction} from '../contracts';
 const requester={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'},d='a'.repeat(64);
 const at=Date.parse('2026-11-12T00:00:00Z');
@@ -25,6 +25,12 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
  return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
+it('never reviews or executes deployment target release through the generic action path',async()=>{
+ const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'release',kind:'deployment.target.release',target:{nativeKey:d,generation:1,expectedReservationVersion:1,originalActionId:'platform_action_11111111-1111-4111-8111-111111111111',requestReceiptDigest:d,providerDeploymentId:'dpl_fixture',profileDigest:d,recoveryDigest:d}}]}),id='platform_action_22222222-2222-4222-8222-222222222222',proposed=createPlatformAction(p,requester,at);
+ f.rows().set(id,proposed);await expect(f.service.review(id,0,p.digest,reviewer)).rejects.toThrow();expect(f.rows().get(id)).toEqual(proposed);
+ const approved=approvePlatformAction(proposed,{...reviewer,planDigest:p.digest},at);f.rows().set(id,approved);await expect(f.service.claim(id,1,requester)).rejects.toThrow();expect(f.rows().get(id)).toEqual(approved);
+ f.rows().set(id,claimPlatformAction(approved,requester,at));await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();expect(f.events()).toHaveLength(0);
+});
 it('records genuine review separately and original requester claims exactly once',async()=>{
  const f=fixture(),id=await ready(f);expect(f.rows().get(id)?.status).toBe('approved');
  await expect(f.service.claim(id,1,reviewer)).rejects.toThrow();

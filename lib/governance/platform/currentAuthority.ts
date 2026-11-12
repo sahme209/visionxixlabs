@@ -19,6 +19,7 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
  return {async assertCurrent(tx,raw){
   await assertCurrentPlatformPrincipal(tx,raw,readAdminEmails);
  },async assertEffectCurrent(tx,effect){
+  if(effect.kind==='deployment.target.release')return fail();
   if(effect.kind==='template.bucket.create'){
    if(effect.target.region!=='us-east-2'||sha256ContentHash(templateBucketEffect(effect.target.accountId,effect.target.region,effect.id))!==sha256ContentHash(effect))fail();return;
   }

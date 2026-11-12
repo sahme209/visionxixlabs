@@ -9,6 +9,7 @@ const origin=z.string().max(2048).refine(value=>{try{const u=new URL(value);retu
 const effect=<K extends string,T extends z.ZodRawShape>(kind:K,target:T)=>z.object({id:identifier,kind:z.literal(kind),target:z.object(target).strict()}).strict();
 export const platformEffectSchema=z.discriminatedUnion('kind',[
  effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),leadId:identifier.optional(),leadRevision:timestamp.optional(),filesDigest:digest,configurationDigest:digest}),
+ effect('deployment.target.release',{nativeKey:digest,generation:z.number().int().positive().safe(),expectedReservationVersion:z.number().int().nonnegative().safe(),originalActionId:z.string().regex(/^platform_action_[a-f0-9-]{36}$/),requestReceiptDigest:digest,providerDeploymentId:z.string().max(256).regex(/^dpl_[A-Za-z0-9]+$/),profileDigest:digest,recoveryDigest:digest}),
  effect('deployment.ecs',{accountId,region:identifier,cluster:identifier,service:identifier,taskDefinitionArn:identifier,operation:z.enum(['force','rollback']),configurationDigest:digest}),
  effect('custodian.drain',{accountId,roleArn:platformCustodianRoleArn,nativeKey:digest,issuerProfileDigest:digest,controlDigest:digest,operation:z.enum(['begin','abort'])}),
  effect('settings.vercel',{projectId:identifier,settingsDigest:digest}),
