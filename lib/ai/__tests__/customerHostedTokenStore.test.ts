@@ -2,9 +2,9 @@ import {it,expect} from 'vitest';
 import {createCustomerHostedTokenStore,type TokenCall,type TokenRepository} from '../customerHostedTokenStore';
 function fixture(){
  const rows=new Map<string,TokenCall>();let tail=Promise.resolve();
- const repository:TokenRepository={transaction:async fn=>{const before=tail;let release!:()=>void;tail=new Promise<void>(r=>{release=r});await before;const snapshot=new Map(rows);try{return await fn({lock:async()=>{},read:async(org)=>[...rows.values()].filter(r=>r.organizationId===org),insert:async r=>{if(rows.has(r.id))throw Error('duplicate');rows.set(r.id,r)},replace:async r=>{rows.set(r.id,r)}})}catch(e){rows.clear();for(const [k,v] of snapshot)rows.set(k,v);throw e}finally{release()}}};
+ const repository:TokenRepository={transaction:async fn=>{const before=tail;let release!:()=>void;tail=new Promise<void>(r=>{release=r});await before;const snapshot=new Map(rows);try{return await fn({lock:async()=>{},now:async()=>1000,read:async(org)=>[...rows.values()].filter(r=>r.organizationId===org),insert:async r=>{if(rows.has(r.id))throw Error('duplicate');rows.set(r.id,r)},replace:async r=>{rows.set(r.id,r)}})}catch(e){rows.clear();for(const [k,v] of snapshot)rows.set(k,v);throw e}finally{release()}}};
  let current={digest:'a'.repeat(64),windowId:'w1',limitTokens:100,expiresAt:2000};
- const store=createCustomerHostedTokenStore(repository,async()=>current,()=>1000);
+ const store=createCustomerHostedTokenStore(repository,async()=>current);
  const request={installationId:'install',organizationId:'org',actorId:'actor',requestDigest:'b'.repeat(64),modelId:'model',configDigest:'a'.repeat(64),windowId:'w1',reservedTokens:60};
  return {rows,store,request,setCurrent:(value:typeof current)=>{current=value}};
 }

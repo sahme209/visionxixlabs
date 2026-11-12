@@ -8,6 +8,7 @@ export interface TokenRequest {
 export interface TokenCall extends TokenRequest,CustomerHostedTokenRecord {readonly id:string}
 export interface TokenTransaction {
  lock(organizationId:string):Promise<void>;
+ now():Promise<number>;
  /** All installations/windows for this organization; never filter unknown holds by expiry. */
  read(organizationId:string):Promise<readonly TokenCall[]>;
  insert(record:TokenCall):Promise<void>;
@@ -25,10 +26,10 @@ function idFor(request:TokenRequest){return 'customer_hosted_token_'+createHash(
 function same(a:TokenRequest,b:TokenRequest){return (['installationId','organizationId','actorId','requestDigest','modelId','configDigest','windowId','reservedTokens'] as const).every(k=>a[k]===b[k]);}
 /** Internal accounting service. Callers still need qualified model bounds,
  * current actor/policy checks and a final one-use transport dispatch boundary. */
-export function createCustomerHostedTokenStore(repository:TokenRepository,readCurrent:(organizationId:string)=>Promise<CurrentTokenBudget|null>,clock:()=>number=Date.now){
+export function createCustomerHostedTokenStore(repository:TokenRepository,readCurrent:(organizationId:string)=>Promise<CurrentTokenBudget|null>){
  const claims=new WeakMap<object,TokenCall>();
- async function current(request:TokenRequest){
-  const budget=await readCurrent(request.organizationId),now=clock();
+ async function current(request:TokenRequest,tx:TokenTransaction){
+  const budget=await readCurrent(request.organizationId),now=await tx.now();
   if(!budget||budget.digest!==request.configDigest||budget.windowId!==request.windowId||!Number.isSafeInteger(now)||!Number.isSafeInteger(budget.expiresAt)||budget.expiresAt<=now)refuse();
   return budget;
  }
@@ -37,7 +38,7 @@ export function createCustomerHostedTokenStore(repository:TokenRepository,readCu
    valid(request);const bound=Object.freeze({...request}),id=idFor(bound);
    return repository.transaction(async tx=>{
     await tx.lock(bound.organizationId);
-    const records=await tx.read(bound.organizationId),budget=await current(bound);
+    const records=await tx.read(bound.organizationId),budget=await current(bound,tx);
     if(records.some(r=>r.organizationId!==bound.organizationId||r.id===id))refuse();
     const exposure=customerHostedExposure(bound.windowId,records);
     if(exposure===null||!customerHostedReservationFits(budget.limitTokens,exposure,bound.reservedTokens))refuse();
@@ -48,7 +49,7 @@ export function createCustomerHostedTokenStore(repository:TokenRepository,readCu
    valid(request);const bound=Object.freeze({...request});
    const record=await repository.transaction(async tx=>{
     await tx.lock(bound.organizationId);
-    const records=await tx.read(bound.organizationId),budget=await current(bound),record=records.find(r=>r.id===id);
+    const records=await tx.read(bound.organizationId),budget=await current(bound,tx),record=records.find(r=>r.id===id);
     if(records.some(r=>r.organizationId!==bound.organizationId)||!record||id!==idFor(bound)||!same(record,bound)||record.status!=='reserved')refuse();
     const exposure=customerHostedExposure(bound.windowId,records);
     if(exposure===null||!Number.isSafeInteger(budget.limitTokens)||budget.limitTokens<exposure)refuse();

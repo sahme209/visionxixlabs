@@ -33,6 +33,11 @@ export function createCustomerHostedTokenRepository(db:CustomerHostedSqlReposito
  return {transaction:fn=>db.$transaction(async sql=>{
   let locked:string|null=null;
   const tx:TokenTransaction={
+   async now(){
+    if(locked===null)refuse();
+    const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');
+    if(rows.length!==1||!Number.isSafeInteger(rows[0].now))refuse();return rows[0].now;
+   },
    async lock(org){
     if(locked!==null||!org||org.length>256)refuse();
     await sql.$queryRawUnsafe('SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtextextended($1,0))','axiom-customer-hosted-token:'+org);locked=org;
