@@ -874,3 +874,12 @@ it.skipIf(!enabled)('inventories recorded pending and unknown custodian liabilit
   expect(await f.store.inspect(f.id,actor)).toMatchObject({sourceCredential:{status:'unknown'},credential:{status:'unknown'}});
  }finally{vi.unstubAllEnvs()}
 });
+
+import {compileCustodianDrainPlan,compileCustodianDrainPlatformPlan} from '../operations/custodianDrainContract';
+it.skipIf(!enabled)('persists exact custodian control metadata but refuses generic SQL approval and execution',async()=>{
+ await identityFixtures();const s=currentService(),control=compileCustodianDrainPlan({format:1,scope:'platform',operation:'begin',custodian:{accountId:'123456789012',roleArn:'arn:aws:iam::123456789012:role/private'},issuerProfileDigest:d,sourceEvidenceDigest:d,predecessorAdmissionDigest:d,expectedGeneration:0,expectedVersion:null,expiresAt:new Date(Date.now()+60000).toISOString()}),p=compileCustodianDrainPlatformPlan(control),id=await s.propose(p,actor);
+ await expect(s.review(id,0,p.digest,reviewer)).rejects.toThrow();await expect(s.claim(id,0,actor)).rejects.toThrow();
+ const state=await s.inspect(id,actor);expect(state).toMatchObject({status:'proposed',attemptCount:0,version:0,plan:{sourceDigest:control.digest}});
+ const effects=await db.$queryRawUnsafe('SELECT status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',id);expect(effects).toEqual([]);
+ const events=await db.$queryRawUnsafe<Array<{kind:string}>>('SELECT kind FROM "PlatformGovernanceEvent" WHERE "actionId"=$1',id);expect(events).toHaveLength(1);
+});

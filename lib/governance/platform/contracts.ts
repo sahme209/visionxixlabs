@@ -9,6 +9,7 @@ const effect=<K extends string,T extends z.ZodRawShape>(kind:K,target:T)=>z.obje
 export const platformEffectSchema=z.discriminatedUnion('kind',[
  effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),leadId:identifier.optional(),leadRevision:timestamp.optional(),filesDigest:digest,configurationDigest:digest}),
  effect('deployment.ecs',{accountId,region:identifier,cluster:identifier,service:identifier,taskDefinitionArn:identifier,operation:z.enum(['force','rollback']),configurationDigest:digest}),
+ effect('custodian.drain',{accountId,roleArn:identifier,nativeKey:digest,issuerProfileDigest:digest,controlDigest:digest,operation:z.enum(['begin','abort'])}),
  effect('settings.vercel',{projectId:identifier,settingsDigest:digest}),
  effect('template.bucket.create',cloud),
  effect('template.object.put',{...cloud,key:identifier,bytesDigest:digest}),
