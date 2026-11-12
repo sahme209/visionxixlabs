@@ -32,3 +32,8 @@ No generated source is to be installed, executed as a real workflow or enabled b
 Approve local code, source-only workflow artifact preparation, intercepted HTTP, synthetic crypto and existing owned isolated PostgreSQL tests. This adds the new gate/profile handoff composition identified by the original design review, so the validation-first boundary requires an explicit decision.
 
 Excluded: actual repository/environment reads or configuration, audience/role trust setup, real JWT/credential requests, native GitHub workflow runs, release/review actions, signing/installing helpers, production migration/flag/settings/deployment, publishing, dependencies and spending. Missing real qualification continues to refuse execution. Existing image/template/deployment recovery decisions are unchanged and are not re-requested or inferred here.
+
+
+## Owner decision — November12
+
+Owner explicitly selected “Approve local implementation and isolated tests.” This permits the bounded local source and test scope above, not actual workflow/configuration/credential/provider/runtime/production execution. Implementation is in progress, not complete.

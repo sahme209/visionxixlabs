@@ -1,0 +1,30 @@
+{
+  "scope": "first approved local exact-run handoff sender component, not complete workflow",
+  "focusedChecks": 52,
+  "newSenderChecks": 13,
+  "rootTypes": "pass",
+  "files": {
+    "lib/governance/platform/operations/workloadHandoff.ts": "6cafe63dfe7d118f9f9ff5019b4cfdf77d33bf5a590ace66df116060839222f2",
+    "lib/governance/platform/operations/__tests__/workloadHandoff.test.ts": "b549b9bbd2fe16bbb70bf0ec4fe9adf942969ad46683ba606cd63b795bc01698",
+    "lib/demo/demoScenarios.ts": "ea2532d7283d9fd2cbfbfa180c5cebe06acbc4f9cc04272421d88eca16171bea"
+  },
+  "fullSuite": {
+    "directory": "/private/tmp/axiom-native-supplier-full-xri31qat",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "counts": {
+      "numPassedTests": 18579,
+      "numFailedTests": 0,
+      "numPendingTests": 1024,
+      "numTodoTests": 0,
+      "numFailedTestSuites": 0
+    },
+    "failedTests": []
+  },
+  "actualSQLHandoff": "not yet integrated",
+  "workflowArtifactCompiler": "not yet implemented",
+  "nativeTokenSupplier": "unqualified/unmounted",
+  "activeWorkflowChanged": false,
+  "realCredentialsOrProvider": false,
+  "productionChanged": false
+}

@@ -1249,3 +1249,12 @@ The separately approved operational design names this exact workflow. The checke
 Behavioral RED preceded implementation;22workflow/customer-template/immutable-source checks and root strict types PASS. Internal scenario updated. This is required legacy retirement within an unfinished source batch; actual exact-run handoff/default source/custody/workflow qualification, other held families and full P01 remain open. No production workflow/settings, provider, credential, native issuer or spending action.
 
 ECS workflow retirement full ordinary regression:18,566pass/0fail/1,024pending/0failed suites at `/private/tmp/axiom-native-supplier-full-qnizd4gz`, source unchanged;15demo contract checks also pass. Template/observer original hashes matched. No production build, CI, native/live acceptance or complete P01 claim.
+
+
+## Approved exact-run handoff sender — first component only
+
+Owner approved local handoff implementation/isolated tests. Added one-use private source composition and exact strict command POST. Immutable captured endpoint/run/environment/protection/audience/source survives async input mutation; source assertions run before token, before send and after bounded original receipt. Shared bounded body/abort controls retain64KiB/40second total budget, no redirects, credentials omitted/no cache, no retries, fixed secret-free unconfirmed errors. Private source/token suppliers remain explicitly unqualified by default, no ambient token reader or active route/workflow is mounted.
+
+Missing-module RED preceded implementation. First import failed on extending a refined Zod object; corrected with safeExtend to preserve the source/commit refinement.52focused checks across sender/HTTP/actual signed-identity tests pass; root strict types pass after correcting a test mock’s empty argument tuple without casts/suppression. Full workflow compiler/native supplier/current SQL integration and the complete design acceptance matrix remain open. No provider/GitHub/native/runtime/deployment/spending action.
+
+Sender first-component broad regression:18,579pass/0fail/1,024pending/0failed suites, unchanged source at `/private/tmp/axiom-native-supplier-full-xri31qat`. No production compile/native/SQL handoff acceptance is inferred.

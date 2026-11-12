@@ -2,6 +2,12 @@
 
 Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
 
+## Exact-run handoff implementation approved — first source component
+
+Owner approved the new local gate/profile implementation/tests. `workloadHandoff.ts` now prepares one consumed job-local submission to a private source-qualified endpoint, using exact original action/version only. Immutable source/run/environment/protection/audience capture is rechecked before token acquisition, before the sole POST and after bounded exact receipt decoding. Caller endpoints/tokens/roles, redirects, oversized bodies, lost replies, revoked sources and late token acquisition refuse; no automatic retry.52focused sender/HTTP/signed-identity checks and root strict types pass. Full ordinary suite18,579pass/0fail/1,024pending/0failed suites, unchanged source; HANDOFF-SENDER-LOCAL-RECEIPT.json binds this first component. No native GitHub token supplier, active workflow, real credentials or network was used.
+
+This is the first component, not the complete approved handoff: source-only workflow artifact compiler, native token/source composition, actual SQL/HTTP/runner handoff integration and final validation remain. The prior full-suite receipt is superseded only for ordinary regression by the new sender receipt; production compilation below still predates this component. Other held family permissions are unchanged.
+
 ## Current frozen production compilation — fac3982c
 
 Full production types/compilation PASS for frozen sourcefac3982c, no database URL/networking, source/cached engine unchanged. Directory `/private/tmp/axiom-current-production-thxkik54`, build log SHA256 `55214c25653523a542e81973ecb945c078aa6ec9d98cf026c0274ef4f3cf9411`. CURRENT-PRODUCTION-COMPILE-RECEIPT.json binds archive/manifest/head. This replaces only the older compilation scope; all native/live/custody/coverage/review/PR/production gates remain. Master/handoff/board/remaining records now share this checkpoint, with original bytes preserved in the recorded local backup. No deployment.
