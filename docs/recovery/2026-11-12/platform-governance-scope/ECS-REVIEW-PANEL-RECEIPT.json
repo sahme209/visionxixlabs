@@ -1,0 +1,21 @@
+{
+  "scope": "Prepared ECS review panel and existing unregistered workflow composition; no shipping/native/visual acceptance",
+  "focusedChecks": 19,
+  "rootTypes": "PASS before last narrow consumed-status presentation guard",
+  "desktopTypesFrontendBuild": "PASS before later callback truthfulness and consumed-status UI corrections; final whole-branch builds still required",
+  "red": [
+    "missing panel",
+    "history-refresh exception relabeled a known approval as unconfirmed",
+    "consumed ECS action still offered proposal source loading"
+  ],
+  "sourceHashes": {
+    "desktop/src/components/OperationalEcsReviewPanel.tsx": "ba0540135e5b89930859e4eb112104a13d3b1c4832abbb905490299418ab1454",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "ec761fd92acf9ba03df35b9915af7af55c0c705110c0014da922099a0c982ca5",
+    "lib/desktop/__tests__/operationalReviewPanel.test.ts": "a3fdf1e7395e60f6feabc5f28e06b4cb7d083cf58c6b1df44f03cdef032a1176",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "5afc1cafe87919b737023bbb333afe79e0f8d4b86873a9f72a7cc1ce8184ce33",
+    "lib/desktop/__tests__/fixtures/operationalReview.ts": "dab54d5b60ae386498101e5979e7208997f13bc615dafb3f33d9907f4d2c3f5a"
+  },
+  "actualSqlRerun": false,
+  "reason": "No SQL/provider/service code changed; latest71SQL receipt retained, not relabeled",
+  "productionChanged": false
+}
