@@ -1,5 +1,13 @@
 # Current platform Governance checkpoint
 
+Active branch: `codex/platform-governance-scope`; all changes remain local/unregistered, not PR-merged or production-activated. P01 and the full master goal remain incomplete. Unit receipts below are accumulated historical evidence, not an exact-head whole-batch validation claim. Detailed source/receipt scopes live in LOCAL-PROGRESS.md.
+
+Current independent work: finish the supported proposal/review/original-requester execution/history workflow; complete missing image, ECS/settings/operational authority and all coverage/validation before one PR. Image-custody implementation approval and the earlier official LinkedIn documentation decision are pending. Do not infer either or repeat them. No provider/key/schema/flag/deploy/spending authority is added.
+
+Latest local unit: separate requester confirmation panel and read-only shared target/source presentation;16focused checks and final root/desktop types pass. No native/customer registration or visual acceptance. Reviewer approval remains a different panel/client; unknown/consumed execution has inspection, not another send.
+
+## Accumulated unit checkpoints (historical; preserve their scopes)
+
 Local branch `codex/platform-governance-scope`, publisher sourcec3551371 plus the reviewed conditional-recording correction. Root strict types pass;62focused deployment/effect/kernel checks and24focused template/signing/quick-create checks pass. Independent review confirms the late-proof, deployment-environment and grant-expiry corrections with no remaining findings in those reviewed units. Eleven real isolated PostgreSQL tests passed before the narrow grant-expiry correction, with synthetic tokens/accounts and simulated HTTP/SDK I/O; preserved receipts distinguish that scope. No active database or build.
 
 Implemented locally: dedicated action/event/child storage; current platform-admin/session authority; actual HMAC/request possession composition; independent review/requester-only claim; one-use final checks; private effect runner; default Vercel helper and wrappers requiring exact admitted effects. Managed template bucket/object/access boundaries are also implemented locally: no unsafe us-east-1 creation, conditional content-addressed uploads, observed versioning, exact bounded version readback and validated signed URL release/expiry. Versioning setup and actual IAM qualification are not automatic. Legacy deployment/template routes currently refuse without an admitted binding; a complete usable workflow has not yet been mounted.

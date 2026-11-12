@@ -29,7 +29,7 @@ export type PlatformReviewClient=ReturnType<typeof createPlatformReviewClient>;
  * exact saved reference. There is no approval or retry operation here. */
 export function createPlatformExecutionClient(context:Context){
  const reader=createPlatformReviewClient(context);
- return {inspect:reader.inspect,
+ return {inspect:reader.inspect,preview:reader.preview,
   execute(raw:unknown,signal?:AbortSignal){
    const parsed=platformInspectionSchema.safeParse(raw);
    if(!parsed.success||parsed.data.status!=='approved'||parsed.data.version!==1||parsed.data.expired||Date.parse(parsed.data.plan.expiresAt)<=Date.now()||parsed.data.plan.effects.length!==1||!['growth.post.publish','growth.schedule.change','growth.post.delete'].includes(parsed.data.plan.effects[0].kind))return Promise.resolve({ok:false as const,error:'Inspect this exact supported approved action before execution.',outcomeUnconfirmed:false});
