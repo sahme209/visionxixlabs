@@ -38,11 +38,13 @@ function sameLineage(previous:PlatformInspection,next:PlatformInspection){
 /** Prepared integration, NOT a registered product entry point. Capability
  * props are presentation hints only; server authority always decides. */
 export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,canExecute,clients}:Props){
- const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision),owner=useRef({revision,config:desktopClient.config,userId:currentUserId}).current;
+ const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision),owner=useRef({revision,config:desktopClient.config,apiBase:desktopClient.config.apiBase,token:desktopClient.config.sessionToken,userId:currentUserId,reviewClient:clients.review}).current;
+ const latest=useRef({userId:currentUserId,reviewClient:clients.review});latest.current={userId:currentUserId,reviewClient:clients.review};
+ const invalidated=useRef(false);
  const [delegationKnown,setDelegationKnown]=useState<string|null>(null);
  const [reference,setReference]=useState(''),[action,setAction]=useState<PlatformInspection|null>(null),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const alive=useRef(true),generation=useRef(0),active=useRef<AbortController|null>(null);
- const owns=()=>alive.current&&owner.revision===desktopClient.getContextRevision()&&owner.config===desktopClient.config&&currentUserId===owner.userId;
+ const owns=()=>{const matches=owner.revision===desktopClient.getContextRevision()&&owner.config===desktopClient.config&&owner.apiBase===desktopClient.config.apiBase&&owner.token===desktopClient.config.sessionToken&&latest.current.userId===owner.userId&&latest.current.reviewClient===owner.reviewClient;if(!matches)invalidated.current=true;return alive.current&&!invalidated.current&&matches};
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;active.current?.abort()}},[]);
  async function load(id:string){
   if(!owns())return;const parsed=platformActionId.safeParse(id);if(!parsed.success){setMessage('Enter the original saved action reference.');return}

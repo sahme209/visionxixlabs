@@ -965,3 +965,8 @@ Dedicated prepared review/execution/history panels now route saved custodian con
 ### November12 — local issuer preparation/recovery composed
 
 Exact metadata preparation now retains one original reference and supports explicit existing-reference recovery in the prepared platform workflow; known saved actions remain visible through surrounding-view failures.36mocked UI checks pass, with scoped types/frontend build as recorded in [current evidence](../recovery/2026-11-12/platform-governance-scope/CURRENT.md). No qualified default source, native/live acceptance or full P01 completion. Actual source/fleet/legacy/all-family integration and whole-branch final validation remain.
+
+
+### November12 — composed platform regression
+
+Delayed user/token context replacement no longer stores a stale platform history response.38focused UI checks, root types and desktop frontend build pass; complete ordinary suite18,519pass/0fail/1,021pending (not acceptance). See [current regression receipt](../recovery/2026-11-12/platform-governance-scope/CUSTODIAN-INTEGRATION-REGRESSION-RECEIPT.json). Actual source/custody/fleet qualification, pending image/template/deployment designs, final review/PR and all native/live/production gates remain.

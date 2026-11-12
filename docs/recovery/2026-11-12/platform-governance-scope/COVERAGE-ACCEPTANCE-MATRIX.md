@@ -49,3 +49,14 @@ The following rows described the earlier f0dd0849-era source checkpoint. The cur
 | Platform default/UI/runtime coverage | Actual paired HMAC/current SQL admin authority, distinct reviewer/original requester, action/event/effect store, source selection/preparation/reference/history, optional review/coordinator panels. | Full inventory/default caller closure, native/issuer/key/host qualification, registered product workflow and all-family composed acceptance remain. No private test supplier or UI hint substitutes for server/native authority. |
 | Final source/PR gate | Accumulated unit tests and actual isolated PG; latest broad checkpoint80a8dfee records18,179ordinary tests passed/951pending and304-page production compilation, with exact source/environment limits. | This local checkpoint covers the current template source, not the still-unimplemented execution/custody/operational families. After those changes: requirement-by-requirement final audit, matching full tests/types/builds, fresh whole-source review, one PR and all exact-head applicable CI green before normal merge. No production activation follows automatically. |
 ```
+
+
+## November12 custodian continuation and current regression
+
+| Required path | Verified local source | Remaining acceptance gate |
+|---|---|---|
+| Platform issuer begin/abort drain and native-ready intents | Actual platform ledger/barrier CAS and same physical-key intent serialization; final source/STS/ECS admission hooks; strict paired client and separate preparation/review/requester/history panels.107actual isolated SQL cases use synthetic custody/fleet/provider qualification. | Real complete issuer/fleet/legacy/runtime/time/source qualification and registered workflow. A recorded drain is not credential revocation or proof that remote work stopped. |
+| Credential-closure observation and safe abort | Exact immutable snapshot/qualified-source observation contract, supplemental summary history and separately reviewed abort consumption, retaining unknown actions/intents. | Protected native evidence supplier remains unavailable. Historical summary/digests/local expiry cannot establish closure or reconcile unknown provider outcomes. |
+| Composed desktop context | Displayed-user/client/primitive paired-token changes invalidate the mounted workflow; late responses and restoring an old display cannot reveal a newly stored stale record.38focused UI checks and full18,519ordinary tests pass; types/frontend build pass. | Native rendered/accessibility acceptance, production-source qualification and final whole-source review remain.1,021ordinary pending tests do not count as accepted. |
+
+See CUSTODIAN-INTEGRATION-REGRESSION-RECEIPT.json. No new coverage registration or activation; existing pending image/template/deployment decisions and all original matrix rows remain in force.
