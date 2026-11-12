@@ -865,3 +865,12 @@ it.skipIf(!enabled)('preserves issued credentials but refuses deployment when pr
   await expect(runner.run({actionId:f.id,delegationVersion:0},token,new AbortController().signal)).rejects.toThrow();expect(native).toHaveBeenCalledOnce();
  }finally{native.mockRestore();vi.unstubAllEnvs()}
 });
+
+import {createCustodianLiabilityInventory} from '../operations/custodianLiabilityInventory';
+it.skipIf(!enabled)('inventories recorded pending and unknown custodian liabilities without closing or authorizing them',async()=>{
+ try{const f=await operationalFixture({issuerProfileDigest:d});await f.store.delegate(f.id,1,f.plan.digest,actor);const claimed=await f.store.claim(f.id,0,await f.token('custodian-inventory')),pending=await f.store.beginCredential(claimed.proof),reader=createCustodianLiabilityInventory(db as unknown as PlatformSqlDatabase);
+  const before=await reader.read();expect(before).toMatchObject({coverage:'recorded_platform_attempts_only',activationAuthorized:false,credentialValidityChecked:false});expect(before.entries).toEqual(expect.arrayContaining([expect.objectContaining({actionId:f.id,sourceStatus:'pending',hold:true})]));
+  await f.store.observeCredential(pending.proof,{status:'unknown'});const after=await reader.read();expect(after.entries).toEqual(expect.arrayContaining([expect.objectContaining({actionId:f.id,sourceStatus:'unknown',executionStatus:'unknown',hold:true})]));expect(after.activationAuthorized).toBe(false);expect(after.entries.length).toBeGreaterThanOrEqual(before.entries.length);
+  expect(await f.store.inspect(f.id,actor)).toMatchObject({sourceCredential:{status:'unknown'},credential:{status:'unknown'}});
+ }finally{vi.unstubAllEnvs()}
+});
