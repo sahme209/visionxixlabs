@@ -1,3 +1,4 @@
+import {readCustodianClosureObservation,type CustodianClosureObservation} from './custodianClosureObservation';
 import 'server-only';
 import type {PlatformAuthority,PlatformTransaction} from '../actionStore';
 import {platformPrincipalSchema,type PlatformPrincipal,type PlatformAction} from '../contracts';
@@ -11,14 +12,15 @@ export interface CustodianDrainTransaction extends PlatformTransaction{
  readCustodianBarrier(nativeKey:string):Promise<unknown|null>;
  writeCustodianBarrier(nativeKey:string,expectedVersion:number|null,state:CustodianBarrier):Promise<void>;
  /** Must cover ALL original pending/unknown slots, never local expiry cleanup. */
- assertNoCustodianIntents(nativeKey:string):Promise<void>;
+ readCustodianClosure?(nativeKey:string):Promise<unknown|null>;
+ assertNoCustodianIntents(nativeKey:string,originalBarrier?:CustodianBarrier):Promise<void>;
 }
 export interface CustodianDrainRepository{transaction<T>(fn:(tx:CustodianDrainTransaction)=>Promise<T>):Promise<T>}
 interface Source{
  /** Protected current profile/runtime/admission source; no default supplier. */
  assertCurrent(tx:CustodianDrainTransaction,control:CustodianDrainPlan):Promise<void>;
  /** Fresh complete source/fleet/time qualification, NOT identity-probe success. */
- assertAbortSafe(tx:CustodianDrainTransaction,control:CustodianDrainPlan,barrier:CustodianBarrier):Promise<void>;
+ assertAbortSafe(tx:CustodianDrainTransaction,control:CustodianDrainPlan,barrier:CustodianBarrier,observation:CustodianClosureObservation|null):Promise<void>;
 }
 const fail=():never=>{throw Error('platform_custodian_control_unavailable')};
 const actionId=/^platform_action_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
@@ -51,14 +53,15 @@ export function createCustodianDrainService(repo:CustodianDrainRepository,author
   async execute(id:string,version:number,principal:PlatformPrincipal){const actor=platformPrincipalSchema.parse(principal);return locked(id,async(tx,{state,control})=>{
    if(state.version!==version)fail();let now=await current(tx,state,control,actor);const prior=await predecessor(tx,control);let nextBarrier=transitionCustodianBarrier(prior,control,id,now);
    const claimed=claimPlatformAction(state,actor,now);
-   if(control.operation==='abort'){if(prior===null)return fail();await source.assertAbortSafe(tx,control,prior);await tx.assertNoCustodianIntents(control.nativeKey)}
+   let closure:CustodianClosureObservation|null=null;
+   if(control.operation==='abort'){if(prior===null)return fail();const saved=await tx.readCustodianClosure?.(control.nativeKey);if(saved)closure=readCustodianClosureObservation(saved);await source.assertAbortSafe(tx,control,prior,closure);await tx.assertNoCustodianIntents(control.nativeKey,prior)}
    now=await current(tx,state,control,actor);nextBarrier=transitionCustodianBarrier(prior,control,id,now);
    await tx.replace(id,version,claimed);await tx.event({actionId:id,kind:'claimed',state:claimed});
    await tx.writeEffect(id,0,null,'claimed');await tx.event({actionId:id,kind:'effect.claimed',state:claimed,effectIndex:0});
    await tx.writeCustodianBarrier(control.nativeKey,prior?.version??null,nextBarrier);
    await tx.writeEffect(id,0,'claimed','confirmed');const confirmed=finishPlatformAction(claimed,'confirmed',await tx.now());await tx.replace(id,claimed.version,confirmed);await tx.event({actionId:id,kind:'effect.observed',state:confirmed,effectIndex:0,outcome:'confirmed',custodianBarrier:nextBarrier});
    await current(tx,confirmed,control,actor);
-   if(control.operation==='abort'){await source.assertAbortSafe(tx,control,prior!);await tx.assertNoCustodianIntents(control.nativeKey);await current(tx,confirmed,control,actor)}
+   if(control.operation==='abort'){await source.assertAbortSafe(tx,control,prior!,closure);await tx.assertNoCustodianIntents(control.nativeKey,prior!);await current(tx,confirmed,control,actor)}
    return {actionId:id,status:'confirmed' as const,barrier:nextBarrier,executionAuthorized:false as const,closureObserved:false as const};
   })},
  });
