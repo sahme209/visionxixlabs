@@ -20,6 +20,8 @@ Server-prepared schedule/delete now join their positive default SQL journeys too
 
 A separate original-requester execution HTTP composition is prepared locally (NOT route-registered). It accepts only the exact saved ID/version/digest, refuses reviewer/different requester session and unsupported families, derives targets from the stored plan and requires confirmed durable outcome.15focused checks/root types and27actual isolated SQL cases pass with four new default HTTP journeys using simulated providers; fixture stopped. Desktop execution UI/transport and full remaining-family coverage are still required.
 
+Local legacy automation containment now keeps text-draft generation useful while queueing independent review instead of auto-generating/uploading media, inventing approval or scheduling. Raw-token image upload refuses; cron invocation secret alone cannot scan/claim/publish and yields an explicit unavailable result.12focused checks and strict root types pass after RED regressions. No new SQL/provider test was needed; managed image/service capabilities remain required and unimplemented, not covered by refusal.
+
 NEXT: growth image initialization/upload boundaries and operational scripts/workflows; then actual prepare/review/execute/history UI+HTTP, source qualification/coverage audit, full required checks and one green PR. Preserve all named effects; do not stop at containment or delete P01. No new PR/push until coherent batch is ready.
 
 All source/schema work is local. No production migration/settings/flags, actual credential/provider access, deployment, spending, independent human impersonation or native issuer enablement. P01 remains uncovered; full master plan/production target-schema/TLS and all live gates remain open.

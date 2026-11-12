@@ -1,0 +1,19 @@
+import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import {NextRequest} from 'next/server';
+const m=vi.hoisted(()=>({plan:vi.fn(),draft:vi.fn(),check:vi.fn(),decide:vi.fn(),audit:vi.fn(),image:vi.fn(),upload:vi.fn(),decrypt:vi.fn(),findConnection:vi.fn(),findDraft:vi.fn(),update:vi.fn(),queue:vi.fn(),decision:vi.fn()}));
+vi.mock('@/lib/db',()=>({prisma:{linkedInPostDraft:{update:m.update,updateMany:m.queue,findUnique:m.findDraft},linkedInAccountConnection:{findFirst:m.findConnection},growthAutopilotDecision:{create:m.decision}}}));
+vi.mock('@/lib/growth/contentPlanner',()=>({planContent:m.plan}));vi.mock('@/lib/growth/draftStore',()=>({createDraft:m.draft}));vi.mock('@/lib/growth/hallucinationCheck',()=>({checkHallucination:m.check}));vi.mock('@/lib/growth/autopilot',()=>({decideAutopilotAction:m.decide,loadAutopilotPolicy:()=>({enabled:true,confidenceThreshold:0.8})}));vi.mock('@/lib/growth/audit',()=>({writeGrowthAudit:m.audit}));vi.mock('@/lib/growth/imageGenerator',()=>({generateBrandImage:m.image}));vi.mock('@/lib/growth/linkedin/imageUpload',()=>({uploadImageToLinkedIn:m.upload}));vi.mock('@/lib/security/credentialVault',()=>({decryptCredential:m.decrypt}));
+import {POST} from '../../../../app/api/cron/linkedin-daily-drafts/route';
+beforeEach(()=>{vi.resetAllMocks();vi.stubEnv('CRON_SECRET','synthetic-cron');m.plan.mockResolvedValue({drafts:[{body:'Exact draft for human review.',cta:'Reply',hashtags:[],draftedByAgent:'fixture'}],usedLlm:true});m.draft.mockResolvedValue({id:'draft'});m.check.mockResolvedValue({score:1,notes:[]});m.update.mockResolvedValue({id:'draft'});m.queue.mockResolvedValue({count:1});m.decision.mockResolvedValue({id:'decision'});m.decide.mockReturnValue({kind:'scheduled',draftId:'draft',effectiveScore:1,scheduledFor:new Date(Date.now()+60000)});m.findDraft.mockResolvedValue({id:'draft',body:'Body'});m.findConnection.mockResolvedValue({accessToken:'encrypted',linkedinUrn:'urn:li:person:author'});m.decrypt.mockReturnValue('plaintext');m.image.mockResolvedValue({kind:'ok',prompt:'Prompt',bytes:Buffer.from('image')});m.upload.mockResolvedValue({kind:'ok',urn:'urn:li:image:fixture'});});
+afterEach(()=>vi.unstubAllEnvs());
+it('automatic draft generation queues review without generating/uploading media, credentials or false approval',async()=>{
+ const response=await POST(new NextRequest('https://fixture.test/cron',{method:'POST',headers:{authorization:'Bearer synthetic-cron'}}));expect(response.status).toBe(200);expect(await response.json()).toMatchObject({generated:1,autopilot:{decision:'queued_for_review',scheduledFor:null}});
+ expect(m.image).not.toHaveBeenCalled();expect(m.findConnection).not.toHaveBeenCalled();expect(m.decrypt).not.toHaveBeenCalled();expect(m.upload).not.toHaveBeenCalled();
+ expect(m.queue).toHaveBeenCalledWith({where:{id:'draft',status:'drafted'},data:{status:'in_review'}});expect(m.update.mock.calls.some(([input])=>input.data?.approvedByEmail||input.data?.status==='scheduled')).toBe(false);
+});
+it('unauthorized cron cannot generate drafts or inspect a connection',async()=>{
+ expect((await POST(new NextRequest('https://fixture.test/cron',{method:'POST'}))).status).toBe(401);expect(m.plan).not.toHaveBeenCalled();expect(m.findConnection).not.toHaveBeenCalled();
+});
+it('a concurrently changed draft is not overwritten or reported queued successfully',async()=>{
+ m.queue.mockResolvedValueOnce({count:0});const response=await POST(new NextRequest('https://fixture.test/cron',{method:'POST',headers:{authorization:'Bearer synthetic-cron'}}));expect(await response.json()).toMatchObject({autopilot:{enabled:false,policyEnabled:true,decision:'error',scheduledFor:null}});expect(m.upload).not.toHaveBeenCalled();expect(m.decrypt).not.toHaveBeenCalled();expect(m.audit.mock.calls.some(([input])=>input.action==='draft.scheduled')).toBe(false);
+});

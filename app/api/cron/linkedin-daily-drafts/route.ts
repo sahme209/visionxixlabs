@@ -1,27 +1,9 @@
 /**
  * GET/POST /api/cron/linkedin-daily-drafts
- *
- * Vercel cron — runs daily on weekdays. Pipeline:
- *
- *   1. planContent() → 3 LinkedIn drafts in today's category
- *   2. checkHallucination() on each (parallel) → score 0..1
- *   3. Persist all 3 with status=drafted + scores
- *   4. decideAutopilotAction() picks the strongest
- *   5. If scheduled:
- *        a. Generate a brand image for the best draft
- *        b. Upload to LinkedIn (if a connection exists + we have the binary)
- *        c. Set draft.status=scheduled, draft.scheduledFor=<next slot>
- *        d. Audit row written
- *      Else:
- *        a. Best draft stays drafted with autopilotEligible reflecting the score
- *        b. Audit row explains why
- *
- * Image generation + LinkedIn image upload both fail soft — autopilot
- * still schedules a text-only post if image gen fails. The cron never
- * publishes; it only schedules. The publish cron picks it up at the
- * scheduled time.
- *
- * Guarded by Bearer ${CRON_SECRET}.
+ * Existing authenticated authoring pipeline: generate drafts, score them and
+ * recommend a candidate for human review. No image generation/upload, posting
+ * credential access, invented approval or automatic publication schedule.
+ * A recommendation never supplies platform execution/service authority.
  */
 
 import { NextResponse, type NextRequest } from "next/server";
@@ -31,13 +13,10 @@ import { createDraft } from "@/lib/growth/draftStore";
 import { writeGrowthAudit } from "@/lib/growth/audit";
 import { checkHallucination } from "@/lib/growth/hallucinationCheck";
 import { decideAutopilotAction, loadAutopilotPolicy } from "@/lib/growth/autopilot";
-import { generateBrandImage } from "@/lib/growth/imageGenerator";
-import { uploadImageToLinkedIn } from "@/lib/growth/linkedin/imageUpload";
 import type { ContentTopicCategory } from "@/lib/growth/growthModels";
-import { decryptCredential } from "@/lib/security/credentialVault";
 
 export const dynamic = "force-dynamic";
-export const maxDuration = 300; // image gen + upload can take ~30-60s combined
+export const maxDuration = 300; // Existing content-planning budget; no image/provider write in this route.
 
 const ROTATION: ContentTopicCategory[] = [
   "product_education",
@@ -112,86 +91,30 @@ async function handle(req: NextRequest): Promise<NextResponse> {
   } = { decision: "disabled" };
 
   if (decision.kind === "scheduled") {
-    // Generate image for the chosen draft (fail soft).
-    const winningDraft = await prisma.linkedInPostDraft.findUnique({ where: { id: decision.draftId } });
-    let imageUrn: string | null = null;
-    let imageUrl: string | null = null;
-    let imagePrompt: string | null = null;
-    let imageError: string | null = null;
-
-    if (winningDraft) {
-      const image = await generateBrandImage({ category, postSummary: winningDraft.body });
-      if (image.kind === "ok") {
-        imagePrompt = image.prompt;
-        // Try uploading directly to LinkedIn (no intermediate hosting). Needs a connection.
-        const connection = await prisma.linkedInAccountConnection.findFirst({
-          where: { status: "connected" },
-          orderBy: { updatedAt: "desc" },
-        });
-        if (connection) {
-          let decryptedAccessToken: string | null = null;
-          try {
-            decryptedAccessToken = decryptCredential(connection.accessToken);
-          } catch {
-            // Covers real decryption failures and legacy rows written
-            // before this connector's tokens were encrypted at rest.
-            imageError = "linkedin_upload_token_decrypt_failed";
-          }
-          if (decryptedAccessToken) {
-            const upload = await uploadImageToLinkedIn({
-              accessToken: decryptedAccessToken,
-              owner: connection.organizationUrn || connection.linkedinUrn,
-              bytes: image.bytes,
-            });
-            if (upload.kind === "ok") {
-              imageUrn = upload.urn;
-            } else {
-              imageError = `linkedin_upload_${upload.kind}`;
-            }
-          }
-        } else {
-          imageError = "no_connection_for_image_upload";
-        }
-      } else if (image.kind === "disabled") {
-        imageError = `image_disabled: ${image.reason}`;
-      } else {
-        imageError = `image_error: ${image.message}`;
-      }
-    }
-
-    // Update the winning draft → scheduled + image fields.
-    await prisma.linkedInPostDraft.update({
-      where: { id: decision.draftId },
-      data: {
-        status: "scheduled",
-        scheduledFor: decision.scheduledFor,
-        approvedByEmail: "autopilot",
-        approvedAt: new Date(),
-        imageUrn,
-        imageUrl,
-        imagePrompt,
-      },
+    // A recommendation is not independent approval or a qualified service
+    // identity. Keep authoring useful without decrypting credentials, paid
+    // image generation, provider upload or an automatic schedule transition.
+    const queued = await prisma.linkedInPostDraft.updateMany({
+      where: { id: decision.draftId, status: "drafted" },
+      data: { status: "in_review" },
     });
-
     autopilotAuditPayload = {
-      decision: "queued_for_review", // The post itself isn't published yet — the publish cron will pick it up.
+      decision: queued.count === 1 ? "queued_for_review" : "error",
       draftId: decision.draftId,
-      scheduledFor: decision.scheduledFor,
-      reason: `autopilot scheduled for ${decision.scheduledFor.toISOString()}`,
+      reason: queued.count === 1 ? "Independent platform review is required; no image or publication schedule was created." : "Draft changed before review queueing; no automatic schedule was created.",
       detail: {
         effectiveScore: decision.effectiveScore,
         threshold: policy.confidenceThreshold,
-        imageAttached: Boolean(imageUrn),
-        imageError: imageError ?? "",
+        suggestedScheduledFor: decision.scheduledFor.toISOString(),
+        providerActionPerformed: false,
       },
     };
-
-    await writeGrowthAudit({
+    if (queued.count === 1) await writeGrowthAudit({
       actor: "cron:linkedin-daily-drafts",
-      action: "draft.scheduled",
+      action: "draft.edited",
       targetKind: "linkedin_draft",
       targetId: decision.draftId,
-      detail: { autopilot: true, effectiveScore: decision.effectiveScore, imageAttached: Boolean(imageUrn) },
+      detail: { queuedForIndependentReview: true, providerActionPerformed: false },
     });
   } else if (decision.kind === "queued_for_review") {
     autopilotAuditPayload = {
@@ -245,7 +168,9 @@ async function handle(req: NextRequest): Promise<NextResponse> {
     category,
     generated: persisted.length,
     autopilot: {
-      enabled: policy.enabled,
+      enabled: false,
+      policyEnabled: policy.enabled,
+      executionStatus: "independent_review_required",
       threshold: policy.confidenceThreshold,
       decision: autopilotAuditPayload.decision,
       scheduledFor: autopilotAuditPayload.scheduledFor?.toISOString() ?? null,
