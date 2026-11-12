@@ -15,7 +15,7 @@ Original ECS history now has a strict browser-safe client and optional recovery 
 
 ## Prepared settings review continuation
 
-Exact create-only settings metadata/review now has a strict paired client, real in-process client→HTTP→signed synthetic session/SQL evidence and an optional independent-review panel in the unregistered workflow. Secret intake/execution are not exposed by this client. Custody/source qualification, full requester preparation/execution/recovery UI, held existing-setting updates, default registration and P01 remain open. See LOCAL-PROGRESS.md.
+Exact create-only settings metadata/review now has a strict paired client, real in-process client→HTTP→signed synthetic session/SQL evidence and an optional independent-review panel in the unregistered workflow. Secret intake/execution are not exposed by this client. Original consumed-result recovery now has a separate typed client/panel and real client/HTTP/SQL test after reviewer revocation/source refusal, without decryption. Custody/source qualification, full requester preparation/private-intake/claim/execution UI, held existing-setting updates, default registration and P01 remain open. See LOCAL-PROGRESS.md.
 
 ## Earlier scoped checkpoints — historical
 

@@ -12,7 +12,7 @@ export type ReleasePlanResult<T>={ok:true;data:T}|{ok:false;error:string;outcome
 /** Paired, bounded transport for fixed stored release-plan routes only. */
 export async function releaseOperationPlanRequest<T>(context:Context,method:'GET'|'POST'|'DELETE'|'PATCH',path:string,body:unknown,validate:(v:unknown)=>v is T,signal?:AbortSignal,correlationId?:string,expectedVersion?:number):Promise<ReleasePlanResult<T>>{
  const config=context.getConfig(),revision=context.getRevision(),token=config.sessionToken;
- const settingsCommand=settingsReviewCommand.safeParse(body),settingsPath=method==='POST'&&path==='/api/desktop/platform-governance/settings'&&settingsCommand.success,settingsRead=settingsPath&&settingsCommand.success&&settingsCommand.data.operation==='preview';
+ const settingsCommand=settingsReviewCommand.safeParse(body),settingsPath=method==='POST'&&path==='/api/desktop/platform-governance/settings'&&settingsCommand.success,settingsRead=settingsPath&&settingsCommand.success&&settingsCommand.data.operation!=='review';
  if(settingsPath&&settingsCommand.success)body=settingsCommand.data;
  const operational=operationalCommand.safeParse(body),operationalPath=method==='POST'&&path==='/api/desktop/platform-governance/operations'&&operational.success,operationalRead=operationalPath&&operational.success&&['inspect','preview','lookup'].includes(operational.data.operation);
  if(operationalPath&&operational.success)body=operational.data;

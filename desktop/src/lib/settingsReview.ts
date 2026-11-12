@@ -17,3 +17,19 @@ export function createSettingsReviewClient(context:Context){return {
  },
 }}
 export type SettingsReviewClient=ReturnType<typeof createSettingsReviewClient>;
+
+import {settingsHistory,type SettingsHistory} from '../../../lib/governance/platform/operations/settingsReviewContract';
+function normalize(value:unknown):unknown{if(Array.isArray(value))return value.map(normalize);if(value&&typeof value==='object')return Object.fromEntries(Object.entries(value as Record<string,unknown>).sort(([a],[b])=>a.localeCompare(b)).map(([key,child])=>[key,normalize(child)]));return value}
+async function hash(value:unknown){const bytes=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(JSON.stringify(normalize(value))));return Array.from(new Uint8Array(bytes),b=>b.toString(16).padStart(2,'0')).join('')}
+/** Original result metadata; never decrypts, renews, claims or resends. */
+export function createSettingsHistoryClient(context:Context){return {
+ async inspect(actionId:string,signal?:AbortSignal):Promise<ReleasePlanResult<SettingsHistory>>{
+  const config=context.getConfig(),revision=context.getRevision();
+  if(!platformActionId.safeParse(actionId).success)return {ok:false,error:'Load the original settings action reference.',outcomeUnconfirmed:false};
+  const response=await releaseOperationPlanRequest(context,'POST',path,{operation:'inspect',actionId},(raw):raw is SettingsHistory=>{const p=settingsHistory.safeParse(raw);return p.success&&p.data.actionId===actionId},signal);
+  if(!response.ok)return response;
+  try{for(const result of response.data.results){const {receiptDigest,...fields}=result;if(await hash(fields)!==receiptDigest)throw Error('mismatched')}if(signal?.aborted||context.getConfig()!==config||context.getRevision()!==revision)throw Error('changed');return response}
+  catch{return {ok:false,error:'Original settings history could not be verified. No action was submitted.',outcomeUnconfirmed:false}}
+ },
+}}
+export type SettingsHistoryClient=ReturnType<typeof createSettingsHistoryClient>;

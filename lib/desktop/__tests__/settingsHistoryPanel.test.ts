@@ -1,0 +1,12 @@
+/** @vitest-environment jsdom */
+import {createElement} from 'react';
+import {afterEach,it,expect,vi} from 'vitest';
+import {cleanup,fireEvent,render,screen,waitFor} from '@testing-library/react';
+const context=vi.hoisted(()=>({revision:0,config:{}}));vi.mock('../../../desktop/src/lib/desktopClient',()=>({desktopClient:{getContextRevision:()=>context.revision,subscribeContext:()=>()=>{},config:context.config}}));
+import {OperationalSettingsHistoryPanel} from '../../../desktop/src/components/OperationalSettingsHistoryPanel';
+import {settingsHistory} from '../../governance/platform/operations/settingsReviewContract';
+const id='platform_action_11111111-1111-4111-8111-111111111111',d='a'.repeat(64),history=settingsHistory.parse({actionId:id,planDigest:d,status:'unknown',version:3,attemptCount:1,requesterUserId:'requester',reviewerUserId:'reviewer',expired:true,results:[{format:1,purpose:'platform_settings_creation_result_v1',actionId:id,effectIndex:0,planDigest:d,manifestDigest:d,nativeKey:d,outcome:'unknown',settingId:null,observedAt:100,receiptDigest:d}],authority:'history_only',sourceValidation:'not_checked',executionAuthorized:false});
+function fixture(){const client={inspect:vi.fn(async()=>({ok:true as const,data:history}))};return {client,props:{actionId:id,planDigest:d,currentUserId:'requester',client}}}
+afterEach(()=>{cleanup();context.revision=0});
+it('loads original unknown results only deliberately and offers no resend',async()=>{const f=fixture();render(createElement(OperationalSettingsHistoryPanel,f.props));expect(f.client.inspect).not.toHaveBeenCalled();fireEvent.click(screen.getByRole('button',{name:'Load original settings history'}));await screen.findByText(/Do not resend/);expect(screen.getAllByRole('button')).toHaveLength(1);expect(screen.queryByRole('textbox')).toBeNull();expect(f.client.inspect).toHaveBeenCalledExactlyOnceWith(id,expect.any(AbortSignal))});
+it('clears earlier facts when a reload cannot verify original history',async()=>{const f=fixture();render(createElement(OperationalSettingsHistoryPanel,f.props));fireEvent.click(screen.getByRole('button',{name:'Load original settings history'}));await screen.findByText(/Do not resend/);f.client.inspect.mockRejectedValueOnce(Error('unavailable'));fireEvent.click(screen.getByRole('button',{name:'Load original settings history'}));await waitFor(()=>expect(screen.getByRole('status').textContent).toContain('unavailable'));expect(screen.queryByText(/Do not resend/)).toBeNull()});
