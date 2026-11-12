@@ -15,6 +15,28 @@ function isolatedNextStartupCategories(value) {
   syntax_error:/SyntaxError/,
   type_error:/TypeError/,
  };
- return{status:'observed',categories:Object.entries(patterns).filter(([,pattern])=>pattern.test(value)).map(([name])=>name)};
+ const categories=Object.entries(patterns).filter(([,pattern])=>pattern.test(value)).map(([name])=>name);
+ const requests=new Map([
+  ['@prisma/client','missing_prisma_package'],['.prisma/client/default','missing_legacy_prisma_client'],
+  ['@prisma/client/runtime/client','missing_prisma_runtime'],['@prisma/client/runtime/client.js','missing_prisma_runtime'],
+  ['@prisma/client/runtime/query_compiler_fast_bg.postgresql.js','missing_prisma_compiler'],
+  ['@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm','missing_prisma_wasm'],
+  ['@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.js','missing_prisma_wasm'],
+  ['./internal/class.js','missing_generated_class'],['./internal/prismaNamespace.js','missing_generated_namespace'],
+  ['@prisma/adapter-pg','missing_prisma_adapter'],['pg','missing_pg'],['typescript','missing_typescript'],
+  ['@typescript/native','missing_native_typescript'],['@typescript/native-preview','missing_native_typescript'],['server-only','missing_server_only'],
+ ]);
+ const observations=[];
+ for(const match of value.matchAll(/(?:Cannot find module|Can't resolve)\s+['"]([^'"\r\n]{1,512})['"]/g)){observations.push(match);if(observations.length===16)break;}
+ for(const match of observations){
+  const token=match[1];let category=requests.get(token);
+  if(!category&&token.endsWith('/vitest/suppress-warnings.cjs'))category='missing_fixture_warning_preload';
+  if(!category&&token.endsWith('/fonts.cjs'))category='missing_fixture_font_mock';
+  if(!category&&/\/\.next\/(?:dev\/)?server\/vendor-chunks\//.test(token))category='missing_next_vendor_chunk';
+  if(!category&&/\/\.next\/(?:dev\/)?server\/app\//.test(token))category='missing_next_route_chunk';
+  if(!category&&token.endsWith('/webpack-runtime.js'))category='missing_next_webpack_runtime';
+  if(!categories.includes(category??'missing_module_unknown'))categories.push(category??'missing_module_unknown');
+ }
+ return{status:'observed',categories};
 }
 module.exports=Object.freeze({isolatedNextStartupCategories});
