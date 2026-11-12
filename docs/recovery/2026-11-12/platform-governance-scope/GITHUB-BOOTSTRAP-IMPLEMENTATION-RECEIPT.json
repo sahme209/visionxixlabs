@@ -60,5 +60,27 @@
     "exitCode": 0,
     "log": "/private/tmp/axiom-github-bootstrap-final-types3.log",
     "correction": "test-only child environment explicit NODE_ENV=test and contextual ProcessEnv type; no suppression"
+  },
+  "productionModeCompile": {
+    "root": "/private/tmp/axiom-current-production-u7d7pwy5",
+    "input": {
+      "head": "ad5a70633ec5e18846071689e95009be84ae3e6b",
+      "sourceCount": 13187,
+      "sourceManifestSha256": "4cf49bfcc2fb0a02f50a42d9f892440853bb0ab2eaf0dc445dde43ff227789a4",
+      "sourceArchiveSha256": "6372f208472cbdba76f3a23b58e6beed6e24446a789016159aeef46269a484e7",
+      "networkDenied": true,
+      "databaseUrlSupplied": false,
+      "environmentFilesAbsent": true,
+      "cachedEngineSha256": "6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1",
+      "scope": "ordinary isolated current-source production compile; shared installed dependencies; no runtime/native/issuer qualification",
+      "productionChanged": false
+    },
+    "result": {
+      "exitCode": 0,
+      "sourcesAndEngineUnchanged": true,
+      "buildLogSha256": "d73777a2d6595e9d18d07415e801ab976135d011dcbdb7812725616ab74fb56f",
+      "productionChanged": false
+    },
+    "scope": "offline build/types only; no deployment/native issuer qualification"
   }
 }
