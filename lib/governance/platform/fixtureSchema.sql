@@ -52,3 +52,11 @@ CREATE TABLE "PlatformOperationalTargetReceipt" (
  "receiptDigest" TEXT NOT NULL, "receiptJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX "PlatformOperationalTargetReceipt_nativeKey_generation_idx" ON "PlatformOperationalTargetReceipt" ("nativeKey",generation);
+
+-- Private encrypted settings, fixture only. No update/delete path in repository.
+CREATE TABLE "PlatformSettingsArtifact" (
+ id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ "effectIndex" INTEGER NOT NULL CHECK ("effectIndex" BETWEEN 0 AND 31),
+ "bindingJson" JSONB NOT NULL, envelope TEXT NOT NULL, "createdAtMs" DOUBLE PRECISION NOT NULL,
+ UNIQUE ("actionId","effectIndex")
+);
