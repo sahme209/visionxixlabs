@@ -1,0 +1,24 @@
+# Current execution sequence — November12
+
+This orders the complete existing master plan; it does not remove requirements or authorize held work. CODEX_HANDOFF.md, the continuation goal, current coverage matrix and individual owner decisions govern every action. Work stays on one coherent branch/PR; no paid work or production action is implied.
+
+1. **Resolve release prerequisites.** Reconcile the recorded production target/schema discrepancy and Prisma pool/TLS compatibility; prepare exact precheck/apply/verify and recovery evidence where required. Already-consumed read grants do not authorize another read. The owner runs approved production SQL. Continue independent authorized local work when this lane awaits consent/evidence.
+2. **Finish Governance source as one usable workflow.** Complete the pending image, template-execution and deployment-recovery families after their existing design decisions arrive; finish all named admission/executor/default/legacy coverage, source-to-review-to-requester-to-outcome/recovery and enrollment workflow. Preserve completed kernel, runtime/compiler, one-attempt and123case SQL work. Do not spend additional cycles re-proving unchanged components or count temporary refusals as usable completion.
+3. **Qualify the real Governance boundary and security.** Establish actual source/key/protection, issuer/runtime/custody/fleet/time and credential lifetime evidence under separately approved concrete setup/read/run packets. Complete independent security review and repair findings. Prove complete covered admission/revocation/replay/unknown recovery, and genuine independent decisions; synthetic callbacks cannot become defaults. Native/production enablement remains gated.
+4. **Complete real operational acceptance.** Finish ServiceNow written-note observation, native Normal-New approvals/policy and exact closure without resending the existing note. Qualify offline model limits/operator caps, live batch/provider behavior and remaining approved on-prem controls with genuine identities/evidence. Bounded real effects, credentials, services and spending each need their specific authority. Preserve all unresolved owner choices.
+5. **Finish customer delivery and comprehension.** Validate signed release artifacts and clean-host install/sign-in/session, complete Store/certification/Windows when a host and approvals exist, and record real-app walkthroughs. Validate the complete website/app/docs/demo/support experience, availability labels and truthful size/version/usage/pricing. Existing free-core/actual-paid-AI and introductory service-credit direction requires its reviewed implementation/acceptance; no fake usage, grant or payment enablement.
+6. **Review and release one exact candidate.** Close the original requirement audit; run required exact-source checks and one fresh whole-source review; open one PR, require every applicable check green and merge normally. Confirm schema/recovery/runtime compatibility for that exact candidate. Owner clicks the specifically approved production deploy and protected publications; then perform approved bounded smoke/acceptance. No auto-deploy or broad permission inference.
+7. **Expand the retained roadmap.** Continue all named integration/plugin/batch services, companion, token-efficiency and future-technology requirements in their approved sequence/design boundaries. Keep the full roadmap visible; sequencing is not cancellation or a completion claim. New capabilities/SDKs/dependencies/providers remain separately reviewed. Research may occur in genuine gaps without delaying earlier gates.
+
+## Parallel lane throughout
+
+Keep security, premium visual consistency and intuitive task order as acceptance criteria at every stage. Authorized app/website visual refinement, comprehensive documented controls/media, knowledge grounding and deterministic/token-efficiency research can progress while core work waits. Final visuals and recordings must match stable real behavior; no fake workspace data, unsupported capability or security claims. This is scheduling, not an instruction to spawn agents or restart/interrupt an app.
+
+## Current Governance completion gates
+
+- Held source families and complete usable admission/review/execution/recovery/enrollment coverage.
+- Actual qualified identity/protection/runtime/credential custody and source suppliers, with no unsafe legacy alternative.
+- Registered native/web customer workflow and successful real-environment end-to-end trials under genuine approvals.
+- Final full-scope security review, source/CI acceptance and separately approved activation.
+
+No exact percentage is defensible: local implementation, simulated-provider tests, real qualification, merged code and production acceptance are separate measures. The current evidence supports local component/integration progress, not full Governance readiness. Current branch123case evidence does not count unfinished gates as completed.

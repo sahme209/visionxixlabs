@@ -1019,3 +1019,8 @@ Exact-run local implementation and the revised GitHub bootstrap design are owner
 Full ordinary regression18,615pass/0fail/1,028pending and production-mode build/types at frozenad5a7063 remain scoped earlier evidence; they predate the connected preparer1542949a and the new test-only matrix. No repeated unchanged SQL or production compile is claimed. The prepared actual workflow remains uninstalled and the checked-in platform workflow refuses. Source stays local/unmerged. Details: [current checkpoint](../recovery/2026-11-12/platform-governance-scope/CURRENT.md).
 
 Real source/key/protection/native trust/custody/fleet/time qualification, shipping registration/defaults, held image/template/deployment recovery decisions, all-family usable coverage, final whole-source review/whole validation/mandatory-green PR and production gates remain. P01/full Governance/the master goal are NOT complete. No real provider/credential/configuration/schema/flag/workflow/deployment/spending action follows from this local checkpoint.
+
+
+## November12 — dependency-ordered execution
+
+The owner requested a proper sequence. Follow [current execution sequence](current-execution-sequence.md) alongside all existing instructions: release prerequisites; complete Governance source; real qualification/security; operational live acceptance; customer delivery/comprehension; exact reviewed release; retained expansion roadmap. Authorized visual/documentation work runs alongside the critical path. Existing blocked approvals remain pending, all original scope is retained, and this schedule grants no new action/credential/production/spending authority.
