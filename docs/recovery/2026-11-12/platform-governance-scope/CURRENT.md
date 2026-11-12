@@ -13,6 +13,10 @@ Active branch: `codex/platform-governance-scope`; all changes remain local/unreg
 
 Original ECS history now has a strict browser-safe client and optional recovery panel for consumed actions. Reader freshness after the final clock await is rechecked. No source preview, renewed approval, provider read, resend or automatic action occurs. Scoped tests/types/frontend build pass; Exact immutable stability-proof history now joins the original event/receipt and is SQL-tested with synthetic provider evidence; actual source qualification, default supplier qualification, registration and full P01 remain incomplete. See LOCAL-PROGRESS.md for exact scopes.
 
+## Prepared settings review continuation
+
+Exact create-only settings metadata/review now has a strict paired client, real in-process client→HTTP→signed synthetic session/SQL evidence and an optional independent-review panel in the unregistered workflow. Secret intake/execution are not exposed by this client. Custody/source qualification, full requester preparation/execution/recovery UI, held existing-setting updates, default registration and P01 remain open. See LOCAL-PROGRESS.md.
+
 ## Earlier scoped checkpoints — historical
 
 Historical source-selection tranche: existing Lead metadata catalog now populates the unregistered generated-site form. It exposes bounded labels/status/package-presence only, excludes email/full payload/content, and never grants source validation or a save/approval automatically.24focused checks/final root and desktop types/shell-client build PASS.35actual isolated SQL cases PASS/stopped, including25-lead pagination/private-field exclusion and real client/prepared HTTP/current HMAC/SQL. All delivery/provider facts remain synthetic/in-process; no new execution/recovery authority or live acceptance.
