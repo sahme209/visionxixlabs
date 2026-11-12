@@ -15,7 +15,7 @@ export interface TokenTransaction {
  replace(record:TokenCall):Promise<void>;
 }
 export interface TokenRepository {transaction<T>(fn:(tx:TokenTransaction)=>Promise<T>):Promise<T>}
-export interface CurrentTokenBudget {readonly digest:string;readonly windowId:string;readonly limitTokens:number;readonly expiresAt:number}
+export interface CurrentTokenBudget {readonly digest:string;readonly windowId:string;readonly limitTokens:number;readonly startsAt:number;readonly expiresAt:number}
 function refuse():never{throw Error('customer_hosted_token_admission_unavailable');}
 function valid(request:TokenRequest){
  for(const value of [request.installationId,request.organizationId,request.actorId,request.modelId,request.windowId])if(typeof value!=='string'||!value.length||value.length>256)refuse();
@@ -30,7 +30,7 @@ export function createCustomerHostedTokenStore(repository:TokenRepository,readCu
  const claims=new WeakMap<object,TokenCall>();
  async function current(request:TokenRequest,tx:TokenTransaction){
   const budget=await readCurrent(request.organizationId),now=await tx.now();
-  if(!budget||budget.digest!==request.configDigest||budget.windowId!==request.windowId||!Number.isSafeInteger(now)||!Number.isSafeInteger(budget.expiresAt)||budget.expiresAt<=now)refuse();
+  if(!budget||budget.digest!==request.configDigest||budget.windowId!==request.windowId||!Number.isSafeInteger(now)||!Number.isSafeInteger(budget.startsAt)||budget.startsAt>now||!Number.isSafeInteger(budget.expiresAt)||budget.expiresAt<=now)refuse();
   return budget;
  }
  return {

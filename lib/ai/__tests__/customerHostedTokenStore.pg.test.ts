@@ -25,7 +25,7 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
     await client.query('COMMIT');return value;
    }catch(e){await client.query('ROLLBACK');throw e}finally{client.release()}
   }};
-  let budget={digest:'a'.repeat(64),windowId:'w1',limitTokens:100,expiresAt:Date.now()+60000};
+  let budget={digest:'a'.repeat(64),windowId:'w1',limitTokens:100,startsAt:0,expiresAt:Date.now()+60000};
   const repository=createCustomerHostedTokenRepository(db),store=createCustomerHostedTokenStore(repository,async()=>budget);
   const request={installationId:'install',organizationId:org,actorId:'actor',requestDigest:'b'.repeat(64),modelId:'local-model',configDigest:'a'.repeat(64),windowId:'w1',reservedTokens:60};
   return {org,store,request,setBudget:(value:typeof budget)=>{budget=value},another:()=>createCustomerHostedTokenStore(repository,async()=>budget)};
@@ -49,12 +49,12 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
  });
  it('keeps unknown old-window exposure after a new service and config',async()=>{
   const f=fixture(),id=await f.store.reserveCustomerHostedCall(f.request),claim=await f.store.claimCustomerHostedCall(f.request,id);await f.store.settleCustomerHostedCall(claim,null);
-  f.setBudget({digest:'d'.repeat(64),windowId:'w2',limitTokens:100,expiresAt:Date.now()+60000});
+  f.setBudget({digest:'d'.repeat(64),windowId:'w2',limitTokens:100,startsAt:0,expiresAt:Date.now()+60000});
   await expect(f.another().reserveCustomerHostedCall({...f.request,requestDigest:'e'.repeat(64),configDigest:'d'.repeat(64),windowId:'w2'})).rejects.toThrow();
   expect((await pool.query('SELECT "stateJson" FROM "DurableAgentWorkflow" WHERE id=$1',[id])).rows[0].stateJson.status).toBe('unknown');
  });
  it('uses database time to refuse an expired budget before dispatch',async()=>{
-  const f=fixture(),id=await f.store.reserveCustomerHostedCall(f.request);f.setBudget({digest:'a'.repeat(64),windowId:'w1',limitTokens:100,expiresAt:1});
+  const f=fixture(),id=await f.store.reserveCustomerHostedCall(f.request);f.setBudget({digest:'a'.repeat(64),windowId:'w1',limitTokens:100,startsAt:0,expiresAt:1});
   await expect(f.store.claimCustomerHostedCall(f.request,id)).rejects.toThrow();
   expect((await pool.query('SELECT "stateJson" FROM "DurableAgentWorkflow" WHERE id=$1',[id])).rows[0].stateJson.status).toBe('reserved');
  });
@@ -63,7 +63,7 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
   return {config,modelId:'local-model',policyDigest:'d'.repeat(64),reservedTokens:60,windowId:'w1'};
  }
  it('composes the real ledger through one simulated model response and settlement',async()=>{
-  const f=fixture(),snapshot=snapshotFor(f.org);f.setBudget({digest:snapshot.config.digest,windowId:'w1',limitTokens:100,expiresAt:Date.now()+60000});
+  const f=fixture(),snapshot=snapshotFor(f.org);f.setBudget({digest:snapshot.config.digest,windowId:'w1',limitTokens:100,startsAt:0,expiresAt:Date.now()+60000});
   const audit:unknown[]=[],oldMode=process.env.AXIOM_OFFLINE_MODE;process.env.AXIOM_OFFLINE_MODE='true';let sends=0;
   try{
    const extract=createCustomerHostedExtraction({organizationId:f.org,actorId:'actor'},{store:f.store,readCurrent:async()=>snapshot,assertActor:async()=>{},audit:async detail=>{audit.push(detail)},send:async input=>{await input.beforeSend();sends++;return {data:{ok:true},raw:'{}',promptTokens:10,completionTokens:10,totalTokens:20}}});
@@ -73,7 +73,7 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
   }finally{if(oldMode===undefined)delete process.env.AXIOM_OFFLINE_MODE;else process.env.AXIOM_OFFLINE_MODE=oldMode}
  });
  it('preserves an unknown database hold when authority is revoked after its claim',async()=>{
-  const f=fixture(),snapshot=snapshotFor(f.org);f.setBudget({digest:snapshot.config.digest,windowId:'w1',limitTokens:100,expiresAt:Date.now()+60000});
+  const f=fixture(),snapshot=snapshotFor(f.org);f.setBudget({digest:snapshot.config.digest,windowId:'w1',limitTokens:100,startsAt:0,expiresAt:Date.now()+60000});
   const oldMode=process.env.AXIOM_OFFLINE_MODE;process.env.AXIOM_OFFLINE_MODE='true';let current=true,sends=0;
   try{
    const store={...f.store,claimCustomerHostedCall:async(...args:Parameters<typeof f.store.claimCustomerHostedCall>)=>{const claim=await f.store.claimCustomerHostedCall(...args);current=false;return claim}};
@@ -83,7 +83,7 @@ describe.skipIf(!root)('customer-hosted ledger on owned PostgreSQL (no model)',(
   }finally{if(oldMode===undefined)delete process.env.AXIOM_OFFLINE_MODE;else process.env.AXIOM_OFFLINE_MODE=oldMode}
  });
  it('rolls settlement back and retains dispatched exposure without a second settlement attempt',async()=>{
-  let fail=false;const f=fixture(()=>fail),snapshot=snapshotFor(f.org);f.setBudget({digest:snapshot.config.digest,windowId:'w1',limitTokens:100,expiresAt:Date.now()+60000});
+  let fail=false;const f=fixture(()=>fail),snapshot=snapshotFor(f.org);f.setBudget({digest:snapshot.config.digest,windowId:'w1',limitTokens:100,startsAt:0,expiresAt:Date.now()+60000});
   const oldMode=process.env.AXIOM_OFFLINE_MODE;process.env.AXIOM_OFFLINE_MODE='true';let settlements=0;
   try{
    const store={...f.store,settleCustomerHostedCall:async(...args:Parameters<typeof f.store.settleCustomerHostedCall>)=>{settlements++;return f.store.settleCustomerHostedCall(...args)}};
