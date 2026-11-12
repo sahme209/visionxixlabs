@@ -24,6 +24,7 @@ export interface RegisteredModel {
 }
 
 const MODELS: Record<AIProviderName, RegisteredModel[]> = {
+  customer_hosted: [], // Deployment-configured only; no registry/default/fallback.
   vercel_gateway: [
     { id: "service-default", label: "AI Gateway · service default", tier: "preferred", family: "other", freeNote: "Secure service-managed routing" },
   ],
@@ -101,14 +102,16 @@ const MODELS: Record<AIProviderName, RegisteredModel[]> = {
   ],
 };
 
-/** Return the recommended list for a provider (never empty). */
+/** Recommended models; customer_hosted has no static/default model. */
 export function listModels(provider: AIProviderName): RegisteredModel[] {
+  if (provider === "customer_hosted") return [];
   const arr = MODELS[provider];
   return arr.length > 0 ? [...arr] : MODELS.mock;
 }
 
 /** Pick the default model for a provider (first preferred, else first). */
 export function defaultModelFor(provider: AIProviderName): string {
+  if (provider === "customer_hosted") return "";
   const arr = MODELS[provider];
   const pref = arr.find((m) => m.tier === "preferred");
   return (pref ?? arr[0])?.id ?? "mock-v1";

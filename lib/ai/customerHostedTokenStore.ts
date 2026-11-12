@@ -57,7 +57,7 @@ export function createCustomerHostedTokenStore(repository:TokenRepository,readCu
    });
    const claim=Object.freeze({});claims.set(claim,record);return claim;
   },
-  async settleCustomerHostedCall(claim:object,reportedTokens:unknown){
+  async settleCustomerHostedCall(claim:object,reportedTokens:unknown,responseVerified=true){
    const record=claims.get(claim);if(!record)refuse();
    // Consume before awaits. A failed/unknown settlement keeps the dispatched
    // hold; it never grants permission to resend or retry settlement silently.
@@ -66,7 +66,8 @@ export function createCustomerHostedTokenStore(repository:TokenRepository,readCu
     await tx.lock(record.organizationId);
     const rows=await tx.read(record.organizationId),stored=rows.find(r=>r.id===record.id);
     if(!stored||!same(stored,record)||stored.status!=='dispatched')refuse();
-    const outcome=customerHostedUsageLiability(record.reservedTokens,reportedTokens);
+    const observed=customerHostedUsageLiability(record.reservedTokens,reportedTokens);
+    const outcome=!responseVerified&&observed.status!=='overrun'?{status:'unknown' as const,liabilityTokens:record.reservedTokens}:observed;
     await tx.replace({...stored,status:outcome.status,reportedTokens:outcome.status==='unknown'?null:outcome.liabilityTokens});
     return outcome;
    });

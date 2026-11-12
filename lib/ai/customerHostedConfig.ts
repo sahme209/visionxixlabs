@@ -13,6 +13,9 @@ export interface CustomerHostedOperatorConfig {
  readonly server:Readonly<{kind:'vllm'|'ollama'|'lm_studio';baseUrl:string;allowedHosts:readonly string[]}>;
  readonly models:readonly CustomerHostedModel[];readonly budgets:readonly CustomerHostedBudget[];
 }
+export function isCustomerHostedModelId(value:unknown):value is string {
+ return typeof value==='string'&&/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$/.test(value)&&!value.includes('://');
+}
 function invalid():never{throw Error('customer_hosted_configuration_unavailable');}
 function object(v:unknown,keys:readonly string[]):Record<string,unknown>{
  if(!v||typeof v!=='object'||Array.isArray(v)||Object.keys(v).length!==keys.length||Object.keys(v).some(k=>!keys.includes(k)))invalid();
@@ -45,7 +48,7 @@ export function parseCustomerHostedOperatorConfig(raw:unknown):CustomerHostedOpe
   const server=Object.freeze({kind:s.kind as 'vllm'|'ollama'|'lm_studio',baseUrl:url.toString(),allowedHosts:Object.freeze(allowedHosts)});
   const models=array(v.models,64).map(value=>{
    const m=object(value,['id','maxInputTokens','maxOutputTokens','maxInputBytes']);
-   if(typeof m.id!=='string'||!/^[A-Za-z0-9][A-Za-z0-9._:/-]{0,199}$/.test(m.id))invalid();
+   if(!isCustomerHostedModelId(m.id))invalid();
    const maxInputTokens=number(m.maxInputTokens),maxOutputTokens=number(m.maxOutputTokens),maxInputBytes=number(m.maxInputBytes);
    if(!Number.isSafeInteger(maxInputTokens+maxOutputTokens)||maxInputBytes>131072)invalid();
    return Object.freeze({id:m.id,maxInputTokens,maxOutputTokens,maxInputBytes});

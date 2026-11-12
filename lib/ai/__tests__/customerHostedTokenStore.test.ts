@@ -42,3 +42,8 @@ it('rejects cross-actor claims and records overrun without refund',async()=>{
  expect(await f.store.settleCustomerHostedCall(claim,120)).toEqual({status:'overrun',liabilityTokens:120});
  await expect(f.store.reserveCustomerHostedCall({...f.request,requestDigest:'e'.repeat(64),reservedTokens:1})).rejects.toThrow();
 });
+it('retains the full hold for a refused response even if it reports smaller usage',async()=>{
+ const f=fixture(),id=await f.store.reserveCustomerHostedCall(f.request),claim=await f.store.claimCustomerHostedCall(f.request,id);
+ expect(await f.store.settleCustomerHostedCall(claim,20,false)).toEqual({status:'unknown',liabilityTokens:60});
+ expect([...f.rows.values()][0]).toMatchObject({status:'unknown',reportedTokens:null});
+});

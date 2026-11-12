@@ -20,6 +20,7 @@ import type { SmallSonnetDispatch } from "@/lib/billing/smallSonnetRequest";
  */
 
 export type AIProviderName =
+  | "customer_hosted"
   | "vercel_gateway"
   | "openai"
   | "anthropic"
@@ -35,7 +36,7 @@ export type AIProviderName =
   | "mock";
 
 export const AI_PROVIDER_NAMES = [
-  "vercel_gateway", "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
+  "customer_hosted", "vercel_gateway", "openai", "anthropic", "xai", "github_models", "ollama", "lm_studio", "groq", "hugging_face",
   "openrouter", "gemini", "cloudflare", "mock",
 ] as const satisfies readonly AIProviderName[];
 
