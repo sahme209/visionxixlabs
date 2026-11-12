@@ -44,9 +44,9 @@ Interfaces: original receipt/native key/generation selection, source-backed term
 
 ### Task4: Complete prepared execution/customer workflow and batch acceptance
 Files: deploymentHttp/requestService/default caller, desktop platform prepared workflow/result metadata, coverage and living docs.
-- [ ] RED actual proposal→review→requester→default helper→receipt/history and sequential separately approved release/new action, with native transport intercepted.
-- [ ] Complete current authenticated original-reference workflow; display accepted/pending/unknown truthfully, no READY inference or repeat button.
-- [ ] Validate required source/frontend/types/build/isolated storage and final whole-family source audit. The existing final whole-batch independent review/one exact-green PR remains after all three approved families; not a separate guard-only PR.
+- [x] RED actual proposal→review→requester→default helper→receipt/history and sequential separately approved release/new action, with native transport intercepted.
+- [x] Complete current authenticated original-reference workflow; display accepted/pending/unknown truthfully, no READY inference or repeat button.
+- [x] Validate required source/frontend/types/build/isolated storage and final whole-family source audit. The existing final whole-batch independent review/one exact-green PR remains after all three approved families; not a separate guard-only PR.
 
 Ruling: owner explicitly approved all three local designs and continuous inline execution; no extra plan checkpoint. Template/image remain in full scope and follow this first dependency unit. Real qualification remains separate.
 
