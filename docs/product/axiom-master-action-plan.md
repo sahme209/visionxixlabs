@@ -4,6 +4,8 @@
 
 This checkpoint supersedes earlier operational instructions, not historical evidence or unfinished requirements. **Read root [CODEX_HANDOFF.md](../../CODEX_HANDOFF.md) in full, then [AGENTS.md](../../AGENTS.md) and [CLAUDE.md](../../CLAUDE.md).** The handoff controls execution and permissions; this master plan retains the complete application and website scope. Do not repeat completed operations from the dated checkpoints below.
 
+The complete ready-to-paste continuation goal is saved in [codex-resume-goal.md](codex-resume-goal.md). The pinned app goal still requires a manual text update; available tools cannot replace or resume it.
+
 **Updated goal:** Complete the authorized handoff section 10.1 sequence for Axiom, one fully green PR at a time, keeping the master requirements, remaining-work record and living documentation synchronized. Preserve security, premium visual clarity and ease of use. Ask for the owner decisions in section 10.2 and the real-world steps in section 10.3; their presence in this plan is not authorization. Completion means the required acceptance evidence exists, not merely local code or simulated tests. Continue authorized, unblocked work without routine checkpoints.
 
 ### Verified position
@@ -15,11 +17,26 @@ This checkpoint supersedes earlier operational instructions, not historical evid
 
 ### Next, in order
 
-1. ~~PR #319 merged only after every applicable check passed.~~ Continue TypeScript 7 native checks as a side-by-side candidate, keeping exact reviewed API 5.9.3 for existing tooling. The direct replacement is incompatible; no forced peers, unstable API substitution or historical packet renewal. [Evidence](../recovery/2026-11-11/typescript7-upgrade/README.md).
-2. Remaining platform migrations, separate sequential PRs: TypeScript 7, Prisma 7, Vitest 5. Verify actual package availability and compatibility before choosing versions. Prisma requires an owner-approved production schema check; the owner runs the SQL. **ESLint remains on 9 by the owner's November 11 decision** until its plugins support 10; do not force peers or disable rules.
+1. ~~PR #319 merged only after every applicable check passed.~~ ~~TypeScript 7 side-by-side checks merged green in PR #320 (`a99c053f`).~~ Exact reviewed API 5.9.3 is retained for existing tooling. The direct replacement is incompatible; no forced peers, unstable API substitution or historical packet renewal. [Evidence](../recovery/2026-11-11/typescript7-upgrade/README.md).
+2. Remaining platform migrations, separate sequential PRs: Prisma 7, then Vitest 5. The Prisma read-only check was owner-approved and then explicitly delegated to Codex; it found two absent November 9 tables/ledger records on the recorded production branch, contradicting the historical receipt. No write or cause is inferred; production changes remain blocked. [Observed result](../recovery/2026-11-11/prisma7-preflight/README.md). Verify actual package availability and compatibility before choosing versions. Prisma requires an owner-approved production schema check; the owner runs the SQL. **ESLint remains on 9 by the owner's November 11 decision** until its plugins support 10; do not force peers or disable rules.
 3. Fix `privateFixtureJoined.test.ts` only if its actual failure reproduces; capture the failure site, do not guess.
 4. Offline AI only after the owner accepts the ADR and answers its three decisions. No unapproved fallback or inference.
 5. Source-grounded documentation guides: Plugins, Workspaces, MCP and Settings; update navigation, heading hashes, support corpus, guide-count tests and related living docs in the same PR.
+
+### Gap-time research — future technology and deployment assessment
+
+- [ ] **Planned, not started:** [complete assessment brief](future-technology-deployment-assessment.md). The owner's November 11 clarification schedules it **during gaps, without delaying current priorities**, superseding only the attachment's original after-completion timing. Continue the handoff sequence first; no interruption or reprioritization.
+- Cover all eight supplied areas: containers/orchestration; infrastructure automation; CI/CD/GitOps; modern deployment; platform engineering; AI-native infrastructure; security/networking/observability; emerging technologies over the next 3–5 years. Preserve every named technology and requirement in the linked brief.
+- For each topic, verify actual support and overlap with the existing roadmap; assess customer value, extension/integration/new-development options, architecture/security/maintenance/cost/complexity and intuitive product fit. Recommend adopt now, consider later, monitor or avoid, distinguishing evidence from assumptions/predictions and citing current authoritative sources.
+- Deliver verified capabilities, genuine gaps, already-planned coverage, architectural/integration recommendations, prioritized future suggestions, monitoring topics and risks/trade-offs. **Research only:** no automatic implementation, tickets, changes to completed functionality or additional master-plan scope. Recommendations require owner review/approval. Existing production, spending, data and security controls remain in force.
+- This assessment adds no completion claim and no new mandatory technology backlog. A1–A9/B1–B6/C1–C6 retain their existing requirements and acceptance gates.
+
+### Cross-cutting token efficiency and useful repositories/tools
+
+- [ ] [Token-efficiency and tooling assessment](token-efficiency-and-tooling-assessment.md): identify relevant repositories, libraries, plugins and skills that can reduce unnecessary context, repeated work and model usage or improve Axiom. Evaluate broadly; adopt selectively after evidence, security/license review and normal approval/PR gates. No blind “install everything” requirement.
+- Track Axiom runtime AI costs separately from development-assistant usage. Establish a baseline, measure actual provider-reported input/output/cache usage and billed cost where available, and preserve task quality, tenant isolation, source freshness and exact governance boundaries. Token estimates, cache discounts, token counts, latency and subscription credits are different measurements; no invented percentage savings.
+- Prioritize reusing existing retrieval/usage/audit facilities, scoped context and deterministic tools before adding dependencies. Research compression, code-aware context, safe caching, current documentation, evaluation and supply-chain tooling; preserve exact approvals, targets, source hashes and budgets outside lossy compression. Keep the current implementation sequence moving and use gaps for supplemental discovery.
+- The initial source-checked shortlist and adoption gates are recorded in the linked assessment. Candidates are not installed, integrated, qualified or approved for customer-data access; no paid calls, grants, telemetry export, provider routing changes or production actions are implied.
 
 ### Rules and unfinished scope
 
@@ -28,7 +45,7 @@ This checkpoint supersedes earlier operational instructions, not historical evid
 - Production database changes, deployments, feature flags, billing and external posts require explicit owner approval. The owner runs Neon pre-check/apply/verify SQL and clicks every production deployment. Payments stay off; never expose secrets or show demo data in real workspaces.
 - Section 10.2 decisions remain owner-controlled: P01 scope, offline/on-prem policy and custody, held identity/security/billing choices and each production build. Section 10.3 remains separate acceptance: installers, live Governance trials, genuine ServiceNow review/lifecycle/closure, real-app walkthroughs, deferred Windows/Store, independent security assessment, live batch providers and recorded demos. Never resend the already-written ServiceNow note or decide for its human reviewers.
 - All A1–A9, B1–B6 and C1–C6 requirements and the integration/plugin roadmap remain retained below and in the requirements index. Historical counts and statements describe their dated snapshots; this checkpoint does not mark parent requirements complete or authorize C1–C6.
-- **Pinned app goal:** the older goal is still paused. Its text/status could not be edited through the available goal tools; the app also refused automated access to its own controls. The updated goal text above is saved here; do not report the UI goal as updated until its actual state is verified.
+- **Pinned app goal:** the owner replaced its text with the continuation-file reference and activated it November 11. The active objective follows `codex-resume-goal.md`; status was verified through the goal tool. Existing permission/approval limits remain unchanged.
 
 ---
 
@@ -1160,3 +1177,23 @@ New internal [ticket-card source supplement](knowledge/ticket-action-card-contex
 ## November4 — named intake source guidance and current contract requalification
 
 ~~All52direct named intake field callsites have source IDs, label/model/condition/constraint/save guidance; existing29family contract explicitly requalified to post-fix19821435~~ ([guide](knowledge/releases-intake-fields.md), [evidence](../recovery/2026-11-04/release-intake-fields/README.md)). Stale29/52contracts failed1/2cases as expected; each current suite5/5, rootactualGit/derivedbaseline/IDs/nodes/manifests and independentreview pass. Registry initially refused changed/newtests; explicitreviewedpins nowyield ONEcombined8file39checks/0failed/0skipped. No runtime metadata added by namedmapping/DOM lookup/customer/media/editorial/native/retrieval/Gov acceptance or provider/DB/CI/deploy action. Existing15A/B parents remain open; user-added C1–C6 preserved as future scope without permission expansion.
+
+
+## November 11 — Prisma 7 application compatibility progress (not merged/deployed)
+
+The modern generated client, explicit PostgreSQL adapter factory and application constructor/import migration are implemented locally. Root native types pass; full first migration suite observed 17,803 passing tests, 30 failures across six files, 893 skipped and one expected failure. Generated-model guards retain full required-field checks and reject stale generation. The old datasource/cache/proxy assertions and reviewed framework source pin were subsequently repaired; 95 tests across those ten focused files now pass in the recorded split runs. Two old synthetic recipe tests remain incompatible with the Prisma 5 schema/engine profile; they are not skipped or declared qualified. Ordinary script sources retain exact targets and operations through the adapter, but were not executed. Historical issuer/recipe authority is not renewed. Full rerun, production/desktop builds, remaining recipe compatibility, independent final review and mandatory green PR CI remain. No production change or deployment. See [metadata evidence](../recovery/2026-11-11/prisma7-preflight/GENERATED-METADATA-PROGRESS.md) and [Node/driver review](../recovery/2026-11-11/prisma7-preflight/NODE-SOURCE-COMPATIBILITY.md). The live schema discrepancy and unverified Vercel target remain deployment blockers.
+
+
+### Subsequent Prisma 7 validation — local candidate ready for mandatory PR CI
+
+The two recipe failures above are resolved by the reviewed current-source `/2` helper and mocked tests, with old-driver refusal retained. Full rerun: 17,835 passed, 893 skipped, one expected failure; no unexpected failures. Three additional actual fresh isolated-PG tests passed (P2002, atomic workflow/event rollback, Serializable P2034); server stopped. Production build/299 pages, desktop types/frontend build and Python 36 tests pass; independent source review found no important issues. [Full evidence and explicit limits](../recovery/2026-11-11/prisma7-preflight/README.md). Not merged, deployed or historically issuer-qualified. Live target/schema reconciliation and driver compatibility remain deployment gates.
+
+
+### PR #321 — deeper CI compatibility repair, not merged
+
+Required Typecheck + Vitest, production/offline build, desktop/macOS, audit and auth recovery passed on the prior head; actual opt-in AWS/PG and HTTP/website acceptance found remaining failures. Raw-SQL conflict compatibility is now repaired locally with exact own-data driver evidence; transaction scopes/retry caps/authority are unchanged. Full local suite 17,850 pass / 897 skip / one expected failure, four actual fresh PG tests and complete AWS enrollment/revocation rehearsal pass; owned servers stopped. Bounded secret-free startup categories are prepared for the still-unconfirmed HTTP/website startup failures. [Evidence and limits](../recovery/2026-11-11/prisma7-preflight/CI-SECOND-ROUND.md). Do not merge pending/failing checks, deploy or equate this with live Governance acceptance.
+
+
+### Prisma startup compiler boundary — source correction, CI pending
+
+Actual Next Webpack compilation of the real instrumentation hook reproduced 17 Edge errors with the early-return form. The Node store-factory import is now enclosed in a positive Node-only condition: Edge excludes the real PostgreSQL adapter graph, Node retains it, and the original Node store/logging/error behavior is unchanged. Implemented source review passes; no emitted application was executed by this regression. [Evidence](../recovery/2026-11-11/prisma7-preflight/INSTRUMENTATION-COMPILER-BOUNDARY.md). Actual HTTP/website CI success remains mandatory; no startup/deployment acceptance is claimed yet. No Next config/hash, authority, timeout, flag, credentials or native dependency changed.

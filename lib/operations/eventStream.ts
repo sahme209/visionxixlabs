@@ -10,7 +10,7 @@
  * (server components, API routes) don't have to re-derive them.
  */
 
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 
 // ---------------------------------------------------------------------------
 // Output types — mirror the props consumed by the operations/ components

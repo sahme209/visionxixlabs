@@ -1,5 +1,5 @@
 import "server-only";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { captureRestartTarget } from "@/lib/axiom/agentRuntime/restartTargetReview";
 import { hasDesktopCapability } from "@/lib/desktop/desktopAuthorization";
 import { checkRestartReview, type RestartSource, type RestartRule, type RestartReviewRecord } from "./restartReview";

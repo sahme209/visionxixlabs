@@ -1,0 +1,37 @@
+# PR 321 second CI round — unresolved
+
+Candidate `741a230a` fixes missing emitted clients; the actual auth-recovery rehearsal now passes. Type checking and production high-severity audit also pass. Other jobs are tracked on the PR; no merge is authorized while any applicable job fails/pends.
+
+## AWS isolated enrollment failure reproduced locally
+
+CI job `130853264831` reaches the actual serializable last-slot rehearsal but fails its assertion that the loser exposes P2034 or SQLSTATE 40001. Fresh owned local PostgreSQL reproduces exactly that assertion. A separate diagnostic copy (not committed or used for acceptance) shows the losing raw SQL operation throws `DriverAdapterError`, message `TransactionWriteConflict`, with neither top-level `code` nor `meta`. Installed adapter source maps PostgreSQL 40001 and 40P01 to that exact cause kind. The schema/data/transaction assertion must remain; do not accept arbitrary rejections or remove the exactly-one-commit check.
+
+The model-operation concurrency test already passed as P2034, so that narrower proof did not establish raw-SQL conflict-code compatibility. Next: inspect the actual cause and existing production conflict classifiers, preserve legacy and modern abort semantics through a source-reviewed compatibility mechanism, and test actual raw-SQL concurrency. Do not merely make the rehearsal accept any error or claim existing production retry handlers are compatible. No production/provider request occurred. Each diagnostic used a fresh owned local cluster; the diagnostic shell stops that owned server on exit. Files are preserved.
+
+## HTTP acceptance failure
+
+CI job `130853264650` reaches application HTTP acceptance but fails `isolated_next_start_failed` while waiting for the CSRF endpoint. Its existing harness captures stdout/stderr to `/tmp/axiom-isolated-next-http.log`, but the workflow currently does not return that file. Root cause remains unconfirmed. Do not increase the timeout, suppress startup failures or call it a Prisma problem without evidence. Next: reproduce the exact guarded child startup locally or add bounded fixed-category failure observations, retaining the current child environment and no-credential/no-provider guards.
+
+Local full suite/build results are preserved but do not substitute for these actual opt-in CI gates. The PR remains open and production unchanged.
+
+## Local correction and remaining startup diagnosis
+
+A pure own-data error-code reader now recognizes the exact bare adapter conflict and the actual Prisma P2010 wrapper's `meta.driverAdapterError` conflict. It preserves every other existing code, refuses accessors/inherited/malformed evidence, and performs no retry or IO. Nine existing P2034 classifiers reuse it without changing their transaction bodies, retry counts, requester authority or provider dispatch. The AWS rehearsal and legacy admission classifier reuse the same reader; arbitrary rejections still fail. The nested-wrapper unit first failed, then passed after the source-reviewed narrow exception.
+
+Actual fresh owned PG tests now pass all four cases (including raw SQL one-commit/one-recognized-abort). The complete actual AWS enrollment/revocation rehearsal also passes, including distinct last-slot accounts, foreign tenant refusal, challenge consumption, revocation rollback and exactly one serializable commit. Local servers stopped after each run; no existing cluster/database/provider was used or altered.
+
+A local exact HTTP startup probe was refused by the unchanged managed launch policy before any child launched. That is not evidence of the CI root cause and was not bypassed. Instead, source-reviewed bounded readers now emit fixed failure-category labels from the already captured synthetic HTTP/runtime logs in CI. No raw logs, error text, paths, environment values or credentials are returned. Optional invalid logs remain unavailable and do not weaken required receipt/image/cleanup acceptance. Both readers use nonblocking/no-follow opens; an actual owned FIFO regression confirms bounded refusal. Six Node tests and the collector's existing private-input/security assertions pass. Startup root cause remains unconfirmed until the new observation executes in CI. No timeout increase, fake success, disabled test or guard weakening.
+
+## Third CI observation
+
+On `04e22752`, the actual AWS enrollment CI now passes, alongside required Typecheck + Vitest, production/offline build and the observed desktop/frontend checks. Both HTTP and website failure observers return only `module_missing`; the website still fails with owned cleanup confirmed. This narrows the cause to module loading but does not identify the missing module. Independent source inspection found no supported exact missing specifier or justified fix. A finite whitelist of public Prisma/internal/preload module tokens and Next output path families is added to the bounded classifier; it emits static labels only, never captured tokens. Seven Node tests pass, including secret non-disclosure and real FIFO refusal. Unknown requests remain unknown; no startup success or timeout/guard change is claimed.
+
+## Fourth CI observation
+
+On `eedb12ed`, required checks/build and observed desktop/macOS/auth/AWS checks pass, while both startup surfaces still report module_missing with an unknown token. This is not a successful repair. The next source-reviewed classifier adds the actual generated enum requests found in emitted CJS, relative Next output-chunk families and fixed structural labels for unknown tokens; it strips only ANSI color formatting before matching. No token/path/raw error is emitted. Nine bounded Node tests pass, including secret non-disclosure, formatted public tokens and actual FIFO refusal. No application code or acceptance timeout/guard is changed by this diagnostic refinement.
+
+## Fifth observation and public-dependency lookup
+
+CI `9325abd1` HTTP diagnosis reports module_missing, an unknown bare request and pg-native. A direct installed-compiler probe only reproduced pg-native as a warning, with a working lazy bundled constructor; no externalization fix was claimed/applied. Because static labels did not identify the other package, the observer now returns only matching base package IDs taken from the committed public lockfile's package/dependency/optional-peer keys. It never returns captured tokens/subpaths, dependency values, raw logs or unknown names. Both consumers use one nonblocking/no-follow regular-file reader with a 4 MiB cap and stable bounded reads. Thirteen Node tests (including actual FIFO, links, oversize and secret-nondisclosure cases), 23 collector tests and independent source review pass. No additional provider/credential access, application behavior, acceptance timeout or guard changes.
+
+The `5378cbc0` push created no Actions suite despite an open mergeable PR and unchanged base. One handoff-prescribed empty commit `9325abd1` requested checks; runs then appeared. This does not establish a service cause and no repeated trigger loop was used.

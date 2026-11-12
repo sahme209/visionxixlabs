@@ -1,5 +1,5 @@
 import "server-only";
-import type { PrismaClient, Prisma } from "@prisma/client";
+import type { PrismaClient, Prisma } from "@/lib/prismaClient";
 import { readPostgresReviewPolicy } from "./postgresReviewStore";
 import type { GithubBuildScope, GithubBuildRequest, GithubBuildSnapshot } from "./githubBuildEvidence";
 

@@ -6,7 +6,7 @@ import { existsSync, mkdtempSync, readdirSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 import { rehearseLocalDesktopPairingHttp } from "./rehearse-local-desktop-pairing-http.mjs";
 import { startOwnedAirflowWireFixture } from "./fixtures/ownedAirflowWireFixture.mjs";
 import { localAirflowChildEnvironment } from "./fixtures/localAirflowChildEnvironment.mjs";
@@ -90,7 +90,7 @@ export async function rehearseLocalAuthHttp(value, { airflowWireFixture = false,
   assertNoRuntimeDotenv(root);
   const sourceCommit = assertCommittedApplicationSource(root);
   assert.ok(!existsSync(join(root, ".next/dev/lock")), "existing_dev_server_forbidden");
-  const client = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
+  const client = createDatabaseClient(databaseUrl);
   const journeyDeadline = Date.now() + 240_000;
   const mail = [];
   const mailServer = createServer(async (request, response) => {

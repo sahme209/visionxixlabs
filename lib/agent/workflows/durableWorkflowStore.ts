@@ -5,7 +5,7 @@ import {RELEASE_DEPLOYMENT_EXECUTION_KIND} from '@/lib/tauri/releaseDeploymentEx
 import {RELEASE_WORKFLOW_EVIDENCE_KIND} from '@/lib/tauri/releaseWorkflowEvidenceContract';
 import { RELEASE_PROVIDER_MERGE_APPROVAL_KIND } from '@/lib/tauri/releaseProviderMergeApprovalKind';
 import { RELEASE_PROVIDER_MERGE_KIND } from '@/lib/tauri/releaseProviderMergeKind';
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 
 import { prisma } from "@/lib/db";
 import { RELEASE_MERGE_EXECUTION_KIND } from "@/lib/tauri/releaseMergeExecutionKind";

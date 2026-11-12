@@ -12,17 +12,17 @@
 
 export async function register(): Promise<void> {
   // Edge / browser bundles must not run server-only modules.
-  if (process.env.NEXT_RUNTIME !== "nodejs") return;
-
-  try {
-    const { configureStoresFromEnv } = await import("@/lib/platform/storeFactory");
-    const result = await configureStoresFromEnv();
-    if (result.mode === "prisma") {
-      console.info(`[platform] Stores configured: prisma — ${JSON.stringify(result.wired)}`);
-    } else {
-      console.info(`[platform] Stores configured: in-memory — ${result.reason}`);
+  if (process.env.NEXT_RUNTIME === "nodejs") {
+    try {
+      const { configureStoresFromEnv } = await import("@/lib/platform/storeFactory");
+      const result = await configureStoresFromEnv();
+      if (result.mode === "prisma") {
+        console.info(`[platform] Stores configured: prisma — ${JSON.stringify(result.wired)}`);
+      } else {
+        console.info(`[platform] Stores configured: in-memory — ${result.reason}`);
+      }
+    } catch (err) {
+      console.error("[platform] Store factory failed to boot — falling back to in-memory defaults.", err);
     }
-  } catch (err) {
-    console.error("[platform] Store factory failed to boot — falling back to in-memory defaults.", err);
   }
 }

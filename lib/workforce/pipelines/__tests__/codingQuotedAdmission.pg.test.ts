@@ -1,3 +1,4 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { randomUUID } from 'node:crypto';
 import { realpathSync, statSync } from 'node:fs';
@@ -53,7 +54,7 @@ describe.skipIf(!root)('fresh owned composed quoted admission',()=>{
   const socket=process.env.AXIOM_CODING_QUOTE_PG_SOCKET!,client=process.env.AXIOM_CODING_QUOTE_PG_CLIENT!;
   if(socket!==root+'/socket'||client!==root+'/generated/index.js'||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||realpathSync(client)!==client)throw Error('owned_private_client_required');
   const {PrismaClient}=createRequire(import.meta.url)(client);
-  f.db=new PrismaClient({datasources:{db:{url:'postgresql://coding_quote_fixture@localhost:55491/axiom_coding_quote_fixture?host='+encodeURIComponent(socket)}}});
+  f.db=createDatabaseClient('postgresql://coding_quote_fixture@localhost:55491/axiom_coding_quote_fixture?host='+encodeURIComponent(socket));
   expect(await f.db.$queryRawUnsafe("SELECT current_database() AS db,current_user AS role,current_setting('listen_addresses') AS listen,current_setting('data_directory') AS data")).toEqual([{db:'axiom_coding_quote_fixture',role:'coding_quote_fixture',listen:'',data:root+'/data'}]);
  });
  afterAll(async()=>{await f.db?.$disconnect();vi.unstubAllGlobals();vi.unstubAllEnvs();});

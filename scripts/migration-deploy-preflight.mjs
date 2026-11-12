@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFileSync, readdirSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const manualRecovery = new Set(["20261013172000_add_workspace_agent_identity"]);
@@ -60,7 +60,7 @@ async function main() {
       name, checksum: createHash("sha256").update(readFileSync(join(root, "prisma/migrations", name, "migration.sql"))).digest("hex"),
     }));
   if (!local.length) throw new Error("migration_sources_missing");
-  const client = new PrismaClient();
+  const client = createDatabaseClient(process.env.DATABASE_URL);
   try {
     const report = await inspectMigrationDeploy(client, local);
     console.log(JSON.stringify(report));

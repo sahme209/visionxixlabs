@@ -1,5 +1,5 @@
 import 'server-only';
-import type {Prisma} from '@prisma/client';
+import type {Prisma} from '@/lib/prismaClient';
 import {z} from 'zod';
 import {sha256ContentHash} from './contentHash';
 import {RELEASE_WORKFLOW_EVIDENCE_KIND,releaseWorkflowEvidenceBindingSchema,releaseWorkflowObservationSchema,parseReleaseWorkflowEvidenceDto,type ReleaseWorkflowEvidenceBinding,type ReleaseWorkflowObservation} from './releaseWorkflowEvidenceContract';

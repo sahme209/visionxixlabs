@@ -1,5 +1,5 @@
 import "server-only";
-import type {Prisma} from "@prisma/client";
+import type {Prisma} from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { hasPermission } from "@/lib/axiom/agent/rbacEngine";
 import type { OrgRole } from "@/lib/axiom/enums";

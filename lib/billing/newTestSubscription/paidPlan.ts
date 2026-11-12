@@ -1,6 +1,6 @@
 import { newTestAllocationPricingPlan } from "./allocationPlan";
 import "server-only";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { randomUUID } from "node:crypto";
 import { planForStripeTier, type PricingPlan } from "../planRegistry";
 import { paidAccess, paidIdentity } from "./paidCoverage";

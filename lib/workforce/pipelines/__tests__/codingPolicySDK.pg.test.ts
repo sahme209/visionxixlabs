@@ -1,8 +1,9 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import {beforeAll,afterAll,beforeEach,afterEach,describe,expect,it,vi} from 'vitest';
 import {createRequire} from 'node:module';
 import {realpathSync,statSync} from 'node:fs';
 import {randomUUID} from 'node:crypto';
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@/lib/prismaClient';
 const f=vi.hoisted(()=>{
  const fetcher=vi.fn(async(_input:RequestInfo|URL,_init:RequestInit):Promise<Response>=>{throw Error('synthetic_offline_default');});
  vi.stubGlobal('fetch',fetcher);vi.stubGlobal('AI_SDK_DEFAULT_PROVIDER',undefined);
@@ -21,7 +22,7 @@ describe.skipIf(!root)('fresh owned coding text-policy compatibility',()=>{
   const socket=process.env.AXIOM_GENERIC_AI_PG_SOCKET!,client=process.env.AXIOM_GENERIC_AI_PG_CLIENT!;
   if(socket!==root+'/socket'||client!==root+'/generated/index.js'||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||realpathSync(client)!==client)throw Error('owned_private_client_required');
   const {PrismaClient}=createRequire(import.meta.url)(client);
-  f.db=new PrismaClient({datasources:{db:{url:'postgresql://generic_ai_policy_fixture@localhost:55494/axiom_generic_ai_policy_fixture?host='+encodeURIComponent(socket)}}});
+  f.db=createDatabaseClient('postgresql://generic_ai_policy_fixture@localhost:55494/axiom_generic_ai_policy_fixture?host='+encodeURIComponent(socket));
   expect(await f.db.$queryRawUnsafe("SELECT current_database() AS db,current_user AS role,current_setting('listen_addresses') AS listen,current_setting('data_directory') AS data")).toEqual([{db:'axiom_generic_ai_policy_fixture',role:'generic_ai_policy_fixture',listen:'',data:root+'/data'}]);
  });
  afterAll(async()=>{await f.db?.$disconnect();vi.unstubAllGlobals();});

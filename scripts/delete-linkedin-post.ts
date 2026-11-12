@@ -7,9 +7,9 @@
  * delete-self on the user's own posts. Marks the local draft as
  * `failed` so it doesn't reappear in any timeline.
  */
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 
-const prisma = new PrismaClient();
+const prisma = createDatabaseClient(process.env.DATABASE_URL);
 const TARGET_URN = "urn:li:share:7467661358357151744";
 
 async function main() {

@@ -1,0 +1,265 @@
+{
+  "base": "d64f0726",
+  "method": "All legacy statically typed PrismaClient datasources and prior env-default constructor targets exactly match migrated factory argument expressions; adapters and dynamic historical fixture constructors excluded",
+  "files": [
+    {
+      "path": "app/api/ai/generate/__tests__/durableAdversarial.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "161959bc9a2ef868cb552677e58b499c2fad2f8c1a22b8db6155e07104116b92",
+      "afterSha256": "da269da4f4409728c083adfe7b2768ee44cd39fc96b530b58faa4d7c9e13eb29"
+    },
+    {
+      "path": "app/api/ai/generate/__tests__/durableComposition.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "072aeddabfd7e6761625399f843a746bea5868993b831446dae961e932d5ade2",
+      "afterSha256": "3316127ccdc6a76bb452701921d2cdc0656ebc78b3f1d53c7bddb97747746cbf"
+    },
+    {
+      "path": "app/api/ai/generate/__tests__/policyRevocation.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "9175452daf58d775c447a0a1fc25a4efd4d58d414d7aebce4a2c4b74a0b8b246",
+      "afterSha256": "8e925fbeec24a3f2fe8cc8f44f004f4a2e0e0df61112457a8eebca3cb4c44d25"
+    },
+    {
+      "path": "app/api/auth/verify-email/__tests__/route.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "85d75362bfee7c6f3bde3b8d2c8fdea67651861d46fb207f80c95111243a5e37",
+      "afterSha256": "5bed3f4f3ab5d39ca133f2db4b45894408323029de9aa2ef63fd670771757319"
+    },
+    {
+      "path": "lib/__tests__/migrationDeployPreflight.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "cec28bea2af44717d50224fc844fdd4271028598885f0d0e934fa35afc1e9440",
+      "afterSha256": "39d6305ad48b6baef1091dbe3f400b2ec9987d2b87c772dadbc30bebf4a085ef"
+    },
+    {
+      "path": "lib/agent/workflows/__tests__/durableWorkflowStore.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "7d496f304171a99ea22c8680270be32881f717fa739b9202c428f9fb7246f48d",
+      "afterSha256": "e0681f3bef8a5efd86af1c36e0ecab7fd49e7efd7b92fca12ebd28901e5525ec"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/desktopAgentRoute.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "5b32be9ed7e50c1d8f94531c473358fa41cc1a119d8f5bc46351530c7088a0a7",
+      "afterSha256": "3271dd4aeb4a733248832237180db1146a28b8cdd0f68fedc0db0b981f09c842"
+    },
+    {
+      "path": "lib/axiom/agentRuntime/__tests__/governedAgent.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "b2715a6e9acf8dcf13c8bc4e771a9c28e0b14406a13ca335bf3291a895f46a07",
+      "afterSha256": "46da4d4cd24843be5f3b3f6c46181bcf3239fe4046995bb42b3c2df8cec46323"
+    },
+    {
+      "path": "lib/billing/__tests__/fixtures/ownedCheckoutWorkerEntry.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "bbdffad1b4c3a68d1098c31ad7ac716056cc19077d5c570f7f8066ce04c32ccd",
+      "afterSha256": "30fe3abe1597afe53970329ba6a03e1ee5ab1dce7658dd8b0018ec5d75ad878f"
+    },
+    {
+      "path": "lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "a3cbd70d74ee250ca3d399f38b31e132820a84d936b6b50ab8e252ccd7d399bc",
+      "afterSha256": "1bde843d7fa6dfb70f85da32f61a4495e29125ed019516c08620fd7536ec693d"
+    },
+    {
+      "path": "lib/billing/newTestSubscription/postgresFixtureStore.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "4d8c44429b5704705fcf1693417ece5beac2354ee0aa924512c079d40a5fb7c5",
+      "afterSha256": "8b2432e2ae21fcf86f6689e101303fe89f535c99ddc319c6e60b592ce997e1f8"
+    },
+    {
+      "path": "lib/cloud/aws/enrollment/__tests__/enrollment.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "8018584e93f653562935c5ca02ba5b5aa8e3b8d36d64a313afd1fdf81eb204c2",
+      "afterSha256": "47c459661addaca3859109b1dcf9a751777de3095cfbee90a8ae2f5f22afb6d8"
+    },
+    {
+      "path": "lib/cloud/gcp/guided/__tests__/service.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "3c912585bfb60f2057d9b06b32dd095b5861c9d5b4c3a3c2147eacf7182f18b9",
+      "afterSha256": "0b697c87123ea34f62e7728093362aebce42487e1180254b18ddeed01668f56a"
+    },
+    {
+      "path": "lib/cockpit/__tests__/usageAnalytics.database.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "8492ebd23c9c1d4b1b96917a0fef58756fc7dda2a0bec4477d0a9be07a38e694",
+      "afterSha256": "1027f1103ef8bfc22c2ea432e1976bd406931aa6ffe9e0326a8f5b4857810eb7"
+    },
+    {
+      "path": "lib/db.ts",
+      "constructors": 2,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+      "afterSha256": "db3d7d757dde56acd8bc539560ea38d99e376b560a4c353d47458597b7672e02"
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopSessionAuthority.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "3db4e4fcad91df8ec1494e8adad1edf118ffa37109682687a9b3edb638d14a17",
+      "afterSha256": "22b8b356a2b0e88e384048d4cbdd609bb3cdde14e42474e2c7b1360db6bf7527"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/scheduledAutomation.engine.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "042dee5ecc513e1600ecae027469d79808e257f1369fd2bb0bcc0063babb396b",
+      "afterSha256": "6ae9b7d02c1b302b0b7b2f894391800981e531560bf76950dbc7e081b4404135"
+    },
+    {
+      "path": "lib/integrations/airflow/__tests__/scheduledDispatchFreshness.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "2753c939cdaf7cedb933adeba323a40b7ddeb4a8baf26bf562429c61967a7e4d",
+      "afterSha256": "3e7466e43958afd2dbf041025a2f91c1362e8c29961c0b806172bf6138f69956"
+    },
+    {
+      "path": "lib/integrations/jira/__tests__/jiraReadActivation.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "e6493c193a5c2ee805b80583adcec53482530cf680e56206e5e95527705feb2d",
+      "afterSha256": "2461f98155e94cf7b4b7ac44d3edf2eadf83d40af713fbdadcccb112e8679dd8"
+    },
+    {
+      "path": "lib/integrations/jira/__tests__/jiraRefreshPersistence.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "b988034e85f2e9e591cf9df8465d5566947a6c99e056230fae2e5b4648fdb9da",
+      "afterSha256": "225fe8ec91861de38d92a1bb55b410c00d954b61abb770e861c792e26bbf4776"
+    },
+    {
+      "path": "lib/operations/__tests__/agentStorageRecovery.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "b19ab112436b06caa4152b6ecf5fbd8f37f7561cd5fffe8b0b372c8395bc9da9",
+      "afterSha256": "528f8571dbc75660b3547794929783c7444855a78e3c6417de3d4d50317a4eff"
+    },
+    {
+      "path": "lib/scan/__tests__/persistScanAtomicity.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "e1e40ce8bd4fd98fdffe4fa022bc0f45055fa494b9c0394bb75b4517d4c81e09",
+      "afterSha256": "41d13a6286e2476638d2038909b70fe2bb7a44e81dfb7ed6fbe79aa89f54cbc2"
+    },
+    {
+      "path": "lib/scan/__tests__/scheduledScanClaim.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "ef37a1deabe5b5a7b2c2de17db3e4ad0747ce4416e11adb9d6ccdc1a10a1bdc6",
+      "afterSha256": "3016a16297b6adeb810abf1ec2f81f90e57147d335d65f4b339035b5a4944e65"
+    },
+    {
+      "path": "lib/security/__tests__/privateReleaseOperationPlanRepo.test.ts",
+      "constructors": 3,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "816ba6168dde774febb2081bd343aa2692cf9fd86dff786647689c1f5f31012e",
+      "afterSha256": "e02668d7dd8e11e76a838c90e887a5236ac96f84ba88b82e1adc012e3d4af6be"
+    },
+    {
+      "path": "lib/security/privateAuthorityDatabase.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "0baf90d2d6624d56c5ec6be220e33f53be7dbd48480bf5758ba7aa70752f07cd",
+      "afterSha256": "2577e161da627ca3d0db8c29e8d55df54645a9f56b0f1175c80e9098f20c0d75"
+    },
+    {
+      "path": "lib/tauri/__tests__/releaseResolutionDraft.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "ed8d8e3c9f346f5e576746a3055d8c2a33168fb64cadc6b12d40cb7744727200",
+      "afterSha256": "229b648d79cc132fd9c95fa77060a3eaa5f7c7923fba72e21af57da7f03cb937"
+    },
+    {
+      "path": "lib/workforce/__tests__/approvalVote.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "13828a06563ab521b3d86758660355203a3eadb7d0607126de10f5d1e9021c38",
+      "afterSha256": "f1ebac551d12c892053cd786ea5b9b699b6586cb9bf8372e5e6d1105e6b5eca7"
+    },
+    {
+      "path": "lib/workforce/__tests__/approvalWriterGuards.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "8bccfcd9282c0e334e2c74db3d51bb69f286e58e18e3798df8d10c2f15dcdbb4",
+      "afterSha256": "4a376c2ac40fba68f880f4c229f0783057428b54aa6bb63ebf17f64b2dc09ea0"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codeProposeAdmission.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "9e12232d6e87fd1cc2b6256d0c093d0fbe7ec38d6d872105a160d19b4e7c274d",
+      "afterSha256": "f5b264c6a0aab8b95de8de776e66cb88b02dc3c35ee57320c24652337a86db46"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingArtifact.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "e0ab528b4e4f5249fa9924a5362e6027809b69e2e09646acc604e4e981b871aa",
+      "afterSha256": "c3b12efa757ed686941a3a1f22fbd35e1ff856d70087a5634169aa4dcfa47caf"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingPolicy.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "4c35f40c25f4edcfc10240fce758b54f2a63e7cbe92d50c86ed6b291fecfd50b",
+      "afterSha256": "99f7388b72e8f261b9a694beb47e1754c0068409ff130c05215b56540050ec4b"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingPolicyExecutor.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "f5abff4cd69145130c0cb3029599b0dc96871fd38f11136fb14c97e47141eb8c",
+      "afterSha256": "58812139b31728068dbc316de5b26dd55b1c14e01e69a3fb0102735487ab690b"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingPolicySDK.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "eb365e82d77911927160a2233bf9d0844955537f1e7125fc710f66f1d7a1c646",
+      "afterSha256": "bd1e25f428df298a853a27d62219b8557a18c01d36026e392120fd8cf5557b79"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingQuotedAdmission.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "53f6bc8688e15464c83ed09b2253214113a84e9400be18fce9077b0623dd91c7",
+      "afterSha256": "746bcd57e4d9977e45878bfa63e43f477211a4b1b6274ffd46e7c48655b33938"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRequestQuote.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "de979c30c72267eb82d60e3627750f959acaf63ad86cde1d6df05b99a43748c5",
+      "afterSha256": "af29bbf417bb0bba711e228de53b5ec31bf7c81ba407b2247f1d3c1643b89b5a"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/codingRunBudget.pg.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "9f9f2f5fd676eaf02c99232ef56a96608e3ac8ea53718cbd2c89ab4b9df71c47",
+      "afterSha256": "3e3c49c9f883f950567774a9ee7a7a5e1e4f71cb8932769119c1d5f193cb6772"
+    },
+    {
+      "path": "lib/workforce/pipelines/__tests__/pipelineBudgetAuthority.postgres.test.ts",
+      "constructors": 1,
+      "targetArgumentsPreserved": true,
+      "beforeSha256": "b95454ae5a538dbbc358a26ef500ac6d98a82f3366f54096551d2563f80d049e",
+      "afterSha256": "58e461d3ef472c7f26851592c8076549df65d84e533df76126dc895b00ee5b6b"
+    }
+  ]
+}

@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import {afterAll,afterEach,beforeAll,beforeEach,describe,expect,it,vi} from "vitest";
 import {readFileSync,realpathSync,statSync} from "node:fs";
 import {randomUUID} from "node:crypto";
-import {PrismaClient} from "@prisma/client";
+import {PrismaClient} from "@/lib/prismaClient";
 const f=vi.hoisted(()=>({client:undefined as unknown as PrismaClient}));vi.mock("@/lib/db",()=>({get prisma(){return f.client;}}));
 import {persistApprovalVote,withBoundApprovalWrite} from "../persistApprovalVote";
 const socket=process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
@@ -16,7 +17,7 @@ describe.skipIf(!socket)('retired approval writers refused by actual PostgreSQL 
  }
  beforeAll(async()=>{
   if(!socket||!/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket)||realpathSync(socket)!==socket||(statSync(socket).mode&0o077)!==0||statSync(socket).uid!==process.getuid?.())throw new Error('owned_private_socket_required');
-  f.client=new PrismaClient({datasources:{db:{url:`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`}}});const [binding]=await f.client.$queryRawUnsafe<Array<{private:boolean}>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);if(!binding?.private)throw new Error('owned_fixture_binding_required');
+  f.client=createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);const [binding]=await f.client.$queryRawUnsafe<Array<{private:boolean}>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);if(!binding?.private)throw new Error('owned_fixture_binding_required');
  });
  beforeEach(async()=>{await removeGuards();approvalRequestId='owned_guard_'+randomUUID();const snap=await f.client.engineerApprovalSnapshot.create({data:{organizationId:'owned_guard_org',approvalRequestId,engineerId:'no_executor',action:'fixture_only',riskLevel:'low',effectiveRule:'two_step_approval',requiredApprovers:2,correlationId:'owned_guard_correlation',requestedBy:'owned_requester'}});snapshotId=snap.id;snapshots.push(snap.id);await installGuards();});
  afterEach(async()=>{await removeGuards();});

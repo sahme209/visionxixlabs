@@ -1,5 +1,5 @@
 import { expect, it, vi } from 'vitest';
-import type { Prisma } from '@prisma/client';
+import type { Prisma } from '@/lib/prismaClient';
 vi.mock('@/lib/db',()=>({prisma:{}}));
 import { assertTextAdmissionPolicy, type TextAdmissionPolicyRequirement } from '../textAdmissionPolicy';
 const org='synthetic-policy-workspace',model='anthropic/claude-sonnet-5';

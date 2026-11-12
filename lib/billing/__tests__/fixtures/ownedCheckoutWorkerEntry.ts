@@ -1,9 +1,10 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 /** Dedicated synthetic worker entry. Built/launched ONLY by the reviewed owned
  * supervisor after a separate runtime grant; never imported by Next routes. */
 import { createServer, type Socket } from "node:net";
 import { chmodSync, lstatSync, realpathSync } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import { ownedCheckoutConfiguration } from "../../ownedCheckoutBridge/configuration";
 import { createOwnedCheckoutOperations } from "../../ownedCheckoutBridge/operations";
 import { serveConversation } from "../../ownedCheckoutBridge/conversation";
@@ -22,7 +23,7 @@ process.once("message", async input => {
     const config = ownedCheckoutConfiguration(message.env as Record<string, string | undefined>); if (!config || config.accountId !== "acct-test") throw new Error("refuse");
     const dir = lstatSync(config.directory); if (!dir.isDirectory() || dir.isSymbolicLink() || realpathSync(config.directory) !== config.directory || (dir.mode & 0o777) !== 0o700 || dir.uid !== process.getuid?.()) throw new Error("refuse");
     phase = "store";
-    const db = new PrismaClient({ datasources: { db: { url: config.databaseUrl } } }), store = postgresFixtureStore(config.databaseUrl, config.runtimeId, config.accountId);
+    const db = createDatabaseClient(config.databaseUrl), store = postgresFixtureStore(config.databaseUrl, config.runtimeId, config.accountId);
     const service = createNewTestSubscriptionService({ store, provider: ownedSyntheticProvider(store, config), configuredPrices: ownedSyntheticPriceMap(config), now: () => Date.now(), id: () => randomBytes(16).toString("hex"), digest: text => createHash("sha256").update(text).digest("hex") });
     const execute = createOwnedCheckoutOperations({ manifest: config, store, service, actor: async userId => {
       const actor = await db.user.findUnique({ where: { id: userId }, select: { email: true, emailVerifiedAt: true } });

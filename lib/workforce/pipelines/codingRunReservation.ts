@@ -1,7 +1,7 @@
 import { assertTextAdmissionPolicy, pinTextAdmissionPolicy, type TextAdmissionPolicyRequirement } from "@/lib/ai/textAdmissionPolicy";
 import 'server-only';
 import {randomUUID} from 'node:crypto';
-import {Prisma,type PrismaClient} from '@prisma/client';
+import {Prisma,type PrismaClient} from '@/lib/prismaClient';
 import {codingRequestQuoteProtocol,parseStoredCodingQuoteEvidence,type CodingQuoteProtocol,type CodingQuote,type CodingReservationQuote,type PreparedCodingRequest,type CodingQuoteEvidence} from '@/lib/ai/codingRequestQuote';
 
 declare const claimBrand:unique symbol;

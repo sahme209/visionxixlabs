@@ -2,7 +2,7 @@ import "server-only";
 import {createPrivateFixtureScenario} from '@/lib/governance/qualification/privateFixtureScenario';
 import {createPrivateFixtureProvider} from '@/lib/governance/qualification/privateFixtureProvider';
 import type {FixedFixtureScenarioInputs} from '@/lib/governance/qualification/fixtureScenarioInputs';
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import type { NextRequest } from "next/server";
 import { consumeToken } from "@/lib/api/rateLimiter";
 import { createReleaseProviderMergeExecutionHttp } from "./releaseProviderMergeExecutionHttpCore";

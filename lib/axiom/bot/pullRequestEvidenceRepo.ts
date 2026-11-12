@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -51,7 +52,7 @@ export async function createPullRequestEvidenceRun(repo:PullRequestEvidenceRepo,
   if(storedBytes>PULL_REQUEST_EVIDENCE_LIMITS.maxTotalBytes-PULL_REQUEST_EVIDENCE_LIMITS.maxArtifactBytes)throw new PullRequestEvidenceConflict();
   const row=await tx.botPullRequestEvidenceRun.create({data:{...where,taskId:input.taskId,taskVersion:input.expectedVersion,clientRequestId:input.clientRequestId,kind:PULL_REQUEST_EVIDENCE_KIND,intentHash,snapshotJson,snapshotDigest:hash([scope.organizationId,scope.userId,input.taskId,input.expectedVersion,input.clientRequestId,snapshotJson]),status:'queued',revision:0,attemptCount:0,eventCount:1,storedBytes,cancelRequested:false,leaseOwner:null,leaseExpiresAt:null,createdAt:now,updatedAt:now,deadlineAt:new Date(now.getTime()+PULL_REQUEST_EVIDENCE_LIMITS.totalMs)}});
   await tx.botPullRequestEvidenceEvent.create({data:{organizationId:scope.organizationId,createdByUserId:scope.userId,runId:row.id,sequence:0,eventType:'run.queued',payloadJson,occurredAt:now}});return row;
- });}catch(error){const code=error&&typeof error==='object'&&'code'in error?error.code:undefined;if((code==='P2002'||code==='P2034')&&attempt<2)continue;if(code==='P2002'||code==='P2034')throw new PullRequestEvidenceConflict();throw error}
+ });}catch(error){const code=databaseErrorCode(error);if((code==='P2002'||code==='P2034')&&attempt<2)continue;if(code==='P2002'||code==='P2034')throw new PullRequestEvidenceConflict();throw error}
  throw new PullRequestEvidenceConflict();
 }
 function bind(row:PullRequestEvidenceRow,b:PullRequestEvidenceWorkerBinding,allowCancellation=false){if(!Number.isSafeInteger(b.expectedRevision)||b.expectedRevision<0||(!allowCancellation&&row.revision!==b.expectedRevision)||(allowCancellation&&row.revision<b.expectedRevision)||row.snapshotDigest!==b.snapshotDigest||!/^worker_[a-f0-9]{32}$/.test(b.workerId))throw new PullRequestEvidenceConflict()}

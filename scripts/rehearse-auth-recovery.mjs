@@ -5,7 +5,7 @@ import { cpSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writ
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 import { inspectAuthRecovery, publicRecoverySummary } from "./auth-recovery-preflight.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -25,9 +25,10 @@ export function validateRehearsalTarget(value) {
 
 export async function rehearseAuthRecovery(connectionString) {
   const target = validateRehearsalTarget(connectionString);
-  const client = new PrismaClient({ datasources: { db: { url: target } } });
+  const client = createDatabaseClient(target);
   const temp = mkdtempSync(join(tmpdir(), "axiom-auth-rehearsal-"));
   const schema = join(temp, "prisma/schema.prisma");
+  const config = join(temp, "prisma.config.ts");
   const fixtureEmail = "fixture-founder@example.test";
   const workspace = `ws_${createHash("sha256").update(fixtureEmail).digest("hex").slice(0, 16)}`;
   const artifact = readFileSync(join(root, "ops/recovery/20261015_auth_schema_only.sql"), "utf8");
@@ -38,7 +39,7 @@ export async function rehearseAuthRecovery(connectionString) {
   assert.ok(historicalPending.every(name => sourcePending.includes(name)), "original pending sources must remain represented");
 
   function cli(args, expectedSuccess = true) {
-    const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), ...args, "--schema", schema], {
+    const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), ...args, "--config", config], {
       env: { ...process.env, DATABASE_URL: target, PRISMA_HIDE_UPDATE_MESSAGE: "true" },
       encoding: "utf8", timeout: 120_000, maxBuffer: 4 * 1024 * 1024,
     });
@@ -57,6 +58,7 @@ export async function rehearseAuthRecovery(connectionString) {
     assert.equal(initial.count, 0, "rehearsal requires a new empty disposable database; refusing to reset it");
     mkdirSync(join(temp, "prisma"));
     cpSync(join(root, "prisma/schema.prisma"), schema);
+    writeFileSync(config, 'export default {schema:"prisma/schema.prisma",migrations:{path:"prisma/migrations"},datasource:{url:process.env.DATABASE_URL}};\n');
     cpSync(join(root, "prisma/migrations"), join(temp, "prisma/migrations"), { recursive: true });
     // Production recorded the ORIGINAL migration text (which selects from a nonexistent "Organization"
     // table) as failed on 2026-10-14. The repo file is now corrected for fresh databases, so the rehearsal

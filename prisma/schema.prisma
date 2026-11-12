@@ -1,11 +1,13 @@
 // Vision XIX AI — sellable bot platform
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output = "../.prisma/client-source"
+  moduleFormat = "cjs"
+  importFileExtension = "js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 // ---------------------------------------------------------------------------

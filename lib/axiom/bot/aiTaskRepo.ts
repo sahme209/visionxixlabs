@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import {loadAiTaskEvidenceContext} from './aiTaskEvidenceContext';
 import {parseAiTaskInput,aiTaskRunId,aiTaskIntentHash,aiTaskSnapshot,aiTaskSnapshotDigest,aiTaskCorrelationId,AI_TASK_LIMITS,type AiTaskSnapshot,type AiTaskStatus} from './aiTaskContract';
 import {savedBotTaskContentHash,type SavedBotTaskContent} from './savedTaskSchema';
@@ -50,7 +51,7 @@ export async function createAiTaskRun(repo:AiTaskRepo,scope:SavedBotTaskScope,ra
    const row=await tx.botAiTaskRun.create({data:{...where,taskId:body.taskId,taskVersion:body.expectedVersion,clientRequestId:body.clientRequestId,kind:body.kind,modelId:body.modelId,correlationId:aiTaskCorrelationId(where.id),intentHash,snapshotJson,snapshotDigest,status:'queued',revision:0,attemptCount:0,eventCount:1,storedBytes,cancelRequested:false,leaseOwner:null,leaseExpiresAt:null,dispatchClaimedAt:null,usageReceiptId:null,createdAt:captured,updatedAt:captured,deadlineAt}});
    await tx.botAiTaskEvent.create({data:event});return row;
   });}catch(error){
-   const code=error&&typeof error==='object'&&'code' in error?error.code:undefined;
+   const code=databaseErrorCode(error);
    if((code==='P2002'||code==='P2034')&&attempt<2)continue;
    if(code==='P2002'||code==='P2034')throw new AiTaskConflict();throw error;
   }

@@ -1,5 +1,6 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import { randomUUID } from "node:crypto";
 import { readFileSync, realpathSync, statSync } from "node:fs";
 import { AirflowClient, validateAirflowBaseUrl, type AirflowMutationAuthority } from "../airflowClient";
@@ -20,7 +21,7 @@ describe.skipIf(!socket || !file)("actual scheduler → local Airflow → durabl
     if (!file || !/^\/(?:private\/)?tmp\/axiom-airflow-engine-[^/]+\/fixture.json$/.test(file) || realpathSync(file) !== file || (statSync(file).mode & 0o077) !== 0 || (process.getuid && statSync(file).uid !== process.getuid())) throw Error("owned_airflow_fixture_required");
     fixture = JSON.parse(readFileSync(file, "utf8")); const origin = new URL(fixture.baseUrl);
     if (origin.protocol !== "http:" || origin.hostname !== "127.0.0.1" || !origin.port || origin.pathname !== "/" || origin.search || origin.hash || origin.username || origin.password || fixture.version !== "3.3.2" || fixture.username !== "axiom_fixture" || !/^axiom_owned_noop_[a-f0-9]{16}$/.test(fixture.dagId)) throw Error("owned_airflow_binding_required");
-    f.db = new PrismaClient({ datasources: { db: { url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}` } } });
+    f.db = createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
     const [binding] = await f.db.$queryRawUnsafe<Array<{ private: boolean }>>("SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private");
     if (!binding?.private) throw Error("owned_fixture_binding_required");
     // Private fixture loader substitutes tenant credential/metadata resolution only;

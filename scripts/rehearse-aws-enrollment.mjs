@@ -1,10 +1,11 @@
+import { databaseErrorCode } from "../lib/database/databaseErrorCode.ts";
 import assert from "node:assert/strict";
 import { spawnSync } from "node:child_process";
 import { mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 export const enrollmentMigration = "20261016010000_cloud_account_enrollment";
@@ -20,14 +21,14 @@ export function validateAwsEnrollmentRehearsalTarget(value) {
 /** Deliberately synthetic, initially empty fixture; never accepts production targets. */
 export async function rehearseAwsEnrollment(value) {
   const target = validateAwsEnrollmentRehearsalTarget(value);
-  const client = new PrismaClient({ datasources: { db: { url: target } } });
+  const client = createDatabaseClient(target);
   const temp = mkdtempSync(join(tmpdir(), "axiom-aws-enrollment-"));
   const sql = readFileSync(join(root, "prisma/migrations", enrollmentMigration, "migration.sql"), "utf8");
   const revokeSql = readFileSync(join(root, "prisma/migrations", revocationMigration, "migration.sql"), "utf8");
   function apply(text = sql, success = true, expectedError) {
     const path = join(temp, "fixture.sql");
     writeFileSync(path, text);
-    const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "execute", "--file", path, "--schema", join(root, "prisma/schema.prisma")], {
+    const result = spawnSync(process.execPath, [join(root, "node_modules/prisma/build/index.js"), "db", "execute", "--file", path, "--config", join(root, "prisma.config.ts")], {
       env: { ...process.env, DATABASE_URL: target, PRISMA_HIDE_UPDATE_MESSAGE: "true" }, encoding: "utf8", timeout: 60_000, maxBuffer: 1024 * 1024,
     });
     assert.equal(result.status === 0, success, "unexpected isolated enrollment SQL outcome");
@@ -97,7 +98,7 @@ export async function rehearseAwsEnrollment(value) {
     assert.equal(await client.$executeRawUnsafe(consume), 0);
     // Real SSI predicate test: distinct account keys cannot rely on the
     // existing per-account unique index to arbitrate this last-slot race.
-    const racers = [new PrismaClient({ datasources: { db: { url: target } } }), new PrismaClient({ datasources: { db: { url: target } } })];
+    const racers = [createDatabaseClient(target), createDatabaseClient(target)];
     let arrivals = 0;
     let releaseBarrier;
     let rejectBarrier;
@@ -117,8 +118,8 @@ export async function rehearseAwsEnrollment(value) {
       const failures = outcomes.filter(result => result.status === "rejected");
       assert.equal(failures.length, 1);
       const error = failures[0].reason;
-      assert.ok(error?.code === "P2034" || error?.meta?.code === "40001", "the losing transaction must fail with a serialization conflict");
-      lastSlotFailureCode = error.meta?.code ?? error.code;
+      assert.ok(databaseErrorCode(error) === "P2034" || error?.meta?.code === "40001", "the losing transaction must fail with a serialization conflict");
+      lastSlotFailureCode = error.meta?.code ?? databaseErrorCode(error);
       const [finalCount] = await client.$queryRawUnsafe(`SELECT count(*)::int AS count FROM "CloudAccount" WHERE "organizationId"=$1`, "fixture-last-slot-org");
       assert.equal(finalCount.count, 1);
     } finally {

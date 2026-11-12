@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { createHash, createDecipheriv } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { Socket } from "node:net";
 import * as privateVault from "../privateCredentialVault";
 import * as privateDatabase from "../privateAuthorityDatabase";
 import { encryptCredential, encryptScopedCredential, decryptScopedCredential } from "../credentialVault";
 
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => { vi.restoreAllMocks(); vi.unstubAllEnvs(); });
 const key = () => Buffer.alloc(32, 7);
 
 describe("private vault actual AES-GCM", () => {
@@ -70,17 +70,32 @@ describe("private actual Prisma client", () => {
   it("supplies explicit datasource to distinct lazy clients with owned disconnect", async () => {
     vi.stubEnv("DATABASE_URL", "postgresql://unused.invalid/environment");
     const url = "postgresql://synthetic:synthetic@127.0.0.1:1/private_test";
+    const network = vi.spyOn(Socket.prototype, 'connect').mockImplementation(() => { throw new Error('network_forbidden'); });
     const first = privateDatabase.createPrivateAuthorityDatabase(url);
     const second = privateDatabase.createPrivateAuthorityDatabase(url);
     try {
-      expect(first).toBeInstanceOf(PrismaClient);
+      // Prisma 7's returned client proxy does not preserve instanceof, including
+      // for a direct generated constructor. Inspect its real API and adapter.
+      expect(Object.prototype.toString.call(first)).toBe('[object PrismaClient]');
+      expect(first.$disconnect).toBeTypeOf('function');
       expect(first).not.toBe(second);
-      // Inspect real constructor configuration without connecting or executing SQL.
-      const internal = first as unknown as { _engineConfig: { overrideDatasources: unknown }; _engine: { libraryStarted?: boolean } };
-      expect(internal._engineConfig.overrideDatasources).toEqual({ db: { url } });
-      expect(internal._engine.libraryStarted).not.toBe(true);
-    } finally { await first.$disconnect(); await second.$disconnect(); }
+      const config: unknown = Reflect.get(first, '_engineConfig');
+      if (!config || typeof config !== 'object') throw new Error('client_configuration_missing');
+      const adapter: unknown = Reflect.get(config, 'adapter');
+      if (!adapter || typeof adapter !== 'object') throw new Error('client_adapter_missing');
+      const connect: unknown = Reflect.get(adapter, 'connect');
+      if (typeof connect !== 'function') throw new Error('adapter_connect_missing');
+      // Driver connect constructs a lazy pool; underlyingDriver inspection does
+      // not acquire a connection, run SQL or invoke client query machinery.
+      const driver = await connect();
+      try {
+        expect(driver.underlyingDriver().options).toMatchObject({ host: '127.0.0.1', port: 1, user: 'synthetic', database: 'private_test', ssl: false });
+        expect(driver.underlyingDriver().options.password()).toBe('synthetic');
+        expect(network).not.toHaveBeenCalled();
+      } finally { await driver.dispose(); }
+    } finally { await first.$disconnect(); await second.$disconnect(); network.mockRestore(); }
   });
+
   it("refuses missing, non-PostgreSQL, oversized and malformed datasource values", () => {
     for (const input of [undefined, "", " postgres://localhost/db", "file:test", "https://localhost/db", "postgresql://", "postgresql://localhost/", "postgresql://localhost/" + "x".repeat(8192)]) {
       expect(() => privateDatabase.createPrivateAuthorityDatabase(input as string)).toThrow();

@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import type { Contract, Intent } from "./service";
 import { paidIdentity, validateEvidence, validateObservation, type CoverageObservation, type PaidInvoiceEvidence } from "./paidCoverage";
 

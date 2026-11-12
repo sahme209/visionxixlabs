@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { attachAICreditReservationUsage, claimLegacyAICreditDispatch, releaseAICreditReservation, reserveAICredits, settleAICreditReservation } from "../aiCreditReservation";
 
 function reservationRepo(overrides: { used?: number; held?: number; existing?: unknown; tier?: string } = {}) {

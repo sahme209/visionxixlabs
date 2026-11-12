@@ -1,7 +1,7 @@
 /** Registered only inside the existing opt-in owned PG suite. This declaration
  * installs nothing. The default suite skips all database/server work. */
 import { beforeAll, expect, it } from "vitest";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { claimNewTestBillableDispatch, settleAttributedUsageV2, type AttributedGatewayCostV2 } from "../../newTestSubscription/usageAllocationIO";
 import { reserveAllocationV2, newTestAllocationPricingPlan } from "../../newTestSubscription/allocationPlan";
 import { readFixtureEnrollment } from "../../newTestSubscription/fixtureAllocation";

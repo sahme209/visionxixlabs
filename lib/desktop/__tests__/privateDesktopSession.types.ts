@@ -1,4 +1,4 @@
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import { createPrivatePrismaDesktopSessionStore } from "../privateDesktopSessionStore.prisma";
 import { createPrivateRequestDesktopSessionResolver } from "../privateRequestDesktopSessionResolver";
 // Compile-only: real generated Prisma delegate assignment, no client construction/connection.

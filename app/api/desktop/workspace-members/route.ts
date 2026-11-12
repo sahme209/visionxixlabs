@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
-import type { OrgRole } from "@prisma/client";
+import type { OrgRole } from "@/lib/prismaClient";
 import { prisma } from "@/lib/db";
 import { resolveRequestDesktopSession } from "@/lib/desktop/resolveRequestDesktopSession";
 import { appendAuditEvent, type AuditEventRepo } from "@/lib/releaseops/auditEventResponder";

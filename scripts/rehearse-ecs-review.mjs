@@ -6,7 +6,7 @@ import { tmpdir } from "node:os";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawnSync } from "node:child_process";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 const root=dirname(dirname(fileURLToPath(import.meta.url)));
 export function validateReviewRehearsalTarget(value) {
  let url;try{url=new URL(value);}catch{throw new Error("isolated_ecs_review_target_required");}
@@ -15,7 +15,7 @@ export function validateReviewRehearsalTarget(value) {
 }
 export async function rehearseReview(value) {
  const target=validateReviewRehearsalTarget(value),temp=mkdtempSync(join(tmpdir(),"axiom-ecs-review-"));
- const client=new PrismaClient({datasources:{db:{url:target}}});
+ const client=createDatabaseClient(target);
  const sql=readFileSync(join(root,"prisma/migrations/20261016030000_ecs_release_review_core/migration.sql"),"utf8");
  const executeSql=(text)=>{const path=join(temp,"fixture.sql");writeFileSync(path,text);return spawnSync(process.execPath,[join(root,"node_modules/prisma/build/index.js"),"db","execute","--file",path,"--schema",join(root,"prisma/schema.prisma")],{cwd:root,env:{...process.env,DATABASE_URL:target,DIRECT_URL:target},encoding:"utf8"});};
  try {
@@ -114,7 +114,7 @@ export async function rehearseReview(value) {
   assert.equal((await core.checkpoint(author,packetId)).reason,"review_rejected_or_revoked");
   assert.equal((await core.decide(alice,{packetId,expectedPriorRevision:1,decision:"approved"})).reason,"review_decision_conflict");
   // Real two-client Serializable CAS race: same previous voter revision.
-  const racerClients=[new PrismaClient({datasources:{db:{url:target}}}),new PrismaClient({datasources:{db:{url:target}}})];
+  const racerClients=[createDatabaseClient(target),createDatabaseClient(target)];
   let arrivals=0;let releaseBarrier;let barrierTimer;const barrier=new Promise((resolve,reject)=>{releaseBarrier=resolve;barrierTimer=setTimeout(()=>reject(new Error("isolated_race_barrier_timeout")),4000);barrierTimer.unref();});
   const racers=racerClients.map(database=>{
    const base=postgresReviewStore(database);

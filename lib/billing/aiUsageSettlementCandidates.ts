@@ -1,4 +1,4 @@
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prismaClient";
 import { MAX_AUTOMATIC_RETRY_AGE_MS } from "./aiUsageSettlementRetryPolicy";
 
 /** Select unreserved usage or matching reservations still eligible for retry.

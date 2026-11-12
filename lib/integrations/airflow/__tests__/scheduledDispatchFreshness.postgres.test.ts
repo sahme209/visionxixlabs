@@ -1,5 +1,6 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import { randomUUID } from "node:crypto";
 import { realpathSync, statSync } from "node:fs";
 const f = vi.hoisted(() => ({ client: undefined as unknown as PrismaClient, org: "", connectionId: "", ruleId: "", connectionVersion: new Date(0), afterRead: null as null | (() => Promise<void>), trigger: vi.fn() }));
@@ -25,7 +26,7 @@ const occurrence = new Date("2026-10-15T10:00:00Z");
 describe.skipIf(!socket)("actual PostgreSQL scheduled dispatch freshness and schedule preservation", () => {
   beforeAll(async () => {
     if (!socket || !/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket) || realpathSync(socket) !== socket || (statSync(socket).mode & 0o077) !== 0 || (process.getuid && statSync(socket).uid !== process.getuid())) throw Error("owned_private_socket_required");
-    f.client = new PrismaClient({ datasources: { db: { url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}` } } });
+    f.client = createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
     const [binding] = await f.client.$queryRawUnsafe<Array<{ private: boolean }>>("SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private");
     if (!binding?.private) throw Error("owned_fixture_binding_required");
     vi.stubGlobal("fetch", vi.fn(async () => { throw Error("unexpected_external_request"); }));

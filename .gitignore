@@ -62,3 +62,7 @@ next-env.d.ts
 
 # Local native ticket-review preview output (never a release artifact)
 /desktop/dist-ticket-preview/
+
+# Prisma 7 vendor-generated source and compiled client; generated during builds.
+/.prisma/client-source/
+/lib/generated/prisma/

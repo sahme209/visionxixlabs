@@ -1,0 +1,8 @@
+{
+  "status": "stopped_unverified",
+  "providerCalls": 1,
+  "valuesReturned": false,
+  "sourceSha256": "77e8dee9d7d007254649909716c97688630ef529d830da95088c62f42081801d",
+  "authorization": "User approved one two-call private comparison; stopped after metadata call. No decrypted detail call, retries, SQL, writes or deployment.",
+  "assessment": "Current production environment target remains unverified. Fixed-category result does not establish an authorization, wrapper or service cause; no raw response retained in workspace."
+}

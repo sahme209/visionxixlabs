@@ -1,5 +1,5 @@
 import {lockCodingFinancial,settleCodingLedger,codingBudgetUnavailable} from "@/lib/workforce/pipelines/codingRunReservation";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import { settleAttributedUsageV2 } from "./newTestSubscription/usageAllocationIO";
 import { denyIsolatedUnsupportedOperation } from "./isolatedApplication/runtime";
 import "server-only";

@@ -9,7 +9,7 @@ import { resolve } from "node:path";
 import { hash } from "bcryptjs";
 import Stripe from "stripe";
 import { expect } from "vitest";
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import { deriveWorkspaceIdFromEmail } from "../../../auth/workspaceId";
 import { enrollFixtureAllowanceV2 } from "../../newTestSubscription/fixtureAllocation";
 import type { Intent } from "../../newTestSubscription/service";

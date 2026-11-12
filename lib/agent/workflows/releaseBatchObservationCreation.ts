@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import { prisma } from "@/lib/db";
 import { sha256ContentHash } from "@/lib/tauri/contentHash";
 import { decideReleaseBatchWait } from "@/lib/tauri/releaseBatchWaitPolicy";
@@ -53,7 +54,7 @@ export async function ensureReleaseBatchObservation(input: {
   for (let retry = 0; ; retry += 1) {
     try { return await transaction(); }
     catch (error) {
-      const code = error && typeof error === "object" && "code" in error ? error.code : null;
+      const code = databaseErrorCode(error);
       if (retry >= 2 || (code !== "P2002" && code !== "P2034")) throw error;
     }
   }

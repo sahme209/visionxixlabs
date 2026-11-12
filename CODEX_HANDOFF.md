@@ -76,7 +76,7 @@ Axiom (VisionXIXLabs) is a governed control plane for AI agents and cloud/releas
 - **SDKs:** `sdk/` (TS, Swift, Python, Go). The Python CLI is `sdk/python/vxl_cli.py` (`vxl ask`, `vxl outcome`).
 
 **Stack:**
-- Next.js **16.4.5**, React 19.3, TypeScript 7.0.2 native checks plus retained 5.9.3 compiler API (migration candidate), Tailwind **4.3.5** (CSS-first migration; customer engine acceptance remains gated), Prisma **5.22**, Vitest **4.1.12**.
+- Next.js **16.4.5**, React 19.3, TypeScript 7.0.2 native checks plus retained 5.9.3 compiler API (#320 merged green), Tailwind **4.3.5** (CSS-first migration; customer engine acceptance remains gated), Prisma **5.22**, Vitest **4.1.12**.
 - Node 24 in CI; ai 7 requires Node 22+. Node 24 is used for this upgrade’s local checks.
 - Desktop: Vite 8, Tauri 2.
 
@@ -207,7 +207,7 @@ November 11: the synthetic recipe unit helper now binds the current schema after
   - Build 1, build 2 and build 3 (`61c69e65`, after the AgentGatewayRequest and AuditSeal migrations).
   - **Build 4 (`a344f4f6`)**: no database step; all smoke checks passed. See `docs/recovery/2026-11-09/build-4/RESULT.md`.
   - The owner's original cap was 3 builds; build 4 was explicitly approved. **Ask before each new production build.**
-- **Latest applied migration in production:** `20261109100000_add_audit_seal`, which matches the repo.
+- **Historical build-3 latest-applied receipt:** `20261109100000_add_audit_seal`. **November 11 live read of recorded production branch `br-holy-voice-ai303o8m` / compute `ep-small-mountain-ailw0kvt`: latest is `20261108120000_add_pipeline_ai_call_quote_fields`; both November 9 tables/ledger rows are absent.** This discrepancy is unresolved; do not deploy or repair automatically. See `docs/recovery/2026-11-11/prisma7-preflight/OBSERVED-RESULT.json`.
 - **Migrations must be additive.** Never reverse-migrate; rollback means the previous bundle plus a backup restore.
 - **The Vercel build does not run migrations.** It runs `prisma generate` and `next build` with `NODE_OPTIONS=--max-old-space-size=16384`.
 - **Preview environment shares the production database.** Do not create preview deploys until the owner sets up a separate Neon preview branch.
@@ -306,8 +306,8 @@ November 11: the synthetic recipe unit helper now binds the current schema after
 3. **Platform migrations, one PR each, in a branch with CI as the judge:**
    - ESLint 10: HOLD on ESLint 9 by owner decision November 11. Published React/import/accessibility plugins still reject 10; the normal install emits peer conflicts and `npm ls eslint --all` reports ELSPROBLEMS. Do not force or disable rules. Diagnostic: `docs/recovery/2026-11-11/tailwind4-upgrade/eslint10-hold.json`.
    - Tailwind 4: DONE, PR #319 merged green as `77d932c5`; CSS-first 4.3.5 for web and desktop, not deployed or installer-qualified. Evidence: `docs/recovery/2026-11-11/tailwind4-upgrade/README.md`.
-   - TypeScript 7: native 7.0.2 side-by-side candidate. Keep exact API 5.9.3 and its reviewed pins for Next/ESLint/fixture emitters; use explicit native checks for root, production source and desktop builds. Direct replacement reproduced missing API and invalid peers; never force them. API-major Dependabot holds remain deliberate. See `docs/recovery/2026-11-11/typescript7-upgrade/README.md`.
-   - Prisma 7: new client generator and config. **Needs an owner-approved production schema check; no data changes.**
+   - TypeScript 7: DONE, PR #320 merged green as `a99c053f`; native 7.0.2 side-by-side checks. Keep exact API 5.9.3 and its reviewed pins for Next/ESLint/fixture emitters; use explicit native checks for root, production source and desktop builds. Direct replacement reproduced missing API and invalid peers; never force them. API-major Dependabot holds remain deliberate. See `docs/recovery/2026-11-11/typescript7-upgrade/README.md`.
+   - Prisma 7: new client generator and config. **Needs an owner-approved production schema check; no data changes.** Prepared owner-run query: `docs/recovery/2026-11-11/prisma7-preflight/1-PRECHECK-READ-ONLY.sql` (executed once read-only by Codex after the owner explicitly requested agent execution; mismatch found, see `OBSERVED-RESULT.json`).
    - Vitest 5.
    - Remove each package's Dependabot ignore line after its PR merges.
 4. **Flaky `lib/governance/qualification/__tests__/privateFixtureJoined.test.ts`.**
@@ -358,3 +358,31 @@ Status details live in `docs/product/remaining-work.md` and `docs/product/execut
 - [ ] Every CI check green, including `Typecheck + Vitest`; merged with `--merge --delete-branch`.
 - [ ] `docs/product/remaining-work.md` updated.
 - [ ] Anything touching production (database, deploy, flags, billing, external posts) waits for the owner's explicit yes.
+
+## 12. Supplemental future technology assessment — gap-time research only
+
+The owner added `docs/product/future-technology-deployment-assessment.md` on November 11 and clarified “During gaps, without delaying current priorities.” This timing supersedes only the attached original's after-completion timing. Do not interrupt section 10.1, replace unfinished requirements, create a mandatory feature backlog or implement recommendations. Research the full preserved brief against actual source/existing plans during genuine gaps, then present recommendations for owner review. No assessment has started and no additional paid/provider/production authority is granted.
+
+## 13. Token-efficiency and useful tooling
+
+Owner added `docs/product/token-efficiency-and-tooling-assessment.md`: discover relevant repositories/libraries/plugins/skills, prioritize measured token/cost efficiency and project value, and reuse current facilities before adding dependencies. Source-checked candidates remain uninstalled/unqualified. Preserve quality, tenant/data boundaries, exact approvals, gateway-only policy and all spending/production controls; distinguish runtime accounting from development-assistant usage. No current-sequence reprioritization or automatic adoption is authorized.
+
+
+## November 11 — Prisma 7 application compatibility progress (not merged/deployed)
+
+The modern generated client, explicit PostgreSQL adapter factory and application constructor/import migration are implemented locally. Root native types pass; full first migration suite observed 17,803 passing tests, 30 failures across six files, 893 skipped and one expected failure. Generated-model guards retain full required-field checks and reject stale generation. The old datasource/cache/proxy assertions and reviewed framework source pin were subsequently repaired; 95 tests across those ten focused files now pass in the recorded split runs. Two old synthetic recipe tests remain incompatible with the Prisma 5 schema/engine profile; they are not skipped or declared qualified. Ordinary script sources retain exact targets and operations through the adapter, but were not executed. Historical issuer/recipe authority is not renewed. Full rerun, production/desktop builds, remaining recipe compatibility, independent final review and mandatory green PR CI remain. No production change or deployment. See [metadata evidence](docs/recovery/2026-11-11/prisma7-preflight/GENERATED-METADATA-PROGRESS.md) and [Node/driver review](docs/recovery/2026-11-11/prisma7-preflight/NODE-SOURCE-COMPATIBILITY.md). The live schema discrepancy and unverified Vercel target remain deployment blockers.
+
+
+### Subsequent Prisma 7 validation — local candidate ready for mandatory PR CI
+
+The two recipe failures above are resolved by the reviewed current-source `/2` helper and mocked tests, with old-driver refusal retained. Full rerun: 17,835 passed, 893 skipped, one expected failure; no unexpected failures. Three additional actual fresh isolated-PG tests passed (P2002, atomic workflow/event rollback, Serializable P2034); server stopped. Production build/299 pages, desktop types/frontend build and Python 36 tests pass; independent source review found no important issues. [Full evidence and explicit limits](docs/recovery/2026-11-11/prisma7-preflight/README.md). Not merged, deployed or historically issuer-qualified. Live target/schema reconciliation and driver compatibility remain deployment gates.
+
+
+### PR #321 — deeper CI compatibility repair, not merged
+
+Required Typecheck + Vitest, production/offline build, desktop/macOS, audit and auth recovery passed on the prior head; actual opt-in AWS/PG and HTTP/website acceptance found remaining failures. Raw-SQL conflict compatibility is now repaired locally with exact own-data driver evidence; transaction scopes/retry caps/authority are unchanged. Full local suite 17,850 pass / 897 skip / one expected failure, four actual fresh PG tests and complete AWS enrollment/revocation rehearsal pass; owned servers stopped. Bounded secret-free startup categories are prepared for the still-unconfirmed HTTP/website startup failures. [Evidence and limits](docs/recovery/2026-11-11/prisma7-preflight/CI-SECOND-ROUND.md). Do not merge pending/failing checks, deploy or equate this with live Governance acceptance.
+
+
+### Prisma startup compiler boundary — source correction, CI pending
+
+Actual Next Webpack compilation of the real instrumentation hook reproduced 17 Edge errors with the early-return form. The Node store-factory import is now enclosed in a positive Node-only condition: Edge excludes the real PostgreSQL adapter graph, Node retains it, and the original Node store/logging/error behavior is unchanged. Implemented source review passes; no emitted application was executed by this regression. [Evidence](docs/recovery/2026-11-11/prisma7-preflight/INSTRUMENTATION-COMPILER-BOUNDARY.md). Actual HTTP/website CI success remains mandatory; no startup/deployment acceptance is claimed yet. No Next config/hash, authority, timeout, flag, credentials or native dependency changed.

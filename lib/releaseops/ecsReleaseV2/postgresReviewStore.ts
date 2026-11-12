@@ -1,4 +1,4 @@
-import type { Prisma, PrismaClient } from "@prisma/client";
+import type { Prisma, PrismaClient } from "@/lib/prismaClient";
 import { evidenceDigest } from "./contract";
 import { projectTargetSnapshot, type TargetSnapshotRows } from "./targetSnapshot";
 import type { ReviewStore, ReviewTransaction, ReviewPacket, ReviewDecision, ReviewCheckpoint, ReviewPolicy } from "./reviewCore";

@@ -17,7 +17,7 @@ import { requireContext } from "@/lib/auth/currentContext";
 import { prisma } from "@/lib/db";
 import { isSameOriginRequest } from "@/lib/auth/requestOrigin";
 import { isWorkspaceAdminRole } from "@/lib/desktop/desktopAuthorization";
-import { Prisma } from "@prisma/client";
+import { Prisma } from "@/lib/prismaClient";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";

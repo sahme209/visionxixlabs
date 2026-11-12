@@ -1,0 +1,12 @@
+{
+  "date": "2026-11-11",
+  "sourceAttachmentSha256": "724be72c62cb2b85f0dc7e517749ea05c05384b7aa20c5fb6c8015c514886540",
+  "sourceBytes": 5044,
+  "sourcePreservedVerbatim": true,
+  "ownerClarification": "During gaps, without delaying current priorities",
+  "masterOriginalSha256": "5c349200180ae6652f7ec9ba6f137a2611a7899d1eb3ae401c956b1a3a0cf733",
+  "priorMasterBodyPreserved": true,
+  "backupDirectory": "/private/tmp/axiom-assessment-plan-before-20261111-171246",
+  "assessmentStarted": false,
+  "implementationAuthorized": false
+}

@@ -43,7 +43,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: npm run db:generate
       # Existing harness creates its own named container, random password and
       # empty loopback-only database; it refuses external URLs and env files.
       # No production environment, secret, Stripe call or provider is loaded.
@@ -77,7 +77,7 @@ jobs:
           node-version: '24'
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npx prisma generate --schema prisma/schema.prisma
+      - run: npm run db:generate
       - run: docker pull postgres:17-alpine
       # Reuse the portable existing HTTP case, not the separately reviewed
       # environment-bound checkout worker. No live Stripe/provider credentials.
@@ -90,6 +90,9 @@ jobs:
           npx vitest run lib/billing/__tests__/newTestSubscriptionService.postgres.test.ts
           --testNamePattern 'actual local Next HTTP authenticates, reads versioned allowance, denies unsupported operations and releases provider-disabled hold'
           --reporter=dot --reporter=json --outputFile.json=/tmp/axiom-owned-application-http.json
+      - name: Report fixed startup failure categories only
+        if: failure()
+        run: node scripts/report-isolated-next-startup.mjs
       - name: Require the selected application HTTP case to execute
         run: node scripts/check-owned-commercial-acceptance.mjs /tmp/axiom-owned-application-http.json http
       - name: Verify fixture container cleanup

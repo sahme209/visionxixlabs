@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { realpathSync, statSync } from "node:fs";
 import { randomUUID } from "node:crypto";
-import { PrismaClient, type Prisma } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@/lib/prismaClient";
 const f = vi.hoisted(() => ({ client: undefined as unknown as PrismaClient, execute: vi.fn() }));
 vi.mock("@/lib/db", () => ({ get prisma() { return f.client; } }));
 vi.mock("@/lib/audit/secureAudit", () => ({ record: vi.fn() }));
@@ -13,7 +14,7 @@ const socket = process.env.AXIOM_OWNED_AGENT_PG_SOCKET;
 describe.skipIf(!socket)("saved budget authority through the runner and actual PostgreSQL", () => {
   beforeAll(async () => {
     if (!socket || !/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket) || realpathSync(socket) !== socket || (statSync(socket).mode & 0o077) !== 0 || (process.getuid && statSync(socket).uid !== process.getuid())) throw Error("owned_private_socket_required");
-    f.client = new PrismaClient({ datasources: { db: { url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}` } } });
+    f.client = createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
     const [binding] = await f.client.$queryRawUnsafe<Array<{ private: boolean }>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);
     if (!binding?.private) throw Error("owned_fixture_binding_required");
   });

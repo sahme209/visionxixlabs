@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { realpathSync, statSync } from "node:fs";
 import { randomBytes, randomUUID } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import { activateJiraReadConnection, type JiraReadActivationRepository } from "../jiraReadActivation";
 import { encryptScopedCredential, decryptScopedCredential } from "@/lib/security/credentialVault";
 import { connectionCredentialContext } from "../../tenantAuthorization";
@@ -66,7 +67,7 @@ describe.skipIf(!socket)("Jira read activation on owned real PostgreSQL", () => 
  beforeAll(async () => {
   if (!socket || !/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket) || realpathSync(socket) !== socket ||
       (statSync(socket).mode & 0o077) !== 0 || statSync(socket).uid !== process.getuid?.()) throw Error("owned_private_socket_required");
-  db = new PrismaClient({ datasources: { db: { url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}` } } });
+  db = createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
   const [binding] = await db.$queryRawUnsafe<Array<{ private: boolean }>>(`SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture' AND current_setting('listen_addresses')='' AS private`);
   if (!binding?.private) throw Error("owned_fixture_binding_required");
  });

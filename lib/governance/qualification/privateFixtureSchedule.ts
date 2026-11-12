@@ -1,5 +1,5 @@
 import 'server-only';
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@/lib/prismaClient';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {FIXTURE_TENANT,FIXTURE_SOCKET_DIRECTORY} from './fixtureAuthorizationFrame';
 import {FIXTURE_SCHEDULE_ID} from './privateFixtureBase';

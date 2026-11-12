@@ -1,5 +1,5 @@
 import 'server-only';
-import type {PrismaClient,Prisma} from '@prisma/client';
+import type {PrismaClient,Prisma} from '@/lib/prismaClient';
 import {generateKeyPairSync,randomUUID} from 'node:crypto';
 import {createPrivateCredentialVault} from '@/lib/security/privateCredentialVault';
 import {credentialContext} from '@/lib/connectors/github/platformGithubAppCredentialContext';

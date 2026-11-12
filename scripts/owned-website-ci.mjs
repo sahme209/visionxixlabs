@@ -6,6 +6,8 @@ import { dirname, isAbsolute, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import pointerObservation from './fixtures/ownedWebsitePointerObservation.cjs';
+import startupCategories from './fixtures/isolatedNextStartupCategories.cjs';
+import {readPublicDependencyNames} from './read-public-dependency-names.mjs';
 
 export const screenshotNames = Object.freeze(['home-desktop.png', 'agent-review-desktop.png', 'terraform-held-desktop.png', 'product-mobile.png', 'product-reduced-motion-mobile.png', 'approval-documentation.png']);
 const root = realpathSync(join(dirname(fileURLToPath(import.meta.url)), '..'));
@@ -15,7 +17,7 @@ function privateDirectory(path) {
   assert.ok(stat.isDirectory() && !stat.isSymbolicLink() && stat.uid === process.getuid() && (stat.mode & 0o777) === 0o700 && realpathSync(path) === path, 'website_ci_private_directory');
 }
 export function privateFile(path, limit = 1024 * 1024) {
-  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW);
+  const fd = openSync(path, constants.O_RDONLY | constants.O_NOFOLLOW | constants.O_NONBLOCK);
   try {
     const stat = fstatSync(fd);
     assert.ok(stat.isFile() && stat.uid === process.getuid() && (stat.mode & 0o777) === 0o600 && stat.size <= limit, 'website_ci_private_file');
@@ -220,6 +222,7 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
   }
   assert.ok(matches.length <= 1, 'website_ci_ambiguous_window');
   let result; let capture; let done; let nonce; let server; let proxy; const screenshots = [];
+  let startupDiagnostic = { status: 'unavailable', categories: [] };
   if (matches.length) {
     const { directory, config } = matches[0]; nonce = config.nonce;
     for (const name of ['result.json', 'capture.json', 'done.json', 'server.json', 'proxy.json']) {
@@ -230,6 +233,11 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
       if (name === 'done.json') done = value;
       if (name === 'server.json') server = value;
       if (name === 'proxy.json') proxy = value;
+    }
+    // Observe only the already bounded owned-runtime log; publish closed labels,
+    // never raw text, environment values, paths or error messages.
+    if (existsSync(join(directory, 'bounded-runtime.log'))) {
+      try { startupDiagnostic = startupCategories.isolatedNextStartupCategories(privateFile(join(directory, 'bounded-runtime.log'), 512_000).toString('utf8').slice(-65536), readPublicDependencyNames()); } catch { /* Optional diagnostic remains unavailable; raw/invalid logs never publish. */ }
     }
     const screenshotDirectory = join(directory, 'screenshots');
     if (existsSync(screenshotDirectory)) {
@@ -248,7 +256,7 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
       for (const image of screenshots) assert.equal(reported.filter(row => row.path === join(screenshotDirectory, image.name) && Number.isFinite(row.width) && row.width > 0 && row.width <= 1440 && Number.isFinite(row.height) && row.height > 0 && row.height <= 2400 && Math.abs(row.width - image.width) <= 1 && Math.abs(row.height - image.height) <= 1).length, 1, 'website_ci_image_receipt');
     }
   }
-  const summary = { ...publicSummary(expected, result, capture, done, nonce), serverGuard: publicServerGuard(server, result, nonce), proxyDelivery: publicProxyDelivery(proxy, result, nonce) };
+  const summary = { ...publicSummary(expected, result, capture, done, nonce), startupDiagnostic, serverGuard: publicServerGuard(server, result, nonce), proxyDelivery: publicProxyDelivery(proxy, result, nonce) };
   if (summary.outcome === 'passed') assert.equal(screenshots.length, screenshotNames.length, 'website_ci_complete_images');
   // Validate all inputs before creating a fresh upload directory. Never reuse or remove one.
   assert.equal(existsSync(destination), false, 'website_ci_existing_destination');

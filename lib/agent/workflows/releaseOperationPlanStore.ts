@@ -1,3 +1,4 @@
+import { databaseErrorCode } from "@/lib/database/databaseErrorCode";
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {buildReleaseMergePlan} from '@/lib/tauri/releaseMergePlan';
@@ -66,7 +67,7 @@ export async function createReleaseOperationPlan(repo:ReleaseOperationPlanRepo,i
   await input.assertCurrent(tx);
   const row=await tx.durableAgentWorkflow.create({data:{id,organizationId:input.organizationId,workflowKind:RELEASE_OPERATION_PLAN_KIND,objective:'Review exact release merge plan; execution unavailable',status:'paused_for_input',autonomyLevel:'observe',currentStep:'review_plan',inputJson:binding,stateJson:{reviewStatus:'pending_review'},requestedByUserId:input.actorUserId,attemptCount:0,maxAttempts:1,version:0,leaseOwner:null,leaseExpiresAt:null,approvalProposalId:null,nextAttemptAt:null,createdAt:captured,updatedAt:captured}});
   await event(tx,row,'created',input.actorUserId,{planDigest:input.planDigest},captured);const recorded=await history(tx,row);await input.assertCurrent(tx);await assertWindow(tx,binding.deadlineAt);return dto(row,recorded,input.actorUserId,true,true);
- });}catch(error){const code=error&&typeof error==='object'&&'code'in error?error.code:null;if(retry>=2||!['P2002','P2034'].includes(String(code)))throw error}
+ });}catch(error){const code=databaseErrorCode(error);if(retry>=2||!['P2002','P2034'].includes(String(code)))throw error}
 }
 export async function listReleaseOperationPlans(repo:ReleaseOperationPlanRepo,input:Scope&{requestId:string;canManage:boolean},at?:Date){
  scope(input);identity.parse(input.requestId);return repo.$transaction(async tx=>{await membership(tx,input);const rows=await tx.durableAgentWorkflow.findMany({where:{organizationId:input.organizationId,workflowKind:RELEASE_OPERATION_PLAN_KIND,inputJson:{path:['plan','requestId'],equals:input.requestId}},orderBy:[{createdAt:'desc'},{id:'desc'}],take:6});if(rows.length>6)throw new ReleaseOperationPlanConflict();const plans=[];

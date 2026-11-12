@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../../lib/database/createDatabaseClient.ts";
 
 /** Actual checked-in final-fence IO in two independently connected PG clients.
  * Provider dispatch/policy/billing remain outside this fixture's authority. */
 export async function runOwnedAirflowPgAcceptance({ databaseUrl, client, harness, nextProposal, organizationId, userId, environmentId }) {
-  const second = new PrismaClient({ datasources: { db: { url: databaseUrl } } });
+  const second = createDatabaseClient(databaseUrl);
   const receipts = [];
   async function claim(execution) {
     assert.equal((await client.airflowAutomationExecution.updateMany({ where: { id: execution.id, status: "pending_approval", attempt: 0 }, data: { status: "running", attempt: 1, decidedByUserId: userId } })).count, 1);

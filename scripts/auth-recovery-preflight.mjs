@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readdirSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 import { databaseHostingMetadata } from "./auth-recovery-database-metadata.mjs";
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
@@ -129,7 +129,7 @@ export function publicRecoverySummary(report) {
 
 async function main() {
   if (!process.env.DATABASE_URL) throw new Error("database_connection_unavailable");
-  const client = new PrismaClient();
+  const client = createDatabaseClient(process.env.DATABASE_URL);
   try {
     const report = await inspectAuthRecovery(client, {
       founderEmail: process.env.AUTH_PREFLIGHT_FOUNDER_EMAIL,

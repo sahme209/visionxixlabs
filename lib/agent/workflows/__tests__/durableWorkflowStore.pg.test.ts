@@ -1,6 +1,7 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { realpathSync, statSync } from "node:fs";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 
 const fixture = vi.hoisted(() => ({ client: undefined as unknown as PrismaClient }));
 vi.mock("@/lib/db", () => ({ get prisma() { return fixture.client; } }));
@@ -25,9 +26,7 @@ describe.skipIf(!socket)("durable workflow actual isolated PostgreSQL", () => {
         || realpathSync(socket) !== socket || (statSync(socket).mode & 0o077) !== 0) {
       throw new Error("owned_private_socket_required");
     }
-    fixture.client = new PrismaClient({ datasources: { db: {
-      url: `postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}`,
-    } } });
+    fixture.client = createDatabaseClient(`postgresql://recovery_fixture@localhost/neondb?host=${encodeURIComponent(socket)}`);
     const [binding] = await fixture.client.$queryRawUnsafe<Array<{ private: boolean }>>(
       `SELECT current_database()='neondb' AND current_user='recovery_fixture'
         AND current_setting('listen_addresses')='' AS private`);

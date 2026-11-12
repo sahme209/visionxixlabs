@@ -2,7 +2,7 @@ import { fixtureUsageGuardsDDL } from "./fixtureUsageGuards";
 import { resolveAllocationV2, type AllocationFactsV2, type HoldV2, type PurchaseV2, type ReservationAttributionV2, type UsageV2 } from "./allocationV2";
 import "server-only";
 import { createHash } from "node:crypto";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import type { Contract, Intent } from "./service";
 import { hasOriginalCreateProof } from "./lifecycle";
 import { paidIdentity, validateEvidence, type CoverageObservation, type PaidInvoiceEvidence } from "./paidCoverage";

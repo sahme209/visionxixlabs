@@ -1,7 +1,7 @@
 import 'server-only';
 import {FIXTURE_SOCKET_DIRECTORY} from './fixtureAuthorizationFrame';
 import {createHash} from 'node:crypto';
-import type {PrismaClient} from '@prisma/client';
+import type {PrismaClient} from '@/lib/prismaClient';
 import {prepareFixedFixtureBase} from './privateFixtureBase';
 import {mintFixedFixtureAuthorization} from './privateFixtureAuthentication';
 import {readFileSync,lstatSync,realpathSync,readSync,writeSync} from 'node:fs';

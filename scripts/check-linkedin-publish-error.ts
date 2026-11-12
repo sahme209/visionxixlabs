@@ -3,9 +3,9 @@
  *
  * Run: npx tsx scripts/check-linkedin-publish-error.ts
  */
-import { PrismaClient } from "@prisma/client";
+import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
 
-const prisma = new PrismaClient();
+const prisma = createDatabaseClient(process.env.DATABASE_URL);
 
 async function main() {
   const conn = await prisma.linkedInAccountConnection.findFirst({

@@ -1,0 +1,10 @@
+{
+  "date": "2026-11-11",
+  "masterBeforeSha256": "3407021e7d7ee2fedfce107eb9ca3dd52d0bb6edb0e3fd1f35622e36d5fad764",
+  "priorMasterPreserved": true,
+  "backupDirectory": "/private/tmp/axiom-token-plan-before-20261111-172029",
+  "candidateCount": 8,
+  "installed": false,
+  "savingsMeasured": false,
+  "scope": "Planning and initial primary-source discovery only; current sequence unchanged"
+}

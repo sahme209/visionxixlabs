@@ -1,7 +1,7 @@
 import {assertBotActionTaskBinding} from '@/lib/axiom/bot/actionTaskBinding';
 import 'server-only';
 import {z} from 'zod';
-import type {Prisma} from '@prisma/client';
+import type {Prisma} from '@/lib/prismaClient';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction as Tx,ReleaseOperationPlanRow as Row} from '@/lib/agent/workflows/releaseOperationPlanStore';
 import {slackNotificationIntentSchema,slackNotificationScopeSchema,slackNotificationApprovalSchema,type SlackNotificationIntent as Intent,type SlackNotificationScope as Scope,type SlackNotificationApproval as Approval} from './slackNotificationContract';

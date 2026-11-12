@@ -22,7 +22,7 @@
  */
 
 import { prisma } from "@/lib/db";
-import type { Prisma } from "@prisma/client";
+import type { Prisma } from "@/lib/prismaClient";
 import type { PreviewFinding, PreviewRecommendation } from "@/lib/cloud/aws/awsPreviewScanner";
 import type { OrganizationId, UserId } from "@/lib/domain/ids";
 import { notifyScanComplete } from "@/lib/notifications/scanCompleteNotifier";

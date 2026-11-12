@@ -1,7 +1,8 @@
+import { createDatabaseClient } from "@/lib/database/createDatabaseClient";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 import { realpathSync, statSync } from "node:fs";
 import { randomUUID } from "node:crypto";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "@/lib/prismaClient";
 import { createGateway } from "@ai-sdk/gateway";
 const f = vi.hoisted(() => ({ client: undefined as unknown as PrismaClient, model: undefined as unknown,
   phase: 0, malformedNext: false, beforeResponse: null as null | (() => Promise<void>), requests: [] as Array<{ headers: Headers; body: Record<string, unknown> }> }));
@@ -39,9 +40,7 @@ describe.skipIf(!socket)("Agent decision → installed SDK → actual PostgreSQL
     if (!socket || !/^\/(?:private\/)?tmp\/axiom-agent-chain-[^/]+\/socket$/.test(socket)
         || realpathSync(socket) !== socket || (statSync(socket).mode & 0o077) !== 0
         || (process.getuid && statSync(socket).uid !== process.getuid())) throw new Error("owned_private_socket_required");
-    f.client = new PrismaClient({ datasources: { db: {
-      url: `postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`,
-    } } });
+    f.client = createDatabaseClient(`postgresql://agent_fixture@localhost/axiom_agent_fixture?host=${encodeURIComponent(socket)}`);
     const [binding] = await f.client.$queryRawUnsafe<Array<{ private: boolean }>>(
       `SELECT current_database()='axiom_agent_fixture' AND current_user='agent_fixture'
        AND current_setting('listen_addresses')='' AS private`);

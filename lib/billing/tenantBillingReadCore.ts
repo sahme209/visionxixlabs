@@ -1,5 +1,5 @@
 import "server-only";
-import type { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@/lib/prismaClient";
 import { publicDatabaseNow } from "./publicCreditAuthority";
 import { readPublicEntitlementSnapshot } from "./publicEntitlementSnapshotCore";
 import { isBillingTier, tierSpec, type BillingStatus, type BillingTier, type TierSpec } from "./tierCatalog";

@@ -1,6 +1,6 @@
 import "server-only";
 import { assertNoGovernanceEnrollmentForMutation } from "@/lib/governance/intelligence/enrollmentMetadata";
-import type { PrismaClient, Prisma } from "@prisma/client";
+import type { PrismaClient, Prisma } from "@/lib/prismaClient";
 import { appendAuditEvent, type AuditEventRepo } from "./auditEventResponder";
 import { applyTransition, type ReleaseStatus } from "./releaseLifecycleResponder";
 import { deploymentEvidence } from "./deploymentEvidence";

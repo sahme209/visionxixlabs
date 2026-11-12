@@ -1,4 +1,4 @@
-import type {Prisma, PrismaClient} from '@prisma/client';
+import type {Prisma, PrismaClient} from '@/lib/prismaClient';
 import type {ReleaseOperationPlanRepo,ReleaseOperationPlanTransaction} from '@/lib/agent/workflows/releaseOperationPlanStore';
 
 /**
