@@ -18,6 +18,7 @@ export function readOperationalTargetReceipt(raw:unknown){const value=receiptSch
 export type OperationalTarget=ReturnType<typeof readOperationalTarget>;
 export type OperationalTargetReceipt=ReturnType<typeof readOperationalTargetReceipt>;
 export interface OperationalTargetTransaction{
+ readOperationalEcsResult(actionId:string):Promise<unknown>;
  readOperationalCredentialLiability(actionId:string):Promise<unknown>;
  now():Promise<number>;lockOperationalTarget(nativeKey:string):Promise<void>;
  readOperationalTarget(nativeKey:string):Promise<unknown|null>;
