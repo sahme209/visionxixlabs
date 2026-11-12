@@ -629,3 +629,16 @@ it.skipIf(!enabled)('rolls back the actual private envelope when current authori
  const store=createSettingsArtifactStore({transaction:fn=>repo.transaction(tx=>fn({...tx,insertSettingsArtifact:async(key,row)=>{await tx.insertSettingsArtifact(key,row);revoked=true}}))},{assertCurrent:async(tx,principal)=>{if(revoked)throw Error('synthetic revoked');await authority.assertCurrent(tx,principal)}},{readManifest:async()=>manifest,assertCurrent:async()=>{},readKey:async()=>new Uint8Array(32).fill(9)});
  await expect(store.save(id,0,actor,'synthetic')).rejects.toThrow('settings_artifact_unavailable');const rows=await db.$queryRawUnsafe('SELECT id FROM "PlatformSettingsArtifact" WHERE "actionId"=$1',id);expect(rows).toEqual([]);expect((await s.inspect(id,actor)).status).toBe('proposed');
 });
+
+import {createSettingsArtifactRequestComposition} from '../operations/settingsArtifactRequest';
+it.skipIf(!enabled)('binds private settings save and genuine independent review to actual HMAC sessions and SQL',async()=>{
+ await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-settings-key-'.repeat(3));
+ try{
+ const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),readAdminEmails=()=>['requester@example.test','reviewer@example.test'];
+ const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(Date.now()+60000).toISOString(),target:{projectId:'synthetic-project',teamId:'synthetic-team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_'+randomUUID(),current:{kind:'absent',receiptId:'platform_evidence_'+randomUUID()}}]});
+ const p=compileOperationalSettingsPlan(manifest),id=await createPlatformActionService(repo,createCurrentPlatformAuthority(readAdminEmails)).propose(p,actor),source={readManifest:async()=>manifest,assertCurrent:async()=>{},readKey:vi.fn(async()=>new Uint8Array(32).fill(11))},ports={repo,source,verifyDesktopToken,readAdminEmails};
+ const headers=new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)}),requester=await createSettingsArtifactRequestComposition({headers},ports);await requester.save(id,0,'synthetic');await expect(requester.review(id,0,p.digest)).rejects.toThrow();
+ const independent=await createSettingsArtifactRequestComposition({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})},ports);await independent.review(id,0,p.digest);expect(source.readKey).toHaveBeenCalledTimes(1);
+ headers.delete('authorization');await expect(requester.save(id,0,'replacement')).rejects.toThrow();const state=await db.$queryRawUnsafe<Array<{stateJson:{status:string;reviewer:{userId:string}}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',id);expect(state[0].stateJson).toMatchObject({status:'approved',reviewer:{userId:reviewer.userId}});
+ }finally{vi.unstubAllEnvs()}
+});
