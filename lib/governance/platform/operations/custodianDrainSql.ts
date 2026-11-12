@@ -1,3 +1,6 @@
+import {readCustodianIntent} from './custodianIntentContract';
+import {assertCustodianAdmission} from './custodianDrainKernel';
+import type {CustodianIntentTransaction} from './custodianIntentAdmission';
 import 'server-only';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {digest} from '../contracts';
@@ -11,7 +14,7 @@ const fail=():never=>{throw Error('platform_custodian_storage_unavailable')};
 const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private transaction-only adapter. Never opens a database or qualifies a
  * profile/fleet. The SAME physical lock is required for intent admission. */
-export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>PlatformTransaction,check:(id:string)=>void):Pick<CustodianDrainTransaction,'readCustodianControl'|'lockCustodian'|'readCustodianBarrier'|'writeCustodianBarrier'|'assertNoCustodianIntents'>{
+export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>PlatformTransaction,check:(id:string)=>void):Pick<CustodianDrainTransaction,'readCustodianControl'|'lockCustodian'|'readCustodianBarrier'|'writeCustodianBarrier'|'assertNoCustodianIntents'> & Pick<CustodianIntentTransaction,'readCustodianIntent'|'insertCustodianIntent'>{
  let issuerKey:string|null=null,written:CustodianBarrier|null=null;
  function issuer(raw:string){const key=digest.parse(raw);if(issuerKey!==key)fail();return key}
  async function controlFor(id:string,parent:unknown){
@@ -37,6 +40,16 @@ export function createCustodianDrainSqlMethods(sql:PlatformSql,getTx:()=>Platfor
    const now=await tx.now();if(state.updatedAt>now||!same(transitionCustodianBarrier(prior,control,state.controlActionId,state.updatedAt),state))fail();
    const count=prior===null?await sql.$executeRawUnsafe('INSERT INTO "PlatformCustodianBarrier" ("nativeKey","controlActionId",version,"stateJson") VALUES ($1,$2,$3,$4::jsonb) ON CONFLICT ("nativeKey") DO NOTHING',key,state.controlActionId,state.version,JSON.stringify(state)):await sql.$executeRawUnsafe('UPDATE "PlatformCustodianBarrier" SET "controlActionId"=$1,version=$2,"stateJson"=$3::jsonb WHERE "nativeKey"=$4 AND version=$5 AND "stateJson"=$6::jsonb',state.controlActionId,state.version,JSON.stringify(state),key,expectedVersion,JSON.stringify(prior));
    if(count!==1)fail();written=state;
+  },
+  async readCustodianIntent(id){
+   if(!/^platform_intent_[a-f0-9]{64}$/.test(id))fail();const rows=await sql.$queryRawUnsafe<Array<{id:string;nativeKey:string;actionId:string;stateJson:unknown}>>('SELECT id,"nativeKey","actionId","stateJson" FROM "PlatformCustodianIntent" WHERE id=$1',id);
+   if(rows.length===0)return null;if(rows.length!==1)fail();const row=rows[0],state=readCustodianIntent(row.stateJson);check(state.actionId);issuer(state.nativeKey);if(row.id!==state.id||row.nativeKey!==state.nativeKey||row.actionId!==state.actionId)fail();return state;
+  },
+  async insertCustodianIntent(raw){
+   const state=readCustodianIntent(raw),key=issuer(state.nativeKey),tx=getTx();check(state.actionId);const parent=readPlatformAction(await tx.read(state.actionId)),barrier=await readBarrier(key),now=await tx.now();
+   if(parent.status!=='claimed'||parent.plan.sourceDigest!==state.manifestDigest||state.createdAt>now||state.createdAt<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))fail();
+   assertCustodianAdmission(barrier,{nativeKey:key,issuerProfileDigest:state.issuerProfileDigest,admissionDigest:state.admissionDigest,generation:state.generation,version:state.barrierVersion});
+   const count=await sql.$executeRawUnsafe('INSERT INTO "PlatformCustodianIntent" (id,"nativeKey","actionId","stateJson") VALUES ($1,$2,$3,$4::jsonb) ON CONFLICT (id) DO NOTHING',state.id,key,state.actionId,JSON.stringify(state));if(count!==1)fail();
   },
   async assertNoCustodianIntents(raw){
    const key=issuer(raw);const rows=await sql.$queryRawUnsafe<Array<{held:number}>>('SELECT 1 AS held FROM "PlatformCustodianIntent" WHERE "nativeKey"=$1 LIMIT 1',key);
