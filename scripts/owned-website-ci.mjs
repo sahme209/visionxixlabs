@@ -7,6 +7,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import policy from './fixtures/ownedWebsitePolicy.cjs';
 import pointerObservation from './fixtures/ownedWebsitePointerObservation.cjs';
 import startupCategories from './fixtures/isolatedNextStartupCategories.cjs';
+import {readPublicDependencyNames} from './read-public-dependency-names.mjs';
 
 export const screenshotNames = Object.freeze(['home-desktop.png', 'agent-review-desktop.png', 'terraform-held-desktop.png', 'product-mobile.png', 'product-reduced-motion-mobile.png', 'approval-documentation.png']);
 const root = realpathSync(join(dirname(fileURLToPath(import.meta.url)), '..'));
@@ -236,7 +237,7 @@ export function collect({ manifest, expected, temporary = '/tmp', destination })
     // Observe only the already bounded owned-runtime log; publish closed labels,
     // never raw text, environment values, paths or error messages.
     if (existsSync(join(directory, 'bounded-runtime.log'))) {
-      try { startupDiagnostic = startupCategories.isolatedNextStartupCategories(privateFile(join(directory, 'bounded-runtime.log'), 512_000).toString('utf8').slice(-65536)); } catch { /* Optional diagnostic remains unavailable; raw/invalid logs never publish. */ }
+      try { startupDiagnostic = startupCategories.isolatedNextStartupCategories(privateFile(join(directory, 'bounded-runtime.log'), 512_000).toString('utf8').slice(-65536), readPublicDependencyNames()); } catch { /* Optional diagnostic remains unavailable; raw/invalid logs never publish. */ }
     }
     const screenshotDirectory = join(directory, 'screenshots');
     if (existsSync(screenshotDirectory)) {

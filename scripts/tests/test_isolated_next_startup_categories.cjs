@@ -25,3 +25,8 @@ test('distinguishes actual generated enum requests and relative Next output chun
 test('formatting codes cannot hide a whitelisted module token',()=>{
  assert.ok(classify("Cannot find module '\u001b[31m./enums.js\u001b[0m'").categories.includes('missing_generated_enums'));
 });
+test('returns only a package name approved by public dependency metadata, never its raw subpath',()=>{
+ const result=classify("Cannot find module '@prisma/client/PRIVATE_SECRET'\nCannot find module 'PRIVATE_SECRET'",['@prisma/client']);
+ assert.deepEqual(result.publicMissingPackages,['@prisma/client']);assert.equal(JSON.stringify(result).includes('PRIVATE_SECRET'),false);
+ assert.equal(classify("Cannot find module 'unlisted-package'",['@prisma/client']).publicMissingPackages,undefined);
+});

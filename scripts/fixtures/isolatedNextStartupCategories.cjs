@@ -1,6 +1,6 @@
 'use strict';
 // Fixed categories only. Raw child output is never returned or logged.
-function isolatedNextStartupCategories(value) {
+function isolatedNextStartupCategories(value, publicNames=[]) {
  if(typeof value!=='string'||value.length>65536)return{status:'unavailable',categories:[]};
  value=value.replace(/\x1b\[[0-9;]*m/g,''); // Formatting only; raw text is never returned.
  const patterns={
@@ -17,6 +17,7 @@ function isolatedNextStartupCategories(value) {
   type_error:/TypeError/,
  };
  const categories=Object.entries(patterns).filter(([,pattern])=>pattern.test(value)).map(([name])=>name);
+ const approved=new Set(Array.isArray(publicNames)&&publicNames.length<=10000?publicNames.filter(name=>typeof name==='string'&&name.length<=214&&/^(?:@[a-z0-9._-]+\/)?[a-z0-9._-]+$/.test(name)&&!name.startsWith('.')):[]),publicMissingPackages=new Set();
  const requests=new Map([
   ['@prisma/client','missing_prisma_package'],['.prisma/client/default','missing_legacy_prisma_client'],
   ['@prisma/client/runtime/client','missing_prisma_runtime'],['@prisma/client/runtime/client.js','missing_prisma_runtime'],
@@ -31,6 +32,8 @@ function isolatedNextStartupCategories(value) {
  for(const match of value.matchAll(/(?:Cannot find module|Can't resolve)\s+['"]([^'"\r\n]{1,512})['"]/g)){observations.push(match);if(observations.length===16)break;}
  for(const match of observations){
   const token=match[1];let category=requests.get(token);
+  const parts=token.split('/'),packageName=token.startsWith('@')?parts.slice(0,2).join('/'):parts[0];
+  if(approved.has(packageName))publicMissingPackages.add(packageName);
   if(!category&&token.startsWith('./vendor-chunks/'))category='missing_next_vendor_chunk';
   if(!category&&token.startsWith('./chunks/'))category='missing_next_route_chunk';
   if(!category&&/\/node_modules\/\.prisma\/client\/default(?:\.js)?$/.test(token))category='missing_legacy_prisma_client';
@@ -46,6 +49,6 @@ function isolatedNextStartupCategories(value) {
    for(const[needle,label]of[['prisma','missing_request_prisma_family'],['next/','missing_request_next_family'],['node_modules/','missing_request_dependency_path'],['.wasm','missing_request_wasm'],['.node','missing_request_native_module']])if(token.includes(needle)&&!categories.includes(label))categories.push(label);
   }
  }
- return{status:'observed',categories};
+ return{status:'observed',categories,...(publicMissingPackages.size?{publicMissingPackages:[...publicMissingPackages].sort()}: {})};
 }
 module.exports=Object.freeze({isolatedNextStartupCategories});
