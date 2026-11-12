@@ -4,7 +4,7 @@ import {request as httpsRequest,type RequestOptions} from 'node:https';
 import {request as httpRequest,type ClientRequest} from 'node:http';
 import {checkServerIdentity} from 'node:tls';
 import {CustomerHostedResponseError,customerHostedPrivateAddress,parseCustomerHostedCompletion} from './customerHostedProtocol';
-import type {CustomerHostedOperatorConfig} from './customerHostedConfig';
+import {readInstallationAIMode,type CustomerHostedOperatorConfig} from './customerHostedConfig';
 interface Input {
  readonly config:CustomerHostedOperatorConfig;readonly modelId:string;readonly prompt:string;
  readonly signal:AbortSignal;
@@ -16,6 +16,7 @@ interface Dependencies {
  request(options:RequestOptions):ClientRequest;
 }
 const failure=()=>new Error('customer_hosted_transport_unavailable');
+function offline(){if(readInstallationAIMode(process.env.AXIOM_OFFLINE_MODE)!=='offline')throw failure()}
 function canonical(ip:string):string {
  if(isIP(ip)===6)return new URL('http://['+ip+']/').hostname;
  return ip;
@@ -24,6 +25,7 @@ function canonical(ip:string):string {
  * retries. Dependency injection is for isolated tests, never workspace input.
  * No caller may use this without token admission/qualified bounds/redaction. */
 export async function sendCustomerHostedCompletion(input:Input,deps?:Dependencies):Promise<ReturnType<typeof parseCustomerHostedCompletion>> {
+ offline();
  const {config,signal}=input,model=config.models.find(m=>m.id===input.modelId);
  if(signal.aborted||!model||typeof input.prompt!=='string'||Buffer.byteLength(input.prompt)>model.maxInputBytes)throw failure();
  const url=new URL(config.server.baseUrl),host=url.hostname.replace(/^\[|\]$/g,'');
@@ -41,7 +43,7 @@ export async function sendCustomerHostedCompletion(input:Input,deps?:Dependencie
   if(signal.aborted){abort();return;}
   void(async()=>{
    const addresses=isIP(host)?[{address:host,family:isIP(host)}]:await io.resolve(host);
-   if(done)return;
+   if(done)return;offline();
    if(!addresses.length||addresses.length>16||addresses.some(a=>isIP(a.address)!==a.family||!customerHostedPrivateAddress(a.address)))throw failure();
    if(!tls&&addresses.some(a=>!(isIP(a.address)===4&&a.address.startsWith('127.')||isIP(a.address)===6&&canonical(a.address)==='[::1]')))throw failure();
    const selected=addresses[0],target=canonical(selected.address);
@@ -51,11 +53,11 @@ export async function sendCustomerHostedCompletion(input:Input,deps?:Dependencie
    request.once('error',()=>stop(failure()));
    request.once('socket',socket=>{
     socket.once(tls?'secureConnect':'connect',()=>{void(async()=>{
-     if(done)return;
+     if(done)return;offline();
      const peer=socket.remoteAddress;
      if(!peer||canonical(peer)!==target||!customerHostedPrivateAddress(peer)||tls&&(!('authorized'in socket)||socket.authorized!==true))throw failure();
      await input.beforeSend();
-     if(done||signal.aborted)return;
+     if(done||signal.aborted)return;offline();
      // No body bytes are queued until peer and final claim/policy checks pass.
      if(!socket.remoteAddress||canonical(socket.remoteAddress)!==target)throw failure();
      request!.end(body);

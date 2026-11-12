@@ -77,3 +77,9 @@ Expanded the existing owned runner to eight actual non-skipped PostgreSQL tests 
 Root strict types PASS (`/private/tmp/axiom-offline-composed-pg-types.log`). A broader suite is being checked separately; do not infer its outcome from the database tests. The trusted acceptance-supplier design decision remains pending, with no implementation/provisioning or invented live qualification. Default Agent composition and full feature remain incomplete.
 
 Broader suite completed: **1,582 files /17,918 tests PASS,102 files/905 tests skipped,1 expected failure**, no unexpected failures. `/private/tmp/axiom-offline-full-suite.log`. The eight new PostgreSQL tests are deliberately skipped in the ordinary suite and were separately run non-skipped on the owned server above. No default changed, skip introduced to hide a failure or assertion relaxed. Full production/desktop/Python checks and independent full-branch review remain pending for the eventual complete feature, not justified by this suite alone.
+
+## Transport-level mode enforcement
+
+Added independent offline-mode checks before DNS, after DNS, before final admission and after its awaited completion. Online/invalid modes cannot call the new private transport directly, and a mode change cannot queue a prompt. Four new RED→GREEN cases (three entry modes plus awaited-boundary changes); transport/extraction/cloud/metadata batch34/34 PASS and root types PASS. No live request. Logs `/private/tmp/axiom-offline-transport-mode-red.log`, `/private/tmp/axiom-offline-mode-composition-{green,types}.log`.
+
+Owner subsequently approved the local evidence-supplier design. Implementation is now authorized within the proposal's source/isolated-test limits; real qualification, protected-resource provisioning and enablement remain excluded.

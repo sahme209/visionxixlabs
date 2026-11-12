@@ -1,7 +1,9 @@
-import {it,expect,vi} from 'vitest';
+import {it,expect,vi,beforeEach,afterEach} from 'vitest';
 import {EventEmitter} from 'node:events';
 import {sendCustomerHostedCompletion} from '../customerHostedTransport';
 import {parseCustomerHostedOperatorConfig} from '../customerHostedConfig';
+beforeEach(()=>{vi.stubEnv('AXIOM_OFFLINE_MODE','true')});
+afterEach(()=>{vi.unstubAllEnvs()});
 function config(kind='vllm'){
  return parseCustomerHostedOperatorConfig(JSON.stringify({format:'axiom.customer-hosted/1',installationId:'one',revision:'one',server:{kind,baseUrl:'https://models.private.test/v1',allowedHosts:['models.private.test']},models:[{id:'local',maxInputTokens:100,maxOutputTokens:20,maxInputBytes:8192}],budgets:[{organizationId:'org',windowId:'w',startsAt:'2026-11-11T00:00:00.000Z',expiresAt:'2026-11-12T00:00:00.000Z',limitTokens:10000}]}))!;
 }
@@ -59,4 +61,14 @@ it('refuses oversized input before DNS and sanitizes final-check errors',async()
 it('refuses non-loopback DNS answers for loopback HTTP configuration',async()=>{
  const c=config();const local=parseCustomerHostedOperatorConfig(JSON.stringify({format:c.format,installationId:c.installationId,revision:c.revision,server:{...c.server,baseUrl:'http://localhost:8000/v1',allowedHosts:['localhost']},models:c.models,budgets:c.budgets}))!;
  const f=fixture();await expect(sendCustomerHostedCompletion({config:local,modelId:'local',prompt:'x',signal:f.signal.signal,beforeSend:f.beforeSend},f.deps)).rejects.toThrow();expect(f.deps.request).not.toHaveBeenCalled();
+});
+it.each(['false','invalid',''])('refuses customer-hosted transport before DNS in mode %s',async mode=>{
+ vi.stubEnv('AXIOM_OFFLINE_MODE',mode);const f=fixture();
+ await expect(sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:f.signal.signal,beforeSend:f.beforeSend},f.deps)).rejects.toThrow();expect(f.deps.resolve).not.toHaveBeenCalled();expect(f.deps.request).not.toHaveBeenCalled();
+});
+it('rechecks offline mode after DNS and after awaited final admission',async()=>{
+ const f=fixture();f.deps.resolve.mockImplementation(async()=>{vi.stubEnv('AXIOM_OFFLINE_MODE','false');return [{address:'10.1.2.3',family:4}]});
+ await expect(sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:f.signal.signal,beforeSend:f.beforeSend},f.deps)).rejects.toThrow();expect(f.deps.request).not.toHaveBeenCalled();
+ vi.stubEnv('AXIOM_OFFLINE_MODE','true');const g=fixture();g.beforeSend.mockImplementation(async()=>{vi.stubEnv('AXIOM_OFFLINE_MODE','false')});
+ await expect(sendCustomerHostedCompletion({config:config(),modelId:'local',prompt:'x',signal:g.signal.signal,beforeSend:g.beforeSend},g.deps)).rejects.toThrow();expect(g.request.end).not.toHaveBeenCalled();
 });

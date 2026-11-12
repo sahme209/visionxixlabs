@@ -85,3 +85,5 @@ Task4 coordinator: joined redaction/input bound → token reserve → final curr
 Task5 metadata closure: offline/invalid mode refuses Sonnet metadata and Gateway reconciliation, including a mode change during awaited pending read, retaining liabilities. Four new tests + online compatibility68/68 and types PASS. Task4 trusted accepted-limit supplier needs owner design review (proposal prepared/question pending); never promote attestation parsing into authority silently. Other unblocked work may continue; all tasks/scope remain intact.
 
 Composed owned-PG progress: expanded8/8 actual SQL tests PASS, including real coordinator/store success, authority revocation after claim and settlement rollback with no retry. Provider/authority are simulated; cluster stopped. Root types PASS. Trusted acceptance-supplier design still pending; do not claim default/live composition complete.
+
+Transport mode race closure: independent offline checks before/after DNS and final admission;34 focused composition tests/types PASS. Owner approved local protected evidence-supplier design; implement locally next, without live qualification/provisioning/enablement.
