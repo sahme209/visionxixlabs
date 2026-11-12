@@ -1,3 +1,4 @@
+import {custodianCredentialObservation,type CustodianCredentialObservation} from './custodianCredentialContract';
 import {readOperationalStabilityHistory} from './stabilityHistory';
 import {createOperationalEcsResult,readOperationalEcsResult,type OperationalEcsResult,type OperationalEcsTransport} from './ecsExecution';
 import {projectOperationalEcsAcceptance} from './ecsProtocol';
@@ -22,7 +23,7 @@ type Consumed=Awaited<ReturnType<Identity['consume']>>;
 export interface OperationalCredentialIssuer{
  assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
  /** Private fixed issuer; no raw token/role/target from request JSON. */
- issue(manifest:OperationalDelegation['manifest'],beforeIssue:()=>Promise<void>,signal:AbortSignal):Promise<unknown>;
+ issue(manifest:OperationalDelegation['manifest'],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>):Promise<unknown>;
 }
 const privateCredential=z.object({leaseRef:z.string().regex(/^platform_credential_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/),accessKeyId:z.string().min(1).max(128),secretAccessKey:z.string().min(1).max(8192),sessionToken:z.string().min(1).max(16384),expiresAt:z.number().int().nonnegative().safe()}).strict().refine(v=>[v.accessKeyId,v.secretAccessKey,v.sessionToken].every(s=>!/[\s\x00-\x1f\x7f]/.test(s)));
 const fail=():never=>{throw Error('operational_delegation_unavailable')};
@@ -45,14 +46,14 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
   const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))return fail();return {parent,now};
  }
  async function locked<T>(raw:string,fn:(tx:OperationalDelegationTransaction,id:string)=>Promise<T>){const id=operationalWorkloadBinding.shape.actionId.parse(raw);return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,id)})}
- function projection(state:OperationalDelegation,now:number){const p=state.executionPrincipal;return Object.freeze({actionId:state.actionId,manifest:state.manifest,status:state.status,version:state.version,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer.userId,executionPrincipal:p?{kind:p.kind,workload:p.workload,profileDigest:p.profileDigest,expiresAt:p.expiresAt}:null,credential:state.credential,targetReservation:state.targetReservation,expired:now>=Date.parse(state.manifest.expiresAt),authority:'delegation_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const,providerExecution:false as const})}
- async function event(tx:OperationalDelegationTransaction,parent:PlatformAction,state:OperationalDelegation,kind:'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'){
+ function projection(state:OperationalDelegation,now:number){const p=state.executionPrincipal;return Object.freeze({actionId:state.actionId,manifest:state.manifest,status:state.status,version:state.version,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer.userId,executionPrincipal:p?{kind:p.kind,workload:p.workload,profileDigest:p.profileDigest,expiresAt:p.expiresAt}:null,credential:state.credential,...(state.sourceCredential?{sourceCredential:state.sourceCredential}:{}),targetReservation:state.targetReservation,expired:now>=Date.parse(state.manifest.expiresAt),authority:'delegation_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const,providerExecution:false as const})}
+ async function event(tx:OperationalDelegationTransaction,parent:PlatformAction,state:OperationalDelegation,kind:'workload.delegated'|'workload.claimed'|'credential.pending'|'credential.observed'|'credential.source_observed'){
   await tx.event({actionId:state.actionId,state:parent,kind,operationalDigest:sha256ContentHash(state)});
  }
  async function recordCredential(proof:object,rawOutcome:unknown){const pending=issuance.get(proof);if(!pending)return fail();issuance.delete(proof);
    try{const outcome=credentialOutcome.parse(rawOutcome);return await locked(pending.actionId,async(tx,key)=>{
     const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending')return fail();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();
-    const next=readOperationalDelegation({...state,version:3,credential:{...outcome,requestedAt:state.credential.requestedAt,observedAt:now},updatedAt:now}),parent=readPlatformAction(await tx.read(key));match(parent,state);
+    const next=readOperationalDelegation({...state,...(state.sourceCredential?.status==='pending'?{sourceCredential:{status:'unknown',requestedAt:state.sourceCredential.requestedAt,observedAt:now}}:{}),version:3,credential:{...outcome,requestedAt:state.credential.requestedAt,observedAt:now},updatedAt:now}),parent=readPlatformAction(await tx.read(key));match(parent,state);
     await tx.replaceDelegation(key,state.version,next);await event(tx,parent,next,'credential.observed');return projection(next,now);
    })}catch{throw Error('operational_credential_observation_unconfirmed')}
   }
@@ -95,7 +96,13 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     const beforeIssue=async()=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
      const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));
     });abort.signal.throwIfAborted();authorized=true};
-    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,beforeIssue,abort.signal),timeout]));abort.signal.throwIfAborted();
+    const recordSource=async(raw:CustodianCredentialObservation)=>{
+     abort.signal.throwIfAborted();const metadata=custodianCredentialObservation.parse(raw);
+     await locked(pending.actionId,async(tx,key)=>{const state=await load(tx,key);if(!tx.writeOperationalSourceCredential||state.version!==pending.version||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||metadata.profileDigest!==state.manifest.issuerProfileDigest)return fail();const now=await tx.now();if(now<state.updatedAt||metadata.expiresAt<=now)return fail();
+      const next=readOperationalDelegation({...state,sourceCredential:{...metadata,status:'issued',requestedAt:state.sourceCredential.requestedAt,observedAt:now},updatedAt:now}),parent=readPlatformAction(await tx.read(key));match(parent,state);await tx.writeOperationalSourceCredential(key,state.version,next);await event(tx,parent,next,'credential.source_observed');
+     });abort.signal.throwIfAborted();
+    };
+    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,beforeIssue,abort.signal,recordSource),timeout]));abort.signal.throwIfAborted();
    }catch{
     const history=await recordCredential(observation,{status:'unknown'});return {history,credentialHandle:null};
    }finally{if(timer)clearTimeout(timer);abort.abort()}
@@ -160,7 +167,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
   async beginCredential(proof:object){const claimed=claims.get(proof);if(!claimed)return fail();claims.delete(proof);
    try{const result=await locked(claimed.actionId,async(tx,key)=>{
     const state=await load(tx,key);if(!targets||state.status!=='claimed'||state.version!==1||state.credential.status!=='not_requested'||state.executionPrincipal?.replayKey!==claimed.identity.replayKey)return fail();
-    const {parent,now}=await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,claimed.identity,binding(state));const next=readOperationalDelegation({...state,version:2,credential:{status:'pending',requestedAt:now},updatedAt:now});
+    const {parent,now}=await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,claimed.identity,binding(state));const next=readOperationalDelegation({...state,version:2,credential:{status:'pending',requestedAt:now},...(state.manifest.issuerProfileDigest?{sourceCredential:{status:'pending',requestedAt:now}}:{}),updatedAt:now});
     await tx.replaceDelegation(key,state.version,next);await event(tx,parent,next,'credential.pending');await current(tx,next,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:next.manifest},next.targetReservation);await identity.assertConsumedCurrent(tx,claimed.identity,binding(next));return {state:next,now};
    });const issuanceProof=Object.freeze(Object.create(null)) as object;issuance.set(issuanceProof,{actionId:result.state.actionId,version:result.state.version,identity:claimed.identity});return {proof:issuanceProof,history:projection(result.state,result.now)};
    }catch{throw Error('operational_credential_request_unconfirmed')}

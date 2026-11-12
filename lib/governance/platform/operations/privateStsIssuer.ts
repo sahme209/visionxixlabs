@@ -1,3 +1,4 @@
+import type {CustodianCredentialObservation} from './custodianCredentialContract';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {STSClient,AssumeRoleCommand} from '@aws-sdk/client-sts';
@@ -19,7 +20,7 @@ const fail=():never=>{throw Error('operational_private_sts_issuance_unavailable'
 /** Prepared private AssumeRole exchange. No GitHub-token input or fallback.
  * Missing issuer profile/registered source custody refuses; no default supplier
  * exists. This transport alone does not prove actual IAM or runtime isolation. */
-export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{return Object.freeze({assertQualified:ports.assertQualified,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:()=>Promise<void>,signal:AbortSignal){
+export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{return Object.freeze({assertQualified:ports.assertQualified,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?: (metadata:CustodianCredentialObservation)=>Promise<void>){
  let client:STSClient|undefined;
  try{
   const manifest=readOperationalManifest(rawManifest);if(manifest.kind!=='deployment.ecs')return fail();signal.throwIfAborted();
@@ -27,7 +28,7 @@ export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPor
   const supplied=await ports.readCustodianCredential(manifest,signal);signal.throwIfAborted();
   if(!supplied)return fail();const source=Object.freeze({leaseRef:supplied.leaseRef,profileDigest:supplied.profileDigest,accessKeyId:supplied.accessKeyId,secretAccessKey:supplied.secretAccessKey,sessionToken:supplied.sessionToken,expiresAt:supplied.expiresAt});
   if(!source||source.profileDigest!==manifest.issuerProfileDigest||!/^platform_credential_[a-f0-9-]{36}$/.test(source.leaseRef)||![source.accessKeyId,source.secretAccessKey,source.sessionToken].every(v=>typeof v==='string'&&v.length>0&&v.length<=16384&&!/[\r\n]/.test(v))||!Number.isSafeInteger(source.expiresAt)||source.expiresAt<=Date.now())return fail();
-  await ports.assertCustodianCurrent(manifest,source,signal);signal.throwIfAborted();
+  await ports.assertCustodianCurrent(manifest,source,signal);signal.throwIfAborted();if(!recordSource)return fail();await recordSource({leaseRef:source.leaseRef,profileDigest:source.profileDigest,expiresAt:source.expiresAt});signal.throwIfAborted();
   const leaseId=randomUUID(),session='axiom-'+leaseId,endpoint=new URL(awsReadEndpoint('sts',manifest.target.region,'aws'));
   const policy=JSON.stringify({Version:'2012-10-17',Statement:[{Effect:'Allow',Action:['ecs:UpdateService'],Resource:[manifest.target.serviceArn]}]});
   const expected=new Map(Object.entries({Action:'AssumeRole',Version:'2011-06-15',RoleArn:manifest.roleArn,RoleSessionName:session,DurationSeconds:'900',Policy:policy}));

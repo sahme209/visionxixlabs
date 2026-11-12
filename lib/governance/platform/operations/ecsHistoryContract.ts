@@ -1,3 +1,4 @@
+import {custodianCredentialState} from './custodianCredentialContract';
 import {z} from 'zod';
 import {digest} from '../contracts';
 import {platformActionId} from '../viewContract';
@@ -11,9 +12,12 @@ export const ecsStabilityHistory=z.object({receiptId:operationalEvidenceId,recei
 export const ecsHistory=z.object({
  stability:ecsStabilityHistory.nullable().optional(),actionId:platformActionId,manifest:ecsManifestMetadata,status:z.enum(['delegated','claimed']),version:z.number().int().min(0).max(3),attemptCount:z.number().int().min(0).max(1),requesterUserId:person,reviewerUserId:person,
  executionPrincipal:z.object({kind:z.literal('workload'),workload:operationalWorkloadReference,profileDigest:digest,expiresAt:clock}).strict().nullable(),
- credential:operationalCredentialState,targetReservation:z.object({nativeKey:digest,generation:z.number().int().positive().safe()}).strict().nullable(),expired:z.boolean(),authority:z.literal('delegation_history_only'),sourceValidation:z.literal('not_checked'),executionAuthorized:z.literal(false),providerExecution:z.literal(false),
+ credential:operationalCredentialState,sourceCredential:custodianCredentialState.optional(),targetReservation:z.object({nativeKey:digest,generation:z.number().int().positive().safe()}).strict().nullable(),expired:z.boolean(),authority:z.literal('delegation_history_only'),sourceValidation:z.literal('not_checked'),executionAuthorized:z.literal(false),providerExecution:z.literal(false),
  parentStatus:z.enum(['approved','claimed','confirmed','unknown']),parentVersion:z.number().int().min(1).max(3),effectStatus:z.enum(['claimed','confirmed','unknown']).nullable(),result:operationalEcsResultSchema.nullable(),
 }).strict().refine(v=>{
+ if(v.sourceCredential&&(!v.manifest.issuerProfileDigest||v.credential.status==='not_requested'||v.sourceCredential.status==='issued'&&v.sourceCredential.profileDigest!==v.manifest.issuerProfileDigest))return false;
+ if(v.manifest.issuerProfileDigest&&v.credential.status!=='not_requested'&&!v.sourceCredential)return false;
+ if(v.manifest.issuerProfileDigest&&v.credential.status==='issued'&&v.sourceCredential?.status!=='issued')return false;
  if(v.requesterUserId===v.reviewerUserId)return false;
  if(v.stability&&(v.parentStatus!=='confirmed'||!v.result||v.result.kind!=='accepted'||v.stability.commandReceiptDigest!==v.result.receiptDigest||v.stability.deploymentId!==v.result.deploymentId||Date.parse(v.stability.observedAt)<v.result.observedAt||Date.parse(v.stability.observedAt)>v.stability.recordedAt))return false;
  if(v.status==='delegated')return v.version===0&&v.attemptCount===0&&v.executionPrincipal===null&&v.credential.status==='not_requested'&&v.targetReservation===null&&v.parentStatus==='approved'&&v.parentVersion===1&&v.effectStatus===null&&v.result===null;

@@ -1,3 +1,4 @@
+import {custodianCredentialState} from './custodianCredentialContract';
 import {z} from 'zod';
 import {operationalCredentialState} from './credentialContract';
 export {credentialOutcome} from './credentialContract';
@@ -9,7 +10,7 @@ import {operationalTargetReference,nativeEcsTargetKey,type OperationalTargetTran
 import {readOperationalManifest} from './kernel';
 const clock=z.number().int().nonnegative().safe();
 const executionPrincipal=z.object({kind:z.literal('workload'),workload:operationalWorkloadReference,profileDigest:digest,replayKey:digest,expiresAt:clock}).strict();
-const recordSchema=z.object({actionId:operationalWorkloadBinding.shape.actionId,parentPlanDigest:digest,manifest:z.unknown(),requester:platformPrincipalSchema,reviewer:platformPrincipalSchema,status:z.enum(['delegated','claimed']),version:z.number().int().min(0).max(3),attemptCount:z.number().int().min(0).max(1),executionPrincipal:executionPrincipal.nullable(),targetReservation:operationalTargetReference.nullable(),credential:operationalCredentialState,createdAt:clock,updatedAt:clock}).strict();
+const recordSchema=z.object({actionId:operationalWorkloadBinding.shape.actionId,parentPlanDigest:digest,manifest:z.unknown(),requester:platformPrincipalSchema,reviewer:platformPrincipalSchema,status:z.enum(['delegated','claimed']),version:z.number().int().min(0).max(3),attemptCount:z.number().int().min(0).max(1),executionPrincipal:executionPrincipal.nullable(),targetReservation:operationalTargetReference.nullable(),credential:operationalCredentialState,sourceCredential:custodianCredentialState.optional(),createdAt:clock,updatedAt:clock}).strict();
 const fail=():never=>{throw Error('operational_delegation_unavailable')};
 export function readOperationalDelegation(raw:unknown){
  const value=recordSchema.parse(raw),manifest=readOperationalManifest(value.manifest);
@@ -21,6 +22,9 @@ export function readOperationalDelegation(raw:unknown){
   const principal=value.executionPrincipal;if(!value.targetReservation||value.targetReservation.nativeKey!==nativeEcsTargetKey(manifest.target)||!principal||value.attemptCount!==1||principal.expiresAt<=value.createdAt||principal.expiresAt>Date.parse(manifest.expiresAt)||JSON.stringify(principal.workload)!==JSON.stringify(manifest.workload))return fail();
   if(value.version!==(value.credential.status==='not_requested'?1:value.credential.status==='pending'?2:3))return fail();
  }
+ if(value.sourceCredential){const c=value.sourceCredential;if(!manifest.issuerProfileDigest||value.credential.status==='not_requested'||c.requestedAt<value.createdAt||c.requestedAt>value.updatedAt||c.status!=='pending'&&(c.observedAt<c.requestedAt||c.observedAt>value.updatedAt)||c.status==='issued'&&(c.profileDigest!==manifest.issuerProfileDigest||c.expiresAt<=c.requestedAt))return fail()}
+ if(manifest.issuerProfileDigest&&value.credential.status!=='not_requested'&&!value.sourceCredential)return fail();
+ if(manifest.issuerProfileDigest&&value.credential.status==='issued'&&value.sourceCredential?.status!=='issued')return fail();
  if(value.credential.status!=='not_requested'&&(value.credential.requestedAt<value.createdAt||value.credential.requestedAt>value.updatedAt))return fail();
  if((value.credential.status==='issued'||value.credential.status==='unknown')&&(value.credential.observedAt<value.credential.requestedAt||value.credential.observedAt>value.updatedAt))return fail();
  if(value.credential.status==='issued'&&value.credential.expiresAt<=value.credential.requestedAt)return fail();
@@ -28,6 +32,7 @@ export function readOperationalDelegation(raw:unknown){
 }
 export type OperationalDelegation=ReturnType<typeof readOperationalDelegation>;
 export interface OperationalDelegationTransaction extends PlatformTransaction,OperationalWorkloadTransaction,OperationalTargetTransaction{
+ writeOperationalSourceCredential?(actionId:string,version:number,state:OperationalDelegation):Promise<void>;
  readOperationalStabilityEvent?(actionId:string):Promise<unknown|null>;
  readEcsManifest(actionId:string):Promise<unknown>;
  readDelegation(actionId:string):Promise<unknown|null>;
