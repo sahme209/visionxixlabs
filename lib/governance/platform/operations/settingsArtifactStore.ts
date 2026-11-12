@@ -1,9 +1,12 @@
+import {sha256ContentHash} from '@/lib/tauri/contentHash';
+import {z} from 'zod';
+import {readOperationalManifest} from './kernel';
 import 'server-only';
 import type {PlatformTransaction,PlatformAuthority} from '../actionStore';
 import {platformPrincipalSchema,type PlatformPrincipal} from '../contracts';
-import {readPlatformAction} from '../kernel';
+import {readPlatformAction,approvePlatformAction} from '../kernel';
 import {operationalWorkloadBinding} from './workloadIdentity';
-import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,type SettingsArtifactBinding} from './settingsArtifact';
+import {deriveSettingsArtifactBinding,sealSettingsArtifact,settingsArtifactMetadata,settingsArtifactBindingSchema,type SettingsArtifactBinding} from './settingsArtifact';
 export interface SettingsArtifactTransaction extends PlatformTransaction{
  readSettingsArtifact(artifactId:string):Promise<unknown|null>;
  /** Insert only; uniqueness on artifactId and (actionId,effectIndex) is mandatory.
@@ -38,6 +41,26 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
     const envelope=sealSettingsArtifact(key,binding,value),createdAt=await current();
     await tx.insertSettingsArtifact(binding.artifactId,{binding,envelope,createdAt});await current();
     return settingsArtifactMetadata(binding);
+   });
+  }catch{return fail()}
+ },async review(rawId:string,version:number,planDigest:string,rawReviewer:PlatformPrincipal){
+  try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reviewer=platformPrincipalSchema.parse(rawReviewer);
+   return await repo.transaction(async tx=>{
+    await tx.lock(id);await authority.assertCurrent(tx,reviewer);const parent=readPlatformAction(await tx.read(id));
+    if(parent.status!=='proposed'||parent.version!==version||parent.plan.digest!==planDigest||parent.requester.userId===reviewer.userId)return fail();
+    const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel')return fail();const settingCount=manifest.settings.length;
+    async function current(){
+     await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);
+     for(let index=0;index<settingCount;index++){
+      const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,parent.requester);
+      await source.assertCurrent(tx,binding);
+      const row=z.object({binding:settingsArtifactBindingSchema,envelope:z.string().min(1).max(87423),createdAt:z.number().int().nonnegative()}).strict().parse(await tx.readSettingsArtifact(binding.artifactId));
+      if(sha256ContentHash(row.binding)!==sha256ContentHash(binding)||!/^v2\.[A-Za-z0-9_-]+$/.test(row.envelope)||row.createdAt<parent.updatedAt||row.createdAt>=Date.parse(binding.expiresAt))return fail();
+     }
+     await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
+    }
+    const next=approvePlatformAction(parent,{...reviewer,planDigest},await current());await tx.replace(id,version,next);await tx.event({actionId:id,kind:'approved',state:next});await current();
+    return Object.freeze({actionId:id,planDigest,status:next.status,version:next.version,authority:'review_only' as const,executionAuthorized:false as const});
    });
   }catch{return fail()}
  }});

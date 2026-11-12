@@ -9,10 +9,10 @@ function fixture(){
  const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(now+60000).toISOString(),target:{projectId:'project',teamId:'team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_11111111-1111-4111-8111-111111111111',current:{kind:'absent',receiptId:'platform_evidence_11111111-1111-4111-8111-111111111111'}}]});
  let parent=createPlatformAction(compileOperationalSettingsPlan(manifest),actor,now),clock=now,revoked=false;const rows=new Map<string,unknown>();
  const unused=async():Promise<never>=>{throw Error('unused fixture port')};
- const tx={readGrowthPostingSource:unused,readSessionPrincipal:unused,readPrincipal:unused,insert:unused,replace:unused,event:unused,readEffect:unused,writeEffect:unused,lock:vi.fn(async()=>{}),read:async()=>parent,now:async()=>clock,readSettingsArtifact:async(key:string)=>rows.get(key)??null,insertSettingsArtifact:vi.fn(async(key:string,row:unknown)=>{if(rows.has(key))throw Error('duplicate');rows.set(key,row)})};
+ const tx={readGrowthPostingSource:unused,readSessionPrincipal:unused,readPrincipal:unused,insert:unused,replace:vi.fn(async(_id:string,_version:number,next:typeof parent)=>{parent=next}),event:vi.fn(async()=>{}),readEffect:unused,writeEffect:unused,lock:vi.fn(async()=>{}),read:async()=>parent,now:async()=>clock,readSettingsArtifact:async(key:string)=>rows.get(key)??null,insertSettingsArtifact:vi.fn(async(key:string,row:unknown)=>{if(rows.has(key))throw Error('duplicate');rows.set(key,row)})};
  const authority={assertCurrent:vi.fn(async()=>{if(revoked)throw Error('private detail')})},key=randomBytes(32),source={readManifest:vi.fn(async()=>manifest),assertCurrent:vi.fn(async()=>{}),readKey:vi.fn(async()=>key)};
  const repo={transaction:async<T>(fn:(t:typeof tx)=>Promise<T>)=>{const before=new Map(rows);try{return await fn(tx)}catch(e){rows.clear();for(const [k,v]of before)rows.set(k,v);throw e}}};
- return {store:createSettingsArtifactStore(repo,authority,source),tx,rows,source,key,setClock:(v:number)=>{clock=v},revoke:()=>{revoked=true},approve:()=>{parent={...parent,status:'approved',version:1}}};
+ return {planDigest:parent.plan.digest,store:createSettingsArtifactStore(repo,authority,source),tx,rows,source,key,setClock:(v:number)=>{clock=v},revoke:()=>{revoked=true},approve:()=>{parent={...parent,status:'approved',version:1}}};
 }
 it('saves one immutable private envelope and returns metadata only; duplicate never replaces or reads a key',async()=>{
  const f=fixture(),before=Buffer.from(f.key),result=await f.store.save(id,0,actor,'synthetic value');expect(JSON.stringify(result)).not.toContain('synthetic value');expect(f.key).toEqual(before);expect(f.rows.size).toBe(1);expect(JSON.stringify([...f.rows.values()])).not.toContain('synthetic value');f.source.readKey.mockClear();await expect(f.store.save(id,0,actor,'different')).rejects.toThrow('settings_artifact_unavailable');expect(f.source.readKey).not.toHaveBeenCalled();expect(f.tx.insertSettingsArtifact).toHaveBeenCalledTimes(1);
@@ -29,4 +29,15 @@ it('missing custody supplier refuses without fallback or storage',async()=>{
 
 it('rolls back an inserted envelope if final current-authority confirmation fails',async()=>{
  const f=fixture(),insert=f.tx.insertSettingsArtifact.getMockImplementation()!;f.tx.insertSettingsArtifact.mockImplementation(async(key,row)=>{await insert(key,row);f.revoke()});await expect(f.store.save(id,0,actor,'synthetic')).rejects.toThrow('settings_artifact_unavailable');expect(f.rows.size).toBe(0);
+});
+
+it('requires all exact saved artifacts before independent review without decrypting or reading custody',async()=>{
+ const f=fixture(),reviewer={userId:'reviewer',sessionId:'reviewer-session'};await expect(f.store.review(id,0,f.planDigest,reviewer)).rejects.toThrow('settings_artifact_unavailable');await f.store.save(id,0,actor,'synthetic');f.source.readKey.mockClear();await expect(f.store.review(id,0,f.planDigest,actor)).rejects.toThrow();const result=await f.store.review(id,0,f.planDigest,reviewer);expect(result).toMatchObject({status:'approved',executionAuthorized:false});expect(f.source.readKey).not.toHaveBeenCalled();expect(f.tx.replace).toHaveBeenCalledTimes(1);expect(f.tx.event).toHaveBeenCalledTimes(1);
+});
+it('rejects substituted saved bindings at review',async()=>{
+ const f=fixture();await f.store.save(id,0,actor,'synthetic');const [key,row]=[...f.rows.entries()][0];const saved=row as {binding:Record<string,unknown>};f.rows.set(key,{...saved,binding:{...saved.binding,profileId:'wrong'}});await expect(f.store.review(id,0,f.planDigest,{userId:'reviewer',sessionId:'reviewer-session'})).rejects.toThrow();expect(f.tx.replace).not.toHaveBeenCalled();
+});
+
+it('rejects an inexact plan digest and source revocation without reading a key during review',async()=>{
+ const f=fixture(),reviewer={userId:'reviewer',sessionId:'reviewer-session'};await f.store.save(id,0,actor,'synthetic');f.source.readKey.mockClear();await expect(f.store.review(id,0,'f'.repeat(64),reviewer)).rejects.toThrow();f.source.assertCurrent.mockRejectedValue(Error('synthetic revoked'));await expect(f.store.review(id,0,f.planDigest,reviewer)).rejects.toThrow();expect(f.source.readKey).not.toHaveBeenCalled();expect(f.tx.replace).not.toHaveBeenCalled();
 });

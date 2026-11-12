@@ -620,7 +620,7 @@ it.skipIf(!enabled)('stores one exact private settings envelope in actual SQL an
  const p=compileOperationalSettingsPlan(manifest),s=createPlatformActionService(repo,authority),id=await s.propose(p,actor),key=new Uint8Array(32).fill(7),source={readManifest:async()=>manifest,assertCurrent:async()=>{},readKey:vi.fn(async()=>key)},store=createSettingsArtifactStore(repo,authority,source);
  const results=await Promise.allSettled([store.save(id,0,actor,'synthetic A'),store.save(id,0,actor,'synthetic B')]);expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(source.readKey).toHaveBeenCalledTimes(1);
  const rows=await db.$queryRawUnsafe<Array<{bindingJson:unknown;envelope:string}>>('SELECT "bindingJson",envelope FROM "PlatformSettingsArtifact" WHERE "actionId"=$1',id);expect(rows).toHaveLength(1);expect(['synthetic A','synthetic B']).toContain(openSettingsArtifact(key,rows[0].bindingJson,rows[0].envelope));
- await s.review(id,0,p.digest,reviewer);await expect(store.save(id,0,actor,'replacement')).rejects.toThrow();expect(source.readKey).toHaveBeenCalledTimes(1);
+ await expect(store.review(id,0,p.digest,actor)).rejects.toThrow();await store.review(id,0,p.digest,reviewer);await expect(store.save(id,0,actor,'replacement')).rejects.toThrow();expect(source.readKey).toHaveBeenCalledTimes(1);
 });
 it.skipIf(!enabled)('rolls back the actual private envelope when current authority is lost after insert',async()=>{
  await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']);
