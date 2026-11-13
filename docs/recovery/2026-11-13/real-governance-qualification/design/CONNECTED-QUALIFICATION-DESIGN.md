@@ -74,3 +74,10 @@ The actual trusted-time source is the remaining concrete design question. A cand
 ## HTTP Date result
 
 The single approved RFC9110 read is consumed. HTTP-DATE-SOURCE-DECISION.md rejects the header-only candidate for bounded clock authority: the standard does not provide a numerical maximum UTC error, and round-trip timing cannot supply that missing bound. No native clock request or code was run. BOUNDED-TIME-RESEARCH-SCOPE.md proposes verifying an existing authenticated bounded-time implementation instead of inventing an interval. This preserves the original clock/expiry requirements and full connected runtime goal.
+
+
+## November13 — bounded-time research consumed; native Fargate candidate identified
+
+The owner-approved six public reads are complete; findings and exact sources are in `docs/recovery/2026-11-13/real-governance-qualification/design/BOUNDED-TIME-SOURCE-ASSESSMENT.md`. The Fargate-specific metadata page documents ClockDrift/error/synchronization fields missed by the earlier generic-page review. Prefer qualifying that native source in the actual compiled executor. Do not infer a trusted current interval from those fields alone: sample freshness/growth, protected origin and runtime-time composition remain unresolved. Cloudflare's inspected Roughtime implementation warns against production use and reports older draft compatibility; no automatic adoption. ClockBound is an alternate EC2 candidate, not proven Fargate/macOS support.
+
+This supersedes the earlier pending six-page request only. No new dependency, trusted key, clock query, code/default supplier, cloud resource, credential, native experiment or spending. Full Governance remains incomplete and disabled; production schema/target/recovery and all existing genuine-review/runtime/closure/coverage/owner gates remain. The next research should resolve native Fargate sample/freshness semantics, not implement a fake bounded-clock callback. No repeated suites/builds or production operations occurred.
