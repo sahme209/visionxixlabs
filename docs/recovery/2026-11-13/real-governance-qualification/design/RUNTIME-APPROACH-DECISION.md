@@ -33,6 +33,10 @@ The specification must identify:
 
 Only then request independent review and the appropriate local implementation decision. Actual build/provisioning/native execution/key/identity/provider/write/cleanup authority must name its frozen inputs and remain separate from design approval. Preserve Mac qualification and every remaining master requirement; one successful platform deployment is not full Governance.
 
-## Proposed research scope — not yet approved
+## Research disposition — approved allowance consumed
+
+The owner subsequently approved the four public reads and design preparation. All four requests were made once, including one source-path 404; no retry or alternate file fetch followed. [Recorded observations and complete composition gates](EC2-ALTERNATIVE-SOURCE-ASSESSMENT.md). Exact supported ClockBound source/release, current interval semantics and regional host/disk quote remain unresolved. Local source inspection additionally shows that a generic direct-EC2 move would not preserve the existing task-credential contract. A controlled ECS-on-EC2 candidate must be specified and qualified as its own profile, not silently enabled. No implementation, runtime, credentials, resources or spending is authorized.
+
+### Original bounded request — retained for scope
 
 Official public search and up to four primary pages total: AWS EC2 on-demand pricing, AWS EBS pricing, and up to two pages/source files from AWS's ClockBound project for a maintained release and client interval/status/host requirements. Reuse existing VPC/Fargate/ClockBound findings rather than reread them or broaden the allowance. Public text/design only; no pricing API, package/clone/download/install, protocol/native time query, account access, credentials, configuration, resource, build/run, production operation or spending. Stop when the four-page allowance ends; do not infer missing guarantees from examples.

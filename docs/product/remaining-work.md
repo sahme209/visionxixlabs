@@ -1,5 +1,10 @@
 # Axiom remaining work
 
+## November 13 — Octopus added to competitive product acceptance
+
+The owner's existing beyond-Harness mandate now also includes Octopus Deploy. Keep a source-backed capability/gap matrix for both, with comprehensive relevant feature coverage as the goal and a distinctive agent-native, secure, clear and premium Axiom experience. Competitor superiority and completed parity require demonstrated evidence; planned capabilities stay labeled planned. No research/account/dependency/spending authority or change to Governance-first priority follows. See the master plan's “Harness and Octopus” requirement.
+
+
 ## Current execution snapshot — November 13, after PR328
 
 Read this snapshot for current status. It supersedes older status claims only; all original scope, hard rules and historical evidence below remain intact.
