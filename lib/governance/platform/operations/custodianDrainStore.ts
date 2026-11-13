@@ -1,3 +1,5 @@
+import {assertPlatformPrincipalTime} from '../principalTime';
+import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';
 import {custodianClosureSummary} from './custodianClosureSummary';
 import {readCustodianClosureObservation,type CustodianClosureObservation} from './custodianClosureObservation';
 import 'server-only';
@@ -19,6 +21,7 @@ export interface CustodianDrainTransaction extends PlatformTransaction{
 }
 export interface CustodianDrainRepository{transaction<T>(fn:(tx:CustodianDrainTransaction)=>Promise<T>):Promise<T>}
 interface Source{
+ clock:ExecutionTimeSource;
  /** Protected current profile/runtime/admission source; no default supplier. */
  assertCurrent(tx:CustodianDrainTransaction,control:CustodianDrainPlan):Promise<void>;
  /** Fresh complete source/fleet/time qualification, NOT identity-probe success. */
@@ -29,13 +32,17 @@ const actionId=/^platform_action_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}
 /** Local platform-control service. No native credential/IAM/process operation.
  * All transitions share the physical issuer lock with future intent admission.
  * Repositories lacking that serialization are not qualified for mounting. */
-export function createCustodianDrainService(repo:CustodianDrainRepository,authority:PlatformAuthority,source:Source){
+export function createCustodianDrainService(repo:CustodianDrainRepository,authority:PlatformAuthority,source:Source,signal?:AbortSignal){
+ const clock=source.clock;
  async function load(tx:CustodianDrainTransaction,id:string){const state=readPlatformAction(await tx.read(id)),control=readCustodianDrainPlan(await tx.readCustodianControl(id));if(compileCustodianDrainPlatformPlan(control).digest!==state.plan.digest)fail();return {state,control}}
- async function current(tx:CustodianDrainTransaction,state:PlatformAction,control:CustodianDrainPlan,actor:PlatformPrincipal){
+ async function current(tx:CustodianDrainTransaction,state:PlatformAction,control:CustodianDrainPlan,actor:PlatformPrincipal,closure:CustodianClosureObservation|null=null){
   await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);
-  await source.assertCurrent(tx,control);
+  if(!signal||signal.aborted)return fail();
+  const people=[await assertPlatformPrincipalTime(tx,actor,clock,signal),await assertPlatformPrincipalTime(tx,state.requester,clock,signal)];if(state.reviewer)people.push(await assertPlatformPrincipalTime(tx,state.reviewer,clock,signal));
+  await assertExecutionWindow(clock,{expiresAt:Math.min(Date.parse(control.expiresAt),closure?.evidence.expiresAt??Date.parse(control.expiresAt),...people.map(p=>p.expiresAt)),notBefore:Math.max(closure?closure.evidence.credentialNotAfter+1:0,...people.map(p=>p.notBefore))},signal);
+  await source.assertCurrent(tx,control);signal.throwIfAborted();
   await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);
-  const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(control.expiresAt))fail();return now;
+  const now=await tx.now();signal.throwIfAborted();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(control.expiresAt))fail();return now;
  }
  async function predecessor(tx:CustodianDrainTransaction,control:CustodianDrainPlan){const raw=await tx.readCustodianBarrier(control.nativeKey);return raw===null?null:readCustodianBarrier(raw)}
  async function locked<T>(id:string,fn:(tx:CustodianDrainTransaction,loaded:Awaited<ReturnType<typeof load>>)=>Promise<T>){if(!actionId.test(id))fail();return repo.transaction(async tx=>{await tx.lock(id);const loaded=await load(tx,id);await tx.lockCustodian(loaded.control.nativeKey);return fn(tx,loaded)})}
@@ -64,14 +71,14 @@ export function createCustodianDrainService(repo:CustodianDrainRepository,author
    if(state.version!==version)fail();let now=await current(tx,state,control,actor);const prior=await predecessor(tx,control);let nextBarrier=transitionCustodianBarrier(prior,control,id,now);
    const claimed=claimPlatformAction(state,actor,now);
    let closure:CustodianClosureObservation|null=null;
-   if(control.operation==='abort'){if(prior===null)return fail();const saved=await tx.readCustodianClosure?.(control.nativeKey);if(saved)closure=readCustodianClosureObservation(saved);await source.assertAbortSafe(tx,control,prior,closure);await tx.assertNoCustodianIntents(control.nativeKey,prior)}
-   now=await current(tx,state,control,actor);nextBarrier=transitionCustodianBarrier(prior,control,id,now);
+   if(control.operation==='abort'){if(prior===null)return fail();const saved=await tx.readCustodianClosure?.(control.nativeKey);if(saved)closure=readCustodianClosureObservation(saved);await current(tx,state,control,actor,closure);await source.assertAbortSafe(tx,control,prior,closure);await tx.assertNoCustodianIntents(control.nativeKey,prior)}
+   now=await current(tx,state,control,actor,closure);nextBarrier=transitionCustodianBarrier(prior,control,id,now);
    await tx.replace(id,version,claimed);await tx.event({actionId:id,kind:'claimed',state:claimed});
    await tx.writeEffect(id,0,null,'claimed');await tx.event({actionId:id,kind:'effect.claimed',state:claimed,effectIndex:0});
    await tx.writeCustodianBarrier(control.nativeKey,prior?.version??null,nextBarrier);
    await tx.writeEffect(id,0,'claimed','confirmed');const confirmed=finishPlatformAction(claimed,'confirmed',await tx.now());await tx.replace(id,claimed.version,confirmed);await tx.event({actionId:id,kind:'effect.observed',state:confirmed,effectIndex:0,outcome:'confirmed',custodianBarrier:nextBarrier});
-   await current(tx,confirmed,control,actor);
-   if(control.operation==='abort'){await source.assertAbortSafe(tx,control,prior!,closure);await tx.assertNoCustodianIntents(control.nativeKey,prior!);await current(tx,confirmed,control,actor)}
+   await current(tx,confirmed,control,actor,closure);
+   if(control.operation==='abort'){await source.assertAbortSafe(tx,control,prior!,closure);await tx.assertNoCustodianIntents(control.nativeKey,prior!);await current(tx,confirmed,control,actor,closure)}
    return {actionId:id,status:'confirmed' as const,barrier:nextBarrier,executionAuthorized:false as const,closureObserved:false as const};
   })},
  });

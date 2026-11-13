@@ -10,5 +10,5 @@ it('requires exact session identity and original timestamps without a point-cloc
  for(const r of [{...row,sessionIssuedAtMs:undefined},{...row,sessionExpiresAtMs:undefined},{...row,sessionId:'substitute'},{...row,live:false},{...row,sessionIssuedAtMs:201}])await expect(assertPlatformPrincipalTime({readPrincipal:async()=>r},principal,async()=>({earliest:100,latest:101}),signal())).rejects.toThrow();
 });
 it('accepts the whole interval only inside the exact locked session lifetime',async()=>{
- await expect(assertPlatformPrincipalTime({readPrincipal:async()=>row},principal,async()=>({earliest:100,latest:199}),signal())).resolves.toBeUndefined();
+ await expect(assertPlatformPrincipalTime({readPrincipal:async()=>row},principal,async()=>({earliest:100,latest:199}),signal())).resolves.toEqual({notBefore:100,expiresAt:200});
 });

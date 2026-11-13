@@ -1,0 +1,28 @@
+{
+  "status": "partial_local_closure_and_control_time_integration",
+  "authorizationQuestionId": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "rootTypes": "passed",
+  "focusedChecks": 36,
+  "ordinaryTests": {
+    "passed": 18961,
+    "failed": 0,
+    "pending": 1142,
+    "total": 20103,
+    "failedSuites": 0
+  },
+  "actualSqlExecuted": false,
+  "nativeProfileQualified": false,
+  "governanceEnabled": false,
+  "independentSourceReview": "reported_intersection_issue_closed_no_remaining_important_finding_in_slice",
+  "files": {
+    "lib/governance/platform/__tests__/principalTime.test.ts": "82a87d7a07419e428c66319b30eac6d0a10f48592762070c24c8822d17bacf6a",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "0c520bdd16d95763a329d6d9b8dab2b10f912e55acec30ca34c9e8033c39b3b2",
+    "lib/governance/platform/operations/__tests__/custodianClosureStore.test.ts": "f048a8a5b3cb612eece5f63bfa0b7a1ef8044e72cb2497acabe0c1e8ac6179ff",
+    "lib/governance/platform/operations/__tests__/custodianDrainStore.test.ts": "340893c1050daf584dcd75dcdb039ca9f42ef9b30219800833f41f38f0aa4964",
+    "lib/governance/platform/operations/custodianClosureStore.ts": "4b456a63549a108f6d6b40ac528ccb048acecef46c11348dbd8caa0707f24162",
+    "lib/governance/platform/operations/custodianDrainStore.ts": "76e47d32ec1a74d2b1e2cffba97a59af130d0a90019c3832e6c40b9d1e3ab3ae",
+    "lib/governance/platform/operations/custodianRequest.ts": "d69bddda698d5085aa21650cc1bb6c76b9ea299d220aa6ec267e2fff921d4ef6",
+    "lib/governance/platform/operations/custodianRequestService.ts": "17ae9ee51d011f5d87300bf8d52dff65c6370fce3b181f0da31a077cf86b1f02",
+    "lib/governance/platform/principalTime.ts": "35522f68cba2066ccd6046910eb69fff5a9ab1e5f4564effbaa1f2ea50d124d1"
+  }
+}
