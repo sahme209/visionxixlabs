@@ -17,7 +17,10 @@ export const platformEffectSchema=z.discriminatedUnion('kind',[
  effect('template.object.put',{...cloud,key:identifier,bytesDigest:digest}),
  effect('template.access.grant',{...cloud,key:identifier,objectVersion:identifier,bytesDigest:digest,recipientDigest:digest,ttlSeconds:z.number().int().min(1).max(3600)}),
  effect('growth.image.initialize',{...social,bytesDigest:digest}),
- effect('growth.image.put',{...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,destinationPathDigest:digest}),
+ z.object({id:identifier,kind:z.literal('growth.image.put'),target:z.union([
+  z.object({...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,destinationPathDigest:digest}).strict(),
+  z.object({...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,profile:z.literal('private_derived_grant_v1'),artifactId:z.string().regex(/^platform_image_artifact_[a-f0-9-]{36}$/),grantReference:z.string().regex(/^platform_image_grant_[a-f0-9]{64}$/),destinationProfileId:identifier,destinationProfileDigest:digest}).strict(),
+ ])}).strict(),
  effect('growth.post.publish',{...social,draftId:identifier,renderedPayloadDigest:digest}),
  effect('growth.post.delete',{...social,draftId:identifier,postUrn:identifier,draftRevision:timestamp,publicationActionId:identifier,publicationPlanDigest:digest,apiVersion:z.string().regex(/^\d{6}$/)}),
  effect('growth.schedule.change',{...social,draftId:identifier,scheduledFor:timestamp,renderedPayloadDigest:digest}),
