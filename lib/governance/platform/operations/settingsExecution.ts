@@ -49,7 +49,7 @@ export function createSettingsExecutor(repo:SettingsArtifactRepository,authority
    }
    async function current(tx:SettingsArtifactTransaction,index:number,held:boolean,nativeCheck?:ExecutionTimeCheck){
     const before=await sourceCurrent(tx,index,held),parent=readPlatformAction(await tx.read(id));if(!parent.reviewer)return fail();
-    await time(tx,[actor,parent.reviewer],before.binding,nativeCheck);const after=await sourceCurrent(tx,index,held);signal!.throwIfAborted();if(sha256ContentHash(before.binding)!==sha256ContentHash(after.binding))return fail();return after;
+    return time(tx,[actor,parent.reviewer],before.binding,async()=>{const after=await sourceCurrent(tx,index,held);signal!.throwIfAborted();if(sha256ContentHash(before.binding)!==sha256ContentHash(after.binding))return fail();return after},nativeCheck);
    }
    let nativeFinal:{check:ExecutionTimeCheck;consumed:boolean}|undefined;
    // Reuse the real child/proof/outcome machinery. The repository wrapper adds

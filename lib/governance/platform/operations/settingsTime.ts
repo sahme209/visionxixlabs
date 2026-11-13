@@ -20,11 +20,12 @@ function context(raw:unknown):Readonly<SettingsTimeContext>{
  const binding=settingsArtifactBindingSchema.parse(raw);return Object.freeze({manifestDigest:binding.manifestDigest,profileId:binding.profileId,expiresAt:stamp.parse(Date.parse(binding.expiresAt))});
 }
 /** Supplemental time, not current-role/source authority. The original locked
- * owner must repeat its exact current-source and people checks after this await.
+ * owner supplies its exact final current-source/people checks as afterTime;
+ * equality is checked after those awaits before any result is returned.
  * No Date/DB fallback, cached interval or new capability is installed. */
 export function createSettingsTimePolicy(source:SettingsTimeEvidenceSource,timing?:SettingsTiming){
  const read=source.readTimeWindow?.bind(source),clock=timing?.clock,signal=timing?.signal;
- return async(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown,nativeCheck?:ExecutionTimeCheck)=>{
+ return async<T>(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown,afterTime:()=>Promise<T>,nativeCheck?:ExecutionTimeCheck):Promise<T>=>{
   try{
    if(typeof clock!=='function'||typeof read!=='function'||!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();
    const principals=people.map(p=>platformPrincipalSchema.parse(p));if(!principals.length)return fail();
@@ -33,8 +34,9 @@ export function createSettingsTimePolicy(source:SettingsTimeEvidenceSource,timin
    const restriction={notBefore:evidence.notBefore,expiresAt:Math.min(expected.expiresAt,evidence.expiresAt)};
    if(nativeCheck!==undefined){if(typeof nativeCheck!=='function')return fail();for(const principal of principals){const session=await readPlatformPrincipalTimeWindow(tx,principal,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}await nativeCheck(Object.freeze(restriction))}
    else await assertPlatformParticipantsTime(tx,principals,clock,restriction,signal);signal.throwIfAborted();
+   const result=await afterTime();signal.throwIfAborted();
    const after=window.parse(await read(tx,expected));signal.throwIfAborted();
-   if(after.manifestDigest!==evidence.manifestDigest||after.profileId!==evidence.profileId||after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();
+   if(after.manifestDigest!==evidence.manifestDigest||after.profileId!==evidence.profileId||after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();return result;
   }catch{return fail()}
  };
 }

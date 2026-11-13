@@ -108,3 +108,29 @@ it('a bearer lost during native acquisition authorization stops before requestin
  const request=await createSettingsArtifactRequestComposition({headers,signal:f.controller.signal},{repo:f.repo,source:f.source,clock:f.clock,verifyDesktopToken:token=>({sessionId:token}),readAdminEmails:()=>['requester@example.test','reviewer@example.test'],execution:{assertWriteProfile:f.source.assertWriteProfile,createTransport:timing=>createSettingsVercelTransport({...n.ports,...timing})}});
  await expect(request.executeNext(p.id,0)).rejects.toThrow();expect(n.credential).not.toHaveBeenCalled();expect(n.fetch).not.toHaveBeenCalled();expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
 });
+
+it.each(['prepare','save','preview','review','claim'] as const)('refuses a source-window replacement in the final %s owner check and rolls back its decision',async phase=>{
+ const f=fixture(),p=phase==='prepare'?undefined:phase==='save'?await f.proposed():await f.saved();
+ if(phase==='claim')await f.store.review(p!.id,0,p!.digest,reviewer);
+ const beforeEvents=f.events().length,beforeArtifacts=f.artifacts().size,beforeStatus=p?f.parents().get(p.id)?.status:null;
+ f.clock.mockClear();let changed=false;const last={prepare:2,save:4,preview:1,review:2,claim:2}[phase];
+ f.source.readTimeWindow.mockImplementation(async(_tx,context)=>{return {manifestDigest:context.manifestDigest,profileId:context.profileId,notBefore:at-1000,expiresAt:changed?at+1:at+60000}});
+ f.source.assertCurrent.mockImplementation(async()=>{if(f.clock.mock.calls.length===last)changed=true});
+ const operation=phase==='prepare'?f.proposed():phase==='save'?f.store.save(p!.id,0,actor,'synthetic'):phase==='preview'?f.store.preview(p!.id,reviewer):phase==='review'?f.store.review(p!.id,0,p!.digest,reviewer):f.store.claim(p!.id,1,p!.digest,actor);
+ await expect(operation).rejects.toThrow();expect(changed).toBe(true);expect(f.events()).toHaveLength(beforeEvents);expect(f.artifacts().size).toBe(beforeArtifacts);
+ if(p)expect(f.parents().get(p.id)?.status).toBe(beforeStatus);else expect(f.parents().size).toBe(0);
+});
+it('checks the final native settings source window before any HTTP and preserves one consumed unknown attempt',async()=>{
+ const f=fixture(),p=await f.executable(),n=f.native();let afterNativeClock=false,changed=false;
+ n.credentialCurrent.mockImplementation(async()=>{if(f.depth()>0)afterNativeClock=true});
+ f.source.assertCurrent.mockImplementation(async()=>{if(afterNativeClock)changed=true});
+ f.source.readTimeWindow.mockImplementation(async(_tx,c)=>({manifestDigest:c.manifestDigest,profileId:c.profileId,notBefore:at-1000,expiresAt:changed?at+1:at+60000}));
+ await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(changed).toBe(true);expect(n.fetch).not.toHaveBeenCalled();expect(n.credential).toHaveBeenCalledOnce();expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
+ await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(n.fetch).not.toHaveBeenCalled();expect(n.credential).toHaveBeenCalledOnce();
+});
+it('refuses paired possession lost in the last settings source-window read',async()=>{
+ const {createSettingsArtifactRequestComposition}=await import('../settingsArtifactRequest'),f=fixture(),p=await f.saved(),request=new Request('http://fixture.invalid',{headers:{authorization:'Bearer requester-session'},signal:f.controller.signal});let reads=0;
+ const service=await createSettingsArtifactRequestComposition(request,{repo:f.repo,source:f.source,clock:f.clock,verifyDesktopToken:token=>({sessionId:token}),readAdminEmails:()=>['requester@example.test','reviewer@example.test']});
+ f.source.readTimeWindow.mockImplementation(async(_tx,c)=>{if(++reads===2)request.headers.delete('authorization');return {manifestDigest:c.manifestDigest,profileId:c.profileId,notBefore:at-1000,expiresAt:at+60000}});
+ await expect(service.preview(p.id)).rejects.toThrow();expect(f.parents().get(p.id)?.status).toBe('proposed');
+});

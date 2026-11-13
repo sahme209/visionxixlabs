@@ -22,7 +22,7 @@ export function createSettingsPreparationStore(repo:SettingsArtifactRepository,a
     await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
     if(existing){const parent=readPlatformAction(existing),saved=readOperationalManifest(await tx.readSettingsManifest(id));if(parent.requester.userId!==actor.userId||parent.requester.sessionId!==actor.sessionId||parent.plan.digest!==plan.digest||saved.digest!==manifest.digest)return fail();await authority.assertCurrent(tx,actor);return Object.freeze({requestId,actionId:id,historical:true,authority:'proposal_reference_only',executionAuthorized:false})}
     const sourceCurrent=async()=>{await source.assertCurrent(tx,manifest);await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(manifest.expiresAt))return fail();return now}
-    async function current(){const before=await sourceCurrent();await time(tx,[actor],manifest);const after=await sourceCurrent();if(after<before)return fail();return after}
+    async function current(){const before=await sourceCurrent();return time(tx,[actor],manifest,async()=>{const after=await sourceCurrent();if(after<before)return fail();return after})}
     const now=await current(),parent=createPlatformAction(plan,actor,now);
     await tx.insert(id,parent);await tx.event({actionId:id,kind:'proposed',state:parent,settingsManifest:manifest});const after=await current();if(after<now)return fail();return Object.freeze({requestId,actionId:id,historical:false,authority:'proposal_reference_only',executionAuthorized:false});
    });

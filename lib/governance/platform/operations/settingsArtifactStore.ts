@@ -59,7 +59,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
    }
    await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();
    return {settings,now};}
-   const before=await sourceCurrent();await time(tx,[parent.requester,reader],manifest);const after=await sourceCurrent();if(after.now<before.now)return fail();const settings=after.settings;
+   const before=await sourceCurrent(),after=await time(tx,[parent.requester,reader],manifest,async()=>{const after=await sourceCurrent();if(after.now<before.now)return fail();return after});const settings=after.settings;
    return Object.freeze({actionId:id,planDigest:parent.plan.digest,version:parent.version,target:manifest.target,profileId:manifest.artifactProfileId,expiresAt:manifest.expiresAt,settings:Object.freeze(settings),reviewReady:settings.every(s=>s.artifactStatus==='saved'),authority:'review_preview_only' as const,executionAuthorized:false as const});
   })}catch{return fail()}
  },async save(rawId:string,index:number,rawActor:PlatformPrincipal,value:unknown){
@@ -73,7 +73,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
      const actual=readPlatformAction(await tx.read(id)),now=await tx.now();
      if(actual.status!=='proposed'||actual.version!==parent.version||actual.plan.digest!==parent.plan.digest||actual.requester.userId!==actor.userId||actual.requester.sessionId!==actor.sessionId||!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(binding.expiresAt))return fail();return now;
     }
-    async function current(){const before=await sourceCurrent();await time(tx,[actor],binding);const after=await sourceCurrent();if(after<before)return fail();return after}
+    async function current(){const before=await sourceCurrent();return time(tx,[actor],binding,async()=>{const after=await sourceCurrent();if(after<before)return fail();return after})}
     await current();if(await tx.readSettingsArtifact(binding.artifactId))return fail();
     const key=await source.readKey(tx,binding);await current();
     const envelope=sealSettingsArtifact(key,binding,value),createdAt=await current();
@@ -94,7 +94,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
     }
     await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
    }
-   async function current(){const before=await sourceCurrent();await time(tx,[actor,reviewer],manifest);const after=await sourceCurrent();if(after<before)return fail();return after}
+   async function current(){const before=await sourceCurrent();return time(tx,[actor,reviewer],manifest,async()=>{const after=await sourceCurrent();if(after<before)return fail();return after})}
    const next=claimPlatformAction(parent,actor,await current());await tx.replace(id,version,next);await tx.event({actionId:id,kind:'claimed',state:next});await current();
    return Object.freeze({actionId:id,planDigest,status:next.status,version:next.version,attemptCount:next.attemptCount,authority:'claim_record_only' as const,executionAuthorized:false as const});
   })}catch{return fail()}
@@ -113,7 +113,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
      }
      await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
     }
-    async function current(){const before=await sourceCurrent();await time(tx,[parent.requester,reviewer],manifest);const after=await sourceCurrent();if(after<before)return fail();return after}
+    async function current(){const before=await sourceCurrent();return time(tx,[parent.requester,reviewer],manifest,async()=>{const after=await sourceCurrent();if(after<before)return fail();return after})}
     const next=approvePlatformAction(parent,{...reviewer,planDigest},await current());await tx.replace(id,version,next);await tx.event({actionId:id,kind:'approved',state:next});await current();
     return Object.freeze({actionId:id,planDigest,status:next.status,version:next.version,authority:'review_only' as const,executionAuthorized:false as const});
    });
