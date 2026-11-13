@@ -1,3 +1,4 @@
+const credentialExpiry=Date.now()+86400000; // Synthetic fixture metadata only.
 import {it,expect,vi,afterEach} from 'vitest';
 import {NodeHttpHandler} from '@smithy/node-http-handler';
 import {Readable} from 'node:stream';
@@ -22,7 +23,7 @@ async function fixture(){
    templateStorage:{reserve:async()=>{stagedResource=reserveTemplateResource(prepared.binding,now,stagedResource);return stagedResource},readResource:async()=>stagedResource,record:async(value:TemplateExecutionReceipt)=>{stagedResource=observeTemplateResult(stagedResource,prepared.binding,value,now);stagedReceipts.push(value)},receipts:async()=>stagedReceipts,deliveries:async()=>[]},
   } as unknown as PlatformTransaction;
   const result=await fn(tx);state=staged;effect=stagedEffect;resource=stagedResource;receipts=stagedReceipts;return result;
- }},authority={assertCurrent:async()=>{if(!live)throw Error('revoked')}},credential=vi.fn(()=>({accessKeyId:'synthetic',secretAccessKey:'synthetic'}));
+ }},authority={assertCurrent:async()=>{if(!live)throw Error('revoked')}},credential=vi.fn(()=>({accessKeyId:'synthetic',secretAccessKey:'synthetic',expiresAt:credentialExpiry}));
  const resources={profiles:{read:async()=>profile,assertQualified:async()=>{}},assertQualified:async()=>{},readCredential:credential,now:()=>now,clock:async()=>({earliest:now,latest:now+1})};
  let writes=0;
  vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async request=>{
@@ -62,4 +63,11 @@ it('withholds the actual SDK write if qualification is revoked during the final 
  f.resources.assertQualified=async()=>{if(!qualified)throw Error('profile revoked')};f.resources.clock=async()=>{if(prepared)qualified=false;return {earliest:now,latest:now+1}};
  const store=createTemplateExecutionStore(f.repo,f.authority,f.resources,new AbortController().signal);
  await expect(store.execute(id,1,actor)).rejects.toThrow();expect(f.writes()).toBe(0);expect((await store.history(id,actor)).receipts[0].outcome).toBe('unknown');
+});
+it('preserves one unknown without an outgoing write when a shorter credential expires during final SDK preparation',async()=>{
+ const f=await fixture(),send=S3Client.prototype.send;let prepared=false;
+ f.credential.mockReturnValue({accessKeyId:'synthetic',secretAccessKey:'synthetic',expiresAt:now+500});
+ vi.spyOn(S3Client.prototype,'send').mockImplementation(function(this:S3Client,...args:unknown[]){this.middlewareStack.add(next=>async request=>{prepared=true;return next(request)},{step:'finalizeRequest',name:'syntheticCredentialExpiry',priority:'low'});return Reflect.apply(send,this,args)});
+ f.resources.clock=async()=>({earliest:now,latest:prepared?now+500:now+1});const store=createTemplateExecutionStore(f.repo,f.authority,f.resources,new AbortController().signal);
+ await expect(store.execute(id,1,actor)).rejects.toThrow('platform_template_native_unconfirmed');expect(f.writes()).toBe(0);expect(f.state()).toMatchObject({status:'unknown',attemptCount:1});expect((await store.history(id,actor)).receipts[0].outcome).toBe('unknown');await expect(store.execute(id,1,actor)).rejects.toThrow();expect(f.writes()).toBe(0);
 });

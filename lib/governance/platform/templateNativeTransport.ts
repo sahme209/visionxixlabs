@@ -9,7 +9,7 @@ import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
 import {readPlatformTemplateBytes} from '@/lib/cloud/aws/platformTemplateSource';
 import {readBoundedPlatformTemplateBody,validatePlatformTemplateSignedUrl} from '@/lib/cloud/aws/templateHosting';
 import {readTemplateExecutionBinding,type TemplateExecutionBinding} from './templateExecutionContract';
-const credential=z.object({accessKeyId:z.string().min(1).max(256),secretAccessKey:z.string().min(1).max(4096),sessionToken:z.string().min(1).max(16384).optional()}).strict();
+const credential=z.object({accessKeyId:z.string().min(1).max(256),secretAccessKey:z.string().min(1).max(4096),sessionToken:z.string().min(1).max(16384).optional(),expiresAt:z.number().int().positive().safe().refine(value=>Number.isFinite(new Date(value).getTime()))}).strict();
 type Credential=z.infer<typeof credential>;
 export type TemplateNativeObservation={kind:'bucket';providerStatus:200}|{kind:'object';providerStatus:200;objectVersion:string;versioningEnabled:true}|{kind:'access';url:string;signedAt:number;ttlSeconds:number;hardExpiresAt:number};
 export interface TemplateNativePorts{
@@ -21,7 +21,9 @@ export interface TemplateNativePorts{
  signal?:AbortSignal;
  assertQualified(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
  /** Private already-held resource only; no environment/file/provider fallback.
-  * This metadata interface itself does not qualify actual credential custody. */
+  * The absolute expiry must come from the qualified private supplier; no
+  * duration/process-clock fallback. This metadata interface itself does not
+  * qualify actual credential custody or the expiry source. */
  readCredential(binding:Readonly<TemplateExecutionBinding>):Credential;
  now():number;
 }
@@ -40,15 +42,16 @@ export function createTemplateNativeTransport(ports?:TemplateNativePorts){
    const signal=ports.signal?AbortSignal.any([ports.signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000),p=ports;let currentKeys:Credential|undefined;
    async function within<T>(fn:()=>Promise<T>):Promise<T>{signal.throwIfAborted();let abort:()=>void=()=>{};const deadline=new Promise<never>((_resolve,reject)=>{abort=()=>reject(Error('platform_template_native_unavailable'));signal.addEventListener('abort',abort,{once:true});if(signal.aborted)abort()});try{return await Promise.race([Promise.resolve().then(fn),deadline])}finally{signal.removeEventListener('abort',abort)}}
    function time(){const now=p.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(b.approvalExpiresAt))return fail();signal.throwIfAborted();return now}
-   async function current(){time();await within(()=>p.assertQualified(b));await within(()=>authorizeExecutionWindow(clock!,{expiresAt:Date.parse(b.approvalExpiresAt)},check=>p.assertCurrent(b,check),signal));if(currentKeys){const live=credential.parse(p.readCredential(b));if(live.accessKeyId!==currentKeys.accessKeyId||live.secretAccessKey!==currentKeys.secretAccessKey||live.sessionToken!==currentKeys.sessionToken)return fail()}time()}
+   async function current(grantExpiresAt?:number){time();await within(()=>p.assertQualified(b));await within(()=>authorizeExecutionWindow(clock!,{expiresAt:Math.min(Date.parse(b.approvalExpiresAt),currentKeys?.expiresAt??Number.MAX_SAFE_INTEGER,grantExpiresAt??Number.MAX_SAFE_INTEGER)},check=>p.assertCurrent(b,check),signal));if(currentKeys){const live=credential.parse(p.readCredential(b));if(live.accessKeyId!==currentKeys.accessKeyId||live.secretAccessKey!==currentKeys.secretAccessKey||live.sessionToken!==currentKeys.sessionToken||live.expiresAt!==currentKeys.expiresAt)return fail()}time()}
    // SDK preparation/signing can await after send() starts. Recheck at the
    // actual HTTP boundary, using the original locked authorization owner.
    function finalHandler(){const native=new NodeHttpHandler();return {metadata:native.metadata,destroy:()=>native.destroy(),async handle(request:Parameters<typeof native.handle>[0],options:Parameters<typeof native.handle>[1]){await current();signal.throwIfAborted();return native.handle(request,options)}}}
    await current();await within(()=>p.admit(b));await current();
    const keys=credential.parse(p.readCredential(b));currentKeys=keys;await current();const {accountId,region}=e.target;
-   sts=new STSClient({region,credentials:keys,maxAttempts:1,requestHandler:finalHandler(),endpoint:`https://sts.${region}.amazonaws.com`});
+   const sdkKeys={accessKeyId:keys.accessKeyId,secretAccessKey:keys.secretAccessKey,...(keys.sessionToken?{sessionToken:keys.sessionToken}:{}),expiration:new Date(keys.expiresAt)};
+   sts=new STSClient({region,credentials:sdkKeys,maxAttempts:1,requestHandler:finalHandler(),endpoint:`https://sts.${region}.amazonaws.com`});
    const identity=await within(()=>sts!.send(new GetCallerIdentityCommand({}),{abortSignal:signal}));await current();if(identity.Account!==accountId)return fail();
-   s3=new S3Client({region,credentials:keys,maxAttempts:1,requestHandler:finalHandler(),endpoint:`https://s3.${region}.amazonaws.com`,followRegionRedirects:false,forcePathStyle:false,useAccelerateEndpoint:false,useDualstackEndpoint:false,useFipsEndpoint:false});
+   s3=new S3Client({region,credentials:sdkKeys,maxAttempts:1,requestHandler:finalHandler(),endpoint:`https://s3.${region}.amazonaws.com`,followRegionRedirects:false,forcePathStyle:false,useAccelerateEndpoint:false,useDualstackEndpoint:false,useFipsEndpoint:false});
    let value:TemplateNativeObservation;
    if(e.kind==='template.bucket.create'){
     if(region!=='us-east-2')return fail();await current();const response=await within(()=>s3!.send(new CreateBucketCommand({Bucket:e.target.bucket,CreateBucketConfiguration:{LocationConstraint:'us-east-2'}}),{abortSignal:signal}));if(response.$metadata.httpStatusCode!==200)return fail();value={kind:'bucket',providerStatus:200};
@@ -61,10 +64,10 @@ export function createTemplateNativeTransport(ports?:TemplateNativePorts){
      if(!b.access)return fail();const target=e.target,object={Bucket:target.bucket,Key:target.key,VersionId:target.objectVersion,ExpectedBucketOwner:accountId};await current();const response=await within(()=>s3!.send(new GetObjectCommand(object),{abortSignal:signal}));await current();if(response.$metadata.httpStatusCode!==200||response.VersionId!==target.objectVersion||response.ContentLength!==bytes.length||!response.Body)return fail();const readback=await within(()=>readBoundedPlatformTemplateBody(response.Body,bytes.length,signal));if(createHash('sha256').update(readback).digest('hex')!==target.bytesDigest)return fail();
      // Durable admission already committed before credential acquisition. A
      // second fresh authority check precedes the actual async signing operation.
-     await current();const signed=await within(()=>getSignedUrl(s3 as unknown as Parameters<typeof getSignedUrl>[0],new GetObjectCommand(object) as unknown as Parameters<typeof getSignedUrl>[1],{expiresIn:target.ttlSeconds}));await current();const url=validatePlatformTemplateSignedUrl(signed,target,keys.accessKeyId,time(),b.access.clockSkewMs),date=new URL(url).searchParams.get('X-Amz-Date')!;const signedAt=Date.parse(date.slice(0,4)+'-'+date.slice(4,6)+'-'+date.slice(6,8)+'T'+date.slice(9,11)+':'+date.slice(11,13)+':'+date.slice(13,15)+'Z'),hardExpiresAt=signedAt+target.ttlSeconds*1000;if(!Number.isSafeInteger(hardExpiresAt)||hardExpiresAt<=time())return fail();value={kind:'access',url,signedAt,ttlSeconds:target.ttlSeconds,hardExpiresAt};
+     await current();const signed=await within(()=>getSignedUrl(s3 as unknown as Parameters<typeof getSignedUrl>[0],new GetObjectCommand(object) as unknown as Parameters<typeof getSignedUrl>[1],{expiresIn:target.ttlSeconds}));await current();const url=validatePlatformTemplateSignedUrl(signed,target,keys.accessKeyId,time(),b.access.clockSkewMs),date=new URL(url).searchParams.get('X-Amz-Date')!;const signedAt=Date.parse(date.slice(0,4)+'-'+date.slice(4,6)+'-'+date.slice(6,8)+'T'+date.slice(9,11)+':'+date.slice(11,13)+':'+date.slice(13,15)+'Z'),hardExpiresAt=signedAt+target.ttlSeconds*1000;if(!Number.isSafeInteger(hardExpiresAt)||hardExpiresAt<=time()||hardExpiresAt>keys.expiresAt)return fail();value={kind:'access',url,signedAt,ttlSeconds:target.ttlSeconds,hardExpiresAt};
     }
    }
-   await current();const proof=Object.freeze({});observations.set(proof,{bindingDigest:b.bindingDigest,value:Object.freeze(value)});return proof;
+   await current(value.kind==='access'?value.hardExpiresAt:undefined);const proof=Object.freeze({});observations.set(proof,{bindingDigest:b.bindingDigest,value:Object.freeze(value)});return proof;
   }catch{return fail()}finally{sts?.destroy();s3?.destroy()}},
   consume(proof:object,raw:unknown):Readonly<TemplateNativeObservation>{const record=observations.get(proof);observations.delete(proof);const b=readTemplateExecutionBinding(raw);if(!record||record.bindingDigest!==b.bindingDigest)return fail();return record.value},
  };
