@@ -1,3 +1,5 @@
+import {postingSourceSchema} from '@/lib/growth/linkedin/platformPostingPlan';
+import {readImagePublicationSource} from './imagePublicationSource';
 import {createImageStorageSql,imageBindingForParent} from './imageStorageSql';
 import {readTemplateExecutionReceipt} from './templateExecutionContract';
 import {createTemplateStorageSql,templateBindingForParent} from './templateStorageSql';
@@ -98,7 +100,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     if(!locked)fail();
     const drafts=await sql.$queryRawUnsafe<unknown[]>('SELECT id,title,hook,body,cta,hashtags,"imageUrn",status,"scheduledFor","updatedAt" FROM "LinkedInPostDraft" WHERE id=$1 FOR SHARE',draftId);
     const connections=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"linkedinUrn","organizationUrn",scopes,status,"expiresAt","updatedAt" FROM "LinkedInAccountConnection" WHERE id=$1 FOR SHARE',connectionId);
-    if(drafts.length!==1||connections.length!==1)fail();return {draft:drafts[0],connection:connections[0]};
+    if(drafts.length!==1||connections.length!==1)fail();const source=postingSourceSchema.parse({draft:drafts[0],connection:connections[0]});return source.draft.imageUrn===null?source:{...source,imageLineage:await readImagePublicationSource(sql,source.connection,source.draft.imageUrn)};
    },
    ...createPlatformIdentitySqlReader(sql,()=>{if(!locked)fail()}),
    async lock(id){if(locked!==null)fail();await sql.$queryRawUnsafe('SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtextextended($1,0))','axiom-platform-governance:'+id);locked=id},

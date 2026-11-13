@@ -21,3 +21,14 @@ it('company posting requires its own granted scope and captured author',()=>{
  const c={...connection(),organizationUrn:'urn:li:organization:123'};expect(()=>preparePlatformLinkedInPost(draft(),c,'202605',now)).toThrow();
  expect(preparePlatformLinkedInPost(draft(),{...c,scopes:'w_organization_social'},'202605',now).effect.target.author).toBe(c.organizationUrn);
 });
+
+it('refuses an arbitrary stored image URN without a confirmed compatible managed-upload lineage',()=>{
+ expect(()=>preparePlatformLinkedInPost({...draft(),imageUrn:'urn:li:image:unverified'},connection(),'202605',now)).toThrow('platform_posting_source_unavailable');
+});
+it('binds a separately confirmed compatible upload lineage into the reviewed post and refuses substituted provenance',async()=>{
+ const {compileImagePublicationLineage}=await import('@/lib/governance/platform/imagePublicationLineage'),c=connection(),d=draft(),digest='a'.repeat(64);
+ const lineage=compileImagePublicationLineage({format:1,purpose:'platform_image_publication_lineage_v1',uploadActionId:'platform_action_11111111-1111-4111-8111-111111111111',uploadPlanDigest:digest,bindingDigest:digest,artifactId:'platform_image_artifact_11111111-1111-4111-8111-111111111111',bytesDigest:digest,connectionId:c.id,connectionRevision:linkedInConnectionRevision(c),author:c.linkedinUrn,providerImageReference:'urn:li:image:managed',grantReference:'platform_image_grant_'+digest,putReceiptDigest:digest});
+ const imageDraft={...d,imageUrn:'urn:li:image:managed'},post=preparePlatformLinkedInPost(imageDraft,c,'202605',now,undefined,lineage);expect(post.effect.target.imageLineageDigest).toBe(lineage.lineageDigest);expect(JSON.parse(post.body).content.media.id).toBe('urn:li:image:managed');
+ const {lineageDigest:originalDigest,...lineageBody}=lineage;expect(originalDigest).toMatch(/^[a-f0-9]{64}$/);for(const wrong of [{...lineage,lineageDigest:'b'.repeat(64)},compileImagePublicationLineage({...lineageBody,author:'urn:li:person:other'})])expect(()=>preparePlatformLinkedInPost(imageDraft,c,'202605',now,undefined,wrong)).toThrow();
+ expect(()=>preparePlatformLinkedInPost(d,c,'202605',now,undefined,lineage)).toThrow();
+});

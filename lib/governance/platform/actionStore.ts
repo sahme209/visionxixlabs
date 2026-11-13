@@ -246,8 +246,10 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async claim(id:string,version:number,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(await tx.readTemplateBinding?.(id))fail();if(state.version!==version||state.plan.effects.some(effect=>effect.kind==='deployment.ecs'||effect.kind==='custodian.drain'||effect.kind==='deployment.target.release'||effect.kind==='growth.image.initialize'||effect.kind==='growth.image.put'||effect.kind.startsWith('template.')))fail();await actors(tx,state);
+    const imagePosts=state.plan.effects.filter(e=>(e.kind==='growth.post.publish'||e.kind==='growth.schedule.change')&&e.target.imageLineageDigest!==undefined);
+    for(const e of imagePosts){if(!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent!(tx,e)}
     const next=claimPlatformAction(state,actor,await timely(tx,state));await tx.replace(id,version,next);
-    await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});});
+    await actors(tx,next);if(imagePosts.length){for(const e of imagePosts)await authority.assertEffectCurrent!(tx,e);await actors(tx,next)}await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});});
   },
   async claimNextEffect(id:string,principal:PlatformPrincipal):Promise<{effect:PlatformEffect;proof:object}>{
    const actor=platformPrincipalSchema.parse(principal);

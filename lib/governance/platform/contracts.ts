@@ -21,9 +21,9 @@ export const platformEffectSchema=z.discriminatedUnion('kind',[
   z.object({...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,destinationPathDigest:digest}).strict(),
   z.object({...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,profile:z.literal('private_derived_grant_v1'),artifactId:z.string().regex(/^platform_image_artifact_[a-f0-9-]{36}$/),grantReference:z.string().regex(/^platform_image_grant_[a-f0-9]{64}$/),destinationProfileId:identifier,destinationProfileDigest:digest}).strict(),
  ])}).strict(),
- effect('growth.post.publish',{...social,draftId:identifier,renderedPayloadDigest:digest}),
+ effect('growth.post.publish',{...social,draftId:identifier,renderedPayloadDigest:digest,imageLineageDigest:digest.optional()}),
  effect('growth.post.delete',{...social,draftId:identifier,postUrn:identifier,draftRevision:timestamp,publicationActionId:identifier,publicationPlanDigest:digest,apiVersion:z.string().regex(/^\d{6}$/)}),
- effect('growth.schedule.change',{...social,draftId:identifier,scheduledFor:timestamp,renderedPayloadDigest:digest}),
+ effect('growth.schedule.change',{...social,draftId:identifier,scheduledFor:timestamp,renderedPayloadDigest:digest,imageLineageDigest:digest.optional()}),
 ]).superRefine((e,c)=>{if(e.kind==='deployment.vercel'&&Boolean(e.target.leadId)!==Boolean(e.target.leadRevision))c.addIssue({code:'custom',message:'Incomplete deployment source reference'})});
 export const platformPlanSchema=z.object({format:z.literal(1),scope:z.literal('platform'),sourceDigest:digest,expiresAt:timestamp,effects:z.array(platformEffectSchema).min(1).max(32).refine(xs=>new Set(xs.map(x=>x.id)).size===xs.length)}).strict();
 export const platformPrincipalSchema=z.object({userId:identifier,sessionId:identifier}).strict();

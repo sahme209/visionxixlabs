@@ -6,7 +6,7 @@ import {readDeploymentPlatformSource} from './deploymentPreparation';
 import {preparePlatformLinkedInDeletion} from '@/lib/growth/linkedin/platformDeletionPlan';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule,currentLinkedInVersion,postingDraftSchema,postingConnectionSchema} from '@/lib/growth/linkedin/platformPostingPlan';
+import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule,currentLinkedInVersion,postingDraftSchema,postingConnectionSchema,postingSourceSchema} from '@/lib/growth/linkedin/platformPostingPlan';
 import {isPostingEnabled} from '@/lib/growth/linkedin/oauth';
 import {platformPrincipalSchema} from './contracts';
 import type {PlatformAuthority} from './actionStore';
@@ -39,8 +39,8 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   }
   if((effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change')||!isPostingEnabled())fail();
   if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change')return fail();
-  const source=z.object({draft:postingDraftSchema,connection:postingConnectionSchema}).strict().parse(await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId));
-  const version=currentLinkedInVersion(),now=await tx.now(),prepared=effect.kind==='growth.post.publish'?preparePlatformLinkedInPost(source.draft,source.connection,version,now,effect.id):preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(effect.target.scheduledFor),effect.id);
+  const source=postingSourceSchema.parse(await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId));
+  const version=currentLinkedInVersion(),now=await tx.now(),prepared=effect.kind==='growth.post.publish'?preparePlatformLinkedInPost(source.draft,source.connection,version,now,effect.id,source.imageLineage):preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(effect.target.scheduledFor),effect.id,source.imageLineage);
   if(!isPostingEnabled()||currentLinkedInVersion()!==version||sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))fail();
  }};
 }

@@ -26,6 +26,8 @@ Task2 storage/schema evidence: `IMAGE-STORAGE-LOCAL-RECEIPT.json`. The later IMA
 - [ ] After approved protocol reads, bind actual fixed provider endpoint/response, exact destinations/headers/expiry, one send/no retry/deadline/redirect refusal. No invented origin/path/native success rule.
 - [ ] Private observation capability only; current requester/reviewer/source/bytes/profile/expiry checked around awaits; uncertainty never advances/reinitializes/posts. Later separate post can reference only a compatible confirmed uploaded-image record.
 
+Local downstream publication binding is now evidenced in IMAGE-PUBLICATION-LINEAGE-LOCAL-RECEIPT.json: actual SQL proof consumption/current post claim with synthesized native upload observations. This does not complete the unchecked private native executor/real observation or qualification requirements above.
+
 ## Task4 — prepared authenticated client/UI and connected workflow
 Prepared HTTP intake/recovery/preview/review has actual HMAC/current-SQL local evidence in IMAGE-WORKFLOW-HTTP-LOCAL-RECEIPT.json. Prepared desktop client/saved-action review now adds real client→HTTP→HMAC/current SQL and injected React uncertainty/context/Blob lifecycle checks in IMAGE-DESKTOP-REVIEW-LOCAL-RECEIPT.json. The dedicated intake/proposal UI is now prepared and source-tested in IMAGE-PREPARATION-UI-LOCAL-RECEIPT.json; no real browser/native acceptance is claimed. Task4 remains partial: qualified native progression and later-post lineage are unfinished; both original task checkboxes remain open.
 - [ ] Exact artifact intake/preview and two-operation review; requester init/PUT progression and typed historical recovery, no extra human review timer after init and no address/token/error leaks.

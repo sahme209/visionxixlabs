@@ -110,3 +110,43 @@ it.skipIf(!enabled)('the real image desktop client keeps lost intake/proposal re
   const history=await requester.inspect(proposal.data.actionId);expect(history).toMatchObject({ok:true,data:{action:{status:'proposed',attemptCount:0}}});expect(intakes).toBe(1);expect(proposals).toBe(1);
  }finally{globalThis.fetch=old}
 });
+
+import {readImagePublicationSource} from '../imagePublicationSource';
+import {preparePlatformLinkedInPost,currentLinkedInVersion} from '@/lib/growth/linkedin/platformPostingPlan';
+async function publicationFixture(outcome:'confirmed'|'unknown'='confirmed'){
+ const f=await authorityFixture(),artifact=await f.service.intake(f.selection,f.bytes,actor),proposal=await f.service.prepare(artifact.artifact.artifactId,new Date(Date.now()+60000).toISOString(),randomUUID(),actor),view=await f.service.preview(proposal.actionId,reviewer);await f.service.review(proposal.actionId,0,view.binding.plan.digest,reviewer);view.bytes.fill(0);
+ const b=view.binding,urn='urn:li:image:synthetic_'+randomUUID().replaceAll('-','');
+ // Native observations are intentionally synthesized. This tests stored proof
+ // consumption, not a real provider/decoder/initializer/PUT acceptance.
+ await f.r.transaction(async tx=>{await tx.lock(proposal.actionId);const state=readPlatformAction(await tx.read(proposal.actionId)),claimed=claimPlatformAction(state,actor,await tx.now());await tx.replace(proposal.actionId,state.version,claimed);await tx.event({actionId:proposal.actionId,kind:'claimed',state:claimed});await tx.writeEffect(proposal.actionId,0,null,'claimed');await tx.event({actionId:proposal.actionId,kind:'effect.claimed',state:claimed,effectIndex:0});await tx.imageStorage!.reserveInitializer(b)});
+ await f.r.transaction(async tx=>{await tx.lock(proposal.actionId);const now=await tx.now(),context=imageUploadGrantContext(b,{providerImageReference:urn,issuedAt:now,expiresAt:now+30000});await tx.imageStorage!.recordGrant(context,sealImageUploadGrant(f.artifactKey,context,'https://synthetic-upload.invalid/exact?token=private'));const state=readPlatformAction(await tx.read(proposal.actionId));await tx.writeEffect(proposal.actionId,0,'claimed','confirmed');await tx.event({actionId:proposal.actionId,kind:'effect.observed',state,effectIndex:0,outcome:'confirmed',imageGrantReference:b.grantReference});await tx.writeEffect(proposal.actionId,1,null,'claimed');await tx.event({actionId:proposal.actionId,kind:'effect.claimed',state,effectIndex:1});await tx.imageStorage!.claimPut(actor)});
+ await f.r.transaction(async tx=>{await tx.lock(proposal.actionId);const result=await tx.imageStorage!.recordPut(outcome),state=readPlatformAction(await tx.read(proposal.actionId)),next=finishPlatformAction(state,outcome,await tx.now());await tx.writeEffect(proposal.actionId,1,'claimed',outcome);await tx.replace(proposal.actionId,state.version,next);await tx.event({actionId:proposal.actionId,kind:'effect.observed',state:next,effectIndex:1,outcome,imagePutResult:result})});
+ const draftId='image-post-'+randomUUID();await db.$executeRawUnsafe('INSERT INTO "LinkedInPostDraft" (id,title,hook,body,category,status,"imageUrn","updatedAt") VALUES ($1,$2,$3,$4,$5,$6,$7,clock_timestamp())',draftId,'Image title','Hook','Body','governance','approved',urn);
+ return {...f,b,urn,draftId,uploadActionId:proposal.actionId};
+}
+it.skipIf(!enabled)('derives compatible publication lineage from actual confirmed upload parent/children/grant/result SQL and binds it to a later post proposal',async()=>{
+ const f=await publicationFixture();const source=await f.r.transaction(async tx=>{await tx.lock('post-source-'+randomUUID());return tx.readGrowthPostingSource(f.draftId,f.id)}) as {draft:Parameters<typeof preparePlatformLinkedInPost>[0];connection:Parameters<typeof preparePlatformLinkedInPost>[1];imageLineage:unknown};
+ const post=preparePlatformLinkedInPost(source.draft,source.connection,currentLinkedInVersion(),Date.now(),undefined,source.imageLineage);expect(post.effect.target.imageLineageDigest).toMatch(/^[a-f0-9]{64}$/);expect(JSON.parse(post.body).content.media.id).toBe(f.urn);expect(JSON.stringify(source.imageLineage)).not.toMatch(/https:|token=|envelope|sessionId/);
+ const {prepareGrowthPlatformPlan}=await import('../growthPreparation'),old=process.env.LINKEDIN_POSTING_ENABLED;process.env.LINKEDIN_POSTING_ENABLED='true';
+ try{const plan=await f.r.transaction(async tx=>{await tx.lock('post-prepare-'+randomUUID());return prepareGrowthPlatformPlan(tx,{operation:'publish',draftId:f.draftId,connectionId:f.id,expiresAt:new Date(Date.now()+30000).toISOString()},await tx.now())});expect(plan.plan.effects[0]).toMatchObject({kind:'growth.post.publish',target:{imageLineageDigest:post.effect.target.imageLineageDigest}})}finally{if(old===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=old}
+});
+it.skipIf(!enabled)('refuses unknown uploads, arbitrary image URNs, other accounts and changed historical upload proof before post preparation',async()=>{
+ const unknown=await publicationFixture('unknown');await expect(unknown.r.transaction(async tx=>{await tx.lock('image-source-'+randomUUID());return tx.readGrowthPostingSource(unknown.draftId,unknown.id)})).rejects.toThrow();
+ const f=await publicationFixture();await expect(readImagePublicationSource(db as unknown as import('../sqlRepository').PlatformSql,{id:f.id,linkedinUrn:'urn:li:person:other',organizationUrn:null},f.urn)).rejects.toThrow();
+ await expect(readImagePublicationSource(db as unknown as import('../sqlRepository').PlatformSql,{id:f.id,linkedinUrn:'urn:li:person:source',organizationUrn:null},'urn:li:image:unverified')).rejects.toThrow();
+ // Deliberate isolated corruption proves the actual reader checks child state,
+ // rather than accepting only a parent status label. No real/history repair.
+ await db.$executeRawUnsafe('UPDATE "PlatformGovernanceEffect" SET status=$1 WHERE "actionId"=$2 AND index=1','unknown',f.uploadActionId);
+ await expect(f.r.transaction(async tx=>{await tx.lock('image-source-'+randomUUID());return tx.readGrowthPostingSource(f.draftId,f.id)})).rejects.toThrow();
+ const altered=await publicationFixture();await db.$executeRawUnsafe(`UPDATE "PlatformGovernanceEvent" SET "detailJson"=jsonb_set("detailJson",'{imagePutResult,receiptDigest}',$1::jsonb) WHERE "actionId"=$2 AND kind='effect.observed' AND "detailJson"->>'effectIndex'='1'`,JSON.stringify('b'.repeat(64)),altered.uploadActionId);
+ await expect(altered.r.transaction(async tx=>{await tx.lock('image-source-'+randomUUID());return tx.readGrowthPostingSource(altered.draftId,altered.id)})).rejects.toThrow();
+});
+it.skipIf(!enabled)('checks confirmed-image lineage again at real post review and claim, preserving an approved post when upload proof becomes unknown',async()=>{
+ const f=await publicationFixture(),{createPlatformActionService}=await import('../actionStore'),service=createPlatformActionService(f.r,f.authority),old=process.env.LINKEDIN_POSTING_ENABLED;process.env.LINKEDIN_POSTING_ENABLED='true';
+ try{
+  const proposal=await service.prepareGrowth({operation:'publish',draftId:f.draftId,connectionId:f.id,expiresAt:new Date(Date.now()+30000).toISOString()},actor,randomUUID()),view=await service.inspect(proposal.actionId,actor);
+  await service.review(proposal.actionId,0,view.plan.digest,reviewer);
+  await db.$executeRawUnsafe('UPDATE "PlatformGovernanceEffect" SET status=$1 WHERE "actionId"=$2 AND index=1','unknown',f.uploadActionId);
+  await expect(service.claim(proposal.actionId,1,actor)).rejects.toThrow();expect(await service.inspect(proposal.actionId,actor)).toMatchObject({status:'approved',attemptCount:0});
+ }finally{if(old===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=old}
+});
