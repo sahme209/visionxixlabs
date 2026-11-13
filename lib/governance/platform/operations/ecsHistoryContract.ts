@@ -33,3 +33,13 @@ export const ecsHistory=z.object({
  return v.result===null;
 });
 export type EcsHistory=z.infer<typeof ecsHistory>;
+
+/** A deliberate native observation may save evidence/finalize the ORIGINAL
+ * accepted parent. It grants no execution, rollback or fresh-health authority. */
+export const ecsNativeObservation=z.object({actionId:platformActionId,phase:z.enum(['reserved','accepted','stable','terminal_failure','unknown']),generation:z.number().int().positive().safe(),deploymentId:z.string().regex(/^ecs-svc\/[0-9]{1,32}$/).nullable(),lastReceiptId:operationalEvidenceId,credentialStatus:z.enum(['not_requested','pending','issued','unknown']),expired:z.boolean(),authority:z.literal('native_observation_only'),sourceValidation:z.enum(['checked_by_private_source','historical_terminal_receipt_only']),parentStatus:z.enum(['approved','claimed','confirmed','unknown']),parentReconciliation:z.enum(['not_performed','confirmed_from_native_receipt']),executionAuthorized:z.literal(false),providerWritePerformed:z.literal(false)}).strict().refine(v=>{
+ if(v.parentReconciliation==='confirmed_from_native_receipt'&&(v.phase!=='stable'||v.parentStatus!=='confirmed'||v.sourceValidation!=='checked_by_private_source'||v.credentialStatus!=='issued'))return false;
+ if(['accepted','stable','terminal_failure'].includes(v.phase)&&v.deploymentId===null)return false;
+ if(v.sourceValidation==='historical_terminal_receipt_only'&&!['stable','terminal_failure'].includes(v.phase))return false;
+ return v.parentStatus!=='confirmed'||v.phase==='stable';
+});
+export type EcsNativeObservation=z.infer<typeof ecsNativeObservation>;

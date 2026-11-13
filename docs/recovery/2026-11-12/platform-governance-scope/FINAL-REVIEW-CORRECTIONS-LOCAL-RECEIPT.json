@@ -1,0 +1,39 @@
+{
+  "scope": "Approved local correction of the two final whole-batch review findings; not live qualification",
+  "base": "8cc36828",
+  "artifactChecks": {
+    "log": "/private/tmp/axiom-acyclic-acceptance.log",
+    "passed": 25,
+    "actualCompilerAndSameCompiledConsumer": true,
+    "nativeTokenServerProviderQualification": "synthetic; HTTP intercepted"
+  },
+  "focusedCombined": {
+    "log": "/private/tmp/axiom-final-review-corrections-focused.log",
+    "passed": 89,
+    "overlap": true
+  },
+  "sql": {
+    "root": "/private/tmp/axiom-platform-pg-pptetzx4",
+    "passed": 228,
+    "failed": 0,
+    "pending": 0,
+    "database": "actual isolated PostgreSQL",
+    "stopped": true,
+    "providerCredentialNativeProfileAndPeople": "synthetic; actual compiled-pair hashes and signed fixture JWT; native HTTP intercepted"
+  },
+  "initialObservationFixtureFailures": {
+    "root": "/private/tmp/axiom-platform-pg-gz141anp",
+    "passed": 226,
+    "failed": 2,
+    "cause": "Fixture skipped reserved-to-accepted native transition; corrected to actual qualified outcome-source composition, not a weaker backend guard."
+  },
+  "subsequentFixtureCorrection": "Frozen synthetic profile expiry; current-source checks correctly rejected changing expiry. No timeout/assertion/guard was weakened.",
+  "rootTypes": "/private/tmp/axiom-final-review-corrections-types.log",
+  "desktopTypes": "/private/tmp/axiom-corrections-desktop-types.log",
+  "frontendBuild": "/private/tmp/axiom-corrections-desktop-build.log",
+  "fullSuite": "pending frozen run",
+  "productionBuild": "pending frozen run",
+  "independentReview": "WHOLE-BATCH-FINAL-SOURCE-REVIEW.md; no remaining critical/important finding in inspected source",
+  "realQualification": false,
+  "productionChanged": false
+}

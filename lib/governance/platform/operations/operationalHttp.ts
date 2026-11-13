@@ -6,7 +6,8 @@ import {createDefaultOperationalRequestService} from './operationalRequestServic
 type Service=Awaited<ReturnType<typeof createDefaultOperationalRequestService>>;
 const reply=(body:unknown,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','x-content-type-options':'nosniff'}});
 /** Prepared human boundary, not registered. Workload claim/issuance/execution
- * stay private; observation never finalizes the parent or authorizes rollback. */
+ * stay private; qualified observation may reconcile original native stability,
+ * but never sends a deployment or authorizes rollback. */
 export function createOperationalHttp(createService:(request:Request)=>Promise<Service>=createDefaultOperationalRequestService){return async(request:Request)=>{
  if(request.method!=='POST')return reply({ok:false,error:'method_not_allowed'},405);
  let service:Service;

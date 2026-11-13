@@ -1,5 +1,5 @@
 import {afterEach,expect,it,vi} from 'vitest';
-import {createGithubJobEntry} from '../githubJobEntry';
+import {createGithubJobEntry,createMeasuredGithubJobEntry} from '../githubJobEntry';
 import {createOperationalEcsResult} from '../ecsExecution';
 const d='a'.repeat(64),sha='a'.repeat(40),id='platform_action_11111111-1111-4111-8111-111111111111';
 const config={environment:'fixture-reviewed',protectionRevision:d,audience:'fixture-audience',endpoint:'https://custodian.fixture.invalid/workload',preflightEndpoint:'https://custodian.fixture.invalid/preflight'};
@@ -21,3 +21,14 @@ it('refuses changed config and native hints, with no fallback or reacquisition',
 it('does not turn successful channel capture into server authority or repeat a refused acquisition',async()=>{const f=setup(),entry=createGithubJobEntry(f.profile,f.read);f.send.mockImplementation(async url=>url.startsWith(f.profile.nativeOrigin)?Response.json({value:'synthetic.payload.signature'}):Response.json({ok:false},{status:401}));await expect(entry({actionId:id,delegationVersion:0},config)).rejects.toThrow('operational_job_unconfirmed');await expect(entry({actionId:id,delegationVersion:0},config)).rejects.toThrow();expect(f.send).toHaveBeenCalledTimes(2)});
 it('rejects context mutation between capture and first native request',async()=>{const f=setup();let reads=0;f.read.mockImplementation(key=>{reads++;if(reads===11)f.environment.GITHUB_RUN_ID='2';return f.environment[key]});await expect(createGithubJobEntry(f.profile,f.read)({actionId:id,delegationVersion:0},config)).rejects.toThrow();expect(f.send).not.toHaveBeenCalled()});
 it('rejects a malformed action before private context capture',async()=>{const f=setup();await expect(createGithubJobEntry(f.profile,f.read)({actionId:'not-an-action',delegationVersion:0},config)).rejects.toThrow('operational_job_unconfirmed');expect(f.read).not.toHaveBeenCalled();expect(f.send).not.toHaveBeenCalled()});
+
+it('binds measured workflow context without treating it as native or server qualification',async()=>{
+ const f=setup(),{workflowSha256,...rest}=f.profile,channel={...rest,format:3,purpose:'github_native_bootstrap_channel_v3'};
+ const entry=createMeasuredGithubJobEntry(channel,f.read);expect(await entry({actionId:id,delegationVersion:0},{...config,workflowSha256})).toEqual(f.result);expect(f.send).toHaveBeenCalledTimes(6);await expect(entry({actionId:id,delegationVersion:0},{...config,workflowSha256})).rejects.toThrow();
+ const g=setup(),wrong=createMeasuredGithubJobEntry(channel,g.read);await expect(wrong({actionId:id,delegationVersion:0},{...config,workflowSha256:'b'.repeat(64)})).rejects.toThrow('operational_job_unconfirmed');expect(g.send).toHaveBeenCalledTimes(2);
+});
+it('rejects old or digest-bearing compiler channels and malformed measured context before private environment capture',async()=>{
+ const f=setup(),{workflowSha256,...rest}=f.profile,channel={...rest,format:3,purpose:'github_native_bootstrap_channel_v3'};
+ for(const raw of [f.profile,{...channel,workflowSha256},{...channel,expiresAt:0}])expect(()=>createMeasuredGithubJobEntry(raw,f.read)).toThrow();
+ for(const configuration of [config,{...config,workflowSha256:'invalid'},{...config,workflowSha256,qualified:true}])await expect(createMeasuredGithubJobEntry(channel,f.read)({actionId:id,delegationVersion:0},configuration)).rejects.toThrow();expect(f.read).not.toHaveBeenCalled();expect(f.send).not.toHaveBeenCalled();
+});

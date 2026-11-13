@@ -8,16 +8,20 @@ export const githubJobConfiguration=z.object({environment:z.string().regex(/^[-A
  * No actual native coordinate, runtime qualification or default is supplied. */
 export const githubBootstrapProfile=githubJobConfiguration.extend({format:z.literal(2),purpose:z.literal('github_native_bootstrap_channel_v2'),repository:z.literal('sahme209/visionxixlabs'),ref:z.literal('refs/heads/main'),workflowPath:z.literal('.github/workflows/axiom-deploy-aws-ecs.yml'),workflowSha256:digest,nativeOrigin:z.string().max(512),nativePath:z.string().max(1024).regex(/^\/[A-Za-z0-9_./-]+$/),nativeQueryKeys:z.array(z.string().regex(/^[A-Za-z0-9_-]{1,64}$/)).max(16).readonly(),expiresAt:z.number().int().positive().safe()}).strict();
 export type GithubBootstrapProfile=z.infer<typeof githubBootstrapProfile>;
+/** Compiler channel has no self-referential workflow digest. Measured bytes are context; backend expected-source qualification remains mandatory. */
+export const githubBootstrapChannelProfile=githubBootstrapProfile.omit({workflowSha256:true,format:true,purpose:true}).extend({format:z.literal(3),purpose:z.literal('github_native_bootstrap_channel_v3')}).strict();
+export type GithubBootstrapChannel=z.infer<typeof githubBootstrapChannelProfile>;
+export const githubMeasuredJobConfiguration=githubJobConfiguration.extend({workflowSha256:digest}).strict();
 const keys=['ACTIONS_ID_TOKEN_REQUEST_URL','ACTIONS_ID_TOKEN_REQUEST_TOKEN','GITHUB_REPOSITORY','GITHUB_REF','GITHUB_SHA','GITHUB_WORKFLOW_SHA','GITHUB_WORKFLOW_REF','GITHUB_RUN_ID','GITHUB_RUN_ATTEMPT'] as const;
 export type GithubJobEnvironmentKey=typeof keys[number];
 export type GithubJobEnvironmentReader=(key:GithubJobEnvironmentKey)=>string|undefined;
 const fail=():never=>{throw Error('operational_job_unconfirmed')};
 function endpoint(raw:string){const u=new URL(raw);if(u.protocol!=='https:'||u.username||u.password||u.port||u.search||u.hash||u.href!==raw||!/^([a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z][a-z0-9-]*$/.test(u.hostname))return fail();return u}
-export function readGithubBootstrapProfile(raw:unknown):Readonly<GithubBootstrapProfile>{try{
- const p=githubBootstrapProfile.parse(raw),origin=new URL(p.nativeOrigin);
+function validateChannel(p:GithubBootstrapProfile|GithubBootstrapChannel){const origin=new URL(p.nativeOrigin);
  if(p.expiresAt<=Date.now()||origin.origin!==p.nativeOrigin||origin.protocol!=='https:'||origin.username||origin.password||origin.port||!origin.hostname.endsWith('.actions.githubusercontent.com')||p.nativeQueryKeys.includes('audience')||new Set(p.nativeQueryKeys).size!==p.nativeQueryKeys.length||endpoint(p.endpoint).origin!==endpoint(p.preflightEndpoint).origin||p.endpoint===p.preflightEndpoint)return fail();
- return Object.freeze({...p,nativeQueryKeys:Object.freeze([...p.nativeQueryKeys])});
-}catch{return fail()}}
+}
+export function readGithubBootstrapProfile(raw:unknown):Readonly<GithubBootstrapProfile>{try{const p=githubBootstrapProfile.parse(raw);validateChannel(p);return Object.freeze({...p,nativeQueryKeys:Object.freeze([...p.nativeQueryKeys])})}catch{return fail()}}
+export function readGithubBootstrapChannel(raw:unknown):Readonly<GithubBootstrapChannel>{try{const p=githubBootstrapChannelProfile.parse(raw);validateChannel(p);return Object.freeze({...p,nativeQueryKeys:Object.freeze([...p.nativeQueryKeys])})}catch{return fail()}}
 /** Only specific native variables are read, once plus exact currentness checks.
  * Hints can reject a mismatch; they cannot authenticate a job or approve work. */
 export function createGithubBootstrap(raw:unknown,read:GithubJobEnvironmentReader){

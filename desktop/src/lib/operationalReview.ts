@@ -45,18 +45,27 @@ export function createOperationalDelegationClient(context:Context){const reader=
 }}
 export type OperationalDelegationClient=ReturnType<typeof createOperationalDelegationClient>;
 
-import {ecsHistory,type EcsHistory} from '../../../lib/governance/platform/operations/ecsHistoryContract';
-/** Original history only; expired source never becomes renewed authority. */
+import {ecsHistory,ecsNativeObservation,type EcsHistory,type EcsNativeObservation} from '../../../lib/governance/platform/operations/ecsHistoryContract';
+async function exactHistory(value:EcsHistory){const {digest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,...manifest}=value.manifest,result=value.result;let resultMatches=true;if(result){const {receiptDigest,...fields}=result;resultMatches=await hash(fields)===receiptDigest}return resultMatches&&await hash({kind:'operational_manifest_v1',manifest})===digest}
+const observationUnavailable=(submitted=false)=>({ok:false as const,error:submitted?'Observation is unconfirmed. Inspect this original deployment; do not repeat automatically.':'Load the original accepted deployment before requesting one native observation.',outcomeUnconfirmed:submitted});
+/** History reads and deliberate native observations are distinct. Neither
+ * sends a deployment, acquires a write credential or authorizes rollback. */
 export function createOperationalHistoryClient(context:Context){return {
+ async observe(raw:unknown,signal?:AbortSignal):Promise<ReleasePlanResult<EcsNativeObservation>>{
+  const owns=owner(context,signal),parsed=ecsHistory.safeParse(raw);let submitted=false;
+  if(!parsed.success)return observationUnavailable();try{const u=new URL(context.getConfig().apiBase);if(u.protocol!=='https:'||u.username||u.password||u.origin!==context.getConfig().apiBase)return observationUnavailable()}catch{return observationUnavailable()}const saved=parsed.data;
+  if(saved.parentStatus!=='claimed'||saved.effectStatus!=='confirmed'||saved.result?.kind!=='accepted'||saved.credential.status!=='issued'||!saved.targetReservation||saved.failure||saved.stability)return observationUnavailable();
+  try{if(!await exactHistory(saved)||!owns())return observationUnavailable();submitted=true;
+   const response=await releaseOperationPlanRequest(context,'POST',path,{operation:'observe',actionId:saved.actionId},(raw):raw is EcsNativeObservation=>{const p=ecsNativeObservation.safeParse(raw);return p.success&&p.data.actionId===saved.actionId&&p.data.generation===saved.targetReservation!.generation&&p.data.credentialStatus==='issued'&&p.data.phase!=='reserved'&&(p.data.deploymentId===null&&p.data.phase==='unknown'||p.data.deploymentId===saved.result!.deploymentId)},signal);
+   return owns()?response:observationUnavailable(true);
+  }catch{return observationUnavailable(submitted)}
+ },
  async inspect(actionId:string,signal?:AbortSignal):Promise<ReleasePlanResult<EcsHistory>>{
   const owns=owner(context,signal);
   if(!platformActionId.safeParse(actionId).success)return {ok:false,error:'Load the original operational action reference.',outcomeUnconfirmed:false};
   const response=await releaseOperationPlanRequest(context,'POST',path,{operation:'inspect',actionId},(raw):raw is EcsHistory=>{const p=ecsHistory.safeParse(raw);return p.success&&p.data.actionId===actionId},signal);
   if(!response.ok)return response;
-  const {digest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,...manifest}=response.data.manifest;
-  const result=response.data.result;let resultMatches=true;
-  if(result){const {receiptDigest,...fields}=result;resultMatches=await hash(fields)===receiptDigest}
-  if(!resultMatches||await hash({kind:'operational_manifest_v1',manifest})!==digest||!owns())return {ok:false,error:'The returned history does not match its original record.',outcomeUnconfirmed:false};
+  if(!await exactHistory(response.data)||!owns())return {ok:false,error:'The returned history does not match its original record.',outcomeUnconfirmed:false};
   return response;
  },
 }}
