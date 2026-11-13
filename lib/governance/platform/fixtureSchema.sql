@@ -106,3 +106,18 @@ CREATE TABLE "PlatformTemplateDelivery" (
  "actionId" TEXT NOT NULL REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT, "claimJson" JSONB NOT NULL, "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 CREATE INDEX "PlatformTemplateDelivery_actionId_idx" ON "PlatformTemplateDelivery" ("actionId");
+
+-- LOCAL image custody only; production schema/apply is not authorized.
+CREATE TABLE "PlatformImageArtifact" (
+ id TEXT PRIMARY KEY, "creatorUserId" TEXT NOT NULL, "connectionId" TEXT NOT NULL,
+ "metadataJson" JSONB NOT NULL, envelope TEXT NOT NULL, "createdAtMs" DOUBLE PRECISION NOT NULL,
+ "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE "PlatformImageUploadGrant" (
+ id TEXT PRIMARY KEY, "actionId" TEXT NOT NULL UNIQUE REFERENCES "PlatformGovernanceAction"(id) ON DELETE RESTRICT,
+ "artifactId" TEXT NOT NULL REFERENCES "PlatformImageArtifact"(id) ON DELETE RESTRICT,
+ "contextJson" JSONB NOT NULL, envelope TEXT NOT NULL, "claimJson" JSONB, "putResultJson" JSONB,
+ "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX "PlatformImageArtifact_creatorUserId_connectionId_idx" ON "PlatformImageArtifact" ("creatorUserId","connectionId");
+CREATE INDEX "PlatformImageUploadGrant_artifactId_idx" ON "PlatformImageUploadGrant" ("artifactId");

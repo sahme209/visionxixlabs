@@ -16,8 +16,10 @@ Evidence: `IMAGE-CUSTODY-CORE-LOCAL-RECEIPT.json`; only pure/synthetic Task1 com
 
 ## Task2 — durable artifact, initializer liability, grant and child outcome
 - [ ] Current actual authority at intake/reviewer access; locked immutable artifact and parent/grant binding, initializer reservation before credentials, atomic grant+initializer receipt/event, permanent once-only PUT reservation.
-- [ ] Add only required local schema/fixtures; compare old model/enum semantics before current helper/client refresh. Never renew historical packets or apply production SQL.
+- [x] Add only required local schema/fixtures; compare old model/enum semantics before current helper/client refresh. Never renew historical packets or apply production SQL.
 - [ ] Actual owned isolated SQL: concurrency, unknown commits, rollback, wrong account/creator/session, substituted envelope/bytes/grant and delayed/expired work. Keep provider/decoder/key/profile qualification explicitly simulated.
+
+Task2 storage/schema evidence: `IMAGE-STORAGE-LOCAL-RECEIPT.json`. Current authenticated intake/reviewer source/key/decoder integration and authority journeys remain open; synthesized parent fixtures do not complete Task2.
 
 ## Task3 — qualified private init/PUT and later-post lineage
 - [ ] Identify/review existing decoder candidate; do not add dependency or execute unapproved native qualification. Missing real decode remains a refusal.

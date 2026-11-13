@@ -26,3 +26,6 @@ export function openImageUploadGrant(rawKey:unknown,rawContext:unknown,rawCipher
 /** Pure proposal only. The real locked parent/child/grant transaction MUST
  * commit this before credential/key access or PUT and recheck current people. */
 export function claimImagePut(rawContext:unknown,rawActor:unknown,now:number,previous:unknown){const c=context(rawContext),actor=platformPrincipalSchema.parse(rawActor);stamp.parse(now);if(previous!==null||hash(actor)!==hash(c.binding.requester)||now<c.native.issuedAt||now>=c.native.expiresAt||now>=Date.parse(c.binding.expiresAt))return fail();return Object.freeze({format:1 as const,purpose:'platform_image_put_claim_v1' as const,actionId:c.binding.actionId,planDigest:c.binding.plan.digest,grantReference:c.binding.grantReference,putIndex:1 as const,contextDigest:hash(c),phase:'claimed' as const,attempt:1 as const,claimedAt:now})}
+
+/** Canonical private record reconstruction, not native qualification. */
+export function readImageUploadGrantContext(raw:unknown){return context(raw)}

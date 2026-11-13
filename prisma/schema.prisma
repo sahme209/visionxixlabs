@@ -5177,6 +5177,7 @@ model PlatformGovernanceAction {
   templateReceipts PlatformTemplateReceipt[]
   templateArtifacts PlatformTemplateArtifact[]
   templateDeliveries PlatformTemplateDelivery[]
+  imageUploadGrant PlatformImageUploadGrant?
   @@index([createdAt, id])
 }
 
@@ -5394,4 +5395,32 @@ model PlatformTemplateDelivery {
   artifact PlatformTemplateArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
   action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   @@index([actionId])
+}
+
+/// LOCAL proposed private immutable image bytes; never public action/event data.
+model PlatformImageArtifact {
+  id String @id
+  creatorUserId String
+  connectionId String
+  metadataJson Json
+  envelope String
+  createdAtMs Float
+  createdAt DateTime @default(now())
+  grants PlatformImageUploadGrant[]
+  @@index([creatorUserId, connectionId])
+}
+
+/// LOCAL proposed exact-parent derived upload capability and permanent PUT claim.
+model PlatformImageUploadGrant {
+  id String @id
+  actionId String @unique
+  artifactId String
+  contextJson Json
+  envelope String
+  claimJson Json?
+  putResultJson Json?
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  artifact PlatformImageArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
+  @@index([artifactId])
 }
