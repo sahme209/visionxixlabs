@@ -1,0 +1,58 @@
+{
+  "observedAt": "2026-11-13T16:26:09.720167+00:00",
+  "scope": "inspected callers only, NOT complete call graph/coverage/qualification",
+  "historicalInventory": "TIME-CONSUMER-INVENTORY.json remains unchanged",
+  "callers": [
+    {
+      "path": "lib/governance/platform/imageArtifactService.ts",
+      "sha256": "dc4d99074e8147dab843aeee2e53f485dc5b66a5942e10b5a7fd4e4ac05ddc5f",
+      "status": "local intake/prepare/private-preview/review timing integrated; not native qualification"
+    },
+    {
+      "path": "lib/governance/platform/postImagePreviewService.ts",
+      "sha256": "bf9da52ed2d6e09384eae3822a427c90edb28191ab4b60dae4ece745f345a846",
+      "status": "local new-action selected-media preview timing integrated"
+    },
+    {
+      "path": "lib/governance/platform/imageExecutionStore.ts",
+      "sha256": "416f3ddb24fd870e8017862f6432fe78de1af07adea2c74197504f5b767acf10",
+      "status": "local initializer/PUT/readiness timing integrated; native protocol/time provenance open"
+    },
+    {
+      "path": "lib/governance/platform/templateNativeTransport.ts",
+      "sha256": "a7c4508c97823617e356e8379e1e72706ebaf24d3ef54eb015ffb9535d6ea746",
+      "status": "local credential/action/grant deadline intersection; signing/time/expiry provenance open"
+    },
+    {
+      "path": "lib/governance/platform/templateExecutionStore.ts",
+      "sha256": "f23de907d79688290fa3cbf8114a503df9bec7719dd44a5c5f94e6032d4c0567",
+      "status": "local session/action/one-use output timing integrated"
+    },
+    {
+      "path": "lib/governance/platform/operations/workloadRunner.ts",
+      "sha256": "0d438c5935154dfc9890ac8eaa91a54d67f479ce08838834df4b98076e5c4d50",
+      "status": "partial local operational time integration; whole participant/transitive join audit open"
+    },
+    {
+      "path": "lib/governance/platform/operations/delegation.ts",
+      "sha256": "e4cb58c9c7cb4fcee3bd253bbce63b71c9c0fc862ebdafe6c21557c745912ad8",
+      "status": "original locked final callbacks integrated; source acquisition/whole participant bounds audit open"
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseStore.ts",
+      "sha256": "a155edd43374c23a135ff0ef021d3cf96aa7d1fd13b062103a3f3d23607d9a23",
+      "status": "inspected current() uses DB-only time; local interval composition remains open"
+    },
+    {
+      "path": "lib/growth/linkedin/posting.ts",
+      "sha256": "59e816856b6d2b76576a3fcb96fc2086b5871e32e7674d309322d8dbd1e9297c",
+      "status": "inspected Date.now preparation and original beforeSend path; joined publishing timing remains open"
+    }
+  ],
+  "untracedOrIncomplete": [
+    "related scheduling/deletion and other transitive callers",
+    "source acquisition/bootstrap/signing/native utilities",
+    "whole cross-participant/profile consistency",
+    "real supplier/native/fleet/credential and human/provider qualification"
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "observedAt": "2026-11-13T16:26:09.807628+00:00",
+  "parentCommit": "7066f65fe1353daf636e8b99d30d30a603970410",
+  "scope": "approved local private-media read timing; partial joined-time Governance implementation",
+  "sourceSha256": {
+    "lib/governance/platform/__tests__/imageArtifactService.test.ts": "4daed9f5900546a52e25ba155bb7730013fca2254f10563de2d9cd9186d70d72",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "c6f10a64898dc89d3f38e1748d6b5644662686a1bbdaafed862e41fd6528f035",
+    "lib/governance/platform/__tests__/principalTime.test.ts": "33af7c2b7e2578a9c41114af3d0e9f7db61fd99f8827cb725bd1b0aad3a9208d",
+    "lib/governance/platform/imageArtifactService.ts": "dc4d99074e8147dab843aeee2e53f485dc5b66a5942e10b5a7fd4e4ac05ddc5f",
+    "lib/governance/platform/imageWorkflowRequest.ts": "d1e33cb65647fcaef4e51d9670055e17511ae9f86fb478950f8f8f2d85a0b5da",
+    "lib/governance/platform/postImagePreviewService.ts": "bf9da52ed2d6e09384eae3822a427c90edb28191ab4b60dae4ece745f345a846",
+    "lib/governance/platform/principalTime.ts": "6e075a70eb00350cd90093af95758b69c2ac69802398b51702ed02046060cf32",
+    "lib/governance/platform/__tests__/imageReviewJoinedTime.test.ts": "dc68a728f90cc35b30dc739ad5a7d0abf80cd1f2b6dab6dbf5f94bb35fc5a9a1",
+    "lib/governance/platform/__tests__/postImagePreviewJoinedTime.test.ts": "52304d34c9bbf808fe9e493f943de64c1d84908f0f19eadaa002a1d274038c78"
+  },
+  "ordinary": {
+    "numPassedTests": 19031,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20173,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "relevantSubset": {
+    "files": 5,
+    "passed": 34,
+    "includedInOrdinary": true
+  },
+  "strictRootTypes": "passed",
+  "review": "existing independent reviewer reports no remaining important issue in this media-read source slice; no execution",
+  "actualSql": "NOT RUN; opt-in fixture definitions updated but skipped",
+  "simulated": [
+    "authentication/people/roles",
+    "clock/profile/decoder",
+    "rows and transactions",
+    "upload provenance supplier"
+  ],
+  "actualLocal": [
+    "artifact/preparation/private-preview/review service",
+    "new-post exact plan/source/rendered-payload reconstruction",
+    "artifact/key crypto",
+    "guarded private request composition with memory identity rows"
+  ],
+  "effects": {
+    "realClockKeyCredentialProvider": false,
+    "actualSql": false,
+    "nativeQualification": false,
+    "resourcesOrInstall": false,
+    "productionSchemaFlags": false,
+    "enablement": false,
+    "pushDeploy": false,
+    "spending": false
+  },
+  "remaining": [
+    "publishing/scheduling/manual/source-acquisition time composition",
+    "whole participant/transitive consistency",
+    "real native clock/credential custody/fleet/SQL/human/provider qualification",
+    "frozen build/green PR and owner production gates"
+  ]
+}

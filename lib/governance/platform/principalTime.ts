@@ -22,3 +22,16 @@ export async function readPlatformPrincipalTimeWindow(tx:Pick<PlatformTransactio
 export async function assertPlatformPrincipalTime(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,clock:ExecutionTimeSource,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{
  try{const window=await readPlatformPrincipalTimeWindow(tx,raw,signal);await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window}catch{throw Error('platform_principal_time_unavailable')}
 }
+
+/** Supplemental time check for the actual phase's locked principals. It never
+ * assigns roles or adds a reviewer. The owner must repeat current authority and
+ * resource checks after this await and retain its original transaction locks. */
+export async function assertPlatformParticipantsTime(tx:Pick<PlatformTransaction,'readPrincipal'>,actors:readonly PlatformPrincipal[],clock:ExecutionTimeSource,restriction:{readonly notBefore?:number;readonly expiresAt?:number},signal:AbortSignal){
+ try{
+  signal.throwIfAborted();if(!actors.length)throw Error('missing participants');
+  const principals=actors.map(p=>platformPrincipalSchema.parse(p));
+  let notBefore=restriction.notBefore===undefined?0:stamp.parse(restriction.notBefore),expiresAt=restriction.expiresAt===undefined?Number.MAX_SAFE_INTEGER:stamp.parse(restriction.expiresAt);
+  for(const principal of principals){const row=await readPlatformPrincipalTimeWindow(tx,principal,signal);notBefore=Math.max(notBefore,row.notBefore);expiresAt=Math.min(expiresAt,row.expiresAt)}
+  const window=Object.freeze({notBefore,expiresAt});await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window;
+ }catch{throw Error('platform_principal_time_unavailable')}
+}
