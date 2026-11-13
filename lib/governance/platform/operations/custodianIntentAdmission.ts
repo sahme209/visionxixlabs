@@ -32,6 +32,7 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
  * workload, source and target checks. No public request/default source exists.
  * Returning an intent cannot bypass those caller checks or authorize a send. */
 export function createCustodianIntentAdmission(source:Source){
+ const assertedLocks=new WeakMap<OperationalDelegationTransaction,Readonly<{intentId:string;intentDigest:string;nativeKey:string}>>();
  const facts=source.facts,readFacts=facts?.readAdmission?.bind(facts),assertFacts=facts?.assertCurrent?.bind(facts);
  return Object.freeze({
  /** Revalidate the SAME permanent intent under its original custodian lock.
@@ -40,7 +41,12 @@ export function createCustodianIntentAdmission(source:Source){
   if(!supportsIntentStorage(tx)||!readFacts||!assertFacts)return fail();
   const intent=readCustodianIntent(raw),state=readOperationalDelegation(await tx.readDelegation(intent.actionId)),parent=readPlatformAction(await tx.read(intent.actionId)),manifest=state.manifest;
   if(intent.stage!=='source.acquire'||state.actionId!==intent.actionId||manifest.kind!=='deployment.ecs'||manifest.digest!==intent.manifestDigest||manifest.issuerProfileDigest!==intent.issuerProfileDigest||state.status!=='claimed'||state.version!==2||!state.executionPrincipal||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||parent.status!=='claimed'||parent.plan.digest!==state.parentPlanDigest||parent.plan.digest!==compileOperationalEcsPlan(manifest).digest||!same(parent.requester,state.requester)||!same(parent.reviewer,state.reviewer))return fail();
-  await tx.lockCustodian(intent.nativeKey);
+  // The SQL adapter permits one custodian-lock acquisition per transaction.
+  // Remember only that acquisition for this exact original intent, never facts
+  // or permission: EVERY assertion below still reloads record/source/barrier.
+  const held=assertedLocks.get(tx);
+  if(held){if(held.intentId!==intent.id||held.intentDigest!==intent.digest||held.nativeKey!==intent.nativeKey)return fail()}
+  else{await tx.lockCustodian(intent.nativeKey);assertedLocks.set(tx,Object.freeze({intentId:intent.id,intentDigest:intent.digest,nativeKey:intent.nativeKey}))}
   const selected=Object.freeze({nativeKey:intent.nativeKey,issuerProfileDigest:intent.issuerProfileDigest,admissionDigest:intent.admissionDigest,generation:intent.generation,version:intent.barrierVersion});
   const ownedTx=tx;
   async function check(){
