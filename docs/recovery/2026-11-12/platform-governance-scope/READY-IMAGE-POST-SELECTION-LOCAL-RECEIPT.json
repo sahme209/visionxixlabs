@@ -2,13 +2,14 @@
   "scope": "Approved local related-image selection and new-action preview; not activation",
   "base": "03c28839",
   "sql": {
-    "root": "/private/tmp/axiom-platform-pg-alnoq6wx",
+    "root": "/private/tmp/axiom-platform-pg-jzb53eba",
     "passed": 225,
     "failed": 0,
     "pending": 0,
     "actualDatabase": true,
     "providerKeysDecoderQualificationAndPeople": "synthetic; HTTP intercepted",
-    "stopped": true
+    "stopped": true,
+    "source": "356ec66d"
   },
   "focusedAcceptance": {
     "log": "/private/tmp/axiom-post-preview-acceptance.log",
@@ -21,8 +22,33 @@
   ],
   "frontendBuild": "/private/tmp/axiom-post-selection-desktop-build.log",
   "review": "Same whole-three-family reviewer, read-only diff over03c28839; no remaining critical/important finding in correction",
-  "fullOrdinarySuite": "pending current run",
-  "frozenProductionBuild": "pending current frozen runtime",
+  "fullOrdinarySuite": {
+    "root": "/private/tmp/axiom-current-full-suite-e5ykv070",
+    "passed": 18902,
+    "failed": 0,
+    "pending": 1139,
+    "failedSuites": 0,
+    "total": 20041,
+    "sourceUnchanged": true,
+    "noRealProviderOrActualPgOptins": true
+  },
+  "frozenProductionBuild": {
+    "head": "356ec66df02dd2f8c46f41fffb5b417f2e95a485",
+    "sourceCount": 13349,
+    "networkDenied": true,
+    "databaseUrlSupplied": false,
+    "loadedEnvironmentFilesAbsent": true,
+    "trackedExampleOnly": true,
+    "scope": "ordinary local production compilation only; no native issuer launch/deploy",
+    "exitCode": 0,
+    "buildLogSha256": "07c21006d3e00448d1d1fbacdc4792caeb9743cdd1deb40916786cd1cbd24ef0",
+    "sourceUnchanged": true,
+    "root": "/private/tmp/axiom-image-combined-build-sxxm3ilb",
+    "staticPages": 304,
+    "archiveSha256": "33728abc2e9fec1dadc3ae98f34195823bebc7bb07b7b0cc14885ae962134a93",
+    "sourceManifestSha256": "3758b4698f93604dfea8b4712b5fb70ef5ade90a851d644ac978170220eac4d7",
+    "warnings": "Existing verified-issuer dynamic import-expression warnings retained"
+  },
   "sourceHashes": {
     "lib/governance/platform/templateWorkflowRequest.ts": "6e9c75345e0b85a8489d9610390d00427a26e0a7387e9489caea2f8f2bb955a7",
     "lib/governance/platform/deploymentRecoveryHttp.ts": "4c1cd08e3e92cecca26fbc6796d43ba3482855c5b3e5b02530f98cfb6d0ce60e",
@@ -123,5 +149,7 @@
     "focusedPassed": 6,
     "log": "/private/tmp/axiom-post-legacy-compatibility.log",
     "types": "/private/tmp/axiom-post-legacy-types.log"
-  }
+  },
+  "finalRuntime": "356ec66df02dd2f8c46f41fffb5b417f2e95a485",
+  "remaining": "Real native/provider/decoder/launcher/key/custody/profile qualification and activation unavailable; mandatory-green batched PR and full Governance/master/live gates remain."
 }
