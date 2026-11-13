@@ -1,0 +1,38 @@
+{
+  "format": 1,
+  "status": "PREPARED ONLY; no new public requests made; fresh owner permission required",
+  "candidateCommit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "candidateTag": "3.0.0-rc.0; prerelease source assessment ONLY, not adoption/support claim",
+  "sourceSha256": {
+    "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/reader.cjs": "d11e92038ba8c06befd0a43bcf215bc2099793a4c1a6ab270f3a5270f547c348",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/reader.test.cjs": "9eeb7ef03354a9e994cdbfe8c64127818fe4b4ae323a996af1569072ed20cc80"
+  },
+  "programs": {
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node": {
+      "canonical": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b"
+    },
+    "/usr/bin/curl": {
+      "canonical": "/usr/bin/curl",
+      "sha256": "b6f8c43b623b760e2fa95910e3f62bb518257c48b4ef54ed09285e49d6d1b85f"
+    }
+  },
+  "tests": {
+    "mockOnlyPassed": 7,
+    "logSha256": "57bd46f18bfe6304338baa2315093bbf59c304d27c3f122ac27f292d62144ac5"
+  },
+  "sequence": "Use ONE prepared reader instance for ONE pass: commit metadata, exact returned tree, up to six relevant regular text blobs positively enumerated by that tree; verify each blob SHA/size. No new instance/restart/retry after failure or exhausted budget.",
+  "limits": {
+    "requests": 8,
+    "sourceFiles": 6,
+    "bytesPerRequest": 262144,
+    "transferSeconds": 10,
+    "childSeconds": 15,
+    "redirects": false,
+    "auth": false,
+    "proxy": false,
+    "retry": false
+  },
+  "scope": "Public AWS official GitHub source text only; save public bodies and nonsecret hashes; no fetched code execution, install/adoption, clock query, cloud credentials/accounts/resources/provider actions, deployment/enablement/spending",
+  "independentReview": "File-only exact reader/mocktest review no important findings; pinned sequence/limits/blob checks/permanent stop verified; reviewer executed no tests/curl/network."
+}
