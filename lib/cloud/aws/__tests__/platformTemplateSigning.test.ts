@@ -1,23 +1,10 @@
 import {afterEach,it,expect,vi} from 'vitest';
-import {createHash} from 'node:crypto';
 import {S3Client} from '@aws-sdk/client-s3';
 import {STSClient} from '@aws-sdk/client-sts';
-const fixture=vi.hoisted(()=>({bytes:Buffer.from('template-fixture')}));
-vi.mock('node:fs/promises',()=>({readFile:vi.fn(async()=>fixture.bytes)}));
 import {ensureTemplatePublished} from '../templateHosting';
 import {templateAccessEffect} from '../platformTemplatePlan';
 import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
 afterEach(()=>{vi.restoreAllMocks();vi.unstubAllEnvs()});
-it('accepts the actual installed S3 presigner with synthetic credentials and no SDK transport',async()=>{
- vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');
- vi.stubEnv('AWS_SHARED_CREDENTIALS_FILE','/private/tmp/axiom-no-synthetic-aws-credentials');vi.stubEnv('AWS_CONFIG_FILE','/private/tmp/axiom-no-synthetic-aws-config');vi.stubEnv('AWS_PROFILE','axiom-synthetic');
- const accountId='123456789012',region='us-east-2',input={accountId,region,objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600};
- const effect=templateAccessEffect({...input,bytesDigest:createHash('sha256').update(fixture.bytes).digest('hex')});
- const sts=vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);
- const s3=vi.spyOn(S3Client.prototype,'send').mockResolvedValue({VersionId:'version-1',ContentLength:fixture.bytes.length,Body:(async function*(){yield fixture.bytes})()} as never);
- const service={claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:vi.fn(async()=>{})};
- const result=await ensureTemplatePublished({platformExecution:bindPlatformExecution(service,'fixture-action'),access:input});
- expect(result.available).toBe(true);expect(sts).toHaveBeenCalledTimes(1);expect(s3).toHaveBeenCalledTimes(1);
- if(!result.available)throw Error('synthetic_profile_unavailable');
- const parsed=new URL(result.url);expect(parsed.searchParams.get('versionId')).toBe('version-1');expect(parsed.searchParams.get('X-Amz-Expires')).toBe('3600');expect(parsed.searchParams.get('X-Amz-SignedHeaders')).toBe('host');
-});
+/** Installed-presigner positive acceptance moved to templateNativeTransport.test
+ * and the joined SQL executor; a v1 binding must not remain a signing bypass. */
+it('even a well-shaped old binding and configured broker environment cannot reach signing credentials/native I/O',async()=>{vi.stubEnv('AWS_CONNECTOR_BROKER_ACCESS_KEY_ID','synthetic-key');vi.stubEnv('AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY','synthetic-secret');const effect=templateAccessEffect({accountId:'123456789012',region:'us-east-2',bytesDigest:'a'.repeat(64),objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:3600}),service={claimNextEffect:vi.fn(async()=>({effect,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})},sts=vi.spyOn(STSClient.prototype,'send').mockRejectedValue(Error('unexpected_native_call')),s3=vi.spyOn(S3Client.prototype,'send').mockRejectedValue(Error('unexpected_native_call'));const {bytesDigest:_,...access}=effect.target;expect(await ensureTemplatePublished({platformExecution:bindPlatformExecution(service,'legacy'),access})).toMatchObject({available:false});expect(service.claimNextEffect).not.toHaveBeenCalled();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled()});

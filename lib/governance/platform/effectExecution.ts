@@ -25,7 +25,7 @@ export async function runPlatformEffect<T>(binding:object,rawEffect:PlatformEffe
  const entry=bindings.get(binding)??fail();if(entry.busy||entry.closed)fail();entry.busy=true;
  let proof:object|undefined,outcome:'confirmed'|'refused'|'unknown'='unknown',value:T|undefined,observation:unknown,completed=false,expected:PlatformEffect|undefined;
  try{
-  const selectedEffect=platformEffectSchema.parse(rawEffect);expected=selectedEffect;const claim=await entry.service.claimNextEffect(entry.actionId);proof=claim.proof;
+  const selectedEffect=platformEffectSchema.parse(rawEffect);expected=selectedEffect;if(selectedEffect.kind.startsWith('template.'))fail();const claim=await entry.service.claimNextEffect(entry.actionId);proof=claim.proof;
   if(sha256ContentHash(selectedEffect)!==sha256ContentHash(claim.effect)){outcome='refused';throw Error('effect_mismatch')}
   let used=false,authorized=false;
   const result=await prepareAndSend(async()=>{

@@ -147,25 +147,13 @@ async function templateFixture(beforeReview?:(id:string)=>void){
  beforeReview?.(id);
  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
  vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);
- return {bytes,input,id,binding:await createDefaultPlatformExecution(request,id,1)};
+ return {bytes,input,id,request,binding:bindPlatformExecution(requester,id)};
 }
-it.skipIf(!enabled)('joins default SQL authority to exact template readback and actual synthetic signing',async()=>{
- try{
-  const f=await templateFixture(),read=vi.spyOn(S3Client.prototype,'send').mockResolvedValue({VersionId:'version-1',ContentLength:f.bytes.length,Body:(async function*(){yield f.bytes})()} as never);
-  expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:true});
-  expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});expect(read).toHaveBeenCalledTimes(1);
-  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'confirmed',attemptCount:1});
- }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
+it.skipIf(!enabled)('preserves paired source preview/review but refuses old template execution before a parent attempt or native read',async()=>{
+ try{const f=await templateFixture(),read=vi.spyOn(S3Client.prototype,'send').mockRejectedValue(Error('unexpected_native_read'));await expect(createDefaultPlatformExecution(f.request,f.id,1)).rejects.toThrow();expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});expect(read).not.toHaveBeenCalled();const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'approved',attemptCount:0});}finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
 });
-it.skipIf(!enabled)('revocation during template readback prevents URL release in the default composed path',async()=>{
- try{
-  const f=await templateFixture();vi.spyOn(S3Client.prototype,'send').mockImplementation(async()=>{
-   await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);
-   return {VersionId:'version-1',ContentLength:f.bytes.length,Body:(async function*(){yield f.bytes})()};
-  });
-  expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});
-  const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
- }finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
+it.skipIf(!enabled)('reviewer revocation cannot revive old template bindings or permit credential/native access',async()=>{
+ try{const f=await templateFixture(),read=vi.spyOn(S3Client.prototype,'send').mockRejectedValue(Error('unexpected_native_read'));await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);await expect(createDefaultPlatformExecution(f.request,f.id,1)).rejects.toThrow();expect(await ensureTemplatePublished({platformExecution:f.binding,access:f.input})).toMatchObject({available:false});expect(read).not.toHaveBeenCalled();const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'approved',attemptCount:0});}finally{vi.restoreAllMocks();vi.unstubAllEnvs()}
 });
 
 import {randomUUID} from 'node:crypto';

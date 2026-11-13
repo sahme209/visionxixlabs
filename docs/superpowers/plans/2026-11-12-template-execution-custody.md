@@ -34,9 +34,9 @@ Interfaces: target-wide lock/read/CAS, immutable result/artifact records and sep
 
 ### Task3: Real template adapter/private observation composition
 Interfaces: actual existing SDK adapters acquire no credential/issue no grant until exact durable admission; typed private transport observation; atomic receipt/target/artifact/event/outcome.
-- [ ] RED unknown/malformed/version/identity/expiry/source/role revocation and final native-send/signer timing.
-- [ ] Reserve before write/signing, preserve actual STS/owner/versioning/conditional-upload/version-read checks and SDK no-retry/fixed endpoints. Legacy access profile refuses before credential/signing work.
-- [ ] Expected: intercepted actual SDK plus current SQL journeys pass, unknown outcomes held, no URL output on ambiguous recording.
+- [x] RED unknown/malformed/version/identity/expiry/source/role revocation and final native-send/signer timing.
+- [x] Reserve before write/signing, preserve actual STS/owner/versioning/conditional-upload/version-read checks and SDK no-retry/fixed endpoints. Legacy access profile refuses before credential/signing work.
+- [x] Expected: intercepted actual SDK plus current SQL journeys pass, unknown outcomes held, no URL output on ambiguous recording.
 
 ### Task4: Original-session encrypted one-use delivery
 Interfaces: qualified private key/clock/channel ports, exact stored grant context and locked durable once-only output claim; current requester/reviewer/source/approval/hard-expiry checks.

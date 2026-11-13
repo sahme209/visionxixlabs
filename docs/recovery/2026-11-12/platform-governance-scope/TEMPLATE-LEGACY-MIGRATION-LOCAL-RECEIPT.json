@@ -1,0 +1,49 @@
+{
+  "base": "ca335895",
+  "scope": "LOCAL legacy template helper/caller retirement with functional native-contract migration; no route activation or real qualification",
+  "red": "/private/tmp/axiom-template-legacy-red.log",
+  "actualPostgres": {
+    "root": "/private/tmp/axiom-platform-pg-h01dlw6r",
+    "passed": 180,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "coverage": "two legacy paired SQL cases changed to pre-attempt refusal; positive contracts retained in new native/SQL executor; one new actual SQL readback revocation",
+    "nativeAndQualification": "intercepted/synthetic"
+  },
+  "validation": {
+    "sharedPassed": 536,
+    "SQLoptinsSkippedInSeparateRun": 180,
+    "log": "/private/tmp/axiom-template-legacy-current-regression.log",
+    "rootNativeTypes": "PASS",
+    "rootNativeTypesLog": "/private/tmp/axiom-template-legacy-current-types.log",
+    "notice": "2server-render/classifier checks; no browser visual acceptance",
+    "noticeDiscoveryRefusal": "/private/tmp/axiom-template-notice-red.log",
+    "noticePass": "/private/tmp/axiom-template-notice-test.log",
+    "productionBuild": "not repeated; required at final batch checkpoint"
+  },
+  "sourceHashes": {
+    "lib/cloud/aws/templateHosting.ts": "0639b7af5b05889379201b53d0829aa59832879204844456b65074a31f669f60",
+    "lib/cloud/aws/__tests__/platformTemplateHosting.test.ts": "5e6bdc27c0f91662565ab39c556ce91ad95477aa5fa6ccada609fb9ce1089b08",
+    "lib/cloud/aws/__tests__/platformTemplateSigning.test.ts": "4d3b55c7711357af57d5a6d7c0d0f663f0d9daba5733ac27dd3b3c4975a2894a",
+    "lib/governance/platform/actionStore.ts": "b3ccb475692610b06d83e9c5d00a5629ee46f76e8c8abd8777d6ce96fb826019",
+    "lib/governance/platform/effectExecution.ts": "8ad3a4f683024fccfb5584bbf70259eac7b4cefc970698b9a64692629b13ed95",
+    "lib/governance/platform/__tests__/effectExecution.test.ts": "e52cce516567be970d9fc5ead286f41b08553f579e7baccbad4e590e2a61937c",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "621e6ffcb30974b8e8b062efcd9d7f39c686a69dd3338b864f9cdc7ea9d1639f",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "820c0cc77c638ad9aa410be56475e74830823c0836132adc3918b8c5c35e6d07",
+    "scripts/run-platform-governance-postgres.py": "e2c3cd2076b60cfe72995d9b22fb69626e02a8b7a8523f0570dc6d5dbdcbcbe1",
+    "app/operator/onboarding/AwsKeyConnect.tsx": "d2f8c1da61abf017f515429645e101ccfea5124bed7f76145a23e6333043b973",
+    "app/operator/onboarding/TemplateReviewNotice.tsx": "3cb73c43ad3164ee66f8826ded32459786e727c9b351eb113bb11d8a379a3896",
+    "app/operator/onboarding/__tests__/TemplateReviewNotice.test.ts": "a748ff929dba085422e87b00308bab1d3e7dac59076f9844818bdb8f4ad767dc",
+    "lib/demo/demoScenarios.ts": "45553610f4a1f3c2c7f70fefe1bdc4dde4c6c361640ff2c9f70d0ca7ba803f3e"
+  },
+  "remaining": [
+    "Task5 new authenticated prepared HTTP/client/UI",
+    "Task6 family/image/final whole-batch independent review/build/mandatory-green PR",
+    "real runtime/protection/source/clock/key/channel/native/customer qualification and owner production actions"
+  ],
+  "productionChanged": false,
+  "realProviderCalls": false,
+  "permissionsChanged": false,
+  "spending": false
+}

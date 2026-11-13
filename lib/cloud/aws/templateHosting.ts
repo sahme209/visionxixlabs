@@ -1,53 +1,12 @@
-/** Platform template hosting: separate reviewed bucket/object/access effects.
- * Legacy GET/cache/operator override is not authority. No retry or public ACL.
- * Existing object versions are observed before a signed bearer URL is granted;
- * intended recipient metadata does not make that URL nontransferable. */
+/** Legacy metadata entry points. Execution moved to the separately reviewed
+ * template executor with durable native-resource admission and scoped output.
+ * These shims never read broker credentials, write, sign or adopt old plans. */
 import 'server-only';
-import {readPlatformTemplateBytes as templateBytes} from './platformTemplateSource';
-import {createHash} from 'node:crypto';
-import {S3Client,CreateBucketCommand,PutObjectCommand,GetObjectCommand,GetBucketVersioningCommand} from '@aws-sdk/client-s3';
-import {STSClient,GetCallerIdentityCommand} from '@aws-sdk/client-sts';
-import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
-import {runPlatformEffect} from '@/lib/governance/platform/effectExecution';
-import {templateBucketEffect,templateObjectEffect,templateAccessEffect,templateRegion,type TemplateAccessInput} from './platformTemplatePlan';
+import type {TemplateAccessInput,templateAccessEffect} from './platformTemplatePlan';
 const MAX_BYTES=256*1024;
 const fail=():never=>{throw Error('platform_template_unavailable')};
-const sha=(bytes:Uint8Array)=>createHash('sha256').update(bytes).digest('hex');
-async function withBroker<T>(accountId:string,rawRegion:string,work:(s3:S3Client,signal:AbortSignal,current:()=>void)=>Promise<T>):Promise<T>{
- const region=templateRegion(rawRegion),accessKeyId=process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim(),secretAccessKey=process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY?.trim();
- if(!accessKeyId||!secretAccessKey)fail();
- const credentials={accessKeyId:accessKeyId!,secretAccessKey:secretAccessKey!},signal=AbortSignal.timeout(15000);
- const current=()=>{signal.throwIfAborted();if(process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim()!==accessKeyId||process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY?.trim()!==secretAccessKey)fail()};
- const sts=new STSClient({region,credentials,maxAttempts:1,endpoint:`https://sts.${region}.amazonaws.com`});
- let s3:S3Client|undefined;
- try{
-  const identity=await sts.send(new GetCallerIdentityCommand({}),{abortSignal:signal});current();if(identity.Account!==accountId)fail();
-  s3=new S3Client({region,credentials,maxAttempts:1,endpoint:`https://s3.${region}.amazonaws.com`,followRegionRedirects:false,forcePathStyle:false,useAccelerateEndpoint:false,useDualstackEndpoint:false,useFipsEndpoint:false});
-  return await work(s3,signal,current);
- }finally{sts.destroy();s3?.destroy()}
-}
-export async function createPlatformTemplateBucket(input:{accountId:string;region:string;platformExecution:object;effectId?:string}){
- const effect=templateBucketEffect(input.accountId,input.region,input.effectId),{accountId,region,bucket}=effect.target;
- // AWS documents that recreating an owned us-east-1 bucket resets ACLs.
- // Other regions return conflict instead; never convert conflict to success.
- const createRegion=templateRegion(region);if(createRegion==='us-east-1')return fail();
- return runPlatformEffect(input.platformExecution,effect,beforeSend=>withBroker(accountId,region,async(s3,signal,current)=>{
-  await beforeSend();current();
-  const result=await s3.send(new CreateBucketCommand({Bucket:bucket,CreateBucketConfiguration:{LocationConstraint:createRegion}}),{abortSignal:signal});current();
-  if(result.$metadata.httpStatusCode!==200)fail();return {outcome:'confirmed',value:{accountId,region,bucket}};
- }));
-}
-export async function publishPlatformTemplateObject(input:{accountId:string;region:string;platformExecution:object;effectId?:string}){
- const bytes=await templateBytes(),effect=templateObjectEffect(input.accountId,input.region,sha(bytes),input.effectId),{accountId,region,bucket,key,bytesDigest}=effect.target;
- return runPlatformEffect(input.platformExecution,effect,beforeSend=>withBroker(accountId,region,async(s3,signal,current)=>{
-  const versioning=await s3.send(new GetBucketVersioningCommand({Bucket:bucket,ExpectedBucketOwner:accountId}),{abortSignal:signal});current();if(versioning.Status!=='Enabled')fail();
-  await beforeSend();current();
-  const result=await s3.send(new PutObjectCommand({Bucket:bucket,Key:key,ExpectedBucketOwner:accountId,IfNoneMatch:'*',Body:bytes,ContentType:'application/x-yaml',Metadata:{'axiom-template-sha256':bytesDigest}}),{abortSignal:signal});current();
-  if(result.$metadata.httpStatusCode!==200)fail();
-  const objectVersion=typeof result.VersionId==='string'&&result.VersionId&&result.VersionId!=='null'?result.VersionId:null;
-  return {outcome:'confirmed',value:{accountId,region,bucket,key,bytesDigest,objectVersion,requiresVersioning:objectVersion===null}};
- }));
-}
+export async function createPlatformTemplateBucket(_input:{accountId:string;region:string;platformExecution:object;effectId?:string}):Promise<never>{return fail()}
+export async function publishPlatformTemplateObject(_input:{accountId:string;region:string;platformExecution:object;effectId?:string}):Promise<never>{return fail()}
 async function boundedBody(body:unknown,expected:number,signal:AbortSignal){
  if(!body||typeof body!=='object'||!(Symbol.asyncIterator in body))fail();
  const stream=body as AsyncIterable<Uint8Array>&{destroy?:()=>void},iterator=stream[Symbol.asyncIterator](),parts:Buffer[]=[];let size=0,complete=false;
@@ -84,27 +43,7 @@ function validateSignedUrl(raw:string,target:ReturnType<typeof templateAccessEff
 export interface PublishResult{available:true;url:string;bucket:string;publishedNow:boolean;brokerAccountId:string}
 export interface PublishError{available:false;reason:'platform_review_required'|'platform_template_unavailable';detail:string;brokerArn?:string;bucket?:string}
 export async function ensureTemplatePublished(opts:{forceRefresh?:boolean;platformExecution?:object;access?:Omit<TemplateAccessInput,'bytesDigest'>}={}):Promise<PublishResult|PublishError>{
- if(!opts.platformExecution||!opts.access)return {available:false,reason:'platform_review_required',detail:'A platform operator must prepare and independently review this exact template access grant.'};
- try{
-  const bytes=await templateBytes(),effect=templateAccessEffect({...opts.access,bytesDigest:sha(bytes)}),target=effect.target;
-  const grant=await runPlatformEffect(opts.platformExecution,effect,beforeSend=>withBroker(target.accountId,target.region,async(s3,signal,current)=>{
-   const object={Bucket:target.bucket,Key:target.key,VersionId:target.objectVersion,ExpectedBucketOwner:target.accountId};
-   const response=await s3.send(new GetObjectCommand(object),{abortSignal:signal});current();
-   if(response.VersionId!==target.objectVersion||response.ContentLength!==bytes.length||!response.Body)fail();
-   if(sha(await boundedBody(response.Body,bytes.length,signal))!==target.bytesDigest)fail();
-   // Prepare the URL privately, then recheck authority after the async signer
-   // and immediately before releasing this bearer access grant.
-   const signed=await getSignedUrl(s3 as unknown as Parameters<typeof getSignedUrl>[0],new GetObjectCommand(object) as unknown as Parameters<typeof getSignedUrl>[1],{expiresIn:target.ttlSeconds});current();
-   const url=validateSignedUrl(signed,target,process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim());
-   await beforeSend();current();validateSignedUrl(url,target,process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim());
-   return {outcome:'confirmed',value:{available:true as const,url,bucket:target.bucket,publishedNow:false,brokerAccountId:target.accountId}};
-  }));
-  // Recording can itself outlast a short grant. Never release an expired URL
-  // and never sign again to conceal the original consumed attempt.
-  validateSignedUrl(grant.url,target,process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim());
-  return grant;
- }catch{return {available:false,reason:'platform_template_unavailable',detail:'The exact template version, current authority or access outcome could not be verified. No automatic retry was made.'}}
+ return {available:false,reason:!opts.platformExecution||!opts.access?'platform_review_required':'platform_template_unavailable',detail:'Use the separately reviewed template workflow. Legacy metadata, overrides and bindings cannot create, upload or sign a template grant.'};
 }
-
 /** Shared private validation only; exports do not grant credentials or authority. */
 export {boundedBody as readBoundedPlatformTemplateBody,validateSignedUrl as validatePlatformTemplateSignedUrl};

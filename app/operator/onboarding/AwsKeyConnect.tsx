@@ -12,12 +12,13 @@
  * &externalId=…) auto-validates and advances.
  *
  * The CFN deep-link uses an S3-hosted templateURL (the platform
- * auto-publishes the YAML to its broker bucket the first time anyone
- * asks). We fetch the URL from /api/aws/quick-deploy-url — AWS Console
+ * requires separate reviewed platform access; the legacy GET cannot
+ * publish or sign it). The legacy endpoint is /api/aws/quick-deploy-url; AWS Console
  * rejects templateBody URL fragments with "templateURL is required".
  */
 
 import { useEffect, useState } from "react";
+import {TemplateReviewNotice,isTemplateReviewBlocked} from "./TemplateReviewNotice";
 import { useSearchParams, useRouter } from "next/navigation";
 
 const SS_EXTERNAL_ID = "axiom.aws.externalId";
@@ -285,6 +286,8 @@ export function AwsKeyConnect({
     const isCfnLoadFail   = !cfnUrl;
     const isS3PermFix     = result?.ok === false && result.error === "broker_s3_perms_missing";
     const isAssumeRoleFix = result?.ok === false && result.error === "broker_assume_role_perms_missing";
+
+    if(result?.ok === false && isTemplateReviewBlocked(result.error)) return <TemplateReviewNotice />;
 
     const retryLoad = () => {
       setResult(null);
