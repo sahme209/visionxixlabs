@@ -22,15 +22,18 @@ export async function createImageWorkflowRequestComposition(request:RequestConte
  function possessed(){if(session()!==actor.sessionId)return fail()}
  async function guarded<T>(fn:()=>Promise<T>){possessed();const value=await fn();possessed();return value}
  const authority={assertCurrent:(tx:PlatformTransaction,p:PlatformPrincipal)=>guarded(()=>assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails))};
- function protect(r:ImageArtifactResources):ImageArtifactResources{return {
+ const artifactClock=ports.resources?.clock,executionClock=ports.executionResources?.clock,sameClock=!ports.resources||!ports.executionResources||artifactClock===executionClock;
+ function readClock(r:ImageArtifactResources,source:ImageArtifactResources['clock'],s:AbortSignal){if(!sameClock||typeof source!=='function')return fail();return guarded(()=>source.call(r,s))}
+ function protect(r:ImageArtifactResources,sourceClock:ImageArtifactResources['clock']):ImageArtifactResources{return {
+  clock:s=>readClock(r,sourceClock,s),
   decoder:{get profileDigest(){possessed();return r.decoder.profileDigest},assertQualified:(d,s)=>guarded(()=>r.decoder.assertQualified(d,s)),inspect:(b,m,s)=>guarded(()=>r.decoder.inspect(b,m,s))},
   readKey:(a,s)=>guarded(()=>r.readKey(a,s)),assertKeyCurrent:(a,k,s)=>guarded(()=>r.assertKeyCurrent(a,k,s)),
   ...(r.readUploadProfile?{readUploadProfile:(a:Parameters<NonNullable<ImageArtifactResources['readUploadProfile']>>[0],s:AbortSignal)=>guarded(()=>r.readUploadProfile!(a,s))}:{}),
   ...(r.assertUploadProfileCurrent?{assertUploadProfileCurrent:(p:unknown,a:Parameters<NonNullable<ImageArtifactResources['assertUploadProfileCurrent']>>[1],s:AbortSignal)=>guarded(()=>r.assertUploadProfileCurrent!(p,a,s))}:{}),
  }}
- const resources=ports.resources?protect(ports.resources):undefined,e=ports.executionResources;
+ const resources=ports.resources?protect(ports.resources,artifactClock!):undefined,e=ports.executionResources,clock=executionClock;
  const executionResources:ImageExecutionResources|undefined=e?{
-  ...protect(e),get version(){possessed();return e.version},now:()=>{possessed();return e.now()},
+  ...protect(e,clock!),clock:s=>readClock(e,clock!,s),get version(){possessed();return e.version},now:()=>{possessed();return e.now()},
   assertNativeQualified:(b,v,s)=>guarded(()=>e.assertNativeQualified(b,v,s)),assertObservationAllowed:(b,v,s)=>guarded(()=>e.assertObservationAllowed(b,v,s)),
   readCredential:(b,i,s)=>guarded(()=>e.readCredential(b,i,s)),assertCredentialCurrent:(b,k,s)=>guarded(()=>e.assertCredentialCurrent(b,k,s)),
   readGrantKey:(b,s)=>guarded(()=>e.readGrantKey(b,s)),assertGrantKeyCurrent:(b,k,s)=>guarded(()=>e.assertGrantKeyCurrent(b,k,s)),

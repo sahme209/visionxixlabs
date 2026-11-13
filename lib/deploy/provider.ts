@@ -1,8 +1,8 @@
 import { generateSiteFiles, generateSiteFilesFromPlan, type WebsiteBuilderPlan } from "../scaffoldGenerator";
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 
-import {runPlatformEffect} from '@/lib/governance/platform/effectExecution';
-import {preparePlatformVercelDeployment,readPlatformDeploymentResponse} from './platformDeployment';
+import {runPlatformEffect,readPlatformDeploymentTransport} from '@/lib/governance/platform/effectExecution';
+import {preparePlatformVercelDeployment} from './platformDeployment';
 
 export type DeployProvider = "vercel" | "aws" | "azure" | "gcp";
 export class UnsupportedDeploymentProviderError extends Error {
@@ -65,16 +65,9 @@ async function deployToVercel(
   const teamId=process.env.VERCEL_TEAM_ID??'';
   const prepared=preparePlatformVercelDeployment(files,{projectName:options.projectName,teamId,target:options.target,effectId:options.effectId,source:options.source});
   const expectedEnvironment=prepared.effect.target.environment;
-  const data=await runPlatformEffect(options.platformExecution,prepared.effect,async beforeSend=>{
-    const token=process.env.VERCEL_TOKEN||options.credentials?.vercelToken;
-    if(!token)throw Error('platform_deployment_credentials_unavailable');
-    await beforeSend();
-    if(process.env.VERCEL_TEAM_ID!==teamId||(process.env.VERCEL_TOKEN||options.credentials?.vercelToken)!==token)throw Error('platform_deployment_configuration_changed');
-    const response=await fetch('https://api.vercel.com/v13/deployments',{
-      method:'POST',redirect:'error',signal:AbortSignal.timeout(15000),
-      headers:{Authorization:`Bearer ${token}`,'Content-Type':'application/json','x-vercel-team-id':teamId},body:prepared.body,
-    });
-    const raw=await readPlatformDeploymentResponse(response);
+  const transport=readPlatformDeploymentTransport(options.platformExecution);
+  const data=await runPlatformEffect(options.platformExecution,prepared.effect,async(beforeSend,beforeCredential)=>{
+    const raw=await transport.send(prepared.effect,prepared.body,beforeSend,beforeCredential);
     if(!raw||typeof raw!=='object'||Array.isArray(raw))throw Error('platform_deployment_result_unconfirmed');
     const result=raw as {url?:unknown;id?:unknown;readyState?:unknown;state?:unknown;target?:unknown;alias?:unknown};
     if(typeof result.id!=='string'||!/^dpl_[A-Za-z0-9]+$/.test(result.id)||(expectedEnvironment==='production'?result.target!=='production':result.target!==undefined&&result.target!==null&&result.target!=='preview'))throw Error('platform_deployment_result_unconfirmed');

@@ -1,0 +1,45 @@
+{
+  "format": 1,
+  "scope": "approved local joined-time integration: fresh ECS observation original-owner/current-reader/profile/native-read gate",
+  "approval": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "sourceSha256": {
+    "lib/governance/platform/operations/observationAuthorization.ts": "33c0f34e7603dc388bfd566302b76540576eca027f8801a22a264b9d82cc2a0c",
+    "lib/governance/platform/operations/ecsOutcomeSource.ts": "49005dce05a277a84be7d64e60eb0fbb78dcc8a5fa131045cf4b794ca04e88d5",
+    "lib/governance/platform/operations/delegation.ts": "8f309171412bd08439ff6f60fea3b9013fd6ecc03192106b4fecea9e85dd177a",
+    "lib/governance/platform/operations/reservationStore.ts": "7cec0b08f4eb214012dbb7f51f31d65597c1d6d6c4d87a8a598c61397a436f48",
+    "lib/governance/platform/operations/ecsDecisionTime.ts": "9069eeb9235700b9db9af5ff363833bb83695ca3a236477d03c037e045afbf63",
+    "lib/governance/platform/operations/operationalRequest.ts": "e700998f652598a67520f6698f0b61fa3226ae84eb77a136929dbf7b57293b32",
+    "lib/governance/platform/operations/__tests__/ecsOutcomeSource.test.ts": "e4487078fb95f2f80678685ffcce2cb95486058979e0c4ab6fc11514cfcdea6b",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "a7d6ae83f6f14266f28fa53fe86e929450beaf4e8ead897bc7babc7d52f68d14",
+    "lib/demo/demoScenarios.ts": "7b7ccc5ce5fc0c6c216b6b21b73a897715107846aed93b24e35a2b3be5dd7448"
+  },
+  "focused": {
+    "passed": 59,
+    "files": 4,
+    "sqlCasesCollectedButSkipped": 147
+  },
+  "rootStrictTypes": "PASS exit0",
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  },
+  "ordinary": {
+    "numPassedTests": 19188,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20330
+  },
+  "review": "final reader-only/profile expiry contradiction reproduced and corrected; no remaining important finding in this slice; file/source review only",
+  "realMechanisms": "actual pure/store/reservation/delegation and installed SDK signing/HTTP-handler composition; native HTTP intercepted; synthetic clock/profile/credential/people/custody, memory transactions",
+  "actualSql": "NOT RUN for this revision; historical228PASS remains only7504a725",
+  "nativeQualification": "NOT established",
+  "productionChanged": false,
+  "fullGovernance": "incomplete and disabled",
+  "next": [
+    "manual-release evidence-window final-owner ordering regression/audit",
+    "growth/deployment source-window identity and whole transitive/current-participant audit",
+    "one reviewed fresh actual SQL batch after coherent source checkpoint",
+    "real runtime/clock/custody/fleet/credential/provider/human qualification",
+    "all existing master and owner production gates"
+  ]
+}

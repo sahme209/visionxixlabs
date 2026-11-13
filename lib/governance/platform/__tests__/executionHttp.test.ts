@@ -6,7 +6,7 @@ import {platformInspectionSchema} from '../viewContract';
 const d='a'.repeat(64),id='platform_action_11111111-1111-4111-8111-111111111111';
 function fixture(actor='requester'){
  let saved=platformInspectionSchema.parse({actionId:id,version:1,status:'approved',attemptCount:0,requesterUserId:'requester',reviewerUserId:'reviewer',plan:{format:1,scope:'platform',digest:d,sourceDigest:d,expiresAt:'2099-01-01T00:00:00Z',effects:[{id:'post',kind:'growth.post.publish',target:{draftId:'saved-draft',connectionId:'saved-account',connectionRevision:d,author:'urn:li:person:author',renderedPayloadDigest:d}}]},expired:false,effects:[{id:'post',status:'not_started'}],authority:'history_only',sourceValidation:'not_checked'});
- const service={actorUserId:actor,inspect:vi.fn(async()=>saved),claim:vi.fn(async()=>{saved={...saved,status:'claimed',version:2,attemptCount:1}}),claimNextEffect:vi.fn(),beforeEffectSend:vi.fn(),observeEffect:vi.fn()};
+ const service={actorUserId:actor,createGrowthExecutionBinding:vi.fn(()=>Object.freeze({})),inspect:vi.fn(async()=>saved),claim:vi.fn(async()=>{saved={...saved,status:'claimed',version:2,attemptCount:1}}),claimNextEffect:vi.fn(),beforeEffectSend:vi.fn(),observeEffect:vi.fn()};
  effects.post.mockImplementation(async()=>{saved={...saved,status:'confirmed',version:3,effects:[{id:'post',status:'confirmed'}]};return {kind:'success'}});
  return {service,handle:createPlatformExecutionHttp(async()=>service),saved:()=>saved};
 }
@@ -27,3 +27,5 @@ it('unsupported effect families and expired approvals refuse before a claim',asy
  const unsupported=fixture();unsupported.saved().plan.effects=[{id:'post',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}}];expect((await unsupported.handle(req())).status).toBe(409);expect(unsupported.service.claim).not.toHaveBeenCalled();
  const expired=fixture();expired.saved().expired=true;expect((await expired.handle(req())).status).toBe(409);expect(expired.service.claim).not.toHaveBeenCalled();expect(effects.post).not.toHaveBeenCalled();expect(effects.schedule).not.toHaveBeenCalled();expect(effects.remove).not.toHaveBeenCalled();
 });
+
+it('a missing qualified private growth attachment refuses before the parent claim',async()=>{const f=fixture();f.service.createGrowthExecutionBinding.mockImplementationOnce(()=>{throw Error('unqualified')});expect((await f.handle(req())).status).toBe(409);expect(f.service.claim).not.toHaveBeenCalled();expect(effects.post).not.toHaveBeenCalled();expect(f.saved().status).toBe('approved')});

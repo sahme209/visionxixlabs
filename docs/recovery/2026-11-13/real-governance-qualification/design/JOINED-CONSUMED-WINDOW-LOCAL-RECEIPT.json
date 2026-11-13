@@ -1,0 +1,51 @@
+{
+  "format": 1,
+  "scope": "Approved local joined-time work: private consumed-JWT bounds and immutable supplier binding; complete owner join remains open",
+  "approval": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "sourceSha256": {
+    "lib/governance/platform/operations/workloadIdentity.ts": "66b569542ae3a2b155ee913573a7180be82fd3c0ae18d4e675aa0c4ebeb48287",
+    "lib/governance/platform/operations/__tests__/workloadIdentity.test.ts": "1575062edc00f8af0a1b88a791f33eaa990028f6b8b61497b7d2b958a03d4c3a",
+    "lib/demo/demoScenarios.ts": "9bfa4b1f304d25850e775419d1fcad1238a41ee8694ffedb671d534d57ff1033",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/JOINED-WORKLOAD-OWNER-IMPLEMENTATION-PLAN.md": "b13a1f08335ed90e39a652eda9734b71c0ef8249c14d9cef6fd3bf60332b29de",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/GROWTH-PRIVATE-ACQUISITION-COMPOSITION-PROPOSAL.md": "1ca15fd8bcb6a0c102bd8c5b23bf15615152afc3559ae32d3c52c3a021077487"
+  },
+  "red": {
+    "passed": 42,
+    "failed": 3,
+    "reason": "missing private window method; supplier rewrote expected binding"
+  },
+  "focused": {
+    "passed": 45,
+    "files": 1
+  },
+  "rootStrictTypes": "PASS exit0 after test-only empty vi.fn input tuple annotation correction",
+  "ordinary": {
+    "numPassedTests": 19205,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20347,
+    "numFailedTestSuites": 0
+  },
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  },
+  "review": "Independent source review: no important issue in identity step; growth design corrected and separately reviewed with no remaining important finding",
+  "logsSha256": {
+    "work/workload-consumed-window-red.log": "b605c7e2689cf003395e8211f69d831f60a167da87cbd4134f63bd934147404a",
+    "work/workload-consumed-window-green.log": "6d0f4b855aa5c767e95b5120a234d6e68cd229e6a54492550628bac48fd13e6f",
+    "work/workload-consumed-window-types.log": "17a9b56c32a50c8ae0ec855aac8fcc0c5eab284c4e6448dba37bcfa8ff5c1601",
+    "work/workload-consumed-window-types-final.log": "3fe8f1d4c885a796efc179822f03d514fb82bfaf636e5d7fdfa27dc0a0fdfa63",
+    "work/workload-consumed-window-ordinary.json": "827be4797ff5ab20b7b70c344e43914248411c7e2b2363f94807551a1aca9ba4",
+    "work/workload-consumed-window-demo.log": "086e88cdfd7e9f4092fa6bf6f2d68b4898a31c9d7ff16d2a2f5d038a505d311c"
+  },
+  "actualSql": "NOT RUN; earlier 228PASS belongs only to7504a725; both grants consumed",
+  "remaining": [
+    "complete workload source-read/STS/ECS joined original-owner composition with explicit fact/window ports",
+    "growth local private-acquisition/cancellation implementation requires scoped owner design approval",
+    "fresh coherent actual SQL/build/final review/mandatory-green PR checkpoint",
+    "real runtime/time/custody/fleet/human/provider acceptance; complete master plan and production gates"
+  ],
+  "activation": "incomplete/disabled; no live/default supplier enabled",
+  "externalActions": "NONE: no provider/credential/SQL/native launch/signing/install/push/workflow/deploy/resource/spending"
+}

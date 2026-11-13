@@ -7,4 +7,4 @@ import {createDeploymentRecoveryRequestComposition} from './deploymentRecoveryRe
 const unavailable=async():Promise<never>=>{throw Error('platform_deployment_native_qualification_unavailable')};
 /** Unregistered. Existing-schema historical reads only; no invented real native
  * terminal profile, issuer qualification, deployment or production capability. */
-export function createDefaultDeploymentRecoveryRequestService(request:Request){return createDeploymentRecoveryRequestComposition(request,{repo:createPlatformSqlRepository(prisma as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:readConfiguredPlatformAdmins,source:{assertCurrent:unavailable,assertEvidenceCurrent:unavailable,readTerminal:unavailable}})}
+export function createDefaultDeploymentRecoveryRequestService(request:Request){return createDeploymentRecoveryRequestComposition(request,{clock:async()=>{throw Error('platform_native_time_unqualified')},repo:createPlatformSqlRepository(prisma as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:readConfiguredPlatformAdmins,source:{assertCurrent:unavailable,assertEvidenceCurrent:unavailable,readTerminal:unavailable}})}

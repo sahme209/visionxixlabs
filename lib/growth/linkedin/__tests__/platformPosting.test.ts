@@ -6,16 +6,20 @@ vi.mock('@/lib/security/credentialVault',()=>({decryptCredential:m.decrypt}));
 vi.mock('../../audit',()=>({writeGrowthAudit:m.audit}));
 import {publishDraft} from '../posting';
 import {preparePlatformLinkedInPost} from '../platformPostingPlan';
-import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
+import {syntheticGrowthBinding} from '@/lib/governance/platform/__tests__/fixtures/syntheticGrowthNative';
 let draft:ReturnType<typeof draftFixture>,connection:ReturnType<typeof connectionFixture>;
 function draftFixture():Parameters<typeof preparePlatformLinkedInPost>[0]{return {id:'draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(Date.now()-1000)}}
 function connectionFixture(){return {id:'connection',linkedinUrn:'urn:li:person:abc',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(Date.now()+60000),updatedAt:new Date(Date.now()-1000)}}
-function binding(imageLineage?:unknown){const effect=preparePlatformLinkedInPost(draft,connection,'202605',Date.now(),undefined,imageLineage).effect,service={actorUserId:'actual-requester',claimNextEffect:vi.fn(async()=>({effect,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})};return {value:bindPlatformExecution(service,'fixture-action'),service}}
+function binding(imageLineage?:unknown){const effect=preparePlatformLinkedInPost(draft,connection,'202605',Date.now(),undefined,imageLineage).effect,service={actorUserId:'actual-requester',claimNextEffect:vi.fn(async()=>({effect,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})};return {value:syntheticGrowthBinding(service,'fixture-action',connection.updatedAt.toISOString()),service}}
 beforeEach(()=>{vi.clearAllMocks();vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');draft=draftFixture();connection=connectionFixture();m.draft.mockImplementation(async()=>({...draft}));m.connection.mockImplementation(async args=>args.select?.accessToken?{accessToken:'stored-encrypted',updatedAt:connection.updatedAt}:{...connection});m.imageSource.mockResolvedValue(undefined);m.decrypt.mockReturnValue('synthetic-plaintext');m.updateDraft.mockResolvedValue({count:1});m.updateConnection.mockResolvedValue({count:1});m.run.mockResolvedValue({id:'run'});});
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs()});
 it('unadmitted and invented execution cannot read account credentials or send',async()=>{
  const http=vi.fn();vi.stubGlobal('fetch',http);for(const platformExecution of [undefined,{}])expect(await publishDraft({draftId:'draft',triggeredBy:'untrusted-hint',connectionId:'connection',platformExecution})).toMatchObject({kind:'governance_required'});
  expect(m.connection).not.toHaveBeenCalled();expect(m.decrypt).not.toHaveBeenCalled();expect(http).not.toHaveBeenCalled();
+});
+it('an opaque generic binding without qualified growth runtime refuses before source or bookkeeping',async()=>{
+ const {bindPlatformExecution}=await import('@/lib/governance/platform/effectExecution'),effect=preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect,binding=bindPlatformExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{}},'original');
+ expect(await publishDraft({draftId:draft.id,connectionId:connection.id,triggeredBy:'hint',platformExecution:binding})).toMatchObject({kind:'governance_required'});expect(m.draft).not.toHaveBeenCalled();expect(m.connection).not.toHaveBeenCalled();expect(m.run).not.toHaveBeenCalled();
 });
 it('posts only through exact connection/payload/final authorization and reports a real URN',async()=>{
  const b=binding(),http=vi.fn(async(_url:string,_init?:RequestInit)=>new Response('',{status:201,headers:{'x-restli-id':'urn:li:share:123'}}));vi.stubGlobal('fetch',http);

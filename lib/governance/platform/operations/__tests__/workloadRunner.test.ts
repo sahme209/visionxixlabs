@@ -3,7 +3,7 @@ import {createOperationalWorkloadRunner} from '../workloadRunner';
 const id='platform_action_11111111-1111-4111-8111-111111111111';
 function fixture(){
  const repo={transaction:vi.fn()},authority={assertCurrent:vi.fn()},source={readManifest:vi.fn(),assertCurrent:vi.fn()},identity={authenticate:vi.fn(),consume:vi.fn(),assertConsumedCurrent:vi.fn()},targets={reserve:vi.fn(),assertHeld:vi.fn()},issuerQualification=vi.fn(),transport={assertQualified:vi.fn(),send:vi.fn()};
- const config={repo,authority,source,identity,targets,intents:{reserve:vi.fn()},custodian:{assertQualified:issuerQualification,assertSourceLeaseCurrent:vi.fn(),readCustodianCredential:vi.fn(),assertCustodianCurrent:vi.fn()},transport};
+ const config={repo,authority,source,identity,targets,intents:{reserve:vi.fn()},custodian:{clock:async()=>({earliest:Date.now(),latest:Date.now()+1}),assertQualified:issuerQualification,assertSourceLeaseCurrent:vi.fn(),readCustodianCredential:vi.fn(),assertCustodianCurrent:vi.fn()},transport};
  return {repo,config,issuerQualification,transport,runner:createOperationalWorkloadRunner(config)};
 }
 

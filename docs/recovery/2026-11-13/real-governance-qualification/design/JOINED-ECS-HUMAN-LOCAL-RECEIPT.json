@@ -1,0 +1,43 @@
+{
+  "format": 1,
+  "scope": "approved local joined-time integration; ECS human preparation/preview/review/delegation only",
+  "approval": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "focused": {
+    "passed": 36,
+    "failed": 0,
+    "files": 3
+  },
+  "demo": {
+    "passed": 15,
+    "sqlDefinitionsCollectedButSkipped": 147
+  },
+  "rootStrictTypes": "PASS exit0",
+  "ordinary": {
+    "numPassedTests": 19161,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20303
+  },
+  "sourceSha256": {
+    "lib/governance/platform/operations/ecsDecisionTime.ts": "5618da28cdd6bae2dfc1bf4a7759176c7a237f4d91518d79505bd392832b5e28",
+    "lib/governance/platform/operations/ecsPreparation.ts": "6782328ec9887bd5111865c8126846bd5333ed1bea5b36e4cbadccf252d9b047",
+    "lib/governance/platform/operations/delegation.ts": "c60a971db5d6d7e6a62ea1d2bcfd9866b17a2f5f2f952d8f74dcb26cf79d8431",
+    "lib/governance/platform/operations/operationalRequest.ts": "4b94f42f03d814aec6832466cc0572821e82552abd32091ac0421329e6c53586",
+    "lib/governance/platform/operations/__tests__/ecsPreparation.test.ts": "745c223c9271f7186ed8d923765e27f7360e38b1db134c4683643133b9460bb2",
+    "lib/governance/platform/operations/__tests__/delegation.test.ts": "810ba054c45b0aac388a8a1275b6de389d4e359973b517f03b6efc9f8534fbe7",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "339d5724148afc4a18c3f7280853bae40ed7d46b7ddccee4fe1c3dd357c9be52",
+    "lib/demo/demoScenarios.ts": "f3842130441e32df273fde2c64ec8d019e3d314709c41f10f0f66d893d74299c"
+  },
+  "review": "no remaining important finding after final-window ordering and last-await possession corrections; source-only independent review",
+  "actualSql": "NOT RUN for this newer source; previous228-casePASS belongs to7504a725 and is preserved separately",
+  "providerClockPeopleSource": "synthetic/intercepted local tests; no real qualification",
+  "productionChanged": false,
+  "activation": "unavailable; full Governance incomplete",
+  "remaining": [
+    "settings final-window owner ordering regression/correction",
+    "fresh ECS observation original transaction/read gate/current reader/qualified profile composition",
+    "whole current-participant/source/transitive validation",
+    "real runtime/time/custody/fleet/credential/provider/human qualification",
+    "all existing master/owner/production gates"
+  ]
+}

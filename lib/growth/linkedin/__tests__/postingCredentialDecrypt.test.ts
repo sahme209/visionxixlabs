@@ -33,10 +33,10 @@ vi.mock("../../draftStore", () => ({ transitionStatus: vi.fn(async () => {}) }))
 vi.mock("@/lib/security/credentialVault", () => ({ decryptCredential: mocks.decryptCredential }));
 
 import {preparePlatformLinkedInPost} from '../platformPostingPlan';
-import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
+import {syntheticGrowthBinding} from '@/lib/governance/platform/__tests__/fixtures/syntheticGrowthNative';
 let draftSnapshot:{id:string;title:string;hook:string;body:string;cta:null;imageUrn:null;hashtags:string[];status:string;scheduledFor:null;updatedAt:Date};
 let connectionSnapshot:{id:string;organizationUrn:null;linkedinUrn:string;scopes:string;expiresAt:Date;status:string;updatedAt:Date};
-function grant(){const effect=preparePlatformLinkedInPost(draftSnapshot,connectionSnapshot,'202605',Date.now()).effect;return bindPlatformExecution({actorUserId:'actual-requester',claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{}},'fixture-action')}
+function grant(){const effect=preparePlatformLinkedInPost(draftSnapshot,connectionSnapshot,'202605',Date.now()).effect;return syntheticGrowthBinding({actorUserId:'actual-requester',claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{}},'fixture-action',connectionSnapshot.updatedAt.toISOString())}
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs()});
 describe("publishDraft — stored credential decrypt failure", () => {
   beforeEach(() => {

@@ -1,0 +1,13 @@
+# Remaining actual settings timing — source findings
+
+This is source tracing for the existing approved joined-time implementation, not a new capability, completed repair or live exploit result. The JSON binds the exact inspected files. No tests, actual SQL, credentials or provider requests were performed for these findings.
+
+Settings preparation, private artifact save/preview/review/claim and its actual executor still rely on source/current-person checks and database timestamps. They have no captured shared interval policy. The generic action timing integration deliberately covers growth only, so it does not complete this path. The default settings source remains unavailable and is not route-registered.
+
+The actual Vercel settings transport acquires a credential string before invoking the original final callback. A string supplies no independently established lifetime, origin or held-credential validity; process time or an arbitrary time-to-live cannot fill that gap. Source/profile checks currently return void, so their validity windows must be supplied by the same qualified private resource contract and bound to exact original metadata—not by request JSON or an invented maximum age.
+
+The next coherent local unit must connect all real settings phases and the transport: exact current phase participants, source/profile/action and credential windows, captured clock and original controlling signal, original locks and one-attempt/commit acknowledgment. The transport's native restrictions and post-clock currentness must be consumed inside its existing final locked owner, not appended after commit or in a nested transaction. Historical metadata inspection/reference recovery must not acquire a key, refresh a source or revive former approvals. Existing-setting updates remain held; only the reviewed create-only lane is in scope.
+
+Use composed synthetic tests through the actual stores, crypto, request composition, child coordinator and intercepted transport. Cover missing clock/source evidence, interval overlap/not-before, revocation across each awaited key/credential/profile step, lost acknowledgment and unknown no-replay. The separately authorized actual SQL and native/profile/custody/provider qualification remain required; do not substitute more isolated guard helpers or a permissive supplier for this complete caller path.
+
+Non-growth Vercel deployment/source acquisition and the whole transitive/signing/runtime review also remain open. Full Governance is not complete or enabled. No additional external reads, new trust decision, installation, provider/credential action or production change is authorized by this finding.

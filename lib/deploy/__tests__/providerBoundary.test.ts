@@ -4,7 +4,8 @@ vi.mock("@/lib/scaffoldGenerator", () => ({ generateSiteFiles: generators.starte
 import { deploySite, deploySiteFromPlan, type DeployProvider } from "../provider";
 import { deployPreview, deployPreviewFromPlan, deployProduction } from "@/lib/previewDeploy";
 import {preparePlatformVercelDeployment} from '../platformDeployment';
-import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
+import {bindPlatformExecution,bindPlatformDeploymentExecution} from '@/lib/governance/platform/effectExecution';
+import {createDeploymentNativeTransport} from '@/lib/governance/platform/deploymentNativeTransport';
 import type { AIStarterPackage } from "@/lib/websiteStarter/engine";
 const pkg = {} as AIStarterPackage;
 const plan = { siteName: "test", fullPageHtml: "<h1>test</h1>" };
@@ -12,7 +13,8 @@ const files = [{ path: "index.html", content: "<h1>test</h1>" }];
 const fetchMock = vi.fn();
 function grant(projectName='fixture',target?:'production'){
  const effect=preparePlatformVercelDeployment(files,{projectName,target,teamId:'team_fixture'}).effect;
- return {binding:bindPlatformExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{},beforeEffectResult:async()=>{}},'fixture-action')};
+ const now=Date.now(),timing={clock:async()=>({earliest:Date.now(),latest:Date.now()}),signal:new AbortController().signal},transport=createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetchMock(url,init),assertQualified:async()=>{},readHeldCredential:async()=>({token:'SYNTHETIC_HELD_TOKEN',notBefore:now-60000,expiresAt:now+60000}),assertCredentialCurrent:async()=>{}});
+ return {binding:bindPlatformDeploymentExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectCredential:async(_proof,_effect,check,finalFacts)=>{await check();if(!finalFacts)throw Error('missing final facts');await finalFacts()},beforeEffectSend:async(_proof,_effect,check,finalFacts)=>{if(!check||!finalFacts)throw Error('missing native owner callbacks');await check();await finalFacts()},observeEffect:async()=>{},beforeEffectResult:async()=>{}},'fixture-action',transport,timing)};
 }
 function response(value:unknown){return new Response(JSON.stringify(value),{status:200})}
 beforeEach(() => {
@@ -63,4 +65,7 @@ it("requests production target only through explicit publication intent", async 
   fetchMock.mockImplementation(async()=>response({id:"dpl_production",readyState:"READY",target:"production",url:"production.vercel.app"}));
   await expect(deployProduction(pkg, "prod-fixture",grant("prod-fixture","production"))).resolves.toMatchObject({ target: "production" });
   expect(JSON.parse(fetchMock.mock.calls[0][1].body).target).toBe("production");
+});
+it('environment or options tokens cannot replace a qualified private deployment runtime',async()=>{
+ const effect=preparePlatformVercelDeployment(files,{projectName:'fixture',teamId:'team_fixture'}).effect,bare=bindPlatformExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectSend:async()=>{},observeEffect:async()=>{}},'bare');await expect(deploySite('vercel',pkg,{projectName:'fixture',platformExecution:bare,credentials:{vercelToken:'SYNTHETIC_UNADMITTED_TOKEN'}})).rejects.toThrow();expect(fetchMock).not.toHaveBeenCalled();
 });

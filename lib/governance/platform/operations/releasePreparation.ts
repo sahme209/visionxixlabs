@@ -44,10 +44,13 @@ export function createManualReleaseSource(supplier:ManualReleaseEvidenceSupplier
   if(!Number.isSafeInteger(now)||now<0||end<=now)fail();
   for(const window of [bundle,bundle.compatibility,bundle.recovery])if(Date.parse(window.observedAt)>now||Date.parse(window.expiresAt)<=now||Date.parse(window.observedAt)>=Date.parse(window.expiresAt)||end>Date.parse(window.expiresAt))fail();
   if(end>Date.parse(manifest.expiresAt))fail();
-  return operationalReleaseManifest.parse({...manifest,expiresAt:selection.expiresAt});
+  const periods=[bundle,bundle.compatibility,bundle.recovery],window=Object.freeze({notBefore:Math.max(...periods.map(v=>Date.parse(v.observedAt))),expiresAt:Math.min(...periods.map(v=>Date.parse(v.expiresAt)))});
+  return {manifest:operationalReleaseManifest.parse({...manifest,expiresAt:selection.expiresAt}),window};
  }
- return Object.freeze<ManualReleaseSource>({buildCurrentManifest:read,async assertCurrent(tx,rawManifest,selection){
+ return Object.freeze<ManualReleaseSource>({buildCurrentManifest:async(tx,selection)=>(await read(tx,selection)).manifest,async readTimeWindow(tx,rawManifest,selection){
+  const manifest=readOperationalManifest(rawManifest),value=await read(tx,selection);if(manifest.kind!=='release.manual'||!same(compileOperationalManifest(value.manifest),manifest))return fail();return value.window;
+ },async assertCurrent(tx,rawManifest,selection){
   const manifest=readOperationalManifest(rawManifest);if(manifest.kind!=='release.manual')fail();
-  const rebuilt=compileOperationalManifest(await read(tx,selection));if(!same(rebuilt,manifest))fail();
+  const rebuilt=compileOperationalManifest((await read(tx,selection)).manifest);if(!same(rebuilt,manifest))fail();
  }});
 }

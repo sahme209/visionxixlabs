@@ -1,0 +1,40 @@
+{
+  "format": 1,
+  "scope": "approved local joined-time composition; settings final-owner ordering/possession",
+  "authorization": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "sourceSha256": {
+    "lib/governance/platform/operations/settingsTime.ts": "e652e2e9d2330999feaf1f4f15140b0518259571f66ec91528ecf0c712a94176",
+    "lib/governance/platform/operations/settingsPreparation.ts": "99d3fce158782c1234ff5d7217e06499a24cf86d7bd78450ee40d909b4d420bb",
+    "lib/governance/platform/operations/settingsArtifactStore.ts": "62b5af6dd85979c28c5d1f4304f4bcfcc2b1418616b647ca5d416bd388bb395a",
+    "lib/governance/platform/operations/settingsExecution.ts": "8a901bcb13e82219d343aad0e6977d7dd4fb78f1b8f909fb36d2d4f69174748b",
+    "lib/governance/platform/operations/settingsArtifactRequest.ts": "681b98f0cffecee902985f3fb721d0e749a86b482fd8da6bd07db105e498e17b",
+    "lib/governance/platform/operations/__tests__/settingsJoinedTime.test.ts": "84b625a3a75b725a7ac3f6c15c36770b0900138d8a5c1e97456e228ae8d2815f",
+    "lib/demo/demoScenarios.ts": "27add5d88c4db49411fe42839d944e624d70a120b32ee5279312c8bb0243c453"
+  },
+  "red": {
+    "finalOwnerWindow": 5,
+    "lastWindowPossession": 1,
+    "observation": "actual local synthetic-store/request regressions; no real settings"
+  },
+  "focused": {
+    "files": 6,
+    "passed": 63,
+    "failed": 0
+  },
+  "demo": {
+    "passed": 15,
+    "scope": "after ordinary run; wording-only change"
+  },
+  "rootStrictTypes": "PASS exit0",
+  "ordinary": {
+    "numPassedTests": 19168,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20310
+  },
+  "review": "independent source review: no remaining important finding; settings ordering and possession gaps closed",
+  "actualSql": "NOT RUN for these source changes; prior228actualSQL belongs7504a725 only",
+  "nativeQualification": "NOT RUN; no real credential/provider operation",
+  "remaining": "fresh ECS observation/current-reader/profile/native-read-gate join; whole transitive review; real runtime/time/custody/fleet/human/provider trials and all owner/master/production gates",
+  "activation": "disabled/incomplete"
+}

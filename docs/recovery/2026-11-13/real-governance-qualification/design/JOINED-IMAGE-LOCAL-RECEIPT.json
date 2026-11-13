@@ -1,0 +1,61 @@
+{
+  "observedAt": "2026-11-13T16:10:44.837284+00:00",
+  "parentCommit": "2705d0121eec97648379be67263c1ff353b8fef2",
+  "scope": "approved local image initializer/PUT/readiness timing; not full image caller coverage or Governance qualification",
+  "sourceSha256": {
+    "lib/governance/platform/__tests__/imageNativeTransport.test.ts": "695c6f7f04f24b0cff59cacaaa543654c4e75e182701a25ed431ec085df1c4ca",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "fe4209799c9a99e846e69b05a063b0d0ace12ee287c84e252bee477c8a31a22f",
+    "lib/governance/platform/imageExecutionStore.ts": "416f3ddb24fd870e8017862f6432fe78de1af07adea2c74197504f5b767acf10",
+    "lib/governance/platform/imageNativeTransport.ts": "caccbaee82f7f8d5fa7b5e59baaaebe95e7a76035c351a91236d0306cdd88e77",
+    "lib/governance/platform/imageWorkflowRequest.ts": "93054ac4d39d3d4bd00b14090d4c96aa33b51f2df637c2c2c0d48091922735b3",
+    "lib/governance/platform/__tests__/imageJoinedTime.test.ts": "88854637de0d2c70050203e5dbfdad572200b57c037f4b1a63472402e701bd32"
+  },
+  "ordinary": {
+    "numPassedTests": 19012,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20154,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "relevantSubset": {
+    "files": 4,
+    "passed": 24,
+    "includedInOrdinary": true
+  },
+  "strictRootTypes": "passed",
+  "review": "existing independent reviewer found no remaining important source issue in this slice; source only",
+  "actualSql": "NOT RUN; opt-in definitions updated, skipped",
+  "simulated": [
+    "people/roles",
+    "private clock",
+    "profile/decoder",
+    "HTTP provider responses",
+    "transaction/storage"
+  ],
+  "actualLocalComponents": [
+    "execution store",
+    "plan and claim/finish kernels",
+    "grant and artifact crypto",
+    "native fetch adapter with intercepted HTTP"
+  ],
+  "effects": {
+    "actualSql": false,
+    "realCredentials": false,
+    "realProvider": false,
+    "nativeQualification": false,
+    "resources": false,
+    "schemaOrFlags": false,
+    "enablement": false,
+    "pushOrDeploy": false,
+    "spending": false
+  },
+  "remaining": [
+    "image preparation/preview and related callers",
+    "source acquisition/publishing/scheduling/manual timing",
+    "transitive/participant coverage",
+    "native clock/token/protocol time provenance/custody/fleet",
+    "actual SQL and genuine human/provider trials",
+    "frozen build/green PR/owner production gates"
+  ]
+}

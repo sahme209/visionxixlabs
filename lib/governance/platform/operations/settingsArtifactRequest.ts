@@ -1,3 +1,5 @@
+import type {SettingsTiming,SettingsTimeEvidenceSource} from './settingsTime';
+import type {ExecutionTimeSource} from '../executionTime';
 import {createSettingsExecutor} from './settingsExecution';
 import {createSettingsPreparationStore,type SettingsPreparationSource} from './settingsPreparation';
 import 'server-only';
@@ -7,8 +9,9 @@ import {assertCurrentPlatformPrincipal} from '../currentAuthority';
 import {createSettingsArtifactStore,type SettingsArtifactRepository} from './settingsArtifactStore';
 interface Ports{
  repo:SettingsArtifactRepository;
+ clock?:ExecutionTimeSource;
  preparationSource?:SettingsPreparationSource;
- execution?:{assertWriteProfile:Parameters<typeof createSettingsExecutor>[2]['assertWriteProfile'];transport:Parameters<typeof createSettingsExecutor>[3]};
+ execution?:{assertWriteProfile:Parameters<typeof createSettingsExecutor>[2]['assertWriteProfile'];transport?:Parameters<typeof createSettingsExecutor>[3];createTransport?:(timing:SettingsTiming)=>Parameters<typeof createSettingsExecutor>[3]};
  source:Parameters<typeof createSettingsArtifactStore>[2];
  verifyDesktopToken(token:string):{sessionId:string};
  readAdminEmails():readonly string[];
@@ -23,9 +26,14 @@ export async function createSettingsArtifactRequestComposition(request:{headers:
   if(p.sessionId!==sessionId||session()!==sessionId)return fail();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);if(session()!==sessionId)return fail();return p;
  });
  const possessed=()=>{if(session()!==principal.sessionId)return fail()};
- const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source);
- const preparation=ports.preparationSource?createSettingsPreparationStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.preparationSource):null;
- const executor=ports.execution?createSettingsExecutor(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},{...ports.source,assertWriteProfile:ports.execution.assertWriteProfile},ports.execution.transport):null;
+ const clock=ports.clock,timing={clock:async(signal:AbortSignal)=>{possessed();if(typeof clock!=='function')return fail();const value=await clock(signal);possessed();return value},signal:request.signal};
+ function guardedWindow(source:SettingsTimeEvidenceSource){const read=source.readTimeWindow?.bind(source);return read?async(...args:Parameters<NonNullable<SettingsTimeEvidenceSource['readTimeWindow']>>)=>{possessed();const result=await read(...args);possessed();return result}:undefined}
+ const source=ports.source,prepared=ports.preparationSource,privateSource={readManifest:source.readManifest.bind(source),assertCurrent:source.assertCurrent.bind(source),readKey:source.readKey.bind(source),readTimeWindow:guardedWindow(source)};
+ const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},privateSource,timing);
+ const preparation=prepared?createSettingsPreparationStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},{assertCurrent:prepared.assertCurrent.bind(prepared),readTimeWindow:guardedWindow(prepared)},timing):null;
+ if(ports.execution?.createTransport&&ports.execution.transport)return fail();
+ const transport=ports.execution?.createTransport?ports.execution.createTransport(timing):ports.execution?.transport;
+ const executor=ports.execution&&transport?createSettingsExecutor(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},{...privateSource,assertWriteProfile:ports.execution.assertWriteProfile},transport,timing):null;
  return Object.freeze({
   async executeNext(id:string,effectIndex:number){possessed();if(!executor)return fail();return executor.executeNext(id,principal,effectIndex)},
   async prepare(raw:unknown,requestId:string){possessed();if(!preparation)return fail();return preparation.prepare(raw,requestId,principal)},

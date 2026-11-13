@@ -1,0 +1,24 @@
+# Original deployment recovery — joined local time integration
+
+Next slice of the owner-approved joined-time composition design (call_89eb4532167a4e55b4c65c38f8fe44cc): local source and simulated tests only. No actual SQL, native clock/provider/credential operation, build/sign/install, production change, enablement or spending. No new native supplier is selected or qualified.
+
+## Actual gap and existing owners
+
+The dedicated recovery service checks current people/native profile and database timestamps but has no captured interval clock. Its native terminal observation is claimed once, then read with a detached timeout; final observedAt/expiry checks use database time only. Thus interval-expired people/evidence may release a held physical target even when the native clock would refuse. History and original-reference recovery deliberately require current reader authority but do not refresh original evidence.
+
+## Connected change within the approved timing boundary
+
+1. Capture one private interval source and original signal in the existing recovery service. Actual authenticated request composition supplies a bearer-guarded clock, preserving possession before/after awaits. Missing clock/signal refuses new prepare/preview/review/claim/read/release; history/reference recovery stays resource-free.
+2. Extend the existing protected recovery source with optional exact time-window evidence bound to the immutable recovery plan digest and native profile digest. Missing/unreadable/mismatched/future/expired/replaced evidence refuses; it grants nothing by itself. Intersect current phase reader/requester/reviewer session windows, action creation/expiry and source bounds inside the original locked owner. Repeat source/people and exact time-window identity after the clock await. Database ordering remains independently required. No local Date/DB fallback or invented native freshness.
+3. Preserve the original durable claim BEFORE the one read. Give the private readTerminal supplier a one-use `beforeRead(): Promise<void>` callback: after its existing native preparation it must await original claimed-state/people/source/time/target validation before its exact read. Retire callbacks after return/error/timeout/cancellation. Require completion of the WHOLE owner callback, not merely a started clock check; omitted/double/late/nonawaited callbacks cannot produce release acceptance. The actual native reader still requires separate qualification proving its real acquisition, request and callback placement; this contract does not qualify that placeholder supplier.
+4. Combine original request cancellation with the existing five-second read timeout. No uncertain claim permits a read; any failed read/guard preserves the original consumed unknown and target hold without retry. No new write, deployment or replacement provider request is made by observation.
+5. After exact terminal evidence arrives, join its observedAt/expiry into the current source/people/action interval before the original atomic release and again afterward. Repeat native evidence-currentness and validate the same original target/receipt lineage. Preserve the deliberate held→released CAS and original immutable observation/receipt; expiry/revocation during release rolls back the SAME transaction. Lost committed release acknowledgement never rewrites confirmation or retries.
+6. Actual default source/time stays unavailable; prepared routes and activation remain closed. This slice does not claim real read-credential custody, native profile/time validity, SQL or provider acceptance.
+
+## Implementation and verification plan
+
+- [x] Extend existing memory fixture with explicit synthetic session/source/clock windows and failing expired requester/prospective reviewer/preview-reader/native-evidence cases. Preserve original self-review, duplicate/lost claims, commit acknowledgement and rollback assertions.
+- [x] Implement timing/current evidence in deploymentRecoveryStore.ts; one-use final-read owner and original cancellation; add guarded clock to deploymentRecoveryRequest.ts and explicit unavailable default.
+- [x] Join actual request/HTTP and native-read callback with serialized memory rows. Test role/source/window changes across awaits, cancellation, omitted/double/late/pending callback, expired read/release and original history recovery. Add mutation-time expiry/revocation rollback and lost final acknowledgement cases.
+- [x] Adapt only affected existing and opt-in SQL definitions to explicit synthetic time/native-read handshake; do not execute SQL. No production/default fake supplier.
+- [x] Focused checks, root strict types, full ordinary suite and final independent source review. Update internal demo, exact source receipt and five living documents with backed-up additive preservation; branch-only commit. Full Governance/master/live/owner gates stay open.

@@ -1,0 +1,9 @@
+Owned fixture: /private/tmp/axiom-platform-pg-pnwe2e95
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/scripts/run-platform-governance-postgres.py", line 61, in <module>
+    if __name__=='__main__':main()
+  File "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/scripts/run-platform-governance-postgres.py", line 49, in main
+    run('tests',[NODE,REPO/'node_modules/vitest/vitest.mjs','run','--config',root/'vitest.config.mjs','--configLoader','native','--reporter=json','--outputFile='+str(root/'result.json')],60)
+  File "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/scripts/run-platform-governance-postgres.py", line 33, in run
+    if p.returncode:raise RuntimeError(name+'_failed_see_owned_log')
+RuntimeError: tests_failed_see_owned_log

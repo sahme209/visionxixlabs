@@ -1,3 +1,8 @@
+import type {DeploymentTiming,DeploymentNativeTransport} from './deploymentNativeTransport';
+import type {ExecutionTimeCheck} from './executionTime';
+import {bindPlatformDeploymentExecution,bindPlatformGrowthExecution} from './effectExecution';
+import type {GrowthTiming,GrowthNativeTransport} from './growthNativeTransport';
+import type {ExecutionTimeSource} from './executionTime';
 import 'server-only';
 import type {PlatformSourceKind} from './sourceCatalog';
 import type {PlatformHistoryCursor} from './historyContract';
@@ -8,6 +13,10 @@ import {createPlatformActionService,type PlatformRepository} from './actionStore
 import {createCurrentPlatformAuthority} from './currentAuthority';
 interface Ports{
  repo:PlatformRepository;
+ /** Resource-free constructor only; real native qualification remains required. */
+ deploymentTransport?:(timing:DeploymentTiming&{actionId:string})=>Readonly<DeploymentNativeTransport>;
+ growthTransport?:(timing:GrowthTiming&{actionId:string})=>Readonly<GrowthNativeTransport>;
+ clock?:ExecutionTimeSource;
  verifyDesktopToken(token:string):{sessionId:string};
  readAdminEmails():readonly string[];
 }
@@ -15,8 +24,10 @@ const fail=():never=>{throw Error('platform_governance_request_unavailable')};
 /** Private server factory. Ports and observation proofs are never request JSON.
  * Token verification proves possession; current SQL authority proves privilege.
  * No cookie/API-key/cron fallback and no incidental session heartbeat/self-heal. */
-export async function createPlatformRequestComposition(request:{headers:Headers},ports:Ports){
+export async function createPlatformRequestComposition(request:{headers:Headers;signal?:AbortSignal},ports:Ports){
+ const clock=ports.clock,deploymentFactory=ports.deploymentTransport,growthFactory=ports.growthTransport;
  function verifiedSession(){
+  request.signal?.throwIfAborted();
   const token=bearerFromHeader(request.headers.get('authorization'));
   if(!token||token.length>4096)fail();
   try{const result=ports.verifyDesktopToken(token!);if(typeof result.sessionId!=='string'||!result.sessionId||result.sessionId.length>256)fail();return result.sessionId}catch{return fail()}
@@ -30,11 +41,34 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
   if(verifiedSession()!==sessionId)fail();return actor;
  });
  function assertPossession(){if(verifiedSession()!==principal.sessionId)fail()}
+ const guardedClock:ExecutionTimeSource=async signal=>{assertPossession();if(typeof clock!=='function')return fail();const value=await clock(signal);assertPossession();return value};
  const store=createPlatformActionService(ports.repo,{async assertCurrent(tx,actor){
   assertPossession();await currentAuthority.assertCurrent(tx,actor);assertPossession();
- },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}});
+ },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}},{clock:guardedClock,signal:request.signal});
  return Object.freeze({
   actorUserId:principal.userId,
+  createGrowthExecutionBinding(actionId:string){
+   assertPossession();if(!growthFactory||!(request.signal instanceof AbortSignal)||typeof clock!=='function')return fail();
+   const timing={clock:guardedClock,signal:request.signal,assertActive:assertPossession},transport=growthFactory({...timing,actionId});
+   const binding=bindPlatformGrowthExecution({actorUserId:principal.userId,
+    async claimNextEffect(id){assertPossession();const result=await store.claimNextEffect(id,principal);assertPossession();return result},
+    async beforeEffectCredential(proof,effect,check,finalFacts){assertPossession();await store.beforeEffectCredential(proof,effect,principal,check,finalFacts);assertPossession()},
+    async assertEffectCredentialCurrent(proof,effect,check,finalFacts){assertPossession();await store.assertEffectCredentialCurrent(proof,effect,principal,check,finalFacts);assertPossession()},
+    async beforeEffectSend(proof,effect,check,finalFacts){assertPossession();await store.beforeEffectSend(proof,effect,principal,check,finalFacts);assertPossession()},
+    observeEffect:store.observeEffect,
+   },actionId,transport,timing);assertPossession();return binding;
+  },
+  createDeploymentExecutionBinding(actionId:string,checks?:{beforeCredential?():Promise<void>;beforeSend?():Promise<void>;beforeResult?():Promise<void>}){
+   assertPossession();if(!deploymentFactory||!(request.signal instanceof AbortSignal))return fail();
+   const timing={clock:guardedClock,signal:request.signal},transport=deploymentFactory({...timing,actionId}),beforeCredential=checks?.beforeCredential,beforeSend=checks?.beforeSend,beforeResult=checks?.beforeResult;
+   const binding=bindPlatformDeploymentExecution({actorUserId:principal.userId,
+    async claimNextEffect(id){assertPossession();const result=await store.claimNextEffect(id,principal);assertPossession();return result},
+    async beforeEffectCredential(proof,effect,check,finalFacts){assertPossession();await beforeCredential?.();assertPossession();await store.beforeEffectCredential(proof,effect,principal,check,finalFacts);assertPossession()},
+    async beforeEffectSend(proof,effect,check,finalFacts){assertPossession();await beforeSend?.();assertPossession();await store.beforeEffectSend(proof,effect,principal,check,finalFacts);assertPossession()},
+    observeEffect:store.observeEffect,
+    async beforeEffectResult(proof){assertPossession();await beforeResult?.();assertPossession();await store.beforeEffectResult(proof,principal);assertPossession()},
+   },actionId,transport,timing);assertPossession();return binding;
+  },
   async prepareTemplate(raw:unknown,requestId:string){assertPossession();return store.prepareTemplate(raw,principal,requestId)},
   async lookupTemplatePreparation(requestId:string){assertPossession();return store.lookupTemplatePreparation(requestId,principal)},
   async previewTemplate(id:string){assertPossession();return store.previewTemplate(id,principal)},
@@ -53,7 +87,8 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
   async review(id:string,version:number,planDigest:string){assertPossession();await store.review(id,version,planDigest,principal)},
   async claim(id:string,version:number){assertPossession();await store.claim(id,version,principal)},
   async claimNextEffect(id:string){assertPossession();return store.claimNextEffect(id,principal)},
-  async beforeEffectSend(proof:object,effect:PlatformEffect){assertPossession();await store.beforeEffectSend(proof,effect,principal)},
+  async beforeEffectSend(proof:object,effect:PlatformEffect,check?:ExecutionTimeCheck,finalFacts?:()=>Promise<void>){assertPossession();await store.beforeEffectSend(proof,effect,principal,check,finalFacts)},
+  async beforeEffectCredential(proof:object,effect:PlatformEffect,check:ExecutionTimeCheck,finalFacts?:()=>Promise<void>){assertPossession();await store.beforeEffectCredential(proof,effect,principal,check,finalFacts)},
   // Private transport observation may outlive session expiry after a send.
   // No public endpoint may accept a caller's invented outcome/proof.
   observeEffect:store.observeEffect,

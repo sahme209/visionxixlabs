@@ -1,0 +1,43 @@
+{
+  "observedAt": "2026-11-13T17:09:20.469524+00:00",
+  "scope": "inspected callers only, NOT full call graph, coverage or qualification",
+  "historicalMap": "JOINED-TIME-CALLER-STATUS-2026-11-13.json unchanged; this supersedes manual/growth pending labels only within the described local scope",
+  "callers": [
+    {
+      "path": "lib/governance/platform/actionStore.ts",
+      "sha256": "3efcecdacbca050650dfaf44afbb1a72ad8170fb26345f4d764c4a99fbb50f7f",
+      "status": "local growth decision and final schedule mutation joined; nongrowth generic timing still incomplete"
+    },
+    {
+      "path": "lib/governance/platform/growthPreparation.ts",
+      "sha256": "39c6601f3262858c819eb93416e2e8be2fb8be8c9a4e6be58d88805c31acf482",
+      "status": "private exact source validity window; not native timestamp provenance"
+    },
+    {
+      "path": "lib/governance/platform/requestComposition.ts",
+      "sha256": "eeefab1e3794a21219d4af7eef401cd8eb77a6b48d7012338976aa758b0b0993",
+      "status": "private captured clock and possession checks; unqualified default refuses live growth"
+    },
+    {
+      "path": "lib/governance/platform/sqlRepository.ts",
+      "sha256": "e12916324cfe85291a08868a92af01e51ff5d041b6e1ee6fd7c6c685640f0393",
+      "status": "fixed schedule method in original transaction; actual SQL not run"
+    },
+    {
+      "path": "lib/growth/linkedin/platformSchedule.ts",
+      "sha256": "52e0afdc9ee93a7adaaf540a9c79ad3e23df236a8c515424e2fa030aa71f28e7",
+      "status": "separate mutation removed; original owner must apply and acknowledge"
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseStore.ts",
+      "sha256": "85c4e2317373a73b44d90d606a1c18100491f4877105ae19c76a4b984307640c",
+      "status": "local manual decisions and current-reader observation joined; real source/SQL/native acceptance open"
+    }
+  ],
+  "remaining": [
+    "nongrowth generic/settings/deployment source and execution timing audit/integration",
+    "source-acquisition/bootstrap/signing and whole participant/transitive consistency",
+    "real SQL/native clock/custody/fleet/human/provider qualification",
+    "frozen build/green PR, target/schema/recovery and owner production gates"
+  ]
+}

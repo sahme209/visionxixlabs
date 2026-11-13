@@ -12,5 +12,5 @@ const unavailable=async():Promise<never>=>{throw Error('operational_source_quali
 export function createDefaultOperationalRequestService(request:Request){return createOperationalDelegationRequestComposition(request,{
  repo:createPlatformSqlRepository(prisma as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:readConfiguredPlatformAdmins,
  source:{readManifest:unavailable,assertCurrent:unavailable},
- identity:createOperationalWorkloadIdentity({readProfile:unavailable,assertProfileCurrent:unavailable}),
+ identity:createOperationalWorkloadIdentity({readProfile:unavailable,assertProfileCurrent:unavailable},unavailable,request.signal),
 })}

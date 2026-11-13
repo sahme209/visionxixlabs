@@ -1,3 +1,4 @@
+import {assertExecutionWindow,authorizeExecutionWindow,type ExecutionTimeAuthorization} from '../executionTime';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -21,6 +22,9 @@ export interface NativeCustodianQualification {
  assertSourceLeaseCurrent:PrivateOperationalStsPorts['assertSourceLeaseCurrent'];
  capture(manifest:Manifest,signal:AbortSignal):Promise<NativeCustodianCapture>;
  assertCurrent(manifest:Manifest,capture:Readonly<NativeCustodianCapture>,signal:AbortSignal):Promise<void>;
+ /** Audited clock-free current native ownership/profile facts for the final
+  * original owner. No timed qualifier fallback or real default is installed. */
+ assertCurrentFacts?(manifest:Manifest,capture:Readonly<NativeCustodianCapture>,signal:AbortSignal):Promise<void>;
  clock(signal:AbortSignal):Promise<{earliest:number;latest:number}>;
 }
 const credentialText=(max:number)=>z.string().min(1).max(max).refine(v=>!/[\s\x00-\x1f\x7f]/.test(v));
@@ -31,19 +35,24 @@ const fail=():never=>{throw Error('custodian_native_supplier_unavailable')};
  * No ambient credentials, defaults, refresh, memoization or public registration.
  * Native acquisition uncertainty is handled by the original delegation ledger. */
 export function createNativeCustodianPorts(qualification:NativeCustodianQualification):PrivateOperationalStsPorts {
+ const clock=qualification.clock.bind(qualification);
+ const assertFacts=qualification.assertCurrentFacts?.bind(qualification);
  const issued=new WeakMap<object,{manifestDigest:string;capture:Readonly<NativeCustodianCapture>}>();
  async function current(manifest:Manifest,capture:Readonly<NativeCustodianCapture>,signal:AbortSignal,expiresAt?:number){
   signal.throwIfAborted();await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
-  const raw=await qualification.clock(signal);signal.throwIfAborted();const earliest=raw.earliest,latest=raw.latest;
-  if(!Number.isSafeInteger(earliest)||!Number.isSafeInteger(latest)||earliest<0||latest<earliest||capture.maximumExpiresAt<=latest||expiresAt!==undefined&&(expiresAt<=latest||expiresAt>capture.maximumExpiresAt))return fail();
+  if(expiresAt!==undefined&&expiresAt>capture.maximumExpiresAt)return fail();
+  await assertExecutionWindow(clock,{expiresAt:expiresAt??capture.maximumExpiresAt},signal);
+  await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
  }
- return Object.freeze({assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
-  async readCustodianCredential(raw:Manifest,signal:AbortSignal){try{
+ return Object.freeze({clock,assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
+  async readCustodianCredential(raw:Manifest,signal:AbortSignal,beforeRead?:ExecutionTimeAuthorization){try{
+   if(typeof beforeRead!=='function'||typeof assertFacts!=='function')return fail();
    const manifest=readOperationalManifest(raw);if(manifest.kind!=='deployment.ecs'||!manifest.issuerProfileDigest)return fail();signal.throwIfAborted();
    const supplied=await qualification.capture(manifest,signal);signal.throwIfAborted();
    const capture=Object.freeze({profileDigest:supplied.profileDigest,relativePath:supplied.relativePath,sourceRoleArn:supplied.sourceRoleArn,maximumExpiresAt:supplied.maximumExpiresAt});
    if(capture.profileDigest!==manifest.issuerProfileDigest||!/^\/v2\/credentials\/[A-Za-z0-9_-]{1,128}$/.test(capture.relativePath)||!/^arn:aws:iam::[0-9]{12}:role\/[A-Za-z0-9_+=,.@\/-]+$/.test(capture.sourceRoleArn)||capture.sourceRoleArn===manifest.roleArn||!capture.sourceRoleArn.startsWith(`arn:aws:iam::${manifest.target.accountId}:role/`)||!Number.isSafeInteger(capture.maximumExpiresAt))return fail();
    await current(manifest,capture,signal);
+   await authorizeExecutionWindow(clock,{expiresAt:Math.min(capture.maximumExpiresAt,Date.parse(manifest.expiresAt))},beforeRead,signal,async()=>{await assertFacts(manifest,capture,signal);signal.throwIfAborted()});
    const text=await readNativeCustodianResponse(capture.relativePath,signal);signal.throwIfAborted();
    const native=response.parse(JSON.parse(text)),expiresAt=Date.parse(native.Expiration);
    if(native.RoleArn!==capture.sourceRoleArn||!Number.isSafeInteger(expiresAt))return fail();
@@ -55,6 +64,11 @@ export function createNativeCustodianPorts(qualification:NativeCustodianQualific
    const manifest=readOperationalManifest(raw),held=issued.get(credential);
    if(!held||manifest.kind!=='deployment.ecs'||held.manifestDigest!==manifest.digest||manifest.issuerProfileDigest!==held.capture.profileDigest)return fail();
    await current(manifest,held.capture,signal,credential.expiresAt);
+  }catch{return fail()}},
+  async assertCustodianFactsCurrent(raw:Manifest,credential:Credential,signal:AbortSignal){try{
+   signal.throwIfAborted();const manifest=readOperationalManifest(raw),held=issued.get(credential);
+   if(typeof assertFacts!=='function'||!held||manifest.kind!=='deployment.ecs'||held.manifestDigest!==manifest.digest||manifest.issuerProfileDigest!==held.capture.profileDigest||credential.expiresAt>held.capture.maximumExpiresAt)return fail();
+   await assertFacts(manifest,held.capture,signal);signal.throwIfAborted();
   }catch{return fail()}}
  });
 }

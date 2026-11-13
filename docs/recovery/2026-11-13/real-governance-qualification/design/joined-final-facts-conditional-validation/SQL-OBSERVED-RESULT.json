@@ -1,0 +1,19 @@
+{
+  "format": 1,
+  "approval": "call_85c3b47965ed4a3ea5668ae80f0c8c14",
+  "phase": "sql",
+  "fixture": "/private/tmp/axiom-platform-pg-xakfpidy",
+  "passed": 229,
+  "failed": 0,
+  "skipped": 0,
+  "sourceHashesMatch": true,
+  "serverStopped": true,
+  "buildPrerequisites": "Verified; build still requires exact unchanged source and frozen runner/program checks",
+  "scope": "Actual isolated SQL/HMAC/locks; synthetic source/time/custody/fleet/credentials/intercepted providers",
+  "logsSha256": {
+    "/private/tmp/axiom-platform-pg-xakfpidy/result.json": "5862e7c347c63cc3d8fa564f8f598de61e5bf22c11693efb83e86640c4d43892",
+    "/private/tmp/axiom-platform-pg-xakfpidy/receipt.json": "f362e0428960bec2601c5a57fa77c3adbe0d1edc0c11e9c067b3a139c5bff9c3",
+    "/private/tmp/axiom-platform-pg-xakfpidy/stopped.log": "e138ccb54fdb08283c6eb21159c53207bbbbf07077246e2804e18d22efe6e250",
+    "/private/tmp/axiom-platform-pg-xakfpidy/tests.log": "1f75004f1b9bf455de982cfe5134ec573f2a56ea34a2410ad9350cb7fe5dd002"
+  }
+}

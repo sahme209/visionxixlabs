@@ -1,0 +1,22 @@
+{
+  "status": "public_research_completed_design_incomplete",
+  "authorizationQuestionId": "call_78791cc556cc401080e7414b023bfb58",
+  "publicRequests": 4,
+  "successfulPages": 3,
+  "failedSourceRequests": 1,
+  "retries": 0,
+  "accountCalls": 0,
+  "resourcesCreated": 0,
+  "implementationChanged": false,
+  "qualifiedRuntime": false,
+  "spending": false,
+  "findings": [
+    "Exact regional host/disk rate not obtained",
+    "Exact supported client source/release and full interval semantics not established",
+    "Direct EC2 move does not preserve existing fixed ECS credential source; separate profile design remains"
+  ],
+  "files": {
+    "EC2-ALTERNATIVE-SOURCE-ASSESSMENT.md": "f1aa2a2dd40d8fc363178eba8a80a24623a087f67b44439d16dc29ee93c86298",
+    "RUNTIME-APPROACH-DECISION.md": "e93834a0a878ea9106127892200640cd8c4c1dbbcb4c94cd0873f89a6152811b"
+  }
+}

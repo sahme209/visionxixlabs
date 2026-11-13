@@ -1,0 +1,34 @@
+{
+  "status": "partial_local_consumer_integration_not_qualified",
+  "authorizationQuestionId": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "focusedChecks": 68,
+  "rootTypes": "passed",
+  "ordinaryTests": {
+    "passed": 18937,
+    "failed": 0,
+    "pending": 1142,
+    "total": 20079,
+    "failedSuites": 0
+  },
+  "actualSqlRun": false,
+  "nativeSupplierImplemented": false,
+  "fullDesignImplemented": false,
+  "governanceEnabled": false,
+  "files": {
+    "lib/governance/platform/__tests__/executionTime.test.ts": "b1534287cb67b56d180d4d0eee297e42d42b41ba6be759cebf7718e47a506f2c",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "2662ba0c94bebbe764433d277b3299215b64ee7a785c2e5b522413d0bf694ccc",
+    "lib/governance/platform/executionTime.ts": "3a20e8ace0222652d1153e8810075248f86ac54e70c9b8160f3c5b9656441588",
+    "lib/governance/platform/operations/__tests__/delegation.test.ts": "28c95c80d2f2013b792311208beea52917ac6115869a2846bc3ff6e72007f7a8",
+    "lib/governance/platform/operations/__tests__/ecsSdkTransport.test.ts": "358c3c67d33a0eab0467f7fd3b36d5e5bd1f6d3d0b7d3f78cd6433403cb64138",
+    "lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts": "e3e015c7300cbf88eef70c3e34be6f2573937d9e53516809682f5dcb5f5720cb",
+    "lib/governance/platform/operations/__tests__/privateStsIssuer.test.ts": "a0ce781e35e8a1332b20564bc18d478e35574b47c41cc1c1d0a42e6a45b50dd2",
+    "lib/governance/platform/operations/__tests__/workloadRunner.test.ts": "8f35bbe4fd6f168b91c6463055702f2d0dd6b8dae77103c696e76b911572a94a",
+    "lib/governance/platform/operations/delegation.ts": "e4cb58c9c7cb4fcee3bd253bbce63b71c9c0fc862ebdafe6c21557c745912ad8",
+    "lib/governance/platform/operations/ecsExecution.ts": "8cbe60a03527e3e8068cc80f6de5da480c60ea22337b769c172a53e5d0417c51",
+    "lib/governance/platform/operations/ecsSdkTransport.ts": "a606c8ab92d091ff1c63d9eea9c45caff5de1ea57b722b59f63102ab2c8be8d2",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "cd0425a33c6c1da06071097241c98a596fd5572986d0387e3d8f88694aeae36b",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "e0c5eb1c859409b1aabfabd7c8015cf75f0b2718279bc65ecd3c66e04e2ff66e",
+    "lib/governance/platform/operations/workloadRunner.ts": "88e029d8cd249eebb95dda6a1d5e377e22e160a6b384a93ab2d77e7be5cb1762"
+  },
+  "independentSourceReview": "no_remaining_important_findings_in_initial_slice_only"
+}

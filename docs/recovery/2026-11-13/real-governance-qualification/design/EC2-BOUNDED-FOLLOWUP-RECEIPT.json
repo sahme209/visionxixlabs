@@ -1,0 +1,29 @@
+{
+  "authorizationQuestionId": "call_a80b2e23d5c44bba8b67decb65972362",
+  "status": "public_followup_consumed_design_only",
+  "publicPagesRequested": 6,
+  "pagesRead": 5,
+  "failedLinkedPage": 1,
+  "retriesOrAlternativeFetches": 0,
+  "accountCalls": 0,
+  "nativeQueries": 0,
+  "resourcesCreated": 0,
+  "qualifiedRuntime": false,
+  "libraryAdopted": false,
+  "spendAuthorized": false,
+  "priceObservation": {
+    "region": "us-east-2",
+    "os": "Linux",
+    "instance": "m6i.large",
+    "vCPU": 2,
+    "memoryGiB": 8,
+    "usdPerHour": "0.096",
+    "gp3UsdPerGBMonth": "0.08",
+    "gp3BaselineIOPS": 3000,
+    "gp3BaselineMBps": 125,
+    "method": "rendered public AWS table and selected region/filter; not account API"
+  },
+  "illustrative30MinuteSubtotalUsd": "0.0689536111111111",
+  "subtotalIsWholeTrialQuote": false,
+  "sourceAssessmentSha256": "23eff7235b79aeb82adfa0c914a639c6e55330661ddf5685e9835359be0e9af7"
+}

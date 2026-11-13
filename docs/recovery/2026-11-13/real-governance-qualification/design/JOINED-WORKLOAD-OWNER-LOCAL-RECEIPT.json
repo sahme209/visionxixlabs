@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "scope": "Approved LOCAL original workload source-read/STS/ECS owner/time/intent composition",
+  "approval": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "baseCommit": "0cb4cc8f870344dfc03f180e46d99c58b458331c",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "a4713e37a9b028268f9cfde6c2a8887ebbf821f16cffadb98a374a87da4c8d44",
+    "lib/governance/platform/__tests__/executionTime.test.ts": "3f5f28d919f3afed7398a3feaed0d4e84ba6382d42dc9d907fbbb540423c1291",
+    "lib/governance/platform/executionTime.ts": "8ff4774b95d78aa058306870a1ba2cbab6042357b4697870253c8f3cbdcf57ac",
+    "lib/governance/platform/operations/__tests__/delegation.test.ts": "78b9e04c8a72caae5f70b6f01f66a4e497fd318c3d61884fcf1f2c7dc8d30d50",
+    "lib/governance/platform/operations/__tests__/ecsSdkTransport.test.ts": "6114b623e739cc9a78137959d9c05021bd882942818c5da146036b3be11d179d",
+    "lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts": "59520a22e34aff7e0fd0a9b8622f4a71f160b83952b902896b8bf02c99a2d084",
+    "lib/governance/platform/operations/__tests__/privateStsIssuer.test.ts": "ed5167b519c70af8cc1b7889596c1ec38535477bd8b7fc5ec94bb2db3a447430",
+    "lib/governance/platform/operations/__tests__/workloadIdentity.test.ts": "07d0de9fb9d04ae2b6521730e30ba9c763ad55e455b276878a9ea7a86ef220c8",
+    "lib/governance/platform/operations/__tests__/workloadJoinedExecution.test.ts": "96974e6115aae0c5e28ea329c448f6b7047345098f3d3ba487d14c4e1b2f8e07",
+    "lib/governance/platform/operations/__tests__/workloadOwnerTime.test.ts": "96ee331251e055e7ab177d1d03955dcecc6938567ade6959d4af656e478329ba",
+    "lib/governance/platform/operations/custodianIntentAdmission.ts": "a153646a2588887f438d5831fcd6f57a65cad3fca08078a4e350828dcb0917b5",
+    "lib/governance/platform/operations/delegation.ts": "a57764488aefc330b3c544646fb953dfcb1b9e8d7f8ea4cc4883f7595ca89ad3",
+    "lib/governance/platform/operations/ecsSdkTransport.ts": "b65cae69820d0adfd6b99cd334a84ae8f6181816b2908bcbc628e3afce35507b",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "42aa870415623480a548cc1330c668811ea6958d697d37636876bdf00946b7aa",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "925799496a41c7b0308cd27b10ffdfe8002a010cb18d98870b91825520e88063",
+    "lib/governance/platform/operations/workloadIdentity.ts": "242894bf87279eef8fce515bbaa46a610301037d7bcbceb6841f1cd7e8e91405",
+    "lib/governance/platform/operations/workloadOwnerTime.ts": "ccb01ecb69ccfff04db648bd9f6819dccc6ff553d23f67a35d4ff9cc8467dc6d",
+    "lib/governance/platform/operations/workloadRunner.ts": "810feebe8e91d281f7716c1eba8122900fc3811f03039a62fe40c8e633bb12fb"
+  },
+  "logsSha256": {
+    "work/workload-original-intent-batch.log": "e911ca237f91c9788e89893f2baa5d71bafc84aa0c2ba65a7bc1eaa0b0ba7078",
+    "work/workload-original-intent-frozen-2.log": "b3dfa1508b97bec853e613a7f76365d6116ac08d17d34f7ffb4bb2d640ed60e9",
+    "work/workload-original-intent-types-2.log": "3fe8f1d4c885a796efc179822f03d514fb82bfaf636e5d7fdfa27dc0a0fdfa63",
+    "work/workload-final-ordinary.json": "6988444f103013259be7a8f781e6408d0b1d689488aa092245644c53962cf5d1",
+    "work/workload-owner-demo.log": "201153b43db1c98523298db80ac5fdef50ffce09ccc790c67125443903047d99"
+  },
+  "ordinary": {
+    "numPassedTests": 19260,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20402,
+    "numFailedTestSuites": 0
+  },
+  "focused": {
+    "eightFileBatch": 148,
+    "laterComposed": 7,
+    "overlapping": true
+  },
+  "rootStrictTypes": "PASS exit0",
+  "review": "Independent source review: no remaining important findings after original-intent revalidation and expected-coordinate freeze",
+  "actualSql": "NOT RUN; operational opt-in fixtures require explicit-contract migration before a fresh authorized SQL batch; historical228PASS only7504a725",
+  "realQualification": "NOT performed: all people/source/custody/clock/fleet/target facts synthetic; native HTTP intercepted. Real JOSE JWT crypto and installed STS/ECS SDK composition exercised.",
+  "activation": "Governance remains incomplete/disabled; no default real qualifier or fallback",
+  "remaining": [
+    "operational SQL fixture contract migration",
+    "fresh authorized coherent SQL/build/source review and mandatory-green PR",
+    "real runtime/time/custody/fleet/human/provider qualification",
+    "all master/owner/production gates"
+  ],
+  "externalActions": "No real credential/provider/SQL/resource/sign/install/push/deploy/enablement/spending",
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  }
+}

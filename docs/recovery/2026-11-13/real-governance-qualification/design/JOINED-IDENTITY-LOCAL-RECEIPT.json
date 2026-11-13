@@ -1,0 +1,28 @@
+{
+  "status": "partial_local_identity_and_session_integration",
+  "authorizationQuestionId": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "rootTypes": "passed",
+  "focusedChecks": 53,
+  "ordinaryTests": {
+    "passed": 18948,
+    "failed": 0,
+    "pending": 1142,
+    "total": 20090,
+    "failedSuites": 0
+  },
+  "actualSqlExecuted": false,
+  "nativeProfileQualified": false,
+  "fullGovernanceCompleted": false,
+  "independentSourceReview": "no_important_findings_in_this_slice",
+  "files": {
+    "lib/governance/platform/__tests__/principalTime.test.ts": "dda1aa68f5d2bf1cfc4ff3779d32cf1b68dca3fa8941cac8b94eafc9babc3dbb",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "ed88cf3f720c1f7a59497cb0c830e4f9c734065bc387d954ffa47ea46314d85f",
+    "lib/governance/platform/currentAuthority.ts": "380f7caf41141315ba634697a4eeb0ef356ec99378c46059661c64de4ebb9196",
+    "lib/governance/platform/operations/__tests__/workloadIdentity.test.ts": "a91fd70d704d3859e9d3c25bc93e200d2ba625b54578c08e68cea1a2836a657e",
+    "lib/governance/platform/operations/operationalRequestService.ts": "1a5313cec347fedfbb52ac9282327e5c11df3598aeb000a5c70f40440e1892ec",
+    "lib/governance/platform/operations/workloadIdentity.ts": "e4f6e16c791a43df303081d4d31f12615efe227e6bb86bc47f2823b6b89c0fc7",
+    "lib/governance/platform/operations/workloadRunner.ts": "0d438c5935154dfc9890ac8eaa91a54d67f479ce08838834df4b98076e5c4d50",
+    "lib/governance/platform/principalTime.ts": "baf9aa0e7e343c4290e7ae73f7e81928ed0eb730c14de654db347e5fe5529c97",
+    "lib/governance/platform/sqlRepository.ts": "b773d654ee47c5bf29debc9d68a51c92dec5d37a14b15ef6c8294ee164755a1f"
+  }
+}

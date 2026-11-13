@@ -1,0 +1,41 @@
+{
+  "format": 1,
+  "scope": "PROPOSED bounded public text research only; NOT executed",
+  "readerSha256": "3431623f310709574003b27fc0d8c74650ac669352c38f2980512797a05e8120",
+  "testsSha256": "f0545a95127b819e34caf0cdf27c30693bfb2bec310e28961355315ae31acc09",
+  "mockedTests": 5,
+  "requestLimit": 6,
+  "requestsUsed": 0,
+  "perRequest": {
+    "childSeconds": 10,
+    "parentSeconds": 15,
+    "maxBufferBytes": 262144,
+    "redirects": false,
+    "retries": false,
+    "authentication": false,
+    "proxy": false
+  },
+  "firstUrl": "https://api.github.com/repos/aws/clock-bound/tags?per_page=100",
+  "order": [
+    "tags metadata; select highest plain stable semantic version candidate and exact40hex commit only",
+    "exact pinned tree metadata, rejecting truncated tree; no floatingmain source",
+    "root Cargo.toml only if present in pinned tree",
+    "client Cargo.toml from exact tree/workspace path",
+    "client src/lib.rs from same path/commit",
+    "client or root README.md only if present; no guessed URL"
+  ],
+  "stop": [
+    "any HTTP/transport/schema/size/error",
+    "no admissible stable tag/commit",
+    "unsupported/truncated tree or missing unambiguous client paths",
+    "six requests consumed"
+  ],
+  "noAuthority": [
+    "dependency adoption/install",
+    "native clock query",
+    "credential/account access",
+    "SQL/native test/resource setup",
+    "production/deployment/enablement/spending"
+  ],
+  "independentReview": "No important scope/URL/output/stop-policy issue; source-only, no execution or hash verification. Root independently checked both pinned file hashes."
+}

@@ -1,0 +1,61 @@
+{
+  "format": 1,
+  "approval": "call_815178d011cb45e8a433f7b5447b0dc7",
+  "packetSha256": "baf09fab49e1058fce160fc9ffe8e02a151a61924c9b7a087e4e22cb75930cf8",
+  "fixture": "/private/tmp/axiom-platform-pg-pnwe2e95",
+  "result": {
+    "numPassedTests": 220,
+    "numFailedTests": 9,
+    "numPendingTests": 0,
+    "numTotalTests": 229,
+    "numFailedTestSuites": 1
+  },
+  "failures": [
+    {
+      "name": "joins exact-run handoff to SQL and installed STS/ECS (mode=false)",
+      "error": "Error: operational_job_unconfirmed"
+    },
+    {
+      "name": "joins exact-run handoff to SQL and installed STS/ECS (mode=true)",
+      "error": "AssertionError: expected null to match object { kind: 'accepted', \u2026(3) }"
+    },
+    {
+      "name": "joins exact-run handoff to SQL and installed STS/ECS (mode=concurrent)",
+      "error": "AssertionError: expected [] to have a length of 1 but got +0"
+    },
+    {
+      "name": "stops the joined workload on unknown issuance without an ECS send or second STS attempt",
+      "error": "AssertionError: expected \"handle\" to be called once, but got 0 times"
+    },
+    {
+      "name": "preserves a known private source lease after a lost SQL acknowledgement without native exchange",
+      "error": "AssertionError: expected { \u2026(22) } to match object { sourceCredential: { \u2026(2) }, \u2026(3) }"
+    },
+    {
+      "name": "keeps private source acquisition unknown without erasing its pending liability or replaying",
+      "error": "AssertionError: expected \"readNativeCustodianResponse\" to be called once, but got 0 times"
+    },
+    {
+      "name": "preserves issued credentials but refuses deployment when private source authority is revoked after STS",
+      "error": "AssertionError: expected \"handle\" to be called once, but got 0 times"
+    },
+    {
+      "name": "preserves the admitted source liability but blocks installed STS when drain follows source acquisition",
+      "error": "AssertionError: expected \"readNativeCustodianResponse\" to be called once, but got 0 times"
+    },
+    {
+      "name": "records known role issuance but blocks the installed ECS send when drain follows STS admission",
+      "error": "Error: operational_workload_result_unconfirmed"
+    }
+  ],
+  "logsSha256": {
+    "/private/tmp/axiom-platform-pg-pnwe2e95/result.json": "c20e9b707c4456bdfe8846962e022664a2e062877ec1fa39f55466d6133365d5",
+    "/private/tmp/axiom-platform-pg-pnwe2e95/tests.log": "584d7c1e4544b0ac6835b209f117439c8ddd582ed2126fbe24dd2bd85b147eb3",
+    "/private/tmp/axiom-platform-pg-pnwe2e95/stopped.log": "e138ccb54fdb08283c6eb21159c53207bbbbf07077246e2804e18d22efe6e250",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/joined-current-owned-sql-preparation/INVOCATION.log": "56c43433ab5703e7802d863dcc95994a7e0d589bdc3aa0e5dccff5a78786fab2"
+  },
+  "cleanup": "Owned script completed stop; pg_ctl status exit3: no server running, preserved stopped.log",
+  "authority": "Consumed; no retry or further actual SQL run authorized",
+  "diagnosis": "Source traces show repeated assertCurrent acquiring the same custodian lock twice; real SQL adapter deliberately refuses repeated acquisition. Strict in-memory regression reproduces positive refusal. Local correction retains one exact original lock acquisition per same transaction and rechecks every fact. Actual corrected SQL remains UNVERIFIED.",
+  "productionAndRealProvider": "No production or real credentials/provider/native qualification/access/spending"
+}

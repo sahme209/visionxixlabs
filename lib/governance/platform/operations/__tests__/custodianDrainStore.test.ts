@@ -1,3 +1,5 @@
+import {compileCustodianClosureSnapshot} from '../custodianClosureSnapshot';
+import {compileCustodianClosureObservation} from '../custodianClosureObservation';
 import {it,expect,vi} from 'vitest';
 import {createCustodianDrainService,type CustodianDrainRepository,type CustodianDrainTransaction} from '../custodianDrainStore';
 import type {PlatformAction} from '../../contracts';
@@ -6,12 +8,13 @@ import type {CustodianBarrier} from '../custodianDrainKernel';
 const a='a'.repeat(64),b='b'.repeat(64),at=Date.parse('2026-11-12T12:00:00Z'),actor={userId:'requester',sessionId:'requester-session'},reviewer={userId:'reviewer',sessionId:'reviewer-session'};
 const selection={format:1,scope:'platform',operation:'begin',custodian:{accountId:'123456789012',roleArn:'arn:aws:iam::123456789012:role/private'},issuerProfileDigest:a,sourceEvidenceDigest:b,predecessorAdmissionDigest:a,expectedGeneration:0,expectedVersion:null,expiresAt:new Date(at+60000).toISOString()};
 function fixture(){
- let rows=new Map<string,PlatformAction>(),controls=new Map<string,CustodianDrainPlan>(),barriers=new Map<string,CustodianBarrier>(),events:unknown[]=[],queue=Promise.resolve(),failEvent=false,holds=false,loseReply=false;
+ let rows=new Map<string,PlatformAction>(),controls=new Map<string,CustodianDrainPlan>(),barriers=new Map<string,CustodianBarrier>(),events:unknown[]=[],queue=Promise.resolve(),failEvent=false,holds=false,loseReply=false,sessionEnd=at+3600000;
+ let closure:unknown=null;const clock=vi.fn(async()=>({earliest:at,latest:at}));
  const source=vi.fn(async()=>{}),authority=vi.fn(async()=>{}),abortSource=vi.fn(async()=>{});
  const repo:CustodianDrainRepository={transaction:async fn=>{const previous=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await previous;const r=new Map(rows),c=new Map(controls),b=new Map(barriers),e=[...events],effects=new Map<string,unknown>();
- const tx:CustodianDrainTransaction={readSessionPrincipal:async()=>null,readPrincipal:async()=>null,readGrowthPostingSource:async()=>null,lock:async()=>{},now:async()=>at,read:async id=>r.get(id)??null,insert:async(id,state)=>{if(r.has(id))throw Error('duplicate');r.set(id,state)},replace:async(id,v,state)=>{if(r.get(id)?.version!==v)throw Error('stale');r.set(id,state)},event:async event=>{if(failEvent)throw Error('event');e.push(event);if(event.custodianControl)c.set(event.actionId,event.custodianControl)},readEffect:async(id,index)=>effects.get(id+index)??null,writeEffect:async(id,index,expected,status)=>{if((effects.get(id+index)??null)!==expected)throw Error('stale');effects.set(id+index,status)},readCustodianControl:async id=>c.get(id)??null,lockCustodian:async()=>{},readCustodianBarrier:async key=>b.get(key)??null,writeCustodianBarrier:async(key,v,state)=>{if((b.get(key)?.version??null)!==v)throw Error('stale');b.set(key,state)},assertNoCustodianIntents:async()=>{if(holds)throw Error('held')}};
+ const tx:CustodianDrainTransaction={readCustodianClosure:async()=>closure,readSessionPrincipal:async()=>null,readPrincipal:async(p)=>({...p,live:true,sessionIssuedAtMs:at-1000,sessionExpiresAtMs:sessionEnd}),readGrowthPostingSource:async()=>null,lock:async()=>{},now:async()=>at,read:async id=>r.get(id)??null,insert:async(id,state)=>{if(r.has(id))throw Error('duplicate');r.set(id,state)},replace:async(id,v,state)=>{if(r.get(id)?.version!==v)throw Error('stale');r.set(id,state)},event:async event=>{if(failEvent)throw Error('event');e.push(event);if(event.custodianControl)c.set(event.actionId,event.custodianControl)},readEffect:async(id,index)=>effects.get(id+index)??null,writeEffect:async(id,index,expected,status)=>{if((effects.get(id+index)??null)!==expected)throw Error('stale');effects.set(id+index,status)},readCustodianControl:async id=>c.get(id)??null,lockCustodian:async()=>{},readCustodianBarrier:async key=>b.get(key)??null,writeCustodianBarrier:async(key,v,state)=>{if((b.get(key)?.version??null)!==v)throw Error('stale');b.set(key,state)},assertNoCustodianIntents:async()=>{if(holds)throw Error('held')}};
  try{const out=await fn(tx);rows=r;controls=c;barriers=b;events=e;if(loseReply){loseReply=false;throw Error('synthetic_committed_response_lost')}return out}finally{release()}}};
- const service=createCustodianDrainService(repo,{assertCurrent:authority},{assertCurrent:source,assertAbortSafe:abortSource});return {service,source,authority,abortSource,rows:()=>rows,barriers:()=>barriers,events:()=>events,failEvents:()=>{failEvent=true},hold:()=>{holds=true},loseReply:()=>{loseReply=true}};
+ const service=createCustodianDrainService(repo,{assertCurrent:authority},{assertCurrent:source,assertAbortSafe:abortSource,clock},new AbortController().signal);return {service,source,authority,abortSource,clock,setSessionEnd:(value:number)=>{sessionEnd=value},setClosure:(value:unknown)=>{closure=value},rows:()=>rows,barriers:()=>barriers,events:()=>events,failEvents:()=>{failEvent=true},hold:()=>{holds=true},loseReply:()=>{loseReply=true}};
 }
 const ref='11111111-1111-4111-8111-111111111111',otherRef='22222222-2222-4222-8222-222222222222';
 async function ready(f:ReturnType<typeof fixture>,raw=selection,reference=ref){const proposal=await f.service.prepare(raw,actor,reference);await f.service.review(proposal.actionId,0,proposal.planDigest,reviewer);return proposal}
@@ -26,3 +29,27 @@ it('restores only the reviewed predecessor after a separate safe abort without c
 it('rolls back a late source revocation after tentative barrier/action writes',async()=>{const f=fixture(),p=await ready(f);f.source.mockClear();let calls=0;f.source.mockImplementation(async()=>{if(++calls===3)throw Error('late_source_revoked')});await expect(f.service.execute(p.actionId,1,actor)).rejects.toThrow();expect(f.barriers().size).toBe(0);expect(f.rows().get(p.actionId)).toMatchObject({status:'approved',attemptCount:0});expect(f.events()).toHaveLength(2)});
 
 it('preserves a committed drain after a lost reply and recovers only its original reference',async()=>{const f=fixture(),p=await ready(f);f.loseReply();await expect(f.service.execute(p.actionId,1,actor)).rejects.toThrow('synthetic_committed_response_lost');expect(f.rows().get(p.actionId)).toMatchObject({status:'confirmed',attemptCount:1});expect(await f.service.prepare(selection,actor,ref)).toMatchObject({actionId:p.actionId,historical:true});await expect(f.service.execute(p.actionId,1,actor)).rejects.toThrow();expect(f.barriers().size).toBe(1);expect([...f.barriers().values()][0]).toMatchObject({generation:1,version:0,mode:'draining'})});
+
+it('refuses a control whose private interval reaches expiry even with an unchanged database clock',async()=>{
+ const f=fixture(),p=await ready(f);f.clock.mockResolvedValue({earliest:at+59999,latest:at+60000});
+ await expect(f.service.execute(p.actionId,1,actor)).rejects.toThrow();expect(f.barriers().size).toBe(0);expect(f.rows().get(p.actionId)?.attemptCount).toBe(0);
+});
+it('does not reopen a drained issuer while the private interval still overlaps an observed liability bound',async()=>{
+ const f=fixture(),p=await ready(f);await f.service.execute(p.actionId,1,actor);const barrier=[...f.barriers().values()][0],snapshot=compileCustodianClosureSnapshot(barrier,[]),ref='platform_evidence_11111111-1111-4111-8111-111111111111';
+ f.setClosure(compileCustodianClosureObservation(snapshot,{format:1,purpose:'platform_custodian_native_lifetime_evidence_v1',nativeKey:barrier.nativeKey,issuerProfileDigest:a,generation:barrier.generation,barrierVersion:barrier.version,controlDigest:barrier.controlDigest,snapshotDigest:snapshot.digest,fleetReceiptId:ref,runtimeReceiptId:ref,lifetimeReceiptId:ref,timeReceiptId:ref,lastPossibleIssueAt:at,credentialNotAfter:at+1000,trustedNow:{earliest:at+1001,latest:at+1002},expiresAt:at+60000},actor.userId,at));
+ const abort={...selection,operation:'abort',expectedGeneration:1,expectedVersion:0,restoredAdmissionDigest:a},q=await f.service.prepare(abort,actor,otherRef);await f.service.review(q.actionId,0,q.planDigest,reviewer);f.clock.mockResolvedValue({earliest:at+999,latest:at+1001});
+ await expect(f.service.execute(q.actionId,1,actor)).rejects.toThrow();expect([...f.barriers().values()][0].mode).toBe('draining');expect(f.rows().get(q.actionId)?.attemptCount).toBe(0);
+});
+
+it('blocks an expired human session even when the control and database point timestamp remain valid',async()=>{
+ const f=fixture(),p=await ready(f);f.setSessionEnd(at+1000);f.clock.mockResolvedValue({earliest:at+999,latest:at+1000});
+ await expect(f.service.execute(p.actionId,1,actor)).rejects.toThrow();expect(f.barriers().size).toBe(0);expect(f.rows().get(p.actionId)?.attemptCount).toBe(0);
+});
+
+it('intersects the later control interval with every previously checked participant lifetime',async()=>{
+ const f=fixture(),p=await ready(f);f.setSessionEnd(at+1000);
+ // Three participant reads are valid; the next control read overlaps their
+ // lifetime while remaining inside the longer action deadline.
+ f.clock.mockResolvedValueOnce({earliest:at,latest:at}).mockResolvedValueOnce({earliest:at,latest:at}).mockResolvedValueOnce({earliest:at,latest:at}).mockResolvedValueOnce({earliest:at+999,latest:at+1000});
+ await expect(f.service.execute(p.actionId,1,actor)).rejects.toThrow();expect(f.barriers().size).toBe(0);expect(f.rows().get(p.actionId)?.attemptCount).toBe(0);
+});

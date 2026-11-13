@@ -1,0 +1,7 @@
+{
+  "approval": "call_85c3b47965ed4a3ea5668ae80f0c8c14",
+  "startedAt": "2026-11-13T22:17:36.071410+00:00",
+  "packetSha256": "5932208f6aa9a446f16e5db0e3ba82f30ecb3796c3d97fbb97b329bd3d790ce8",
+  "sourceCommit": "01c369a63694f61d6e691e015c784fc2ef330669",
+  "authority": "ONE SQL invocation consumed at start. Build authority conditional on229pass0fail0skip/stopped/exactsource. Any failure stops whole bundle; no retry."
+}

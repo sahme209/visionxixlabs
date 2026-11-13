@@ -1,4 +1,6 @@
 import 'server-only';
+import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';
+import {readPlatformPrincipalTimeWindow} from './principalTime';
 import {timingSafeEqual} from 'node:crypto';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
 import {withGithubAbort} from '@/lib/connectors/github/boundedGithubRead';
@@ -15,6 +17,7 @@ import {createImageNativeTransport,type ImageNativePorts,type ImageNativeObserva
 
 export interface ImageExecutionResources extends ImageArtifactResources {
  version:string;
+ clock:ExecutionTimeSource;
  now():number;
  assertNativeQualified(binding:Readonly<ImageUploadBinding>,version:string,signal:AbortSignal):Promise<void>;
  /** Receives actual locked connection metadata. A write-only token is not
@@ -39,13 +42,13 @@ type Scope=ReturnType<typeof scope>;
  * fixed adapter, never a caller observation command. No real resource supplier
  * exists by default. Source tests cannot enable production custody or transport. */
 export function createImageExecutionStore(repo:PlatformRepository,authority:PlatformAuthority,resources?:ImageExecutionResources,requestSignal?:AbortSignal){
- const fixedVersion=resources?.version;
+ const fixedVersion=resources?.version,clock=resources?.clock;
  function storage(tx:PlatformTransaction){return tx.imageStorage??fail()}
  async function locked<T>(id:string,c:Scope,fn:(tx:PlatformTransaction,state:State)=>Promise<T>){platformActionId.parse(id);return c.within(()=>repo.transaction(async tx=>{await c.within(()=>tx.lock(id));return fn(tx,readPlatformAction(await c.within(()=>tx.read(id))))}))}
  async function binding(tx:PlatformTransaction,id:string,state:State,c:Scope){if(!tx.readImageBinding)return fail();return imageBindingForParent(await c.within(()=>tx.readImageBinding!(id)),state,id)}
  async function people(tx:PlatformTransaction,state:State,c:Scope){if(!state.reviewer)return fail();for(const p of [state.requester,state.reviewer])await c.within(()=>authority.assertCurrent(tx,p))}
  async function time(tx:PlatformTransaction,state:State,c:Scope){const now=await c.within(()=>tx.now());if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();return now}
- async function current(tx:PlatformTransaction,id:string,state:State,b:Readonly<ImageUploadBinding>,actor:PlatformPrincipal,c:Scope){
+ async function sourceCurrent(tx:PlatformTransaction,id:string,state:State,b:Readonly<ImageUploadBinding>,actor:PlatformPrincipal,c:Scope){
   if(!resources||resources.version!==fixedVersion||hash(state.requester)!==hash(actor)||hash(await binding(tx,id,state,c))!==hash(b)||!tx.readImageConnection)return fail();
   await people(tx,state,c);const now=await time(tx,state,c);
   const connection=postingConnectionSchema.parse(await c.within(()=>tx.readImageConnection!(b.artifact.connectionId)));
@@ -59,7 +62,14 @@ export function createImageExecutionStore(repo:PlatformRepository,authority:Plat
   if(resources.decoder.profileDigest!==b.artifact.formatProfileDigest)return fail();
   await c.within(()=>resources.decoder.assertQualified(b.artifact.formatProfileDigest,c.signal));
   await c.within(()=>resources.assertNativeQualified(b,resources.version,c.signal));
-  await people(tx,state,c);await time(tx,state,c);if(resources.version!==fixedVersion||resources.decoder.profileDigest!==b.artifact.formatProfileDigest)return fail();
+  await people(tx,state,c);await time(tx,state,c);if(resources.version!==fixedVersion||resources.decoder.profileDigest!==b.artifact.formatProfileDigest)return fail();return connection;
+ }
+ async function current(tx:PlatformTransaction,id:string,state:State,b:Readonly<ImageUploadBinding>,actor:PlatformPrincipal,c:Scope,check?:ExecutionTimeCheck){
+  const connection=await sourceCurrent(tx,id,state,b,actor,c);if(!state.reviewer||typeof clock!=='function')return fail();
+  const requester=await c.within(()=>readPlatformPrincipalTimeWindow(tx,state.requester,c.signal)),reviewer=await c.within(()=>readPlatformPrincipalTimeWindow(tx,state.reviewer!,c.signal));
+  const window=Object.freeze({notBefore:Math.max(requester.notBefore,reviewer.notBefore),expiresAt:Math.min(Date.parse(b.expiresAt),requester.expiresAt,reviewer.expiresAt,connection.expiresAt.getTime())});
+  if(check)await c.within(()=>check(window));else await c.within(()=>assertExecutionWindow(clock,window,c.signal));
+  await sourceCurrent(tx,id,state,b,actor,c);
  }
  async function withKey<T>(c:Scope,read:()=>Promise<Uint8Array>,assert:(key:Buffer)=>Promise<void>,fn:(key:Buffer)=>Promise<T>){
   const raw=await c.within(read);if(!(raw instanceof Uint8Array)||raw.byteLength!==32)return fail();const key=c.own(Buffer.from(raw));
@@ -77,7 +87,7 @@ export function createImageExecutionStore(repo:PlatformRepository,authority:Plat
   })}finally{c.close()}
  }
  async function execute(id:string,version:number,rawActor:PlatformPrincipal,index:0|1){
-  if(!resources)return fail();const r=resources,actor=platformPrincipalSchema.parse(rawActor),c=scope(15000,requestSignal);
+  if(!resources||!(requestSignal instanceof AbortSignal)||requestSignal.aborted)return fail();const r=resources,actor=platformPrincipalSchema.parse(rawActor),c=scope(15000,requestSignal);
   let admitted=false,recordingStarted=false,b:Readonly<ImageUploadBinding>|undefined;
   let claimedPut:Awaited<ReturnType<NonNullable<PlatformTransaction['imageStorage']>['claimPut']>>|undefined;
   try{
@@ -89,11 +99,14 @@ export function createImageExecutionStore(repo:PlatformRepository,authority:Plat
     await current(tx,id,state,selected,actor,c);return selected;
    });
    const selected=b;
-   async function fresh(){return locked(id,c,async(tx,state)=>{
+   async function fresh(check?:ExecutionTimeCheck){return locked(id,c,async(tx,state)=>{
     if(state.status!=='claimed')return fail();await current(tx,id,state,selected,actor,c);
     if(index===0)await c.within(()=>storage(tx).assertInitializerHeld(selected));
     else{if(!claimedPut)return fail();await c.within(()=>storage(tx).assertPutHeld(selected,claimedPut!.claim))}
-    await current(tx,id,state,selected,actor,c);
+    await current(tx,id,state,selected,actor,c,check);
+    if(index===0)await c.within(()=>storage(tx).assertInitializerHeld(selected));
+    else{if(!claimedPut)return fail();await c.within(()=>storage(tx).assertPutHeld(selected,claimedPut!.claim))}
+    await sourceCurrent(tx,id,state,selected,actor,c);
    })}
    async function admit(){
     if(admitted){await fresh();return}
@@ -108,7 +121,7 @@ export function createImageExecutionStore(repo:PlatformRepository,authority:Plat
     // Acknowledged commit only. A lost reply can leave a hold, never a send.
     c.check();claimedPut=saved;admitted=true;await fresh();
    }
-   const transport=createImageNativeTransport({version:r.version,now:()=>r.now(),assertQualified:async(_b,v)=>c.within(()=>r.assertNativeQualified(selected,v,c.signal)),assertObservationAllowed:async()=>{await locked(id,c,async(tx,state)=>current(tx,id,state,selected,actor,c))},assertCurrent:async()=>{if(admitted)await fresh();else await locked(id,c,async(tx,state)=>{if(state.status!==(index===0?'approved':'claimed')||state.version!==version)return fail();await current(tx,id,state,selected,actor,c)})},admit,readCredential:(_b,i)=>c.within(()=>r.readCredential(selected,i,c.signal)),assertCredentialCurrent:async(_b,key)=>{await c.within(()=>r.assertCredentialCurrent(selected,key,c.signal));await fresh()}},c.signal);
+   const transport=createImageNativeTransport({version:r.version,clock:clock!,now:()=>r.now(),assertQualified:async(_b,v)=>c.within(()=>r.assertNativeQualified(selected,v,c.signal)),assertObservationAllowed:async()=>{await locked(id,c,async(tx,state)=>current(tx,id,state,selected,actor,c))},assertCurrent:async(_b,_index,_signal,check)=>{if(admitted)await fresh(check);else await locked(id,c,async(tx,state)=>{if(state.status!==(index===0?'approved':'claimed')||state.version!==version)return fail();await current(tx,id,state,selected,actor,c,check)})},admit,readCredential:(_b,i)=>c.within(()=>r.readCredential(selected,i,c.signal)),assertCredentialCurrent:async(_b,key)=>{await c.within(()=>r.assertCredentialCurrent(selected,key,c.signal))}},c.signal);
    let proof:object;
    if(index===0)proof=await transport.initialize(selected);
    else{

@@ -1,0 +1,94 @@
+{
+  "format": 1,
+  "scope": "Approved LOCAL growth publish/delete original-child credential acquisition, currentness, native final facts, original cancellation and result integrity",
+  "approval": "call_51fe46505b7c4b8aae74389a1263e69c",
+  "baseCommit": "ca22791e",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "075b31c75753cb20b676d7814c3f5ac76fdd202bc33c51fdb3a88f445920ca2b",
+    "lib/governance/platform/__tests__/actionStore.test.ts": "24f03279dce502e347e740b340aaa9f827cba1fd4815a775e53de4cd0e99fa2c",
+    "lib/governance/platform/__tests__/effectExecution.test.ts": "b5bacdad1e79d302efaa82b34dc33829a40a7d499555dbd0a51237cd608929ba",
+    "lib/governance/platform/__tests__/executionHttp.test.ts": "40e311b2c10f04b68662fba61c134f1569d30b3b10c1e523e2aa06ab621ad0d3",
+    "lib/governance/platform/__tests__/growthJoinedTime.test.ts": "94fff977d76c998854e43d32db8b684d6560c35ed7f3e4e73f489b258f1f05f5",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "b3598e269f0c063db5456dd7f1c9959e722e3db5b7ca83e53c691de39323771c",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "eadb20384b17dda4433bffeae41d881daf5d284977ce9d8b411f82756167a117",
+    "lib/governance/platform/actionStore.ts": "da6ba9a56f058c0b2523f3e4a21eaa6ae44e51629b8b56d1e01922b87aad4de7",
+    "lib/governance/platform/effectExecution.ts": "7c176cb68a9a9083edf0c4547fb195996b139a614d5cb176295aaca9149958bf",
+    "lib/governance/platform/executionHttp.ts": "2a7833903165e2832931fa57968f49c64c916586949c52b2a001af4d63ca2737",
+    "lib/governance/platform/executionTime.ts": "9ac9c7afd7647354e4200281efb8fcdc955fe9f845ca23925acf421e2134fd00",
+    "lib/governance/platform/requestComposition.ts": "ea4d56a154bb70536f5b46bb722571add0b644c9bad4fac7c52b693357e34f10",
+    "lib/growth/linkedin/__tests__/platformDeletion.test.ts": "412e1ea07ed65229dd7290016a83876ee5bb318d347af914a2f9c4439002acb0",
+    "lib/growth/linkedin/__tests__/platformPosting.test.ts": "4eecfa84a71715656c624e4214c62ac0ae06389c2a96767bf343befe81fe03db",
+    "lib/growth/linkedin/__tests__/postingCredentialDecrypt.test.ts": "c28c0b5cfde1b8900340679d2bb4939449262ca6b95373ddd7651de7a1c9d4b5",
+    "lib/growth/linkedin/platformDeletion.ts": "f1efde60299a3150404e4bbab1c1c88127b6c7eed418d4ef9443fa1c5e0b679e",
+    "lib/growth/linkedin/posting.ts": "5688dd13b7450b8c23ca995f5e73e205e7519740987c87659f158506c25981b9",
+    "lib/governance/platform/growthNativeTransport.ts": "afa7058b0dbe9c97fc85007e8f098b4721cca0b76f9f82ef81267507deaadd86",
+    "lib/governance/platform/__tests__/growthNativeTransport.test.ts": "007553bd7731dca80de4fad9c7078729161b4a7fbb5783c7b5bd45686be73d64",
+    "lib/governance/platform/__tests__/fixtures/syntheticGrowthNative.ts": "73cf3eb3a8ea96bdfc80a9639c49ee40bccfdc59eba09f6e8076461c986fc998"
+  },
+  "logsSha256": {
+    "work/growth-native-red.log": "514713d6502dcccf0b6fd53f5cd59ee71c4dfc739be38a83f89c238defdec370",
+    "work/growth-native-green.log": "028569485207a68aeb724df6350740bd5a245534cde93a5b4ef1e59f5852a122",
+    "work/growth-owner-red.log": "ed3857184b4d53f69c2568c21dd423027d55682ff27405f54a2a099228c501f1",
+    "work/growth-owner-green.log": "e834a8e6f2baadf4deb96a38c71decd1328e28ba4bfb6c95686592384c750d47",
+    "work/growth-last-owner-red.log": "9dfc22a79a73e2461a2ff1205f2bad01e11abb0cbc9a8aed027a7c84f874f4a1",
+    "work/growth-known-response-red.log": "4ab0207cc6628fe7b932386b9217a898430843d0dff169b3fe1d2764a83a4290",
+    "work/growth-composed-owner-green.log": "52c30cfe2a8f03c4d9b30ddbd1c037a5f67a672f72e05db7b6ca4372f190b3bc",
+    "work/growth-missing-runtime-red.log": "0a9613ffa5168e531ed883d54a32b691306bcfe6a175d858c8a85fba6ff5d14f",
+    "work/growth-missing-runtime-green.log": "7fcd61521db2c507d38368790704c3041f351964b284e8ef8d15a9464f785ce0",
+    "work/growth-first-ordinary.json": "812c8740cc360ed1459d9917528419dccff67db6d7383442e07816f2b61a2ccb",
+    "work/growth-joined-final-focused.log": "d31fbed591537e9be9e9a9280d485008b6e3a99ff054fa3bb7ff7c21790c3af0",
+    "work/growth-callback-guard-final.log": "3fba0563cfc953e381a242530c06c180329bada8e4fd6e26798b07764415c701",
+    "work/growth-current-final-ordinary.json": "761b2fd7905ff8338c4ed7bf31abb2064b2863b599906822d3a196fc775bbe23",
+    "work/growth-current-final-types.log": "3fe8f1d4c885a796efc179822f03d514fb82bfaf636e5d7fdfa27dc0a0fdfa63",
+    "work/growth-current-demo.log": "6cc8452d361c27def499db5842bd0d0a01c43d3557f03f31db92dacef7bed1f7"
+  },
+  "regressions": [
+    "missing native transport module; missing actual owner currentness method",
+    "revoked profile in last original-owner await: acquire/pre-decrypt/final-send effects blocked (post-decrypt independently blocked at next phase too)",
+    "actual composed actionStore/currentAuthority/opaque binding/native transport: final human-row wait revokes profile, zero row/decrypt/HTTP, unknown attempt1 and no replay",
+    "known remote identity after caller disconnect retained",
+    "missing runtime refused before source/bookkeeping"
+  ],
+  "focused": {
+    "joined": {
+      "passed": 97,
+      "filesPassed": 9,
+      "filesSqlSkipped": 2,
+      "sqlDefinitionsSkipped": 187
+    },
+    "laterCallbackAndBinding": {
+      "passed": 34,
+      "files": 2,
+      "overlapping": true
+    },
+    "laterMissingRuntime": {
+      "passed": 13,
+      "files": 2,
+      "overlapping": true
+    }
+  },
+  "rootStrictTypes": "PASS exit0; prior closure union-narrowing correction preserved full type checking",
+  "ordinary": {
+    "numPassedTests": 19232,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20374,
+    "numFailedTestSuites": 0
+  },
+  "firstOrdinary": "19224pass/1fail/1142pending; old generic growth coordinator test migrated to explicit branded synthetic admission, unknown/no-send assertions preserved",
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  },
+  "review": "Independent exact-source review: last-owner profile-ordering P2 reproduced/corrected; final and missing-runtime follow-up no important findings",
+  "actualSql": "NOT RUN. Opt-in definitions updated with explicit synthetic runtime/credential metadata source only; previous228SQLPASS is7504a725, both one-run grants consumed",
+  "nativeAndCredentials": "No real native/provider/credential/key; selected DB/vault calls intercepted in unit tests, explicit synthetic profiles; no qualification supplier/default added",
+  "remaining": [
+    "connected workload source-acquisition/STS/ECS simultaneous original-owner windows",
+    "fresh coherent authorized SQL/build/full review and mandatory-green PR checkpoint",
+    "real runtime/time/custody/fleet/human/provider qualification",
+    "all remaining master/owner/production gates"
+  ],
+  "activation": "Governance incomplete/disabled; unregistered actual default refuses missing runtime before claim",
+  "externalActions": "No actual SQL/provider/credential/native helper/sign/install/account/resource/flags/settings/schema/push/workflow/deploy/spending"
+}

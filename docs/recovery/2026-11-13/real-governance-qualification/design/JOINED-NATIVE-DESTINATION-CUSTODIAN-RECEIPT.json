@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "scope": "approved local private-Vercel/joined-time correction: immutable copied native destinations and custodian post-clock profile currentness",
+  "approval": [
+    "call_dcfc565c33fe4740a2f1c4cb6fffaed7",
+    "call_89eb4532167a4e55b4c65c38f8fe44cc"
+  ],
+  "sourceSha256": {
+    "lib/governance/platform/deploymentNativeTransport.ts": "d04bf4c3a876f894f4ec2563aa9acb8c28232faa913c287b1d7b2ad3b970186c",
+    "lib/governance/platform/operations/settingsVercelTransport.ts": "629cfc948fdde273a5058ee9c223d2214094ddbfd7d2a2d41d6f763722a26430",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "4e09706ccc2cb401e519421106cfe94f30b4dcd494e766a1bb53d2922baf6927",
+    "lib/governance/platform/__tests__/deploymentNativeTransport.test.ts": "fc854abd6f3c5c1313c17bcf8185dafc6386471cdd6cf6beb1a70017baa9b637",
+    "lib/governance/platform/operations/__tests__/settingsVercelTransport.test.ts": "43434126bc929abd81c55dfb621942954841c08268b67d8c7aa923aa5f4d9092",
+    "lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts": "0802c1000a486d48f3afbeb0b8fc7fd041192a71611519d9cae2cd9baaef74a6",
+    "lib/demo/demoScenarios.ts": "93b17880e694018752171120b1e30236b0c10935a499bf9c38968d2c15b424b2"
+  },
+  "regressions": {
+    "mutableNativeDestinations": 4,
+    "nativeProfileRevocationDuringClock": 1
+  },
+  "focused": {
+    "passed": 40,
+    "files": 3
+  },
+  "rootStrictTypes": "PASS exit0 after initial local parsed-name collision correction",
+  "ordinary": {
+    "numPassedTests": 19202,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20344
+  },
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  },
+  "review": "Exact six-file native destination/custodian corrections have no remaining important source finding; source/file review only",
+  "actualSql": "NOT RUN;228historicalPASS is7504a725 only",
+  "realNativeProviderCredential": "NONE; intercepted/synthetic tests",
+  "remaining": [
+    "whole operational source-acquisition/STS/ECS joined-window owner composition",
+    "growth exact private acquisition/cancellation scoped design",
+    "fresh coherent SQL/build/sourcePR checkpoint",
+    "real runtime/time/custody/fleet/human/provider and all master/owner gates"
+  ],
+  "activation": "Governance remains incomplete/disabled"
+}

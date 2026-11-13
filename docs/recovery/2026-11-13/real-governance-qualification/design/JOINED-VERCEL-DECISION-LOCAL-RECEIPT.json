@@ -1,0 +1,66 @@
+{
+  "observedAt": "2026-11-13T18:16:14.916100+00:00",
+  "parentCommit": "a293d3ac2906e897f6881aca7dfdc89caef0a62d",
+  "scope": "local generated-site deployment decision timing, not native credential acquisition/qualification",
+  "sourceSha256": {
+    "lib/governance/platform/actionStore.ts": "8e1c637b648269a654465fdaf99edbf58c96bb6cd42da0ec7368b5148ef720e7",
+    "lib/governance/platform/__tests__/actionStore.test.ts": "bd312d5cf9a6d969bb6f46004c8da1719cb7ee348a2135042479ec9cc12d9264",
+    "lib/governance/platform/__tests__/deploymentJoinedTime.test.ts": "82efbf2bae8ebe3bc6df5e23a3cd929e4f9d8e76d96b0a7a59f8ee0caa472760",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "1faf97c5634c60062e67c2392d99406de31b3a0c1abb81f3b2bfb5e351ca25eb",
+    "lib/demo/demoScenarios.ts": "9cae6260f12390543090be3c0cec69385b2c77a3020b13695ff1df384529f565"
+  },
+  "red": {
+    "log": "work/deployment-time-red2.log",
+    "failed": 8,
+    "passed": 1,
+    "meaning": "expired uncertainty/source/session/cancel cases admitted before integration; synthetic outbound counter reached1"
+  },
+  "reviewCorrection": {
+    "finding": "prospective preview reader omitted from interval participants",
+    "redLog": "work/deployment-preview-red.log",
+    "redFailed": 1,
+    "redPassed": 11,
+    "fix": "original previewDeployment now supplies phaseActor to timely",
+    "finalReview": "same reviewer no remaining important finding; source-only no execution"
+  },
+  "focused": {
+    "files": 4,
+    "passed": 67,
+    "log": "work/deployment-time-final-focused.log"
+  },
+  "ordinary": {
+    "numPassedTests": 19109,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20251,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "strictRootTypes": "PASS work/deployment-time-final-types2.log",
+  "actualSql": "NOT RUN; opt-in SQL fixture definitions explicitly use synthetic timing only",
+  "simulated": [
+    "clock/people/session authority",
+    "serialized memory rows and native target locks/receipts",
+    "provider outcome metadata"
+  ],
+  "actualLocal": [
+    "original action lifecycle and transaction-owner composition",
+    "exact lead/source/files/configuration reconstruction",
+    "private bearer-guarded request clock",
+    "original effect proof and immutable deployment receipt kernels"
+  ],
+  "effects": {
+    "actualSql": false,
+    "realCredentialClockProvider": false,
+    "signingInstallation": false,
+    "productionSchemaFlagDeployEnablement": false,
+    "push": false,
+    "spending": false
+  },
+  "remaining": [
+    "private native deployment credential acquisition and explicit lifetime/currentness joined to original final authorization",
+    "remaining source/transitive composition",
+    "real SQL/native clock/custody/fleet/genuine human/provider qualification",
+    "frozen build/green PR and owner production gates"
+  ]
+}

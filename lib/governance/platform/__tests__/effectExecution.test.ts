@@ -1,5 +1,6 @@
 import {it,expect,vi} from 'vitest';
-import {bindPlatformExecution,runPlatformEffect} from '../effectExecution';
+import {bindPlatformExecution,bindPlatformGrowthExecution,runPlatformEffect} from '../effectExecution';
+import {syntheticGrowthNative} from './fixtures/syntheticGrowthNative';
 const effect={id:'deployment',kind:'settings.vercel' as const,target:{projectId:'project',settingsDigest:'a'.repeat(64)}};
 function fixture(){const proof=Object.freeze({});const service={claimNextEffect:vi.fn(async()=>({effect,proof})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})};return {service,binding:bindPlatformExecution(service,'platform_action_'+'a'.repeat(36)),proof}}
 it('rejects client-shaped bindings before preparation or a send',async()=>{
@@ -35,3 +36,11 @@ it('rejects concurrent use of the same binding before another claim',async()=>{
  await expect(runPlatformEffect(f.binding,effect,async()=>({outcome:'confirmed',value:2}))).rejects.toThrow();release();expect(await first).toBe(1);expect(f.service.claimNextEffect).toHaveBeenCalledTimes(1);
 });
 it.each(['template.bucket.create','template.object.put','template.access.grant'] as const)('generic runner cannot claim or prepare migrated %s effects',async kind=>{const {templateBucketEffect,templateObjectEffect,templateAccessEffect}=await import('@/lib/cloud/aws/platformTemplatePlan');const selected=kind==='template.bucket.create'?templateBucketEffect('123456789012','us-east-2'):kind==='template.object.put'?templateObjectEffect('123456789012','us-east-2','a'.repeat(64)):templateAccessEffect({accountId:'123456789012',region:'us-east-2',bytesDigest:'a'.repeat(64),objectVersion:'version-1',recipientDigest:'b'.repeat(64),ttlSeconds:60});const service={claimNextEffect:vi.fn(async()=>({effect:selected,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})},prepare=vi.fn(async()=>({outcome:'confirmed' as const,value:'must-not-run'}));await expect(runPlatformEffect(bindPlatformExecution(service,'legacy'),selected,prepare)).rejects.toThrow();expect(service.claimNextEffect).not.toHaveBeenCalled();expect(prepare).not.toHaveBeenCalled();expect(service.observeEffect).not.toHaveBeenCalled()});
+it('generic growth bindings cannot claim a credential-bearing child or enter provider preparation',async()=>{
+ const growth={id:'post',kind:'growth.post.publish' as const,target:{connectionId:'account',connectionRevision:'a'.repeat(64),author:'urn:li:person:abc',draftId:'draft',renderedPayloadDigest:'b'.repeat(64)}},service={claimNextEffect:vi.fn(async()=>({effect:growth,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})},prepare=vi.fn(async()=>({outcome:'confirmed' as const,value:true}));
+ await expect(runPlatformEffect(bindPlatformExecution(service,'original'),growth,prepare)).rejects.toThrow();expect(service.claimNextEffect).not.toHaveBeenCalled();expect(prepare).not.toHaveBeenCalled();
+});
+it('growth attachments reject forged transports and genuine transports for another action/runtime',()=>{
+ const f=fixture(),signal=new AbortController().signal,timing={clock:async()=>({earliest:0,latest:1}),signal,assertActive:()=>{}},service={...f.service,beforeEffectCredential:async()=>{},assertEffectCredentialCurrent:async()=>{}},native=syntheticGrowthNative(timing,'original','2026-11-13T00:00:00.000Z');
+ expect(()=>bindPlatformGrowthExecution(service,'original',{...native},timing)).toThrow();expect(()=>bindPlatformGrowthExecution(service,'different',native,timing)).toThrow();expect(()=>bindPlatformGrowthExecution(service,'original',native,{...timing,signal:new AbortController().signal})).toThrow();
+});

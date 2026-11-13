@@ -1,0 +1,21 @@
+{
+  "head": "260d76407bcae72a185f21315d71ec088e900229",
+  "sourceCount": 13504,
+  "networkDenied": true,
+  "databaseUrlSupplied": false,
+  "loadedEnvironmentFilesAbsent": true,
+  "trackedExampleOnly": true,
+  "scope": "ordinary local production compilation only; no native issuer launch/deploy",
+  "exitCode": 0,
+  "buildLogSha256": "9c146fadcc4d22daec86831f3a0bc33cae5269cc8d4ddcd0e502b6e480900f6e",
+  "sourceUnchanged": true,
+  "stage": "/private/tmp/axiom-joined-current-build-_6av2r7j",
+  "approval": "call_8a662783648c4d158a4a13df81410f3c",
+  "packetSha256": "e2f1c67845b3a450b8dfd021431440845da595364f836c7e56d75afdc15dda42",
+  "sourceManifestSha256": "1fb6213cc7204234222e3cc4ee568203ee3085d7ebd889c6f2672ef10e799c33",
+  "archiveSha256": "9a3f50cd4ef903d99217abdaa468098f4283ae3c7d802e5928332d8799bb76f5",
+  "staticPages": 304,
+  "warnings": "Three existing dynamic dependency-expression warnings, not suppressed",
+  "authority": "One invocation consumed; no retry",
+  "notVerified": "No real runtime/time/custody/fleet/provider/production qualification. Subsequent aggregate source review found deployment/settings final-native-facts ordering gaps; this build is not a claim they are fixed."
+}

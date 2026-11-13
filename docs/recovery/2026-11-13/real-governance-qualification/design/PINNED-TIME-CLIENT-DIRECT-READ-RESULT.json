@@ -1,0 +1,45 @@
+{
+  "observedAt": "2026-11-13T17:18:08.719572+00:00",
+  "approval": "call_3349036e44b24ddc86978dd9e3fcbbc9",
+  "readerSha256": "4bb239b363e1e04d8014819f5734b0d91d05f39b7a516c8d736a689139445949",
+  "readerTests": "3 intercepted-I/O tests passed; no curl/network during tests",
+  "review": "existing independent reviewer found no important collector/scope issue; parent enforced count/order",
+  "attempts": [
+    {
+      "slot": 1,
+      "url": "https://api.github.com/repos/aws/clock-bound/releases?per_page=10",
+      "status": "success",
+      "bodySha256": "8bc153083c04d97b47c1be7b54d66aae9ed71e62ec592ca4a530e9b32c4d3f5d",
+      "bodyBytes": 13264
+    }
+  ],
+  "stopped": true,
+  "reason": "no_stable_in_bounded_listing",
+  "releaseMetadata": [
+    {
+      "tag": "3.0.0-alpha.1",
+      "prerelease": true,
+      "draft": false,
+      "publishedAt": "2025-12-02T16:40:52Z"
+    },
+    {
+      "tag": "3.0.0-alpha.0",
+      "prerelease": true,
+      "draft": false,
+      "publishedAt": "2025-11-24T19:24:37Z"
+    }
+  ],
+  "conclusions": [
+    "The bounded GitHub Releases response contains two prereleases and no stable release.",
+    "This is NOT proof that no stable tag/package/older supported client exists elsewhere.",
+    "No tag was selected, immutable source read, dependency adopted, or native source qualified.",
+    "The old web-reader failure did not demonstrate upstream unavailability; the approved direct HTTPS request succeeded."
+  ],
+  "effects": {
+    "nativeClockQuery": false,
+    "dependenciesInstall": false,
+    "credentialsResources": false,
+    "actualSql": false,
+    "deploymentEnablementSpend": false
+  }
+}

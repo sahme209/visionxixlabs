@@ -10,7 +10,7 @@ import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule,currentLinke
 import {isPostingEnabled} from '@/lib/growth/linkedin/oauth';
 import {platformPrincipalSchema} from './contracts';
 import type {PlatformAuthority} from './actionStore';
-const rowSchema=platformPrincipalSchema.extend({email:z.string().email().max(320),live:z.literal(true)}).strict();
+const rowSchema=platformPrincipalSchema.extend({email:z.string().email().max(320),live:z.literal(true),sessionIssuedAtMs:z.number().int().nonnegative().safe().optional(),sessionExpiresAtMs:z.number().int().nonnegative().safe().optional()}).strict();
 const fail=():never=>{throw Error('platform_governance_authority_unavailable')};
 /** Platform privilege is the current deployment-admin allowlist, never a
  * customer workspace role. A paired session still requires current membership

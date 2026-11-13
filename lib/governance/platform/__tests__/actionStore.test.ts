@@ -10,7 +10,7 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
   const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects),nextPublications=new Map(publications);
-  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
+  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async p=>({...p,live:true,sessionIssuedAtMs:at-2000,sessionExpiresAtMs:at+120000}),now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
@@ -21,10 +21,23 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
   try{const value=await fn(tx);rows=next;events=nextEvents;effects=nextEffects;publications=nextPublications;return value}finally{release()}
  }};
  const assertCurrent=vi.fn(async(_tx:PlatformTransaction,_actor:typeof requester)=>{});
- const service=createPlatformActionService(repo,{assertCurrent,...(withSourceAuthority?{assertEffectCurrent:async()=>{}}:{})});
+ const service=createPlatformActionService(repo,{assertCurrent,...(withSourceAuthority?{assertEffectCurrent:async()=>{}}:{})},{clock:async()=>({earliest:at,latest:at+1}),signal:new AbortController().signal});
  return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
+it('growth credential admission stays one-use while exact-child currentness can repeat without a send or new claim',async()=>{
+ vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');
+ const source={draft:{id:'draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(at-1000)},connection:{id:'connection',linkedinUrn:'urn:li:person:author',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(at+60000),updatedAt:new Date(at-1000)}},f=fixture(source);
+ const saved=await f.service.prepareGrowth({operation:'publish',draftId:'draft',connectionId:'connection',expiresAt:new Date(at+30000).toISOString()},requester,'11111111-1111-4111-8111-111111111111'),id=saved.actionId;
+ await f.service.review(id,0,f.rows().get(id)!.plan.digest,reviewer);await f.service.claim(id,1,requester);const child=await f.service.claimNextEffect(id,requester),check=async()=>{};
+ await expect(f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check)).rejects.toThrow();
+ await f.service.beforeEffectCredential(child.proof,child.effect,requester,check);
+ await expect(f.service.beforeEffectCredential(child.proof,child.effect,requester,check)).rejects.toThrow();
+ await f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check);await f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check);
+ expect(f.rows().get(id)?.attemptCount).toBe(1);expect(f.rows().get(id)?.status).toBe('claimed');
+ f.assertCurrent.mockRejectedValueOnce(Error('revoked'));await expect(f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check)).rejects.toThrow();
+ await f.service.beforeEffectSend(child.proof,child.effect,requester,check);await expect(f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check)).rejects.toThrow();await f.service.observeEffect(child.proof,'confirmed');expect(f.rows().get(id)?.status).toBe('confirmed');
+});
 it('never reviews or executes deployment target release through the generic action path',async()=>{
  const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'release',kind:'deployment.target.release',target:{nativeKey:d,generation:1,expectedReservationVersion:1,originalActionId:'platform_action_11111111-1111-4111-8111-111111111111',requestReceiptDigest:d,providerDeploymentId:'dpl_fixture',profileDigest:d,recoveryDigest:d}}]}),id='platform_action_22222222-2222-4222-8222-222222222222',proposed=createPlatformAction(p,requester,at);
  f.rows().set(id,proposed);await expect(f.service.review(id,0,p.digest,reviewer)).rejects.toThrow();expect(f.rows().get(id)).toEqual(proposed);
@@ -104,8 +117,8 @@ it('cannot grant a final send after concurrent outcome observation consumes its 
 });
 
 it('does not grant another action the same native draft after an unknown publication',async()=>{
- const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'post',kind:'growth.post.publish',target:{draftId:'same-draft',connectionId:'connection',connectionRevision:'revision',author:'urn:li:person:test',renderedPayloadDigest:d}}]});
- const ids=[];for(let i=0;i<2;i++){const id=await f.service.propose(p,requester);await f.service.review(id,0,p.digest,reviewer);await f.service.claim(id,1,requester);ids.push(id)}
+ vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');const source={draft:{id:'same-draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(at-1000)},connection:{id:'connection',linkedinUrn:'urn:li:person:test',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(at+60000),updatedAt:new Date(at-1000)}},f=fixture(source);
+ const ids=[];for(let i=0;i<2;i++){const saved=await f.service.prepareGrowth({operation:'publish',draftId:'same-draft',connectionId:'connection',expiresAt:new Date(at+30000).toISOString()},requester),id=saved.actionId,p=f.rows().get(id)!.plan;await f.service.review(id,0,p.digest,reviewer);await f.service.claim(id,1,requester);ids.push(id)}
  const first=await f.service.claimNextEffect(ids[0],requester);await f.service.beforeEffectSend(first.proof,first.effect,requester);await f.service.observeEffect(first.proof,'unknown');
  const next=await f.service.claimNextEffect(ids[1],requester);await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
  expect(f.rows().get(ids[0])?.status).toBe('unknown');await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
@@ -120,8 +133,11 @@ it('the same authenticated preparation reference returns the original record wit
 });
 
 it('a source-bound deployment cannot send if its current-source supplier is missing',async()=>{
- const {approvePlatformAction}=await import('../kernel'),f=fixture(undefined,false),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'lead-deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'preview',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:new Date(at-1000).toISOString()}}]}),id=await f.service.propose(p,requester);
- f.rows().set(id,approvePlatformAction(f.rows().get(id)!,{...reviewer,planDigest:p.digest},at));await f.service.claim(id,1,requester);const effect=await f.service.claimNextEffect(id,requester);await expect(f.service.beforeEffectSend(effect.proof,effect.effect,requester)).rejects.toThrow();
+ const {approvePlatformAction}=await import('../kernel'),f=fixture(undefined,false),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'lead-deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'preview',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:new Date(at-1000).toISOString()}}]}),id='platform_action_11111111-1111-4111-8111-111111111111';
+ await expect(f.service.propose(p,requester)).rejects.toThrow();expect(f.rows().size).toBe(0);
+ // Seed only historical claimed state to check that old records cannot bypass
+ // the earlier source refusal or obtain a proof for the send boundary.
+ f.rows().set(id,claimPlatformAction(approvePlatformAction(createPlatformAction(p,requester,at),{...reviewer,planDigest:p.digest},at),requester,at));await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();expect(f.events()).toHaveLength(0);
 });
 it('requires a current template source supplier before independent upload or access review',async()=>{
  for(const effect of [

@@ -1,3 +1,6 @@
+import {z} from 'zod';
+import {assertPlatformParticipantsTime} from './principalTime';
+import type {ExecutionTimeSource} from './executionTime';
 import 'server-only';
 import {platformPrincipalSchema,type PlatformPrincipal,type PlatformAction} from './contracts';
 import {deploymentRecoverySelection} from './deploymentRecoveryCommand';
@@ -22,20 +25,32 @@ export interface DeploymentRecoverySource {
  assertCurrent(tx:DeploymentRecoveryTransaction,plan:DeploymentRecoveryPlan):Promise<void>;
  /** One bounded, read-only observation of the exact known provider reference.
   * Caller JSON/status strings/URLs can never implement this private supplier. */
- readTerminal(plan:DeploymentRecoveryPlan,signal:AbortSignal):Promise<unknown>;
+ readTerminal(plan:DeploymentRecoveryPlan,signal:AbortSignal,beforeRead:()=>Promise<void>):Promise<unknown>;
+ /** Exact private source/profile validity; structure is not native provenance. */
+ readTimeWindow?(tx:DeploymentRecoveryTransaction,plan:DeploymentRecoveryPlan):Promise<unknown>;
  /** Native completeness/currentness, including absence of unqualified work,
   * must remain valid across the atomic release. Not a parser/hash check. */
  assertEvidenceCurrent(tx:DeploymentRecoveryTransaction,plan:DeploymentRecoveryPlan,evidence:DeploymentTerminalObservation):Promise<void>;
 }
 const fail=():never=>{throw Error('platform_deployment_recovery_unavailable')};
+const stamp=z.number().int().nonnegative().safe(),timeWindow=z.object({planDigest:z.string().regex(/^[a-f0-9]{64}$/),profileDigest:z.string().regex(/^[a-f0-9]{64}$/),notBefore:stamp,expiresAt:stamp}).strict();
 /** Prepared private service only; no route, native supplier or execution default.
  * Claim commits BEFORE the one native read. Unknown acknowledgements cannot
  * yield a read capability or a second observation attempt. */
-export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepository,authority:PlatformAuthority,source:DeploymentRecoverySource){
+export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepository,authority:PlatformAuthority,source:DeploymentRecoverySource,timing?:{clock:ExecutionTimeSource;signal?:AbortSignal}){
+ const clock=timing?.clock,originalSignal=timing?.signal,readWindow=source.readTimeWindow?.bind(source);
  async function load(tx:DeploymentRecoveryTransaction,id:string){const state=readPlatformAction(await tx.read(id)),plan=readDeploymentRecoveryPlan(await tx.readDeploymentRecoveryPlan(id));if(compileDeploymentRecoveryPlatformPlan(plan).digest!==state.plan.digest)return fail();return {state,plan}}
- async function current(tx:DeploymentRecoveryTransaction,state:PlatformAction,plan:DeploymentRecoveryPlan,actor:PlatformPrincipal){
-  async function people(){await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer)}
-  await people();await source.assertCurrent(tx,plan);await people();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(plan.expiresAt))return fail();return now;
+ async function current(tx:DeploymentRecoveryTransaction,state:PlatformAction,plan:DeploymentRecoveryPlan,actor:PlatformPrincipal,evidence?:DeploymentTerminalObservation,useSignal?:AbortSignal){
+  if(typeof clock!=='function'||!(originalSignal instanceof AbortSignal)||typeof readWindow!=='function')return fail();
+  const signal=useSignal?AbortSignal.any([originalSignal,useSignal]):originalSignal;signal.throwIfAborted();
+  async function people(){await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);signal.throwIfAborted()}
+  async function window(){const value=timeWindow.parse(await readWindow!(tx,plan));signal.throwIfAborted();if(value.planDigest!==plan.digest||value.profileDigest!==plan.profileDigest||value.notBefore>=value.expiresAt)return fail();return value}
+  async function database(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(plan.expiresAt))return fail();return now}
+  await people();await source.assertCurrent(tx,plan);if(evidence)await source.assertEvidenceCurrent(tx,plan,evidence);await people();const before=await database(),sourceTime=await window();
+  await assertPlatformParticipantsTime(tx,[actor,state.requester,...(state.reviewer?[state.reviewer]:[])],clock,{notBefore:Math.max(state.createdAt,sourceTime.notBefore,evidence?.observedAt??0),expiresAt:Math.min(Date.parse(plan.expiresAt),sourceTime.expiresAt,evidence?.expiresAt??Number.MAX_SAFE_INTEGER)},signal);
+  await source.assertCurrent(tx,plan);if(evidence)await source.assertEvidenceCurrent(tx,plan,evidence);await people();const after=await window();
+  if(after.planDigest!==sourceTime.planDigest||after.profileDigest!==sourceTime.profileDigest||after.notBefore!==sourceTime.notBefore||after.expiresAt!==sourceTime.expiresAt)return fail();
+  const now=await database();if(now<before)return fail();signal.throwIfAborted();return now;
  }
  async function original(tx:DeploymentRecoveryTransaction,plan:DeploymentRecoveryPlan){const reservation=await tx.readDeploymentTarget(plan.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(plan.nativeKey,plan.requestReceiptId);if(compileDeploymentRecoveryPlan({reservation,receipt,profileDigest:plan.profileDigest,expiresAt:plan.expiresAt}).digest!==plan.digest)return fail();return {reservation,receipt}}
  async function locked<T>(id:string,fn:(tx:DeploymentRecoveryTransaction,state:PlatformAction,plan:DeploymentRecoveryPlan)=>Promise<T>){platformActionId.parse(id);return repo.transaction(async tx=>{await tx.lock(id);const {state,plan}=await load(tx,id);await tx.lockDeploymentTarget(plan.nativeKey);return fn(tx,state,plan)})}
@@ -59,23 +74,30 @@ export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepositor
    // This await is intentionally outside the catch: an uncertain claim commit
    // grants no lexical permission even to perform the observation.
    const claimed=await locked(id,async(tx,state,plan)=>{if(state.version!==version||expectedPlanDigest!==undefined&&state.plan.digest!==expectedPlanDigest)return fail();await original(tx,plan);const now=await current(tx,state,plan,actor),next=claimPlatformAction(state,actor,now);await tx.replace(id,version,next);await tx.event({actionId:id,kind:'claimed',state:next});await tx.writeEffect(id,0,null,'claimed');await tx.event({actionId:id,kind:'effect.claimed',state:next,effectIndex:0});await current(tx,next,plan,actor);return {state:next,plan}});
-   const controller=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined;
+   const controller=new AbortController(),signal=originalSignal instanceof AbortSignal?AbortSignal.any([originalSignal,controller.signal]):controller.signal;let activeRead=true,startedRead=false,completedRead=false,invalidRead=false;let timer:ReturnType<typeof setTimeout>|undefined;
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('platform_deployment_recovery_unavailable'))},5000)});
-    const raw=await Promise.race([source.readTerminal(claimed.plan,controller.signal),timeout]);if(controller.signal.aborted)return fail();
-    const evidence=deploymentTerminalObservationSchema.parse(raw);if(evidence.observedAt<claimed.state.updatedAt)return fail();
+    const beforeRead=()=>{
+     const pending=(async()=>{try{
+      if(!activeRead||startedRead)return fail();startedRead=true;signal.throwIfAborted();
+      await locked(id,async(tx,state,plan)=>{if(state.status!=='claimed'||state.version!==claimed.state.version||state.plan.digest!==claimed.state.plan.digest||await tx.readEffect(id,0)!=='claimed')return fail();await original(tx,plan);await current(tx,state,plan,actor,undefined,signal);await original(tx,plan);signal.throwIfAborted()});
+      signal.throwIfAborted();if(!activeRead)return fail();completedRead=true;
+     }catch{invalidRead=true;return fail()}})();void pending.catch(()=>{});return pending;
+    };
+    signal.throwIfAborted();const raw=await Promise.race([source.readTerminal(claimed.plan,signal,beforeRead),timeout]);activeRead=false;signal.throwIfAborted();if(!completedRead||invalidRead)return fail();
+    const evidence=Object.freeze(deploymentTerminalObservationSchema.parse(raw));if(evidence.observedAt<claimed.state.updatedAt)return fail();
     return await locked(id,async(tx,state,plan)=>{
      if(state.status!=='claimed'||state.version!==claimed.state.version||state.plan.digest!==claimed.state.plan.digest||await tx.readEffect(id,0)!=='claimed')return fail();
-     const saved=await original(tx,plan);await source.assertEvidenceCurrent(tx,plan,evidence);const now=await current(tx,state,plan,actor),nextTarget=validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,now);
+     const saved=await original(tx,plan);await source.assertEvidenceCurrent(tx,plan,evidence);const now=await current(tx,state,plan,actor,evidence,signal),nextTarget=validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,now);
      await tx.releaseDeploymentReservation(plan,evidence,nextTarget);await tx.writeEffect(id,0,'claimed','confirmed');const next=finishPlatformAction(state,'confirmed',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'confirmed',deploymentReleaseObservation:evidence});
-     await source.assertEvidenceCurrent(tx,plan,evidence);const finalNow=await current(tx,next,plan,actor);validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,finalNow);
+     await source.assertEvidenceCurrent(tx,plan,evidence);const finalNow=await current(tx,next,plan,actor,evidence,signal);validateDeploymentRecoveryEvidence(plan,saved.reservation,saved.receipt,evidence,finalNow);
      return {actionId:id,planDigest:next.plan.digest,version:next.version,status:'confirmed' as const,reservationReleased:true as const,providerWritePerformed:false as const,executionAuthorized:false as const};
     });
    }catch{
     // Never rewrite a committed confirmation after a lost final acknowledgement.
     try{await locked(id,async(tx,state)=>{if(state.status!=='claimed'||state.plan.digest!==claimed.state.plan.digest||await tx.readEffect(id,0)!=='claimed')return;await tx.writeEffect(id,0,'claimed','unknown');const next=finishPlatformAction(state,'unknown',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'unknown'})})}catch{/* Original uncertainty is preserved; never retry the native read. */}
     return fail();
-   }finally{if(timer!==undefined)clearTimeout(timer);controller.abort()}
+   }finally{activeRead=false;if(timer!==undefined)clearTimeout(timer);controller.abort()}
   },
  });
 }

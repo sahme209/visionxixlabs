@@ -1,0 +1,7 @@
+{
+  "approval": "call_49645b74e2a54556bfaaf8d28b6120f0",
+  "packetSha256": "02dab1a82e84d665be5f5d5785789c80cef75f3a5b3769a6d1e0d94f24471c42",
+  "startedAt": "2026-11-13T21:54:24.078992+00:00",
+  "authority": "ONE invocation consumed at start; no retry",
+  "command": "python3 scripts/run-platform-governance-postgres.py"
+}

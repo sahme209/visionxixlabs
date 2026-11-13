@@ -27,3 +27,25 @@ it('rejects caller extras, stale evidence, expired/revoked private supplier and 
 it('rechecks qualification and database time after awaited evidence reads',async()=>{
  const f=fixture();f.assertQualified.mockImplementationOnce(async()=>{f.setNow(at+60000)});await expect(f.source.buildCurrentManifest(f.tx,f.selection)).rejects.toThrow();
 });
+it('derives the private time intersection from all three qualified evidence receipts',async()=>{
+ const f=fixture();f.setNow(at+5000);
+ f.value.observedAt=new Date(at+1000).toISOString();
+ f.value.compatibility.observedAt=new Date(at+3000).toISOString();
+ f.value.recovery.observedAt=new Date(at+2000).toISOString();
+ f.value.compatibility.expiresAt=new Date(at+45000).toISOString();
+ f.value.recovery.expiresAt=new Date(at+40000).toISOString();
+ const manifest=compiled(await f.source.buildCurrentManifest(f.tx,f.selection));
+ const window=await f.source.readTimeWindow(f.tx,manifest,f.selection);
+ expect(window).toEqual({notBefore:at+3000,expiresAt:at+40000});
+ expect(Object.isFrozen(window)).toBe(true);
+ expect(f.assertQualified).toHaveBeenLastCalledWith(f.tx,ref(1),sha256ContentHash(f.value));
+});
+it('does not release receipt timing for substituted or no-longer-qualified manifest evidence',async()=>{
+ const f=fixture(),manifest=compiled(await f.source.buildCurrentManifest(f.tx,f.selection));
+ f.value.manifest.sourceHashes={...hashes,configuration:'f'.repeat(64)};
+ f.value.artifact.sourceHashes={...f.value.manifest.sourceHashes};
+ await expect(f.source.readTimeWindow(f.tx,manifest,f.selection)).rejects.toThrow();
+ const g=fixture(),current=compiled(await g.source.buildCurrentManifest(g.tx,g.selection));
+ g.assertQualified.mockRejectedValueOnce(Error('profile revoked'));
+ await expect(g.source.readTimeWindow(g.tx,current,g.selection)).rejects.toThrow();
+});

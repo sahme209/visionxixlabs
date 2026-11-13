@@ -1,0 +1,34 @@
+{
+  "format": 1,
+  "scope": "LOCAL same-original-transaction custodian lock acquisition correction; authority facts never cached",
+  "baseCommit": "f5d035c58b59e3cc1f266b37dc1af6b1198b7988",
+  "sourceSha256": {
+    "lib/governance/platform/operations/custodianIntentAdmission.ts": "9104447720b335ee9da53cac5c7ebec140a08812b956a24941e17688d305a218",
+    "lib/governance/platform/operations/__tests__/workloadJoinedExecution.test.ts": "a2fbf5f7642273d62afe9ee99015abcc98792e299ca32adc7c1495c31ec2941d",
+    "lib/demo/demoScenarios.ts": "cd2dfad91ae386b7fcc4a61ed8004f2b9861839c955aa32104e8ee64fa5d2ea2"
+  },
+  "logsSha256": {
+    "work/workload-custodian-single-lock-red.log": "0fc806137b4fa798dbb1e14881d25f0359405dfa8bef0151d95fcbd0df4e08a2",
+    "work/workload-custodian-single-lock-final.log": "2ef3746c19783b834b07a572ccee1321ac78110cb7ec0b449acd71d2f60562a7",
+    "work/workload-single-lock-final-types.log": "3fe8f1d4c885a796efc179822f03d514fb82bfaf636e5d7fdfa27dc0a0fdfa63",
+    "work/workload-single-lock-ordinary.json": "594e7484e3b6a8d3e6ae70472478c2d49625e031260d35ec66c2467b8a70b706",
+    "work/workload-single-lock-demo.log": "80d3da38d5d1221e1ebc89c5df53f75a912c5767f2b6acd2b4dd3c453fc6931b"
+  },
+  "regression": "Strict SQL-like single-lock memory transaction:1failed6passed before fix; final8composed+3contract passed including drain after final owner snapshot",
+  "ordinary": {
+    "numPassedTests": 19261,
+    "numFailedTests": 0,
+    "numPendingTests": 1143,
+    "numTotalTests": 20404,
+    "numFailedTestSuites": 0
+  },
+  "types": "PASS exit0",
+  "review": "Independent source review no important findings",
+  "actualSql": "Original229run220pass9fail0skip; stopped fixture preserved. New corrected SQL NOT RUN; earlier authority consumed",
+  "remaining": "Corrected frozen229packet/fresh owner authorization, coherent build and mandatory-green PR, real runtime/time/custody/fleet/human/provider qualification; all master and owner gates",
+  "activation": "Incomplete/disabled; no production change or real credential/provider effect",
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "approval": "call_49645b74e2a54556bfaaf8d28b6120f0",
+  "packetSha256": "02dab1a82e84d665be5f5d5785789c80cef75f3a5b3769a6d1e0d94f24471c42",
+  "sourceCommit": "846e2692281a6a0815e03f4da15ad5b7b5704c18",
+  "fixture": "/private/tmp/axiom-platform-pg-zd1w703s",
+  "result": {
+    "numPassedTests": 229,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numTotalTests": 229,
+    "numFailedTestSuites": 0
+  },
+  "sourceBindings": "All331frozen source hashes match current bytes and saved runner receipt",
+  "cleanup": "Owned runner stop completed; saved pg_ctl status exit3: no server running",
+  "logsSha256": {
+    "/private/tmp/axiom-platform-pg-zd1w703s/result.json": "6a8b56a3b0290de3d5ff35b504a0c2477e9bf1953e7d20749958514dddf600a6",
+    "/private/tmp/axiom-platform-pg-zd1w703s/receipt.json": "9f432a5d0b05f6e84847863e610f2c89188ec845a79db1d1f10d5ad3f3f4840b",
+    "/private/tmp/axiom-platform-pg-zd1w703s/tests.log": "f31c1ae97d48fb03fd6e1c8fdae40799f4c5051411de5622c3ff009037aaf8f7",
+    "/private/tmp/axiom-platform-pg-zd1w703s/stopped.log": "e138ccb54fdb08283c6eb21159c53207bbbbf07077246e2804e18d22efe6e250",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/joined-current-owned-sql-lock-correction/INVOCATION.log": "0efd52c03f58ba975ff0a86886ce39c50f942d6de7c454550e4106ad1345f105"
+  },
+  "authority": "Consumed; no retry/next database invocation authorized",
+  "scope": "Actual isolated PostgreSQL/HMAC/original stores/locks/transactions; people/credentials/source/time/custody/fleet/providers synthetic/intercepted",
+  "notVerified": [
+    "real runtime/time/custody/fleet and provider qualification",
+    "genuine human field trials",
+    "current production database compatibility",
+    "coherent current source production build and exact-head mandatory-green PR",
+    "Governance activation and full master-plan acceptance"
+  ],
+  "productionAndRealProvider": "No production change, real credentials/provider effect, cloud resource or spending"
+}

@@ -1,0 +1,729 @@
+{
+  "purpose": "local_source_time_dependency_inventory_not_runtime_acceptance",
+  "scope": "lib/governance/platform/**/*.ts excluding __tests__",
+  "method": "literal pattern discovery; source review still required; not a complete transitive call graph",
+  "files": [
+    {
+      "path": "lib/governance/platform/actionStore.ts",
+      "sha256": "9b2b8c8ef3ba1b2108846a5bca830e8b2b76656dd4825ebe98032dac1d7aa2c9",
+      "sites": [
+        {
+          "line": 73,
+          "text": "async function timely(tx:PlatformTransaction,state:PlatformAction){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}"
+        },
+        {
+          "line": 109,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();"
+        },
+        {
+          "line": 118,
+          "text": "const plan=await prepareTemplatePlatformPlan(selected,await tx.now()),state=createPlatformAction(plan,actor,await tx.now());"
+        },
+        {
+          "line": 137,
+          "text": "const current=await prepareTemplatePlatformPlan({operation:'create_bucket',accountId:effect.target.accountId,region:effect.target.region,expiresAt:state.plan.expiresAt},await tx.now());"
+        },
+        {
+          "line": 163,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();await authority.assertCurrent(tx,actor);"
+        },
+        {
+          "line": 187,
+          "text": "const prepared=await prepareDeploymentPlatformPlan(tx,selected),state=createPlatformAction(prepared.plan,actor,await tx.now());"
+        },
+        {
+          "line": 199,
+          "text": "const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind!=='growth.post.delete'&&effect.target.imageUploadActionId?{imageUploadActionId:effect.target.imageUploadActionId}:{}),...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);"
+        },
+        {
+          "line": 227,
+          "text": "const prepared=await prepareGrowthPlatformPlan(tx,selected,await tx.now());"
+        },
+        {
+          "line": 228,
+          "text": "const state=createPlatformAction(prepared.plan,actor,await tx.now());"
+        },
+        {
+          "line": 237,
+          "text": "return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());"
+        },
+        {
+          "line": 289,
+          "text": "deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);"
+        },
+        {
+          "line": 317,
+          "text": "const observedAt=await tx.now();"
+        },
+        {
+          "line": 327,
+          "text": "const next=final?finishPlatformAction(state,final,await tx.now()):state;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/currentAuthority.ts",
+      "sha256": "fc97c82ff1b4269a5bd44c98f76cc54b10da1cbfe9b2767e0b06ef09d84f8d5a",
+      "sites": [
+        {
+          "line": 37,
+          "text": "const prepared=preparePlatformLinkedInDeletion(source,version,await tx.now(),effect.id);"
+        },
+        {
+          "line": 43,
+          "text": "const version=currentLinkedInVersion(),now=await tx.now(),prepared=effect.kind==='growth.post.publish'?preparePlatformLinkedInPost(source.draft,source.connection,version,now,effect.id,source.imageLineage,effect.target.imageUploadActionId):preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(effect.target.scheduledFor),effect.id,source.imageLineage,effect.target.imageUploadActionId);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentLiabilitySql.ts",
+      "sha256": "72dcaf05518e785c0ea36228f9ae0dd8cd9002f1c399645ddc63c12dcc357ad6",
+      "sites": [
+        {
+          "line": 33,
+          "text": "async insertDeploymentTarget(raw){const r=readDeploymentReservation(raw);key(r.nativeKey);await checkParent(r);if(r.generation!==1||r.version!==0||r.phase!=='held'||r.requestReceiptDigest!==null)return fail();await sql.$executeRawUnsafe('INSERT INTO \"PlatformDeploymentTarget\" (\"nativeKey\",\"actionId\",generation,version,\"stateJson\",\"updatedAt\") VALUES ($1,$2,$3,$4,$5::jsonb,clock_timestamp())',r.nativeKey,r.actionId,r.generation,r.version,JSON.stringify(r))},"
+        },
+        {
+          "line": 34,
+          "text": "async replaceDeploymentTarget(version,raw){const r=readDeploymentReservation(raw);key(r.nativeKey);await checkParent(r);const previous=await readTarget(r.nativeKey);if(!previous||previous.version!==version||r.version!==version+1||r.updatedAt<previous.updatedAt||r.phase!=='held')return fail();if(previous.phase==='held'&&(previous.actionId!==r.actionId||previous.generation!==r.generation||previous.requestReceiptDigest!==null||r.requestReceiptDigest===null))return fail();if(previous.phase==='released'&&(r.generation!==previous.generation+1||r.requestReceiptDigest!==null))return fail();const count=await sql.$executeRawUnsafe('UPDATE \"PlatformDeploymentTarget\" SET \"actionId\"=$1,generation=$2,version=$3,\"stateJson\"=$4::jsonb,\"updatedAt\"=clock_timestamp() WHERE \"nativeKey\"=$5 AND version=$6',r.actionId,r.generation,r.version,JSON.stringify(r),r.nativeKey,version);if(count!==1)return fail()},"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentPreparation.ts",
+      "sha256": "3b859e5c37f56b7aa664f0230d61dab6930f9c35f32cde3d196110f9a22cc66f",
+      "sites": [
+        {
+          "line": 10,
+          "text": "const row=await tx.readDeploymentSource(selected.leadId),prepared=preparePlatformLeadDeployment(row,selected,team,await tx.now(),effectId);"
+        },
+        {
+          "line": 22,
+          "text": "const source=preparePlatformLeadDeploymentSource(await tx.readDeploymentSource(selected.leadId),selected,team,await tx.now(),effectId);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentRecoverySql.ts",
+      "sha256": "ec0f65e6b9b64db3091224d25c811149f26fea01b961b31358a46472091ff871",
+      "sites": [
+        {
+          "line": 29,
+          "text": "const prior=await tx.readDeploymentTarget(plan.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(plan.nativeKey,plan.requestReceiptId),now=await tx.now(),expected=validateDeploymentRecoveryEvidence(plan,prior,receipt,evidence,now);"
+        },
+        {
+          "line": 34,
+          "text": "const count=await sql.$executeRawUnsafe('UPDATE \"PlatformDeploymentTarget\" SET version=$1,\"stateJson\"=$2::jsonb,\"updatedAt\"=clock_timestamp() WHERE \"nativeKey\"=$3 AND \"actionId\"=$4 AND generation=$5 AND version=$6',next.version,JSON.stringify(next),plan.nativeKey,plan.originalActionId,plan.generation,plan.expectedReservationVersion);if(count!==1)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentRecoveryStore.ts",
+      "sha256": "3fc87ff85077f51350c6822339e4308edf129ee49786c00417bb6c10d93e5f21",
+      "sites": [
+        {
+          "line": 38,
+          "text": "await people();await source.assertCurrent(tx,plan);await people();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(plan.expiresAt))return fail();return now;"
+        },
+        {
+          "line": 46,
+          "text": "await tx.lock(id);await authority.assertCurrent(tx,actor);const {state,plan}=await load(tx,id),observation=await tx.readDeploymentReleaseObservation(id),now=await tx.now();"
+        },
+        {
+          "line": 54,
+          "text": "await tx.lockDeploymentTarget(selection.nativeKey);const reservation=await tx.readDeploymentTarget(selection.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(selection.nativeKey,selection.requestReceiptId),plan=compileDeploymentRecoveryPlan({reservation,receipt,profileDigest:selection.profileDigest,expiresAt:selection.expiresAt}),state=createPlatformAction(compileDeploymentRecoveryPlatformPlan(plan),actor,await tx.now());"
+        },
+        {
+          "line": 70,
+          "text": "await tx.releaseDeploymentReservation(plan,evidence,nextTarget);await tx.writeEffect(id,0,'claimed','confirmed');const next=finishPlatformAction(state,'confirmed',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'confirmed',deploymentReleaseObservation:evidence});"
+        },
+        {
+          "line": 76,
+          "text": "try{await locked(id,async(tx,state)=>{if(state.status!=='claimed'||state.plan.digest!==claimed.state.plan.digest||await tx.readEffect(id,0)!=='claimed')return;await tx.writeEffect(id,0,'claimed','unknown');const next=finishPlatformAction(state,'unknown',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'unknown'})})}catch{/* Original uncertainty is preserved; never retry the native read. */}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageArtifactService.ts",
+      "sha256": "98c00623dac81696d00d91f449e187ec6353c7614336e343faa676d618484aaa",
+      "sites": [
+        {
+          "line": 31,
+          "text": "async function connection(tx:PlatformTransaction,id:string,signal:AbortSignal){if(!tx.readImageConnection)return fail();const value=postingConnectionSchema.parse(await guard(signal,()=>tx.readImageConnection!(id))),now=await guard(signal,()=>tx.now()),author=value.organizationUrn||value.linkedinUrn,scopes=value.scopes.split(/[\\s,]+/);if(value.id!==id||value.status!=='connected'||value.expiresAt.getTime()<=now||!/^urn:li:(person|organization):[A-Za-z0-9_-]+$/.test(author)||!scopes.includes(value.organizationUrn?'w_organization_social':'w_member_social'))return fail();return {connectionId:id,connectionRevision:linkedInConnectionRevision(value),author}}"
+        },
+        {
+          "line": 40,
+          "text": "async function load<T>(tx:PlatformTransaction,id:string,actor:PlatformPrincipal,signal:AbortSignal,use:(value:{state:ReturnType<typeof readPlatformAction>;binding:ReturnType<typeof imageBindingForParent>;bytes:Buffer;actors:PlatformPrincipal[]})=>Promise<T>,keepBytes=false){await people(tx,[actor],signal);const state=readPlatformAction(await guard(signal,()=>tx.read(id)));if(!['proposed','approved'].includes(state.status)||!tx.readImageBinding)return fail();const b=imageBindingForParent(await guard(signal,()=>tx.readImageBinding!(id)),state,id),actors=[actor,state.requester,...(state.reviewer?[state.reviewer]:[])];if(await guard(signal,()=>tx.now())>=Date.parse(b.expiresAt))return fail();const saved=await storage(tx).artifactMatches(b);return validatedArtifact(tx,b.artifact,saved.envelope,actors,signal,async bytes=>{const currentProfile=await profile(b.artifact,signal);if(hash(currentProfile)!==hash(b.profile))return fail();await current(tx,b.artifact,actors,signal);if(await guard(signal,()=>tx.now())>=Date.parse(b.expiresAt))return fail();await people(tx,actors,signal);return use({state,binding:b,bytes,actors})},keepBytes)}"
+        },
+        {
+          "line": 44,
+          "text": "const source=await connection(tx,s.connectionId,signal),format=await inspect(bytes,s.mimeType,signal);if(bytesDigest(bytes)!==initialDigest)return fail();const a=imageArtifactMetadata.parse({artifactId:id,creatorUserId:actor.userId,...source,bytesDigest:initialDigest,byteCount:bytes.length,...format});await current(tx,a,[actor],signal);await withKey(a,signal,async key=>{await current(tx,a,[actor],signal);const envelope=sealImageArtifact(key,a,bytes);await current(tx,a,[actor],signal);await storage(tx).insertArtifact(a,envelope,await tx.now());await current(tx,a,[actor],signal)});return {requestReference:s.requestReference,artifact:a,historical:false as const,authority:'artifact_metadata_only' as const}"
+        },
+        {
+          "line": 46,
+          "text": "async prepare(rawArtifactId:string,expiresAt:string,reference:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor),artifact=imageArtifactMetadata.shape.artifactId.parse(rawArtifactId),id=actionId(reference,actor);z.string().datetime().parse(expiresAt);return run(signal=>repo.transaction(async tx=>{await tx.lock(id);await people(tx,[actor],signal);const old=await tx.read(id);if(old){const state=readPlatformAction(old);if(!tx.readImageBinding)return fail();const b=imageBindingForParent(await tx.readImageBinding(id),state,id);if(hash(b.requester)!==hash(actor)||b.artifact.artifactId!==artifact||b.expiresAt!==expiresAt)return fail();await people(tx,[actor],signal);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}const saved=await storage(tx).readArtifact(artifact);if(!saved||saved.metadata.creatorUserId!==actor.userId)return fail();return validatedArtifact(tx,saved.metadata,saved.envelope,[actor],signal,async()=>{const selected=await profile(saved.metadata,signal),b=prepareImageUploadBinding({artifact:saved.metadata,requester:actor,actionId:id,expiresAt,profile:selected},await tx.now()),state=createPlatformAction(b.plan,actor,await tx.now());await current(tx,b.artifact,[actor],signal);await guard(signal,()=>resources!.assertUploadProfileCurrent!(selected,b.artifact,signal));await guard(signal,()=>tx.insert(id,state));await guard(signal,()=>tx.event({actionId:id,kind:'proposed',state,imageBinding:b}));await current(tx,b.artifact,[actor],signal);await guard(signal,()=>resources!.assertUploadProfileCurrent!(selected,b.artifact,signal));if(await guard(signal,()=>tx.now())>=Date.parse(expiresAt))return fail();await current(tx,b.artifact,[actor],signal);return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const}})}))},"
+        },
+        {
+          "line": 49,
+          "text": "async review(id:string,version:number,planDigest:string,rawActor:PlatformPrincipal){platformActionId.parse(id);const actor=platformPrincipalSchema.parse(rawActor);await run(signal=>repo.transaction(async tx=>{await tx.lock(id);await load(tx,id,actor,signal,async value=>{const {state,binding:b,actors}=value;if(state.status!=='proposed'||state.version!==version||state.plan.digest!==planDigest)return fail();const next=approvePlatformAction(state,{...actor,planDigest},await tx.now());await current(tx,b.artifact,actors,signal);await guard(signal,()=>resources!.assertUploadProfileCurrent!(b.profile,b.artifact,signal));await guard(signal,()=>tx.replace(id,version,next));await guard(signal,()=>tx.event({actionId:id,kind:'approved',state:next}));await current(tx,b.artifact,[...actors,actor],signal);await guard(signal,()=>resources!.assertUploadProfileCurrent!(b.profile,b.artifact,signal));if(await guard(signal,()=>tx.now())>=Date.parse(b.expiresAt))return fail();await current(tx,b.artifact,[...actors,actor],signal)})}))},"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageExecutionStore.ts",
+      "sha256": "cb42c913eee1aceb230e32e0689bd81f3bb43ba67798188de285943624343671",
+      "sites": [
+        {
+          "line": 47,
+          "text": "async function time(tx:PlatformTransaction,state:State,c:Scope){const now=await c.within(()=>tx.now());if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();return now}"
+        },
+        {
+          "line": 74,
+          "text": "const next=finishPlatformAction(state,'unknown',await c.within(()=>tx.now()));"
+        },
+        {
+          "line": 111,
+          "text": "const transport=createImageNativeTransport({version:r.version,now:()=>r.now(),assertQualified:async(_b,v)=>c.within(()=>r.assertNativeQualified(selected,v,c.signal)),assertObservationAllowed:async()=>{await locked(id,c,async(tx,state)=>current(tx,id,state,selected,actor,c))},assertCurrent:async()=>{if(admitted)await fresh();else await locked(id,c,async(tx,state)=>{if(state.status!==(index===0?'approved':'claimed')||state.version!==version)return fail();await current(tx,id,state,selected,actor,c)})},admit,readCredential:(_b,i)=>c.within(()=>r.readCredential(selected,i,c.signal)),assertCredentialCurrent:async(_b,key)=>{await c.within(()=>r.assertCredentialCurrent(selected,key,c.signal));await fresh()}},c.signal);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageNativeTransport.ts",
+      "sha256": "7664c4f94dde949219989318eb949d013dd409c79ecba653b0c818f1a9bfa343",
+      "sites": [
+        {
+          "line": 59,
+          "text": "signal.throwIfAborted();const now=p.now();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageStorageSql.ts",
+      "sha256": "17be92e9cb60c6ccf733fc483d2732ec18d83a2c104471151e0705b2c4b0f9a1",
+      "sites": [
+        {
+          "line": 23,
+          "text": "async function now(){owner();const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1)return fail();return stamp.parse(rows[0].now)}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageWorkflowRequest.ts",
+      "sha256": "ffedf7f22a42c64a695a723967820cd1ec454094cef55b4167d2843ec3644ed0",
+      "sites": [
+        {
+          "line": 33,
+          "text": "...protect(e),get version(){possessed();return e.version},now:()=>{possessed();return e.now()},"
+        },
+        {
+          "line": 44,
+          "text": "const grant=await tx.imageStorage.readGrant(),now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianClosureStore.ts",
+      "sha256": "56520e3e3f98ba8a3ef1028ff68beef2df95e2cb5105a32b1988e1a7d0d9ef64",
+      "sites": [
+        {
+          "line": 24,
+          "text": "const existing=await tx.readCustodianClosure(control.nativeKey),now=await tx.now();"
+        },
+        {
+          "line": 26,
+          "text": "const rawEvidence=await source.readEvidence(tx,snapshot),observation=compileCustodianClosureObservation(snapshot,rawEvidence,reader.userId,await tx.now());"
+        },
+        {
+          "line": 31,
+          "text": "const after=await tx.now();if(after<observation.observedAt||after>=observation.evidence.expiresAt||(await tx.readCustodianClosureSnapshot(control.nativeKey)).digest!==snapshot.digest)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianDrainSql.ts",
+      "sha256": "e2bf16d8469b7db47e8692077e0e6c1f6b4096e1f6957c6a214581918e67475c",
+      "sites": [
+        {
+          "line": 57,
+          "text": "const now=await tx.now();if(state.updatedAt>now||!same(transitionCustodianBarrier(prior,control,state.controlActionId,state.updatedAt),state))fail();"
+        },
+        {
+          "line": 72,
+          "text": "const state=readCustodianIntent(raw),key=issuer(state.nativeKey),tx=getTx();check(state.actionId);const parent=readPlatformAction(await tx.read(state.actionId)),barrier=await readBarrier(key),now=await tx.now();"
+        },
+        {
+          "line": 95,
+          "text": "const b=closure.snapshot.barrier,now=await tx.now();if(event.kind!=='custodian.closure_observed'||event.state.status!=='confirmed'||event.actionId!==b.controlActionId||event.state.plan.sourceDigest!==b.controlDigest||control||barrier||event.ecsManifest||event.settingsManifest||closure.observedAt>now||now>=closure.evidence.expiresAt||!same(await tx.read(event.actionId),event.state)||(await tx.readCustodianClosureSnapshot(b.nativeKey)).digest!==closure.snapshot.digest)fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianDrainStore.ts",
+      "sha256": "c4d8cdd94dded0b9a244873828697480908341bc052b90da7b481ce7ba298c04",
+      "sites": [
+        {
+          "line": 38,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(control.expiresAt))fail();return now;"
+        },
+        {
+          "line": 48,
+          "text": "const reader=platformPrincipalSchema.parse(principal);if(!actionId.test(id)||!Number.isInteger(afterSequence)||afterSequence< -1||afterSequence>2147483647)return fail();return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,reader);const {state,control}=await load(tx,id);if(!tx.readCustodianClosureHistory)return fail();const page=await tx.readCustodianClosureHistory(id,afterSequence);if(!Array.isArray(page.observations)||page.observations.length>32||page.nextSequence!==null&&(!Number.isInteger(page.nextSequence)||page.nextSequence<=afterSequence||page.nextSequence>2147483647||page.observations.length!==32))return fail();const closures=page.observations.map(custodianClosureSummary),now=await tx.now();if(now<state.updatedAt)return fail();await authority.assertCurrent(tx,reader);return {actionId:id,planDigest:state.plan.digest,control,inspectedAt:now,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,expired:now>=Date.parse(control.expiresAt),closures,closurePage:{afterSequence,nextSequence:page.nextSequence},authority:'control_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const,providerExecution:false as const}});"
+        },
+        {
+          "line": 55,
+          "text": "await tx.lockCustodian(control.nativeKey);const state=createPlatformAction(plan,actor,await tx.now()),now=await current(tx,state,control,actor),prior=await predecessor(tx,control);transitionCustodianBarrier(prior,control,id,now);"
+        },
+        {
+          "line": 72,
+          "text": "await tx.writeEffect(id,0,'claimed','confirmed');const confirmed=finishPlatformAction(claimed,'confirmed',await tx.now());await tx.replace(id,claimed.version,confirmed);await tx.event({actionId:id,kind:'effect.observed',state:confirmed,effectIndex:0,outcome:'confirmed',custodianBarrier:nextBarrier});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianIntentAdmission.ts",
+      "sha256": "b626ecaa4ed7b4cdc6c684102e0e87b2d82ad0f693ccb6fe131fd927427f6113",
+      "sites": [
+        {
+          "line": 34,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now<barrier.updatedAt||now>=Date.parse(manifest.expiresAt))return fail();"
+        },
+        {
+          "line": 46,
+          "text": "const after=await tx.now();if(after<now||after>=Date.parse(manifest.expiresAt)||state.sourceCredential?.status==='issued'&&after>=state.sourceCredential.expiresAt||state.credential.status==='issued'&&after>=state.credential.expiresAt)return fail();return intent;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/delegation.ts",
+      "sha256": "741d1746c24ec607aa33ec08fc753521ee5803f71626be97d969d1c69909993c",
+      "sites": [
+        {
+          "line": 50,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))return fail();return {parent,now};"
+        },
+        {
+          "line": 60,
+          "text": "const before=await tx.now();if(before>=source.expiresAt)return fail();"
+        },
+        {
+          "line": 62,
+          "text": "const after=await tx.now();if(after<before||after>=source.expiresAt)return fail();"
+        },
+        {
+          "line": 66,
+          "text": "const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending')return fail();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();"
+        },
+        {
+          "line": 89,
+          "text": "await sourceCurrent(tx,state);const now=await tx.now();if(now>=held!.value.expiresAt||child&&await tx.readEffect(key,0)!=='claimed')return fail();return state;"
+        },
+        {
+          "line": 103,
+          "text": "const state=await load(tx,key),parent=readPlatformAction(await tx.read(key));match(parent,state);if(parent.status!=='claimed'||await tx.readEffect(key,0)!=='claimed'||state.credential.status!=='issued'||state.credential.leaseRef!==held.value.leaseRef||!state.targetReservation)return fail();const now=await tx.now(),outcome=accepted?'confirmed' as const:'unknown' as const;"
+        },
+        {
+          "line": 133,
+          "text": "await locked(pending.actionId,async(tx,key)=>{const state=await load(tx,key);if(!tx.writeOperationalSourceCredential||state.version!==pending.version||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||metadata.profileDigest!==state.manifest.issuerProfileDigest)return fail();const now=await tx.now();if(now<state.updatedAt||metadata.expiresAt<=now)return fail();"
+        },
+        {
+          "line": 144,
+          "text": "const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==value.leaseRef||state.credential.expiresAt!==value.expiresAt)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await sourceCurrent(tx,state);const now=await tx.now();if(now>=value.expiresAt)return fail();"
+        },
+        {
+          "line": 153,
+          "text": "await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();"
+        },
+        {
+          "line": 159,
+          "text": "finalParent=finishPlatformAction(parent,'confirmed',await tx.now());await tx.replace(key,parent.version,finalParent);await tx.event({actionId:key,kind:'workload.stable_observed',state:finalParent,operationalObserverUserId:reader.userId,operationalStabilityReceiptId:observed.lastReceiptId,operationalCommandReceiptDigest:result.receiptDigest});"
+        },
+        {
+          "line": 162,
+          "text": "const finalNow=await tx.now();if(!Number.isSafeInteger(finalNow)||finalNow<now||finalNow<finalParent.updatedAt)return fail();"
+        },
+        {
+          "line": 178,
+          "text": "if(result?.kind==='accepted'){if(!state.targetReservation||!tx.readOperationalFailureReceipt)return fail();await tx.lockOperationalTarget(state.targetReservation.nativeKey);const receipt=await tx.readOperationalFailureReceipt(key,state.targetReservation.generation);if(receipt)failure=readOperationalFailureHistory(key,parent,result,receipt,await tx.now())}"
+        },
+        {
+          "line": 179,
+          "text": "await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||result&&result.observedAt>now)return fail();await authority.assertCurrent(tx,actor);"
+        },
+        {
+          "line": 185,
+          "text": "const state=readOperationalDelegation({actionId:key,parentPlanDigest:parent.plan.digest,manifest,requester:parent.requester,reviewer:parent.reviewer,status:'delegated',version:0,attemptCount:0,executionPrincipal:null,targetReservation:null,credential:{status:'not_requested'},createdAt:await tx.now(),updatedAt:await tx.now()});"
+        },
+        {
+          "line": 186,
+          "text": "await current(tx,state,'approved');await tx.insertDelegation(key,state);await event(tx,parent,state,'workload.delegated');await current(tx,state,'approved');return projection(state,await tx.now());"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsOutcomeSource.ts",
+      "sha256": "074c30a61a2f909d8063149d3bb48f700eb2655793b4043851c3d50c9a8be3a0",
+      "sites": [
+        {
+          "line": 25,
+          "text": "if(sha256ContentHash(saved)!==sha256ContentHash(p.accepted)||sha256ContentHash(profile)!==sha256ContentHash(p.profile))return fail();await ports.assertQualified(tx,p);const now=await tx.now();if(!Number.isSafeInteger(now)||now<p.target.updatedAt||now>=p.profile.expiresAt)return fail();return now;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsPreparation.ts",
+      "sha256": "4c9d6df74a9f278bf141bf8d1ca9ec29d4b4a1deea57a20644f3fcf551b55b35",
+      "sites": [
+        {
+          "line": 25,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;"
+        },
+        {
+          "line": 45,
+          "text": "await source.assertCurrent(tx,manifest);await current(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now>=Date.parse(manifest.expiresAt))return fail();const parent=createPlatformAction(plan,actor,now);"
+        },
+        {
+          "line": 46,
+          "text": "await tx.insert(id,parent);await tx.event({actionId:id,kind:'proposed',state:parent,ecsManifest:manifest});await source.assertCurrent(tx,manifest);await current(tx,actor);const after=await tx.now();if(!Number.isSafeInteger(after)||after<now||after>=Date.parse(manifest.expiresAt))return fail();return Object.freeze({actionId:id,planDigest:plan.digest,historical:false,authority:'proposal_reference_only',executionAuthorized:false});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsSdkTransport.ts",
+      "sha256": "22905c3bb506f278ef782cfc763ece6686f8acc975c9945adae60e4abb1486ff",
+      "sites": [
+        {
+          "line": 18,
+          "text": "const credential=credentialSchema.parse(rawCredential);if(!(signal instanceof AbortSignal)||signal.aborted||credential.expiresAt<=Date.now()||[credential.accessKeyId,credential.secretAccessKey,credential.sessionToken].some(s=>/[\\s\\x00-\\x1f\\x7f]/.test(s)))return fail();"
+        },
+        {
+          "line": 24,
+          "text": "await beforeRequest();signal.throwIfAborted();if(credential.expiresAt<=Date.now())return fail();return bounded.handle(request,options);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/githubBootstrap.ts",
+      "sha256": "cc6e3c7a79a0f351693c9aa846486c4ff6f33c1f8fe941e31b48ee23fbfa06fd",
+      "sites": [
+        {
+          "line": 21,
+          "text": "if(p.expiresAt<=Date.now()||origin.origin!==p.nativeOrigin||origin.protocol!=='https:'||origin.username||origin.password||origin.port||!origin.hostname.endsWith('.actions.githubusercontent.com')||p.nativeQueryKeys.includes('audience')||new Set(p.nativeQueryKeys).size!==p.nativeQueryKeys.length||endpoint(p.endpoint).origin!==endpoint(p.preflightEndpoint).origin||p.endpoint===p.preflightEndpoint)return fail();"
+        },
+        {
+          "line": 30,
+          "text": "if(p.expiresAt<=Date.now())return fail();"
+        },
+        {
+          "line": 41,
+          "text": "function current(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal){signal.throwIfAborted();const snapshotValues=snapshot();if(p.expiresAt<=Date.now()||sha256ContentHash(profile)!==sha256ContentHash(remote)||keys.some(k=>snapshotValues[k]!==held[k]))return fail()}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseSqlRepository.ts",
+      "sha256": "193a85097fe6c16ed51e5b76d06d1c61462c50319a626048998c7973f3ac246e",
+      "sites": [
+        {
+          "line": 16,
+          "text": "async now(){check();const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1||!Number.isSafeInteger(rows[0].now))fail();return rows[0].now},"
+        },
+        {
+          "line": 19,
+          "text": "async insert(id,raw){check(id);const state=readManualReleaseRecord(raw);if(state.id!==id||state.version!==0)fail();await sql.$executeRawUnsafe('INSERT INTO \"PlatformManualRelease\" (id,\"manifestDigest\",\"stateJson\",version,\"updatedAt\") VALUES ($1,$2,$3::jsonb,$4,clock_timestamp())',id,state.manifest.digest,JSON.stringify(state),state.version)},"
+        },
+        {
+          "line": 20,
+          "text": "async replace(id,version,raw){check(id);const state=readManualReleaseRecord(raw);if(state.id!==id||state.version!==version+1)fail();const count=await sql.$executeRawUnsafe('UPDATE \"PlatformManualRelease\" SET \"stateJson\"=$1::jsonb,version=$2,\"updatedAt\"=clock_timestamp() WHERE id=$3 AND version=$4 AND \"manifestDigest\"=$5',JSON.stringify(state),state.version,id,version,state.manifest.digest);if(count!==1)fail()},"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseStore.ts",
+      "sha256": "a155edd43374c23a135ff0ef021d3cf96aa7d1fd13b062103a3f3d23607d9a23",
+      "sites": [
+        {
+          "line": 44,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))fail();return now;"
+        },
+        {
+          "line": 53,
+          "text": "const now=await tx.now(),state=readManualReleaseRecord({id,selection,manifest,requester:actor,reviewer:null,status:'proposed',version:0,attemptCount:0,createdAt:now,updatedAt:now});"
+        },
+        {
+          "line": 60,
+          "text": "await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();await authority.assertCurrent(tx,actor);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/nativeCustodianSupplier.ts",
+      "sha256": "9bcadb6493978e8e6ee9260aad10facd22ca7bf6a937be6bbcc1ed7b5de35853",
+      "sites": [
+        {
+          "line": 37,
+          "text": "const raw=await qualification.clock(signal);signal.throwIfAborted();const earliest=raw.earliest,latest=raw.latest;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/privateStsIssuer.ts",
+      "sha256": "88bd4af4b2223e6eaf96ecaf49f01be625098e10609693e737d0cd5478a3b072",
+      "sites": [
+        {
+          "line": 32,
+          "text": "if(!source||source.profileDigest!==manifest.issuerProfileDigest||!/^platform_credential_[a-f0-9-]{36}$/.test(source.leaseRef)||![source.accessKeyId,source.secretAccessKey,source.sessionToken].every(v=>typeof v==='string'&&v.length>0&&v.length<=16384&&!/[\\r\\n]/.test(v))||!Number.isSafeInteger(source.expiresAt)||source.expiresAt<=Date.now())return fail();"
+        },
+        {
+          "line": 48,
+          "text": "if(source.expiresAt<=Date.now())return fail();await assertSource();await beforeIssue();signal.throwIfAborted();return bounded.handle(request,options);"
+        },
+        {
+          "line": 52,
+          "text": "const credential=result.Credentials,roleName=manifest.roleArn.split('/').at(-1),now=Date.now(),expiresAt=credential?.Expiration?.getTime();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/releasePreparation.ts",
+      "sha256": "f9ecdadece62e73dec68889e212308ed399d0d3619e99b0baf1bdd797ac14865",
+      "sites": [
+        {
+          "line": 43,
+          "text": "const now=await tx.now(),end=Date.parse(selection.expiresAt);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/reservationStore.ts",
+      "sha256": "d04be2f61f802af9a22fb0315746bc5dd24c159268c8c254cc45e6af97f75f45",
+      "sites": [
+        {
+          "line": 44,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<0||Date.parse(snapshot.observedAt)>now||Date.parse(snapshot.expiresAt)<=now||Date.parse(snapshot.observedAt)>=Date.parse(snapshot.expiresAt)||now>=Date.parse(m.expiresAt)||Date.parse(m.expiresAt)>Date.parse(snapshot.expiresAt))return fail();"
+        },
+        {
+          "line": 48,
+          "text": "const end=await tx.now();if(!Number.isSafeInteger(end)||end<now||end>=Date.parse(m.expiresAt)||end>=Date.parse(snapshot.expiresAt))return fail();return operationalTargetReference.parse({nativeKey:key,generation});"
+        },
+        {
+          "line": 53,
+          "text": "await source.assertSnapshotCurrent(tx,state.snapshotDigest,state.bindingDigest);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.sourceExpiresAt)||now>=Date.parse(b.manifest.expiresAt))return fail();"
+        },
+        {
+          "line": 69,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<previous.updatedAt||Date.parse(outcome.observedAt)>now||Date.parse(outcome.observedAt)<previous.createdAt)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsArtifactStore.ts",
+      "sha256": "86f46e9f9771c345662635bf3305df4cf83cb44fe8306e74744fd16681ccc623",
+      "sites": [
+        {
+          "line": 45,
+          "text": "await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt)return fail();"
+        },
+        {
+          "line": 58,
+          "text": "await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();"
+        },
+        {
+          "line": 69,
+          "text": "const actual=readPlatformAction(await tx.read(id)),now=await tx.now();"
+        },
+        {
+          "line": 90,
+          "text": "await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;"
+        },
+        {
+          "line": 108,
+          "text": "await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsExecution.ts",
+      "sha256": "5fe4484a60b8fcc8b0581e7853eb1e54686ebd0f25457f31609a43adeca48f3d",
+      "sites": [
+        {
+          "line": 43,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(binding.expiresAt))return fail();return {binding,record};"
+        },
+        {
+          "line": 53,
+          "text": "const settingsResult=createSettingsResult(resultBinding,event.outcome,event.outcome==='confirmed'?confirmedSettingId:null,await tx.now());await tx.event({...event,settingsResult});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsPreparation.ts",
+      "sha256": "3675cfa66d779db4ba1d56b6b6ed505e1e9e65abe95172eb24ce7567e0ce09db",
+      "sites": [
+        {
+          "line": 22,
+          "text": "await source.assertCurrent(tx,manifest);await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now>=Date.parse(manifest.expiresAt))return fail();const parent=createPlatformAction(plan,actor,now);"
+        },
+        {
+          "line": 23,
+          "text": "await tx.insert(id,parent);await tx.event({actionId:id,kind:'proposed',state:parent,settingsManifest:manifest});await source.assertCurrent(tx,manifest);await authority.assertCurrent(tx,actor);const after=await tx.now();if(!Number.isSafeInteger(after)||after<now||after>=Date.parse(manifest.expiresAt))return fail();return Object.freeze({requestId,actionId:id,historical:false,authority:'proposal_reference_only',executionAuthorized:false});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/stsIssuer.ts",
+      "sha256": "cc2e3f2d1c88a833f94a11ce0b222f0c54c5a9f1c761ca5766fd182b030c46c9",
+      "sites": [
+        {
+          "line": 38,
+          "text": "const credential=result.Credentials,roleName=manifest.roleArn.split('/').at(-1),now=Date.now(),expiresAt=credential?.Expiration?.getTime();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/workloadIdentity.ts",
+      "sha256": "c14546a9e2614e571a0c40556876d60b5cfc34a9c2c9004985be160010fce4c6",
+      "sites": [
+        {
+          "line": 45,
+          "text": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=verified.expiresAt||now>=Date.parse(binding.expiresAt))fail();"
+        },
+        {
+          "line": 51,
+          "text": "const binding=operationalWorkloadBinding.parse(rawBinding),p=await profile(tx,binding),now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(binding.expiresAt))return fail();"
+        },
+        {
+          "line": 59,
+          "text": "const end=Math.min(claims.exp*1000,Date.parse(binding.expiresAt)),after=await tx.now();if(!Number.isSafeInteger(after)||after<now||after>=end)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/postImagePreviewService.ts",
+      "sha256": "927a5232b1c3a37e6922ca8a960c4575e310eff1823f508b419a7888c301b726",
+      "sites": [
+        {
+          "line": 36,
+          "text": "const now=await checked(()=>tx.now());if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();"
+        },
+        {
+          "line": 40,
+          "text": "if(await checked(()=>tx.now())>=Date.parse(state.plan.expiresAt))return fail();return prepared.preview.renderedPost;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/sqlRepository.ts",
+      "sha256": "fcf01a9bb1053827660a74c85aa62e3b6c413bd29a8df66fbda835de3e4fde3f",
+      "sites": [
+        {
+          "line": 73,
+          "text": "async insertOperationalTarget(key,raw){if(nativeLocked!==key)fail();const state=readOperationalTarget(raw);check(state.actionId);if(state.nativeKey!==key||state.generation!==1||state.version!==0||state.phase!=='reserved')fail();await sql.$executeRawUnsafe('INSERT INTO \"PlatformOperationalTarget\" (\"nativeKey\",\"actionId\",generation,version,\"stateJson\",\"updatedAt\") VALUES ($1,$2,$3,$4,$5::jsonb,clock_timestamp())',key,state.actionId,state.generation,state.version,JSON.stringify(state))},"
+        },
+        {
+          "line": 74,
+          "text": "async replaceOperationalTarget(key,version,raw){if(nativeLocked!==key)fail();const state=readOperationalTarget(raw);check(state.actionId);if(state.nativeKey!==key||state.version!==version+1)fail();const count=await sql.$executeRawUnsafe('UPDATE \"PlatformOperationalTarget\" SET \"actionId\"=$1,generation=$2,version=$3,\"stateJson\"=$4::jsonb,\"updatedAt\"=clock_timestamp() WHERE \"nativeKey\"=$5 AND version=$6',state.actionId,state.generation,state.version,JSON.stringify(state),key,version);if(count!==1)fail()},"
+        },
+        {
+          "line": 79,
+          "text": "async insertDelegation(id,raw){check(id);const state=readOperationalDelegation(raw);if(state.actionId!==id||state.version!==0)fail();await sql.$executeRawUnsafe('INSERT INTO \"PlatformOperationalDelegation\" (\"actionId\",\"manifestDigest\",\"parentPlanDigest\",\"stateJson\",version,\"updatedAt\") VALUES ($1,$2,$3,$4::jsonb,$5,clock_timestamp())',id,state.manifest.digest,state.parentPlanDigest,JSON.stringify(state),state.version)},"
+        },
+        {
+          "line": 80,
+          "text": "async writeOperationalSourceCredential(id,version,raw){check(id);const previous=readOperationalDelegation(await tx.readDelegation(id)),next=readOperationalDelegation(raw);if(previous.version!==version||next.version!==version||previous.sourceCredential?.status!=='pending'||next.sourceCredential?.status!=='issued'||previous.credential.status!=='pending'||next.updatedAt<previous.updatedAt)fail();const {sourceCredential:oldSource,updatedAt:oldAt,...oldFields}=previous,{sourceCredential:newSource,updatedAt:newAt,...newFields}=next;if(sha256ContentHash(oldFields)!==sha256ContentHash(newFields)||newSource?.requestedAt!==oldSource?.requestedAt)fail();const count=await sql.$executeRawUnsafe('UPDATE \"PlatformOperationalDelegation\" SET \"stateJson\"=$1::jsonb,\"updatedAt\"=clock_timestamp() WHERE \"actionId\"=$2 AND version=$3 AND \"stateJson\"=$4::jsonb',JSON.stringify(next),id,version,JSON.stringify(previous));if(count!==1)fail()},"
+        },
+        {
+          "line": 81,
+          "text": "async replaceDelegation(id,version,raw){check(id);const state=readOperationalDelegation(raw);if(state.actionId!==id||state.version!==version+1)fail();const count=await sql.$executeRawUnsafe('UPDATE \"PlatformOperationalDelegation\" SET \"stateJson\"=$1::jsonb,version=$2,\"updatedAt\"=clock_timestamp() WHERE \"actionId\"=$3 AND version=$4 AND \"manifestDigest\"=$5 AND \"parentPlanDigest\"=$6',JSON.stringify(state),state.version,id,version,state.manifest.digest,state.parentPlanDigest);if(count!==1)fail()},"
+        },
+        {
+          "line": 108,
+          "text": "async now(){if(!locked)fail();const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1||!Number.isSafeInteger(rows[0].now))fail();return rows[0].now},"
+        },
+        {
+          "line": 111,
+          "text": "async insert(id,raw){check(id);const state=readPlatformAction(raw);await sql.$executeRawUnsafe('INSERT INTO \"PlatformGovernanceAction\" (id,\"planDigest\",\"stateJson\",version,\"updatedAt\") VALUES ($1,$2,$3::jsonb,$4,clock_timestamp())',id,state.plan.digest,JSON.stringify(state),state.version)},"
+        },
+        {
+          "line": 113,
+          "text": "const count=await sql.$executeRawUnsafe('UPDATE \"PlatformGovernanceAction\" SET \"stateJson\"=$1::jsonb,version=$2,\"updatedAt\"=clock_timestamp() WHERE id=$3 AND version=$4 AND \"planDigest\"=$5',JSON.stringify(state),state.version,id,version,state.plan.digest);if(count!==1)fail()},"
+        },
+        {
+          "line": 181,
+          "text": "const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean}>>('SELECT u.id AS \"userId\", s.id AS \"sessionId\", u.email, (s.\"revokedAt\" IS NULL AND s.\"issuedAt\" <= clock_timestamp() AND s.\"expiresAt\" > clock_timestamp() AND m.\"acceptedAt\" IS NOT NULL) AS live FROM \"DesktopSessionRecord\" s JOIN \"User\" u ON u.id=s.\"userId\" JOIN \"OrgMembership\" m ON m.\"userId\"=s.\"userId\" AND m.\"organizationId\"=s.\"organizationId\" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templateExecutionStore.ts",
+      "sha256": "855ca69e7010b2e7c7acf59e37555ddb716b64ff37f32dbf3e022c6451080484",
+      "sites": [
+        {
+          "line": 36,
+          "text": "async function timely(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>,b:Readonly<TemplateExecutionBinding>){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();if(b.access&&resources){const native=resources.now();if(!Number.isSafeInteger(native)||Math.abs(native-now)>b.access.clockSkewMs)return fail()}return now}"
+        },
+        {
+          "line": 61,
+          "text": "assertQualified:async()=>{await r.assertQualified(b);await checkKey(true)},assertCurrent:async()=>externalCurrent(false,true),readCredential:binding=>{if(nativeFinished)return fail();return r.readCredential(binding)},now:()=>r.now(),"
+        },
+        {
+          "line": 75,
+          "text": "receipt=await locked(id,async(tx,state)=>{if(state.status!=='claimed'||await tx.readEffect(id,b.effectIndex)!=='claimed'||hash(await binding(tx,id,state))!==hash(b))return fail();const saved=await storage(tx).readResource(admitted!.nativeKey);if(!saved||hash(saved)!==hash(admitted))return fail();const observedAt=await tx.now();let detail:unknown=null;"
+        },
+        {
+          "line": 80,
+          "text": "await storage(tx).record(value,envelope);await tx.writeEffect(id,b.effectIndex,'claimed',outcome);const next=finishPlatformAction(state,outcome,await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:b.effectIndex,outcome,templateReceipt:value});return value;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templateNativeTransport.ts",
+      "sha256": "feac171146fccd1940cf547db27ee8e2227b7934d2726e1af32179f63939d1b5",
+      "sites": [
+        {
+          "line": 37,
+          "text": "function time(){const now=p.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(b.approvalExpiresAt))return fail();signal.throwIfAborted();return now}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templatePreparationStore.ts",
+      "sha256": "8f1390687f23b03b886e24699c64bff7ee171d1b8a0468a63ffb9716cd6c3e79",
+      "sites": [
+        {
+          "line": 19,
+          "text": "async function timely(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();return now}"
+        },
+        {
+          "line": 26,
+          "text": "const profile=templateExecutionProfile.parse(await profiles.read(selection));await profiles.assertQualified(profile,selection);const prepared=await prepareTemplateExecutionPlan(selection,await tx.now(),id,actor,profile),state=createPlatformAction(prepared.plan,actor,await tx.now());await authority.assertCurrent(tx,actor);await profiles.assertQualified(profile,selection);await timely(tx,state);await tx.insert(id,state);await tx.event({actionId:id,kind:'proposed',state,templateBinding:prepared.binding});await authority.assertCurrent(tx,actor);await profiles.assertQualified(profile,selection);await timely(tx,state);return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const};"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templateStorageSql.ts",
+      "sha256": "aa082942a88d4a673cbd70392052dca2317020084fd623a96b29bb70bb03ce9f",
+      "sites": [
+        {
+          "line": 22,
+          "text": "async function now(){const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1||!Number.isSafeInteger(rows[0].now))return fail();return rows[0].now}"
+        },
+        {
+          "line": 26,
+          "text": "async function writeResource(r:ReturnType<typeof readTemplateReservation>,previous:ReturnType<typeof readTemplateReservation>|null){if(selected!==r.nativeKey||owner()!==r.binding.actionId)return fail();if(previous){const changed=await sql.$executeRawUnsafe('UPDATE \"PlatformTemplateResource\" SET \"actionId\"=$1,generation=$2,version=$3,\"stateJson\"=$4::jsonb,\"updatedAt\"=clock_timestamp() WHERE \"nativeKey\"=$5 AND version=$6 AND \"stateJson\"=$7::jsonb',r.binding.actionId,r.generation,r.version,JSON.stringify(r),r.nativeKey,previous.version,JSON.stringify(previous));if(changed!==1)return fail()}else await sql.$executeRawUnsafe('INSERT INTO \"PlatformTemplateResource\" (\"nativeKey\",\"actionId\",generation,version,\"stateJson\",\"updatedAt\") VALUES ($1,$2,$3,$4,$5::jsonb,clock_timestamp())',r.nativeKey,r.binding.actionId,r.generation,r.version,JSON.stringify(r))}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templateWorkflowRequest.ts",
+      "sha256": "6e9c75345e0b85a8489d9610390d00427a26e0a7387e9489caea2f8f2bb955a7",
+      "sites": [
+        {
+          "line": 26,
+          "text": "readCredential:b=>{possessed();const value=r.readCredential(b);possessed();return value},now:()=>{possessed();const value=r.now();possessed();return value},"
+        }
+      ]
+    }
+  ],
+  "fileCount": 38,
+  "matchingLines": 123
+}

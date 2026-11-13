@@ -21,9 +21,9 @@ it('binds exact future time and content; past, invalid and unapproved sources re
  for(const date of [new Date(0),new Date(NaN)])expect(()=>preparePlatformLinkedInSchedule(draft,connection,'202605',Date.now(),date)).toThrow();
  expect(()=>preparePlatformLinkedInSchedule({...draft,status:'failed'},connection,'202605',Date.now(),when)).toThrow();
 });
-it('changes only the reviewed draft revision after final authorization',async()=>{
+it('delegates the schedule mutation to its original action owner without a second transaction',async()=>{
  const b=binding();expect(await schedulePlatformLinkedInDraft({draftId:'draft',connectionId:'connection',scheduledFor:when,platformExecution:b.value})).toMatchObject({kind:'scheduled'});
- expect(b.service.beforeEffectSend).toHaveBeenCalledTimes(1);expect(m.update).toHaveBeenCalledWith({where:{id:'draft',updatedAt:draft.updatedAt,status:{in:['approved','scheduled']}},data:{status:'scheduled',scheduledFor:when}});
+ expect(b.service.beforeEffectSend).toHaveBeenCalledTimes(1);expect(m.transaction).not.toHaveBeenCalled();expect(m.update).not.toHaveBeenCalled();
  expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'confirmed');
 });
 it('source change and final refusal prevent any schedule mutation',async()=>{
@@ -31,15 +31,11 @@ it('source change and final refusal prevent any schedule mutation',async()=>{
  expect(await schedulePlatformLinkedInDraft({draftId:'draft',connectionId:'connection',scheduledFor:when,platformExecution:b.value})).toMatchObject({kind:'outcome_unknown'});expect(m.update).not.toHaveBeenCalled();}
 });
 it('uncertain update consumes the binding without automatic replay',async()=>{
- const b=binding();m.update.mockRejectedValueOnce(Error('lost result'));const input={draftId:'draft',connectionId:'connection',scheduledFor:when,platformExecution:b.value};
- expect(await schedulePlatformLinkedInDraft(input)).toMatchObject({kind:'outcome_unknown'});expect(await schedulePlatformLinkedInDraft(input)).toMatchObject({kind:'governance_required'});expect(m.update).toHaveBeenCalledTimes(1);
+ const b=binding();b.service.beforeEffectSend.mockRejectedValueOnce(Error('lost original transaction acknowledgment'));const input={draftId:'draft',connectionId:'connection',scheduledFor:when,platformExecution:b.value};
+ expect(await schedulePlatformLinkedInDraft(input)).toMatchObject({kind:'outcome_unknown'});expect(await schedulePlatformLinkedInDraft(input)).toMatchObject({kind:'governance_required'});expect(b.service.beforeEffectSend).toHaveBeenCalledTimes(1);expect(m.transaction).not.toHaveBeenCalled();
 });
 
-it('database-time expiry after lock or during update refuses confirmation',async()=>{
- for(const phase of ['locked','updated']){
-  const b=binding();m.update.mockClear();let clocks=0;
-  m.query.mockImplementation(async(sql:string)=>sql.includes('clock_timestamp')?[{now:++clocks>=(phase==='locked'?1:2)?when.getTime():Date.now()}]:[{id:'draft'}]);
-  expect(await schedulePlatformLinkedInDraft({draftId:'draft',connectionId:'connection',scheduledFor:when,platformExecution:b.value})).toEqual({kind:'outcome_unknown'});
-  expect(b.service.observeEffect).toHaveBeenCalledWith(expect.anything(),'unknown');expect(m.update).toHaveBeenCalledTimes(phase==='locked'?0:1);
- }
+it('a fixed-time check after the original transaction cannot start a second update',async()=>{
+ const b=binding(),clock=vi.spyOn(Date,'now');clock.mockReturnValue(when.getTime());
+ try{expect(await schedulePlatformLinkedInDraft({draftId:'draft',connectionId:'connection',scheduledFor:when,platformExecution:b.value})).toEqual({kind:'outcome_unknown'});expect(m.transaction).not.toHaveBeenCalled();expect(m.update).not.toHaveBeenCalled()}finally{clock.mockRestore()}
 });

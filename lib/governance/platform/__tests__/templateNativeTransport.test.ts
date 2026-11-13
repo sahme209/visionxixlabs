@@ -1,4 +1,6 @@
+const credentialExpiry=Date.now()+86400000; // Synthetic fixture metadata only.
 import {beforeEach,afterEach,it,expect,vi} from 'vitest';
+import type {ExecutionTimeCheck} from '../executionTime';
 import {createHash} from 'node:crypto';
 import {S3Client,GetBucketVersioningCommand,GetObjectCommand} from '@aws-sdk/client-s3';
 import {STSClient} from '@aws-sdk/client-sts';
@@ -8,8 +10,8 @@ const m=vi.hoisted(()=>({sign:vi.fn()}));vi.mock('@aws-sdk/s3-request-presigner'
 const d='a'.repeat(64),actor={userId:'requester',sessionId:'session'},actionId='platform_action_11111111-1111-4111-8111-111111111111',accountId='123456789012';
 let sts:ReturnType<typeof vi.spyOn>,s3:ReturnType<typeof vi.spyOn>;
 beforeEach(()=>{sts=vi.spyOn(STSClient.prototype,'send').mockResolvedValue({Account:accountId} as never);s3=vi.spyOn(S3Client.prototype,'send').mockResolvedValue({$metadata:{httpStatusCode:200},Status:'Enabled',VersionId:'version-1'} as never);m.sign.mockReset()});afterEach(()=>vi.restoreAllMocks());
-async function fixture(operation:'create_bucket'|'upload'|'access'='create_bucket'){const selection={operation,accountId,region:'us-east-2',expiresAt:new Date(Date.now()+60000).toISOString(),...(operation==='access'?{objectVersion:'version-1',ttlSeconds:60,delivery:'original_requester_session'}:{})},profile={accountId,region:'us-east-2',profileDigest:d,access:operation==='access'?{artifactProfileDigest:d,clockSkewMs:1000}:null};return (await prepareTemplateExecutionPlan(selection,Date.now(),actionId,actor,profile)).binding}
-function ports(){const events:string[]=[];return {events,admit:vi.fn(async()=>{events.push('committed-admission')}),assertCurrent:vi.fn(async()=>{}),assertQualified:vi.fn(async()=>{}),readCredential:vi.fn(()=>{events.push('credential');return {accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret'}}),now:()=>Date.now()}}
+async function fixture(operation:'create_bucket'|'upload'|'access'='create_bucket',ttlSeconds=60){const selection={operation,accountId,region:'us-east-2',expiresAt:new Date(Date.now()+60000).toISOString(),...(operation==='access'?{objectVersion:'version-1',ttlSeconds,delivery:'original_requester_session'}:{})},profile={accountId,region:'us-east-2',profileDigest:d,access:operation==='access'?{artifactProfileDigest:d,clockSkewMs:1000}:null};return (await prepareTemplateExecutionPlan(selection,Date.now(),actionId,actor,profile)).binding}
+function ports(){const events:string[]=[];return {events,admit:vi.fn(async()=>{events.push('committed-admission')}),assertCurrent:vi.fn(async(_b:unknown,check?:ExecutionTimeCheck)=>{await check?.()}),assertQualified:vi.fn(async()=>{}),readCredential:vi.fn(()=>{events.push('credential');return {accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt:credentialExpiry}}),clock:async()=>({earliest:Date.now(),latest:Date.now()+1}),now:()=>Date.now()}}
 it('refuses an unqualified real default before admission, credentials or native I/O',async()=>{await expect(createTemplateNativeTransport().perform(await fixture())).rejects.toThrow();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled()});
 it('requires committed admission before credentials and emits a private one-use exact-bucket observation',async()=>{const p=ports(),b=await fixture(),t=createTemplateNativeTransport(p),proof=await t.perform(b);expect(p.events.slice(0,2)).toEqual(['committed-admission','credential']);expect(proof).toEqual({});expect(t.consume(proof,b)).toMatchObject({kind:'bucket',providerStatus:200});expect(()=>t.consume(proof,b)).toThrow();await expect(t.perform(b)).rejects.toThrow();expect(s3).toHaveBeenCalledTimes(1);const client=s3.mock.contexts[0] as unknown as S3Client;expect(await client.config.maxAttempts()).toBe(1);expect(client.config.followRegionRedirects).toBe(false)});
 it('lost admission acknowledgement cannot acquire credentials or send a native command',async()=>{const p=ports();p.admit.mockRejectedValueOnce(Error('synthetic_unknown_commit'));await expect(createTemplateNativeTransport(p).perform(await fixture())).rejects.toThrow();expect(p.readCredential).not.toHaveBeenCalled();expect(sts).not.toHaveBeenCalled()});
@@ -19,6 +21,61 @@ it('refuses role/source revocation immediately before signing and never retries 
 
 it('records an exact versioned conditional upload observation without a plaintext artifact',async()=>{const p=ports(),b=await fixture('upload'),t=createTemplateNativeTransport(p),proof=await t.perform(b);const value=t.consume(proof,b);expect(value).toEqual({kind:'object',providerStatus:200,objectVersion:'version-1',versioningEnabled:true});expect(s3.mock.calls[1][0].input).toMatchObject({IfNoneMatch:'*',ExpectedBucketOwner:accountId,ContentType:'application/x-yaml'});expect(m.sign).not.toHaveBeenCalled()});
 it('rejects forged or context-swapped observation tokens and never makes a replacement request',async()=>{const b=await fixture(),t=createTemplateNativeTransport(ports()),proof=await t.perform(b);expect(()=>t.consume({},b)).toThrow();expect(()=>t.consume(proof,{...b,profileDigest:'b'.repeat(64)})).toThrow();expect(()=>t.consume(proof,b)).toThrow();expect(s3).toHaveBeenCalledTimes(1)});
-it('detects a changed held credential before its first native command',async()=>{const p=ports();p.readCredential.mockReturnValueOnce({accessKeyId:'old-key',secretAccessKey:'synthetic-secret'});await expect(createTemplateNativeTransport(p).perform(await fixture())).rejects.toThrow();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled()});
+it('detects a changed held credential before its first native command',async()=>{const p=ports();p.readCredential.mockReturnValueOnce({accessKeyId:'old-key',secretAccessKey:'synthetic-secret',expiresAt:credentialExpiry});await expect(createTemplateNativeTransport(p).perform(await fixture())).rejects.toThrow();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled()});
 it('does not release an observation when qualification is revoked by the completed native response',async()=>{const p=ports(),b=await fixture();s3.mockImplementation(async()=>{p.assertQualified.mockRejectedValue(Error('native_profile_revoked'));return {$metadata:{httpStatusCode:200}}});await expect(createTemplateNativeTransport(p).perform(b)).rejects.toThrow();expect(s3).toHaveBeenCalledTimes(1);await expect(createTemplateNativeTransport().perform(b)).rejects.toThrow();expect(s3).toHaveBeenCalledTimes(1)});
 it('accepts the installed SDK presigner under the new exact-version transport with synthetic keys and intercepted native reads',async()=>{const actual=await vi.importActual<typeof import('@aws-sdk/s3-request-presigner')>('@aws-sdk/s3-request-presigner');m.sign.mockImplementation(actual.getSignedUrl);const b=await fixture('access'),bytes=await (await import('@/lib/cloud/aws/platformTemplateSource')).readPlatformTemplateBytes();s3.mockImplementation(async(command:unknown)=>command instanceof GetBucketVersioningCommand?{$metadata:{httpStatusCode:200},Status:'Enabled'}:{$metadata:{httpStatusCode:200},VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()});const t=createTemplateNativeTransport(ports()),proof=await t.perform(b),result=t.consume(proof,b);expect(result.kind).toBe('access');if(result.kind!=='access')throw Error('fixture');const url=new URL(result.url);expect(url.hostname).toBe('axiom-cfn-templates-123456789012.s3.us-east-2.amazonaws.com');expect(url.searchParams.get('versionId')).toBe('version-1');expect(result.hardExpiresAt).toBe(result.signedAt+60000);expect(sts).toHaveBeenCalledTimes(1);expect(s3).toHaveBeenCalledTimes(2)});
+
+it('refuses an interval overlapping original approval expiry even when the point clock is live',async()=>{
+ const b=await fixture(),p=ports();p.clock=async()=>({earliest:Date.parse(b.approvalExpiresAt)-1,latest:Date.parse(b.approvalExpiresAt)});
+ await expect(createTemplateNativeTransport(p).perform(b)).rejects.toThrow();expect(p.admit).not.toHaveBeenCalled();expect(p.readCredential).not.toHaveBeenCalled();expect(sts).not.toHaveBeenCalled();
+});
+it('does not accept a final authority callback that omits the joined time check',async()=>{
+ const b=await fixture(),p=ports();p.assertCurrent.mockImplementation(async()=>{});
+ await expect(createTemplateNativeTransport(p).perform(b)).rejects.toThrow();expect(p.admit).not.toHaveBeenCalled();expect(sts).not.toHaveBeenCalled();
+});
+it('accepts explicit absolute held-credential expiry metadata for an otherwise current command',async()=>{
+ const p=ports(),b=await fixture();p.readCredential.mockImplementation(()=>({accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt:credentialExpiry}));
+ const t=createTemplateNativeTransport(p),proof=await t.perform(b);expect(t.consume(proof,b)).toEqual({kind:'bucket',providerStatus:200});expect(sts).toHaveBeenCalledTimes(1);expect(s3).toHaveBeenCalledTimes(1);
+});
+it('rejects credential-expiry overlap despite a live action and point clock, before any command',async()=>{
+ const p=ports(),b=await fixture(),expiresAt=Date.now()+1000;p.readCredential.mockReturnValue({accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt});p.clock=async()=>({earliest:expiresAt-1,latest:expiresAt});
+ await expect(createTemplateNativeTransport(p).perform(b)).rejects.toThrow();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();
+});
+it('cannot extend held credential lifetime by changing only its expiry during an awaited authority check',async()=>{
+ const p=ports(),b=await fixture();let expiresAt=credentialExpiry;p.readCredential.mockImplementation(()=>({accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt}));
+ p.assertCurrent.mockImplementation(async(_b,check)=>{if(p.readCredential.mock.calls.length)expiresAt++;await check?.()});
+ await expect(createTemplateNativeTransport(p).perform(b)).rejects.toThrow();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();
+});
+it('does not publish an otherwise valid presigned grant extending past the held credential expiry',async()=>{
+ const actual=await vi.importActual<typeof import('@aws-sdk/s3-request-presigner')>('@aws-sdk/s3-request-presigner');m.sign.mockImplementation(actual.getSignedUrl);
+ const b=await fixture('access'),p=ports(),expiresAt=Date.now()+30000;p.readCredential.mockReturnValue({accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt});const bytes=await (await import('@/lib/cloud/aws/platformTemplateSource')).readPlatformTemplateBytes();
+ s3.mockImplementation(async(command:unknown)=>command instanceof GetBucketVersioningCommand?{$metadata:{httpStatusCode:200},Status:'Enabled'}:{$metadata:{httpStatusCode:200},VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()});
+ const t=createTemplateNativeTransport(p);await expect(t.perform(b)).rejects.toThrow();expect(m.sign).toHaveBeenCalledTimes(1);expect(s3).toHaveBeenCalledTimes(2);await expect(t.perform(b)).rejects.toThrow();expect(m.sign).toHaveBeenCalledTimes(1);
+});
+
+it.each([undefined,NaN,Infinity,0,-1,100.5,Number.MAX_SAFE_INTEGER])('refuses absent or unusable credential expiry without a command: %s',async expiresAt=>{
+ const p=ports(),b=await fixture();p.readCredential.mockImplementation(()=>({accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt:expiresAt!}));
+ await expect(createTemplateNativeTransport(p).perform(b)).rejects.toThrow();expect(sts).not.toHaveBeenCalled();expect(s3).not.toHaveBeenCalled();
+});
+
+it('binds the installed SDK expiration field to the captured absolute metadata without forwarding private metadata names',async()=>{
+ const p=ports(),b=await fixture(),t=createTemplateNativeTransport(p);await t.perform(b);
+ for(const client of [sts.mock.contexts[0] as unknown as STSClient,s3.mock.contexts[0] as unknown as S3Client]){const keys=await client.config.credentials();expect(keys.expiration?.getTime()).toBe(credentialExpiry);expect(keys).not.toHaveProperty('expiresAt')}
+});
+it('retains the requested grant lifetime when its hard expiry exactly matches the captured credential expiry',async()=>{
+ vi.useFakeTimers({toFake:['Date']});try{
+  const start=Date.parse('2026-11-13T00:00:00Z');vi.setSystemTime(start);const actual=await vi.importActual<typeof import('@aws-sdk/s3-request-presigner')>('@aws-sdk/s3-request-presigner');m.sign.mockImplementation(actual.getSignedUrl);
+  const p=ports(),b=await fixture('access');p.readCredential.mockReturnValue({accessKeyId:'synthetic-key',secretAccessKey:'synthetic-secret',expiresAt:start+60000});const bytes=await (await import('@/lib/cloud/aws/platformTemplateSource')).readPlatformTemplateBytes();
+  s3.mockImplementation(async(command:unknown)=>command instanceof GetBucketVersioningCommand?{$metadata:{httpStatusCode:200},Status:'Enabled'}:{$metadata:{httpStatusCode:200},VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()});
+  const t=createTemplateNativeTransport(p),proof=await t.perform(b),value=t.consume(proof,b);expect(value).toMatchObject({kind:'access',ttlSeconds:60,hardExpiresAt:start+60000});expect(m.sign).toHaveBeenCalledTimes(1);
+ }finally{vi.useRealTimers()}
+});
+
+it('refuses a native grant observation if its own expiry overlaps the final interval while action and credential stay live',async()=>{
+ vi.useFakeTimers({toFake:['Date']});try{
+  const start=Date.parse('2026-11-13T00:00:00Z');vi.setSystemTime(start);const actual=await vi.importActual<typeof import('@aws-sdk/s3-request-presigner')>('@aws-sdk/s3-request-presigner');m.sign.mockImplementation(actual.getSignedUrl);
+  const p=ports(),b=await fixture('access',1);p.clock=async()=>({earliest:start,latest:m.sign.mock.calls.length?start+1000:start+1});const bytes=await (await import('@/lib/cloud/aws/platformTemplateSource')).readPlatformTemplateBytes();
+  s3.mockImplementation(async(command:unknown)=>command instanceof GetBucketVersioningCommand?{$metadata:{httpStatusCode:200},Status:'Enabled'}:{$metadata:{httpStatusCode:200},VersionId:'version-1',ContentLength:bytes.length,Body:(async function*(){yield bytes})()});
+  const t=createTemplateNativeTransport(p);await expect(t.perform(b)).rejects.toThrow();expect(m.sign).toHaveBeenCalledTimes(1);await expect(t.perform(b)).rejects.toThrow();expect(m.sign).toHaveBeenCalledTimes(1);
+ }finally{vi.useRealTimers()}
+});

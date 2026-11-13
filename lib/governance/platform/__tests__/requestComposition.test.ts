@@ -52,3 +52,15 @@ it('current admin can inspect exact historical state without session identifiers
  expect(JSON.stringify(result)).not.toContain('requester-session');expect(f.events).toHaveLength(before);expect(f.rows.get(id)?.status).toBe('proposed');
  f.identities.delete('reviewer-session');await expect(reviewer.inspect(id)).rejects.toThrow();
 });
+
+import {syntheticRequestContext} from './fixtures/syntheticRequestContext';
+it('real Request fixture authenticates through the actual composition and retains live possession checks',async()=>{
+ const f=fixture(),original=new Request('http://fixture.invalid',{headers:f.headers}),context=syntheticRequestContext(original,new AbortController().signal);
+ const service=await createPlatformRequestComposition(context,f.ports);
+ original.headers.delete('authorization');await expect(service.propose(raw())).rejects.toThrow();expect(f.rows.size).toBe(0);
+});
+it('real Request fixture retains original cancellation while plain fixture contexts use the explicit fallback',()=>{
+ const controller=new AbortController(),original=new Request('http://fixture.invalid',{signal:controller.signal}),fallback=new AbortController().signal;
+ const context=syntheticRequestContext(original,fallback);controller.abort();expect(context.signal.aborted).toBe(true);
+ expect(syntheticRequestContext({headers:new Headers()},fallback).signal).toBe(fallback);
+});
