@@ -664,7 +664,7 @@ function settingsFixtureTiming(){return {clock:async()=>{const now=Date.now();re
 function settingsFixtureSource<T extends import('../operations/settingsTime').SettingsTimeEvidenceSource>(source:T){const start=Date.now()-60000,end=Date.now()+300000;return {...source,readTimeWindow:source.readTimeWindow??(async(_tx:unknown,context:{manifestDigest:string;profileId:string})=>({...context,notBefore:start,expiresAt:end}))}}
 function createSettingsArtifactStore(...[repo,authority,source]:Parameters<typeof createSettingsArtifactStoreActual>){return createSettingsArtifactStoreActual(repo,authority,settingsFixtureSource(source),settingsFixtureTiming())}
 function createSettingsPreparationStore(...[repo,authority,source]:Parameters<typeof createSettingsPreparationStoreActual>){return createSettingsPreparationStoreActual(repo,authority,settingsFixtureSource(source),settingsFixtureTiming())}
-function createSettingsArtifactRequestComposition(...[request,ports]:Parameters<typeof createSettingsArtifactRequestCompositionActual>){const timing=settingsFixtureTiming();return createSettingsArtifactRequestCompositionActual({...request,signal:request.signal??timing.signal},{...ports,clock:timing.clock,source:settingsFixtureSource(ports.source),preparationSource:ports.preparationSource?settingsFixtureSource(ports.preparationSource):undefined})}
+function createSettingsArtifactRequestComposition(...[request,ports]:Parameters<typeof createSettingsArtifactRequestCompositionActual>){const timing=settingsFixtureTiming(),original=ports.execution?.transport,execution=ports.execution&&original?{...ports.execution,transport:undefined,createTransport:(shared:SettingsTiming)=>settingsFixtureExecutionTransport(original,shared)}:ports.execution;return createSettingsArtifactRequestCompositionActual({...request,signal:request.signal??timing.signal},{...ports,execution,clock:timing.clock,source:settingsFixtureSource(ports.source),preparationSource:ports.preparationSource?settingsFixtureSource(ports.preparationSource):undefined})}
 
 it.skipIf(!enabled)('stores one exact private settings envelope in actual SQL and excludes duplicate/reviewed replacements',async()=>{
  await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']);
@@ -703,7 +703,15 @@ it.skipIf(!enabled)('permanently excludes a cloned settings action from the same
  const a=await prepare(),reserve=(f:Awaited<ReturnType<typeof prepare>>)=>repo.transaction(async tx=>{await tx.lock(f.id);return tx.reserveSettingsCreation(f.binding)});const key=await reserve(a);await a.service.observeEffect(a.child.proof,'unknown');const b=await prepare();await expect(reserve(b)).rejects.toThrow();await expect(reserve(a)).rejects.toThrow();const rows=await db.$queryRawUnsafe<Array<{publicationKey:string;status:string}>>('SELECT "publicationKey",status FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',a.id);expect(rows).toEqual([{publicationKey:key,status:'unknown'}]);
 });
 
-import {createSettingsExecutor} from '../operations/settingsExecution';
+import {createSettingsExecutor as createSettingsExecutorActual} from '../operations/settingsExecution';
+import {authorizeExecutionWindow} from '../executionTime';
+import type {SettingsTiming} from '../operations/settingsTime';
+// These opt-in definitions exercise SQL ownership with SYNTHETIC clock and
+// credential evidence only. They are not native qualification or run authority.
+function createSettingsExecutor(...[repo,authority,source,transport]:Parameters<typeof createSettingsExecutorActual>){
+ const timing=settingsFixtureTiming();
+ return createSettingsExecutorActual(repo,authority,settingsFixtureSource(source),settingsFixtureExecutionTransport(transport,timing),timing);
+}
 async function settingsExecutionFixture(){
  await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']);
  const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(Date.now()+60000).toISOString(),target:{projectId:'synthetic-project',teamId:'synthetic-team'},settings:[0,1].map(i=>({name:'VALUE_'+i+'_'+randomUUID().replaceAll('-','').toUpperCase(),environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_'+randomUUID(),current:{kind:'absent',receiptId:'platform_evidence_'+randomUUID()}}))});
@@ -723,7 +731,25 @@ it.skipIf(!enabled)('refuses a revoked write profile at the final settings send 
  const f=await settingsExecutionFixture();let physicalSends=0;const send=vi.fn(async(_binding:unknown,_value:string,before:()=>Promise<void>)=>{f.source.assertWriteProfile.mockRejectedValue(Error('synthetic revoked'));await before();physicalSends++;return {outcome:'confirmed',settingId:'must-not-exist'}}),executor=createSettingsExecutor(f.repo,f.authority,f.source,{send});await expect(executor.executeNext(f.id,actor,0)).rejects.toThrow();expect(physicalSends).toBe(0);const rows=await db.$queryRawUnsafe<Array<{status:string;publicationKey:string}>>('SELECT status,"publicationKey" FROM "PlatformGovernanceEffect" WHERE "actionId"=$1',f.id);expect(rows).toHaveLength(1);expect(rows[0].status).toBe('unknown');expect(rows[0].publicationKey).toHaveLength(64);
 });
 
-import {createSettingsVercelTransport} from '../operations/settingsVercelTransport';
+import {createSettingsVercelTransport as createSettingsVercelTransportActual} from '../operations/settingsVercelTransport';
+type FixtureTransport=Parameters<typeof createSettingsExecutorActual>[3];
+type FixtureNativePorts=Parameters<typeof createSettingsVercelTransportActual>[0];
+const settingsNativeRecipes=new WeakMap<object,FixtureNativePorts>();
+function createSettingsVercelTransport(ports:FixtureNativePorts){
+ const start=Date.now()-60000,end=Date.now()+300000,read=ports.readCredential;
+ const recipe={...ports,assertCredentialCurrent:ports.assertCredentialCurrent??(async()=>{}),readCredential:async(...args:Parameters<typeof read>)=>{const value=await read(...args);return typeof value==='string'?{token:value,notBefore:start,expiresAt:end}:value}};
+ const transport=createSettingsVercelTransportActual({...recipe,...settingsFixtureTiming()});settingsNativeRecipes.set(transport,recipe);return transport;
+}
+function settingsFixtureExecutionTransport(transport:FixtureTransport,timing:SettingsTiming):FixtureTransport{
+ if(!(timing.signal instanceof AbortSignal))throw Error('synthetic signal missing');const signal=timing.signal;
+ const recipe=settingsNativeRecipes.get(transport);if(recipe)return createSettingsVercelTransportActual({...recipe,...timing});
+ // Legacy simulated sends still consume the actual owner's time handshake.
+ // No production transport receives this synthetic fixture adapter.
+ return {...timing,async send(binding,value,beforeSend,beforeCredential){
+  await authorizeExecutionWindow(timing.clock,{expiresAt:Date.parse(binding.expiresAt)},beforeCredential,signal);
+  return transport.send(binding,value,async()=>authorizeExecutionWindow(timing.clock,{expiresAt:Date.parse(binding.expiresAt)},beforeSend,signal),beforeCredential);
+ }};
+}
 
 import {createSettingsPreparationStore as createSettingsPreparationStoreActual} from '../operations/settingsPreparation';
 

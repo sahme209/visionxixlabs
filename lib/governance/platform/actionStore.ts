@@ -66,6 +66,8 @@ export interface PlatformAuthority{
   * current platform role. A test port is not a production authority source. */
  assertCurrent(tx:PlatformTransaction,principal:PlatformPrincipal):Promise<void>;
  assertEffectCurrent?(tx:PlatformTransaction,effect:PlatformEffect):Promise<void>;
+ /** Private original-owner final hook; no caller JSON or nested transaction. */
+ assertFinalSend?(tx:PlatformTransaction,effect:PlatformEffect):Promise<void>;
 }
 const fail=():never=>{throw Error('platform_governance_action_unavailable')};
 /** Local store composition. No route or provider may accept a client-built
@@ -347,6 +349,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      // Expiry, revocation or any other source change rolls this SAME tx back.
      await timely(tx,state,actor,{effectId:effect.id,source});
     }
+    await authority.assertFinalSend?.(tx,effect);
    });
    if(observations.get(proof)!==binding)fail();
    binding.deployment=deployment;binding.sendGranted=true;

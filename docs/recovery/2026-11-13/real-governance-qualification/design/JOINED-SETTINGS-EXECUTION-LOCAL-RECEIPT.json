@@ -1,0 +1,68 @@
+{
+  "observedAt": "2026-11-13T18:03:46.895057+00:00",
+  "parentCommit": "a5193d7d3ae588b30a092a9d23011b5482e0eddf",
+  "scope": "local settings executor, original authorization owner, credential acquisition and final-send time composition; default remains unavailable",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "ab1ecdf2e8e04165b964dc9184011dc8cfd88ebbabf094892838a0f7b8fce630",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "f34e9fee44535bb26ff97dbf94102c0d1c5f039ec4da70bc6a131bf3194db963",
+    "lib/governance/platform/actionStore.ts": "d61980b6b8a8e6195bde22d5a30ae5568561d2a54283529ce6b1f7d5d3e25571",
+    "lib/governance/platform/operations/__tests__/settingsExecution.test.ts": "f2041af3dbb9e541d058d376cfbeddff09193ce10d5940f07edf0ddce289b1b2",
+    "lib/governance/platform/operations/__tests__/settingsJoinedTime.test.ts": "dbcc775c02dd29eaaa1ec01ce0f78b173e86a8d7b537702ad17910ec1e1133b4",
+    "lib/governance/platform/operations/__tests__/settingsVercelTransport.test.ts": "9576fb04515ac10d2e52722fce3b36cdb840684b2f0ddcac0b076847eb25397c",
+    "lib/governance/platform/operations/settingsArtifactRequest.ts": "35630e2a7736d6a386e307da56ba318881d00f8830578648c5fb2c797b188599",
+    "lib/governance/platform/operations/settingsExecution.ts": "f99a9bc8631725408efd51c90b32c303bcdfebc28e373771c40770b99df2cff0",
+    "lib/governance/platform/operations/settingsTime.ts": "478c4b252ed0f81609123d81094d92a9916308f37ea719be84125e492bba09ff",
+    "lib/governance/platform/operations/settingsVercelTransport.ts": "d0662f819a1003e17bd4f2bc4a39b3ed60a69819e21207588e7150526ce54b69"
+  },
+  "ordinary": {
+    "numPassedTests": 19097,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20239,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "ordinaryScope": "application runtime and composed tests; precedes only test-fixture AbortSignal narrowing and internal walkthrough wording",
+  "strictRootTypes": "PASS after all runtime/test/walkthrough edits; work/settings-execution-final-types2.log",
+  "focused": {
+    "files": 4,
+    "passed": 61,
+    "log": "work/settings-execution-final-focused.log"
+  },
+  "finalWalkthroughAndOptInDefinitions": {
+    "passed": 41,
+    "skipped": 147,
+    "filesPassed": 2,
+    "filesSkipped": 1,
+    "log": "work/settings-execution-walkthrough.log"
+  },
+  "independentReview": "existing final reviewer found no important integration finding, then no important fixture/request/demo/competitive-doc followup finding; source/test/docs only, no execution",
+  "actualSql": "NOT RUN; 147 opt-in SQL definitions skipped, synthetic source/time/credential fixtures only",
+  "actualLocal": [
+    "actual preparation/artifact AES-GCM/review/claim/executor/coordinator composition",
+    "intercepted fixed native HTTP transport",
+    "serialized memory transaction and commit acknowledgment handling",
+    "private request guarded-clock factory"
+  ],
+  "simulated": [
+    "people/roles/sessions",
+    "source/profile/clock/native qualification",
+    "credential/key suppliers",
+    "repository rows/transactions",
+    "HTTP/provider responses"
+  ],
+  "effects": {
+    "actualSql": false,
+    "realCredentialClockProvider": false,
+    "signingInstallation": false,
+    "productionSchemaFlagDeploymentEnablement": false,
+    "push": false,
+    "spending": false
+  },
+  "remaining": [
+    "non-growth deployment/source acquisition and whole transitive/current-participant review",
+    "real SQL/native clock/profile/custody/fleet/human/provider qualification",
+    "frozen build, mandatory-green PR, owner production gates",
+    "complete competitive detail/implementation/real-comparison audit"
+  ]
+}

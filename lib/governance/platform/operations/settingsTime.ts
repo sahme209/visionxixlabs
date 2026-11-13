@@ -1,8 +1,8 @@
 import 'server-only';
 import {z} from 'zod';
-import {assertPlatformParticipantsTime} from '../principalTime';
-import type {ExecutionTimeSource} from '../executionTime';
-import type {PlatformPrincipal} from '../contracts';
+import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from '../principalTime';
+import type {ExecutionTimeSource,ExecutionTimeCheck} from '../executionTime';
+import {platformPrincipalSchema,type PlatformPrincipal} from '../contracts';
 import type {SettingsArtifactTransaction} from './settingsArtifactStore';
 import {settingsArtifactBindingSchema} from './settingsArtifact';
 import {readOperationalManifest} from './kernel';
@@ -24,12 +24,15 @@ function context(raw:unknown):Readonly<SettingsTimeContext>{
  * No Date/DB fallback, cached interval or new capability is installed. */
 export function createSettingsTimePolicy(source:SettingsTimeEvidenceSource,timing?:SettingsTiming){
  const read=source.readTimeWindow?.bind(source),clock=timing?.clock,signal=timing?.signal;
- return async(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown)=>{
+ return async(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown,nativeCheck?:ExecutionTimeCheck)=>{
   try{
    if(typeof clock!=='function'||typeof read!=='function'||!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();
+   const principals=people.map(p=>platformPrincipalSchema.parse(p));if(!principals.length)return fail();
    const expected=context(rawContext),evidence=window.parse(await read(tx,expected));signal.throwIfAborted();
    if(evidence.manifestDigest!==expected.manifestDigest||evidence.profileId!==expected.profileId||evidence.notBefore>=evidence.expiresAt)return fail();
-   await assertPlatformParticipantsTime(tx,people,clock,{notBefore:evidence.notBefore,expiresAt:Math.min(expected.expiresAt,evidence.expiresAt)},signal);signal.throwIfAborted();
+   const restriction={notBefore:evidence.notBefore,expiresAt:Math.min(expected.expiresAt,evidence.expiresAt)};
+   if(nativeCheck!==undefined){if(typeof nativeCheck!=='function')return fail();for(const principal of principals){const session=await readPlatformPrincipalTimeWindow(tx,principal,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}await nativeCheck(Object.freeze(restriction))}
+   else await assertPlatformParticipantsTime(tx,principals,clock,restriction,signal);signal.throwIfAborted();
    const after=window.parse(await read(tx,expected));signal.throwIfAborted();
    if(after.manifestDigest!==evidence.manifestDigest||after.profileId!==evidence.profileId||after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();
   }catch{return fail()}

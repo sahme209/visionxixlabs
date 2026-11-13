@@ -1,3 +1,4 @@
+import type {SettingsTiming} from './settingsTime';
 import type {ExecutionTimeSource} from '../executionTime';
 import {createSettingsExecutor} from './settingsExecution';
 import {createSettingsPreparationStore,type SettingsPreparationSource} from './settingsPreparation';
@@ -10,7 +11,7 @@ interface Ports{
  repo:SettingsArtifactRepository;
  clock?:ExecutionTimeSource;
  preparationSource?:SettingsPreparationSource;
- execution?:{assertWriteProfile:Parameters<typeof createSettingsExecutor>[2]['assertWriteProfile'];transport:Parameters<typeof createSettingsExecutor>[3]};
+ execution?:{assertWriteProfile:Parameters<typeof createSettingsExecutor>[2]['assertWriteProfile'];transport?:Parameters<typeof createSettingsExecutor>[3];createTransport?:(timing:SettingsTiming)=>Parameters<typeof createSettingsExecutor>[3]};
  source:Parameters<typeof createSettingsArtifactStore>[2];
  verifyDesktopToken(token:string):{sessionId:string};
  readAdminEmails():readonly string[];
@@ -28,7 +29,9 @@ export async function createSettingsArtifactRequestComposition(request:{headers:
  const clock=ports.clock,timing={clock:async(signal:AbortSignal)=>{possessed();if(typeof clock!=='function')return fail();const value=await clock(signal);possessed();return value},signal:request.signal};
  const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source,timing);
  const preparation=ports.preparationSource?createSettingsPreparationStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.preparationSource,timing):null;
- const executor=ports.execution?createSettingsExecutor(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},{...ports.source,assertWriteProfile:ports.execution.assertWriteProfile},ports.execution.transport):null;
+ if(ports.execution?.createTransport&&ports.execution.transport)return fail();
+ const transport=ports.execution?.createTransport?ports.execution.createTransport(timing):ports.execution?.transport;
+ const executor=ports.execution&&transport?createSettingsExecutor(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},{...ports.source,assertWriteProfile:ports.execution.assertWriteProfile},transport,timing):null;
  return Object.freeze({
   async executeNext(id:string,effectIndex:number){possessed();if(!executor)return fail();return executor.executeNext(id,principal,effectIndex)},
   async prepare(raw:unknown,requestId:string){possessed();if(!preparation)return fail();return preparation.prepare(raw,requestId,principal)},
