@@ -23,18 +23,9 @@ export async function schedulePlatformLinkedInDraft(input:Input):Promise<{kind:'
   await runPlatformEffect(execution,prepared.effect,async beforeSend=>{
    await beforeSend();
    if(!isPostingEnabled()||currentLinkedInVersion()!==prepared.version||Date.parse(prepared.effect.target.scheduledFor)<=Date.now())throw Error('schedule_stale');
-   const updated=await prisma.$transaction(async tx=>{
-    const locked=await tx.$queryRawUnsafe<Array<{id:string}>>('SELECT id FROM "LinkedInPostDraft" WHERE id=$1 FOR UPDATE',draft.id);
-    if(locked.length!==1)throw Error('schedule_source_unavailable');
-    const assertFuture=async()=>{
-     const rows=await tx.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');
-     if(rows.length!==1||!Number.isSafeInteger(rows[0].now)||Date.parse(prepared.effect.target.scheduledFor)<=rows[0].now)throw Error('schedule_stale');
-    };
-    await assertFuture();
-    const result=await tx.linkedInPostDraft.updateMany({where:{id:draft.id,updatedAt:draft.updatedAt,status:{in:['approved','scheduled']}},data:{status:'scheduled',scheduledFor:new Date(prepared.effect.target.scheduledFor)}});
-    await assertFuture();return result;
-   },{isolationLevel:'ReadCommitted',timeout:10000,maxWait:5000});
-   return {outcome:updated.count===1?'confirmed':'refused',value:undefined};
+   // The bound original action/child transaction applies the fixed schedule
+   // update and post-write authority/time checks before acknowledging this call.
+   return {outcome:'confirmed',value:undefined};
   });
   try{await writeGrowthAudit({actor:binding.actor,action:'draft.scheduled',targetKind:'linkedin_draft',targetId:draft.id,detail:{platformActionId:binding.actionId,scheduledFor:prepared.effect.target.scheduledFor,effectDigest:sha256ContentHash(prepared.effect)}})}catch{/* durable platform event is authoritative */}
   return {kind:'scheduled'};

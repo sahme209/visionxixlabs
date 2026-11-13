@@ -25,7 +25,7 @@ import 'server-only';
 import {readPlatformDeletionSource} from '@/lib/growth/linkedin/platformDeletionSource';
 import {randomUUID} from 'node:crypto';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-import {digest,platformPrincipalSchema} from './contracts';
+import {digest,platformPrincipalSchema,platformEffectSchema} from './contracts';
 import {operationalEvidenceId} from './operations/contracts';
 import {readOperationalTarget,readOperationalTargetReceipt} from './operations/reservationContract';
 import {readOperationalDelegation,type OperationalDelegationRepository,type OperationalDelegationTransaction} from './operations/delegationContract';
@@ -101,6 +101,11 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     const drafts=await sql.$queryRawUnsafe<unknown[]>('SELECT id,title,hook,body,cta,hashtags,"imageUrn",status,"scheduledFor","updatedAt" FROM "LinkedInPostDraft" WHERE id=$1 FOR SHARE',draftId);
     const connections=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"linkedinUrn","organizationUrn",scopes,status,"expiresAt","updatedAt" FROM "LinkedInAccountConnection" WHERE id=$1 FOR SHARE',connectionId);
     if(drafts.length!==1||connections.length!==1)fail();const source=postingSourceSchema.parse({draft:drafts[0],connection:connections[0]});if(imageUploadActionId!==undefined)return {...source,imageLineage:await readImagePublicationSourceByAction(sql,source.connection,imageUploadActionId)};return source.draft.imageUrn===null?source:{...source,imageLineage:await readImagePublicationSource(sql,source.connection,source.draft.imageUrn)};
+   },
+   async applyGrowthSchedule(id,index,raw,expectedUpdatedAt){
+    check(id);const effect=platformEffectSchema.parse(raw),parent=readPlatformAction(await tx.read(id));
+    if(effect.kind!=='growth.schedule.change'||parent.status!=='claimed'||!Number.isSafeInteger(index)||index<0||await tx.readEffect(id,index)!=='claimed'||sha256ContentHash(parent.plan.effects[index])!==sha256ContentHash(effect)||!(expectedUpdatedAt instanceof Date)||!Number.isSafeInteger(expectedUpdatedAt.getTime()))return fail();
+    const count=await sql.$executeRawUnsafe('UPDATE "LinkedInPostDraft" SET status=$1,"scheduledFor"=$2,"updatedAt"=clock_timestamp() WHERE id=$3 AND "updatedAt"=$4 AND status IN ($5,$6)','scheduled',new Date(effect.target.scheduledFor),effect.target.draftId,expectedUpdatedAt,'approved','scheduled');if(count!==1)return fail();
    },
    async readReadyImageArtifact(uploadActionId,connectionId){if(!locked)fail();const connection=postingSourceSchema.shape.connection.parse(await tx.readImageConnection!(connectionId));return readReadyImageArtifactSource(sql,connection,uploadActionId)},
    ...createPlatformIdentitySqlReader(sql,()=>{if(!locked)fail()}),

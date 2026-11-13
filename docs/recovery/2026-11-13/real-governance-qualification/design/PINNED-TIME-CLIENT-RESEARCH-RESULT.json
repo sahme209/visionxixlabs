@@ -1,0 +1,28 @@
+{
+  "observedAt": "2026-11-13T16:58:05.948752+00:00",
+  "approval": "call_46047e4f43f94299b6a0d82e9afce0b4",
+  "scope": "at most six exact official public-source reads; stop on unavailable response",
+  "attemptedReads": [
+    {
+      "number": 1,
+      "url": "https://api.github.com/repos/aws/clock-bound/releases?per_page=10",
+      "tool": "web open",
+      "result": "tool reported URL not accessible; no response source metadata established"
+    }
+  ],
+  "actualReadAttempts": 1,
+  "remainingCalls": "not executed; stop condition triggered, no retry/replacement",
+  "conclusions": [
+    "No stable release, immutable commit, client or use-validity contract was established by this pass.",
+    "Tool access failure does not prove upstream absence or unsupported status.",
+    "Prior protocol-only floating-main observations remain insufficient for native qualification."
+  ],
+  "effects": {
+    "dependencyAdoption": false,
+    "nativeClockQuery": false,
+    "credentials": false,
+    "resources": false,
+    "spending": false,
+    "deploymentEnablement": false
+  }
+}

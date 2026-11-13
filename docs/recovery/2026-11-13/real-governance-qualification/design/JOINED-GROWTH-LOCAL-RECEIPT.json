@@ -1,0 +1,64 @@
+{
+  "observedAt": "2026-11-13T17:09:20.469524+00:00",
+  "parentCommit": "cd9f71202359c3413f5ca961796a30a99c894ddf",
+  "scope": "approved local joined-time publishing/scheduling/deletion, including actual schedule mutation composition; partial Governance only",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "9385dd1f91eb364b030f6587faefa81b9ac6244cceef1728e04e848a589d3cb1",
+    "lib/governance/platform/__tests__/actionStore.test.ts": "8e18f0b631f58410eef5e46d004fc8444516a96c7702cde20a5a7a8e1cd558ee",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "75721c3eba1cc0f61de1b21d52229bb1e705e737be253dec1cb8be0a6888bf2a",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "af8804165d597439f298fab71f125b61dfc5b1d585f245aa1b07ba15392fbc1b",
+    "lib/governance/platform/actionStore.ts": "3efcecdacbca050650dfaf44afbb1a72ad8170fb26345f4d764c4a99fbb50f7f",
+    "lib/governance/platform/growthPreparation.ts": "39c6601f3262858c819eb93416e2e8be2fb8be8c9a4e6be58d88805c31acf482",
+    "lib/governance/platform/requestComposition.ts": "eeefab1e3794a21219d4af7eef401cd8eb77a6b48d7012338976aa758b0b0993",
+    "lib/governance/platform/requestService.ts": "f795701adc4b508e25ff9e0ad34a99ab31b9c619e5bc8e282cbb95fc40aa3dbb",
+    "lib/governance/platform/sqlRepository.ts": "e12916324cfe85291a08868a92af01e51ff5d041b6e1ee6fd7c6c685640f0393",
+    "lib/growth/linkedin/__tests__/platformSchedule.test.ts": "39d0b474099629aa3969f10b4dad94d8bf1de29cd2e0f9b181b26c40886ce750",
+    "lib/growth/linkedin/platformSchedule.ts": "52e0afdc9ee93a7adaaf540a9c79ad3e23df236a8c515424e2fa030aa71f28e7",
+    "lib/governance/platform/__tests__/growthJoinedTime.test.ts": "106c637095c722c5dd1375c7a968e4640a2ccfac93d843785defe2078d4de566",
+    "lib/governance/platform/__tests__/scheduleSqlAdapter.test.ts": "5a7a22c03270a4714c2d158de66bc54794be4000e62e8af5dd0758c3f05ec5e4"
+  },
+  "ordinary": {
+    "numPassedTests": 19070,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20212,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "relevantSubset": {
+    "files": 7,
+    "passed": 72,
+    "includedInOrdinary": true
+  },
+  "strictRootTypes": "passed",
+  "independentReview": "P2 confirmed-child source-revalidation bug reproduced/corrected; final existing reviewer reports no important remaining finding in slice",
+  "actualSql": "NOT RUN; SQL adapter intercepted with synthetic results and opt-in PG definitions updated only",
+  "simulated": [
+    "identity/session/roles",
+    "clock and source contract",
+    "memory rows, transactions and commit acknowledgments",
+    "native outbound operation and SQL driver"
+  ],
+  "actualLocal": [
+    "original action service and child coordinator",
+    "exact rendered posting/scheduling/deletion plan reconstruction",
+    "private request composition/possession guards",
+    "actual parameterized SQL adapter code with intercepted driver",
+    "wrapper delegates schedule without a separate mutation transaction"
+  ],
+  "effects": {
+    "providerOrClockQuery": false,
+    "actualSql": false,
+    "nativeCredentialsOrKeys": false,
+    "resourcesInstallSign": false,
+    "schemaFlagDeploymentEnablement": false,
+    "push": false,
+    "spending": false
+  },
+  "remaining": [
+    "nongrowth generic/settings/deployment source and execution timing audit/integration",
+    "source-acquisition/bootstrap/signing and whole participant/transitive consistency",
+    "real SQL/native clock/custody/fleet/human/provider qualification",
+    "frozen build/green PR, target/schema/recovery and owner production gates"
+  ]
+}

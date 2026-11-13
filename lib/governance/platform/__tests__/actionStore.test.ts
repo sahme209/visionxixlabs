@@ -10,7 +10,7 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
   const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects),nextPublications=new Map(publications);
-  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async()=>null,now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
+  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async p=>({...p,live:true,sessionIssuedAtMs:at-2000,sessionExpiresAtMs:at+120000}),now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
@@ -21,7 +21,7 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
   try{const value=await fn(tx);rows=next;events=nextEvents;effects=nextEffects;publications=nextPublications;return value}finally{release()}
  }};
  const assertCurrent=vi.fn(async(_tx:PlatformTransaction,_actor:typeof requester)=>{});
- const service=createPlatformActionService(repo,{assertCurrent,...(withSourceAuthority?{assertEffectCurrent:async()=>{}}:{})});
+ const service=createPlatformActionService(repo,{assertCurrent,...(withSourceAuthority?{assertEffectCurrent:async()=>{}}:{})},{clock:async()=>({earliest:at,latest:at+1}),signal:new AbortController().signal});
  return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
@@ -104,8 +104,8 @@ it('cannot grant a final send after concurrent outcome observation consumes its 
 });
 
 it('does not grant another action the same native draft after an unknown publication',async()=>{
- const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'post',kind:'growth.post.publish',target:{draftId:'same-draft',connectionId:'connection',connectionRevision:'revision',author:'urn:li:person:test',renderedPayloadDigest:d}}]});
- const ids=[];for(let i=0;i<2;i++){const id=await f.service.propose(p,requester);await f.service.review(id,0,p.digest,reviewer);await f.service.claim(id,1,requester);ids.push(id)}
+ vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');const source={draft:{id:'same-draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(at-1000)},connection:{id:'connection',linkedinUrn:'urn:li:person:test',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(at+60000),updatedAt:new Date(at-1000)}},f=fixture(source);
+ const ids=[];for(let i=0;i<2;i++){const saved=await f.service.prepareGrowth({operation:'publish',draftId:'same-draft',connectionId:'connection',expiresAt:new Date(at+30000).toISOString()},requester),id=saved.actionId,p=f.rows().get(id)!.plan;await f.service.review(id,0,p.digest,reviewer);await f.service.claim(id,1,requester);ids.push(id)}
  const first=await f.service.claimNextEffect(ids[0],requester);await f.service.beforeEffectSend(first.proof,first.effect,requester);await f.service.observeEffect(first.proof,'unknown');
  const next=await f.service.claimNextEffect(ids[1],requester);await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();
  expect(f.rows().get(ids[0])?.status).toBe('unknown');await expect(f.service.beforeEffectSend(next.proof,next.effect,requester)).rejects.toThrow();

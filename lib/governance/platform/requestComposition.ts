@@ -1,3 +1,4 @@
+import type {ExecutionTimeSource} from './executionTime';
 import 'server-only';
 import type {PlatformSourceKind} from './sourceCatalog';
 import type {PlatformHistoryCursor} from './historyContract';
@@ -8,6 +9,7 @@ import {createPlatformActionService,type PlatformRepository} from './actionStore
 import {createCurrentPlatformAuthority} from './currentAuthority';
 interface Ports{
  repo:PlatformRepository;
+ clock?:ExecutionTimeSource;
  verifyDesktopToken(token:string):{sessionId:string};
  readAdminEmails():readonly string[];
 }
@@ -15,8 +17,10 @@ const fail=():never=>{throw Error('platform_governance_request_unavailable')};
 /** Private server factory. Ports and observation proofs are never request JSON.
  * Token verification proves possession; current SQL authority proves privilege.
  * No cookie/API-key/cron fallback and no incidental session heartbeat/self-heal. */
-export async function createPlatformRequestComposition(request:{headers:Headers},ports:Ports){
+export async function createPlatformRequestComposition(request:{headers:Headers;signal?:AbortSignal},ports:Ports){
+ const clock=ports.clock;
  function verifiedSession(){
+  request.signal?.throwIfAborted();
   const token=bearerFromHeader(request.headers.get('authorization'));
   if(!token||token.length>4096)fail();
   try{const result=ports.verifyDesktopToken(token!);if(typeof result.sessionId!=='string'||!result.sessionId||result.sessionId.length>256)fail();return result.sessionId}catch{return fail()}
@@ -30,9 +34,10 @@ export async function createPlatformRequestComposition(request:{headers:Headers}
   if(verifiedSession()!==sessionId)fail();return actor;
  });
  function assertPossession(){if(verifiedSession()!==principal.sessionId)fail()}
+ const guardedClock:ExecutionTimeSource=async signal=>{assertPossession();if(typeof clock!=='function')return fail();const value=await clock(signal);assertPossession();return value};
  const store=createPlatformActionService(ports.repo,{async assertCurrent(tx,actor){
   assertPossession();await currentAuthority.assertCurrent(tx,actor);assertPossession();
- },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}});
+ },async assertEffectCurrent(tx,effect){assertPossession();await currentAuthority.assertEffectCurrent!(tx,effect);assertPossession()}},{clock:guardedClock,signal:request.signal});
  return Object.freeze({
   actorUserId:principal.userId,
   async prepareTemplate(raw:unknown,requestId:string){assertPossession();return store.prepareTemplate(raw,principal,requestId)},

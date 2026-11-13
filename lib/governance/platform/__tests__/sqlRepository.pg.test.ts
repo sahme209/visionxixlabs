@@ -161,13 +161,19 @@ import {encryptCredential} from '@/lib/security/credentialVault';
 import {publishDraft,POST_DRAFT_SELECT,POST_CONNECTION_SELECT} from '@/lib/growth/linkedin/posting';
 import {preparePlatformLinkedInPost,preparePlatformLinkedInSchedule} from '@/lib/growth/linkedin/platformPostingPlan';
 import {schedulePlatformLinkedInDraft} from '@/lib/growth/linkedin/platformSchedule';
-async function postFixture(schedule=false,scheduleDelay=30000,serverPrepared=false,claimExecution=true){
+// Explicitly synthetic time for isolated SQL definitions only. Default server
+// time remains unavailable; this does not qualify a native source.
+async function syntheticGrowthRequest(request:{headers:Headers}){
+ return createPlatformRequestComposition({...request,signal:new AbortController().signal},{repo:createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}}});
+}
+async function syntheticGrowthExecution(request:{headers:Headers},id:string){const service=await syntheticGrowthRequest(request);await service.claim(id,1);return bindPlatformExecution(service,id)}
+async function postFixture(schedule=false,scheduleDelay=30000,serverPrepared=false,claimExecution=true,draftId?:string){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');vi.stubEnv('CREDENTIAL_ENCRYPTION_KEY','synthetic-credential-key-'.repeat(3));
  const connection=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:fixture',accessToken:encryptCredential('synthetic-linkedin-token'),scopes:'w_member_social',expiresAt:new Date(Date.now()+60000),status:'connected'},select:POST_CONNECTION_SELECT});
- const draft=await defaultPrisma.linkedInPostDraft.create({data:{title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),scheduledFor=new Date(Date.now()+scheduleDelay),effect=schedule?preparePlatformLinkedInSchedule(draft,connection,'202605',Date.now(),scheduledFor).effect:preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
- const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(connection.expiresAt.getTime(),Date.now()+30000)).toISOString(),effects:[effect]},request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await createDefaultPlatformRequestService(request),prepared=serverPrepared?await requester.prepareGrowth({operation:schedule?'schedule':'publish',draftId:draft.id,connectionId:connection.id,expiresAt:raw.expiresAt,...(schedule?{scheduledFor:scheduledFor.toISOString()}:{})}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
- const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});if(serverPrepared)expect((await independent.previewGrowth(id)).renderedPost).toBe(prepared?.preview?.renderedPost);await independent.review(id,0,saved.plan.digest);
- return {draft,connection,scheduledFor,effect,id,requester,request,prepared,binding:claimExecution?await createDefaultPlatformExecution(request,id,1):undefined};
+ const draft=await defaultPrisma.linkedInPostDraft.create({data:{...(draftId?{id:draftId}:{}),title:'Fixture',hook:'Hook',body:'Body',category:'governance',status:'approved'},select:POST_DRAFT_SELECT}),scheduledFor=new Date(Date.now()+scheduleDelay),effect=schedule?preparePlatformLinkedInSchedule(draft,connection,'202605',Date.now(),scheduledFor).effect:preparePlatformLinkedInPost(draft,connection,'202605',Date.now()).effect;
+ const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(connection.expiresAt.getTime(),Date.now()+30000)).toISOString(),effects:[effect]},request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await syntheticGrowthRequest(request),prepared=serverPrepared?await requester.prepareGrowth({operation:schedule?'schedule':'publish',draftId:draft.id,connectionId:connection.id,expiresAt:raw.expiresAt,...(schedule?{scheduledFor:scheduledFor.toISOString()}:{})}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
+ const independent=await syntheticGrowthRequest({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});if(serverPrepared)expect((await independent.previewGrowth(id)).renderedPost).toBe(prepared?.preview?.renderedPost);await independent.review(id,0,saved.plan.digest);
+ return {draft,connection,scheduledFor,effect,id,requester,request,prepared,binding:claimExecution?await syntheticGrowthExecution(request,id):undefined};
 }
 it.skipIf(!enabled)('joins actual default post source, credential crypto, human review and SQL ledger with simulated HTTP',async()=>{
  try{
@@ -196,9 +202,11 @@ it.skipIf(!enabled)('lost post response remains unknown in both ledgers and neve
 });
 
 async function publicationPair(draftId:string){
- const s=createPlatformActionService(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),{assertCurrent:async()=>{},assertEffectCurrent:async()=>{}});
- const p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[{id:'post',kind:'growth.post.publish',target:{draftId,connectionId:'synthetic-connection',connectionRevision:'synthetic-revision',author:'urn:li:person:synthetic',renderedPayloadDigest:d}}]});
- const effects=[];for(let i=0;i<2;i++){const id=await s.propose(p,actor);await s.review(id,0,p.digest,reviewer);await s.claim(id,1,actor);effects.push(await s.claimNextEffect(id,actor))}return {s,effects};
+ const f=await postFixture(false,30000,true,false,draftId),s=await syntheticGrowthRequest(f.request),first=await s.inspect(f.id),{digest:_,...raw}=first.plan,second=await s.propose(raw),independent=await syntheticGrowthRequest({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});
+ await independent.review(second,0,first.plan.digest);const effects=[];for(const id of [f.id,second]){await s.claim(id,1);effects.push(await s.claimNextEffect(id))}
+ // Keep the existing principal-taking test API without bypassing possessed
+ // composition; actor is the exact verified fixture requester.
+ return {s:{beforeEffectSend:(proof:object,effect:import('../contracts').PlatformEffect,_actor:typeof actor)=>s.beforeEffectSend(proof,effect),observeEffect:s.observeEffect},effects};
 }
 it.skipIf(!enabled)('SQL uniqueness grants one native publication across concurrent approved actions',async()=>{
  const {s,effects}=await publicationPair('concurrent-native-draft');
@@ -250,11 +258,11 @@ async function deletionFixture(){
  expect(await publishDraft({draftId:f.draft.id,connectionId:f.connection.id,platformExecution:f.binding,triggeredBy:'fixture'})).toMatchObject({kind:'success'});
  const source=await defaultPrisma.$transaction(tx=>readPlatformDeletionSource(tx,f.draft.id,f.connection.id)),effect=preparePlatformLinkedInDeletion(source,'202605',Date.now()).effect;
  async function approved(serverPrepared=false,claimExecution=true){
-  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(f.connection.expiresAt.getTime(),Date.now()+20000)).toISOString(),effects:[effect]},requester=await createDefaultPlatformRequestService(f.request);
+  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Math.min(f.connection.expiresAt.getTime(),Date.now()+20000)).toISOString(),effects:[effect]},requester=await syntheticGrowthRequest(f.request);
   const prepared=serverPrepared?await requester.prepareGrowth({operation:'delete',draftId:f.draft.id,connectionId:f.connection.id,expiresAt:raw.expiresAt}):null,id=prepared?.actionId??await requester.propose(raw),saved=await requester.inspect(id);
-  const independent=await createDefaultPlatformRequestService({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});
+  const independent=await syntheticGrowthRequest({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});
   if(serverPrepared)expect(await independent.previewGrowth(id)).toMatchObject({actionId:id,planDigest:saved.plan.digest,authority:'review_preview_only'});
-  await independent.review(id,0,saved.plan.digest);return {id,binding:claimExecution?await createDefaultPlatformExecution(f.request,id,1):undefined};
+  await independent.review(id,0,saved.plan.digest);return {id,binding:claimExecution?await syntheticGrowthExecution(f.request,id):undefined};
  }
 
  return {...f,effect,approved};

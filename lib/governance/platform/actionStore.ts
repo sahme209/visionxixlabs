@@ -1,3 +1,6 @@
+import {postingSourceSchema} from '@/lib/growth/linkedin/platformPostingPlan';
+import {assertPlatformParticipantsTime} from './principalTime';
+import type {ExecutionTimeSource} from './executionTime';
 import type {createImageStorageSql,ImagePutResult} from './imageStorageSql';
 import type {ImageUploadBinding} from './imageCustodyContract';
 import type {createTemplateStorageSql} from './templateStorageSql';
@@ -52,6 +55,8 @@ export interface PlatformTransaction extends Partial<DeploymentLiabilityTransact
  /** Permanent send reservation. No release/reset API, including unknown outcomes. */
  reservePostDeletion?(id:string,index:number,postUrn:string):Promise<void>;
  reservePublication?(id:string,index:number,draftId:string):Promise<void>;
+ /** Fixed schedule mutation owned by the ORIGINAL action/child transaction. */
+ applyGrowthSchedule?(id:string,index:number,effect:Extract<PlatformEffect,{kind:'growth.schedule.change'}>,expectedUpdatedAt:Date):Promise<void>;
  readEffect(id:string,index:number):Promise<unknown|null>;
  writeEffect(id:string,index:number,expected:unknown|null,status:EffectStatus):Promise<void>;
 }
@@ -65,15 +70,52 @@ export interface PlatformAuthority{
 const fail=():never=>{throw Error('platform_governance_action_unavailable')};
 /** Local store composition. No route or provider may accept a client-built
  * authority supplier, claim or observation proof. Default mounting is separate. */
-export function createPlatformActionService(repo:PlatformRepository,authority:PlatformAuthority){
+export function createPlatformActionService(repo:PlatformRepository,authority:PlatformAuthority,timing?:{clock:ExecutionTimeSource;signal?:AbortSignal}){
+ const clock=timing?.clock,signal=timing?.signal;
+ const actionIds=new WeakMap<PlatformTransaction,string>();
  const observations=new WeakMap<object,{actionId:string;index:number;sendUsed:boolean;sendGranted:boolean;deployment?:Readonly<DeploymentReservation>}>();
  const resultProofs=new WeakMap<object,{actionId:string;index:number}>();
  async function load(tx:PlatformTransaction,id:string){const row=await tx.read(id);if(!row)fail();return readPlatformAction(row)}
  async function actors(tx:PlatformTransaction,state:PlatformAction){await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer)}
- async function timely(tx:PlatformTransaction,state:PlatformAction){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
+ async function timely(tx:PlatformTransaction,state:PlatformAction,phaseActor?:PlatformPrincipal,scheduled?:{effectId:string;source:ReturnType<typeof postingSourceSchema.parse>}){
+  async function auditTime(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
+  const before=await auditTime(),growth=state.plan.effects.map((effect,index)=>({effect,index})).filter(({effect})=>effect.kind.startsWith('growth.'));
+  if(!growth.length)return before;
+  if(typeof clock!=='function'||!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();
+  const actionId=actionIds.get(tx);if(!actionId)return fail();
+  const people=[state.requester,...(state.reviewer?[state.reviewer]:[]),...(phaseActor?[phaseActor]:[])];
+  async function sourceWindows(){
+   const windows=[];
+   for(const {effect,index} of growth){
+    const status=await tx.readEffect(actionId!,index);if(status==='confirmed')continue;if(status!==null&&status!=='claimed')return fail();
+    if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change'&&effect.kind!=='growth.post.delete')return fail();
+    const target=effect.target,selected={operation:effect.kind==='growth.post.publish'?'publish':effect.kind==='growth.schedule.change'?'schedule':'delete',draftId:target.draftId,connectionId:target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{}),...('imageUploadActionId' in target&&target.imageUploadActionId?{imageUploadActionId:target.imageUploadActionId}:{})};
+    let sourceTx=tx;
+    if(scheduled&&scheduled.effectId===effect.id){
+     if(effect.kind!=='growth.schedule.change')return fail();
+     sourceTx={...tx,async readGrowthPostingSource(draftId,connectionId,imageUploadActionId){
+      const actual=postingSourceSchema.parse(await tx.readGrowthPostingSource(draftId,connectionId,imageUploadActionId)),original=scheduled.source;
+      const changedAt=actual.draft.updatedAt.getTime(),now=await auditTime();
+      if(actual.draft.status!=='scheduled'||actual.draft.scheduledFor?.toISOString()!==effect.target.scheduledFor||!Number.isSafeInteger(changedAt)||changedAt<original.draft.updatedAt.getTime()||changedAt>now)return fail();
+      const normalized={...actual,draft:{...actual.draft,status:original.draft.status,scheduledFor:original.draft.scheduledFor,updatedAt:original.draft.updatedAt}};
+      if(sha256ContentHash(normalized)!==sha256ContentHash(original))return fail();return normalized;
+     }};
+    }
+    const prepared=await prepareGrowthPlatformPlan(sourceTx,selected,await auditTime(),effect.id);
+    if(sha256ContentHash(prepared.plan.effects[0])!==sha256ContentHash(effect))return fail();windows.push(prepared.timeWindow);signal!.throwIfAborted();
+   }return windows;
+  }
+  for(const person of people)await authority.assertCurrent(tx,person);
+  const windows=await sourceWindows();
+  await assertPlatformParticipantsTime(tx,people,clock,{notBefore:Math.max(0,...windows.map(w=>w.notBefore)),expiresAt:Math.min(Date.parse(state.plan.expiresAt),...windows.map(w=>w.expiresAt))},signal);
+  // Original transaction owns source and human authority both before and after
+  // the clock await, including waits for permanent send reservations.
+  await sourceWindows();for(const person of people)await authority.assertCurrent(tx,person);
+  const now=await auditTime();if(now<before)return fail();signal.throwIfAborted();return now;
+ }
  async function locked<T>(id:string,fn:(tx:PlatformTransaction,state:PlatformAction)=>Promise<T>){
   if(typeof id!=='string'||!/^platform_action_[a-f0-9-]{36}$/.test(id))fail();
-  return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,await load(tx,id))});
+  return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);return fn(tx,await load(tx,id))});
  }
  return {
   async sources(rawKind:PlatformSourceKind,rawCursor:string|null,principal:PlatformPrincipal){
@@ -113,7 +155,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   },
   async prepareTemplate(raw:unknown,principal:PlatformPrincipal,requestId:string){
    const actor=platformPrincipalSchema.parse(principal),selected=platformTemplateSelection.parse(raw),id=preparationActionReference(requestId,actor,'platform_template_preparation_v1');
-   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
+   return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
     if(existing){const state=readPlatformAction(existing);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId||!matchesTemplateSelection(state.plan,selected))fail();await authority.assertCurrent(tx,actor);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}
     const plan=await prepareTemplatePlatformPlan(selected,await tx.now()),state=createPlatformAction(plan,actor,await tx.now());
     const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,state.plan.effects[0]);
@@ -123,7 +165,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   },
   async lookupTemplatePreparation(requestId:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(requestId,actor,'platform_template_preparation_v1');
-   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
+   return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
     if(raw){const state=readPlatformAction(raw);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}
     await authority.assertCurrent(tx,actor);return raw?{found:true as const,actionId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const};
    });
@@ -175,14 +217,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   },
   async lookupDeploymentPreparation(requestId:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(requestId,actor,'platform_deployment_preparation_v1');
-   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
+   return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
     if(raw){const state=readPlatformAction(raw);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}
     await authority.assertCurrent(tx,actor);return raw?{found:true as const,actionId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const};
    });
   },
   async prepareDeployment(raw:unknown,principal:PlatformPrincipal,requestId:string){
    const actor=platformPrincipalSchema.parse(principal),selected=platformDeploymentSelection.parse(raw),id=preparationActionReference(requestId,actor,'platform_deployment_preparation_v1');
-   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
+   return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
     if(existing){const state=readPlatformAction(existing);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId||!matchesDeploymentSelection(state.plan,selected))fail();await authority.assertCurrent(tx,actor);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}
     const prepared=await prepareDeploymentPlatformPlan(tx,selected),state=createPlatformAction(prepared.plan,actor,await tx.now());
     if(!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent!(tx,state.plan.effects[0]);await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
@@ -198,14 +240,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const operation=effect.kind==='growth.post.publish'?'publish':effect.kind==='growth.post.delete'?'delete':'schedule';
     const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind!=='growth.post.delete'&&effect.target.imageUploadActionId?{imageUploadActionId:effect.target.imageUploadActionId}:{}),...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);
     if(prepared.plan.digest!==state.plan.digest)fail();
-    await authority.assertCurrent(tx,actor);await timely(tx,state);
+    await authority.assertCurrent(tx,actor);await timely(tx,state,actor);
     return platformGrowthPreviewSchema.parse({actionId:id,planDigest:state.plan.digest,...prepared.preview,authority:'review_preview_only'});
    });
   },
   async lookupGrowthPreparation(requestId:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id=preparationActionReference(requestId,actor);
    return repo.transaction(async tx=>{
-    await tx.lock(id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
+    await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const raw=await tx.read(id);
     if(raw){const state=readPlatformAction(raw);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId)fail()}
     await authority.assertCurrent(tx,actor);
     return raw?{found:true as const,actionId:id,authority:'history_only' as const}:{found:false as const,authority:'history_only' as const};
@@ -214,7 +256,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async prepareGrowth(raw:unknown,principal:PlatformPrincipal,requestId?:string){
    const actor=platformPrincipalSchema.parse(principal),selected=canonicalGrowthSelection(raw),id=requestId===undefined?'platform_action_'+randomUUID():preparationActionReference(requestId,actor);
    return repo.transaction(async tx=>{
-    await tx.lock(id);await authority.assertCurrent(tx,actor);
+    await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);
     const existing=await tx.read(id);
     if(existing){
      const original=readPlatformAction(existing);
@@ -228,21 +270,21 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const state=createPlatformAction(prepared.plan,actor,await tx.now());
     if(!authority.assertEffectCurrent)fail();
     await authority.assertEffectCurrent!(tx,state.plan.effects[0]);
-    await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
+    await timely(tx,state,actor);await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state,actor);await tx.event({actionId:id,kind:'proposed',state});await timely(tx,state,actor);
     return {actionId:id,preview:prepared.preview,historical:false as const,authority:'proposal_reference_only' as const};
    });
   },
   async propose(plan:PlatformPlan,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id='platform_action_'+randomUUID();
-   return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());
-    await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});return id});
+   return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());
+    if(state.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,state,actor);await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});if(state.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,state,actor);return id});
   },
   async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(await tx.readTemplateBinding?.(id))fail();if(state.version!==version||state.plan.effects.some(effect=>effect.kind==='deployment.ecs'||effect.kind==='custodian.drain'||effect.kind==='deployment.target.release'||effect.kind==='growth.image.initialize'||effect.kind==='growth.image.put'))fail();await actors(tx,state);await authority.assertCurrent(tx,actor);
     for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
-    const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state));await tx.replace(id,version,next);
-    await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});});
+    const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state,actor));await tx.replace(id,version,next);
+    await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});if(next.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,next,actor);});
   },
   async claim(id:string,version:number,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
@@ -250,14 +292,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const imagePosts=state.plan.effects.filter(e=>(e.kind==='growth.post.publish'||e.kind==='growth.schedule.change')&&e.target.imageLineageDigest!==undefined);
     for(const e of imagePosts){if(!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent!(tx,e)}
     const next=claimPlatformAction(state,actor,await timely(tx,state));await tx.replace(id,version,next);
-    await actors(tx,next);if(imagePosts.length){for(const e of imagePosts)await authority.assertEffectCurrent!(tx,e);await actors(tx,next)}await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});});
+    await actors(tx,next);if(imagePosts.length){for(const e of imagePosts)await authority.assertEffectCurrent!(tx,e);await actors(tx,next)}await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});if(next.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,next,actor);});
   },
   async claimNextEffect(id:string,principal:PlatformPrincipal):Promise<{effect:PlatformEffect;proof:object}>{
    const actor=platformPrincipalSchema.parse(principal);
    const result=await locked(id,async(tx,state)=>{
     if(await tx.readTemplateBinding?.(id))fail();
     if(state.plan.effects.some(effect=>effect.kind==='deployment.ecs'||effect.kind==='custodian.drain'||effect.kind==='deployment.target.release'||effect.kind==='growth.image.initialize'||effect.kind==='growth.image.put'||effect.kind.startsWith('template.'))||state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId)fail();
-    await actors(tx,state);await timely(tx,state);
+    await actors(tx,state);await timely(tx,state,actor);
     let index=-1;
     for(let i=0;i<state.plan.effects.length;i++){
      const status=await tx.readEffect(id,i);
@@ -265,7 +307,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      if(status!==null)fail();index=i;break;
     }
     if(index<0)fail();await tx.writeEffect(id,index,null,'claimed');
-    await actors(tx,state);await timely(tx,state);await tx.event({actionId:id,kind:'effect.claimed',state,effectIndex:index});
+    await actors(tx,state);await timely(tx,state,actor);await tx.event({actionId:id,kind:'effect.claimed',state,effectIndex:index});if(state.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,state,actor);
     return {index,effect:state.plan.effects[index]};
    });
    // No capability is issued unless the transaction's commit is confirmed.
@@ -279,22 +321,31 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    await locked(binding.actionId,async(tx,state)=>{
     if(await tx.readTemplateBinding?.(binding.actionId))fail();
     if(state.plan.effects.some(effect=>effect.kind==='deployment.ecs'||effect.kind==='custodian.drain'||effect.kind==='deployment.target.release'||effect.kind==='growth.image.initialize'||effect.kind==='growth.image.put'||effect.kind.startsWith('template.'))||state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))fail();
-    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    await actors(tx,state);if((effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId)&&!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state,actor);
     // Repeat after awaited authority/clock reads. Final transport calls this
     // after preparation and directly before its one outbound attempt.
-    await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+    await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state,actor);
     if(effect.kind==='deployment.vercel'){
      if(!tx.lockDeploymentTarget||!tx.assertDeploymentTargetAdmission||!tx.readDeploymentTarget||!tx.insertDeploymentTarget||!tx.replaceDeploymentTarget)fail();
      const key=nativeDeploymentKey(effect);await tx.lockDeploymentTarget!(key);await tx.assertDeploymentTargetAdmission!(key);const previous=await tx.readDeploymentTarget!(key);
      deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);
      if(previous)await tx.replaceDeploymentTarget!(previous.version,deployment);else await tx.insertDeploymentTarget!(deployment);
-     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state,actor);
     }
     if(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete'){
      const reserve=(effect.kind==='growth.post.publish'?tx.reservePublication:tx.reservePostDeletion)??fail();await reserve.call(tx,binding.actionId,binding.index,effect.kind==='growth.post.publish'?effect.target.draftId:effect.target.postUrn);
      // Uniqueness can wait on another transaction; authority and expiry must
      // still hold after that wait before committing any send reservation.
-     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state);
+     await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state,actor);
+    }
+    if(effect.kind==='growth.schedule.change'){
+     if(!tx.applyGrowthSchedule)return fail();
+     const source=postingSourceSchema.parse(await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId,effect.target.imageUploadActionId));
+     await timely(tx,state,actor);
+     await tx.applyGrowthSchedule(binding.actionId,binding.index,effect,source.draft.updatedAt);
+     // Only the exact deliberate mutation may differ during post-write checks.
+     // Expiry, revocation or any other source change rolls this SAME tx back.
+     await timely(tx,state,actor,{effectId:effect.id,source});
     }
    });
    if(observations.get(proof)!==binding)fail();
