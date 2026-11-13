@@ -1,0 +1,68 @@
+{
+  "scope": "Image Task2 LOCAL backend current-identity intake, proposal/recovery and private review",
+  "actualPostgres": {
+    "cases": 202,
+    "priorCases": 193,
+    "newCurrentImageIdentitySourceCases": 9,
+    "fixture": "/private/tmp/axiom-platform-pg-pjy_08dx",
+    "stopped": true,
+    "imageAuthority": "Actual current User/DesktopSessionRecord/accepted OrgMembership SQL and actual connection metadata rows. Private caller principal, synthetic admin configuration/key/decoder/upload-profile qualification; no HTTP/HMAC possession or human/live identity acceptance for the new image service.",
+    "coverage": [
+      "Positive exact intake/two-child proposal/private preview/distinct synthetic-principal review",
+      "Self-review and another creator preparation refusal; generic image claim unavailable",
+      "Missing real suppliers and metadata-only original artifact/action recovery",
+      "Revoked session/current connection revision refusal before key access",
+      "Allowlist revocation after awaited decoder and final private profile check",
+      "Lost committed intake/proposal acknowledgements without repeat decoding/key access or renewed review",
+      "Key rotation during private preview qualification",
+      "Actual DB connection expiry during bounded decode"
+    ],
+    "allEnumeratedSourceHashesStillMatch": true
+  },
+  "redEvidence": {
+    "missingService": "/private/tmp/axiom-image-artifact-service-red.log",
+    "fixtureRequiredOwner": "/private/tmp/axiom-platform-pg-6ub_jotx:193pass/6fail",
+    "fixtureOwnerUniqueness": "/private/tmp/axiom-platform-pg-bo916jql:194pass/6fail",
+    "realCurrentnessGaps": "/private/tmp/axiom-platform-pg-klioa9sg:198pass/2fail"
+  },
+  "fixes": [
+    "Retain private key-current validation around the entire awaited preview/review/proposal scope",
+    "Final current source/people validation after awaited profile checks; rollback stale proposal",
+    "Owned source fixtures honor actual required/unique owner columns without weakening schema or tests"
+  ],
+  "acceptedChecks": {
+    "ordinaryPassed": 589,
+    "sqlOptinsSkippedOnlyInOrdinaryRun": 202,
+    "pureInjectedServiceChecks": 5,
+    "rootNativeTypes": "PASS",
+    "logs": [
+      "/private/tmp/axiom-image-artifact-authority-shared.log",
+      "/private/tmp/axiom-image-artifact-authority-final-types.log",
+      "/private/tmp/axiom-image-artifact-service-unit.log"
+    ]
+  },
+  "sourceRules": [
+    "Artifact ID is derived server-side from the actual private principal and original random UUID reference using the existing domain-separated helper; the reference is correlation only, never authority",
+    "No caller creator/author/profile/recipient/credential selection is accepted",
+    "Exact existing references return historical metadata without re-decoding, replacing, renewing or replaying",
+    "Missing qualified decoder/key/upload-profile sources keep real intake/render/send unavailable",
+    "Key copies and failed previews are cleared; JavaScript erasure or OS isolation is not claimed"
+  ],
+  "requiredNext": [
+    "Actual bounded decoder source/profile qualification",
+    "Approved official LinkedIn protocol facts and qualified native initializer/PUT transport/private observations",
+    "Prepared authenticated HTTP/client/UI and later confirmed-media post lineage",
+    "Complete family/batch audit/build/independent review/green PR",
+    "All real runtime/key/installation/security/production requirements"
+  ],
+  "productionChanged": false,
+  "sourceHashes": {
+    "lib/governance/platform/imageArtifactService.ts": "98c00623dac81696d00d91f449e187ec6353c7614336e343faa676d618484aaa",
+    "lib/governance/platform/preparationReference.ts": "fc3896408b9471e2b7c5d74fdb77ce763a636257694790be7d30c18460d42f16",
+    "lib/governance/platform/actionStore.ts": "d6771c6e57cf00db0e1f263901131b6216e391e99e46cd85b644d1a11899d0a2",
+    "lib/governance/platform/sqlRepository.ts": "865e7e015b331ac3072897599a266ee37d8a1cfcc2b39db408c9c683282fcf0a",
+    "lib/governance/platform/__tests__/imageArtifactService.test.ts": "10777d1fe73da583e1f6bc149e49e5941c707858a5a6467db60d50777c4aeeea",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "169e2f71acdbfadb22353553433fdc40644062a6fd9889bfcd86b3b76c0fa506",
+    "scripts/run-platform-governance-postgres.py": "ee67a547ca76adf0c66c0fc1126359393c96c6af9cabc986943fbb503aa01857"
+  }
+}

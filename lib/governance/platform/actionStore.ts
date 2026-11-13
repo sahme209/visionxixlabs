@@ -34,6 +34,7 @@ import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type Plat
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction extends Partial<DeploymentLiabilityTransaction>{
  imageStorage?:ReturnType<typeof createImageStorageSql>;
+ readImageConnection?(id:string):Promise<unknown>;
  readImageBinding?(id:string):Promise<Readonly<ImageUploadBinding>|null>;
  templateStorage?:ReturnType<typeof createTemplateStorageSql>;
  readTemplateBinding?(id:string):Promise<Readonly<TemplateExecutionBinding>|null>;

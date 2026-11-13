@@ -42,6 +42,7 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
   const check=(id:string)=>{if(locked!==id)fail()};
   const tx:OperationalDelegationTransaction & SettingsArtifactTransaction & EcsPreparationTransaction & CustodianDrainTransaction & CustodianIntentTransaction & CustodianClosureTransaction & DeploymentRecoveryTransaction={
    imageStorage:createImageStorageSql(sql,()=>locked),
+   async readImageConnection(id){if(!locked||typeof id!=='string'||!id||id.length>256)fail();const rows=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"linkedinUrn","organizationUrn",scopes,status,"expiresAt","updatedAt" FROM "LinkedInAccountConnection" WHERE id=$1 FOR SHARE',id);if(rows.length!==1)fail();return rows[0]},
    async readImageBinding(id){check(id);const rows=await sql.$queryRawUnsafe<Array<{binding:unknown}>>(`SELECT "detailJson"->'imageBinding' AS binding FROM "PlatformGovernanceEvent" WHERE "actionId"=$1 AND kind='proposed' AND "detailJson" ? 'imageBinding' LIMIT 2`,id);if(!rows.length)return null;if(rows.length!==1)fail();return imageBindingForParent(rows[0].binding,readPlatformAction(await tx.read(id)),id)},
    templateStorage:createTemplateStorageSql(sql,()=>locked),
    ...createCustodianDrainSqlMethods(sql,()=>tx,check),

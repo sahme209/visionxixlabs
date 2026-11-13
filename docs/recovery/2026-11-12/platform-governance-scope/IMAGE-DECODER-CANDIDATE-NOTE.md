@@ -1,0 +1,5 @@
+# Existing decoder candidate — not qualified
+
+Local cached package metadata identifies Sharp 0.35.5, Apache-2.0, Node >=20.9.0; package SHA256 ad4a2535d72eb638053a38867b1abf43c328cd1c1dbae5cf4172d498365a8b97. The optional Darwin ARM64 native module exists locally. This was ordinary file/metadata inspection only: no import, native module execution, install, network or customer image access.
+
+This is a candidate for the required bounded decoder, not proof that image intake/rendering is supported or safe. Next: inspect the actual cached loader/input/full-raster decoding and animation/container behavior, specify hard byte/pixel/allocation/deadline/format limits and a protected fixed worker, then obtain any required design/execution qualification authority before allowing a real profile. A MIME/signature or metadata-only read is insufficient. Do not add a dependency, weaken library validation, fabricate qualification or silently adopt this candidate. The earlier separate public LinkedIn protocol-documentation decision remains pending; these local reads do not consume or replace it.
