@@ -29,6 +29,11 @@ export interface OperationalWorkloadProfileSupplier{
 }
 const fail=():never=>{throw Error('operational_workload_unavailable')};
 interface Verified{binding:OperationalWorkloadBinding;bindingDigest:string;profileDigest:string;replayKey:string;expiresAt:number;validFrom:number}
+/** Suppliers receive only an immutable parsed copy, never the caller's object
+ * or a mutable expected binding they could rewrite during an awaited read. */
+function captureBinding(raw:unknown):OperationalWorkloadBinding{
+ const binding=operationalWorkloadBinding.parse(raw);Object.freeze(binding.workload);return Object.freeze(binding);
+}
 /** Cryptographic candidate unit only, not a workload/provider execution grant.
  * Never returns/stores raw tokens or claims, and never trusts process env or a
  * human-session/static-token fallback. Public/default operational use is closed. */
@@ -41,7 +46,7 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
   await source.assertProfileCurrent(tx,hash,sha256ContentHash(binding));return {value,hash};
  }
  async function current(tx:OperationalWorkloadTransaction,verified:Verified,raw:unknown){
-  signal.throwIfAborted();const binding=operationalWorkloadBinding.parse(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)fail();
+  signal.throwIfAborted();const binding=captureBinding(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)fail();
   const p=await profile(tx,binding);if(p.hash!==verified.profileDigest)fail();
   await assertExecutionWindow(clock,{notBefore:verified.validFrom,expiresAt:Math.min(verified.expiresAt,Date.parse(binding.expiresAt))},signal);
   const afterProfile=await profile(tx,binding);signal.throwIfAborted();if(afterProfile.hash!==verified.profileDigest)fail();
@@ -51,7 +56,7 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
   async authenticate(tx:OperationalWorkloadTransaction,rawToken:unknown,rawBinding:unknown){
    try{
     signal.throwIfAborted();if(typeof rawToken!=='string'||Buffer.byteLength(rawToken)>32768||!/^[-_A-Za-z0-9]+\.[-_A-Za-z0-9]+\.[-_A-Za-z0-9]+$/.test(rawToken))return fail();
-    const binding=operationalWorkloadBinding.parse(rawBinding),p=await profile(tx,binding),now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(binding.expiresAt))return fail();
+    const binding=captureBinding(rawBinding),p=await profile(tx,binding),now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(binding.expiresAt))return fail();
     const {payload,protectedHeader}=await jwtVerify(rawToken,createLocalJWKSet({keys:p.value.keys}),{algorithms:['RS256'],issuer:p.value.issuer,audience:p.value.audience,currentDate:new Date(now),clockTolerance:0,requiredClaims:['iss','aud','sub','jti','iat','nbf','exp','repository','ref','sha','workflow_ref','workflow_sha','run_id','run_attempt','repository_id','repository_owner_id','repository_owner','repository_visibility','event_name','ref_type','runner_environment']});
     if(Object.keys(protectedHeader).some(key=>!['alg','kid','typ','x5t'].includes(key))||protectedHeader.typ!==undefined&&protectedHeader.typ!=='JWT'||typeof protectedHeader.kid!=='string'||protectedHeader.x5t!==undefined&&(typeof protectedHeader.x5t!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(protectedHeader.x5t)))return fail();
     if('job_workflow_ref' in payload||'job_workflow_sha' in payload)return fail();
@@ -67,6 +72,19 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
   },
   async assertCurrent(tx:OperationalWorkloadTransaction,proof:object,binding:unknown):Promise<void>{try{const verified=proofs.get(proof);if(!verified)return fail();await current(tx,verified,binding);if(proofs.get(proof)!==verified)return fail()}catch{return fail()}},
   async assertConsumedCurrent(tx:OperationalWorkloadTransaction,proof:object,binding:unknown):Promise<void>{try{const verified=consumed.get(proof);if(!verified)return fail();await current(tx,verified,binding)}catch{return fail()}},
+  /** Private facts for the ORIGINAL joined authorization owner, not an allow
+   * decision. This does not sample time, mint/consume a proof or reserve a JTI.
+   * The owner must validate the intersection with current human/native bounds,
+   * then re-read these facts after its awaited currentness checks. */
+  async readConsumedTimeWindow(tx:OperationalWorkloadTransaction,proof:object,raw:unknown):Promise<Readonly<{notBefore:number;expiresAt:number}>>{
+   try{
+    signal.throwIfAborted();const verified=consumed.get(proof);if(!verified)return fail();
+    const binding=captureBinding(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)return fail();
+    const p=await profile(tx,binding);signal.throwIfAborted();
+    if(p.hash!==verified.profileDigest||consumed.get(proof)!==verified)return fail();
+    return Object.freeze({notBefore:verified.validFrom,expiresAt:verified.expiresAt});
+   }catch{return fail()}
+  },
   async consume(tx:OperationalWorkloadTransaction,proof:object,binding:unknown){
    const verified=proofs.get(proof);if(!verified)return fail();proofs.delete(proof);
    try{await current(tx,verified,binding);await tx.reserveWorkloadIdentity(verified.replayKey,verified.binding.actionId,verified.binding.manifestDigest);await current(tx,verified,binding);

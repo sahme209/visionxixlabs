@@ -1,6 +1,6 @@
 import {beforeAll,it,expect,vi} from 'vitest';
 import {generateKeyPair,exportJWK,SignJWT} from 'jose';
-import {createOperationalWorkloadIdentity} from '../workloadIdentity';
+import {createOperationalWorkloadIdentity,type OperationalWorkloadTransaction,type OperationalWorkloadBinding} from '../workloadIdentity';
 const at=Date.parse('2026-11-12T00:00:00Z'),seconds=at/1000,d='a'.repeat(64),commit='b'.repeat(40),actionId='platform_action_11111111-1111-4111-8111-111111111111';
 const workload={repository:'sahme209/visionxixlabs',ref:'refs/heads/main',commit,workflowCommit:commit,workflowPath:'.github/workflows/axiom-deploy-aws-ecs.yml',workflowSha256:d,runId:'12345',attempt:1};
 const binding={actionId,manifestDigest:d,workload,expiresAt:new Date(at+300000).toISOString()};
@@ -10,7 +10,7 @@ function claims(){return {iss:'https://token.actions.githubusercontent.com',aud:
 async function token(change:Record<string,unknown>={},header:Record<string,unknown>={}){return new SignJWT({...claims(),...change}).setProtectedHeader({alg:'RS256',kid:'synthetic-key',...header}).sign(keys.privateKey)}
 function fixture(){let now=at;const reserved=new Set<string>(),reserve=vi.fn(async(key:string)=>{if(reserved.has(key))throw Error('replayed');reserved.add(key)}),tx={now:async()=>now,reserveWorkloadIdentity:reserve};
  const profile={format:1,issuer:'https://token.actions.githubusercontent.com',audience:'axiom-synthetic-release',subject:claims().sub,repository:workload.repository,repositoryId:'123',repositoryOwnerId:'456',workflowPath:workload.workflowPath,workflowCommit:commit,workflowSha256:d,maximumLifetimeSeconds:300,keys:[{...publicKey,alg:'RS256',use:'sig',kid:'synthetic-key'}]};
- const source={readProfile:vi.fn(async():Promise<unknown>=>structuredClone(profile)),assertProfileCurrent:vi.fn(async()=>{})},clock=vi.fn(async()=>({earliest:now,latest:now})),controller=new AbortController(),identity=createOperationalWorkloadIdentity(source,clock,controller.signal);return {tx,reserve,reserved,profile,source,clock,controller,identity,setNow:(n:number)=>{now=n}};
+ const source={readProfile:vi.fn(async(_tx:OperationalWorkloadTransaction,_binding:OperationalWorkloadBinding):Promise<unknown>=>structuredClone(profile)),assertProfileCurrent:vi.fn(async()=>{})},clock=vi.fn(async()=>({earliest:now,latest:now})),controller=new AbortController(),identity=createOperationalWorkloadIdentity(source,clock,controller.signal);return {tx,reserve,reserved,profile,source,clock,controller,identity,setNow:(n:number)=>{now=n}};
 }
 it('verifies the actual signed synthetic JWT and issues only an opaque identity proof consumed once',async()=>{
  const f=fixture(),proof=await f.identity.authenticate(f.tx,await token(),binding);expect(JSON.stringify(proof)).toBe('{}');expect(f.reserve).not.toHaveBeenCalled();
@@ -82,4 +82,44 @@ it('retains the replay reservation if the private interval expires while reserva
 it('honors a shorter original action deadline independently of token expiry',async()=>{
  const f=fixture(),short={...binding,expiresAt:new Date(at+60000).toISOString()};f.clock.mockResolvedValue({earliest:at,latest:at+60000});
  await expect(f.identity.authenticate(f.tx,await token(),short)).rejects.toThrow();expect(f.reserve).not.toHaveBeenCalled();
+});
+
+it('resolves only the original privately consumed JWT window without another clock decision or replay claim',async()=>{
+ const f=fixture(),short={...binding,expiresAt:new Date(at+60000).toISOString()},proof=await f.identity.authenticate(f.tx,await token(),short);
+ const consumed=await f.identity.consume(f.tx,proof,short),reads=f.clock.mock.calls.length;
+ // Deliberately make any independent clock read fail. The joined owner, not
+ // this metadata resolver, must intersect these bounds with its other lives.
+ f.clock.mockRejectedValue(Error('independent clock must not run'));
+ const window=await f.identity.readConsumedTimeWindow(f.tx,consumed,short);
+ expect(window).toEqual({notBefore:at,expiresAt:at+60000});expect(Object.isFrozen(window)).toBe(true);
+ expect(f.clock.mock.calls.length).toBe(reads);expect(f.reserve).toHaveBeenCalledOnce();
+ await expect(f.identity.readConsumedTimeWindow(f.tx,proof,short)).rejects.toThrow('operational_workload_unavailable');
+ await expect(f.identity.readConsumedTimeWindow(f.tx,structuredClone(consumed),short)).rejects.toThrow('operational_workload_unavailable');
+ await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,{...short,workload:{...workload,runId:'999'}})).rejects.toThrow('operational_workload_unavailable');
+ expect(f.reserve).toHaveBeenCalledOnce();
+});
+
+it('does not expose consumed bounds after profile substitution, revoked qualification or cancellation',async()=>{
+ const f=fixture(),proof=await f.identity.authenticate(f.tx,await token(),binding),consumed=await f.identity.consume(f.tx,proof,binding);
+ f.profile.maximumLifetimeSeconds=299;
+ await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');
+ f.profile.maximumLifetimeSeconds=300;f.source.assertProfileCurrent.mockRejectedValueOnce(Error('private profile revoked'));
+ await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');
+ f.source.readProfile.mockImplementationOnce(async()=>{f.controller.abort();return structuredClone(f.profile)});
+ await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');
+ expect(f.reserve).toHaveBeenCalledOnce();
+});
+
+it('prevents a profile supplier from rewriting the expected binding during verification',async()=>{
+ const f=fixture(),original=f.source.readProfile.getMockImplementation()!;
+ f.source.readProfile.mockImplementationOnce(async(...args)=>{
+  const supplied=args[1];
+  try{Reflect.set(supplied.workload,'runId','999')}catch{}
+  try{Reflect.set(supplied,'expiresAt',new Date(at+600000).toISOString())}catch{}
+  return original(...args);
+ });
+ // A supplier cannot change the binding used to validate the signed claims.
+ const proof=await f.identity.authenticate(f.tx,await token(),binding),consumed=await f.identity.consume(f.tx,proof,binding);
+ expect(await f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).toEqual({notBefore:at,expiresAt:at+120000});
+ expect(binding.workload.runId).toBe('12345');
 });
