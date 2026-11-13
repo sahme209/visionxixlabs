@@ -47,3 +47,22 @@ Deliver a scored shortlist (reuse current implementation / adopt / experiment / 
 ## November 11 — first source inventory and offline baseline
 
 [Owner-review assessment](../research/2026-11-11/token-efficiency-assessment.md) records existing facilities, a frozen public-only retrieval baseline and eight public repository HEAD/licence-metadata observations.39/42expected-source agreement; selected-entry serialization772–3,070UTF8bytes, not full SDK payload, token count, cost or savings. No model call or new dependency. Candidate versions/licences/transitives/telemetry/security and paid representative experiments remain unqualified; no adoption follows automatically. The original measurement/quality/authority requirements above remain binding.
+
+
+## Hybrid task fulfillment — owner addition, November 12
+
+Evaluate replacing unnecessary inference with approved deterministic/retrieval/tool implementations while preserving equivalent customer outcomes and all Governance controls. Reuse existing Axiom code first; evaluate public/free repositories, libraries/plugins and verified sources under the adoption gates above, not automatic runtime installs or trusted instructions. Benchmark quality-adjusted actual model/tool/compute cost. Evaluate a consistent disclosed customer service-usage tariff independently of internal fulfillment cost, with real model tokens and service/tool usage recorded separately. No fabricated AI usage or assumed1.5x/2x rate. See [the master-plan requirement](axiom-master-action-plan.md#hybrid-task-fulfillment-and-usage-economics--owner-addition-november-12). Planning only; no price, billing, external-read, dependency or runtime authority changes.
+
+
+## November12 — hybrid reuse assessment (no new external reads)
+
+[Source-backed reuse assessment](../research/2026-11-12/hybrid-fulfillment-reuse-assessment.md) traces the default deterministic support path and separate explicit governed AI action, plus existing impact/policy/readiness/drift/proposal kernels. Recommend reuse before dependencies; module-level candidates are not universal availability. Prior frozen baseline remains unchanged. No model/token/cost savings measurement, installation, new provider read, billing or production authority.
+
+
+### November12 existing-context measurement
+
+Source-bound local measurement of existing retrieval/top-five prompt assembly is recorded in ../research/2026-11-12/retrieval-context-byte-measurement.md. Six public questions measure UTF-8bytes only, against a hypothetical all-entry prompt; no current-route improvement, model-token/cost reduction or quality equivalence is claimed. Retain existing facilities before adopting a library. No model/provider/database/billing/production action occurred.
+
+
+### Gap-time coding token-efficiency assessment — no adoption
+Source-bound research and one synthetic arithmetic measurement are saved in docs/research/2026-11-12/coding-quote-efficiency-assessment.md/json/procedure.txt. Current exact-request/quote, cache:none, model-currentness and atomic allowance facilities should be reused before adding libraries. In one invented-rate example, halving4096input tokens to2048changes a fixed4096-output reservation18→17cents, not50%; this is neither production pricing, actual usage/cost nor measured savings. No tokenizer/provider/model/customer read, dependency, runtime, billing or production change. Quality-equivalent real model benchmarks and all adoption gates remain open. Primary image protocol consent/real qualification remains pending; full goal stays active.

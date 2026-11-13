@@ -1,0 +1,7 @@
+# Current settings source — bounded public documentation request
+
+The approved local settings implementation requires an independently qualified current metadata supplier. The prior three-page grant covered PATCH/create/general behavior and is consumed. Its findings do not establish a safe read contract, pagination completeness, redaction, or Config/Secret visibility mapping. No real supplier should be inferred from the prepared client or caller receipt references.
+
+Requested additional scope: official Vercel documentation search and at most three public documentation pages covering (1) project environment-variable listing/pagination and metadata/redaction; (2) exact variable metadata lookup and project/team/custom/branch scope; (3) Config/Secret visibility and encrypted/plain representation. Prefer pages resolving several questions; record unsupported details as unresolved. No account/API calls, credentials, variable values, download/install, setting/flag change, deployment or spending. This does not qualify live behavior, race guarantees, custody or a default profile and does not authorize existing-setting updates.
+
+After approval: record exact public sources and a source-backed read-adapter design within the already-approved local code/test scope. Missing provider semantics remain refusal. Private endpoint/custody/currentness/profile qualification stays separate. Other authorized local work may continue while this request is pending.

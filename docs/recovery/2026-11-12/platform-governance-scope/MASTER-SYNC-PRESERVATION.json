@@ -1,0 +1,25 @@
+{
+  "backup": "work/plan-before-platform-build-20261112-141550",
+  "files": {
+    "docs/product/axiom-master-action-plan.md": {
+      "beforeSha256": "6e204b77855d4346547a85d2507544c100ef3195cad671da5f5aec495a06ad5c",
+      "afterSha256": "f1fdc4e1a4ade2da1b4bf842b4d0e9586d934a2c1f8613b34ea41dd58e8c5a56",
+      "priorBytesPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "beforeSha256": "9e98a3a0e167357324cb4303c3538b4672de162f181fec8e120ce2ee4b75b7e9",
+      "afterSha256": "ebb6dda05e01b5763e175bff18cf7d04e83b20567cdf5a328c507472e20a9c4c",
+      "priorBytesPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "beforeSha256": "d58cad6f8749d43f972172103170e269e05357b5fc7934dd4bec1cfc1895d306",
+      "afterSha256": "65563444cdebad8c140558f70fb3e1a7c8ff4a78c0a07e5f1a6a918805dd916a",
+      "priorBytesPreserved": true
+    },
+    "CODEX_HANDOFF.md": {
+      "beforeSha256": "aced7fdb3a0b20d9e9aac6de06f0b38fa4c9de2fbe293c218a73fd673d7d3487",
+      "afterSha256": "8269f1c6d47d5de8c0c7ffcf82e351300e06557fb51dc62f067909477eda41d6",
+      "priorBytesPreserved": true
+    }
+  }
+}

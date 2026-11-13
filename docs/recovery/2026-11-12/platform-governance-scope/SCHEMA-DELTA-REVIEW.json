@@ -1,0 +1,15 @@
+{
+  "base": "0caaaaab6c809f2188d1a4c8fdd64980e6ef35f0",
+  "previousSchemaSha256": "3506b845ca355b6485fce4a4600957fc65c7f6b1b2a96ca886e4264d385d21ae",
+  "currentSchemaSha256": "828d77dd15e3bcec557608e026afbe05f895fdfee6ac0b7f57a3fc982d1cec6e",
+  "existingModelsSemanticallyUnchanged": 175,
+  "addedModels": [
+    "PlatformGovernanceAction",
+    "PlatformGovernanceEffect",
+    "PlatformGovernanceEvent"
+  ],
+  "totalModels": 178,
+  "documentationExcludedOnly": true,
+  "qualification": false,
+  "productionChanged": false
+}

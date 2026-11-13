@@ -1,0 +1,76 @@
+{
+  "scope": "Approved local correction of the two final whole-batch review findings; not live qualification",
+  "base": "8cc36828",
+  "artifactChecks": {
+    "log": "/private/tmp/axiom-acyclic-acceptance.log",
+    "passed": 25,
+    "actualCompilerAndSameCompiledConsumer": true,
+    "nativeTokenServerProviderQualification": "synthetic; HTTP intercepted"
+  },
+  "focusedCombined": {
+    "log": "/private/tmp/axiom-final-review-corrections-focused.log",
+    "passed": 89,
+    "overlap": true
+  },
+  "sql": {
+    "root": "/private/tmp/axiom-platform-pg-pptetzx4",
+    "passed": 228,
+    "failed": 0,
+    "pending": 0,
+    "database": "actual isolated PostgreSQL",
+    "stopped": true,
+    "providerCredentialNativeProfileAndPeople": "synthetic; actual compiled-pair hashes and signed fixture JWT; native HTTP intercepted"
+  },
+  "initialObservationFixtureFailures": {
+    "root": "/private/tmp/axiom-platform-pg-gz141anp",
+    "passed": 226,
+    "failed": 2,
+    "cause": "Fixture skipped reserved-to-accepted native transition; corrected to actual qualified outcome-source composition, not a weaker backend guard."
+  },
+  "subsequentFixtureCorrection": "Frozen synthetic profile expiry; current-source checks correctly rejected changing expiry. No timeout/assertion/guard was weakened.",
+  "rootTypes": "/private/tmp/axiom-final-review-corrections-types.log",
+  "desktopTypes": "/private/tmp/axiom-corrections-desktop-types.log",
+  "frontendBuild": "/private/tmp/axiom-corrections-desktop-build.log",
+  "fullSuite": {
+    "root": "/private/tmp/axiom-current-full-suite-ohyr9be3",
+    "passed": 18910,
+    "failed": 0,
+    "failedSuites": 0,
+    "pending": 1142,
+    "total": 20052,
+    "sourceUnchanged": true,
+    "noActualProviderOrPgOptins": true
+  },
+  "productionBuild": {
+    "head": "e701b064b2727fd456731fcfd49e704a78ad2053",
+    "sourceCount": 13352,
+    "networkDenied": true,
+    "databaseUrlSupplied": false,
+    "loadedEnvironmentFilesAbsent": true,
+    "trackedExampleOnly": true,
+    "scope": "ordinary local production compilation only; no native issuer launch/deploy",
+    "exitCode": 0,
+    "buildLogSha256": "e206ccc3b88cab3413a504ef4d3976ef3a2749a62d26e617724e0215b9fa4ba3",
+    "sourceUnchanged": true,
+    "root": "/private/tmp/axiom-image-combined-build-9ecot_sg",
+    "staticPages": 304,
+    "archiveSha256": "b4a3e4d24db50e66e50150077183a27efb7c86c11855694fa8d352da211917ed",
+    "sourceManifestSha256": "be5d2034c452bf778553d348a200a5e7aee0c57873b6c18991cd009c449400ac"
+  },
+  "independentReview": "WHOLE-BATCH-FINAL-SOURCE-REVIEW.md; no remaining critical/important finding in inspected source",
+  "realQualification": false,
+  "productionChanged": false,
+  "verifiedRuntime": "e701b064b2727fd456731fcfd49e704a78ad2053",
+  "pythonCli": {
+    "passed": 36,
+    "scope": "unchanged Python CLI, current source, no network/provider calls"
+  },
+  "mainPrePr": {
+    "sha": "0caaaaab6c809f2188d1a4c8fdd64980e6ef35f0",
+    "all10Checks": "success",
+    "publicRepository": true,
+    "overlappingFeaturePr": false,
+    "existingUnrelatedDependabotPr": 318,
+    "vercelGitAutoDeploy": false
+  }
+}

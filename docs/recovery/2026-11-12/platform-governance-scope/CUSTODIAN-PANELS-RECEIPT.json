@@ -1,0 +1,17 @@
+{
+  "scope": "prepared unregistered local React workflow; no native visual acceptance",
+  "sourceHashes": {
+    "desktop/src/components/CustodianControlPanel.tsx": "0dd17ee5b9d9e2e58c305c3d0e1465f0f137dd5baae34a70e41402aea499559b",
+    "desktop/src/components/CustodianHistoryPanel.tsx": "960b8c94b6153f9895fa5edb8a1e9d23fed4b33e59227cbec6b623a19525aa6c",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "3fdd9fb5f6e09714eefd726f26241949de606f6dc54b114f2af3cf73d44c0a25",
+    "lib/desktop/__tests__/custodianControlPanel.test.ts": "b6ed149d21e048b86e978a07c30fd46e6ea46e6b13215f5ce3c7871a006dc7a2",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "a2cf8d7943633140767eaf58b6b01e1f5e58d2421b61420ea26d83eff77c3bcb"
+  },
+  "initialCombinedChecks": 27,
+  "expandedPanelChecks": 9,
+  "overlap": 6,
+  "rootTypes": "pass before final three test-only additions",
+  "desktopTypesAndFrontendBuild": "pass before final three test-only additions",
+  "database": "no SQL changes; prior107 actual isolated SQL cases retained with synthetic provider/source qualification",
+  "productionChanged": false
+}

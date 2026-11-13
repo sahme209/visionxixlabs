@@ -41,6 +41,7 @@ export async function POST(req: NextRequest, ctx: { params: Promise<{ id: string
   });
 
   const httpStatus = outcome.kind === "success" ? 200
+    : outcome.kind === "governance_required" || outcome.kind === "outcome_unknown" ? 409
     : outcome.kind === "skipped_disabled" ? 202
     : outcome.kind === "skipped_not_connected" ? 412
     : outcome.kind === "token_expired" ? 401

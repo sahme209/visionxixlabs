@@ -1,0 +1,16 @@
+{
+  "scope": "Private one-attempt workload orchestration, not registered/default/live enabled",
+  "red": "missing workloadRunner module",
+  "focusedChecks": 2,
+  "rootTypes": "PASS",
+  "actualPostgresChecks": 74,
+  "fixture": "/private/tmp/axiom-platform-pg-8z9qi0af",
+  "fixtureReceiptSha256": "18976eac941f8fc66eb1958e03a28d805a9232fb60f2fd52a8ff84268893f3b8",
+  "stopped": "pg_ctl: no server running",
+  "sourceHashes": {
+    "lib/governance/platform/operations/workloadRunner.ts": "10061ca8725ad438b8ca90a76c58ea4a600ac0775a708ad7a122c0cefe42ed71",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "509af80816ff1df31f96c7c8c8c4e9ead618ec3e3afabc1ac9ce3fd3444b3315"
+  },
+  "qualification": "Actual SQL/current humans/JOSE and installed STS/ECS with native network intercepted; profile/custody/IAM/native/provider evidence remains synthetic",
+  "productionChanged": false
+}

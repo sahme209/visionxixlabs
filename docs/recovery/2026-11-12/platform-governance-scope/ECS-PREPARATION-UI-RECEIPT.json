@@ -1,0 +1,17 @@
+{
+  "scope": "prepared unregistered requester metadata form and workflow routing",
+  "sourceHashes": {
+    "desktop/src/components/OperationalEcsPreparationPanel.tsx": "9f10c69a8efaa9545d8b89c21477daee02e05143fd08a3f4adbbaccd76553461",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "9b7b09b4313c319fed9de879b4c5fc448b7de075d2020ef528a24a93f1f06fd1",
+    "lib/desktop/__tests__/operationalPreparationPanel.test.ts": "667da6560beefbe31e4b191313ec391a1fd03386f5043f036eda1bf14d95e325",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "df8df7fbed7e62041bde692400445ed5d307bba0be4d7d17b61cf904e434ce55"
+  },
+  "checks": 31,
+  "suites": 2,
+  "rootTypes": "PASS",
+  "desktopFrontendTypesAndBuild": "PASS",
+  "nativeRenderedAcceptance": false,
+  "sourceQualification": "no qualified real default supplier; entered references are not authority",
+  "database": "unchanged; prior110 actual isolated SQL cases retain synthetic source/provider scope",
+  "productionChanged": false
+}

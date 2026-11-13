@@ -1,0 +1,10 @@
+{
+  "backup": "work/platform-handoff-matrix-sync-20261112T204433Z",
+  "originalSha256": {
+    "CODEX_HANDOFF.md": "8269f1c6d47d5de8c0c7ffcf82e351300e06557fb51dc62f067909477eda41d6",
+    "docs/product/axiom-master-action-plan.md": "b6d5939e42fc87bc941bb4997488a28f4b093e107ea1131449dcce1c59b7cfcc",
+    "docs/product/current-execution-board.md": "ebb6dda05e01b5763e175bff18cf7d04e83b20567cdf5a328c507472e20a9c4c"
+  },
+  "preserved": true,
+  "method": "whole old documents reconstruct after stripping appended checkpoint and reverting single historical heading label"
+}

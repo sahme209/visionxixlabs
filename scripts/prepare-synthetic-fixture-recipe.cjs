@@ -3,9 +3,10 @@
 // invocation requires the separately authorized artifact-generation packet.
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto'),child=require('node:child_process'),os=require('node:os');
 const hash=b=>crypto.createHash('sha256').update(b).digest('hex');
-// Reviewed Prisma 7 generator/config-only delta; all 175 models are unchanged.
+// Reviewed two appended image custody models and one parent inverse relation; existing model semantics are unchanged.
+// See docs/recovery/2026-11-12/platform-governance-scope/IMAGE-STORAGE-SCHEMA-REVIEW.md.
 // Historical packet authority intentionally retains its original schema/source pins.
-const SCHEMA='3506b845ca355b6485fce4a4600957fc65c7f6b1b2a96ca886e4264d385d21ae';
+const SCHEMA='436c0991b65b878aba7754408b7d6bc5afeaf78e4e4f7d52333cc0cec31b6cf4';
 const ENGINE='6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1';
 const CLI_VERSION='7.10.1',ENGINE_VERSION='d1b3f377ca835d73fd50954a5e22128b9ebdd6b8';
 const CLI_ENTRY='763611d694b08952ced7c5abb3b9d61906fed0a8997d9214ac918a43928e0fc8',CLI_BODY='4ab8a95f0072dfa7c3db869a5ff8f775499f22c346a4556991c0ae28eb1220fd';

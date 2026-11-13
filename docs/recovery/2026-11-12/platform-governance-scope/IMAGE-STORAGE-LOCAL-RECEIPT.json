@@ -1,0 +1,58 @@
+{
+  "scope": "Image Task2 actual transactional storage and proposed local schema; current authenticated intake/reviewer service NOT complete",
+  "actualPostgres": {
+    "tests": 193,
+    "newImageStorageCases": 8,
+    "priorFamilyCases": 185,
+    "fixture": "/private/tmp/axiom-platform-pg-0wjkrnl7",
+    "stopped": true,
+    "allEnumeratedSourceHashesStillMatch": true,
+    "proof": "Real PostgreSQL transactions, uniqueness, event rollback and CAS. Image parent/reviewer/child states are explicitly synthesized fixtures; native/decoder/key/provider qualification is synthetic, not real current-image authority acceptance."
+  },
+  "redEvidence": {
+    "missingStorage": "/private/tmp/axiom-platform-pg-ngumfy9h:185pass/6fail",
+    "priorBindingMarker": "/private/tmp/axiom-platform-pg-3voi2vpc:192pass/1fail",
+    "priorFullBinding": "/private/tmp/axiom-platform-pg-42l85_ih:192pass/1fail"
+  },
+  "acceptedChecks": {
+    "ordinaryPassed": 584,
+    "sqlOptinsSkippedOnlyInOrdinaryRun": 193,
+    "rootNativeTypes": "PASS",
+    "generatedModelAndClientChecks": 3,
+    "mockSchemaRecipeChecks": 22,
+    "logs": [
+      "/private/tmp/axiom-image-storage-accepted-shared.log",
+      "/private/tmp/axiom-image-storage-accepted-types.log",
+      "/private/tmp/axiom-image-generated-client-current.log",
+      "/private/tmp/axiom-image-schema-pin-green.log"
+    ]
+  },
+  "implemented": [
+    "Immutable encrypted artifact and canonical parent binding in actual SQL",
+    "Permanent clone-resistant initializer reservation before credential boundary; malformed prior metadata cannot masquerade as valid tracked history",
+    "Atomic encrypted grant/initializer effect/event recording",
+    "Original-session once-only PUT reservation/CAS and insert-only typed result",
+    "Atomic result/terminal/event rollback and lost committed claim exclusion",
+    "Two proposed local models; all193old model semantics preserved except one inverse relation; cached client refreshed"
+  ],
+  "requiredNext": [
+    "Current authenticated creator intake, connection/source and reviewer-only-through-action reads with separately qualified decoder/key ports",
+    "Positive and revocation/expiry/current-source authority journeys using actual identity SQL",
+    "Qualified protocol/decoder/native adapter and private observations",
+    "Prepared image client/UI and later-post compatible uploaded-media lineage",
+    "Whole-three-family independent review/full source build/CI/PR and all real-world gates"
+  ],
+  "productionChanged": false,
+  "sourceHashes": {
+    "lib/governance/platform/imageStorageSql.ts": "f7098de8d227f84dde8cbaca6d155aa9985a2ea6fc7a5f8df276f814259cad45",
+    "lib/governance/platform/imageCustodyCodec.ts": "ed956f3db8eeaf71d40ce779dd27fedc97673402db910f54532f56856943d0f9",
+    "lib/governance/platform/actionStore.ts": "56cc278c7e18d1ecea988dfed1b3e965a21990a44de656b074b0b3ab2da3845c",
+    "lib/governance/platform/sqlRepository.ts": "4d5c5dc777dbdd056cabbc65e7851904fd57dfe0700851d299f81210ccf7e951",
+    "lib/governance/platform/fixtureSchema.sql": "ecf2c4331ee124d51451f5e4f9770d68eff680fca6d06440bd1fdd2bc9fc42d1",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "f5f16f113bdc5698f48d95211b6258904ee44a86aa1e690158977403c3793e53",
+    "scripts/run-platform-governance-postgres.py": "52b65ae6f38caf945e51d06175db93ef28e85f46e21b38b7fd166dfe15346996",
+    "prisma/schema.prisma": "436c0991b65b878aba7754408b7d6bc5afeaf78e4e4f7d52333cc0cec31b6cf4",
+    "scripts/prepare-synthetic-fixture-recipe.cjs": "5d6ef05242b9fa544b71e477f33efe6084f2783db60b109bf229b6f0a35f60f9",
+    "lib/governance/qualification/__tests__/syntheticFixtureRecipe.test.ts": "b9c8c1758f88cffa2203bd23ffb663d931ecacd13b14e0f131a031a797a121d0"
+  }
+}

@@ -1,0 +1,111 @@
+{
+  "scope": "approved local deployment target liability/typed private request observation/output currentness; no real provider qualification",
+  "sourceHashes": {
+    "lib/governance/platform/deploymentLiability.ts": "9728eed39a1aca96089df064c89f3f0a9eca9e55614d72bc0b7a4f5c048854b0",
+    "lib/governance/platform/deploymentLiabilitySql.ts": "72dcaf05518e785c0ea36228f9ae0dd8cd9002f1c399645ddc63c12dcc357ad6",
+    "lib/governance/platform/actionStore.ts": "9ce60c48617b7cec24b2a293551cec533da2054491d7801b49c69b0545183a7a",
+    "lib/governance/platform/effectExecution.ts": "388e3f8a0f7170b33ea56a981d455f073dcd7b84cfa834233897dd857234d0ce",
+    "lib/governance/platform/requestComposition.ts": "de1f614319048be8f07a218b7c1f521d1c7ebb64b0de3c56223faa284d93e921",
+    "lib/governance/platform/sqlRepository.ts": "fc5201f5b99562e4d99eb32ec59a4a347d5cf67c9a805270c4e64512990096d1",
+    "lib/deploy/provider.ts": "c16507e6eeb87d1690893b1d58c9eb74bcb8076e5f83c14119f4c440fc1ce6d0",
+    "prisma/schema.prisma": "95a56e40ecfac78c6ddb1d2c1ec685c4c9c3151c50e08b7c75daa3c783445ea5",
+    "lib/governance/platform/fixtureSchema.sql": "bf3fc633b0bf3d1c052c844af2977729659c1caa38a332abb7b794088d5e0ecf",
+    "lib/governance/platform/__tests__/deploymentLiability.test.ts": "532ca9f1ca7860621c552f16a55a5a905abb542f7ac05ebf34a42b18a4968cee",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "89ee4e32d9de441fcb9153fe8a8ad82feab5ec3c185ac9d3433f142aeabb3d1f",
+    "scripts/prepare-synthetic-fixture-recipe.cjs": "d89a017b565b7a3ce6e9496774da7f9650fae4504da956e6187d388d2cc72357",
+    "scripts/run-platform-governance-postgres.py": "4b3d9a5273a810bf5ec1e5825e8e624f582f2945b56bad8c005b18e92f6a84f3"
+  },
+  "pureAndFocused": {
+    "initialMissingModuleRed": "/private/tmp/axiom-deployment-liability-red.log",
+    "kernelPassed": 14,
+    "focusedPassed": 75,
+    "focusedLog": "/private/tmp/axiom-deployment-liability-focused-green.log",
+    "schemaMetadataAndDemoPassed": 20,
+    "schemaDemoLog": "/private/tmp/axiom-deployment-schema-demo-checks.log"
+  },
+  "genuineComposedRed": {
+    "root": "/private/tmp/axiom-platform-pg-bfsffovi",
+    "passed": 123,
+    "failed": 3,
+    "reproduced": [
+      "two independently approved actions physically sent to one target",
+      "new action resent after unknown first deployment",
+      "result returned after independent reviewer revocation"
+    ]
+  },
+  "actualSql": {
+    "root": "/private/tmp/axiom-platform-pg-4ipj0tsx",
+    "passed": 129,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "providers": "simulated HTTP; actual HMAC/current SQL/source/proof/receipt/event transactions",
+    "receiptSha256": "acca5c1b722a7706894907fd6bec411691306cf1ca33cecf7a5fc19a45f19d53",
+    "newCases": [
+      "cross-action target serialization with different content",
+      "unknown target exclusion across new request/action",
+      "post-send reviewer revocation preserves accepted evidence and blocks output",
+      "event failure rolls receipt/target observation/parent terminal back atomically",
+      "lost observation acknowledgement retains original accepted receipt with no return/replay",
+      "untracked legacy unknown history blocks a fresh action without backfill/adoption"
+    ]
+  },
+  "strictTypes": {
+    "exitCode": 0,
+    "log": "/private/tmp/axiom-deployment-liability-legacy-types.log"
+  },
+  "schema": {
+    "review": "DEPLOYMENT-LIABILITY-SCHEMA-REVIEW.json",
+    "oldModels": 187,
+    "newModels": 189,
+    "existingModelsEqualExceptTwoInverseRelations": true,
+    "generationRoot": "/private/tmp/axiom-deployment-client-generation-t1e_0xm_",
+    "networkDenied": true,
+    "databaseUrlSupplied": false,
+    "historicalPinsAndQualificationUnchanged": true
+  },
+  "preservedNonProductFailures": [
+    {
+      "root": "/private/tmp/axiom-platform-pg-rvu9qq2_",
+      "cause": "new SQL-test string quoting parse error before cases; fixed test only"
+    },
+    {
+      "root": "/private/tmp/axiom-platform-pg-8uysu_s5",
+      "cause": "new fixture missed private composition import;126pass/2setupfail"
+    },
+    {
+      "root": "/private/tmp/axiom-platform-pg-8bbwluht",
+      "cause": "new fixture missed binding import;126pass/2setupfail"
+    },
+    {
+      "log": "/private/tmp/axiom-deployment-platform-regression.log",
+      "cause": "one legacy provider unit mock lacked the new current-output gate; updated explicit synthetic gate and strengthened typed-receipt assertions; no real authority weakened"
+    }
+  ],
+  "noProductionSchema": true,
+  "noProviderAction": true,
+  "noNewGrantOrCredentialRead": true,
+  "noActivation": true,
+  "remaining": "independently reviewed qualified terminal observation and exact-generation SQL release; metadata history and prepared usable execution/recovery UI/HTTP; other two approved families; final whole-source review/validation/green PR; separately authorized live qualification",
+  "legacyRed": {
+    "root": "/private/tmp/axiom-platform-pg-6p1m8exi",
+    "passed": 128,
+    "failed": 1,
+    "reproduced": "a new action reached intercepted provider transport despite an untracked legacy unknown for the same target; no actual provider called"
+  },
+  "legacyCorrection": "New proposed events carry a server-derived tracking-format marker; legacy proposals are not upgraded. Final admission requires this marker and refuses matching untracked prior claimed/unknown/confirmed actions. A marker is not real host/fleet/source or runtime qualification.",
+  "sharedPlatformRegression": {
+    "log": "/private/tmp/axiom-deployment-platform-regression-green.log",
+    "passed": 466,
+    "skipped": 128,
+    "failed": 0,
+    "scope": "predates the subsequent SQL-only legacy guard; final shared regression recorded separately"
+  },
+  "finalSharedPlatformRegression": {
+    "log": "/private/tmp/axiom-deployment-platform-final.log",
+    "passed": 466,
+    "failed": 0,
+    "skipped": 129,
+    "skippedScope": "owned SQL opt-in cases separately passed in the129case fresh fixture; skips are not ordinary acceptance"
+  }
+}

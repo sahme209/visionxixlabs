@@ -1,0 +1,50 @@
+{
+  "base": "f7dd06a6",
+  "scope": "LOCAL prepared original-session one-use output service only; no real channel/key/native qualification or route registration",
+  "actualPostgres": {
+    "root": "/private/tmp/axiom-platform-pg-v2irae2o",
+    "passed": 179,
+    "failed": 0,
+    "pending": 0,
+    "newDeliveryCases": 11,
+    "stopped": true,
+    "real": "current identity and transactional PostgreSQL",
+    "simulated": "native I/O/private credentials/profiles/keys/clocks/qualified channels; expiry case uses an explicitly seeded synthetic grant"
+  },
+  "red": {
+    "missingDeliveryMethod": "/private/tmp/axiom-platform-pg-a9bicfd0",
+    "fixedTypeNarrowing": "/private/tmp/axiom-template-delivery-types.log"
+  },
+  "validation": {
+    "sharedPassed": 530,
+    "SQLoptinsSkippedInSeparateOrdinaryRun": 179,
+    "log": "/private/tmp/axiom-template-delivery-regression.log",
+    "rootNativeTypes": "PASS",
+    "rootNativeTypesLog": "/private/tmp/axiom-template-delivery-current-types.log",
+    "laterDemoWording": {
+      "passed": 15,
+      "log": "/private/tmp/axiom-template-delivery-demo.log"
+    },
+    "cryptoValidContextCase": "/private/tmp/axiom-template-delivery-codec.log",
+    "productionBuild": "not repeated; final whole-batch validation remains"
+  },
+  "sourceHashes": {
+    "lib/governance/platform/templateExecutionStore.ts": "855ca69e7010b2e7c7acf59e37555ddb716b64ff37f32dbf3e022c6451080484",
+    "lib/governance/platform/templateStorageSql.ts": "aa082942a88d4a673cbd70392052dca2317020084fd623a96b29bb70bb03ce9f",
+    "lib/governance/platform/templateGrantArtifact.ts": "d1f0de965ceaac07154182a44af5182b3a56aedc739cddcb4f5d0b537eb2b0c7",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "0766c116fdca714a805bd545ee2fa2a4e9083aff1e0332e6e7938737ba29fa98",
+    "lib/governance/platform/__tests__/templateGrantArtifact.test.ts": "959f89dd8a26b1ab70259e28f75f1b790e470ef54a45a607504722ce089b42ec",
+    "scripts/run-platform-governance-postgres.py": "125af675be46b55e52b83988a92230021e8f03731a3dceba6578bad6a1292d3d",
+    "lib/demo/demoScenarios.ts": "ce20eb4cdab3dd10b116d72a541f85e90802f9d9a353284e3d74082125f650be"
+  },
+  "remaining": [
+    "Task3 complete legacy helper/caller migration",
+    "prepared authenticated HTTP/client/UI and composed journey",
+    "family validation/image custody/final whole-three-family independent review/mandatory-green PR",
+    "real protection/runtime/source/key/clock/channel/customer qualification and owner production actions"
+  ],
+  "productionChanged": false,
+  "realProviderActions": false,
+  "realSecretsRead": false,
+  "spending": false
+}

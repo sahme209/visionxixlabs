@@ -1,0 +1,73 @@
+{
+  "scope": "Actual isolated PostgreSQL/current identity plus private fixed init/PUT/GET adapter with every HTTP call intercepted; native decoding/keys/profile/custody qualified ports explicitly simulated",
+  "baseHead": "843176fd",
+  "sourceHashes": {
+    "lib/governance/platform/imageExecutionStore.ts": "cb42c913eee1aceb230e32e0689bd81f3bb43ba67798188de285943624343671",
+    "lib/governance/platform/imageStorageSql.ts": "43f90d87f268ea58e260e670e67ca2dac5b75ecbb07c68727adb7093bba15055",
+    "lib/governance/platform/__tests__/imageExecutionStore.test.ts": "35c222fc2266b57491684b76d23788436b389a05bdc3dfe951380751dadecbd7",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "570ceb42f132f1598dae279f0cf5ceacc47f2d70ff3dc65034f6f009c71f0b63",
+    "scripts/run-platform-governance-postgres.py": "46843b5efdfec1fe87685a7019b19a75af0b8322391d09d8bb5c7da7b2b5d1fb"
+  },
+  "actualSql": {
+    "root": "/private/tmp/axiom-platform-pg-9fo51z56",
+    "passed": 220,
+    "failed": 0,
+    "pending": 0,
+    "serverStatus": "stopped; pg_ctl status exit3",
+    "priorPassingCount": 212,
+    "newCases": 8
+  },
+  "fullOrdinarySuite": {
+    "root": "/private/tmp/axiom-current-full-suite-58x3ybha",
+    "passed": 18892,
+    "failed": 0,
+    "pending": 1134,
+    "total": 20026,
+    "failedSuites": 0
+  },
+  "types": "PASS /private/tmp/axiom-image-execution-final-types.log",
+  "sourceBindingLimit": "The SQL runner hashes all platform source and its runner. The ordinary runner binds tracked HEAD/diff; the new execution store/test source files are separately hashed here. Later changes are docs/demo wording, separately tested.",
+  "regressions": [
+    {
+      "fixture": "/private/tmp/axiom-platform-pg-bby3zays",
+      "passed": 212,
+      "failed": 1,
+      "finding": "Legacy confirmed upload without readiness was incorrectly accepted as publishable; current reader now requires exact recorded readiness."
+    },
+    {
+      "fixture": "/private/tmp/axiom-platform-pg-vf4kor8p",
+      "passed": 217,
+      "failed": 1,
+      "finding": "Positive flow completed, but test mistakenly rejected the allowed nonsecret destination origin. Assertion narrowed to the private upload path/token/envelope; no secret leakage assertion removed."
+    },
+    {
+      "fixture": "/private/tmp/axiom-platform-pg-v9gu4acd",
+      "passed": 219,
+      "failed": 1,
+      "finding": "Version changed during final credential validation still permitted one intercepted request. Executor now rechecks fresh actual authority/source/profile after credential validation; corrected220cases pass."
+    }
+  ],
+  "cases": [
+    "Positive reviewed current SQL -> acknowledged init reservation -> credential -> fixed initializer -> atomic encrypted grant/event -> acknowledged PUT claim -> artifact decode/key -> fixed PUT -> exact AVAILABLE GET -> atomic ready result/parent/event -> compatible publication lineage, no replay",
+    "Accepted byte upload with PROCESSING -> durable unknown/no lineage/no poll/no repeat",
+    "Lost initializer claim acknowledgement -> retained claimed hold/no credential or fetch",
+    "Authority loss after result/event statements -> actual rollback with original PUT claim retained",
+    "Requester/reviewer, write-only native read permission, revoked role and final configuration-version checks refuse unauthorized dispatch",
+    "Two competing initialization callers -> one commit/credential/request",
+    "Lost PUT claim acknowledgement -> consumed grant, no artifact/address key or credential/provider access",
+    "Legacy confirmed result lacking readiness remains historical, never upgraded"
+  ],
+  "budget": "One15second execution scope, native attempt clipped by same signal; at most5second separate truthful unknown-recording scope after an acknowledged claim. No retry; recording uncertainty leaves the original durable hold.",
+  "remaining": [
+    "Authenticated execution HTTP/client/panels, typed historical grant/readiness projection and complete user progression",
+    "Further lost-observation and full client/HTTP/HMAC/SQL journeys",
+    "Real decoder/launcher/key/clock/credential/permission/native-profile qualification; defaults remain unavailable",
+    "Whole-three-family source audit/review, frozen production build and exact-head green PR, full master/live gates"
+  ],
+  "productionChanged": false,
+  "externalEffects": "No real provider, key, credential, decoder/worker, account/grant, schema apply, signing/install, push/deploy, inference or spending",
+  "laterDemoWordingChecks": {
+    "passed": 15,
+    "log": "/private/tmp/axiom-image-execution-demo.log"
+  }
+}

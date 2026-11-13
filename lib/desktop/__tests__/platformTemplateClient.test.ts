@@ -1,0 +1,28 @@
+import {it,expect,vi,afterEach} from 'vitest';
+import {createPlatformTemplateClient} from '../../../desktop/src/lib/platformReview';
+import {platformInspectionSchema} from '../../governance/platform/viewContract';
+const id='platform_action_11111111-1111-4111-8111-111111111111',d='a'.repeat(64);
+const config={apiBase:'https://fixture.test',sessionToken:'axm.desk.synthetic'},context={getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}};
+const saved=()=>platformInspectionSchema.parse({actionId:id,status:'proposed',version:0,attemptCount:0,requesterUserId:'requester',reviewerUserId:null,expired:false,plan:{format:1,scope:'platform',digest:d,sourceDigest:d,expiresAt:'2099-01-01T00:00:00Z',effects:[{id:'upload',kind:'template.object.put',target:{accountId:'123456789012',region:'us-east-2',bucket:'bucket',key:'template.yaml',bytesDigest:d}}]},effects:[{id:'upload',status:'not_started'}],authority:'history_only',sourceValidation:'not_checked'});
+const preview={kind:'template.source',actionId:id,planDigest:d,sourceDigest:d,effectId:'upload',bytesDigest:d,yaml:'Resources: {}\n',authority:'review_preview_only'};
+afterEach(()=>vi.unstubAllGlobals());
+it('reads only the exact current template through the fixed paired review transport',async()=>{
+ const http=vi.fn(async()=>Response.json({ok:true,data:preview}));vi.stubGlobal('fetch',http);
+ expect((await createPlatformTemplateClient(context).preview(saved())).ok).toBe(true);
+ expect(http).toHaveBeenCalledExactlyOnceWith('https://fixture.test/api/desktop/platform-governance/review',expect.objectContaining({method:'POST',credentials:'omit',redirect:'error',body:JSON.stringify({operation:'preview_template',actionId:id})}));
+});
+it('rejects substituted bytes/source/action and treats a lost preview as read-only uncertainty',async()=>{
+ const http=vi.fn(async()=>Response.json({ok:true,data:{...preview,bytesDigest:'b'.repeat(64)}}));vi.stubGlobal('fetch',http);const client=createPlatformTemplateClient(context);
+ expect((await client.preview(saved())).ok).toBe(false);http.mockImplementation(async()=>{throw Error('lost')});expect(await client.preview(saved())).toMatchObject({ok:false,outcomeUnconfirmed:false});
+ const record=saved();record.expired=true;http.mockClear();expect((await client.preview(record)).ok).toBe(false);expect(http).not.toHaveBeenCalled();
+});
+it('keeps template saving and original-reference lookup distinct from read-only preview',async()=>{
+ const http=vi.fn(async()=>{throw Error('lost')});vi.stubGlobal('fetch',http);const client=createPlatformTemplateClient(context),requestId='22222222-2222-4222-8222-222222222222';
+ expect(await client.prepare({operation:'upload',accountId:'123456789012',region:'us-east-2',expiresAt:'2099-01-01T00:00:00Z'},requestId)).toMatchObject({ok:false,outcomeUnconfirmed:true});
+ expect(await client.lookup(requestId)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(http).toHaveBeenCalledTimes(2);expect(http).toHaveBeenCalledWith('https://fixture.test/api/desktop/platform-governance/template',expect.objectContaining({credentials:'omit',redirect:'error'}));
+});
+it('accepts only exact canonical bucket metadata and never treats it as observed ownership',async()=>{
+ const savedBucket=saved();savedBucket.plan.effects=[{id:'bucket',kind:'template.bucket.create',target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'}}];savedBucket.effects=[{id:'bucket',status:'not_started'}];
+ const bucket={kind:'template.bucket',actionId:id,planDigest:d,sourceDigest:d,effectId:'bucket',target:{accountId:'123456789012',region:'us-east-2',bucket:'axiom-cfn-templates-123456789012'},ownership:'not_observed',authority:'review_preview_only'},http=vi.fn(async()=>Response.json({ok:true,data:bucket}));vi.stubGlobal('fetch',http);const client=createPlatformTemplateClient(context);expect((await client.preview(savedBucket)).ok).toBe(true);
+ http.mockResolvedValueOnce(Response.json({ok:true,data:{...bucket,ownership:'verified'}}));expect((await client.preview(savedBucket)).ok).toBe(false);http.mockResolvedValueOnce(Response.json({ok:true,data:{...bucket,target:{...bucket.target,accountId:'999999999999',bucket:'axiom-cfn-templates-999999999999'}}}));expect((await client.preview(savedBucket)).ok).toBe(false);
+});

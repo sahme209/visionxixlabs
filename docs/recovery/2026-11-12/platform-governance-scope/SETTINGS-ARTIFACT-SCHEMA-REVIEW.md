@@ -1,0 +1,5 @@
+# Private settings schema review — local only
+
+The actual Prisma DMMF comparison against a3e41387 verifies all184existing models and all enums. Only PlatformGovernanceAction.settingsArtifacts, an inverse relation without a data column, changes existing metadata. The sole appended model is PlatformSettingsArtifact: opaque ID, exact parent/effect, private binding JSON, encrypted envelope and creation milliseconds, with parent deletion restricted and parent/effect unique. See the JSON review for complete new-model metadata and exact schema hashes.
+
+The mock recipe helper's current-schema pin is updated only after this semantic comparison. Its CLI/engine/seed pins and all historical qualification packets are unchanged. An explicit missing-settings-table compiler-output regression is added; no engine/export execution occurs in that test. Production migrations and schema apply remain unauthorized. Database immutability is enforced through insert-only application operations/unique constraints, not claimed as protection against a privileged database administrator. Actual custody and execution remain unqualified.

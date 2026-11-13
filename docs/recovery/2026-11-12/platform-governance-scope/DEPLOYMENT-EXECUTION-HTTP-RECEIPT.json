@@ -1,0 +1,53 @@
+{
+  "scope": "Task4 prepared server execution and request history; desktop full flow incomplete",
+  "actualSql": {
+    "fixture": "/private/tmp/axiom-platform-pg-c5iiz68_",
+    "passed": 143,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "newCases": 4,
+    "newCasesScope": [
+      "private approved original-requester source and historical receipts after source/reviewer revocation",
+      "default qualification unavailable; admitted handler\u2192real existing HMAC/current SQL\u2192existing helper\u2192intercepted provider\u2192durable acceptance/history; no resend or URL exposure",
+      "native qualification revoked before send, unknown consumed and no dispatch",
+      "native qualification revoked after send, accepted evidence retained without fresh result"
+    ],
+    "providerQualification": "simulated; default unavailable",
+    "physicalProviderRequests": 0
+  },
+  "validation": {
+    "sharedPassed": 526,
+    "sharedSqlOptInSkipped": 143,
+    "sharedLog": "/private/tmp/axiom-deployment-execution-regression.log",
+    "rootTypes": "/private/tmp/axiom-deployment-execution-current-types.log",
+    "rootTypesPassed": true,
+    "demoPassed": 15,
+    "demoLog": "/private/tmp/axiom-deployment-execution-demo.log"
+  },
+  "redEvidence": [
+    "/private/tmp/axiom-platform-pg-yc82pgl5/result.json",
+    "/private/tmp/axiom-deployment-execution-http-red.log",
+    "/private/tmp/axiom-deployment-execution-receipt-red.log"
+  ],
+  "sourceHashes": {
+    "lib/governance/platform/deploymentExecutionHttp.ts": "191ddbca4761a5985d4dfbf72a8833c333257f9f209b539eb2db0aacd035f090",
+    "lib/governance/platform/deploymentHistoryContract.ts": "f14c98c9e1599cb1c6c226bbb66d80ed62fd2f526f48fc18b05c40ff20c55b94",
+    "lib/governance/platform/actionStore.ts": "01b2aebfc0bc0199aa5dc02b6f16290d7c32b5d08ef2ba1cb9b5755ff8d96afa",
+    "lib/governance/platform/requestComposition.ts": "1813846a33a4aa1985c6ddc4ab01dee65ad36a09e0756329480a5c07811e2157",
+    "lib/governance/platform/deploymentContract.ts": "d3e6b054a701d519f665788c365309e11335f94da470c4254b12c2de1df2eb70",
+    "lib/governance/platform/deploymentHttp.ts": "407fc692725609d713805fd2a07d4f4d683509c0176e6d9439377e4c463b139c",
+    "scripts/run-platform-governance-postgres.py": "7f81362b2dc75ab9a5a48686faac835ebdd0eba66fa6b7bff1e4c72956c4d915"
+  },
+  "registered": false,
+  "productionChanged": false,
+  "fullTask4Complete": false,
+  "remaining": [
+    "desktop dedicated execute/receipt history client and UI",
+    "original receipt\u2192separate recovery preparation",
+    "composed sequential full workflow validation",
+    "template/image families",
+    "qualified real native runtime/source/credential custody and provider profile",
+    "whole-batch final review/build/mandatory-green PR and real-world gates"
+  ]
+}

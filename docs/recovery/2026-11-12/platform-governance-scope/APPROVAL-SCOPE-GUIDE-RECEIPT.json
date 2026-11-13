@@ -1,0 +1,18 @@
+{
+  "scope": "source-grounded existing public guide clarification; not new execution controls or a new guide",
+  "sourceHashes": {
+    "app/docs/governance-approvals/page.tsx": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f",
+    "app/control/governance/page.tsx": "f2d46ce72dac3a84ea74a15319b3c2e585ef4548a66f70b9e21357a9240b0492",
+    "app/api/agents/proposals/[id]/decide/route.ts": "d2a1aa1171890d408402a7abbe3251462371b163f2f1a1a75c358f697a462398",
+    "lib/governance/platform/currentAuthority.ts": "f4c78d0c27f98d39a8458682850136f6fd758c4938ed38692f1d17ae8c99cc45",
+    "lib/governance/platform/operations/custodianRequestService.ts": "6bb879f7832d8d5ada37e9095d144a2343cafebb0729158c4ff82e46eeddea68",
+    "lib/governance/platform/operations/custodianDrainStore.ts": "c4d8cdd94dded0b9a244873828697480908341bc052b90da7b481ce7ba298c04",
+    "lib/docs/guide-heading-index.json": "8ddeffda8f9c3e3e834b9a64736fc23ac191ee110aa4f117cf59aa7e7b9e46d3",
+    "lib/support/docsCorpus.json": "5ab259c1c53e2e99ba211ca6d4b93c3b8f29ae956a4009a5d7112c2b194a9627"
+  },
+  "checks": "23 existing guide-navigation/support-corpus-freshness/answer-evaluation tests PASS",
+  "guideCount": 36,
+  "publicCorpusSections": 125,
+  "renderedOrCustomerAcceptance": false,
+  "productionChanged": false
+}

@@ -1,0 +1,294 @@
+{
+  "beforeSha256": "452ae9e687d3099b05eeb2271f8267cf1034a0060f4f97ed02d74b2c0605fbfe",
+  "afterSha256": "95a56e40ecfac78c6ddb1d2c1ec685c4c9c3151c50e08b7c75daa3c783445ea5",
+  "existingModels": 187,
+  "newModels": 189,
+  "allExistingMetadataEqualExceptTwoInverseRelations": true,
+  "allEnumsEqual": true,
+  "allExistingRawSourceReconstructs": true,
+  "addedModels": [
+    {
+      "name": "PlatformDeploymentTarget",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "generation",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "version",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "stateJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "updatedAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "DateTime",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": true
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformDeploymentTargetToPlatformGovernanceAction",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [],
+      "uniqueIndexes": [],
+      "isGenerated": false,
+      "documentation": "LOCAL proposed target liability; held acceptance/unknown is not readiness."
+    },
+    {
+      "name": "PlatformDeploymentRequestReceipt",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "id",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "effectIndex",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "generation",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "receiptDigest",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "receiptJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "createdAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "DateTime",
+          "nativeType": null,
+          "default": {
+            "name": "now",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformDeploymentRequestReceiptToPlatformGovernanceAction",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [
+        [
+          "actionId",
+          "effectIndex"
+        ]
+      ],
+      "uniqueIndexes": [
+        {
+          "name": null,
+          "fields": [
+            "actionId",
+            "effectIndex"
+          ]
+        }
+      ],
+      "isGenerated": false,
+      "documentation": "LOCAL immutable content-free request evidence; never a signed URL or token."
+    }
+  ],
+  "productionChanged": false,
+  "realRuntimeQualification": false
+}

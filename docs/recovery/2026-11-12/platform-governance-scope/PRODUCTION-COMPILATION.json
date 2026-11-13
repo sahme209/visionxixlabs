@@ -1,0 +1,16 @@
+{
+  "head": "9ee99682db258024e71b151d97c0d0a34d9f14e5",
+  "exitCode": 0,
+  "networkDenied": true,
+  "heapMiB": 8192,
+  "databaseUrlSupplied": false,
+  "productionChanged": false,
+  "staticPages": 304,
+  "sourceChanged": false,
+  "ciChanged": false,
+  "applicationExecuted": false,
+  "issuerQualified": false,
+  "log": "/private/tmp/axiom-platform-ci-heap-build-nbdrkhya/build.log",
+  "buildLogSha256": "e185253ae780c790160e0440e088c230077d91d88c726832eebe66ed9706df71",
+  "buildIdSha256": "56f6e90f2605ea6a462d4407c15a46432d06d6f66ccd6df3863686c91a1e23fc"
+}

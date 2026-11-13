@@ -1,0 +1,47 @@
+{
+  "base": "e8eefd08",
+  "scope": "Unregistered LOCAL connected template executor and atomic outcome persistence. Complete legacy caller and qualified output coverage still incomplete.",
+  "actualPostgres": {
+    "root": "/private/tmp/axiom-platform-pg-183lxz5m",
+    "passed": 168,
+    "failed": 0,
+    "pending": 0,
+    "newJoinedCases": 11,
+    "stopped": true,
+    "real": "PostgreSQL/current identity/SDK interfaces",
+    "simulated": "native I/O, user fixtures, private source/profile/credential/key/clock qualification"
+  },
+  "red": {
+    "missingExecutorModule": "/private/tmp/axiom-platform-pg-ny_x1n6t"
+  },
+  "intermediatePasses": [
+    "/private/tmp/axiom-platform-pg-126ohf71",
+    "/private/tmp/axiom-platform-pg-9ow2rj3u"
+  ],
+  "validation": {
+    "sharedPassed": 529,
+    "SQLoptinsSkippedInSeparateOrdinaryRun": 168,
+    "log": "/private/tmp/axiom-template-execution-final-regression.log",
+    "rootNativeTypes": "PASS",
+    "rootNativeTypesLog": "/private/tmp/axiom-template-execution-current-types.log",
+    "productionBuild": "not repeated; final whole-family build still required"
+  },
+  "sourceHashes": {
+    "lib/governance/platform/templateExecutionStore.ts": "765c2c84104feaaf4078e2000271f18c4db14523ebf8717c33a5296b516b2bfa",
+    "lib/governance/platform/actionStore.ts": "3317cf0c1ac4c1cdaf8257123f7bd9a89bf78d0247a14f91c97330f7a9114c57",
+    "lib/governance/platform/sqlRepository.ts": "bce2aec5d594d0237642899070e1781321b5a2096446b5a951f88f84d23ab7f8",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "7f873b669852569da25658527878f52f556fba3abbe41c54d766a68d0b719e34",
+    "scripts/run-platform-governance-postgres.py": "17cbd02054b348062bfc7a97de2d25ec01f3ccb6feb2ac042d69d921fc721294",
+    "lib/demo/demoScenarios.ts": "419ef326242708922077f7d286d63496ee2b5ed670de28ab5137c70346737bca"
+  },
+  "remaining": [
+    "complete Task3 legacy helper/caller migration",
+    "qualified original-session one-use delivery service",
+    "prepared HTTP/client/UI and composed user journey",
+    "image custody/family audit/final whole-three-family independent review/CI",
+    "separate real qualification and owner production actions"
+  ],
+  "productionChanged": false,
+  "realProviderActions": false,
+  "spending": false
+}

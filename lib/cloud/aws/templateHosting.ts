@@ -1,245 +1,49 @@
-/**
- * Auto-publish the CloudFormation Quick-Create template to S3.
- *
- * Why this exists: AWS Console's CFN Quick-Create deep-link rejects
- * non-S3 templateURLs, so the platform uploads the YAML to its own
- * S3 bucket and hands the customer a URL. Was using a public bucket
- * + bucket-policy + public-access-block until that ran into account-
- * level S3 BPA / read-only broker users — now uses a *presigned* GET
- * URL signed by the broker, so:
- *
- *   - The bucket stays private. No bucket policy needed.
- *   - No PutPublicAccessBlock call. No account-level BPA conflict.
- *   - Required broker IAM perms shrink to: CreateBucket, HeadBucket,
- *     PutObject, GetObject — nothing privileged.
- *
- * The presigned URL expires after 1 hour (max for SigV4 query auth
- * is 7 days, but 1h matches the customer's expected click-through
- * window). On bounce-back from CFN we don't reuse the URL — we
- * publish a fresh one if needed.
- *
- * Idempotent: if the bucket + object already exist with the same
- * content hash, we skip the upload but still re-sign the URL.
- */
-
-import "server-only";
-import { readFile } from "node:fs/promises";
-import path from "node:path";
-import { createHash } from "node:crypto";
-import {
-  S3Client,
-  HeadBucketCommand,
-  CreateBucketCommand,
-  HeadObjectCommand,
-  PutObjectCommand,
-  GetObjectCommand,
-} from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { STSClient, GetCallerIdentityCommand } from "@aws-sdk/client-sts";
-
-const REGION = "us-east-1";
-const OBJECT_KEY = "axiom-agent-quick-deploy.yaml";
-const TEMPLATE_RELATIVE_PATH = "public/aws/axiom-agent-quick-deploy.yaml";
-const URL_TTL_SECONDS = 60 * 60; // 1 hour
-
-export interface PublishResult {
-  available: true;
-  url: string;
-  bucket: string;
-  publishedNow: boolean;
-  /**
-   * The AWS account id of the broker IAM user the platform is signed in
-   * as. Returned so the quick-deploy-url endpoint can inject it into
-   * the CFN deep-link as `param_BrokerAccountId=…` — that's the value
-   * the role's trust policy uses to gate AssumeRole, so it MUST match
-   * the account the broker actually lives in. Hardcoding it in the
-   * YAML default was the source of a long-running "AssumeRole keeps
-   * failing" bug.
-   */
-  brokerAccountId: string;
+/** Legacy metadata entry points. Execution moved to the separately reviewed
+ * template executor with durable native-resource admission and scoped output.
+ * These shims never read broker credentials, write, sign or adopt old plans. */
+import 'server-only';
+import type {TemplateAccessInput,templateAccessEffect} from './platformTemplatePlan';
+const MAX_BYTES=256*1024;
+const fail=():never=>{throw Error('platform_template_unavailable')};
+export async function createPlatformTemplateBucket(_input:{accountId:string;region:string;platformExecution:object;effectId?:string}):Promise<never>{return fail()}
+export async function publishPlatformTemplateObject(_input:{accountId:string;region:string;platformExecution:object;effectId?:string}):Promise<never>{return fail()}
+async function boundedBody(body:unknown,expected:number,signal:AbortSignal){
+ if(!body||typeof body!=='object'||!(Symbol.asyncIterator in body))fail();
+ const stream=body as AsyncIterable<Uint8Array>&{destroy?:()=>void},iterator=stream[Symbol.asyncIterator](),parts:Buffer[]=[];let size=0,complete=false;
+ try{
+  while(true){
+   signal.throwIfAborted();
+   const item=await new Promise<IteratorResult<Uint8Array>>((resolve,reject)=>{
+    const abort=()=>reject(Error('platform_template_unavailable'));signal.addEventListener('abort',abort,{once:true});
+    if(signal.aborted){signal.removeEventListener('abort',abort);abort();return}
+    Promise.resolve().then(()=>iterator.next()).then(resolve,reject).finally(()=>signal.removeEventListener('abort',abort));
+   });
+   signal.throwIfAborted();if(item.done)break;
+   if(!(item.value instanceof Uint8Array)||(size+=item.value.byteLength)>MAX_BYTES||size>expected)fail();parts.push(Buffer.from(item.value));
+  }
+  if(size!==expected)fail();complete=true;return Buffer.concat(parts);
+ }finally{if(!complete){stream.destroy?.();void Promise.resolve(iterator.return?.()).catch(()=>{})}}
 }
-
-export interface PublishError {
-  available: false;
-  reason:
-    | "broker_creds_missing"
-    | "broker_account_lookup_failed"
-    | "template_read_failed"
-    | "bucket_setup_failed"
-    | "broker_s3_perms_missing"
-    | "upload_failed";
-  detail: string;
-  /** Broker IAM user ARN parsed out of an AccessDenied — lets the UI deep-link the operator to the right IAM page. */
-  brokerArn?: string;
-  /** Bucket name we were trying to create when access was denied. */
-  bucket?: string;
+function validateSignedUrl(raw:string,target:ReturnType<typeof templateAccessEffect>['target'],expectedAccessKey:string|undefined,observedNow=Date.now(),clockSkewMs=30000){
+ let u:URL;try{u=new URL(raw)}catch{return fail()}
+ const hosts=[`${target.bucket}.s3.${target.region}.amazonaws.com`,...(target.region==='us-east-1'?[`${target.bucket}.s3.amazonaws.com`]:[])];
+ if(u.protocol!=='https:'||u.username||u.password||u.port||u.hash||!hosts.includes(u.hostname)||u.pathname!=='/'+target.key)fail();
+ const allowed=new Set(['versionId','X-Amz-Algorithm','X-Amz-Content-Sha256','X-Amz-Credential','X-Amz-Date','X-Amz-Expires','X-Amz-SignedHeaders','X-Amz-Signature','X-Amz-Security-Token','x-id','x-amz-checksum-mode','x-amz-expected-bucket-owner']);
+ for(const key of u.searchParams.keys())if(!allowed.has(key)||u.searchParams.getAll(key).length!==1)fail();
+ if(u.searchParams.get('versionId')!==target.objectVersion||u.searchParams.get('X-Amz-Expires')!==String(target.ttlSeconds)||u.searchParams.get('X-Amz-SignedHeaders')!=='host'||u.searchParams.get('X-Amz-Algorithm')!=='AWS4-HMAC-SHA256')fail();
+ const signature=u.searchParams.get('X-Amz-Signature')??'',date=u.searchParams.get('X-Amz-Date')??'',credential=(u.searchParams.get('X-Amz-Credential')??'').split('/');
+ if(!/^[a-f0-9]{64}$/i.test(signature)||!/^\d{8}T\d{6}Z$/.test(date)||!expectedAccessKey||credential.length!==5||credential[0]!==expectedAccessKey||credential[1]!==date.slice(0,8)||credential[2]!==target.region||credential[3]!=='s3'||credential[4]!=='aws4_request'||u.searchParams.get('x-amz-expected-bucket-owner')!==target.accountId)fail();
+ const signedAt=Date.parse(date.slice(0,4)+'-'+date.slice(4,6)+'-'+date.slice(6,8)+'T'+date.slice(9,11)+':'+date.slice(11,13)+':'+date.slice(13,15)+'Z');
+ if(!Number.isFinite(signedAt)||(!Number.isSafeInteger(observedNow)||!Number.isSafeInteger(clockSkewMs)||clockSkewMs<1)||Math.abs(observedNow-signedAt)>clockSkewMs||signedAt+target.ttlSeconds*1000<=observedNow)fail();
+ if(u.searchParams.has('x-id')&&u.searchParams.get('x-id')!=='GetObject')fail();
+ if(u.searchParams.has('x-amz-checksum-mode')&&u.searchParams.get('x-amz-checksum-mode')!=='ENABLED')fail();
+ if(u.searchParams.has('X-Amz-Content-Sha256')&&u.searchParams.get('X-Amz-Content-Sha256')!=='UNSIGNED-PAYLOAD')fail();
+ return raw;
 }
-
-interface UploadCache {
-  bucket: string;
-  sha: string;
+export interface PublishResult{available:true;url:string;bucket:string;publishedNow:boolean;brokerAccountId:string}
+export interface PublishError{available:false;reason:'platform_review_required'|'platform_template_unavailable';detail:string;brokerArn?:string;bucket?:string}
+export async function ensureTemplatePublished(opts:{forceRefresh?:boolean;platformExecution?:object;access?:Omit<TemplateAccessInput,'bytesDigest'>}={}):Promise<PublishResult|PublishError>{
+ return {available:false,reason:!opts.platformExecution||!opts.access?'platform_review_required':'platform_template_unavailable',detail:'Use the separately reviewed template workflow. Legacy metadata, overrides and bindings cannot create, upload or sign a template grant.'};
 }
-let uploadCache: UploadCache | null = null;
-
-/**
- * Returns a presigned GET URL for the Quick-Create template, uploading
- * it first if needed. The URL is freshly signed on every call so it
- * stays within its TTL even if the cache is warm.
- */
-export async function ensureTemplatePublished(opts: { forceRefresh?: boolean } = {}): Promise<PublishResult | PublishError> {
-  // 1. Need broker credentials. Have to look up the broker account id
-  //    from them BEFORE checking the override — because the role's
-  //    trust policy keys off this account id, and we have to inject it
-  //    as a CFN parameter regardless of where the template body lives.
-  const accessKeyId = process.env.AWS_CONNECTOR_BROKER_ACCESS_KEY_ID?.trim();
-  const secretAccessKey = process.env.AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY?.trim();
-  if (!accessKeyId || !secretAccessKey) {
-    return {
-      available: false,
-      reason: "broker_creds_missing",
-      detail: "AWS_CONNECTOR_BROKER_ACCESS_KEY_ID + AWS_CONNECTOR_BROKER_SECRET_ACCESS_KEY must be set so the platform can publish its CFN template to S3.",
-    };
-  }
-
-  // 2. Look up broker account id to derive a deterministic bucket name.
-  const sts = new STSClient({ region: REGION, credentials: { accessKeyId, secretAccessKey } });
-  let brokerAccountId: string;
-  try {
-    const ident = await sts.send(new GetCallerIdentityCommand({}));
-    if (!ident.Account) throw new Error("no Account in GetCallerIdentity response");
-    brokerAccountId = ident.Account;
-  } catch (err) {
-    return {
-      available: false,
-      reason: "broker_account_lookup_failed",
-      detail: `sts:GetCallerIdentity failed: ${errMessage(err)}`,
-    };
-  }
-
-  // Operator override path — template body already self-hosted, but we
-  // still need to return the discovered broker account id so the URL
-  // builder can inject it into the CFN trust-policy parameter.
-  const override = process.env.AWS_CFN_TEMPLATE_S3_URL?.trim();
-  if (override) {
-    return { available: true, url: override, bucket: "(operator-managed)", publishedNow: false, brokerAccountId };
-  }
-
-  const bucket = `axiom-cfn-templates-${brokerAccountId}`;
-  const s3 = new S3Client({ region: REGION, credentials: { accessKeyId, secretAccessKey } });
-
-  // 3. Load + hash the template.
-  let templateBody: string;
-  try {
-    templateBody = await readFile(path.join(process.cwd(), TEMPLATE_RELATIVE_PATH), "utf8");
-  } catch (err) {
-    return {
-      available: false,
-      reason: "template_read_failed",
-      detail: `Couldn't read ${TEMPLATE_RELATIVE_PATH}: ${errMessage(err)}`,
-    };
-  }
-  const sha = createHash("sha256").update(templateBody).digest("hex").slice(0, 16);
-
-  // 4. Ensure bucket exists. No public access settings touched.
-  try {
-    await ensureBucket(s3, bucket);
-  } catch (err) {
-    const msg = errMessage(err);
-    const isS3PermDenied = /s3:(CreateBucket|HeadBucket)/i.test(msg)
-      || /AccessDenied|not authorized to perform/i.test(msg);
-    if (isS3PermDenied) {
-      const arnMatch = msg.match(/arn:aws:iam::\d{12}:(user|role)\/[A-Za-z0-9_+=,.@\-/]+/);
-      return {
-        available: false,
-        reason: "broker_s3_perms_missing",
-        detail: msg,
-        brokerArn: arnMatch?.[0],
-        bucket,
-      };
-    }
-    return {
-      available: false,
-      reason: "bucket_setup_failed",
-      detail: `Bucket setup failed (${bucket}): ${msg}`,
-      bucket,
-    };
-  }
-
-  // 5. Skip upload if the object is already there with our content hash.
-  let publishedNow = false;
-  if (!opts.forceRefresh && uploadCache?.bucket === bucket && uploadCache.sha === sha) {
-    // Module-memory says we already uploaded this exact version.
-  } else {
-    let skipUpload = false;
-    try {
-      const head = await s3.send(new HeadObjectCommand({ Bucket: bucket, Key: OBJECT_KEY }));
-      if (head.Metadata && head.Metadata["axiom-template-sha"] === sha) {
-        skipUpload = true;
-      }
-    } catch {
-      // Object missing or HeadObject denied — fall through to upload.
-    }
-
-    if (!skipUpload) {
-      try {
-        await s3.send(new PutObjectCommand({
-          Bucket: bucket,
-          Key: OBJECT_KEY,
-          Body: templateBody,
-          ContentType: "application/x-yaml",
-          Metadata: { "axiom-template-sha": sha },
-        }));
-        publishedNow = true;
-      } catch (err) {
-        const msg = errMessage(err);
-        const arnMatch = msg.match(/arn:aws:iam::\d{12}:(user|role)\/[A-Za-z0-9_+=,.@\-/]+/);
-        return {
-          available: false,
-          reason: "upload_failed",
-          detail: `s3:PutObject failed: ${msg}`,
-          brokerArn: arnMatch?.[0],
-          bucket,
-        };
-      }
-    }
-    uploadCache = { bucket, sha };
-  }
-
-  // 6. Sign a GET URL the customer's browser (and AWS Console) can use.
-  // Cast is needed because @aws-sdk/s3-request-presigner ships its own
-  // copy of @smithy/types whose Client interface differs structurally
-  // from the one client-s3 was compiled against. Runtime contract is
-  // identical — the cast is purely a TS structural-typing escape.
-  let url: string;
-  try {
-    url = await getSignedUrl(
-      s3 as unknown as Parameters<typeof getSignedUrl>[0],
-      new GetObjectCommand({ Bucket: bucket, Key: OBJECT_KEY }) as unknown as Parameters<typeof getSignedUrl>[1],
-      { expiresIn: URL_TTL_SECONDS },
-    );
-  } catch (err) {
-    return {
-      available: false,
-      reason: "upload_failed",
-      detail: `s3 presign failed: ${errMessage(err)}`,
-      bucket,
-    };
-  }
-
-  return { available: true, url, bucket, publishedNow, brokerAccountId };
-}
-
-async function ensureBucket(s3: S3Client, bucket: string): Promise<void> {
-  try {
-    await s3.send(new HeadBucketCommand({ Bucket: bucket }));
-    return;
-  } catch {
-    // Falls through to CreateBucket. us-east-1 doesn't take a LocationConstraint.
-  }
-  await s3.send(new CreateBucketCommand({ Bucket: bucket }));
-}
-
-function errMessage(err: unknown): string {
-  if (err instanceof Error) return err.message;
-  return String(err);
-}
+/** Shared private validation only; exports do not grant credentials or authority. */
+export {boundedBody as readBoundedPlatformTemplateBody,validateSignedUrl as validatePlatformTemplateSignedUrl};

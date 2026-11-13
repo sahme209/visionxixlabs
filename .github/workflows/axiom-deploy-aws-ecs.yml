@@ -16,73 +16,22 @@ on:
         required: true
         type: string
 
-permissions:
-  id-token: write
-  contents: read
+# Platform source only: the customer repository template is a separate artifact.
+# Axiom's own release requires exact reviewed action/run delegation and a
+# separately qualified private issuer. Do not restore direct GitHub OIDC→AWS
+# exchange or waiter-triggered automatic rollback here.
+permissions: {}
 
-# Serialize deployments to the same ECS target. A second approved dispatch
-# must wait rather than replacing the first run's rollback baseline.
 concurrency:
-  group: axiom-ecs-${{ inputs.role_arn }}-${{ inputs.region }}-${{ inputs.cluster }}-${{ inputs.service }}
+  group: axiom-platform-ecs-retired-entrypoint
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    env:
-      ECS_CLUSTER: ${{ inputs.cluster }}
-      AWS_MAX_ATTEMPTS: "1"
-      ECS_SERVICE: ${{ inputs.service }}
     steps:
-      - name: Configure AWS credentials (OIDC — no stored keys)
-        uses: aws-actions/configure-aws-credentials@e1253824e5c10ff9df46874f81ed3ec929e19cfd # v6.3.0; reviewed full commit
-        with:
-          disable-retry: true
-          translate-env-variables: false
-          role-to-assume: ${{ inputs.role_arn }}
-          aws-region: ${{ inputs.region }}
-
-      - name: Capture current task definition (rollback target)
-        id: capture
+      - name: Require managed platform deployment
         run: |
-          PREVIOUS_TASK_DEF=$(aws ecs describe-services \
-            --cluster "$ECS_CLUSTER" \
-            --services "$ECS_SERVICE" \
-            --query 'services[0].taskDefinition' --output text)
-          echo "previous_task_def=$PREVIOUS_TASK_DEF" >> "$GITHUB_OUTPUT"
-
-      - name: Force a new ECS deployment
-        run: |
-          aws ecs update-service \
-            --cluster "$ECS_CLUSTER" \
-            --service "$ECS_SERVICE" \
-            --force-new-deployment \
-            --output text >/dev/null
-
-      - name: Wait for the new deployment to stabilize
-        id: wait
-        continue-on-error: true
-        run: |
-          aws ecs wait services-stable \
-            --cluster "$ECS_CLUSTER" \
-            --services "$ECS_SERVICE"
-
-      - name: Roll back — deployment did not stabilize
-        if: steps.wait.outcome == 'failure'
-        env:
-          PREVIOUS_TASK_DEF: ${{ steps.capture.outputs.previous_task_def }}
-        run: |
-          echo "::error::Deployment did not stabilize. Starting rollback."
-          aws ecs update-service \
-            --cluster "$ECS_CLUSTER" \
-            --service "$ECS_SERVICE" \
-            --task-definition "$PREVIOUS_TASK_DEF" \
-            --output text >/dev/null
-          aws ecs wait services-stable \
-            --cluster "$ECS_CLUSTER" \
-            --services "$ECS_SERVICE"
+          echo "::error::Axiom managed deployment review is required. This unmanaged entrypoint is retired."
+          echo "No credential or provider action was performed. Use the exact reviewed platform action and qualified private runner; those controls are not enabled by this workflow."
           exit 1
-
-      - name: Deployment stabilized
-        if: steps.wait.outcome == 'success'
-        run: echo "Deployment stabilized successfully."

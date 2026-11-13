@@ -1,0 +1,35 @@
+{
+  "scope": "local Axiom platform workflow retirement, customer template unchanged",
+  "priorHashes": {
+    ".github/workflows/axiom-deploy-aws-ecs.yml": "3c16557acfc2f4e2ce1ffd050c484ce58ef738622e45a80c8edcd93b9866451e",
+    "lib/releaseops/awsEcsDeployWorkflowTemplate.ts": "265dfb5d3b455deaa4a31b841f6acc170c0172d14d5d1896b78300795be6ccf0",
+    "lib/axiom/agentRuntime/agentRestartWorkflowSource.ts": "fa33baf0d1d57641ee342f6614f439f30aa117dfa2004ecfba6adcc7c193be6b"
+  },
+  "currentHashes": {
+    ".github/workflows/axiom-deploy-aws-ecs.yml": "0a05917f529c22c905c0b27992b0c97fba10bd8a45c60a3c7fba77570f9b6354",
+    "lib/releaseops/__tests__/awsEcsDeployWorkflowTemplate.test.ts": "1d94238a368056cf315e0c844835c03bbf32d08f37c0033f44e5bf1843ac86c9",
+    "lib/governance/platform/operations/__tests__/platformEcsWorkflowRetirement.test.ts": "0f3395ca96672a2d67888ca3f9fc95f43ff9ef713af9a60ff70ebb3e149b4ee6",
+    "lib/demo/demoScenarios.ts": "f2322738080262c3f78e4458d29c3ccb204e5f49899842f2c5c6a0f6d0a5ca8f",
+    "lib/releaseops/awsEcsDeployWorkflowTemplate.ts": "265dfb5d3b455deaa4a31b841f6acc170c0172d14d5d1896b78300795be6ccf0",
+    "lib/axiom/agentRuntime/agentRestartWorkflowSource.ts": "fa33baf0d1d57641ee342f6614f439f30aa117dfa2004ecfba6adcc7c193be6b"
+  },
+  "focusedChecks": 22,
+  "demoChecks": 15,
+  "rootTypes": "pass",
+  "fullSuite": {
+    "directory": "/private/tmp/axiom-native-supplier-full-qnizd4gz",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "counts": {
+      "numPassedTests": 18566,
+      "numFailedTests": 0,
+      "numPendingTests": 1024,
+      "numTodoTests": 0,
+      "numFailedTestSuites": 0
+    },
+    "failedTests": []
+  },
+  "workflowDispatched": false,
+  "productionChanged": false,
+  "completeQualifiedWorkflow": false
+}

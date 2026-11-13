@@ -1,0 +1,624 @@
+{
+  "beforeSha256": "95a56e40ecfac78c6ddb1d2c1ec685c4c9c3151c50e08b7c75daa3c783445ea5",
+  "afterSha256": "952c132b2f6ca20fe11dff5c326f20be8775230d581bf7ed6b5485626db5f075",
+  "existingModels": 189,
+  "newModels": 193,
+  "allExistingMetadataEqualExceptFourInverseRelations": true,
+  "allEnumsEqual": true,
+  "allExistingRawSourceReconstructs": true,
+  "addedModels": [
+    {
+      "name": "PlatformTemplateResource",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "generation",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "version",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "stateJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "updatedAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "DateTime",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": true
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformGovernanceActionToPlatformTemplateResource",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [],
+      "uniqueIndexes": [],
+      "isGenerated": false,
+      "documentation": "LOCAL proposed clone-resistant template liability; no expiry cleanup."
+    },
+    {
+      "name": "PlatformTemplateReceipt",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "id",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "effectIndex",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "generation",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "receiptDigest",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": true,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "receiptJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "createdAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "DateTime",
+          "nativeType": null,
+          "default": {
+            "name": "now",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformGovernanceActionToPlatformTemplateReceipt",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [
+        [
+          "actionId",
+          "effectIndex"
+        ],
+        [
+          "nativeKey",
+          "generation"
+        ]
+      ],
+      "uniqueIndexes": [
+        {
+          "name": null,
+          "fields": [
+            "actionId",
+            "effectIndex"
+          ]
+        },
+        {
+          "name": null,
+          "fields": [
+            "nativeKey",
+            "generation"
+          ]
+        }
+      ],
+      "isGenerated": false,
+      "documentation": "LOCAL immutable nonsecret template observation, never a bearer URL."
+    },
+    {
+      "name": "PlatformTemplateArtifact",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "id",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "effectIndex",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "generation",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "receiptDigest",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": true,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "contextJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "envelope",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "createdAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "DateTime",
+          "nativeType": null,
+          "default": {
+            "name": "now",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformGovernanceActionToPlatformTemplateArtifact",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "delivery",
+          "kind": "object",
+          "isList": false,
+          "isRequired": false,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformTemplateDelivery",
+          "nativeType": null,
+          "relationName": "PlatformTemplateArtifactToPlatformTemplateDelivery",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [
+        [
+          "actionId",
+          "effectIndex"
+        ],
+        [
+          "nativeKey",
+          "generation"
+        ]
+      ],
+      "uniqueIndexes": [
+        {
+          "name": null,
+          "fields": [
+            "actionId",
+            "effectIndex"
+          ]
+        },
+        {
+          "name": null,
+          "fields": [
+            "nativeKey",
+            "generation"
+          ]
+        }
+      ],
+      "isGenerated": false,
+      "documentation": "LOCAL immutable scoped ciphertext; excluded from public history."
+    },
+    {
+      "name": "PlatformTemplateDelivery",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "artifactId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "claimJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "createdAt",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": true,
+          "type": "DateTime",
+          "nativeType": null,
+          "default": {
+            "name": "now",
+            "args": []
+          },
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "artifact",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformTemplateArtifact",
+          "nativeType": null,
+          "relationName": "PlatformTemplateArtifactToPlatformTemplateDelivery",
+          "relationFromFields": [
+            "artifactId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformGovernanceActionToPlatformTemplateDelivery",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [],
+      "uniqueIndexes": [],
+      "isGenerated": false,
+      "documentation": "LOCAL permanent output-attempt claim, not a client receipt or retry ticket."
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+import {it,expect} from 'vitest';
+import {writeFileSync} from 'node:fs';
+import {buildIndex,retrieve} from '@/lib/support/answerKernel';
+import {knowledgeEntries} from '@/lib/support/knowledgeBase';
+import {buildAiAnswerPrompt} from '@/lib/support/aiAnswerKernel';
+it('measures existing top-five prompt bytes without inference',()=>{
+ const entries=knowledgeEntries(),index=buildIndex(entries),queries=['How do I review an exact deployment approval?','How do I revoke an API key?','Where do I review paired desktop sessions?','How do I configure offline workspace token limits?','How do I inspect an unknown deployment outcome?','How do I connect an Airflow batch provider?'];
+ const rows=queries.map(question=>{const passages=retrieve(index,question,5),selected=Buffer.byteLength(buildAiAnswerPrompt(question,passages)),full=Buffer.byteLength(buildAiAnswerPrompt(question,entries));expect(passages.length).toBeGreaterThan(0);expect(passages.length).toBeLessThanOrEqual(5);expect(selected).toBeLessThan(full);return {question,passageIds:passages.map(p=>p.id),selectedPromptUtf8Bytes:selected,hypotheticalAllEntriesPromptUtf8Bytes:full,byteReductionFraction:1-selected/full}});
+ writeFileSync("/private/tmp/axiom-context-measurement-5szfauws/measurement.json",JSON.stringify({metric:'UTF-8 prompt bytes, not model tokens or actual cost',corpusEntries:entries.length,rows,modelCalls:0,networkCalls:0,databaseCalls:0,qualityQualified:false},null,2)+'\n');
+});

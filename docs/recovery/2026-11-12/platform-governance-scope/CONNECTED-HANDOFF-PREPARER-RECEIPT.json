@@ -1,0 +1,42 @@
+{
+  "scope": "local connected preparer; no runtime execution/provider/native/configuration",
+  "sourceHashes": {
+    "lib/governance/platform/operations/compiledHandoffArtifact.ts": "1bbacc757d12db8aed65e6d6289f864f03520e255b012b22b55184f707561683",
+    "lib/governance/platform/operations/__tests__/compiledHandoffArtifact.test.ts": "928e8cfa8cedb546d7abc632a3b5b596c19b63ebcaa540c5bc7e03daf720c996",
+    "scripts/build-github-handoff-runtime.d.cts": "41dce5ddf6b0e2a3cd9ee27947792e276688317f68682a34569c92a265d4d064"
+  },
+  "tests": {
+    "red": "/private/tmp/axiom-compiled-handoff-red.log",
+    "green": "/private/tmp/axiom-compiled-handoff-green.log",
+    "passed": 5,
+    "failed": 0,
+    "coverage": [
+      "actual fixed compiler to workflow artifact",
+      "closed dependency/tool hash evidence passed to private qualification",
+      "setup refusal before compile",
+      "changed source metadata before compile",
+      "unqualified actual build refusal",
+      "revocation after workflow preparation"
+    ]
+  },
+  "strictTypes": {
+    "log": "/private/tmp/axiom-compiled-handoff-types.log",
+    "exitCode": 0
+  },
+  "authorityAndSetup": "explicit synthetic private qualifiers; no actual qualification supplier/default",
+  "productionChanged": false,
+  "schemaChanged": false,
+  "activeWorkflowChanged": false,
+  "fullValidationScope": "prior18615ordinary/114SQL/ad5a7063production receipts predate this adapter; no database/issuer code changed and no unchanged SQL suite repeated",
+  "remaining": [
+    "actual setup/source/dependency/profile/key/protection/runtime/custody qualification",
+    "shipping registration and activation",
+    "other-family decisions",
+    "full-batch final audit/review/exact-head CI"
+  ],
+  "finalFocusedAndDemo": {
+    "passed": 21,
+    "failed": 0,
+    "log": "/private/tmp/axiom-connected-handoff-final.log"
+  }
+}

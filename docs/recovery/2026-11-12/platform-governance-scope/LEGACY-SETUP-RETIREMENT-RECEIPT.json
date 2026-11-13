@@ -1,0 +1,31 @@
+{
+  "scope": "two local legacy administrative scripts retired, complete replacement remains unfinished",
+  "files": {
+    "scripts/setup-vercel-env.mjs": "47ac0c0d27ada9ac603736b76f1eab8bb2421cc90568a08d85c7d696144c6afe",
+    "scripts/setup-oauth.sh": "0ad32a8ec7b8f5f535f752dbc902ba433fff8031435249cf82f076645719172e",
+    "lib/governance/platform/operations/__tests__/legacySetupRetirement.test.ts": "9495c0ebb1e1bcc249882e34b56a253f17d0c20c3244880f120502e3018e01c0",
+    "lib/demo/demoScenarios.ts": "14fa930b1aed2968db2244dd86fc4e019bfac45012b91bb108a7195cf23325f6"
+  },
+  "focused": {
+    "entrypointBehavior": 2,
+    "demoContract": 15,
+    "rootTypes": "pass"
+  },
+  "fullSuite": {
+    "directory": "/private/tmp/axiom-native-supplier-full-qmdggsfp",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "counts": {
+      "numPassedTests": 18565,
+      "numFailedTests": 0,
+      "numPendingTests": 1024,
+      "numTodoTests": 0,
+      "numFailedTestSuites": 0
+    },
+    "failedTests": []
+  },
+  "productionChanged": false,
+  "providerAction": false,
+  "ecsWorkflowChanged": false,
+  "completeP01": false
+}

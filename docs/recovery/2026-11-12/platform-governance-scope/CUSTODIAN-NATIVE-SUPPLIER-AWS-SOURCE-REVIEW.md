@@ -1,0 +1,15 @@
+# Native custodian supplier — three approved AWS documentation reads
+
+Owner approved bounded design and up to three official public AWS pages. One search located sources; exactly these three pages were opened, and no linked pages followed. Allowance consumed. No account/provider/metadata endpoint, credentials, environment values, runtime or deployment was accessed.
+
+## Source facts (not Axiom account qualification)
+
+1. [Container credential provider](https://docs.aws.amazon.com/sdkref/latest/guide/feature-container-credentials.html): the SDK obtains container credentials by HTTP GET. ECS supplies a relative credential URI appended to169.254.170.2. The generic provider also supports a full URI and authorization value/file options; the relative URI takes priority over a full URI. This describes provider configuration, not authentication of Axiom's running task or proof that a supplied endpoint is trustworthy.
+2. [Task IAM role](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/task-iam-roles.html): task-role permissions are available to application containers; the task execution role has a different purpose. Fargate isolates tasks, while containers themselves are not an isolation boundary. Task credential audit context includes a task ARN. AWS warns about shared-host credential exposure on EC2-style deployments. A role trust policy's SourceArn cannot currently select one specific cluster. None of this verifies Axiom's actual launch, image, task role, trust alternatives or process isolation.
+3. [IAM-role best practices](https://docs.aws.amazon.com/AmazonECS/latest/developerguide/security-iam-roles.html): the illustrated native response contains role identity, credential material and expiration. ECS caches task-role credentials, normally gives them a six-hour lifetime and rotates them automatically. Task execution-role permissions concern ECS operations such as image pull/log delivery, rather than the app's task-role access. The documented default duration is not a proven maximum or Axiom closure interval.
+
+## Inferences for the Axiom design
+
+Prefer a dedicated Fargate task as the first supported candidate; do not claim that a sidecar or process inside the same task is isolated from the task-role capability. A captured credential URI and a returned role name do not prove the actual task/image/origin. The protected runtime and deployment-control evidence must establish that separately. Axiom's local drain controls supplier admission, not ECS's ability to rotate or vend more task credentials. Source/fleet production must be genuinely stopped or constrained and every relevant source/derived lifetime qualified before closure can be established. Treat missing evidence as unavailable.
+
+The three pages do not specify all exact failure-body shapes, whether a chosen real endpoint emits extra fields, a universal maximum lifetime, trusted-clock attestation, or cryptographic task identity in the credential response. No further source was opened to fill those gaps, and no assumption is promoted to an allow path. CUSTODIAN-NATIVE-SUPPLIER-DESIGN.md keeps those real qualification gates explicit.

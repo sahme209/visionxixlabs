@@ -1,0 +1,50 @@
+{
+  "scope": "Task3 prepared local recovery client/panel/workflow; not full deployment/customer acceptance",
+  "tests": {
+    "desktopClientPanelWorkflow": 51,
+    "sharedTransport": 45,
+    "demo": 15,
+    "desktopLog": "/private/tmp/axiom-deployment-recovery-desktop-regression.log",
+    "sharedLog": "/private/tmp/axiom-deployment-recovery-shared-transport.log",
+    "demoLog": "/private/tmp/axiom-deployment-recovery-ui-demo.log"
+  },
+  "actualSql": {
+    "fixture": "/private/tmp/axiom-platform-pg-5w86r_xc",
+    "passed": 139,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "newJourney": "actual browser-safe client\u2192paired transport\u2192in-process HTTP\u2192existing HMAC/current SQL, independent review/requester observation/history; simulated native provider/profile",
+    "providerRequests": 0
+  },
+  "builds": {
+    "rootTypes": "/private/tmp/axiom-deployment-recovery-ui-final-types.log",
+    "desktopTypesAndFrontend": "/private/tmp/axiom-deployment-recovery-desktop-build.log",
+    "passed": true,
+    "nativeBuildOrSigningPerformed": false
+  },
+  "reds": [
+    "/private/tmp/axiom-deployment-recovery-client-red.log",
+    "/private/tmp/axiom-deployment-recovery-panel-red.log",
+    "/private/tmp/axiom-deployment-recovery-workflow-red.log"
+  ],
+  "sourceHashes": {
+    "lib/governance/platform/deploymentRecoveryClientContract.ts": "89b9bcd4769614e4ae8c2101c89754828ffa8b73d2ab1d20be5799a0fc6b5ba2",
+    "desktop/src/lib/deploymentRecovery.ts": "c99bf410e9e067018844a7b6cfa2a1042c312ce356ec87fdeafece095e2dfdac",
+    "desktop/src/lib/releaseOperationPlanTransport.ts": "1249483909d2b5b6591b1a3b685af741e3c6466de8f9485fc7c7f47f1a6dd3dc",
+    "desktop/src/components/DeploymentRecoveryPanel.tsx": "76aad62f019c9cf76018071d4d4ab5be742c30f537b59ffe9acd5f207c5c3582",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "2373dd1fe51b457442138eea36b6a1d434a94b381dcf8741eb376617695956ac",
+    "scripts/run-platform-governance-postgres.py": "11b185584c9e7047a9c0b4ff03e672b674c2dd28f9cb093cffe68ec5506b4d44"
+  },
+  "publicRouteRegistered": false,
+  "installedVisualAcceptance": false,
+  "appRestarted": false,
+  "productionChanged": false,
+  "remaining": [
+    "Task4 complete generated-site execution and result receipts/customer flow",
+    "original deployment result to recovery preparation UI",
+    "template execution/recipient delivery and image custody families",
+    "qualified real sources/custody/provider profiles",
+    "full batch independent source review, final tests/build and mandatory-green PR"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "scope": "Complete prepared template desktop workflow; LOCAL Task5 acceptance only",
+  "actualPostgres": {
+    "cases": 185,
+    "fixture": "/private/tmp/axiom-platform-pg-o8qgrtuy",
+    "stopped": true,
+    "newJoinedCases": [
+      "Actual desktop client -> prepared HTTP -> signed synthetic HMAC -> current identity SQL -> exact YAML preview -> genuine separate review -> requester issuance -> once-only original-session reveal -> nonsecret history",
+      "Lost desktop execution reply -> original committed receipt recovery without provider retry"
+    ],
+    "qualification": "Native/provider/profile/key/clock/channel behavior simulated; actual installed signer, SQL and HMAC mechanics",
+    "laterChanges": {
+      "files": [
+        "desktop/src/components/TemplateWorkflowPanel.tsx",
+        "desktop/src/components/TemplateExecutionPreparationPanel.tsx"
+      ],
+      "scope": "Only UI expiry/context clearing and separately requested proposal/reference preservation, covered by subsequent React tests/types/build. Runtime client/HTTP/SQL sources remain byte-identical. This is not an exact-current-UI SQL attestation."
+    }
+  },
+  "localValidation": {
+    "desktopClientPanelWorkflowAndRelatedTests": 66,
+    "sharedLegacyTransportTemplateRegressionTests": 26,
+    "rootNativeTypes": "PASS",
+    "desktopNativeTypes": "PASS",
+    "desktopFrontendBuild": "PASS",
+    "buildWarnings": "Existing chunk-size and mixed dynamic/static import warnings retained",
+    "logs": [
+      "/private/tmp/axiom-template-desktop-validation.log",
+      "/private/tmp/axiom-template-shared-transport-regression.log",
+      "/private/tmp/axiom-template-desktop-current-types.log",
+      "/private/tmp/axiom-template-desktop-types.log",
+      "/private/tmp/axiom-template-desktop-build.log"
+    ]
+  },
+  "notVerified": [
+    "native visual/accessibility acceptance",
+    "registered product route or qualified real resources",
+    "image custody family",
+    "whole-three-family independent review/full production build/green PR",
+    "production schema/provider/installation acceptance"
+  ],
+  "productionChanged": false,
+  "sourceHashes": {
+    "desktop/src/lib/templateWorkflow.ts": "e6d6f02a272f2514f2f92eaaf7fe9bc58810eb744a3aee0c8615f84939e6ee33",
+    "desktop/src/lib/releaseOperationPlanTransport.ts": "2301c92cb0694adfe46edae3142ef3e10a3a077287235b4a2577137382fc3741",
+    "desktop/src/components/TemplateWorkflowPanel.tsx": "22aa37e0665ad0101c1519eebe848e1f268c1f5e3db4e693b9d6505d73e1c74c",
+    "desktop/src/components/TemplateExecutionPreparationPanel.tsx": "812a944cee611ef08d1cf7068c20d8af1e7043f36f8ab01e5816f059c5f77281",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "bb7187cbcd3a39b675eb0d7421b53d53034b90b53a97fbc938d1fd80531b1b4c",
+    "lib/desktop/__tests__/templateWorkflowClient.test.ts": "66f333d3374e37a5c325511f48cb93cfa54c631131a22db1784e41d42578d70f",
+    "lib/desktop/__tests__/templateWorkflowPanel.test.ts": "f1b1c61969c5161516dde39798ce284f4e2b8bd8bab52551a8ad4d722da98429",
+    "lib/desktop/__tests__/templateExecutionPreparationPanel.test.ts": "4406641e107a8aba38b8c5f9d02820b523fbeacbdf814b2c432549b9b003d4b7",
+    "lib/desktop/__tests__/templateWorkflowTransport.test.ts": "dedbf40c13a0cbe6436df569038b90311b5dc486ed48f1aebf96142d1b253947",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "7f24d3bc4e234d7fa8553347491964ed0d92ac8754b21688c7d4ecb41333eabd",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "8e86e16cf30acc57b11d3268d87671418daa0de793cbe5f46d5b248d68f6b537",
+    "scripts/run-platform-governance-postgres.py": "c0d7bf0a56988a86fcc99491c96c520a28b22feeb99c3db17d8e9ae3cb9a26d7"
+  }
+}

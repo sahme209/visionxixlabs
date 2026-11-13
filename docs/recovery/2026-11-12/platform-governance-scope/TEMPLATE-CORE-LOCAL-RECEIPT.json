@@ -1,0 +1,29 @@
+{
+  "scope": "Local Task1 only; pure metadata/proposed transitions and synthetic AES-GCM keys. Not durable/native/production acceptance.",
+  "base": "bf345089",
+  "tests": {
+    "focused": 26,
+    "log": "/private/tmp/axiom-template-kernel-artifact-final.log",
+    "rootTypes": "/private/tmp/axiom-template-kernel-artifact-types.log",
+    "rootTypesResult": "PASS",
+    "initialMemoryFailure": "/private/tmp/axiom-template-kernel-types.log"
+  },
+  "sourceHashes": {
+    "lib/governance/platform/templateContract.ts": "b0cb9f73537824cf4d6aee584429d45ff4f59a1380134290daa8ab20b67b303f",
+    "lib/governance/platform/templateExecutionContract.ts": "a3c62a81ad3169482bf4891633de23ef547d6c6e2c436ae488f6da2ad89352ea",
+    "lib/governance/platform/templateLiability.ts": "a9a0563eb547a5cfa7fec031614d146a5465916154ce56f6f7b72c2764ac3ca6",
+    "lib/governance/platform/templateGrantArtifact.ts": "266ca99a784c3ef00f9913cfc4b3e266d9d8f5f920b8cf34912ebaf784b6d9e5",
+    "lib/governance/platform/__tests__/templateLiability.test.ts": "4f31c35a8aa938ea6640cae46b7d4144543c658992faa8f97fb3e8255bb0e181",
+    "lib/governance/platform/__tests__/templateGrantArtifact.test.ts": "81529a5e4dd2b87c77c8c789154a59a0cde83d29aea85b49f9714f18b6220233"
+  },
+  "remaining": [
+    "actual owned SQL",
+    "profile-aware exact preparation/review",
+    "real adapter/private typed receipt",
+    "durable one-use delivery/current authority",
+    "prepared HTTP/UI and composed journeys",
+    "image custody",
+    "whole-three-family final independent review/CI",
+    "separate real qualification and owner production gates"
+  ]
+}

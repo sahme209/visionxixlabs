@@ -1,0 +1,40 @@
+{
+  "scope": "Image custody Task1 pure contracts/scoped synthetic cryptography ONLY",
+  "validation": {
+    "focusedTests": 8,
+    "sharedTestsPassed": 559,
+    "sqlOptinsSkippedInOrdinaryRun": 185,
+    "rootNativeTypes": "PASS",
+    "logs": [
+      "/private/tmp/axiom-image-custody-red.log",
+      "/private/tmp/axiom-image-custody-tests.log",
+      "/private/tmp/axiom-image-custody-types.log",
+      "/private/tmp/axiom-image-core-shared-regression.log"
+    ]
+  },
+  "implemented": [
+    "Strict immutable 2MiB application-bound artifact metadata and decoded-byte identity",
+    "Derived two-child grant metadata before plan compilation, exact original creator/requester/source binding",
+    "Author+decoded-byte initializer key excluding clone coordinates",
+    "Canonical base64url exact-byte scoped encryption using existing AES-GCM",
+    "Complete private upload-address envelope bound to original plan/children/native reference and narrower expiry",
+    "Pure once-only PUT claim proposal",
+    "Legacy PUT metadata parsing retained, never upgraded to new binding"
+  ],
+  "qualification": "Synthetic bytes and keys. Format/URN/origin grammars are local metadata representation, not verified native provider/decoder profiles. No intake/render/send supplier exists.",
+  "notImplemented": [
+    "Durable artifact/grant/initializer/PUT SQL and schema",
+    "Actual qualified decoder or provider protocol",
+    "Private init/PUT observation/transport/current authority composition",
+    "Image intake/review/client/UI/post-lineage workflow",
+    "Whole-three-family review/full build/CI/PR",
+    "Real provider/native/installed/production acceptance"
+  ],
+  "productionChanged": false,
+  "sourceHashes": {
+    "lib/governance/platform/contracts.ts": "61916e5bef1581f9b1cea0340c361709e084907d979ea1302dfcd0dcdb676c85",
+    "lib/governance/platform/imageCustodyContract.ts": "99ec1e057d7c1f2a774f7106ff3ed6ddad071c4445795e8c7801b857e6fc1dd0",
+    "lib/governance/platform/imageCustodyCodec.ts": "dad73c25a3df90d18c39628934530431dd982f952fe9ac8255fa3cd90370a217",
+    "lib/governance/platform/__tests__/imageCustody.test.ts": "80deed70550a518c2ae171fd476058178c8f0a8cc5e11993a55325d02045f200"
+  }
+}

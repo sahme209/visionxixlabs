@@ -52,7 +52,7 @@ Interface ledger: mode/config → token store/transport uses immutable parsed sn
 
 - [x] Run required full web types/tests/build, desktop types/build and Python; composed isolated tests with simulated providers distinguish real SQL from live inference. No automatic retry after an unknown provider effect.
 - [x] Fresh independent whole-branch review of source, security, actor/budget/DNS/cancellation races, all inventoried dispatch coverage and faithful ADR scope. Resolve important findings with actual RED→GREEN evidence.
-- [ ] One PR, every applicable check green on the exact reviewed head, normal merge only. No production/flag/schema apply/provider call/installer publication. Record source completion separately from real offline isolated-network acceptance and on-prem readiness.
+- [x] One PR, every applicable check green on the exact reviewed head, normal merge only. No production/flag/schema apply/provider call/installer publication. Record source completion separately from real offline isolated-network acceptance and on-prem readiness.
 
 ## Review focus
 
@@ -109,3 +109,9 @@ Review corrections: P1 isolated-provider guard restored at default/coordinator/t
 Tasks 1–5 and the local-validation/review portions of Task6 are satisfied at source. Evidence: offline-ai-v1/README.md, DISPATCH-INVENTORY.md and the 17-test owned PostgreSQL receipt. All model/server/protected-evidence/audit sinks in those SQL journeys are simulated; default protected OS reads and real inference were not executed. The macOS-only evidence supplier refuses unsupported hosts; Linux/Windows supplier qualification remains separate. Total-token counts are recorded content-free in audit and durable transitions; returned usage additionally splits input/output. No schema migration, dependency, credentials, live endpoint or enablement is introduced.
 
 Final full local suite:17,966 pass/914 skip/one expected failure; production build304pages passes strict types. Desktop types/frontend build and Python36 pass. Independent whole-source review and correction re-review passed; the final route-precedence delta also passed independent review. Task6 PR/CI/merge remains unchecked until exact-head remote checks pass. Source completion is never live offline acceptance, on-prem readiness, full Governance or full master-plan completion.
+
+## Offline-AI v1 source merged — PR #325
+
+PR #325 merged normally at 2026-11-12T03:28:08Z as `0caaaaab6c809f2188d1a4c8fdd64980e6ef35f0`. Exact head `4845eda54b26599b299fdf1557e599561a71883b` passed every applicable check: required Typecheck + Vitest, all three shards, types, production/offline build, frontend/native security, macOS transport/policy, owned PG accounting, owned HTTP authentication/billing and isolated website. Screenshot job skipped by its existing branch condition.
+
+This supersedes prior pending source/CI statements only. Local full suite17,966pass/914skip/one expected failure; actual isolated PG17journeys used simulated model/evidence/audit. No real inference, protected OS qualification, Linux/Windows supplier, installed-native UI or production acceptance. No deployment/settings/schema/credentials/provider action. Existing production target/schema/TLS and all full-master owner/live gates remain.

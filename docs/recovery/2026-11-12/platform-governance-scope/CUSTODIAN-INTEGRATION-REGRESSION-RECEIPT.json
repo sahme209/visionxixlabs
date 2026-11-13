@@ -1,0 +1,26 @@
+{
+  "exitCode": 0,
+  "sourceUnchanged": true,
+  "counts": {
+    "numPassedTests": 18519,
+    "numFailedTests": 0,
+    "numPendingTests": 1021,
+    "numTodoTests": 0,
+    "numFailedTestSuites": 0
+  },
+  "failedTests": [],
+  "failedSuites": [],
+  "baseHead": "378e2f815b9912d89db0ba2a9ae49b66eac3466a",
+  "trackedRuntimeDiffSha256": "c05101218cf18776f88518bd917b62429ca9bfc384e9faac77714e8c9f77ff23",
+  "sourceManifestSha256": "d085251d4603e9680bb824a47ff738a1e889c7eb9fb519dae45563f386986dd4",
+  "evidenceRoot": "/private/tmp/axiom-custodian-full-gzi1l4rz",
+  "scope": "complete ordinary suite, clean empty HOME/envDir:false, no database URL or opt-in provider/PG flags, four workers",
+  "rootTypes": "PASS",
+  "desktopFrontendTypesAndBuild": "PASS",
+  "nativeOrLiveAcceptance": false,
+  "productionBuild": "not repeated in this unit; historical c0180a37 remains scoped to that source",
+  "sourceHashes": {
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "6ac7ea2d23be37ded42845108deff6acef0af8a63b3705ffbfd4317f1709382a",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "f4b8dfb57d659c54d2415d75649de47a8b829c69e345afc87547d30a1030b4cc"
+  }
+}

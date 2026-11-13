@@ -1,0 +1,234 @@
+{
+  "baseCommit": "f31eaeab4e70d02da33240ce8ef52daa2c48a2b7",
+  "previousSchemaSha256": "d984ac1e131c11919cd0133838aeae7b372f1be279d5b50ee3d8f131cc184d68",
+  "reviewedSchemaSha256": "452ae9e687d3099b05eeb2271f8267cf1034a0060f4f97ed02d74b2c0605fbfe",
+  "existingModels": 185,
+  "currentModels": 187,
+  "existingChanges": [
+    "PlatformGovernanceAction.custodianBarriers/custodianIntents inverse relations only"
+  ],
+  "allOtherExistingModelMetadataAndEnumsUnchanged": true,
+  "added": [
+    {
+      "name": "PlatformCustodianBarrier",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "controlActionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "version",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "stateJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformCustodianBarrierToPlatformGovernanceAction",
+          "relationFromFields": [
+            "controlActionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "intents",
+          "kind": "object",
+          "isList": true,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformCustodianIntent",
+          "nativeType": null,
+          "relationName": "PlatformCustodianBarrierToPlatformCustodianIntent",
+          "relationFromFields": [],
+          "relationToFields": [],
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [],
+      "uniqueIndexes": [],
+      "isGenerated": false,
+      "documentation": "LOCAL proposed platform issuer admission barrier, never tenant authority."
+    },
+    {
+      "name": "PlatformCustodianIntent",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "id",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "nativeKey",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "stateJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "barrier",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformCustodianBarrier",
+          "nativeType": null,
+          "relationName": "PlatformCustodianBarrierToPlatformCustodianIntent",
+          "relationFromFields": [
+            "nativeKey"
+          ],
+          "relationToFields": [
+            "nativeKey"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformCustodianIntentToPlatformGovernanceAction",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [],
+      "uniqueIndexes": [],
+      "isGenerated": false,
+      "documentation": "LOCAL proposed permanent in-flight issuer liability; no expiry cleanup."
+    }
+  ],
+  "productionMigration": false,
+  "qualification": false
+}

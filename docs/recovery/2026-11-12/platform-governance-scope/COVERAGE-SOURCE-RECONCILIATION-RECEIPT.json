@@ -1,0 +1,84 @@
+{
+  "headBeforeDocumentation": "030efaa1349ca293fcc37e50af8f7d6089749dfc",
+  "sourceMatches": {
+    "lib/governance/platform/operations/githubBootstrap.ts": {
+      "sha256": "449ce09a0eb0f60664bf3f31c75b2b51fa79fced97e797218b06727673807224",
+      "receipt": "GITHUB-BOOTSTRAP-IMPLEMENTATION-RECEIPT.json"
+    },
+    "lib/governance/platform/operations/githubJobEntry.ts": {
+      "sha256": "2125be968cea49dd2af1aab2fa524fb8303d68a4e7aa650088cdd85b5466a2a9",
+      "receipt": "GITHUB-BOOTSTRAP-IMPLEMENTATION-RECEIPT.json"
+    },
+    "lib/governance/platform/operations/nativeGithubJobIdentity.ts": {
+      "sha256": "f9694558b3a2d9ebbde53720efb3aad9d1385e1a0afc21a326e1888c02917f02",
+      "receipt": "GITHUB-BOOTSTRAP-IMPLEMENTATION-RECEIPT.json"
+    },
+    "lib/governance/platform/operations/remoteHandoffSource.ts": {
+      "sha256": "bef9edbc9f5d66601b531ab3f61cdd95dc3adb55bf94ed2de059ed4ad1547179",
+      "receipt": "GITHUB-BOOTSTRAP-IMPLEMENTATION-RECEIPT.json"
+    },
+    "scripts/build-github-handoff-runtime.cjs": {
+      "sha256": "93ef89a1f6fe149c544e3e8166011e6548ef5d78991f93690af828ba3ab1f8cb",
+      "receipt": "GITHUB-BOOTSTRAP-IMPLEMENTATION-RECEIPT.json"
+    },
+    "scripts/fixtures/github-handoff-typescript-loader.cjs": {
+      "sha256": "b4195860824812e47c7a726cc4d3f7217d2c067c25e16a92b9f17c0013822bb0",
+      "receipt": "GITHUB-BOOTSTRAP-IMPLEMENTATION-RECEIPT.json"
+    },
+    "lib/governance/platform/operations/compiledHandoffArtifact.ts": {
+      "sha256": "1bbacc757d12db8aed65e6d6289f864f03520e255b012b22b55184f707561683",
+      "receipt": "CONNECTED-HANDOFF-PREPARER-RECEIPT.json"
+    },
+    "lib/governance/platform/operations/__tests__/compiledHandoffArtifact.test.ts": {
+      "sha256": "928e8cfa8cedb546d7abc632a3b5b596c19b63ebcaa540c5bc7e03daf720c996",
+      "receipt": "CONNECTED-HANDOFF-PREPARER-RECEIPT.json"
+    },
+    "scripts/build-github-handoff-runtime.d.cts": {
+      "sha256": "41dce5ddf6b0e2a3cd9ee27947792e276688317f68682a34569c92a265d4d064",
+      "receipt": "CONNECTED-HANDOFF-PREPARER-RECEIPT.json"
+    },
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": {
+      "sha256": "e496afc7bb5b886fc27ba938da46ec72e7274eefb875e045426f3c9af30f445d",
+      "receipt": "COMPILED-HANDOFF-ADVERSARIAL-SQL-RECEIPT.json"
+    },
+    "scripts/run-platform-governance-postgres.py": {
+      "sha256": "5d32204cb7f492460bd9f6f986f56b67946edd7ac6e71304ef6c01da8d77ad40",
+      "receipt": "COMPILED-HANDOFF-ADVERSARIAL-SQL-RECEIPT.json"
+    },
+    ".github/workflows/axiom-deploy-aws-ecs.yml": {
+      "sha256": "0a05917f529c22c905c0b27992b0c97fba10bd8a45c60a3c7fba77570f9b6354",
+      "receipt": "PLATFORM-ECS-RETIREMENT-RECEIPT.json"
+    },
+    "lib/releaseops/awsEcsDeployWorkflowTemplate.ts": {
+      "sha256": "265dfb5d3b455deaa4a31b841f6acc170c0172d14d5d1896b78300795be6ccf0",
+      "receipt": "PLATFORM-ECS-RETIREMENT-RECEIPT.json"
+    },
+    "lib/axiom/agentRuntime/agentRestartWorkflowSource.ts": {
+      "sha256": "fa33baf0d1d57641ee342f6614f439f30aa117dfa2004ecfba6adcc7c193be6b",
+      "receipt": "PLATFORM-ECS-RETIREMENT-RECEIPT.json"
+    },
+    "scripts/setup-vercel-env.mjs": {
+      "sha256": "47ac0c0d27ada9ac603736b76f1eab8bb2421cc90568a08d85c7d696144c6afe",
+      "receipt": "LEGACY-SETUP-RETIREMENT-RECEIPT.json"
+    },
+    "scripts/setup-oauth.sh": {
+      "sha256": "0ad32a8ec7b8f5f535f752dbc902ba433fff8031435249cf82f076645719172e",
+      "receipt": "LEGACY-SETUP-RETIREMENT-RECEIPT.json"
+    }
+  },
+  "sourceMatchCount": 16,
+  "matrixBackup": "work/platform-coverage-reconcile-20261112T204907Z/COVERAGE-ACCEPTANCE-MATRIX.md",
+  "originalMatrixSha256": "8a3a279ee7bef54e026bb07257573b176fa6c96f4c6f337b2b32d03f0c263e32",
+  "priorMatrixReconstructsExactly": true,
+  "changedRows": [
+    "ECS rollout/rollback",
+    "Platform Vercel settings/redeployment",
+    "Platform default/UI/runtime coverage",
+    "Final source/PR gate"
+  ],
+  "testsRerun": false,
+  "providersContacted": false,
+  "productionChanged": false,
+  "noNewApproval": "Held image/template/deployment-recovery and LinkedIn source-read decisions remain pending; real setup/credential/runtime/provider actions excluded",
+  "nextCoreAction": "Owner decisions for already-pending family designs and separately authorized real qualification. Do not redo completed runtime/compiler/retirement or manufacture a default."
+}

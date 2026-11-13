@@ -1,0 +1,78 @@
+{
+  "scope": "Local stored-upload-to-post source binding; no native upload/decoder/protocol/provider qualification or enablement",
+  "sourceHashes": {
+    "lib/governance/platform/imagePublicationLineage.ts": "5625617a91aa258b3a863cef7f846592812d0d3830fc1d9afeae4acfe693a8f4",
+    "lib/governance/platform/imagePublicationSource.ts": "1e2e61128a71967954746d47616fb5aa6c4679edef10d765ea45182ca93f5be7",
+    "lib/governance/platform/imageStorageSql.ts": "ae820a4fd2044e5216b6674aa31df365bebbefae3748111f097698a426affaaf",
+    "lib/governance/platform/sqlRepository.ts": "677a6d4f7aa2cb2167d45e847c553e427574d199a03483a1d2e63a74629450b9",
+    "lib/governance/platform/contracts.ts": "8f5230a0e3eeb2ef4ef3d96aa448c02c31ced5d605f42c4362d542fd62597e09",
+    "lib/governance/platform/actionStore.ts": "57089bd541b6ab9009d3107b91737ea4dc203b741c95dd65bc7bad9144e10797",
+    "lib/governance/platform/currentAuthority.ts": "78118e639b347dec8abbc297a23b6f5aa24d54d8d9d70db746d0eafeed876b7a",
+    "lib/governance/platform/growthPreparation.ts": "20206e941efec4b6b1f07ed6d912984e63b5f167c8d6d8ec7b481419110bc247",
+    "lib/growth/linkedin/platformImageSource.ts": "663f5bed37c11e56bfebadc7a0fa5e0dee1483d7bdc5cc5779f4e036a7099d6c",
+    "lib/growth/linkedin/platformPostingPlan.ts": "ff7e1836cb94a02b15c6965859c3e1262eadbd1e532460c75f5e3995c81d0a94",
+    "lib/growth/linkedin/posting.ts": "c059e6b60645e4cb14cee15cc4f0bc077dc9ae7dc520d9492f13372c3025e32d",
+    "lib/growth/linkedin/platformSchedule.ts": "dbf1a6bec5965651c73093d10229559664c1420935feabc9259a0cb670d26bfe",
+    "lib/growth/linkedin/__tests__/platformPosting.test.ts": "71205a73647c0e945a4fd8e5cbdf6b899b99ba2e2cf8b83a412c83f0d98795bf",
+    "lib/growth/linkedin/__tests__/platformPostingPlan.test.ts": "14be9603d3a1ab9707cb7b8cdedea965f26abf77e26f585ea2a397823318363e",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "c7db7f1e6483222e2e8035783e9e86d108053a18e1e2a2a2b90245b7e8b1a43b",
+    "scripts/run-platform-governance-postgres.py": "5e48171531a30d80f52a8e347c963bda94191b8268a68cb5bf03be692cd5a6dc"
+  },
+  "checks": {
+    "broad": {
+      "passed": 4058,
+      "skipped": 391,
+      "note": "Ordinary run skipped211actual SQL optins plus180other pre-existing skips. It predates only avoiding an extra server authority read for non-image claims; image semantics unchanged. Final actual SQL and root types cover that scoped optimization."
+    },
+    "actualIsolatedSql": 211,
+    "rootTypes": "PASS after final scoped source",
+    "desktopTypes": "PASS",
+    "desktopFrontendBuild": "PASS"
+  },
+  "actualSql": {
+    "root": "/private/tmp/axiom-platform-pg-d7pts5um",
+    "stopped": true,
+    "newCases": [
+      "Confirmed upload parent/grant/children/event/result proof -> actual source reader -> later post proposal with exact lineage digest",
+      "Unknown upload, arbitrary media reference, wrong account/author, altered child and altered observation event refuse",
+      "Actual current-identity post preparation/review; altered upload proof refuses claim and preserves approved/zero-attempt post"
+    ],
+    "nativeScope": "Original image intake/review uses actual current SQL but decoder/key/profile qualification simulated. Initialization/PUT observations are explicitly synthesized to test downstream consumption. No real upload, real cryptographic native observation, human approval or provider state claimed."
+  },
+  "nativePublisherUnit": "Actual default publisher with intercepted HTTP, synthetic credential/lineage supplier; compatible media publishes once, changed lineage after credential lookup refuses before fetch. This is not live or joined actual-provider acceptance.",
+  "redEvidence": [
+    "/private/tmp/axiom-image-publication-lineage-red.log",
+    "/private/tmp/axiom-image-publication-event-proof-red.log"
+  ],
+  "observedRed": {
+    "fixture": "/private/tmp/axiom-platform-pg-wbemicei",
+    "passed": 209,
+    "failed": 2,
+    "findings": [
+      "Altered upload observation event was accepted as publication lineage",
+      "Image-backed post claim did not recheck current upload proof"
+    ]
+  },
+  "fixes": [
+    "Require exact confirmed initializer and PUT observations as well as typed parent/child/grant/result rows",
+    "Check image-lineage-backed post/schedule sources before and after claim; plaintext post claim read sequence unchanged",
+    "Legacy arbitrary image references stay historical only; missing managed proof refuses before credential/native send",
+    "Metadata compiler is not a proof issuer; actual preparation/final source uses only private SQL derivation"
+  ],
+  "compatibility": "Historical upload connection revision stays bound to its original proof. Current post connection revision is independently bound in the new post plan; same selected connection ID/external author/reference are required. Reconnection cannot erase unknown initializer liability. This is local compatibility logic, not native asset availability acceptance.",
+  "logs": [
+    "/private/tmp/axiom-image-publication-final-broad.log",
+    "/private/tmp/axiom-image-publication-lineage-scoped-types.log",
+    "/private/tmp/axiom-image-publication-desktop-types.log",
+    "/private/tmp/axiom-image-publication-desktop-build.log",
+    "/private/tmp/axiom-image-publication-lineage-scoped-final-pg.log"
+  ],
+  "remaining": [
+    "Private qualified initializer/PUT executor and actual source-backed native observation supplier",
+    "Official protocol/decoder/protected worker and resource qualification",
+    "Complete native progression/related review media workflow and end-to-end acceptance",
+    "Final whole-three-family caller audit/full suite/frozen production build/independent review/green PR",
+    "All unchanged full Governance/master live/installed/production gates"
+  ],
+  "externalActions": "No provider, credentials/keys, production schema/flags/routes, signing/install, push/deploy or spending"
+}

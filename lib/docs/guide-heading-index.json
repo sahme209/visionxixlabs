@@ -418,7 +418,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "76229203f32dc14df27e4b753a5b1fe758bc521cc21965f2d450ddfa5349d4a5",
+      "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
@@ -426,7 +426,10 @@
         "Review an action",
         "Approval is not execution",
         "Approval rules",
-        "What this page shows"
+        "What this page shows",
+        "Workspace and platform approvals are different",
+        "Read the result before trying again",
+        "Different evidence answers different questions"
       ]
     },
     {

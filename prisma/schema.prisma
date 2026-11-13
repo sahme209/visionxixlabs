@@ -3301,7 +3301,7 @@ model LinkedInPostPublishRun {
   draftId         String
   /// Operator email that triggered the publish (or "cron" for scheduler).
   triggeredBy     String
-  /// Closed-union: pending | success | failed | skipped_disabled | skipped_not_connected.
+  /// Closed-union: pending | success | failed | unknown | skipped_disabled | skipped_not_connected.
   outcome         String
   /// LinkedIn URN returned on success.
   linkedinPostUrn String?
@@ -5152,4 +5152,275 @@ model AgentGatewayRequest {
 
   @@index([organizationId, status, createdAt])
   @@index([apiKeyId, createdAt])
+}
+
+/// LOCAL proposed platform-only Governance storage. No production migration is
+/// authorized. Never use a fabricated tenant organization for platform actions.
+model PlatformGovernanceAction {
+  id         String @id
+  planDigest String
+  stateJson  Json
+  version    Int
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  events     PlatformGovernanceEvent[]
+  effects    PlatformGovernanceEffect[]
+  operationalDelegation PlatformOperationalDelegation?
+  settingsArtifacts PlatformSettingsArtifact[]
+  custodianBarriers PlatformCustodianBarrier[]
+  custodianIntents PlatformCustodianIntent[]
+  operationalTargets PlatformOperationalTarget[]
+  operationalTargetReceipts PlatformOperationalTargetReceipt[]
+  deploymentTargets PlatformDeploymentTarget[]
+  deploymentRequestReceipts PlatformDeploymentRequestReceipt[]
+  templateResources PlatformTemplateResource[]
+  templateReceipts PlatformTemplateReceipt[]
+  templateArtifacts PlatformTemplateArtifact[]
+  templateDeliveries PlatformTemplateDelivery[]
+  imageUploadGrant PlatformImageUploadGrant?
+  @@index([createdAt, id])
+}
+
+/// Content-free append-only transitions, atomically committed with the action.
+model PlatformGovernanceEvent {
+  id         String @id
+  actionId   String
+  sequence   Int
+  kind       String
+  detailJson Json
+  occurredAt DateTime @default(now())
+  action     PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, sequence])
+}
+
+/// One claimed effect per exact parent-plan index; unknown never becomes pending.
+model PlatformGovernanceEffect {
+  actionId String
+  index    Int
+  status   String
+  /// Permanent draft-level publication send reservation; unknown retains it.
+  publicationKey String? @unique
+  action   PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@id([actionId, index])
+}
+
+/// LOCAL proposed owner-click notice only; never grants deployment permission.
+model PlatformManualRelease {
+  id             String @id
+  manifestDigest String
+  stateJson      Json
+  version        Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  events         PlatformManualReleaseEvent[]
+  @@index([createdAt, id])
+}
+
+/// Nonsecret transition evidence, committed atomically with the notice record.
+model PlatformManualReleaseEvent {
+  id         String @id
+  recordId   String
+  sequence   Int
+  kind       String
+  detailJson Json
+  occurredAt DateTime @default(now())
+  record     PlatformManualRelease @relation(fields: [recordId], references: [id], onDelete: Restrict)
+  @@unique([recordId, sequence])
+}
+
+
+/// LOCAL proposed exact human delegation to a distinct workload executor.
+model PlatformOperationalDelegation {
+  actionId         String @id
+  manifestDigest   String
+  parentPlanDigest String
+  stateJson        Json
+  version          Int
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  action           PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  identities       PlatformOperationalWorkloadUse[]
+}
+
+/// Permanent global replay exclusion; not a token or a renewable send capability.
+model PlatformOperationalWorkloadUse {
+  replayKey      String @id
+  actionId       String
+  manifestDigest String
+  createdAt      DateTime @default(now())
+  delegation     PlatformOperationalDelegation @relation(fields: [actionId], references: [actionId], onDelete: Restrict)
+  @@index([actionId])
+}
+
+
+/// LOCAL proposed serialized physical ECS service generation, not provider CAS.
+model PlatformOperationalTarget {
+  nativeKey  String @id
+  actionId   String
+  generation Int
+  version    Int
+  stateJson  Json
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  action     PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  receipts   PlatformOperationalTargetReceipt[]
+}
+
+/// LOCAL proposed immutable metadata; actual native provenance still needs qualification.
+model PlatformOperationalTargetReceipt {
+  id            String @id
+  nativeKey     String
+  generation    Int
+  actionId      String
+  receiptDigest String
+  receiptJson   Json
+  createdAt     DateTime @default(now())
+  target        PlatformOperationalTarget @relation(fields: [nativeKey], references: [nativeKey], onDelete: Restrict)
+  action        PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([nativeKey, generation])
+}
+
+/// LOCAL proposed private encrypted value; immutable after insertion.
+/// Never expose envelopes through public action/history DTOs.
+model PlatformSettingsArtifact {
+  id String @id
+  actionId String
+  effectIndex Int
+  bindingJson Json
+  envelope String
+  createdAtMs Float
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, effectIndex])
+}
+
+
+/// LOCAL proposed platform issuer admission barrier, never tenant authority.
+model PlatformCustodianBarrier {
+  nativeKey String @id
+  controlActionId String
+  version Int
+  stateJson Json
+  action PlatformGovernanceAction @relation(fields: [controlActionId], references: [id], onDelete: Restrict)
+  intents PlatformCustodianIntent[]
+}
+
+/// LOCAL proposed permanent in-flight issuer liability; no expiry cleanup.
+model PlatformCustodianIntent {
+  id String @id
+  nativeKey String
+  actionId String
+  stateJson Json
+  barrier PlatformCustodianBarrier @relation(fields: [nativeKey], references: [nativeKey], onDelete: Restrict)
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([nativeKey])
+}
+
+/// LOCAL proposed target liability; held acceptance/unknown is not readiness.
+model PlatformDeploymentTarget {
+  nativeKey String @id
+  actionId String
+  generation Int
+  version Int
+  stateJson Json
+  updatedAt DateTime @updatedAt
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([actionId])
+}
+
+/// LOCAL immutable content-free request evidence; never a signed URL or token.
+model PlatformDeploymentRequestReceipt {
+  id String @id
+  actionId String
+  effectIndex Int
+  nativeKey String
+  generation Int
+  receiptDigest String
+  receiptJson Json
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, effectIndex])
+  @@index([nativeKey, generation])
+}
+
+/// LOCAL proposed clone-resistant template liability; no expiry cleanup.
+model PlatformTemplateResource {
+  nativeKey String @id
+  actionId String
+  generation Int
+  version Int
+  stateJson Json
+  updatedAt DateTime @updatedAt
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([actionId])
+}
+
+/// LOCAL immutable nonsecret template observation, never a bearer URL.
+model PlatformTemplateReceipt {
+  id String @id
+  actionId String
+  effectIndex Int
+  nativeKey String
+  generation Int
+  receiptDigest String @unique
+  receiptJson Json
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@unique([actionId, effectIndex])
+  @@unique([nativeKey, generation])
+}
+
+/// LOCAL immutable scoped ciphertext; excluded from public history.
+model PlatformTemplateArtifact {
+  id String @id
+  actionId String
+  effectIndex Int
+  nativeKey String
+  generation Int
+  receiptDigest String @unique
+  contextJson Json
+  envelope String
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  delivery PlatformTemplateDelivery?
+  @@unique([actionId, effectIndex])
+  @@unique([nativeKey, generation])
+}
+
+/// LOCAL permanent output-attempt claim, not a client receipt or retry ticket.
+model PlatformTemplateDelivery {
+  artifactId String @id
+  actionId String
+  claimJson Json
+  createdAt DateTime @default(now())
+  artifact PlatformTemplateArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  @@index([actionId])
+}
+
+/// LOCAL proposed private immutable image bytes; never public action/event data.
+model PlatformImageArtifact {
+  id String @id
+  creatorUserId String
+  connectionId String
+  metadataJson Json
+  envelope String
+  createdAtMs Float
+  createdAt DateTime @default(now())
+  grants PlatformImageUploadGrant[]
+  @@index([creatorUserId, connectionId])
+}
+
+/// LOCAL proposed exact-parent derived upload capability and permanent PUT claim.
+model PlatformImageUploadGrant {
+  id String @id
+  actionId String @unique
+  artifactId String
+  contextJson Json
+  envelope String
+  claimJson Json?
+  putResultJson Json?
+  createdAt DateTime @default(now())
+  action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
+  artifact PlatformImageArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
+  @@index([artifactId])
 }

@@ -1,0 +1,41 @@
+{
+  "scope": "ordinary frozen local production compilation; deployment plan LOCAL validation only",
+  "runtimeHead": "be24119e2b0f9837b9ea0716225454617594b76a",
+  "buildDirectory": "/private/tmp/axiom-deployment-flow-production-jmxeenfx",
+  "run": {
+    "head": "be24119e2b0f9837b9ea0716225454617594b76a",
+    "sourceCount": 13235,
+    "sourceManifestSha256": "844530b23e6972ad9158648143bc3e351277eafdc040f85397919ce78fb70815",
+    "sourceArchiveSha256": "4e263fb779d8f077acec66a93ed45bd9a41ecc839d721c1999fdd50c1cb55ce5",
+    "networkDenied": true,
+    "databaseUrlSupplied": false,
+    "environmentFilesAbsent": true,
+    "cachedEngineSha256": "6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1",
+    "productionChanged": false,
+    "scope": "ordinary local production compilation only; no runtime/native issuer launch or deployment"
+  },
+  "completion": {
+    "exitCode": 0,
+    "sourcesAndEngineUnchanged": true,
+    "buildLogSha256": "d7dec019c84ceb841b44b436a2e50b97bf060d27add678c97e5a7b575a86273c",
+    "productionChanged": false
+  },
+  "staticPages": 304,
+  "preservedStagingFailures": [
+    "/private/tmp/axiom-deployment-flow-production-bf7ehzn6/staging-failure.json"
+  ],
+  "stagingCorrection": "explicit member whitelist, regular-file/directory-only archive, no absolute/traversal/link/device, exact size and extracted hashes before compile",
+  "warnings": "existing verified-issuer dynamic-expression import warnings retained",
+  "relatedAcceptance": {
+    "actualIsolatedSql": 144,
+    "providerQualification": "simulated",
+    "desktopChecks": 59,
+    "sharedTransport": 45,
+    "demo": 15
+  },
+  "registered": false,
+  "installedNativeVisualAcceptance": false,
+  "finalWholeBatchIndependentReviewComplete": false,
+  "productionChanged": false,
+  "nextApprovedFamily": "template execution reservations and recipient-bound encrypted one-use grant delivery"
+}

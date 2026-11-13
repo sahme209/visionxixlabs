@@ -1,0 +1,146 @@
+{
+  "baseCommit": "a3e41387e985def4070398776d3c5370cc068619",
+  "previousSchemaSha256": "c7fb63180069e5ade1146c3d4a9aab5f65b93480200c440063d826d94092e2e2",
+  "reviewedSchemaSha256": "d984ac1e131c11919cd0133838aeae7b372f1be279d5b50ee3d8f131cc184d68",
+  "existingModels": 184,
+  "currentModels": 185,
+  "existingChanges": [
+    "PlatformGovernanceAction.settingsArtifacts inverse relation only"
+  ],
+  "allOtherExistingModelMetadataAndEnumsUnchanged": true,
+  "added": [
+    {
+      "name": "PlatformSettingsArtifact",
+      "dbName": null,
+      "schema": null,
+      "fields": [
+        {
+          "name": "id",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": true,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "actionId",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": true,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "effectIndex",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Int",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "bindingJson",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Json",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "envelope",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "String",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "createdAtMs",
+          "kind": "scalar",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "Float",
+          "nativeType": null,
+          "isGenerated": false,
+          "isUpdatedAt": false
+        },
+        {
+          "name": "action",
+          "kind": "object",
+          "isList": false,
+          "isRequired": true,
+          "isUnique": false,
+          "isId": false,
+          "isReadOnly": false,
+          "hasDefaultValue": false,
+          "type": "PlatformGovernanceAction",
+          "nativeType": null,
+          "relationName": "PlatformGovernanceActionToPlatformSettingsArtifact",
+          "relationFromFields": [
+            "actionId"
+          ],
+          "relationToFields": [
+            "id"
+          ],
+          "relationOnDelete": "Restrict",
+          "isGenerated": false,
+          "isUpdatedAt": false
+        }
+      ],
+      "primaryKey": null,
+      "uniqueFields": [
+        [
+          "actionId",
+          "effectIndex"
+        ]
+      ],
+      "uniqueIndexes": [
+        {
+          "name": null,
+          "fields": [
+            "actionId",
+            "effectIndex"
+          ]
+        }
+      ],
+      "isGenerated": false,
+      "documentation": "LOCAL proposed private encrypted value; immutable after insertion.\nNever expose envelopes through public action/history DTOs."
+    }
+  ],
+  "productionMigration": false,
+  "historicalQualification": false
+}

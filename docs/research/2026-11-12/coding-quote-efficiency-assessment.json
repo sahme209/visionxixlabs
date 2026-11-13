@@ -1,0 +1,47 @@
+{
+  "scope": "Synthetic quote arithmetic only, no tokenizer/provider/inference or invoice",
+  "fixedOutputBound": 4096,
+  "ratesAreSynthetic": true,
+  "inputRate": "3000",
+  "outputRate": "15000",
+  "rows": [
+    {
+      "inputTokens": 256,
+      "providerCents": 7,
+      "reservedCents": 17
+    },
+    {
+      "inputTokens": 512,
+      "providerCents": 7,
+      "reservedCents": 17
+    },
+    {
+      "inputTokens": 1024,
+      "providerCents": 7,
+      "reservedCents": 17
+    },
+    {
+      "inputTokens": 2048,
+      "providerCents": 7,
+      "reservedCents": 17
+    },
+    {
+      "inputTokens": 4096,
+      "providerCents": 8,
+      "reservedCents": 18
+    },
+    {
+      "inputTokens": 8192,
+      "providerCents": 9,
+      "reservedCents": 21
+    }
+  ],
+  "head": "9eb6f3a1aba1df9d7493fdf01395842a08e091da",
+  "sourceHashes": {
+    "lib/ai/codingRequestQuote.ts": "368b1b67adf0e3eb17c8332298821fc0439d2720707f81981037cee60712ab40",
+    "lib/axiom/agentRuntime/governedAiCall.ts": "4fa3a47970503a3c285e4d653c7dd9a94a12018751d1c0d8338b0785d6f7ec31",
+    "lib/workforce/pipelines/codingRunReservation.ts": "6772e1779f0a1d1eb02a90ac94784c53049163ae63f7ddb964139fa19d575f58"
+  },
+  "procedureSha256": "efe5990db6289ace6669aa0ef79296b60852a73772d23ef64dd2d7085eaa57ec",
+  "log": "/private/tmp/axiom-quote-assessment-run.log"
+}

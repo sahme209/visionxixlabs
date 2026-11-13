@@ -1,0 +1,23 @@
+{
+  "reported": "Owner reported a brief site interruption after manually deploying; owner then confirmed site working again",
+  "observedUTC": "2026-11-13T00:18:25.988427+00:00",
+  "domain": "visionxixlabs.com",
+  "deploymentId": "dpl_2gCqwUL2jYUbToZnXGZUWrKsZJq2",
+  "state": "READY",
+  "target": "production",
+  "commit": "0caaaaab6c809f2188d1a4c8fdd64980e6ef35f0",
+  "branch": "main",
+  "publicChecks": {
+    "home": 200,
+    "product": 200,
+    "authSession": 200,
+    "sampledAssets": {
+      "css": 3,
+      "javascript": 1,
+      "allStatus": 200
+    }
+  },
+  "cause": "Unconfirmed; sampled requests do not prove every signed-in flow or database compatibility",
+  "codexMutations": "None; no rollback, redeploy, settings, database or credentials read",
+  "scope": "Read-only current alias/deployment/project metadata and unauthenticated public GETs; no raw platform response saved"
+}

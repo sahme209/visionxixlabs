@@ -1,0 +1,29 @@
+{
+  "head": "80a8dfee916270a10d157230e30e16a269e0f5fa",
+  "sourceUnchangedDuringBothRuns": true,
+  "suite": {
+    "success": true,
+    "numPassedTests": 18179,
+    "numFailedTests": 0,
+    "numPendingTests": 951,
+    "numTodoTests": 0,
+    "numFailedTestSuites": 0
+  },
+  "suiteReceiptDirectory": "/private/tmp/axiom-platform-full-suite-1_2ralpl",
+  "build": {
+    "head": "80a8dfee916270a10d157230e30e16a269e0f5fa",
+    "workingDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "sourceUnchanged": true,
+    "exitCode": 0,
+    "networkDenied": true,
+    "heapMiB": 8192,
+    "databaseUrlSupplied": false,
+    "productionChanged": false
+  },
+  "buildReceiptDirectory": "/private/tmp/axiom-platform-ci-heap-build-jdj09z85",
+  "staticPages": 304,
+  "buildLogSha256": "e7c9d3633d243028db7aa6526be9d3e17080b1966bff204d0ea48aec688b5b0d",
+  "productionChanged": false,
+  "issuerQualified": false,
+  "fullP01Complete": false
+}

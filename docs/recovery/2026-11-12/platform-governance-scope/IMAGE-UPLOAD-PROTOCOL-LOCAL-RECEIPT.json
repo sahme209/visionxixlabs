@@ -1,0 +1,34 @@
+{
+  "scope": "Pure protocol request/response candidate from three approved official documentation pages; no transport, qualifier or default registration",
+  "checks": {
+    "focused": 5,
+    "rootTypes": "PASS",
+    "fullOrdinarySuite": {
+      "passed": 18881,
+      "failed": 0,
+      "pending": 1126,
+      "total": 20007,
+      "failedSuites": 0
+    },
+    "laterDemoWordingChecks": 15
+  },
+  "fullSuiteRoot": "/private/tmp/axiom-current-full-suite-zyja4m47",
+  "baseHead": "6128adfc184ec991390dfbb887e00a7d7fe49ce2",
+  "sourceHashes": {
+    "lib/governance/platform/imageUploadProtocol.ts": "9cc009a5069d73223b6319b9af5b03b4a0c55d7490e2dc063b2f79566e15cac1",
+    "lib/governance/platform/__tests__/imageUploadProtocol.test.ts": "b76c652eb9d0332cef5df9983052b853b888fbf58573d75053099d7ae6c44816"
+  },
+  "sourceBindingLimit": "Full-suite runner binds tracked HEAD/diff only. Both new untracked source files are separately hashed here and were unchanged during that run; result JSON records this exact new test file. Later changes in this commit are documentation/demo wording only.",
+  "logs": [
+    "/private/tmp/axiom-image-protocol-red.log",
+    "/private/tmp/axiom-image-protocol-green.log",
+    "/private/tmp/axiom-image-protocol-types.log",
+    "/private/tmp/axiom-image-protocol-demo.log"
+  ],
+  "remaining": [
+    "Actual private init/PUT/availability transport and observations plus connected workflow",
+    "Independently reviewed concrete fixed profile and real permission/codec/launcher/custody qualification",
+    "Full three-family review, exact-head CI/PR and master/live gates"
+  ],
+  "externalEffects": "Only approved public documentation reads; no account, token, image, provider API, SQL, signing, installation, deployment or spending"
+}

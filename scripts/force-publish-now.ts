@@ -1,34 +1,7 @@
-/**
- * One-shot: take the newest LinkedInPostDraft in status="scheduled" and
- * pull its scheduledFor into the past so the next publish-cron tick picks
- * it up immediately. No-op if there isn't a scheduled draft.
- *
- * Run: npx tsx scripts/force-publish-now.ts
+/** Legacy force-scheduling is intentionally unavailable.
+ * Use a separately reviewed growth.schedule.change platform action.
+ * No database client or credential is initialized by this retired entry point.
+ * The managed workflow remains incomplete until its UI/HTTP is mounted.
  */
-import { createDatabaseClient } from "../lib/database/createDatabaseClient.ts";
-
-const prisma = createDatabaseClient(process.env.DATABASE_URL);
-
-async function main() {
-  const draft = await prisma.linkedInPostDraft.findFirst({
-    where: { status: "scheduled" },
-    orderBy: { scheduledFor: "desc" },
-  });
-  if (!draft) {
-    console.log("no scheduled draft — nothing to fast-forward");
-    return;
-  }
-  const past = new Date(Date.now() - 60_000);
-  await prisma.linkedInPostDraft.update({
-    where: { id: draft.id },
-    data: { scheduledFor: past },
-  });
-  console.log("fast-forwarded:", {
-    id: draft.id,
-    bodyPreview: draft.body.slice(0, 80),
-    hasImage: Boolean(draft.imageUrn),
-    newScheduledFor: past.toISOString(),
-  });
-}
-
-main().finally(() => prisma.$disconnect());
+throw new Error("platform_governance_review_required: direct force scheduling is disabled");
+export {};

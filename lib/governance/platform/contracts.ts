@@ -1,0 +1,35 @@
+import {z} from 'zod';
+const identifier=z.string().min(1).max(256).refine(s=>s.trim()===s&&!/[\x00-\x1f]/.test(s));
+export const digest=z.string().regex(/^[a-f0-9]{64}$/);
+export const platformCustodianRoleArn=z.string().max(768).regex(/^arn:aws:iam::\d{12}:role\/[A-Za-z0-9+=,.@_\/-]{1,512}$/).refine(value=>value.trim()===value&&!/[\r\n]/.test(value));
+const accountId=z.string().regex(/^\d{12}$/),timestamp=z.string().datetime();
+const cloud={accountId,region:identifier,bucket:identifier};
+const social={connectionId:identifier,connectionRevision:identifier,author:identifier};
+const origin=z.string().max(2048).refine(value=>{try{const u=new URL(value);return u.protocol==='https:'&&!u.username&&!u.password&&u.origin===value}catch{return false}});
+const effect=<K extends string,T extends z.ZodRawShape>(kind:K,target:T)=>z.object({id:identifier,kind:z.literal(kind),target:z.object(target).strict()}).strict();
+export const platformEffectSchema=z.discriminatedUnion('kind',[
+ effect('deployment.vercel',{projectName:identifier,teamId:identifier,environment:z.enum(['preview','production']),projectCreation:z.literal('may_create_named_project'),leadId:identifier.optional(),leadRevision:timestamp.optional(),filesDigest:digest,configurationDigest:digest}),
+ effect('deployment.target.release',{nativeKey:digest,generation:z.number().int().positive().safe(),expectedReservationVersion:z.number().int().nonnegative().safe(),originalActionId:z.string().regex(/^platform_action_[a-f0-9-]{36}$/),requestReceiptDigest:digest,providerDeploymentId:z.string().max(256).regex(/^dpl_[A-Za-z0-9]+$/),profileDigest:digest,recoveryDigest:digest}),
+ effect('deployment.ecs',{accountId,region:identifier,cluster:identifier,service:identifier,taskDefinitionArn:identifier,operation:z.enum(['force','rollback']),configurationDigest:digest}),
+ effect('custodian.drain',{accountId,roleArn:platformCustodianRoleArn,nativeKey:digest,issuerProfileDigest:digest,controlDigest:digest,operation:z.enum(['begin','abort'])}),
+ effect('settings.vercel',{projectId:identifier,settingsDigest:digest}),
+ effect('template.bucket.create',cloud),
+ effect('template.object.put',{...cloud,key:identifier,bytesDigest:digest}),
+ effect('template.access.grant',{...cloud,key:identifier,objectVersion:identifier,bytesDigest:digest,recipientDigest:digest,ttlSeconds:z.number().int().min(1).max(3600)}),
+ effect('growth.image.initialize',{...social,bytesDigest:digest}),
+ z.object({id:identifier,kind:z.literal('growth.image.put'),target:z.union([
+  z.object({...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,destinationPathDigest:digest}).strict(),
+  z.object({...social,bytesDigest:digest,uploadGrantDigest:digest,destinationOrigin:origin,profile:z.literal('private_derived_grant_v1'),artifactId:z.string().regex(/^platform_image_artifact_[a-f0-9-]{36}$/),grantReference:z.string().regex(/^platform_image_grant_[a-f0-9]{64}$/),destinationProfileId:identifier,destinationProfileDigest:digest}).strict(),
+ ])}).strict(),
+ effect('growth.post.publish',{...social,draftId:identifier,renderedPayloadDigest:digest,imageLineageDigest:digest.optional(),imageUploadActionId:z.string().regex(/^platform_action_[a-f0-9-]{36}$/).optional()}),
+ effect('growth.post.delete',{...social,draftId:identifier,postUrn:identifier,draftRevision:timestamp,publicationActionId:identifier,publicationPlanDigest:digest,apiVersion:z.string().regex(/^\d{6}$/)}),
+ effect('growth.schedule.change',{...social,draftId:identifier,scheduledFor:timestamp,renderedPayloadDigest:digest,imageLineageDigest:digest.optional(),imageUploadActionId:z.string().regex(/^platform_action_[a-f0-9-]{36}$/).optional()}),
+]).superRefine((e,c)=>{if(e.kind==='deployment.vercel'&&Boolean(e.target.leadId)!==Boolean(e.target.leadRevision))c.addIssue({code:'custom',message:'Incomplete deployment source reference'})});
+export const platformPlanSchema=z.object({format:z.literal(1),scope:z.literal('platform'),sourceDigest:digest,expiresAt:timestamp,effects:z.array(platformEffectSchema).min(1).max(32).refine(xs=>new Set(xs.map(x=>x.id)).size===xs.length)}).strict();
+export const platformPrincipalSchema=z.object({userId:identifier,sessionId:identifier}).strict();
+export type PlatformPrincipal=z.infer<typeof platformPrincipalSchema>;
+export type PlatformEffect=z.infer<typeof platformEffectSchema>;
+export type PlatformPlanInput=z.infer<typeof platformPlanSchema>;
+export type PlatformPlan=Readonly<PlatformPlanInput & {digest:string}>;
+export const platformStateSchema=z.object({plan:platformPlanSchema.extend({digest}),requester:platformPrincipalSchema,reviewer:platformPrincipalSchema.nullable(),status:z.enum(['proposed','approved','claimed','confirmed','refused','unknown']),attemptCount:z.number().int().min(0).max(1),version:z.number().int().min(0).max(3),createdAt:z.number().int().nonnegative().safe(),updatedAt:z.number().int().nonnegative().safe()}).strict();
+export type PlatformAction=z.infer<typeof platformStateSchema>;

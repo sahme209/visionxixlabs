@@ -1,0 +1,36 @@
+{
+  "scope": "Owner-approved local source/mocked decoder preparation; no native import/run or qualification",
+  "tests": {
+    "candidateAndWorker": 10,
+    "shared": 599,
+    "sqlOptinsSkippedOnlyInOrdinarySuite": 203,
+    "actualIsolatedSql": 203,
+    "rootTypes": "PASS"
+  },
+  "actualSql": "/private/tmp/axiom-platform-pg-ryt2m9xw",
+  "sqlScope": "New connected candidate framing/full-raster algorithm -> actual current-identity SQL intake/proposal/private preview/distinct review; simulated codec/key/profile/private caller, no native decoder/HTTP/human qualification",
+  "evidence": [
+    "/private/tmp/axiom-image-decoder-candidate-red.log",
+    "/private/tmp/axiom-image-decoder-candidate-first.log",
+    "/private/tmp/axiom-image-decoder-worker-red.log",
+    "/private/tmp/axiom-image-decoder-preparation-tests-final.log",
+    "/private/tmp/axiom-image-decoder-preparation-types-final.log",
+    "/private/tmp/axiom-image-decoder-preparation-shared.log"
+  ],
+  "fixtureCorrection": "Initial copied synthetic PNG had an incorrect IDAT CRC. Corrected fixture checksum using independent CRC computation; checksum validation retained. No actual codec acceptance inferred.",
+  "remaining": [
+    "Real codec/package/native dependency provenance and adversarial corpus acceptance",
+    "Protected parent process launch, memory/CPU/network/filesystem/deadline/confirmed cleanup qualification",
+    "Official LinkedIn protocol consent/facts and qualified private init/PUT adapter",
+    "Authenticated complete image HTTP/client/UI and compatible later-post lineage",
+    "Full three-family batch review/build/mandatory-green PR and all live/production master gates"
+  ],
+  "sourceHashes": {
+    "lib/governance/platform/imageDecoderCandidate.ts": "0d47d03d71e79e18a2afc916b7627a278fb13a8d4fd4ef710cf555ae2a3a6eb2",
+    "lib/governance/platform/imageDecoderSharpWorker.ts": "09885ade3199d48d506850abef618aad86df3c9f7f0c5769ea15a7a257982762",
+    "lib/governance/platform/__tests__/imageDecoderCandidate.test.ts": "8eb235cf6c1a6e02ac1b45c1be364244bb6edd3afbcef7757ad26cc774cf5bd7",
+    "lib/governance/platform/__tests__/imageDecoderSharpWorker.test.ts": "2581a0a873a6b288ad22f0d7feb9866eeeed59b11da98f77c0ef444d43e8bced",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "185ca4ea7de568f91c855038323fba1f5dd77aa894b4b440854cd25760ee5d9c",
+    "scripts/run-platform-governance-postgres.py": "670ace1dee2384fed4645e8cdda27d7c521264753cf4bea24757b50bd0a3cc5f"
+  }
+}

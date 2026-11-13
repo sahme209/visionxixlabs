@@ -1,0 +1,31 @@
+{
+  "scope": "local SQL runner and fixed supplier composition, simulated native I/O/qualification",
+  "postgres": {
+    "fixture": "/private/tmp/axiom-platform-pg-f2hkprmr",
+    "result": 110,
+    "stoppedEvidenceSha256": "e138ccb54fdb08283c6eb21159c53207bbbbf07077246e2804e18d22efe6e250"
+  },
+  "fullSuite": {
+    "directory": "/private/tmp/axiom-native-supplier-full-fcfj7f1v",
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "counts": {
+      "numPassedTests": 18563,
+      "numFailedTests": 0,
+      "numPendingTests": 1024,
+      "numTodoTests": 0,
+      "numFailedTestSuites": 0
+    },
+    "failedTests": []
+  },
+  "priorFullFailure": {
+    "directory": "/private/tmp/axiom-native-supplier-full-wtidu_t6",
+    "cause": "isolated test PATH omitted installed /opt/homebrew/bin/gpg; beforeAll failed before 40 release guard tests",
+    "codeChangedToPass": false
+  },
+  "rootTypes": "passed",
+  "sourceTestSha256": "2d7be8f6b6573b35954d36368c78c81fcd10ce154d9aaf7b193bac8951b0a57a",
+  "realSourceQualification": false,
+  "providerAction": false,
+  "productionChanged": false
+}

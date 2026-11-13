@@ -1,0 +1,73 @@
+{
+  "scope": "actual fixed compiled job to signed synthetic JWT/current SQL/private runner; every native transport and real profile qualification intercepted/simulated",
+  "sourceHashes": {
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "e496afc7bb5b886fc27ba938da46ec72e7274eefb875e045426f3c9af30f445d",
+    "scripts/run-platform-governance-postgres.py": "5d32204cb7f492460bd9f6f986f56b67946edd7ac6e71304ef6c01da8d77ad40"
+  },
+  "actualIsolatedPostgres": {
+    "root": "/private/tmp/axiom-platform-pg-90ziuvvq",
+    "passed": 123,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true,
+    "receiptSha256": "788fa193a3eaf7cfcd9baf641798ffe07ade752de2e05bc542b8422d2a1c4250"
+  },
+  "newJoinedCases": [
+    "wrong signed run",
+    "wrong signed attempt",
+    "wrong signed environment",
+    "expired signed token",
+    "revoked independent reviewer session",
+    "revoked requester session",
+    "revoked source qualification",
+    "missing original requester delegation",
+    "two separate compiled job instances competing for the same original action and signed token"
+  ],
+  "negativeAssertions": [
+    "one native workload token request per consumed job",
+    "no execution HTTP request from rejected jobs",
+    "no native custodian credential acquisition",
+    "no STS/ECS I/O",
+    "no new custodian intents",
+    "delegation JSON byte-equivalent",
+    "no durable replay-key consumption",
+    "original parent remains approved/attempt0"
+  ],
+  "concurrencyAssertions": [
+    "one fulfilled original result and one refused competing job",
+    "two job token requests",
+    "at most one native source credential acquisition",
+    "one installed STS and one installed ECS request",
+    "original accepted result preserved and replay refused"
+  ],
+  "preservedFailures": [
+    {
+      "root": "/private/tmp/axiom-platform-pg-6pz7ntz7",
+      "passed": 120,
+      "failed": 2,
+      "cause": "test revoked humans before creating the synthetic approved admission fixture; original authority gate correctly refused setup; fixture reordered only"
+    },
+    {
+      "root": "/private/tmp/axiom-platform-pg-r09h69wc",
+      "passed": 122,
+      "failed": 1,
+      "cause": "new scenario accidentally reused the earlier known case token JTI; durable replay exclusion correctly refused both; each independent scenario now has a unique synthetic JTI; competing instances intentionally share one token"
+    }
+  ],
+  "intermediateMatrix": {
+    "root": "/private/tmp/axiom-platform-pg-6bgcie4_",
+    "passed": 122,
+    "failed": 0,
+    "pending": 0,
+    "stopped": true
+  },
+  "strictTypes": {
+    "log": "/private/tmp/axiom-compiled-handoff-matrix-final-types.log",
+    "exitCode": 0
+  },
+  "runtimeChanged": false,
+  "noActualProviderOrCredentialAction": true,
+  "productionChanged": false,
+  "activeWorkflowChanged": false,
+  "fullGovernanceComplete": false
+}

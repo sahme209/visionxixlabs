@@ -1,3 +1,4 @@
+import {createPlatformTemplateClient,createPlatformDeploymentClient,createPlatformSourceClient,createPlatformHistoryClient,createPlatformReviewClient,createPlatformExecutionClient,createPlatformPreparationClient} from './platformReview';
 import {releaseDeploymentApprovalPreviewSchema,type ReleaseDeploymentApprovalPreview} from '../../../lib/tauri/releaseDeploymentApprovalContract';
 import {readAgentActionEligibility,mutateAgentActionExecution,type AgentActionMutation} from './agentActionExecutionControls';
 import {readAgentActionExecution} from './agentActionExecutionRecovery';
@@ -1617,6 +1618,13 @@ export class DesktopClient {
     const parsed=serviceNowTerminalPolicyRequestSchema.safeParse(input);if(!parsed.success||!ticketReviewNonce.safeParse(clientRequestId).success)return Promise.resolve({ok:false,error:'Review the administrator-declared policy fields and source evidence.',outcomeUnconfirmed:false});
     const selected=parsed.data;return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/ticket-governance',{binding:selected,clientRequestId},(v):v is TicketGovernanceReview=>isTicketGovernanceReview(v)&&v.binding.kind==='servicenow_terminal_policy'&&v.binding.nativeProcess.kind==='model'&&v.binding.nativeProcess.modelSysId===selected.modelSysId&&JSON.stringify(v.binding.sourceReferences)===JSON.stringify(selected.sourceReferences)&&JSON.stringify(v.binding.terminalStates)===JSON.stringify(selected.terminalStates)&&JSON.stringify(v.binding.fields)===JSON.stringify(selected.fields),signal);
   }
+  platformTemplateClient(){return createPlatformTemplateClient(this.savedTaskContext())}
+  platformDeploymentClient(){return createPlatformDeploymentClient(this.savedTaskContext())}
+  platformSourceClient(){return createPlatformSourceClient(this.savedTaskContext())}
+  platformHistoryClient(){return createPlatformHistoryClient(this.savedTaskContext())}
+  platformPreparationClient(){return createPlatformPreparationClient(this.savedTaskContext())}
+  platformExecutionClient(){return createPlatformExecutionClient(this.savedTaskContext())}
+  platformReviewClient(){return createPlatformReviewClient(this.savedTaskContext())}
   governanceCollectionSources(signal?:AbortSignal):Promise<ReleasePlanResult<GovernanceSourceDirectory>> {
     return releaseOperationPlanRequest(this.savedTaskContext(),'POST','/api/desktop/governance-intelligence/read',{operation:'list_collection_sources'},(v):v is GovernanceSourceDirectory=>governanceSourceDirectorySchema.safeParse(v).success,signal);
   }

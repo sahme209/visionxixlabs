@@ -715,3 +715,13 @@ Key fact (L7, L30, L50 and others): **all 21 parents (A1–A9, B1–B6, C1–C6)
 ## November 11 supplemental token-efficiency/tooling requirement
 
 - [ ] Cross-cutting [token efficiency and useful repositories/tools](token-efficiency-and-tooling-assessment.md): evidence-backed selection, actual usage/cost baselines, unchanged quality/security/approval boundaries and no automatic adoption or claimed savings. Separate Axiom runtime usage from development-assistant usage. Linked in the master plan; existing delivery-parent counts and requirements remain intact.
+
+
+## November 12 mandatory competitive product standard
+
+Open cross-cutting acceptance requirement: [A new benchmark beyond Harness](axiom-master-action-plan.md#hard-rule-a-new-benchmark-beyond-harness). Apply it across the complete application/site/cockpit and prove claimed advantages with concrete customer-workflow evidence; feature parity and visual imitation alone do not satisfy it. This does not relax security, genuine approvals, honest availability or spending controls.
+
+
+## November 12 — guided CI/CD setup for teams without DevOps staff
+
+Open planned enhancement: [guided CI/CD setup](axiom-master-action-plan.md#guided-cicd-setup-for-teams-without-devops-staff--owner-addition-november-12). Reuse existing capabilities for a plain-language, button-driven repository-to-pipeline journey with optional governed AI help, inspectable branch/PR configuration, explicit permissions/costs/review, staging, separate production approval and clear outcomes/recovery. It is not marked implemented or live. Existing security, tenant, budget, genuine approval, provider/production and manual-deploy rules remain; continue the current Governance work first.

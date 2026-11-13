@@ -1,0 +1,11 @@
+# Existing support retrieval: bounded local context measurement
+
+Measured the actual pure retrieve/buildAiAnswerPrompt functions over the current192public knowledge entries, using six fixed public setup/governance questions. This is gap-time evidence under the token-efficiency assessment, not a new runtime feature, repository adoption or model benchmark.
+
+The existing top-five path assembles2,712–4,322UTF-8 prompt bytes, compared with94,419–94,442bytes for a deliberately hypothetical prompt containing every entry. This is95.4–97.1%fewer bytes for these six samples. The real current route ALREADY retrieves five passages; it never had the measured all-entry baseline. Therefore this is existing design efficiency, NOT a newly delivered reduction, comparison against Cursor, measured model-token savings, actual invoice reduction or equivalent-answer proof.
+
+The default grounded support answer requires no inference. The separate explicit AI answer still requires its real authentication, workspace policy, admission and actual usage settlement. This experiment invokes neither route and no SDK, provider, model, network, database or secret. Public model input/output tokenizer effects, answer completeness, hallucination/refusal quality, latency and real operating cost remain unmeasured. Some retrieval results are only adjacent topics; source IDs are recorded rather than silently labeled correct.
+
+Evidence: retrieval-context-byte-measurement.json binds head/source hashes, per-query IDs and byte counts; retrieval-context-byte-procedure.txt preserves the actual local procedure. One local measurement assertion passed. The first harness attempt incorrectly passed knowledgeEntries without invoking its factory; fixed only that harness, not product source. This does not repeat the older42case quality baseline or qualify new customer claims.
+
+Recommendation: retain the existing retrieval-first path; do not add a compression dependency merely to claim savings it already provides. Any future change needs a quality-equivalent task baseline and real provider-reported usage under separate model-call approval. Keep service/tool charges separate from actual model tokens and disclose the selected tariff honestly. No billing change or autonomous routing was implemented.

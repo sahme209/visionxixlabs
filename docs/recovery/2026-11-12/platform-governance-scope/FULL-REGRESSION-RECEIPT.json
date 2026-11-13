@@ -1,0 +1,41 @@
+{
+  "source": {
+    "head": "d9103c59a1b162d1b1600e11d808d9caf9868b4a",
+    "trackedDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "correction": "installed Homebrew tool directory restored to clean PATH; isolated existing GPG guard40pass; no test/source assertion changed",
+    "scope": "full ordinary suite; no database URL/opt-in flags/credentials; empty HOME/envDir false",
+    "maxWorkers": 4
+  },
+  "firstRun": {
+    "exitCode": 1,
+    "sourceUnchanged": true,
+    "numPassedTests": 18406,
+    "numFailedTests": 0,
+    "numPendingTests": 1033,
+    "numTodoTests": 0,
+    "numFailedTestSuites": 1,
+    "failedTests": []
+  },
+  "isolatedGuard": {
+    "numPassedTests": 40,
+    "numFailedTests": 0,
+    "numPendingTests": 0,
+    "numFailedTestSuites": 0
+  },
+  "correctedRun": {
+    "exitCode": 0,
+    "sourceUnchanged": true,
+    "numPassedTests": 18446,
+    "numFailedTests": 0,
+    "numPendingTests": 993,
+    "numTodoTests": 0,
+    "numFailedTestSuites": 0,
+    "failedSuites": []
+  },
+  "evidenceRoot": "/private/tmp/axiom-platform-regression-t52x5lab",
+  "limits": [
+    "ordinary suite only; opt-in actual PostgreSQL acceptance has separate79-case receipt",
+    "no CI, full production build, independent final source review, native qualification or production acceptance claimed",
+    "no source/assertion/security change to fix missing GPG in the first clean PATH"
+  ]
+}
