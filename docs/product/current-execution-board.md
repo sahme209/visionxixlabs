@@ -1236,3 +1236,12 @@ Runtimee701b064 passed18,910ordinary tests (0fail,1,142pending),228actual isolat
 
 ### PR326 Ubuntu shell-test correction
 PR326 failed two guard tests because Ubuntu shell startup emitted `PS1: unbound variable` before the fixed test scripts. Both test invocations now explicitly skip startup files while retaining strict options and every original assertion/deadline. Six focused checks pass; same final reviewer found no important issue. Runtime and workflows are unchanged. Exact-head GitHub validation remains required before merge; no real qualification or enablement is claimed. Evidence: docs/recovery/2026-11-12/platform-governance-scope/PR326-CI-SHELL-CORRECTION.json.
+
+
+## November13 — PR326 merged; real qualification is the active gate
+
+PR [#326](https://github.com/sahme209/visionxixlabs/pull/326) merged normally as `3976f3992be79004e8872974fd7ca478fed674d5`; all13 applicable checks passed on exact head `06d666f1a6960ef20efaab784b24927918102bf0`, with the existing screenshot job intentionally skipped. This supersedes earlier pending PR/CI statements only. A subsequent main macOS run captured the five-second full-stream cap fixture timeout; main must not be called green or deployed. A reviewed test-only allocation correction preserves the real wire, all byte/ack/refusal assertions and deadlines; local offline compilation is blocked by uncached quinn. Exact CI remains required.
+
+Owner selected an existing AWS test environment and completed console sign-in. AWS Core still requires reauthentication, but read-only Safari inspection works: the opened project in us-east-2 shows Clusters (0), No clusters, one page. Other regions/accounts are uninspected. No resource, grant or credential was changed; no secret was read. Owner then selected preparation of a minimal setup/cost proposal, not provisioning or spending.
+
+Current evidence/next sequence: `docs/recovery/2026-11-13/real-governance-qualification/READINESS.md`, `MERGED-SOURCE-AND-READINESS.json` and `MINIMAL-SETUP-AND-COST-PROPOSAL.md`. One short-lived Fargate task is a proposal, not an installed or qualified custodian. Actual Linux custody/profile/fixture design, full regional quote, finite reviewed setup/run packet and exact owner permission remain before effects. Native runtime, complete admission/enrollment, production schema/recovery and genuine independent end-to-end decisions remain open. Preserve the existing Mac gates and consumed ServiceNow written-note history. No deployment/enablement occurred; full Governance remains incomplete.
