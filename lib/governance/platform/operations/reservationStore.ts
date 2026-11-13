@@ -1,3 +1,4 @@
+import type {OperationalObservationAuthorization} from './observationAuthorization';
 import 'server-only';
 import {operationalCredentialState,type OperationalCredentialState} from './credentialContract';
 import {operationalEvidenceId} from './contracts';
@@ -12,8 +13,8 @@ interface Source{
  assertPriorCredentialClosed(tx:OperationalTargetTransaction,record:OperationalTarget,credential:Extract<OperationalCredentialState,{status:'issued'}>):Promise<string>;
  readSnapshot(tx:OperationalTargetTransaction,binding:OperationalTargetBinding):Promise<unknown>;
  assertSnapshotCurrent(tx:OperationalTargetTransaction,snapshotDigest:string,bindingDigest:string):Promise<void>;
- readOutcome(tx:OperationalTargetTransaction,record:OperationalTarget):Promise<unknown>;
- assertOutcomeCurrent(tx:OperationalTargetTransaction,lineageDigest:string,outcomeDigest:string):Promise<void>;
+ readOutcome(tx:OperationalTargetTransaction,record:OperationalTarget,owner?:OperationalObservationAuthorization):Promise<unknown>;
+ assertOutcomeCurrent(tx:OperationalTargetTransaction,lineageDigest:string,outcomeDigest:string,owner?:OperationalObservationAuthorization):Promise<void>;
 }
 const fail=():never=>{throw Error('operational_target_unavailable')};
 const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
@@ -23,6 +24,14 @@ function receipt(b:OperationalTargetBinding,key:string,generation:number,kind:Op
  * provider send, credential, reset, deletion or caller-supplied proof path. */
 export function createOperationalTargetReservations(source:Source){
  async function load(tx:OperationalTargetTransaction,key:string){const raw=await tx.readOperationalTarget(key);if(!raw)return null;const state=readOperationalTarget(raw);if(state.nativeKey!==key)return fail();return state}
+ async function observedCurrent(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number,receiptId:string,terminalOnly:boolean,owner?:OperationalObservationAuthorization){
+   const b=binding(raw),key=nativeEcsTargetKey(b.manifest.target);await tx.lockOperationalTarget(key);const state=await load(tx,key);
+   if(!state||state.actionId!==b.actionId||state.manifestDigest!==b.manifest.digest||state.generation!==generation||(terminalOnly?!['stable','terminal_failure'].includes(state.phase):state.phase==='reserved')||state.lastReceiptId!==receiptId)return fail();
+   const saved=readOperationalTargetReceipt(await tx.readOperationalTargetReceipt(receiptId)),outcome=operationalNativeOutcome.parse(saved.detail);
+   if(saved.kind!==state.phase||saved.nativeKey!==key||saved.actionId!==b.actionId||saved.manifestDigest!==b.manifest.digest||saved.generation!==generation||outcome.target.taskDefinitionArn!==state.target.taskDefinitionArn||outcome.deploymentId!==state.deploymentId)return fail();
+   const lineage=sha256ContentHash({nativeKey:key,generation,actionId:b.actionId,manifestDigest:b.manifest.digest,snapshotDigest:state.snapshotDigest});await source.assertOutcomeCurrent(tx,lineage,sha256ContentHash(outcome),owner);return saved;
+
+ }
  return Object.freeze({
   async reserve(tx:OperationalTargetTransaction,raw:OperationalTargetBinding){
    const b=binding(raw),m=b.manifest,key=nativeEcsTargetKey(m.target);await tx.lockOperationalTarget(key);const previous=await load(tx,key);
@@ -52,23 +61,18 @@ export function createOperationalTargetReservations(source:Source){
    if(!state||state.actionId!==b.actionId||state.manifestDigest!==b.manifest.digest||state.generation!==ref.generation||state.phase!=='reserved'||state.bindingDigest!==sha256ContentHash(b))return fail();
    await source.assertSnapshotCurrent(tx,state.snapshotDigest,state.bindingDigest);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.sourceExpiresAt)||now>=Date.parse(b.manifest.expiresAt))return fail();
   },
-  async assertTerminalCurrent(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number,receiptId:string){
-   const b=binding(raw),key=nativeEcsTargetKey(b.manifest.target);await tx.lockOperationalTarget(key);const state=await load(tx,key);
-   if(!state||state.actionId!==b.actionId||state.manifestDigest!==b.manifest.digest||state.generation!==generation||!['stable','terminal_failure'].includes(state.phase)||state.lastReceiptId!==receiptId)return fail();
-   const saved=readOperationalTargetReceipt(await tx.readOperationalTargetReceipt(receiptId)),outcome=operationalNativeOutcome.parse(saved.detail);
-   if(saved.kind!==state.phase||saved.nativeKey!==key||saved.actionId!==b.actionId||saved.manifestDigest!==b.manifest.digest||saved.generation!==generation||outcome.target.taskDefinitionArn!==state.target.taskDefinitionArn||outcome.deploymentId!==state.deploymentId)return fail();
-   const lineage=sha256ContentHash({nativeKey:key,generation,actionId:b.actionId,manifestDigest:b.manifest.digest,snapshotDigest:state.snapshotDigest});await source.assertOutcomeCurrent(tx,lineage,sha256ContentHash(outcome));return saved;
-  },
-  async observe(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number){
+  async assertTerminalCurrent(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number,receiptId:string,owner?:OperationalObservationAuthorization){return observedCurrent(tx,raw,generation,receiptId,true,owner)},
+  async assertObservedCurrent(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number,receiptId:string,owner:OperationalObservationAuthorization){return observedCurrent(tx,raw,generation,receiptId,false,owner)},
+  async observe(tx:OperationalTargetTransaction,raw:OperationalTargetBinding,generation:number,owner?:OperationalObservationAuthorization){
    const b=binding(raw),key=nativeEcsTargetKey(b.manifest.target);await tx.lockOperationalTarget(key);const previous=await load(tx,key);
    if(!previous||previous.actionId!==b.actionId||previous.manifestDigest!==b.manifest.digest||previous.generation!==generation)return fail();
    if(['stable','terminal_failure'].includes(previous.phase))return previous;
-   const outcome=operationalNativeOutcome.parse(await source.readOutcome(tx,previous));
+   const outcome=operationalNativeOutcome.parse(await source.readOutcome(tx,previous,owner));
    if(outcome.actionId!==b.actionId||outcome.manifestDigest!==b.manifest.digest||outcome.generation!==generation||nativeEcsTargetKey(outcome.target)!==key||outcome.target.taskDefinitionArn!==previous.target.taskDefinitionArn||previous.phase==='reserved'&&!['accepted','unknown'].includes(outcome.kind)||previous.phase==='unknown'&&previous.deploymentId===null&&outcome.kind!=='unknown'||previous.deploymentId!==null&&outcome.deploymentId!==null&&previous.deploymentId!==outcome.deploymentId)return fail();
-   const lineageDigest=sha256ContentHash({nativeKey:key,generation,actionId:b.actionId,manifestDigest:b.manifest.digest,snapshotDigest:previous.snapshotDigest}),outcomeDigest=sha256ContentHash(outcome);await source.assertOutcomeCurrent(tx,lineageDigest,outcomeDigest);
+   const lineageDigest=sha256ContentHash({nativeKey:key,generation,actionId:b.actionId,manifestDigest:b.manifest.digest,snapshotDigest:previous.snapshotDigest}),outcomeDigest=sha256ContentHash(outcome);await source.assertOutcomeCurrent(tx,lineageDigest,outcomeDigest,owner);
    const now=await tx.now();if(!Number.isSafeInteger(now)||now<previous.updatedAt||Date.parse(outcome.observedAt)>now||Date.parse(outcome.observedAt)<previous.createdAt)return fail();
    const saved=receipt(b,key,generation,outcome.kind,outcome,previous.previousCredentialClosureReceiptId),existing=await tx.readOperationalTargetReceipt(saved.receiptId);if(existing){const checked=readOperationalTargetReceipt(existing);if(!same(checked,saved)||previous.lastReceiptId!==saved.receiptId)return fail();return previous}
-   const state=readOperationalTarget({...previous,phase:outcome.kind,deploymentId:previous.deploymentId??outcome.deploymentId,lastReceiptId:outcome.receiptId,version:previous.version+1,updatedAt:now});await tx.replaceOperationalTarget(key,previous.version,state);await tx.insertOperationalTargetReceipt(saved);await source.assertOutcomeCurrent(tx,lineageDigest,outcomeDigest);return state;
+   const state=readOperationalTarget({...previous,phase:outcome.kind,deploymentId:previous.deploymentId??outcome.deploymentId,lastReceiptId:outcome.receiptId,version:previous.version+1,updatedAt:now});await tx.replaceOperationalTarget(key,previous.version,state);await tx.insertOperationalTargetReceipt(saved);await source.assertOutcomeCurrent(tx,lineageDigest,outcomeDigest,owner);return state;
   },
  });
 }

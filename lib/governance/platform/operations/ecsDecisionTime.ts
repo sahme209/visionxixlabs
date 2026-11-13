@@ -7,7 +7,7 @@ import {assertPlatformParticipantsTime} from '../principalTime';
 import type {ExecutionTimeSource} from '../executionTime';
 import type {EcsManifest} from './ecsPreparation';
 import {operationalEvidenceId} from './contracts';
-export interface EcsDecisionTiming{clock:ExecutionTimeSource;signal?:AbortSignal}
+export interface EcsDecisionTiming{clock:ExecutionTimeSource;signal?:AbortSignal;assertActive?:()=>void}
 export interface EcsDecisionTimeSource{
  /** Exact private source/profile evidence, never supplied by request JSON.
   * Structural matches do not establish native clock/profile provenance. */
