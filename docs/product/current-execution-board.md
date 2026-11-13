@@ -1,11 +1,22 @@
 # Axiom current execution board
 
+## Current execution snapshot — November13, after PR329
+
+This entry supersedes older status claims only; preserve all historical scope, evidence and approval rules below.
+
+- **Source merged/verified:** PR329 merged normally as0a240c617e035ea76755241b85ddc6900f617cf8; seven exact-head checks passed and all six merged-main checks passed (run43519559276). Receipt: docs/recovery/2026-11-13/real-governance-qualification/joined-governance-pr329/RESULT.json. No bypass or direct main push.
+- **Validated scope:**19270ordinary/0fail/1143pending,154focused/root strict types,229actual isolated SQL/0fail0skip,coherent304page offline build. Original source-intent/window/native-final authority joins and unknown/no-replay histories preserved. Real time/runtime/custody/fleet/credentials/people/providers remain synthetic/intercepted in qualification fixtures, not real acceptance. Governance remains incomplete/disabled.
+- **Next core work:** complete the real test-host/time/custody/fleet/human/provider design and qualification. New PINNED-TIME-CANDIDATE-FINITE-READ-PROPOSAL.md proposes one bounded official-source assessment of the previously observed prerelease commit; NOT adoption, a real clock query or reusable external-read authority. Fresh owner approval required; do not repeat consumed tag/release/account/probe/SQL/build attempts. No native/host/resource/spending/activation authority follows.
+- **Production unchanged:** no deployment, database/schema/settings/flags, real credential/provider action or purchases. Current production target/schema/recovery remains unresolved after consumed read authority. Owner deployment click and every master/owner gate remain.
+- **Visual additions saved:** deployment landscape and future space/universe assessment are OPEN plan-only B2/B6 deliverables after current priorities; hierarchy, clean minimalism and purposeful power are top visual acceptance criteria. No video review, website change, install or deployment is claimed.
+
+
 ## November 13 — Octopus added to competitive product acceptance
 
 The owner's existing beyond-Harness mandate now also includes Octopus Deploy. Keep a source-backed capability/gap matrix for both, with comprehensive relevant feature coverage as the goal and a distinctive agent-native, secure, clear and premium Axiom experience. Competitor superiority and completed parity require demonstrated evidence; planned capabilities stay labeled planned. No research/account/dependency/spending authority or change to Governance-first priority follows. See the master plan's “Harness and Octopus” requirement.
 
 
-## Current execution snapshot — November 13, after PR328
+## Historical execution snapshot — November 13, after PR328
 
 Read this snapshot for current status. It supersedes older status claims only; all original scope, hard rules and historical evidence below remain intact.
 

@@ -1,0 +1,105 @@
+{
+  "format": 1,
+  "observedAt": "2026-11-13T22:34:27.384521+00:00",
+  "pr": {
+    "url": "https://github.com/sahme209/visionxixlabs/pull/329",
+    "state": "MERGED",
+    "mergedAt": "2026-11-13T22:28:28Z",
+    "mergeCommit": {
+      "oid": "0a240c617e035ea76755241b85ddc6900f617cf8"
+    },
+    "headRefOid": "212fe3e35f4f8edd54a9b9c77a17fa26e3275a03"
+  },
+  "prChecks": [
+    {
+      "name": "isolated-website",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518780060/job/132207440975"
+    },
+    {
+      "name": "Type check",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518779971/job/132207440933"
+    },
+    {
+      "name": "Vitest (1/3)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518779971/job/132207441053"
+    },
+    {
+      "name": "Vitest (2/3)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518779971/job/132207440987"
+    },
+    {
+      "name": "Vitest (3/3)",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518779971/job/132207441132"
+    },
+    {
+      "name": "Build and offline checks",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518779971/job/132207441091"
+    },
+    {
+      "name": "Typecheck + Vitest",
+      "status": "COMPLETED",
+      "conclusion": "SUCCESS",
+      "detailsUrl": "https://github.com/sahme209/visionxixlabs/actions/runs/43518779971/job/132209677808"
+    }
+  ],
+  "main": {
+    "sha": "0a240c617e035ea76755241b85ddc6900f617cf8",
+    "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276",
+    "conclusion": "success",
+    "checks": [
+      {
+        "name": "Type check",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276/job/132210114129"
+      },
+      {
+        "name": "Build and offline checks",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276/job/132210114451"
+      },
+      {
+        "name": "Vitest (2/3)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276/job/132210114471"
+      },
+      {
+        "name": "Vitest (1/3)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276/job/132210114650"
+      },
+      {
+        "name": "Vitest (3/3)",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276/job/132210114682"
+      },
+      {
+        "name": "Typecheck + Vitest",
+        "status": "completed",
+        "conclusion": "success",
+        "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43519559276/job/132212158482"
+      }
+    ]
+  },
+  "merge": "Normal expected-head squash; no admin/bypass/main push",
+  "sourceValidation": "19270ordinary/0fail/1143pending;154focused;strict types;229actual isolated PG/0fail0skip;304page network-denied production build",
+  "limits": "DB/native time/custody/fleet/credentials/providers synthetic/intercepted in local SQL; real qualification not established",
+  "production": "No deployment, schema/settings/flag change, native signing/install, resource purchase or spending; Governance incomplete/disabled",
+  "ownerVisualRequirements": "Deployment map plus future space/universe assessment and hierarchy/minimalism/purposeful-power priorities committed in merged source; no visual implementation or dependency adoption"
+}
