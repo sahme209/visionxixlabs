@@ -1,3 +1,4 @@
+import type {ExecutionTimeCheck,ExecutionTimeAuthorization} from '../executionTime';
 import {readOperationalFailureHistory} from './failureHistory';
 import type {CustodianIntentStage} from './custodianIntentContract';
 import {custodianCredentialObservation,type CustodianCredentialObservation} from './custodianCredentialContract';
@@ -27,7 +28,7 @@ export interface OperationalCredentialIssuer{
  assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
  assertSourceCurrent?(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest'],metadata:CustodianCredentialObservation):Promise<void>;
  /** Private fixed issuer; no raw token/role/target from request JSON. */
- issue(manifest:OperationalDelegation['manifest'],beforeIssue:()=>Promise<void>,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>):Promise<unknown>;
+ issue(manifest:OperationalDelegation['manifest'],beforeIssue:ExecutionTimeAuthorization,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>):Promise<unknown>;
 }
 const privateCredential=z.object({leaseRef:z.string().regex(/^platform_credential_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/),accessKeyId:z.string().min(1).max(128),secretAccessKey:z.string().min(1).max(8192),sessionToken:z.string().min(1).max(16384),expiresAt:z.number().int().nonnegative().safe()}).strict().refine(v=>[v.accessKeyId,v.secretAccessKey,v.sessionToken].every(s=>!/[\s\x00-\x1f\x7f]/.test(s)));
 const fail=():never=>{throw Error('operational_delegation_unavailable')};
@@ -95,7 +96,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     });claimed=true;
     const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,authorized=false,used=false,accepted:ReturnType<typeof projectOperationalEcsAcceptance>|null=null;
     try{
-     const beforeSend=async()=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(held.actionId,async(tx,key)=>{await sendCurrent(tx,key,true);if(intents){await intents.reserve(tx,key,'ecs.send');await sendCurrent(tx,key,true)}});abort.signal.throwIfAborted();authorized=true};
+     const beforeSend=async(timeCheck?:ExecutionTimeCheck)=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(held.actionId,async(tx,key)=>{await sendCurrent(tx,key,true);if(intents){await intents.reserve(tx,key,'ecs.send');await sendCurrent(tx,key,true)}if(timeCheck){abort.signal.throwIfAborted();await timeCheck();abort.signal.throwIfAborted();await sendCurrent(tx,key,true)}});abort.signal.throwIfAborted();authorized=true};
      const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
      const raw=await Promise.race([transport.send(saved.state.manifest,Object.freeze({accessKeyId:held.value.accessKeyId,secretAccessKey:held.value.secretAccessKey,sessionToken:held.value.sessionToken,expiresAt:held.value.expiresAt}),beforeSend,abort.signal),timeout]);abort.signal.throwIfAborted();if(!authorized)return fail();accepted=projectOperationalEcsAcceptance(saved.state.manifest,saved.priorDeploymentId,raw);
     }catch{accepted=null}finally{if(timer)clearTimeout(timer);abort.abort()}
@@ -116,8 +117,9 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,value:z.infer<typeof privateCredential>,authorized=false,used=false;
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
-    const beforeIssue=async()=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
+    const beforeIssue=async(timeCheck?:ExecutionTimeCheck)=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
      const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await sourceCurrent(tx,state);if(intents){await intents.reserve(tx,key,'role.acquire');await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await sourceCurrent(tx,state)}
+     if(timeCheck){abort.signal.throwIfAborted();await timeCheck();abort.signal.throwIfAborted();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await sourceCurrent(tx,state);await current(tx,state,'claimed')}
     });abort.signal.throwIfAborted();authorized=true};
     let sourceUsed=false;
     const beforeSource=async()=>{

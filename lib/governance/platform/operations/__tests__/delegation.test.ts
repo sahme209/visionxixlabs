@@ -87,3 +87,14 @@ it('does not release operational history when reader access changes during the f
  const store=createOperationalDelegationStore(repo,{assertCurrent:async(_tx,actor)=>{if(f.revoked.has(actor.userId))throw Error('revoked')}},f.source,f.identity);
  await expect(store.inspect(id,requester)).rejects.toThrow('revoked');
 });
+it('rechecks original authority after a joined clock check, before the simulated physical mint',async()=>{
+ let physicalMints=0,clockReads=0;
+ const issuer={assertQualified:vi.fn(async()=>{}),issue:vi.fn()},f=fixture(issuer);
+ issuer.issue.mockImplementation(async(_m:unknown,beforeIssue:(timeCheck?:()=>Promise<void>)=>Promise<void>)=>{
+  await beforeIssue(async()=>{clockReads++;f.revoked.add(reviewer.userId)});physicalMints++;
+  return {leaseRef:'platform_credential_22222222-2222-4222-8222-222222222222',accessKeyId:'SYNTHETIC_ACCESS',secretAccessKey:'SYNTHETIC_SECRET',sessionToken:'SYNTHETIC_TOKEN',expiresAt:now+900000};
+ });
+ await f.store.delegate(id,1,f.plan.digest,requester);const claim=await f.store.claim(id,0,'synthetic'),pending=await f.store.beginCredential(claim.proof);
+ expect(await f.store.issueCredential(pending.proof)).toMatchObject({credentialHandle:null,history:{credential:{status:'unknown'}}});
+ expect(clockReads).toBe(1);expect(physicalMints).toBe(0);
+});

@@ -1,3 +1,4 @@
+import {assertExecutionWindow} from '../executionTime';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -31,13 +32,14 @@ const fail=():never=>{throw Error('custodian_native_supplier_unavailable')};
  * No ambient credentials, defaults, refresh, memoization or public registration.
  * Native acquisition uncertainty is handled by the original delegation ledger. */
 export function createNativeCustodianPorts(qualification:NativeCustodianQualification):PrivateOperationalStsPorts {
+ const clock=qualification.clock.bind(qualification);
  const issued=new WeakMap<object,{manifestDigest:string;capture:Readonly<NativeCustodianCapture>}>();
  async function current(manifest:Manifest,capture:Readonly<NativeCustodianCapture>,signal:AbortSignal,expiresAt?:number){
   signal.throwIfAborted();await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
-  const raw=await qualification.clock(signal);signal.throwIfAborted();const earliest=raw.earliest,latest=raw.latest;
-  if(!Number.isSafeInteger(earliest)||!Number.isSafeInteger(latest)||earliest<0||latest<earliest||capture.maximumExpiresAt<=latest||expiresAt!==undefined&&(expiresAt<=latest||expiresAt>capture.maximumExpiresAt))return fail();
+  if(expiresAt!==undefined&&expiresAt>capture.maximumExpiresAt)return fail();
+  await assertExecutionWindow(clock,{expiresAt:expiresAt??capture.maximumExpiresAt},signal);
  }
- return Object.freeze({assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
+ return Object.freeze({clock,assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
   async readCustodianCredential(raw:Manifest,signal:AbortSignal){try{
    const manifest=readOperationalManifest(raw);if(manifest.kind!=='deployment.ecs'||!manifest.issuerProfileDigest)return fail();signal.throwIfAborted();
    const supplied=await qualification.capture(manifest,signal);signal.throwIfAborted();
