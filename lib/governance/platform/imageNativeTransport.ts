@@ -1,4 +1,5 @@
 import 'server-only';
+import {authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeWindow} from './executionTime';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
@@ -11,10 +12,11 @@ export interface ImageNativePorts {
  /** Fixed private profile input; the supplier must bind this exact version to
   * the reviewed profile. No environment-selected version or endpoint fallback. */
  version:string;
+ clock:ExecutionTimeSource;
  now():number;
  assertQualified(binding:Readonly<ImageUploadBinding>,version:string,signal:AbortSignal):Promise<void>;
  assertObservationAllowed(binding:Readonly<ImageUploadBinding>,signal:AbortSignal):Promise<void>;
- assertCurrent(binding:Readonly<ImageUploadBinding>,index:0|1,signal:AbortSignal):Promise<void>;
+ assertCurrent(binding:Readonly<ImageUploadBinding>,index:0|1,signal:AbortSignal,timeCheck?:ExecutionTimeCheck):Promise<void>;
  /** Must acknowledge the durable original parent/child/native reservation
   * commit. A lost acknowledgement grants neither credentials nor a send. */
  admit(binding:Readonly<ImageUploadBinding>,index:0|1,signal:AbortSignal):Promise<void>;
@@ -32,6 +34,7 @@ const credentialSchema=z.string().min(1).max(8192).regex(/^[\x21-\x7e]+$/);
  * enclosing execution store must persist them atomically with original claims.
  * No client, generic adapter, source hash or caller JSON can create a proof. */
 export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal?:AbortSignal){
+ const clock=ports?.clock;
  const used=new Set<string>();
  const observations=new WeakMap<object,{bindingDigest:string;index:0|1;value:ImageNativeObservation}>();
  async function perform(raw:unknown,index:0|1,put?:{context:unknown;address:unknown;bytes:unknown}):Promise<object>{
@@ -61,12 +64,14 @@ export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal
     lastNow=now;return now;
    }
    async function within<T>(fn:()=>Promise<T>):Promise<T>{signal.throwIfAborted();const result=await withGithubAbort(Promise.resolve().then(()=>{signal.throwIfAborted();return fn()}),signal);signal.throwIfAborted();return result;}
-   async function current(){
+   async function current(extra?:ExecutionTimeWindow){
     time();if(p.version!==version)return fail();
     await within(()=>p.assertQualified(b,version,signal));
     await within(()=>p.assertObservationAllowed(b,signal));
-    await within(()=>p.assertCurrent(b,index,signal));
-    if(credential)await within(()=>p.assertCredentialCurrent(b,credential!,signal));
+    const window={notBefore:Math.max(grant?.native.issuedAt??0,extra?.notBefore??0),expiresAt:Math.min(Date.parse(b.expiresAt),grant?.native.expiresAt??Number.MAX_SAFE_INTEGER,extra?.expiresAt??Number.MAX_SAFE_INTEGER)};
+    await within(()=>authorizeExecutionWindow(clock!,window,check=>{if(!check)return fail();return p.assertCurrent(b,index,signal,async restriction=>{
+     await check(restriction);if(credential)await within(()=>p.assertCredentialCurrent(b,credential!,signal));signal.throwIfAborted();if(p.version!==version)return fail();
+    })},signal));
     if(p.version!==version)return fail();time();
    }
    await current();await within(()=>p.admit(b,index,signal));await current();
@@ -74,7 +79,9 @@ export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal
    await current();
    async function send(url:string,init:RequestInit){
     await current();
-    // No await between the final clock/abort check and the actual fetch call.
+    // No await between this point-clock/abort guard and fetch. Native
+    // interval validity through final authorization/commit/dispatch still
+    // requires separate qualification; a timer is not that evidence.
     return within(()=>{time();return fetch(url,{...init,headers:{...initial.headers,authorization:'Bearer '+credential,...(init.headers??{})},redirect:'error',cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal})});
    }
    async function json(response:Response){
@@ -104,7 +111,7 @@ export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal
     if(!ready.mediaReady)return fail();
     value=Object.freeze({kind:'ready',image:ready.image,owner:ready.owner,mediaReady:true,observedAt:time()});
    }
-   await current();const proof=Object.freeze({});observations.set(proof,{bindingDigest:b.bindingDigest,index,value});return proof;
+   await current(value.kind==='initialized'?{notBefore:value.issuedAt,expiresAt:value.expiresAt}:undefined);const proof=Object.freeze({});observations.set(proof,{bindingDigest:b.bindingDigest,index,value});return proof;
   }catch{return fail()}finally{if(timer)clearTimeout(timer);abort?.abort();bytes?.fill(0)}
  }
  return Object.freeze({

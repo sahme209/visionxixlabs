@@ -178,9 +178,9 @@ async function nativeExecutionFixture(writeOnly=false,encryptedToken?:string,rev
  if(!writeOnly)await db.$executeRawUnsafe('UPDATE "LinkedInAccountConnection" SET scopes=$1 WHERE id=$2','w_member_social rw_ads',f.id);
  f.resources.readUploadProfile=async()=>({profileId:'synthetic-native-profile',profileDigest:d,destinationOrigin:'https://www.linkedin.com'});
  const grantKey=Buffer.alloc(32,31),credentials=vi.fn(async()=> 'SYNTHETIC_NOT_A_REAL_TOKEN');
- const resources:ImageExecutionResources={...f.resources,version:'202607',now:()=>Date.now(),assertNativeQualified:async()=>{},assertObservationAllowed:async(_b,connection)=>{if(!connection.scopes.split(' ').includes('rw_ads'))throw Error('synthetic_no_observation_permission')},readCredential:credentials,assertCredentialCurrent:async()=>{},readGrantKey:async()=>grantKey,assertGrantKeyCurrent:async(_b,key)=>{if(!Buffer.from(key).equals(grantKey))throw Error('synthetic_grant_key_changed')}};
+ const resources:ImageExecutionResources={...f.resources,version:'202607',clock:async()=>({earliest:Date.now(),latest:Date.now()+1}),now:()=>Date.now(),assertNativeQualified:async()=>{},assertObservationAllowed:async(_b,connection)=>{if(!connection.scopes.split(' ').includes('rw_ads'))throw Error('synthetic_no_observation_permission')},readCredential:credentials,assertCredentialCurrent:async()=>{},readGrantKey:async()=>grantKey,assertGrantKeyCurrent:async(_b,key)=>{if(!Buffer.from(key).equals(grantKey))throw Error('synthetic_grant_key_changed')}};
  const artifact=await f.service.intake(f.selection,f.bytes,actor),proposal=await f.service.prepare(artifact.artifact.artifactId,new Date(Date.now()+reviewWindowMs).toISOString(),randomUUID(),actor),view=await f.service.preview(proposal.actionId,reviewer);await f.service.review(proposal.actionId,0,view.binding.plan.digest,reviewer);view.bytes.fill(0);
- const store=createImageExecutionStore(f.r,f.authority,resources);
+ const store=createImageExecutionStore(f.r,f.authority,resources,new AbortController().signal);
  return {...f,resources,credentials,proposal,b:view.binding,store};
 }
 function interceptImageNative(f:Awaited<ReturnType<typeof nativeExecutionFixture>>,status='AVAILABLE'){
@@ -212,7 +212,7 @@ it.skipIf(!enabled)('accepted bytes with processing status become durable unknow
 it.skipIf(!enabled)('lost initializer claim acknowledgement preserves the durable original hold and forbids credentials or a provider request',async()=>{
  const f=await nativeExecutionFixture(),native=interceptImageNative(f);let lost=false;
  const repo={transaction:async<T>(fn:(tx:import('../actionStore').PlatformTransaction)=>Promise<T>)=>{let claimed=false;const result=await f.r.transaction(tx=>fn({...tx,event:async event=>{await tx.event(event);if(event.kind==='effect.claimed'&&event.actionId===f.proposal.actionId&&event.effectIndex===0)claimed=true}}));if(claimed&&!lost){lost=true;throw Error('synthetic_commit_reply_lost')}return result}};
- const store=createImageExecutionStore(repo,f.authority,f.resources);
+ const store=createImageExecutionStore(repo,f.authority,f.resources,new AbortController().signal);
  try{await expect(store.initialize(f.proposal.actionId,1,actor)).rejects.toThrow();expect(f.credentials).not.toHaveBeenCalled();expect(native.fetch).not.toHaveBeenCalled();
   const state=await f.r.transaction(async tx=>{await tx.lock(f.proposal.actionId);return readPlatformAction(await tx.read(f.proposal.actionId))});expect(state).toMatchObject({status:'claimed',attemptCount:1});await expect(store.initialize(f.proposal.actionId,1,actor)).rejects.toThrow();expect(native.fetch).not.toHaveBeenCalled();
  }finally{native.fetch.mockRestore()}
@@ -221,7 +221,7 @@ it.skipIf(!enabled)('late authority loss rolls back readiness/result/event toget
  const f=await nativeExecutionFixture(),native=interceptImageNative(f);
  try{await f.store.initialize(f.proposal.actionId,1,actor);
   const repo={transaction:<T>(fn:(tx:import('../actionStore').PlatformTransaction)=>Promise<T>)=>f.r.transaction(tx=>fn({...tx,event:async event=>{await tx.event(event);if(event.imagePutResult?.outcome==='confirmed')f.revoke()}}))};
-  await expect(createImageExecutionStore(repo,f.authority,f.resources).put(f.proposal.actionId,2,actor)).rejects.toThrow();
+  await expect(createImageExecutionStore(repo,f.authority,f.resources,new AbortController().signal).put(f.proposal.actionId,2,actor)).rejects.toThrow();
   const saved=await f.r.transaction(async tx=>{await tx.lock(f.proposal.actionId);return {state:readPlatformAction(await tx.read(f.proposal.actionId)),grant:await tx.imageStorage!.readGrant(),effect:await tx.readEffect(f.proposal.actionId,1)}});expect(saved.state.status).toBe('claimed');expect(saved.effect).toBe('claimed');expect(saved.grant?.claim).toMatchObject({attempt:1});expect(saved.grant?.putResult).toBeNull();
   await expect(f.store.put(f.proposal.actionId,2,actor)).rejects.toThrow();expect(native.fetch).toHaveBeenCalledTimes(3);
  }finally{native.fetch.mockRestore()}
@@ -236,7 +236,7 @@ it.skipIf(!enabled)('current reviewer, write-only permission and revocation boun
 });
 it.skipIf(!enabled)('two competing execution callers obtain only one committed initializer, credential lookup and native request',async()=>{
  const f=await nativeExecutionFixture(),native=interceptImageNative(f);
- try{const results=await Promise.allSettled([f.store.initialize(f.proposal.actionId,1,actor),createImageExecutionStore(f.r,f.authority,f.resources).initialize(f.proposal.actionId,1,actor)]);expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(f.credentials).toHaveBeenCalledTimes(1);expect(native.fetch).toHaveBeenCalledTimes(1);
+ try{const results=await Promise.allSettled([f.store.initialize(f.proposal.actionId,1,actor),createImageExecutionStore(f.r,f.authority,f.resources,new AbortController().signal).initialize(f.proposal.actionId,1,actor)]);expect(results.filter(r=>r.status==='fulfilled')).toHaveLength(1);expect(f.credentials).toHaveBeenCalledTimes(1);expect(native.fetch).toHaveBeenCalledTimes(1);
   const saved=await f.r.transaction(async tx=>{await tx.lock(f.proposal.actionId);return tx.imageStorage!.readGrant()});expect(saved?.claim).toBeNull();expect(saved?.putResult).toBeNull();
  }finally{native.fetch.mockRestore()}
 });
@@ -244,7 +244,7 @@ it.skipIf(!enabled)('lost PUT claim acknowledgement cannot open either image or 
  const f=await nativeExecutionFixture(),native=interceptImageNative(f);let lost=false;
  try{await f.store.initialize(f.proposal.actionId,1,actor);const beforeKey=f.readKey.mock.calls.length,grantKeys=vi.spyOn(f.resources,'readGrantKey'),beforeCredential=f.credentials.mock.calls.length;
   const repo={transaction:async<T>(fn:(tx:import('../actionStore').PlatformTransaction)=>Promise<T>)=>{let claimed=false;const value=await f.r.transaction(tx=>fn({...tx,event:async event=>{await tx.event(event);if(event.kind==='effect.claimed'&&event.effectIndex===1)claimed=true}}));if(claimed&&!lost){lost=true;throw Error('synthetic_put_claim_ack_lost')}return value}};
-  await expect(createImageExecutionStore(repo,f.authority,f.resources).put(f.proposal.actionId,2,actor)).rejects.toThrow();expect(f.readKey).toHaveBeenCalledTimes(beforeKey);expect(grantKeys).not.toHaveBeenCalled();expect(f.credentials).toHaveBeenCalledTimes(beforeCredential);expect(native.fetch).toHaveBeenCalledTimes(1);
+  await expect(createImageExecutionStore(repo,f.authority,f.resources,new AbortController().signal).put(f.proposal.actionId,2,actor)).rejects.toThrow();expect(f.readKey).toHaveBeenCalledTimes(beforeKey);expect(grantKeys).not.toHaveBeenCalled();expect(f.credentials).toHaveBeenCalledTimes(beforeCredential);expect(native.fetch).toHaveBeenCalledTimes(1);
   const saved=await f.r.transaction(async tx=>{await tx.lock(f.proposal.actionId);return tx.imageStorage!.readGrant()});expect(saved?.claim).toMatchObject({attempt:1});expect(saved?.putResult).toBeNull();await expect(f.store.put(f.proposal.actionId,2,actor)).rejects.toThrow();expect(native.fetch).toHaveBeenCalledTimes(1);grantKeys.mockRestore();
  }finally{native.fetch.mockRestore()}
 });
