@@ -1,0 +1,20 @@
+{
+  "head": "01c369a63694f61d6e691e015c784fc2ef330669",
+  "sourceCount": 13511,
+  "networkDenied": true,
+  "databaseUrlSupplied": false,
+  "loadedEnvironmentFilesAbsent": true,
+  "trackedExampleOnly": true,
+  "scope": "Ordinary production compiler/types/prerender with network denied and no credentials/DB URL; not native/runtime/provider or production acceptance",
+  "exitCode": 0,
+  "buildLogSha256": "50813b30471af4c2ee55dcf2451c2be212187ab6da4454e1526c5f8ea5dfff1b",
+  "sourceUnchanged": true,
+  "stage": "/private/tmp/axiom-joined-current-build-2xzryvtm",
+  "approval": "call_85c3b47965ed4a3ea5668ae80f0c8c14",
+  "packetSha256": "5932208f6aa9a446f16e5db0e3ba82f30ecb3796c3d97fbb97b329bd3d790ce8",
+  "sourceManifestSha256": "b836386411c9acba722ba1514518e2f933f0b3e45d787ddb494f7eb8ffa1bf80",
+  "archiveSha256": "52f3e9edeaa9b35a04866c3e4e2979d8770462b54949187f7f8a866b732a9799",
+  "staticPages": 304,
+  "warnings": "Three existing dynamic dependency-expression warnings, not suppressed",
+  "authority": "Conditional SQL and build invocation consumed; no retry"
+}

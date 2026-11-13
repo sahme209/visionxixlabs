@@ -1,0 +1,7 @@
+# Conditional joined validation — PASS
+
+Exact code source01c369a6:229actual isolated PostgreSQL cases passed/0failed/0skipped; own socket-only server confirmed stopped, fixture retained. All331SQL source hashes match packet/current/saved receipt. All13,511production-build source files match reconstructed manifest and archived stage. One offline production build passed,304static pages; existing three dynamic dependency-expression warnings preserved. Network denied, clean environment, no actual dotenv/credential/database URL input. Both one-run authorities consumed; no retry.
+
+Full ordinary19,270pass/0fail/1,143pending and strict root types precede this batch; current internal-demo wording checks remain separate. Source review corrected aggregate deployment/settings ordering gaps and reports no important remaining finding in reviewed delta. This is source/isolated database/build validation, not real native time, runtime, credential custody, fleet, genuine human/provider or production qualification. Governance remains incomplete/disabled. No install/sign/provider/cloud/deploy/production/spending action occurred.
+
+Next checkpoint: one reviewed source PR with every exact-head required check green; no deployment or activation. Current fetched main294dd41e has all six completed Actions checks successful. Existing unrelated Dependabot PR318 remains untouched; package/lock/workflow/Vercel configuration unchanged in this batch.
