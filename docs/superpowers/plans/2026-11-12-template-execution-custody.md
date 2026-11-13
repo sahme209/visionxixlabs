@@ -45,9 +45,11 @@ Interfaces: qualified private key/clock/channel ports, exact stored grant contex
 - [x] Expected: scoped crypto and actual isolated SQL delivery journeys pass with synthetic keys; real delivery/channel defaults refuse.
 
 ### Task5: Complete prepared HTTP/client/UI workflow
-- [ ] Implement separate proposal, genuine review, requester issuance, typed history and one-use delivery; original references survive uncertainty and reload.
-- [ ] Explain bearer transferability and distinct review expiry/grant hard expiry; no automatic navigation or secret persistence. Current context changes retire controls.
-- [ ] Expected: exact browser-safe transport/digests, React workflow and joined client→HTTP→HMAC/current-SQL journeys pass with simulated native I/O.
+- [x] Implement separate proposal, genuine review, requester issuance, typed history and one-use delivery; original references survive uncertainty and reload.
+- [x] Explain bearer transferability and distinct review expiry/grant hard expiry; no automatic navigation or secret persistence. Current context changes retire controls.
+- [x] Expected: exact browser-safe transport/digests, React workflow and joined client→HTTP→HMAC/current-SQL journeys pass with simulated native I/O.
+
+LOCAL evidence: `TEMPLATE-DESKTOP-WORKFLOW-RECEIPT.json`; real/native/registered acceptance remains open.
 
 ### Task6: Family/caller validation and complete-batch handoff
 - [ ] Audit all existing template callers and unknown histories; validate types, relevant source/frontend/SQL/build and keep living docs/demo current.
