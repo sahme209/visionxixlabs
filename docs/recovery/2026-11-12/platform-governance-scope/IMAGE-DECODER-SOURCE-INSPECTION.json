@@ -1,0 +1,18 @@
+{
+  "scope": "ordinary cached source text only; no imports or native execution",
+  "files": {
+    "node_modules/sharp/package.json": "ad4a2535d72eb638053a38867b1abf43c328cd1c1dbae5cf4172d498365a8b97",
+    "node_modules/sharp/dist/index.cjs": "d69f275bc49fcd2a6188b26b35c986d4db32a1b008653fef88adb4598688232a",
+    "node_modules/sharp/dist/sharp.cjs": "76120d3971051fcc469c0bfa36e7b23d3c388b6a2f5785bf1491bbdb90ff0176",
+    "node_modules/sharp/dist/input.cjs": "e5eb5c891c0893098dbe8bc0358a2f2c7e800581018923a7956732fe1a5ddf8f",
+    "node_modules/sharp/dist/output.cjs": "4c2878241a264095b661fb321accf86fa9be033bfe541d5a70ac2f8d80150893",
+    "node_modules/sharp/src/common.cc": "c3c56a37bb780dfd97ee53d3556d9ba3d674b1b9cf7d57caf94248f982207a75"
+  },
+  "findings": {
+    "entry": "dist/index.cjs imports constructor and native loader, so merely importing sharp is not inert",
+    "defaults": "input.cjs default pixel cap 0x3fff squared and animated false do not establish our full bounded single-image contract",
+    "metadata": "input.cjs explicitly describes metadata as header-only, not full decode",
+    "timeout": "output.cjs timer starts when vips opens image; excludes libuv queue wait",
+    "limits": "common.cc enforces width times height and channel caps but these are not OS memory/CPU isolation or a complete worker deadline"
+  }
+}

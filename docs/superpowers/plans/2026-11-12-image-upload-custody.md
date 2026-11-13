@@ -22,7 +22,7 @@ Evidence: `IMAGE-CUSTODY-CORE-LOCAL-RECEIPT.json`; only pure/synthetic Task1 com
 Task2 storage/schema evidence: `IMAGE-STORAGE-LOCAL-RECEIPT.json`. The later IMAGE-ARTIFACT-AUTHORITY-LOCAL-RECEIPT.json completes the local current-identity service/SQL Task2 with synthetic qualification; it does not establish real decoder/key/profile or HTTP/HMAC acceptance.
 
 ## Task3 — qualified private init/PUT and later-post lineage
-- [ ] Identify/review existing decoder candidate; do not add dependency or execute unapproved native qualification. Missing real decode remains a refusal.
+- [x] Identify/review cached decoder source and prepare the owner-approved fixed algorithm/dormant worker with mocked tests. Evidence: IMAGE-DECODER-PREPARATION-LOCAL-RECEIPT.json; actual native decoding/parent resource qualification remains open and real profiles unavailable.
 - [ ] After approved protocol reads, bind actual fixed provider endpoint/response, exact destinations/headers/expiry, one send/no retry/deadline/redirect refusal. No invented origin/path/native success rule.
 - [ ] Private observation capability only; current requester/reviewer/source/bytes/profile/expiry checked around awaits; uncertainty never advances/reinitializes/posts. Later separate post can reference only a compatible confirmed uploaded-image record.
 
