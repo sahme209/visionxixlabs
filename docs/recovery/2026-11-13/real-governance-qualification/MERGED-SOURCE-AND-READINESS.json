@@ -1,0 +1,28 @@
+{
+  "format": 1,
+  "pr": 326,
+  "url": "https://github.com/sahme209/visionxixlabs/pull/326",
+  "head": "06d666f1a6960ef20efaab784b24927918102bf0",
+  "mergeCommit": "3976f3992be79004e8872974fd7ca478fed674d5",
+  "mergeMethod": "normal protected merge",
+  "applicablePrChecks": 13,
+  "applicablePrPassed": 13,
+  "intentionallySkipped": [
+    "shots"
+  ],
+  "mainChecks": "Post-merge macOS native test failed its unchanged 5-second full-stream deadline; other main checks still being observed. PR-head checks were green before merge.",
+  "realQualification": false,
+  "governanceEnabled": false,
+  "productionDeployment": false,
+  "awsDiscovery": {
+    "ownerSelectedExistingTestEnvironment": true,
+    "initialConnectionAttempt": "reauthentication_required",
+    "afterOwnerReportedReady": "reauthentication_required",
+    "accountDataReturned": true,
+    "providerCallsConfirmed": false,
+    "cliFallback": "not installed",
+    "browserFallback": "Owner completed console sign-in. Read-only ECS inventory in selected us-east-2 shows Clusters (0), No clusters, one page. No other region inspected.",
+    "scope": "Selected console project/account, us-east-2 only",
+    "ownerNextDecision": "Prepare minimal setup and cost proposal; no provisioning/spending approval."
+  }
+}

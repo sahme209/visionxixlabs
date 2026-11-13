@@ -201,15 +201,25 @@ async fn real_wire_bounds_total_bytes_and_each_ipc_chunk() {
     let count = delivered.clone();
     let (at_limit, mut limit_reached) = mpsc::unbounded_channel();
     let (ack, acknowledged) = mpsc::channel(1);
+    // This fixture measures byte/IPC bounds, not serde_json::Value allocation
+    // throughput. Keep the real serialized Tauri channel, but decode its 8 MiB
+    // of byte values directly instead of allocating one Value per byte.
+    #[derive(serde::Deserialize)]
+    #[serde(tag = "kind")]
+    enum BoundEvent {
+        #[serde(rename = "chunk")]
+        Chunk { sequence: u64, bytes: Vec<u8> },
+        #[serde(other)]
+        Control,
+    }
     let channel = Channel::new(move |body| {
         let InvokeResponseBody::Json(body) = body else { panic!("Expected JSON event"); };
-        let value: Value = serde_json::from_str(&body).expect("stream event JSON");
-        if value["kind"] == "chunk" {
-            let bytes = value["bytes"].as_array().expect("chunk bytes");
+        let value: BoundEvent = serde_json::from_str(&body).expect("stream event JSON");
+        if let BoundEvent::Chunk { sequence, bytes } = value {
             assert!(bytes.len() <= STREAM_CHUNK_BYTES);
             let total = count.fetch_add(bytes.len(), Ordering::SeqCst) + bytes.len();
             if total == STREAM_TOTAL_BYTES { at_limit.send(()).expect("limit observer"); }
-            ack.try_send(value["sequence"].as_u64().expect("sequence")).expect("one outstanding chunk");
+            ack.try_send(sequence).expect("one outstanding chunk");
         }
         Ok(())
     });
