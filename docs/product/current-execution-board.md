@@ -1,5 +1,16 @@
 # Axiom current execution board
 
+## Current execution snapshot — November 13, after PR328
+
+Read this snapshot for current status. It supersedes older status claims only; all original scope, hard rules and historical evidence below remain intact.
+
+- **Merged source:** PR328, main commit `294dd41e89443aed14c54c71173c9c4ce7a56a33`; all seven applicable PR checks and all six exact-main checks passed. Public-support CI/GCP guidance now passes all42fixed questions; this is a small fixed evaluation, not universal accuracy. [Source/CI receipt](../recovery/2026-11-13/support-wording-correction/PR328-MERGED-RESULT.json). Do not repeat completed upgrade/source batches.
+- **Production observation:** the last recorded owner-deployed pointer is `0caaaaab` at `2026-11-13T00:18:25Z`, not the older build4 pointer quoted in historical sections. [Observed scope](../recovery/2026-11-12/platform-governance-scope/OWNER-DEPLOYMENT-READONLY-OBSERVATION.json). This has not been refreshed; source inclusion and sampled public pages do not prove signed-in/database/feature acceptance. No new deployment occurred.
+- **Database gate:** the fresh read stopped after one unverified Vercel metadata response, before decrypted detail, Neon or SQL. Permission is consumed, not pending/reusable; configured target, the historical two-table discrepancy and recovery/driver compatibility remain unresolved. [Exact result](../recovery/2026-11-13/production-compatibility-preparation/LIVE-OBSERVED-RESULT.json). No repeated read or repair is authorized.
+- **Next core work:** complete the connected real-runtime/security/custody/time/fleet/human-trial design and qualification. A controlled EC2/ClockBound alternative is proposed for design/cost assessment, not selected or installed. [Approach proposal](../recovery/2026-11-13/real-governance-qualification/design/RUNTIME-APPROACH-DECISION.md). No further Fargate documentation/probe loop, permissive qualifier, cloud resource, credentials, spending or enablement follows. Full Governance and every remaining master requirement stay open.
+
+---
+
 ## Current integrated continuation — November12
 
 Operational runtime c0180a37 passes the complete ordinary suite18,355tests/0fail/989pending and production types/build304pages, with source unchanged. The build stays offline and uses the existing cached Prisma engine; no database URL or production action. Current ECS review/requester delegation/private workload/STS/ECS/result/stability and create-only settings work remains local/unregistered; provider/profile/custody qualification is synthetic. See [current scope and next work](../recovery/2026-11-12/platform-governance-scope/CURRENT.md) and [integrated evidence](../recovery/2026-11-12/platform-governance-scope/INTEGRATED-VALIDATION.md). P01/full Governance is not complete. Finish remaining approved source/default/workflow coverage, preserve pending owner decisions, then whole-source review and one exact-head green PR. All production/schema/live/native/owner gates and every original master requirement below remain.

@@ -1,5 +1,16 @@
 # CODEX HANDOFF — VisionXIXLabs / Axiom (read this whole file before doing anything)
 
+## Current execution snapshot — November 13, after PR328
+
+Read this snapshot for current status. It supersedes older status claims only; all original scope, hard rules and historical evidence below remain intact.
+
+- **Merged source:** PR328, main commit `294dd41e89443aed14c54c71173c9c4ce7a56a33`; all seven applicable PR checks and all six exact-main checks passed. Public-support CI/GCP guidance now passes all42fixed questions; this is a small fixed evaluation, not universal accuracy. [Source/CI receipt](docs/recovery/2026-11-13/support-wording-correction/PR328-MERGED-RESULT.json). Do not repeat completed upgrade/source batches.
+- **Production observation:** the last recorded owner-deployed pointer is `0caaaaab` at `2026-11-13T00:18:25Z`, not the older build4 pointer quoted in historical sections. [Observed scope](docs/recovery/2026-11-12/platform-governance-scope/OWNER-DEPLOYMENT-READONLY-OBSERVATION.json). This has not been refreshed; source inclusion and sampled public pages do not prove signed-in/database/feature acceptance. No new deployment occurred.
+- **Database gate:** the fresh read stopped after one unverified Vercel metadata response, before decrypted detail, Neon or SQL. Permission is consumed, not pending/reusable; configured target, the historical two-table discrepancy and recovery/driver compatibility remain unresolved. [Exact result](docs/recovery/2026-11-13/production-compatibility-preparation/LIVE-OBSERVED-RESULT.json). No repeated read or repair is authorized.
+- **Next core work:** complete the connected real-runtime/security/custody/time/fleet/human-trial design and qualification. A controlled EC2/ClockBound alternative is proposed for design/cost assessment, not selected or installed. [Approach proposal](docs/recovery/2026-11-13/real-governance-qualification/design/RUNTIME-APPROACH-DECISION.md). No further Fargate documentation/probe loop, permissive qualifier, cloud resource, credentials, spending or enablement follows. Full Governance and every remaining master requirement stay open.
+
+---
+
 Written 2026-11-09 by Claude (Claude Code, Opus) for Codex, at the end of a long working session with the owner (Samir Ahmed, GitHub `sahme209`). This file is the single source of truth for:
 - how to run this project from here without breaking what exists;
 - what was done;

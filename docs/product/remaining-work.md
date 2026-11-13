@@ -1,5 +1,16 @@
 # Axiom remaining work
 
+## Current execution snapshot — November 13, after PR328
+
+Read this snapshot for current status. It supersedes older status claims only; all original scope, hard rules and historical evidence below remain intact.
+
+- **Merged source:** PR328, main commit `294dd41e89443aed14c54c71173c9c4ce7a56a33`; all seven applicable PR checks and all six exact-main checks passed. Public-support CI/GCP guidance now passes all42fixed questions; this is a small fixed evaluation, not universal accuracy. [Source/CI receipt](../recovery/2026-11-13/support-wording-correction/PR328-MERGED-RESULT.json). Do not repeat completed upgrade/source batches.
+- **Production observation:** the last recorded owner-deployed pointer is `0caaaaab` at `2026-11-13T00:18:25Z`, not the older build4 pointer quoted in historical sections. [Observed scope](../recovery/2026-11-12/platform-governance-scope/OWNER-DEPLOYMENT-READONLY-OBSERVATION.json). This has not been refreshed; source inclusion and sampled public pages do not prove signed-in/database/feature acceptance. No new deployment occurred.
+- **Database gate:** the fresh read stopped after one unverified Vercel metadata response, before decrypted detail, Neon or SQL. Permission is consumed, not pending/reusable; configured target, the historical two-table discrepancy and recovery/driver compatibility remain unresolved. [Exact result](../recovery/2026-11-13/production-compatibility-preparation/LIVE-OBSERVED-RESULT.json). No repeated read or repair is authorized.
+- **Next core work:** complete the connected real-runtime/security/custody/time/fleet/human-trial design and qualification. A controlled EC2/ClockBound alternative is proposed for design/cost assessment, not selected or installed. [Approach proposal](../recovery/2026-11-13/real-governance-qualification/design/RUNTIME-APPROACH-DECISION.md). No further Fargate documentation/probe loop, permissive qualifier, cloud resource, credentials, spending or enablement follows. Full Governance and every remaining master requirement stay open.
+
+---
+
 Master execution plan: [application + website action plan](axiom-master-action-plan.md). Authorized local execution has resumed; the [current execution board](current-execution-board.md) holds the prioritized A1–A9/B1–B6 status and evidence. All 15 parent requirements remain open. Specific pending operational, security-boundary and genuine human approvals remain required. The ecosystem roadmap below is retained; it is not a completion claim.
 
 Status pointer corrected November 4, 2026; ecosystem entries retain their recorded planning scope. This is the implementation roadmap, not a claim that planned integrations have been accepted live.
