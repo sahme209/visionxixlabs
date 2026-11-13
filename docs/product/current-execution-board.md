@@ -36,6 +36,8 @@ Read this snapshot for current status. It supersedes older status claims only; a
 
 - **Harness/Octopus evidence gate:** owner reaffirmed comprehensive capability coverage and a distinctly more advanced Axiom experience. The [comparison evidence queue](competitive-capability-evidence-matrix.md) now requires three passes: exact documented capability/availability; actual Axiom implementation and negative tests; comparable real-world workflow/security/usability/cost evidence. The initial two official indexes are only a screen, not complete parity or superiority. Keep every unverified capability open; do not narrow the master scope or publish unsupported claims.
 
+- **Local generated-site deployment decision timing:** actual prepare/preview/review/claim/private-source/final-target decisions now join the captured interval with current people, action and exact lead revision; source/role checks repeat after waits. The prospective preview-reader omission was independently found, reproduced and fixed. Final67focused cases, strict root types and full ordinary19,109pass/0fail/1,142pending pass; final source review has no important finding. [Exact limited scope](../recovery/2026-11-13/real-governance-qualification/design/JOINED-VERCEL-DECISION-LOCAL-PROGRESS.md). Actual SQL was NOT run. The provider still acquires its environment/options token before beforeSend: private credential acquisition/lifetime and native qualification remain OPEN, alongside whole transitive/real qualification and all master/production gates. No real provider/clock/key/SQL, native build/sign/install, push/deploy, enablement or spending.
+
 ---
 
 ## Current integrated continuation — November12

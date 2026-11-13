@@ -120,8 +120,11 @@ it('the same authenticated preparation reference returns the original record wit
 });
 
 it('a source-bound deployment cannot send if its current-source supplier is missing',async()=>{
- const {approvePlatformAction}=await import('../kernel'),f=fixture(undefined,false),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'lead-deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'preview',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:new Date(at-1000).toISOString()}}]}),id=await f.service.propose(p,requester);
- f.rows().set(id,approvePlatformAction(f.rows().get(id)!,{...reviewer,planDigest:p.digest},at));await f.service.claim(id,1,requester);const effect=await f.service.claimNextEffect(id,requester);await expect(f.service.beforeEffectSend(effect.proof,effect.effect,requester)).rejects.toThrow();
+ const {approvePlatformAction}=await import('../kernel'),f=fixture(undefined,false),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'lead-deploy',kind:'deployment.vercel',target:{projectName:'project',teamId:'team_fixture',environment:'preview',projectCreation:'may_create_named_project',filesDigest:d,configurationDigest:d,leadId:'lead',leadRevision:new Date(at-1000).toISOString()}}]}),id='platform_action_11111111-1111-4111-8111-111111111111';
+ await expect(f.service.propose(p,requester)).rejects.toThrow();expect(f.rows().size).toBe(0);
+ // Seed only historical claimed state to check that old records cannot bypass
+ // the earlier source refusal or obtain a proof for the send boundary.
+ f.rows().set(id,claimPlatformAction(approvePlatformAction(createPlatformAction(p,requester,at),{...reviewer,planDigest:p.digest},at),requester,at));await expect(f.service.claimNextEffect(id,requester)).rejects.toThrow();expect(f.events()).toHaveLength(0);
 });
 it('requires a current template source supplier before independent upload or access review',async()=>{
  for(const effect of [

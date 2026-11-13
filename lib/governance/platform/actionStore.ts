@@ -81,15 +81,25 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
  async function actors(tx:PlatformTransaction,state:PlatformAction){await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer)}
  async function timely(tx:PlatformTransaction,state:PlatformAction,phaseActor?:PlatformPrincipal,scheduled?:{effectId:string;source:ReturnType<typeof postingSourceSchema.parse>}){
   async function auditTime(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
-  const before=await auditTime(),growth=state.plan.effects.map((effect,index)=>({effect,index})).filter(({effect})=>effect.kind.startsWith('growth.'));
-  if(!growth.length)return before;
+  const before=await auditTime(),decisions=state.plan.effects.map((effect,index)=>({effect,index})).filter(({effect})=>effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel');
+  if(!decisions.length)return before;
   if(typeof clock!=='function'||!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();
   const actionId=actionIds.get(tx);if(!actionId)return fail();
   const people=[state.requester,...(state.reviewer?[state.reviewer]:[]),...(phaseActor?[phaseActor]:[])];
   async function sourceWindows(){
    const windows=[];
-   for(const {effect,index} of growth){
+   for(const {effect,index} of decisions){
     const status=await tx.readEffect(actionId!,index);if(status==='confirmed')continue;if(status!==null&&status!=='claimed')return fail();
+    if(effect.kind==='deployment.vercel'){
+     let notBefore=state.createdAt;
+     if(effect.target.leadId){
+      if(!effect.target.leadRevision)return fail();
+      const prepared=await prepareDeploymentPlatformPlan(tx,{leadId:effect.target.leadId,projectName:effect.target.projectName,environment:effect.target.environment,expiresAt:state.plan.expiresAt},effect.id);
+      if(sha256ContentHash(prepared.plan.effects[0])!==sha256ContentHash(effect)||state.plan.effects.length===1&&prepared.plan.sourceDigest!==state.plan.sourceDigest)return fail();
+      const revision=Date.parse(effect.target.leadRevision);if(!Number.isSafeInteger(revision)||revision<0)return fail();notBefore=Math.max(notBefore,revision);
+     }
+     windows.push({notBefore,expiresAt:Date.parse(state.plan.expiresAt)});signal!.throwIfAborted();continue;
+    }
     if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change'&&effect.kind!=='growth.post.delete')return fail();
     const target=effect.target,selected={operation:effect.kind==='growth.post.publish'?'publish':effect.kind==='growth.schedule.change'?'schedule':'delete',draftId:target.draftId,connectionId:target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{}),...('imageUploadActionId' in target&&target.imageUploadActionId?{imageUploadActionId:target.imageUploadActionId}:{})};
     let sourceTx=tx;
@@ -109,7 +119,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   }
   for(const person of people)await authority.assertCurrent(tx,person);
   const windows=await sourceWindows();
-  await assertPlatformParticipantsTime(tx,people,clock,{notBefore:Math.max(0,...windows.map(w=>w.notBefore)),expiresAt:Math.min(Date.parse(state.plan.expiresAt),...windows.map(w=>w.expiresAt))},signal);
+  await assertPlatformParticipantsTime(tx,people,clock,{notBefore:Math.max(decisions.some(({effect})=>effect.kind==='deployment.vercel')?state.createdAt:0,...windows.map(w=>w.notBefore)),expiresAt:Math.min(Date.parse(state.plan.expiresAt),...windows.map(w=>w.expiresAt))},signal);
   // Original transaction owns source and human authority both before and after
   // the clock await, including waits for permanent send reservations.
   await sourceWindows();for(const person of people)await authority.assertCurrent(tx,person);
@@ -213,7 +223,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     await authority.assertCurrent(tx,actor);if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
     const effect=state.plan.effects[0];if(effect.kind!=='deployment.vercel'||!effect.target.leadId||!effect.target.leadRevision)return fail();
     const prepared=await prepareDeploymentPlatformPlan(tx,{leadId:effect.target.leadId,projectName:effect.target.projectName,environment:effect.target.environment,expiresAt:state.plan.expiresAt},effect.id);
-    if(prepared.plan.digest!==state.plan.digest)fail();await authority.assertCurrent(tx,actor);await timely(tx,state);
+    if(prepared.plan.digest!==state.plan.digest)fail();await authority.assertCurrent(tx,actor);await timely(tx,state,actor);
     return platformDeploymentPreview.parse({kind:'deployment.vercel',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,files:prepared.files,authority:'review_preview_only'});
    });
   },
@@ -279,14 +289,14 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   async propose(plan:PlatformPlan,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal),id='platform_action_'+randomUUID();
    return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());
-    if(state.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,state,actor);await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});if(state.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,state,actor);return id});
+    if(state.plan.effects.some(e=>e.kind.startsWith('growth.')||e.kind==='deployment.vercel'))await timely(tx,state,actor);await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});if(state.plan.effects.some(e=>e.kind.startsWith('growth.')||e.kind==='deployment.vercel'))await timely(tx,state,actor);return id});
   },
   async review(id:string,version:number,planDigest:string,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
    await locked(id,async(tx,state)=>{if(await tx.readTemplateBinding?.(id))fail();if(state.version!==version||state.plan.effects.some(effect=>effect.kind==='deployment.ecs'||effect.kind==='custodian.drain'||effect.kind==='deployment.target.release'||effect.kind==='growth.image.initialize'||effect.kind==='growth.image.put'))fail();await actors(tx,state);await authority.assertCurrent(tx,actor);
     for(const effect of state.plan.effects)if(effect.kind.startsWith('growth.')||effect.kind==='template.bucket.create'||effect.kind==='template.object.put'||effect.kind==='template.access.grant'||effect.kind==='deployment.vercel'&&effect.target.leadId){const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,effect)}
     const next=approvePlatformAction(state,{...actor,planDigest},await timely(tx,state,actor));await tx.replace(id,version,next);
-    await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});if(next.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,next,actor);});
+    await actors(tx,next);await timely(tx,next);await tx.event({actionId:id,kind:'approved',state:next});if(next.plan.effects.some(e=>e.kind.startsWith('growth.')||e.kind==='deployment.vercel'))await timely(tx,next,actor);});
   },
   async claim(id:string,version:number,principal:PlatformPrincipal){
    const actor=platformPrincipalSchema.parse(principal);
@@ -294,7 +304,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const imagePosts=state.plan.effects.filter(e=>(e.kind==='growth.post.publish'||e.kind==='growth.schedule.change')&&e.target.imageLineageDigest!==undefined);
     for(const e of imagePosts){if(!authority.assertEffectCurrent)fail();await authority.assertEffectCurrent!(tx,e)}
     const next=claimPlatformAction(state,actor,await timely(tx,state));await tx.replace(id,version,next);
-    await actors(tx,next);if(imagePosts.length){for(const e of imagePosts)await authority.assertEffectCurrent!(tx,e);await actors(tx,next)}await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});if(next.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,next,actor);});
+    await actors(tx,next);if(imagePosts.length){for(const e of imagePosts)await authority.assertEffectCurrent!(tx,e);await actors(tx,next)}await timely(tx,next);await tx.event({actionId:id,kind:'claimed',state:next});if(next.plan.effects.some(e=>e.kind.startsWith('growth.')||e.kind==='deployment.vercel'))await timely(tx,next,actor);});
   },
   async claimNextEffect(id:string,principal:PlatformPrincipal):Promise<{effect:PlatformEffect;proof:object}>{
    const actor=platformPrincipalSchema.parse(principal);
@@ -309,7 +319,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      if(status!==null)fail();index=i;break;
     }
     if(index<0)fail();await tx.writeEffect(id,index,null,'claimed');
-    await actors(tx,state);await timely(tx,state,actor);await tx.event({actionId:id,kind:'effect.claimed',state,effectIndex:index});if(state.plan.effects.some(e=>e.kind.startsWith('growth.')))await timely(tx,state,actor);
+    await actors(tx,state);await timely(tx,state,actor);await tx.event({actionId:id,kind:'effect.claimed',state,effectIndex:index});if(state.plan.effects.some(e=>e.kind.startsWith('growth.')||e.kind==='deployment.vercel'))await timely(tx,state,actor);
     return {index,effect:state.plan.effects[index]};
    });
    // No capability is issued unless the transaction's commit is confirmed.
