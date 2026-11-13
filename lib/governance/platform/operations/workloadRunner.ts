@@ -1,3 +1,4 @@
+import {assertPlatformPrincipalTime} from '../principalTime';
 import {operationalWorkloadCommand as command} from './workloadCommand';
 import 'server-only';
 import {createOperationalDelegationStore,type OperationalCredentialIssuer} from './delegation';
@@ -18,7 +19,7 @@ export function createOperationalWorkloadRunner(ports:Ports){
   if(!ports.custodian||!ports.intents||typeof ports.intents.reserve!=='function')return fail();return {selected,token};
  }
  function storeFor(signal:AbortSignal){const stopped=()=>signal.throwIfAborted();
-  const authority:StoreArgs[1]={async assertCurrent(tx,principal){stopped();await ports.authority.assertCurrent(tx,principal);stopped()}};
+  const authority:StoreArgs[1]={async assertCurrent(tx,principal){stopped();await ports.authority.assertCurrent(tx,principal);stopped();await assertPlatformPrincipalTime(tx,principal,internalSignal=>custodianClock.call(ports.custodian,AbortSignal.any([signal,internalSignal])),signal);stopped();await ports.authority.assertCurrent(tx,principal);stopped()}};
   const source:StoreArgs[2]={async readManifest(tx,parent){stopped();const value=readOperationalManifest(await ports.source.readManifest(tx,parent));stopped();if(value.kind!=='deployment.ecs'||!value.issuerProfileDigest||!value.workload.environment||!value.workload.protectionRevision)return fail();return value},async assertCurrent(tx,manifest){stopped();await ports.source.assertCurrent(tx,manifest);stopped();if(!manifest.issuerProfileDigest||!manifest.workload.environment||!manifest.workload.protectionRevision)return fail();await ports.custodian.assertQualified(tx,manifest);stopped()}};
   const identity:StoreArgs[3]={async authenticate(tx,value,binding){stopped();const proof=await ports.identity.authenticate(tx,value,binding);stopped();return proof},async consume(tx,proof,binding){stopped();const principal=await ports.identity.consume(tx,proof,binding);stopped();return principal},async assertConsumedCurrent(tx,proof,binding){stopped();await ports.identity.assertConsumedCurrent(tx,proof,binding);stopped()}};
   const targets:NonNullable<StoreArgs[4]>={async reserve(tx,binding){stopped();const ref=await ports.targets.reserve(tx,binding);stopped();return ref},async assertHeld(tx,binding,ref){stopped();await ports.targets.assertHeld(tx,binding,ref);stopped()}};

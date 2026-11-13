@@ -178,7 +178,7 @@ export function createPlatformIdentitySqlReader(sql:PlatformSql,assertLocked:()=
    },
    async readPrincipal(principal:import('./contracts').PlatformPrincipal){
     assertLocked();
-    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean}>>('SELECT u.id AS "userId", s.id AS "sessionId", u.email, (s."revokedAt" IS NULL AND s."issuedAt" <= clock_timestamp() AND s."expiresAt" > clock_timestamp() AND m."acceptedAt" IS NOT NULL) AS live FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" JOIN "OrgMembership" m ON m."userId"=s."userId" AND m."organizationId"=s."organizationId" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);
+    const rows=await sql.$queryRawUnsafe<Array<{userId:string;sessionId:string;email:string;live:boolean;sessionIssuedAtMs:number;sessionExpiresAtMs:number}>>('SELECT u.id AS "userId", s.id AS "sessionId", u.email, ceil(extract(epoch FROM s."issuedAt")*1000)::double precision AS "sessionIssuedAtMs", floor(extract(epoch FROM s."expiresAt")*1000)::double precision AS "sessionExpiresAtMs", (s."revokedAt" IS NULL AND s."issuedAt" <= clock_timestamp() AND s."expiresAt" > clock_timestamp() AND m."acceptedAt" IS NOT NULL) AS live FROM "DesktopSessionRecord" s JOIN "User" u ON u.id=s."userId" JOIN "OrgMembership" m ON m."userId"=s."userId" AND m."organizationId"=s."organizationId" WHERE s.id=$1 AND u.id=$2 FOR SHARE OF s,u,m',principal.sessionId,principal.userId);
     if(rows.length!==1)fail();return rows[0];
    },
  };}

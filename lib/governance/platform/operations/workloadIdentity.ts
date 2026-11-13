@@ -1,3 +1,4 @@
+import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';
 import 'server-only';
 import {z} from 'zod';
 import {createLocalJWKSet,jwtVerify} from 'jose';
@@ -27,11 +28,11 @@ export interface OperationalWorkloadProfileSupplier{
  assertProfileCurrent(tx:OperationalWorkloadTransaction,profileDigest:string,bindingDigest:string):Promise<void>;
 }
 const fail=():never=>{throw Error('operational_workload_unavailable')};
-interface Verified{binding:OperationalWorkloadBinding;bindingDigest:string;profileDigest:string;replayKey:string;expiresAt:number}
+interface Verified{binding:OperationalWorkloadBinding;bindingDigest:string;profileDigest:string;replayKey:string;expiresAt:number;validFrom:number}
 /** Cryptographic candidate unit only, not a workload/provider execution grant.
  * Never returns/stores raw tokens or claims, and never trusts process env or a
  * human-session/static-token fallback. Public/default operational use is closed. */
-export function createOperationalWorkloadIdentity(source:OperationalWorkloadProfileSupplier){
+export function createOperationalWorkloadIdentity(source:OperationalWorkloadProfileSupplier,clock:ExecutionTimeSource,signal:AbortSignal){
  const proofs=new WeakMap<object,Verified>(),consumed=new WeakMap<object,Verified>();
  async function profile(tx:OperationalWorkloadTransaction,binding:OperationalWorkloadBinding){
   const value=profileSchema.parse(await source.readProfile(tx,binding)),hash=sha256ContentHash(value);
@@ -40,14 +41,16 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
   await source.assertProfileCurrent(tx,hash,sha256ContentHash(binding));return {value,hash};
  }
  async function current(tx:OperationalWorkloadTransaction,verified:Verified,raw:unknown){
-  const binding=operationalWorkloadBinding.parse(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)fail();
+  signal.throwIfAborted();const binding=operationalWorkloadBinding.parse(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)fail();
   const p=await profile(tx,binding);if(p.hash!==verified.profileDigest)fail();
-  const now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=verified.expiresAt||now>=Date.parse(binding.expiresAt))fail();
+  await assertExecutionWindow(clock,{notBefore:verified.validFrom,expiresAt:Math.min(verified.expiresAt,Date.parse(binding.expiresAt))},signal);
+  const afterProfile=await profile(tx,binding);signal.throwIfAborted();if(afterProfile.hash!==verified.profileDigest)fail();
+  const now=await tx.now();signal.throwIfAborted();if(!Number.isSafeInteger(now)||now<0||now>=verified.expiresAt||now>=Date.parse(binding.expiresAt))fail();
  }
  return Object.freeze({
   async authenticate(tx:OperationalWorkloadTransaction,rawToken:unknown,rawBinding:unknown){
    try{
-    if(typeof rawToken!=='string'||Buffer.byteLength(rawToken)>32768||!/^[-_A-Za-z0-9]+\.[-_A-Za-z0-9]+\.[-_A-Za-z0-9]+$/.test(rawToken))return fail();
+    signal.throwIfAborted();if(typeof rawToken!=='string'||Buffer.byteLength(rawToken)>32768||!/^[-_A-Za-z0-9]+\.[-_A-Za-z0-9]+\.[-_A-Za-z0-9]+$/.test(rawToken))return fail();
     const binding=operationalWorkloadBinding.parse(rawBinding),p=await profile(tx,binding),now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(binding.expiresAt))return fail();
     const {payload,protectedHeader}=await jwtVerify(rawToken,createLocalJWKSet({keys:p.value.keys}),{algorithms:['RS256'],issuer:p.value.issuer,audience:p.value.audience,currentDate:new Date(now),clockTolerance:0,requiredClaims:['iss','aud','sub','jti','iat','nbf','exp','repository','ref','sha','workflow_ref','workflow_sha','run_id','run_attempt','repository_id','repository_owner_id','repository_owner','repository_visibility','event_name','ref_type','runner_environment']});
     if(Object.keys(protectedHeader).some(key=>!['alg','kid','typ','x5t'].includes(key))||protectedHeader.typ!==undefined&&protectedHeader.typ!=='JWT'||typeof protectedHeader.kid!=='string'||protectedHeader.x5t!==undefined&&(typeof protectedHeader.x5t!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(protectedHeader.x5t)))return fail();
@@ -57,8 +60,9 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
     if(claims.repository_id!==p.value.repositoryId||claims.repository_owner_id!==p.value.repositoryOwnerId||claims.aud!==p.value.audience||claims.sub!==p.value.subject||claims.repository!==w.repository||claims.ref!==w.ref||claims.sha!==w.commit||claims.workflow_ref!==w.repository+'/'+w.workflowPath+'@'+w.ref||claims.workflow_sha!==w.workflowCommit||claims.run_id!==w.runId||claims.run_attempt!==String(w.attempt)||claims.iat*1000>now||claims.nbf*1000>now||claims.exp<=claims.iat||claims.exp-claims.iat>p.value.maximumLifetimeSeconds)return fail();
     await source.assertProfileCurrent(tx,p.hash,sha256ContentHash(binding));
     const end=Math.min(claims.exp*1000,Date.parse(binding.expiresAt)),after=await tx.now();if(!Number.isSafeInteger(after)||after<now||after>=end)return fail();
-    const proof=Object.freeze(Object.create(null)) as object;
-    proofs.set(proof,{binding,bindingDigest:sha256ContentHash(binding),profileDigest:p.hash,replayKey:sha256ContentHash({purpose:'platform_workload_replay_v1',issuer:claims.iss,jti:claims.jti}),expiresAt:end});return proof;
+    const verified={binding,bindingDigest:sha256ContentHash(binding),profileDigest:p.hash,replayKey:sha256ContentHash({purpose:'platform_workload_replay_v1',issuer:claims.iss,jti:claims.jti}),expiresAt:end,validFrom:Math.max(claims.iat,claims.nbf)*1000};
+    await current(tx,verified,binding);const final=await tx.now();signal.throwIfAborted();if(final<after||final>=end)return fail();
+    const proof=Object.freeze(Object.create(null)) as object;proofs.set(proof,verified);return proof;
    }catch{return fail()}
   },
   async assertCurrent(tx:OperationalWorkloadTransaction,proof:object,binding:unknown):Promise<void>{try{const verified=proofs.get(proof);if(!verified)return fail();await current(tx,verified,binding);if(proofs.get(proof)!==verified)return fail()}catch{return fail()}},
