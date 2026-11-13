@@ -1,0 +1,10 @@
+# Same-attempt dispatch conditional SQL/build validation — preparation
+
+Frozen runtime source is 85749ff6025a5db4b33bd5a7f8695cc48f57878c. Root strict types and19,332ordinary tests pass with0fail/1expectedfailure/1,144skipped; all three lanes and whole source independently reviewed clear. This packet does not execute anything or renew old grants.
+
+## Proposed ONE conditional batch
+Verify exact prepared/source/program/dependency hashes first. Run the existing owned socket-only PostgreSQL runner ONCE, with one fresh isolated synthetic fixture and its existing strict cleanup. Require ALL230cases/0fail/0skip and confirmed own server stopped. The prior229 count is increased solely by the new actual-transaction postcommit-expiry case, independently reviewed as a definition; no SQL ran yet. Limits unchanged:60second test child,30seconds other children,10second final status,340aggregate child seconds including cleanup. No TCP/production URL/default branch or existing DB/backups touched; retain fixture and logs, no deletion.
+
+ONLY after that success/stop confirmation: execute the separately bound ordinary production build ONCE of the SAME exact source. Reuse accepted runner byte-for-byte except its frozen head coordinate, cached dependencies/verified engine, fresh owned stage/clean environment, network denied and30minute child. No DATABASE_URL/credentials or actual application/native helper launch. Archive bytes/source manifest/current checkout must match before and after. The historical base manifest is verified, never edited; new reviewed source delta reconstructs the exact current tree. No old evidence/hash is relabeled current.
+
+Any failure stops the batch; preserve unknown/original result, no retry. No deployment, enablement, actual provider/customer/native clock/credential, resource, signing, installation or spending. SQL people, identity profiles/time/custody/fleet/providers remain synthetic/intercepted, not real Governance acceptance. New permission required because all earlier one-run grants are consumed. No actual SQL or compiler run occurred in this preparation.
