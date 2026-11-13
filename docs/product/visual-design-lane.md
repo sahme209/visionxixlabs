@@ -162,6 +162,16 @@ Use the existing visual research/tooling lane to evaluate relevant libraries, pl
 Acceptance: compare representative actual website and desktop workflows before/after; each should communicate purpose, current state and the next action without explanation. Axiom's visual language should be recognizable across product, documentation, integrations, work and recovery. Verify dark/light, narrow layouts, focus, motion and performance with real rendered evidence. Show coherent local milestones. This request stays queued alongside core qualification; it does not interrupt Governance or assert a visual redesign has shipped.
 
 
+### Top three website visual priorities — owner, November13
+
+These are the top three acceptance priorities WITHIN website visual work; they do not displace security, ease of use or current master-plan execution priorities.
+
+1. **Hierarchy first.** Each page must make its purpose, principal message, primary action and next step clear. Establish a deliberate heading/type/spacing scale and distinguish primary content, supporting evidence and detail; visitors should understand the page before exploring animation. Review first-screen comprehension and navigation on desktop and mobile.
+2. **Clean, minimal and calm.** Remove unnecessary competing boxes, labels, repeated controls and decorative effects. Use consistent alignment, generous intentional spacing, readable contrast and restrained typography/materials/motion across pages. Preserve essential limitations, status differences and recovery guidance rather than hiding them to create a cleaner screenshot.
+3. **Powerful through meaningful capability.** Convey confidence through original product-grounded visuals, precise interactions, clear workflow/evidence/outcomes and responsive behavior. Depth, lighting, orbital motion and 3D must teach something about Axiom; do not substitute effects, fabricated live activity or unsupported superiority/security claims for functionality.
+
+Act in that order: audit existing pages and first-screen tasks → define shared hierarchy/tokens → propose page-specific interaction/visual concepts → owner reviews recommendations/implementation plan → approved focused implementation → responsive/accessibility/performance/comprehension checks. The future space-theme assessment remains after current priorities; no website implementation, installation or deployment is authorized by this criteria update.
+
 ### Future assessment — premium space/universe direction (owner, November13)
 
 **Scheduling:** Finish current master-plan priorities first. This is a future research/proposal item, not a new implementation priority. No dependency installation, website modification, cloud/provider access or deployment is authorized by this addition.

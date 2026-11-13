@@ -522,6 +522,14 @@ Visualizations must explain Axiom **from A to Z**: deployment intake → AI anal
 
 **Acceptance rule:** No major page is visually complete until its visualization clearly answers: *What does this feature do? How does it work? What systems does it interact with? How is it secured and governed? What happens when something fails?* Avoid unnecessary 3D, misleading demonstrations, performance-heavy effects, and copied designs. Preserve Axiom's original premium design system and existing security, licensing, and deployment approval requirements.
 
+#### Website visual acceptance: top three priorities (owner, November13)
+
+1. **Hierarchy:** immediately clear page purpose, message, primary action and next step; intentional typography, spacing and content order.
+2. **Clean minimalism:** cohesive alignment/spacing/type, reduced clutter and restrained motion; retain essential status, limitations and recovery information.
+3. **Power through clarity:** original, meaningful workflow/integration/governance/deployment visuals and precise interactions; no gratuitous effects, fabricated activity or unsupported claims.
+
+Apply these in order to the existing-site audit, design recommendations and proposed implementation plan, then approved implementation and comprehension/accessibility/performance acceptance. See [visual design lane](visual-design-lane.md). They govern visual quality without displacing Security/Makes sense acceptance or reprioritizing current Governance work. Space/universe ideas serve these criteria; no installs/site changes/deploys before approval.
+
 #### Owner addition (2026-11-13): future space/universe visual assessment
 
 - [ ] After current priorities, evaluate the owner video `snapgram.io_sdnxdvaf43kh.mp4` and current site for an original dark/minimal/premium space-inspired direction. Review orbital motion, particles, lighting, depth and meaningful 3D as explanations of Axiom workflows/integrations/governance/deployments, not decoration.
