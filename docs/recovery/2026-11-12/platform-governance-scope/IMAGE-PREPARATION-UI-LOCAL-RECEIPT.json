@@ -1,0 +1,52 @@
+{
+  "scope": "Prepared/unmounted intake/proposal UI with existing verified client; React/jsdom and synthetic File/client only",
+  "sourceHashes": {
+    "desktop/src/components/ImagePreparationPanel.tsx": "d87f67e7d9ca2c8ec7be02dccbf082b72c7b5d81fa1c9c114ea0511af15aec44",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "3d9744ce3cfd4b51e6f3afda532c563829ae0ccac5f82e63b0006a4744dd0d76",
+    "lib/desktop/__tests__/imagePreparationPanel.test.ts": "c84198a1363093620b462a9dbb50bfbdda010be0d74f3385202ee0232d4417d9",
+    "scripts/run-platform-governance-postgres.py": "8e44e08a4074fca085ae7f16b1196ab31ebb65e97dde4084345322d9e35ea7bb"
+  },
+  "checks": {
+    "focusedPreparationCases": 9,
+    "wholeDesktopDirectory": {
+      "passed": 3413,
+      "skipped": 180
+    },
+    "rootTypes": "PASS",
+    "desktopTypes": "PASS",
+    "desktopFrontendBuild": "PASS",
+    "diffCheck": "PASS"
+  },
+  "sqlScope": "No SQL rerun for this UI-only change. Prior208actual client/HTTP/HMAC/SQL cases remain recorded in IMAGE-DESKTOP-REVIEW-LOCAL-RECEIPT.json at d6m_m0t0. That run predates this new preparation form/parent wiring/helper hash list; it is not relabeled current-UI attestation.",
+  "cases": [
+    "No intake until original byte/target/expiry/reference metadata is kept",
+    "Store exact image separately from saving two-child proposal; actual local file/hash guards exercised with synthetic File",
+    "No binary/base64, filename, token/session/ciphertext persisted",
+    "Lost intake held across remount; original-reference metadata read avoids file reselection/resend",
+    "Unknown proposal held; matching lookup opens only original action",
+    "Storage refusal prevents mutation; known original records are archived before deliberate different image",
+    "Changed file bytes and late read after account retirement refuse before sending",
+    "Unsent expiry may be corrected with same references only before first proposal submission; submitted/unknown reviews locked",
+    "Known immutable artifact metadata cannot be substituted by lookup"
+  ],
+  "implementationRuling": "An unsubmitted proposal has no saved action or approval to renew. Its requested expiry can be corrected explicitly only while proposalAttempted=false. The durable pre-submission marker locks it before the first command; any existing server action remains immutable and mismatched historical requests refuse. No authority extension is added.",
+  "redEvidence": [
+    "/private/tmp/axiom-image-preparation-panel-red.log",
+    "/private/tmp/axiom-image-unsent-expiry-red.log",
+    "/private/tmp/axiom-image-preparation-immutable-metadata-red.log"
+  ],
+  "logs": [
+    "/private/tmp/axiom-image-preparation-final-panels.log",
+    "/private/tmp/axiom-image-preparation-all-desktop-tests.log",
+    "/private/tmp/axiom-image-preparation-final-root-types.log",
+    "/private/tmp/axiom-image-preparation-final-desktop-types.log",
+    "/private/tmp/axiom-image-preparation-desktop-build.log"
+  ],
+  "remaining": [
+    "Qualified real decoder/worker/profile/protocol sources",
+    "Private init/PUT executor, source-backed observations and later-post lineage",
+    "Full complete image progression and complete-family audit/validation/build/final independent review/green PR",
+    "Real browser/native UX, live resources and all unchanged master-plan requirements"
+  ],
+  "externalActions": "None: no actual user file/customer data, native decode/helper/sign/install, provider/credential, production SQL/flags/routes, push/deploy or spend"
+}

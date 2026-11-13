@@ -1,3 +1,4 @@
+import {ImagePreparationPanel} from './ImagePreparationPanel';
 import {ImageWorkflowPanel} from './ImageWorkflowPanel';
 import type {ImageWorkflowClient} from '../lib/imageWorkflow';
 import {TemplateWorkflowPanel} from './TemplateWorkflowPanel';
@@ -99,6 +100,7 @@ export function PlatformGovernanceWorkflow({currentUserId,canPrepare,canApprove,
    {clients.operationalPreparation&&<details><summary>Prepare or recover an ECS proposal</summary><OperationalEcsPreparationPanel client={clients.operationalPreparation} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.custodian&&<details><summary>Prepare or recover an issuer control</summary><CustodianPreparationPanel client={clients.custodian} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.manualRelease&&<details><summary>Review a manual production release</summary><OperationalManualReleasePanel client={clients.manualRelease} currentUserId={currentUserId} canApprove={canApprove} canRecordNotice={canExecute}/></details>}
+   {clients.image&&<details><summary>Prepare or recover an image</summary><ImagePreparationPanel client={clients.image} currentUserId={currentUserId} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.templateExecution&&<details><summary>Prepare or recover a template operation</summary><TemplateExecutionPreparationPanel client={clients.templateExecution} currentUserId={currentUserId} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {!clients.templateExecution&&clients.template?.prepare&&clients.template.lookup&&<details><summary>Prepare a template proposal</summary><PlatformTemplatePreparationPanel client={{prepare:clients.template.prepare,lookup:clients.template.lookup}} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
    {clients.deployment&&<details><summary>Prepare a generated-site deployment proposal</summary><PlatformDeploymentPreparationPanel sourceClient={clients.sources} client={clients.deployment} canPrepare={canPrepare} onSaved={id=>void load(id)}/></details>}
