@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "status": "PASS; permission consumed",
+  "approval": "call_b5d2302eaa424b85ba37e2e09e13ee90",
+  "sourceCommit": "7504a7259cb1cae2c5052749b261f04be98db8b2",
+  "fixture": "/private/tmp/axiom-platform-pg-_hos3tmr",
+  "passed": 228,
+  "failed": 0,
+  "skipped": 0,
+  "sourceHashesAfterRun": "all322unchanged",
+  "cleanup": "pg_ctl: no server running",
+  "resultSha256": "5de3810348df960c2a4773624ff3ec31e60e67c10ca3170af3bd1d73b75cb557",
+  "runnerReceiptSha256": "8a67a4a24467fffbf82a04e57d45a00efdc37d0144ada4b130e14849c5e1409a",
+  "limits": "same runner; no retries",
+  "scope": "actual isolated SQL/HMAC/ledger and intercepted provider/SDK; synthetic people, credentials, clocks and qualification; NOT real custody/time/provider acceptance",
+  "originalFailedRun": "../joined-platform-owned-sql-preparation/OBSERVED-RESULT.json",
+  "productionChanged": false
+}
