@@ -1,0 +1,62 @@
+{
+  "observedAt": "2026-11-13T18:54:20.350304+00:00",
+  "parentCommit": "2661f0fccb135a00276830b3ba5995a1d6f9907e",
+  "scope": "approved local original deployment recovery/observation/release time composition only",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "6232f3097eeeea723af9b9059ac8fa8fdffe3f31c996acaa509146298eb02b14",
+    "lib/governance/platform/__tests__/deploymentRecoveryStore.test.ts": "fb6a4f383279ddb6ada154b569e10f9b2096bbb5b95f47c7076c6f3182e42101",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "0dd3d27365fcc788eb428528d6a6e1f388ea39cf030cc784311ebedab0696686",
+    "lib/governance/platform/deploymentRecoveryRequest.ts": "a40bbc24938805fe180c0e028e6015f2de25422859b749e06feb8ba0c1ec3d7f",
+    "lib/governance/platform/deploymentRecoveryRequestService.ts": "3b0bda0dfd897ec06c814fe1861eaca2467cadbe87433e7248f7a935a855f3ee",
+    "lib/governance/platform/deploymentRecoveryStore.ts": "d90f43865a77a0e03ac5af0170b230a3ae507d0ca79a81da3f35071a95609293"
+  },
+  "red": {
+    "failed": 7,
+    "passed": 10,
+    "log": "work/recovery-time-red2.log",
+    "meaning": "expired current people/native evidence, canceled or changed source decisions still admitted on prior database-only timing"
+  },
+  "focused": {
+    "files": 5,
+    "passed": 67,
+    "log": "work/recovery-time-final-focused.log"
+  },
+  "ordinary": {
+    "numPassedTests": 19148,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20290,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "strictRootTypes": "PASS work/recovery-time-final-types.log",
+  "independentReview": "existing final source reviewer found no important issue in recovery slice; review only, no execution",
+  "actualSql": "NOT RUN; opt-in fixture definitions explicitly synthetic clock/profile source/read-guard evidence",
+  "actualLocal": [
+    "original action/claim/observation/release kernels and immutable lineage",
+    "actual private request/HTTP composition",
+    "serialized memory transactional rollback and acknowledged/lost-ack states",
+    "one-use read authorization completion/retirement"
+  ],
+  "simulated": [
+    "people/current roles/sessions",
+    "clock/source/profile/evidence provenance",
+    "memory target/rows/locks and commit acknowledgments",
+    "native terminal observation and read placement"
+  ],
+  "effects": {
+    "actualSql": false,
+    "realClockCredentialProvider": false,
+    "nativeBuildSigningInstallation": false,
+    "productionSchemaFlagDeployEnablement": false,
+    "push": false,
+    "spending": false
+  },
+  "remaining": [
+    "whole source/current-participant/transitive composition audit",
+    "real time client/host/channel/custody/profile/fleet qualification",
+    "actual SQL and genuine independent human/provider trials",
+    "frozen build/mandatory-green PR and owner production gates",
+    "complete remaining Governance/master scope"
+  ]
+}
