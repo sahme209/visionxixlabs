@@ -39,3 +39,5 @@ Prepared HTTP intake/recovery/preview/review has actual HMAC/current-SQL local e
 - [ ] Full Governance and master-plan live/installed/security requirements remain open until separately proven.
 
 Protocol continuation: official reads complete; pure initializer/address/expiry/byte-acceptance/availability candidate tested in IMAGE-UPLOAD-PROTOCOL-LOCAL-RECEIPT.json. Task3 transport checkbox remains OPEN. A201 alone cannot support confirmed ready-image lineage; exact authenticated AVAILABLE observation is required. No default is qualified.
+
+Native adapter continuation: IMAGE-NATIVE-TRANSPORT-LOCAL-RECEIPT.json covers actual fixed HTTP construction with intercepted fetch only. Both Task3 checkboxes remain OPEN until current SQL admission, private grant/result observation and readiness-backed lineage are joined. Default qualification stays unavailable.

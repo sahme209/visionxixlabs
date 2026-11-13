@@ -1,0 +1,47 @@
+{
+  "scope": "Prepared private fixed HTTP init/PUT/exact availability adapter; tests intercept every fetch; no actual network or registered supplier",
+  "checks": {
+    "transportCases": 10,
+    "transportAndProtocolCases": 15,
+    "rootTypes": "PASS",
+    "fullOrdinarySuite": {
+      "passed": 18891,
+      "failed": 0,
+      "pending": 1126,
+      "total": 20017,
+      "failedSuites": 0
+    },
+    "laterDemoWordingChecks": 15
+  },
+  "baseHead": "5e8168d2",
+  "fullSuiteRoot": "/private/tmp/axiom-current-full-suite-stizj5gg",
+  "sourceHashes": {
+    "lib/governance/platform/imageNativeTransport.ts": "7664c4f94dde949219989318eb949d013dd409c79ecba653b0c818f1a9bfa343",
+    "lib/governance/platform/__tests__/imageNativeTransport.test.ts": "d166e370fa348372d41fa9581892658b9d1e23ad2f2846f53a6afcb35b7fe265"
+  },
+  "sourceBindingLimit": "Reused full-suite runner binds tracked HEAD/diff; the two new untracked files are separately hashed here and result JSON includes their tests. Later changes are documentation/demo wording only.",
+  "logs": [
+    "/private/tmp/axiom-image-native-red.log",
+    "/private/tmp/axiom-image-native-first.log",
+    "/private/tmp/axiom-image-native-green.log",
+    "/private/tmp/axiom-image-native-final-focused.log",
+    "/private/tmp/axiom-image-native-final-types.log",
+    "/private/tmp/axiom-image-native-demo.log"
+  ],
+  "initialTestCorrection": "The deadline test uses fake timers, which do not control native AbortSignal.timeout. The adapter now owns an explicit setTimeout and clears it in finally; the deadline test passes without extending or weakening its limit.",
+  "behavior": [
+    "Only fixed initializer origin/path and narrowly parsed derived www.linkedin.com upload address",
+    "Private ports must acknowledge committed exact child admission before credential lookup; unavailable observation permission blocks even initialization",
+    "15-second whole-attempt deadline, caller abort, response 64KiB bound, empty PUT response, redirect refusal and no retry",
+    "Exact AVAILABLE owner/image read required; one read only, PROCESSING stays unknown and no second PUT/poll",
+    "Private per-instance one-use observation, bound to exact plan and child; initializer address never enters public output",
+    "Copied upload bytes cleared while original input remains unchanged; no JavaScript string-erasure guarantee"
+  ],
+  "remaining": [
+    "Actual current SQL parent/child admission and grant/result recording integration",
+    "Durable ready-image evidence and downstream lineage consumption; current earlier SQL proofs synthesize native observations",
+    "Complete client/HTTP progression and adversarial isolated SQL journeys",
+    "Real decoder/launcher/key/clock/credential/permission/fixed-profile qualification, final whole-three-family review/green PR and master gates"
+  ],
+  "externalEffects": "None: no real key/account/provider/SQL/schema/signing/install/push/deploy/spending"
+}
