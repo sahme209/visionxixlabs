@@ -13,7 +13,8 @@ export async function createManualReleaseRequestComposition(request:{headers:Hea
  const sessionId=session(),principal=await ports.repo.transaction(async tx=>{await tx.lock('manual-release-auth:'+sessionId);const p=platformPrincipalSchema.parse(await tx.readSessionPrincipal(sessionId));if(p.sessionId!==sessionId||session()!==sessionId)fail();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);if(session()!==sessionId)fail();return p});
  const possessed=()=>{if(session()!==principal.sessionId)fail()};
  const sourceClock=ports.clock,clock:ExecutionTimeSource=async s=>{possessed();const value=await sourceClock(s);possessed();return value};
- const store=createManualReleaseStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source,{clock,signal:request.signal});
+ const source=ports.source,build=source.buildCurrentManifest.bind(source),assertSource=source.assertCurrent.bind(source),readWindow=source.readTimeWindow.bind(source),privateSource:ManualReleaseSource={buildCurrentManifest:build,assertCurrent:assertSource,async readTimeWindow(...args:Parameters<ManualReleaseSource['readTimeWindow']>){possessed();const value=await readWindow(...args);possessed();return value}};
+ const store=createManualReleaseStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},privateSource,{clock,signal:request.signal});
  const results=ports.resultSupplier?createManualReleaseResultInspector(id=>store.inspect(id,principal),ports.resultSupplier,{clock,signal:request.signal,authorize:(view,check,signal)=>store.authorizeObservation(view,principal,check,signal)}):null;
  return Object.freeze({
   async prepare(raw:unknown,requestId:string){possessed();return store.prepare(raw,principal,requestId)},

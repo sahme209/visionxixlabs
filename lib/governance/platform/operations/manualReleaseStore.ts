@@ -8,6 +8,7 @@ import {platformPreparationRequestId} from '../preparationContract';
 import {manualReleaseSelection} from './manualReleaseClientContract';
 export {manualReleaseSelection} from './manualReleaseClientContract';
 import {compileOperationalManifest,readOperationalManifest} from './kernel';
+const evidenceWindow=z.object({notBefore:z.number().int().nonnegative().safe(),expiresAt:z.number().int().nonnegative().safe()}).strict();
 const recordId=z.string().regex(/^platform_manual_release_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/);
 const recordSchema=z.object({id:recordId,selection:manualReleaseSelection,manifest:z.unknown(),requester:platformPrincipalSchema,reviewer:platformPrincipalSchema.nullable(),status:z.enum(['proposed','reviewed','notice_claimed','notice_recorded']),version:z.number().int().min(0).max(3),attemptCount:z.number().int().min(0).max(1),createdAt:z.number().int().nonnegative().safe(),updatedAt:z.number().int().nonnegative().safe()}).strict();
 const fail=():never=>{throw Error('manual_release_unavailable')};
@@ -51,10 +52,10 @@ export function createManualReleaseStore(repo:ManualReleaseRepository,authority:
  }
  async function current(tx:ManualReleaseTransaction,state:ManualReleaseRecord,phaseActor?:PlatformPrincipal){
   const scope=active();if(phaseActor)await authority.assertCurrent(tx,phaseActor);await sourceCurrent(tx,state);
-  const evidence=z.object({notBefore:z.number().int().nonnegative().safe(),expiresAt:z.number().int().nonnegative().safe()}).strict().parse(await source.readTimeWindow(tx,state.manifest,state.selection));if(evidence.notBefore>=evidence.expiresAt)return fail();
+  const evidence=evidenceWindow.parse(await source.readTimeWindow(tx,state.manifest,state.selection));if(evidence.notBefore>=evidence.expiresAt)return fail();
   const actors=[state.requester,...(state.reviewer?[state.reviewer]:[]),...(phaseActor?[phaseActor]:[])];
   await assertPlatformParticipantsTime(tx,actors,clock!,{notBefore:evidence.notBefore,expiresAt:Math.min(Date.parse(state.manifest.expiresAt),evidence.expiresAt)},scope);
-  const before=await sourceCurrent(tx,state);if(phaseActor)await authority.assertCurrent(tx,phaseActor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<before||now>=Date.parse(state.manifest.expiresAt))return fail();scope.throwIfAborted();return now;
+  const before=await sourceCurrent(tx,state);if(phaseActor)await authority.assertCurrent(tx,phaseActor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<before||now>=Date.parse(state.manifest.expiresAt))return fail();const after=evidenceWindow.parse(await source.readTimeWindow(tx,state.manifest,state.selection));scope.throwIfAborted();if(after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();return now;
  }
  async function locked<T>(raw:string,fn:(tx:ManualReleaseTransaction,state:ManualReleaseRecord)=>Promise<T>){const id=recordId.parse(raw);return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,await load(tx,id))})}
  const api={

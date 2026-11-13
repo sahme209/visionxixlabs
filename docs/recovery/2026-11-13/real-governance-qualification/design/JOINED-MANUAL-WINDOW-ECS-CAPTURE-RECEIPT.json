@@ -1,0 +1,37 @@
+{
+  "format": 1,
+  "scope": "approved local joined-time correction: manual final evidence window and immutable ECS expected capture",
+  "approval": "call_89eb4532167a4e55b4c65c38f8fe44cc",
+  "sourceSha256": {
+    "lib/governance/platform/operations/manualReleaseStore.ts": "37390bfe5498f0f570f72560411cdc368c8f133c820834528bd74f035de8dbf2",
+    "lib/governance/platform/operations/manualReleaseRequest.ts": "842173be473d35e59e42902c67a586e8b577342c6bab63a157ec99fa687aa274",
+    "lib/governance/platform/operations/ecsOutcomeSource.ts": "43cf68f7c576ff212529bf9ab6f61330aa0bb8d5840a6c4825bfd7dd6da98ff6",
+    "lib/governance/platform/operations/__tests__/manualReleaseStore.test.ts": "e7046c96535e5f19591f9058d72b41a1c81f9bddaef14d2c1d7b85032b370860",
+    "lib/governance/platform/operations/__tests__/ecsOutcomeSource.test.ts": "1bcf58cdfe779f35357f66265fe498292265bbb1a8722e4560178450e524dbb4",
+    "lib/demo/demoScenarios.ts": "900bd7bb02b84aae5d8e05b0bcf0ca71cd5c73b0d5c758ad43347bce136a0b3b"
+  },
+  "regressionsBeforeFix": {
+    "manualFinalWindow": 4,
+    "mutableEcsExpectedEvidence": 4
+  },
+  "focused": {
+    "files": 6,
+    "passed": 74
+  },
+  "rootStrictTypes": "PASS exit0",
+  "ordinary": {
+    "numPassedTests": 19197,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20339
+  },
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  },
+  "review": "No important finding in exact manual correction or immutable ECS capture after regressions; source/file review only",
+  "actualSql": "NOT RUN for this revision; earlier228PASS is7504a725 only",
+  "productionOrNativeEffects": "none",
+  "fullGovernance": "incomplete/disabled",
+  "next": "whole joined-time/current-participant/transitive audit; coherent source+actual SQL/build checkpoint; real runtime/clock/custody/fleet/provider/human qualification; all unchanged master/owner gates"
+}

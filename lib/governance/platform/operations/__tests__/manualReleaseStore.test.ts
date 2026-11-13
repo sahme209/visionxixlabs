@@ -75,3 +75,22 @@ it('includes source-evidence not-before bounds rather than trusting an ahead dat
 it('refuses an interval overlapping a shorter source-evidence deadline before notice claim',async()=>{
  const f=fixture(),id=await reviewed(f);f.source.readTimeWindow.mockResolvedValue({notBefore:at,expiresAt:at+1000});f.clock.mockResolvedValue({earliest:at,latest:at+1000});await expect(f.store.recordNotice(id,1,requester)).rejects.toThrow();expect(await f.store.inspect(id,requester)).toMatchObject({status:'reviewed',attemptCount:0});
 });
+
+it.each(['prepare','review','claim','record'] as const)('preserves the final exact evidence window during manual %s and rolls back only its original transaction',async phase=>{
+ const f=fixture(),saved=phase==='prepare'?undefined:await f.store.prepare(selection,requester,requestId),id=saved?.recordId;
+ if(phase==='claim'||phase==='record'){const view=await f.store.inspect(id!,requester);await f.store.review(id!,0,view.manifest.digest,reviewer)}
+ const view=id?await f.store.inspect(id,requester):null;f.clock.mockClear();let changed=false;const finalClock={prepare:2,review:2,claim:2,record:4}[phase];
+ f.source.readTimeWindow.mockImplementation(async()=>({notBefore:at,expiresAt:changed?at+1:at+60000}));f.source.assertCurrent.mockImplementation(async()=>{if(f.clock.mock.calls.length===finalClock)changed=true});
+ const operation=phase==='prepare'?f.store.prepare(selection,requester,requestId):phase==='review'?f.store.review(id!,0,view!.manifest.digest,reviewer):f.store.recordNotice(id!,1,requester);
+ await expect(operation).rejects.toThrow();expect(changed).toBe(true);
+ if(phase==='prepare'){expect(f.rows().size).toBe(0);expect(f.events()).toHaveLength(0)}
+ else{expect(await f.store.inspect(id!,requester)).toMatchObject({status:phase==='review'?'proposed':phase==='claim'?'reviewed':'notice_claimed',attemptCount:phase==='record'?1:0});expect(f.events()).toHaveLength(phase==='review'?1:phase==='claim'?2:3)}
+});
+
+import {createManualReleaseRequestComposition} from '../manualReleaseRequest';
+it('guards paired possession across the last exact manual source-window await',async()=>{
+ const f=fixture(),request=new Request('http://fixture.invalid',{headers:{authorization:'Bearer synthetic-valid'},signal:f.controller.signal}),repo:ManualReleaseRepository={transaction:fn=>f.repo.transaction(tx=>fn({...tx,readSessionPrincipal:async sessionId=>({...requester,sessionId}),readPrincipal:async p=>({...p,email:p.userId+'@example.test',live:!f.revoked.has(p.userId),sessionIssuedAtMs:at-1000,sessionExpiresAtMs:at+120000})}))};
+ const api=await createManualReleaseRequestComposition(request,{clock:f.clock,repo,source:f.source,verifyDesktopToken:token=>{if(token!=='synthetic-valid')throw Error('invalid');return {sessionId:requester.sessionId}},readAdminEmails:()=>['requester@example.test','reviewer@example.test']});let reads=0;
+ f.source.readTimeWindow.mockImplementation(async()=>{if(++reads===4)request.headers.delete('authorization');return {notBefore:at,expiresAt:at+60000}});
+ await expect(api.prepare(selection,requestId)).rejects.toThrow();expect(f.rows().size).toBe(0);expect(f.events()).toHaveLength(0);
+});

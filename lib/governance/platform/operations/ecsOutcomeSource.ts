@@ -26,7 +26,7 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
  * Later proof validation uses runtime/source authority, never a cached reader. */
 export function createOperationalEcsOutcomeSource(ports:Ports){
  const clock=ports.clock,runtime=ports.signal,readProfile=ports.readProfile.bind(ports),qualified=ports.assertQualified.bind(ports),describe=ports.describe.bind(ports);
- type Proof={target:OperationalTarget;accepted:OperationalEcsResult;profile:z.infer<typeof profileSchema>;evidence:object|null};
+ type Proof=Readonly<{target:OperationalTarget;accepted:OperationalEcsResult;profile:Readonly<z.infer<typeof profileSchema>>;evidence:object|null}>;
  const proofs=new Map<string,Proof>();
  function active(scope:AbortSignal,owner?:OperationalObservationAuthorization){scope.throwIfAborted();owner?.assertActive();scope.throwIfAborted()}
  function scopeFor(owner?:OperationalObservationAuthorization){if(typeof clock!=='function'||!(runtime instanceof AbortSignal)||owner&&(!(owner.signal instanceof AbortSignal)||typeof owner.authorize!=='function'||typeof owner.assertActive!=='function'))return fail();return owner?AbortSignal.any([runtime,owner.signal]):runtime}
@@ -55,9 +55,9 @@ export function createOperationalEcsOutcomeSource(ports:Ports){
  }
  return Object.freeze({async readOutcome(tx:OperationalTargetTransaction,raw:OperationalTarget,owner?:OperationalObservationAuthorization){try{
   if(!owner)return fail();const scope=scopeFor(owner);active(scope,owner);
-  const target=readOperationalTarget(raw),accepted=readOperationalEcsResult(await tx.readOperationalEcsResult(target.actionId));active(scope,owner);
+  const parsedTarget=readOperationalTarget(raw),target=Object.freeze({...parsedTarget,target:Object.freeze({...parsedTarget.target})}),accepted=readOperationalEcsResult(await tx.readOperationalEcsResult(target.actionId));active(scope,owner);
   if(accepted.kind!=='accepted'||accepted.actionId!==target.actionId||accepted.manifestDigest!==target.manifestDigest||accepted.nativeKey!==target.nativeKey||accepted.generation!==target.generation||target.deploymentId!==null&&target.deploymentId!==accepted.deploymentId||target.phase==='unknown'&&target.deploymentId===null)return fail();
-  const profile=profileSchema.parse(await readProfile(tx,target));let proof:Proof={target,accepted,profile,evidence:null};await current(tx,proof,owner);
+  const profile=Object.freeze(profileSchema.parse(await readProfile(tx,target)));let proof:Proof=Object.freeze({target,accepted,profile,evidence:null});await current(tx,proof,owner);
   let kind:'accepted'|'stable'|'terminal_failure'|'unknown'='accepted';
   if(target.phase!=='reserved'){
    const abort=new AbortController(),signal=AbortSignal.any([scope,abort.signal]);let timer:ReturnType<typeof setTimeout>|undefined,open=true,started=false,complete=false,invalid=false;
@@ -66,7 +66,7 @@ export function createOperationalEcsOutcomeSource(ports:Ports){
    };
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)}),observed=await Promise.race([describe(target,signal,beforeRead),timeout]);active(signal,owner);
-    if(!complete||invalid||!observed.evidence||typeof observed.evidence!=='object')return fail();proof={...proof,evidence:observed.evidence};kind=projectOperationalEcsObservation(target.target,accepted.deploymentId,observed.response).kind;
+    if(!complete||invalid||!observed.evidence||typeof observed.evidence!=='object')return fail();proof=Object.freeze({...proof,evidence:observed.evidence});kind=projectOperationalEcsObservation(target.target,accepted.deploymentId,observed.response).kind;
    }finally{open=false;if(timer)clearTimeout(timer);abort.abort()}
   }
   const now=await current(tx,proof,owner),outcome={receiptId:'platform_evidence_'+randomUUID(),actionId:target.actionId,manifestDigest:target.manifestDigest,target:target.target,generation:target.generation,kind,deploymentId:accepted.deploymentId,observedAt:new Date(now).toISOString(),profileDigest:profile.profileDigest};
