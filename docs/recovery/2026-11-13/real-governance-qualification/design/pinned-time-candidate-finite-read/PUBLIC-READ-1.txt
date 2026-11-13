@@ -1,0 +1,35 @@
+{
+  "sha": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "node_id": "C_kwDOGR-EVtoAKDM3MTA1OGY4ZjZhMTc4NmQ0YTRhYjNlZWQ5ZjVmMmYxNmVlYTc3Nzc",
+  "url": "https://api.github.com/repos/aws/clock-bound/git/commits/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "html_url": "https://github.com/aws/clock-bound/commit/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "author": {
+    "name": "Shamik Chakraborty",
+    "email": "shamchak808@gmail.com",
+    "date": "2026-11-02T18:36:56Z"
+  },
+  "committer": {
+    "name": "GitHub",
+    "email": "noreply@github.com",
+    "date": "2026-11-02T18:36:56Z"
+  },
+  "tree": {
+    "sha": "6261c1659ff53ccec76cea26a3051fa680d9f676",
+    "url": "https://api.github.com/repos/aws/clock-bound/git/trees/6261c1659ff53ccec76cea26a3051fa680d9f676"
+  },
+  "message": "Release clockbound 3.0.0-rc.0 (#392)",
+  "parents": [
+    {
+      "sha": "f4011ce5d0e979a44fa5504d066b17bf16521d7a",
+      "url": "https://api.github.com/repos/aws/clock-bound/git/commits/f4011ce5d0e979a44fa5504d066b17bf16521d7a",
+      "html_url": "https://github.com/aws/clock-bound/commit/f4011ce5d0e979a44fa5504d066b17bf16521d7a"
+    }
+  ],
+  "verification": {
+    "verified": true,
+    "reason": "valid",
+    "signature": "-----BEGIN PGP SIGNATURE-----\n\nwsFcBAABCAAQBQJq6NhICRC1aQ7uu5UhlAAAcMYQAC2Isa3fYs+BaKlIVwpGG4dt\nfm+lEJ/CuIXEOlawwVAxDLE57RYda6dqgZSa1BuLUPogRA72rwsRDtKOvTSFO+o3\nknxnxKY/6BmXzonpxIfs6a6Ibs/jcTl/QQZGYo+vQcd8f2jmfvH/CUiSesqfBNr9\nbKbacGhlrDRmTUjotWrhP+oy97aaHJt2Pduissh4VM1OeG3sSHIzsWnDecH72Mmz\nskMbMFU15FDoDtFcVvJtpME5/5s7YOgKu/Uk8Ymp0OyEu8ywC1pX2BnKEeYQp6il\nkz10KeDjZbR6kSuRh1neHDzsrHZc5t/AX6BVEfAoFY8aptLmbFZxpPNIyQJSeRCv\ndmWSU8OhIZhR0SIVEOqCm7DG5kDqlo+a02keF+5fAxL5jlsgmzt+oDogWcztWaF4\n2N6a1jaWQwZ0LdsiDA0hiqgyzTVuJvzyvUQEM5Nyo6d4msuDDGrl7XQW62H04U63\n0VnpE4Q5qPWrN7EhE+GHQAKb/afN29dHIeH7cR3ymxHoFVOXBk4f6Nr1ZFcY5Vh+\nbGhln202r2vdGqwCMVv0lvYHBae+b2Up/9YHsKWcwqJGLNiJjQ6NRgoYbrJIWF+q\natQh4Lx3oYN2pByJWFOiTBAsqqFUhOpZQrtwatjEVC2bgtUmpm2G0R8nVj3xNw+v\n0rmahlO9dQdKW8OOOuxJ\n=wBue\n-----END PGP SIGNATURE-----\n",
+    "payload": "tree 6261c1659ff53ccec76cea26a3051fa680d9f676\nparent f4011ce5d0e979a44fa5504d066b17bf16521d7a\nauthor Shamik Chakraborty <shamchak808@gmail.com> 1793644616 -0500\ncommitter GitHub <noreply@github.com> 1793644616 -0500\n\nRelease clockbound 3.0.0-rc.0 (#392)",
+    "verified_at": "2026-11-02T19:08:43Z"
+  }
+}

@@ -1,0 +1,23 @@
+# Pinned ClockBound candidate — one finite source assessment
+
+**Result: candidate API identified, real qualification NOT established.** All eight approved public requests succeeded; six source blobs match the pinned Git tree exactly. The request budget is exhausted. No extra reads, installs, fetched-code execution, real clock query, host/account access or spending occurred. This ends the approved pass rather than automatically extending research.
+
+## What is actually established
+
+- The [workspace manifest](https://github.com/aws/clock-bound/blob/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/Cargo.toml) pins version3.0.0-rc.0. The [crate manifest](https://github.com/aws/clock-bound/blob/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/Cargo.toml) identifies `clock-bound`, Rust2024 and MIT OR Apache-2.0; both exact license texts were read and retained. This is a prerelease source candidate, not an established stable/supported production dependency or dependency audit.
+- The [README](https://github.com/aws/clock-bound/blob/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/README.md) describes a daemon plus client/shared-memory system and interval timestamps, and recommends Amazon Time Sync on EC2. It documents Linux RPM daemon packages; this does not qualify Axiom's current Mac or any actual host.
+- The [client implementation](https://github.com/aws/clock-bound/blob/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/client_impl.rs) exposes `Client::new`, explicit-path construction and `now() -> TimeWindow` containing earliest/latest/status (lines22–181). Each `now()` obtains a shared-memory snapshot and calls that snapshot's `now()`. The source documents interval validity for Synchronized/FreeRunning states; that comment is intended contract evidence, not real measured accuracy.
+- Source lines93–138 compare daemon/VMClock support, return an error on support mismatch, and mark a differing disruption marker as Disrupted. **A successful Result alone is insufficient:** the caller must inspect status. Lines232–295 show that disabling disruption support omits the VMClock reader and its disruption check. Axiom cannot silently assume disruption detection exists.
+- Source lines191–222 require an existing shared-memory path and delegate parsing/mapping to `ShmReader`; error mapping at299–338 includes malformed, uninitialized, causality and unsupported-version categories. Fixed protected resources and trustworthy daemon configuration remain necessary; constructor success does not establish custody or ownership.
+
+## What the source does NOT yet prove
+
+The inspected client delegates the actual time/error-growth calculation and snapshot integrity to `ClockBoundSnapshot::now`/`ShmReader`, and VMClock reading to another module. Those implementations were positively listed by the tree but NOT fetched within this pass. Therefore no claim of verified monotonic growth, freshness, atomic mapping, supported free-running duration, disruption behavior or validity through Axiom's later commit/dispatch follows. Library tests in the fetched file were not executed; daemon internals and dependency/binary provenance were not audited.
+
+No native Axiom bridge exists or becomes qualified here. A reviewed bridge would need fixed protected paths/host identity, exact version/profile and status policy, safe timestamp conversion (conservative integer interval rounding, no floating-point narrowing), original cancellation and validity through the actual original-transaction/final-send handoff. Time-scale/JWT/action/credential compatibility, lifecycle/restart/failure behavior and actual OS/fleet/custody/provider acceptance remain required. This is a design requirement list, not implemented code or authority to relax existing expiry rules.
+
+## Recommendation and owner decision
+
+**Do not adopt this prerelease or enable Governance now.** It is concrete enough to consider as a pinned candidate for an isolated Linux qualification design, with production still held. The owner should choose whether prerelease evaluation is acceptable for that isolated design, or require a stable-supported candidate first. No new source pass or host provision is automatic. If isolated evaluation is accepted, first complete the missing source/bridge/security test design and a full setup/cost proposal; any further public reads, installation, actual clock test, IAM/resource change and spend need their own exact reviewed scope. Existing6.90cent illustrative host/disk subtotal is NOT a complete budget or purchase authorization.
+
+This closes the missing-candidate-identification step only. It does not close real Governance qualification, the master plan, production database compatibility, deployment or activation.

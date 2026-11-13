@@ -1,0 +1,61 @@
+[workspace]
+members = [
+  "clock-bound",
+  "clock-bound-ffi",
+  "clock-bound-ff-tester",
+  "examples/client/rust",
+  "test/clock-bound-vmclock-client-test",
+  "test/amazon-time-sync",
+  "test/ntp-source",
+  "test/phc",
+  "test/vmclock-updater",
+  "test/clock-bound-adjust-clock",
+  "test/clock-bound-adjust-clock-test",
+  "test/vmclock",
+  "test/clock-bound-client-generic",
+  "test/clock-bound-now",
+  "test/clock-bound-phc-offset",
+  "test/shmv3-error-bound-validation",
+  "test/clock-bound-configuration-test",
+  "test/clock-bound-v2-client-test",
+]
+resolver = "3"
+
+[workspace.package]
+authors = [
+  "Jacob Wisniewski <jacoblwisniewski@gmail.com>",
+  "Jennifer Solidum <jennsolidum@gmail.com>",
+  "Julien Ridoux <julien@synclab.org>",
+  "Mohammed Kabir <mekabir93@gmail.com>",
+  "Myles Neloms <mcneloms.451@gmail.com>",
+  "Nick Matthews <nick.matthews1020@gmail.com>",
+  "Ryan Luu <ryanluu@gmail.com>",
+  "Shamik Chakraborty <shamchak808@gmail.com>",
+  "Tam Phan <tphan093@gmail.com>",
+  "Thoth Gunter <thothgunter@live.com>",
+  "Wei-Han Huang <danny87123@gmail.com>",
+  "Wenhao Piao <wenhao.piao@outlook.com>",
+  "Mason Stoecker <masonsto@amazon.com>",
+  "Sierra Nicholes <s.k.nicholes@gmail.com>",
+  "Pranay Mallik <pranaym2004@gmail.com>",
+]
+categories = ["date-and-time"]
+edition = "2024"
+exclude = []
+keywords = ["aws", "ntp", "ec2", "time"]
+publish = false
+repository = "https://github.com/aws/clock-bound"
+version = "3.0.0-rc.0"
+
+# Duplicate profile config as clock_bound/Cargo.toml
+# https://github.com/rust-lang/cargo/issues/8264
+#
+# Duplicating to ensure release config is expected when
+# publishing to crates.io
+#
+# Ensure changes are kept in lockstep
+[profile.release]
+panic = "abort"   # Not just binary size, but desired behavior of clockbound bin
+strip = true
+lto = "fat"
+codegen-units = 1
