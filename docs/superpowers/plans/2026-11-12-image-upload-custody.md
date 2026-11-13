@@ -5,7 +5,7 @@ Spec: `docs/recovery/2026-11-12/platform-governance-scope/IMAGE-GRANT-CUSTODY-PR
 Goal: one exact two-child reviewed upload, scoped encrypted artifact and derived upload address, clone-resistant initializer liability, one-use PUT, immutable truthful outcomes and compatible uploaded-image lineage. Existing raw-token/latest-account/draft-cron bypass stays unavailable.
 
 ## Scope limits
-Local source/additive schema definitions/synthetic scoped crypto/mocked native I/O/owned isolated PostgreSQL only. No real keys/providers/grants/services, signing/install, production schema/flags/routes/deploy or spending. Official LinkedIn protocol reads and concrete bounded decoder qualification are separate pending gates. Missing/unverified profiles remain unavailable; structural parsers, mocks and hashes never qualify them. Preserve old plans and unknown histories; no silent adoption/reset/replay.
+Local source/additive schema definitions/synthetic scoped crypto/mocked native I/O/owned isolated PostgreSQL only. No real keys/providers/grants/services, signing/install, production schema/flags/routes/deploy or spending. Official LinkedIn protocol reads are consumed (IMAGE-UPLOAD-PROTOCOL-SOURCE-REVIEW.md); concrete fixed-profile review and bounded decoder qualification remain separate gates. Missing/unverified profiles remain unavailable; structural parsers, mocks and hashes never qualify them. Preserve old plans and unknown histories; no silent adoption/reset/replay.
 
 ## Task1 — actual closed contracts and scoped custody primitives
 - [x] RED: canonical binary encoding/digest/size and context swaps, copied key preservation, derived metadata excludes secret upload address, clone-resistant author+bytes key, exact two-child/creator/source binding and one-use PUT proposals.
@@ -37,3 +37,5 @@ Prepared HTTP intake/recovery/preview/review has actual HMAC/current-SQL local e
 - [ ] Complete family/caller audit, current types/relevant/full tests, frontend and frozen production build; synchronize living docs/demo and evidence scopes.
 - [ ] One fresh complete three-family independent review, fix important findings with reproducing tests, then one normal PR and green exact-head checks before merge. No production/database authority inferred.
 - [ ] Full Governance and master-plan live/installed/security requirements remain open until separately proven.
+
+Protocol continuation: official reads complete; pure initializer/address/expiry/byte-acceptance/availability candidate tested in IMAGE-UPLOAD-PROTOCOL-LOCAL-RECEIPT.json. Task3 transport checkbox remains OPEN. A201 alone cannot support confirmed ready-image lineage; exact authenticated AVAILABLE observation is required. No default is qualified.
