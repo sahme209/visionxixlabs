@@ -63,9 +63,10 @@ it('a lost final commit acknowledgment withholds send and does not restore its p
  const f=fixture(),p=await f.claimed();f.loseAck();await expect(f.service.beforeEffectSend(p.child.proof,p.child.effect,actor)).rejects.toThrow();await expect(f.service.beforeEffectSend(p.child.proof,p.child.effect,actor)).rejects.toThrow();expect(f.effects().get(p.id+':0')).toBe('claimed');expect(f.rows().get(p.id)?.attemptCount).toBe(1);
 });
 it('the real child coordinator never invokes its synthetic outbound operation after expiry',async()=>{
- const {bindPlatformExecution,runPlatformEffect}=await import('../effectExecution'),f=fixture(),p=await f.prepare();await f.service.review(p.id,0,p.plan.digest,reviewer);await f.service.claim(p.id,1,actor);let sends=0;
- const bound=bindPlatformExecution({claimNextEffect:id=>f.service.claimNextEffect(id,actor),beforeEffectSend:(proof,effect)=>f.service.beforeEffectSend(proof,effect,actor),observeEffect:f.service.observeEffect},p.id);
- await expect(runPlatformEffect(bound,p.plan.effects[0],async beforeSend=>{f.clock.mockResolvedValue({earliest:at+30000,latest:at+30001});await beforeSend();sends++;return {outcome:'confirmed',value:true}})).rejects.toThrow();expect(sends).toBe(0);expect(f.rows().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
+ const {bindPlatformGrowthExecution,runPlatformEffect}=await import('../effectExecution'),{syntheticGrowthNative}=await import('./fixtures/syntheticGrowthNative'),f=fixture(),p=await f.prepare();await f.service.review(p.id,0,p.plan.digest,reviewer);await f.service.claim(p.id,1,actor);let sends=0;
+ const timing={...f.timing,assertActive:()=>f.controller.signal.throwIfAborted()},native=syntheticGrowthNative(timing,p.id,f.source.connection.updatedAt.toISOString());
+ const bound=bindPlatformGrowthExecution({claimNextEffect:id=>f.service.claimNextEffect(id,actor),beforeEffectCredential:(proof,effect,check,finalFacts)=>f.service.beforeEffectCredential(proof,effect,actor,check,finalFacts),assertEffectCredentialCurrent:(proof,effect,check,finalFacts)=>f.service.assertEffectCredentialCurrent(proof,effect,actor,check,finalFacts),beforeEffectSend:(proof,effect,check,finalFacts)=>f.service.beforeEffectSend(proof,effect,actor,check,finalFacts),observeEffect:f.service.observeEffect},p.id,native,timing);
+ await expect(runPlatformEffect(bound,p.plan.effects[0],async(_beforeSend,beforeCredential)=>{f.clock.mockResolvedValue({earliest:at+30000,latest:at+30001});await beforeCredential(async()=>{});sends++;return {outcome:'confirmed',value:true}})).rejects.toThrow();expect(sends).toBe(0);expect(f.rows().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
 });
 
 it('applies a schedule inside the same original final authorization transaction',async()=>{

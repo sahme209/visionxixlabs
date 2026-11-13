@@ -1,4 +1,5 @@
 import {assertDeploymentNativeTransport} from './deploymentNativeTransport';
+import {assertGrowthNativeTransport,type GrowthNativeTransport,type GrowthTiming} from './growthNativeTransport';
 import type {DeploymentNativeTransport,DeploymentTiming} from './deploymentNativeTransport';
 import type {ExecutionTimeCheck,ExecutionTimeAuthorization} from './executionTime';
 import 'server-only';
@@ -7,12 +8,13 @@ import {platformEffectSchema,type PlatformEffect} from './contracts';
 interface Service{
  readonly actorUserId?:string;
  claimNextEffect(id:string):Promise<{effect:PlatformEffect;proof:object}>;
- beforeEffectSend(proof:object,effect:PlatformEffect,nativeCheck?:ExecutionTimeCheck):Promise<void>;
- beforeEffectCredential?(proof:object,effect:PlatformEffect,nativeCheck:ExecutionTimeCheck):Promise<void>;
+ beforeEffectSend(proof:object,effect:PlatformEffect,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<void>;
+ beforeEffectCredential?(proof:object,effect:PlatformEffect,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<void>;
+ assertEffectCredentialCurrent?(proof:object,effect:PlatformEffect,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<void>;
  observeEffect(proof:object,outcome:'confirmed'|'refused'|'unknown',observation?:unknown):Promise<void>;
  beforeEffectResult?(proof:object):Promise<void>;
 }
-interface Binding{service:Service;actionId:string;busy:boolean;closed:boolean;deployment?:Readonly<DeploymentNativeTransport>}
+interface Binding{service:Service;actionId:string;busy:boolean;closed:boolean;deployment?:Readonly<DeploymentNativeTransport>;growth?:Readonly<GrowthNativeTransport>}
 const bindings=new WeakMap<object,Binding>();
 const fail=(code='platform_governance_effect_unavailable'):never=>{throw Error(code)};
 /** Private composition only. The real service still enforces the original
@@ -27,24 +29,33 @@ export function bindPlatformDeploymentExecution(service:Service,actionId:string,
  const binding=bindPlatformExecution(service,actionId);bindings.get(binding)!.deployment=transport;return binding;
 }
 export function readPlatformDeploymentTransport(binding:object){const entry=bindings.get(binding)??fail();if(entry.busy||entry.closed||!entry.deployment)return fail();entry.deployment.signal.throwIfAborted();return entry.deployment}
+export function bindPlatformGrowthExecution(service:Service,actionId:string,transport:Readonly<GrowthNativeTransport>,timing:GrowthTiming):object{
+ assertGrowthNativeTransport(transport);
+ if(typeof timing.clock!=='function'||!(timing.signal instanceof AbortSignal)||transport.actionId!==actionId||transport.clock!==timing.clock||transport.signal!==timing.signal||transport.assertActive!==timing.assertActive||typeof service.beforeEffectCredential!=='function'||typeof service.assertEffectCredentialCurrent!=='function')return fail();
+ timing.assertActive();timing.signal.throwIfAborted();const binding=bindPlatformExecution(service,actionId);bindings.get(binding)!.growth=transport;return binding;
+}
+export function readPlatformGrowthTransport(binding:object){const entry=bindings.get(binding)??fail();if(entry.busy||entry.closed||!entry.growth)return fail();entry.growth.assertActive();entry.growth.signal.throwIfAborted();return entry.growth}
 /** Metadata only; possession is still enforced by the bound real service. */
 export function describePlatformExecution(value:unknown){
  if(!value||typeof value!=='object')return fail();const entry=bindings.get(value)??fail();if(entry.busy||entry.closed)fail();
  return {actionId:entry.actionId,actor:entry.service.actorUserId?'user:'+entry.service.actorUserId:'platform-governance'};
 }
-export async function runPlatformEffect<T>(binding:object,rawEffect:PlatformEffect,prepareAndSend:(beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization)=>Promise<{outcome:'confirmed'|'refused'|'unknown';value:T;observation?:unknown}>):Promise<T>{
+export async function runPlatformEffect<T>(binding:object,rawEffect:PlatformEffect,prepareAndSend:(beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization,credentialCurrent:ExecutionTimeAuthorization)=>Promise<{outcome:'confirmed'|'refused'|'unknown';value:T;observation?:unknown}>):Promise<T>{
  const entry=bindings.get(binding)??fail();if(entry.busy||entry.closed)fail();entry.busy=true;
  let proof:object|undefined,outcome:'confirmed'|'refused'|'unknown'='unknown',value:T|undefined,observation:unknown,completed=false,expected:PlatformEffect|undefined;
  try{
-  const selectedEffect=platformEffectSchema.parse(rawEffect);expected=selectedEffect;if(selectedEffect.kind.startsWith('template.'))fail();const claim=await entry.service.claimNextEffect(entry.actionId);proof=claim.proof;
+  const selectedEffect=platformEffectSchema.parse(rawEffect);expected=selectedEffect;const growth=selectedEffect.kind==='growth.post.publish'||selectedEffect.kind==='growth.post.delete';if(selectedEffect.kind.startsWith('template.')||growth&&!entry.growth)fail();const claim=await entry.service.claimNextEffect(entry.actionId);proof=claim.proof;
   if(sha256ContentHash(selectedEffect)!==sha256ContentHash(claim.effect)){outcome='refused';throw Error('effect_mismatch')}
-  let used=false,authorized=false,acquisitionUsed=false;
-  const result=await prepareAndSend(async check=>{
-   if(used||selectedEffect.kind==='deployment.vercel'&&(!acquisitionUsed||typeof check!=='function'))fail();used=true;
-   if(check===undefined)await entry.service.beforeEffectSend(claim.proof,selectedEffect);else await entry.service.beforeEffectSend(claim.proof,selectedEffect,check);authorized=true;
-  },async check=>{
-   if(acquisitionUsed||used||selectedEffect.kind!=='deployment.vercel'||typeof check!=='function'||!entry.service.beforeEffectCredential)return fail();acquisitionUsed=true;
-   await entry.service.beforeEffectCredential(claim.proof,selectedEffect,check);
+  let used=false,authorized=false,acquisitionUsed=false,acquisitionGranted=false;
+  const result=await prepareAndSend(async(check,finalFacts)=>{
+   if(used||(selectedEffect.kind==='deployment.vercel'||growth)&&(!acquisitionGranted||typeof check!=='function'))fail();used=true;
+   if(check===undefined)await entry.service.beforeEffectSend(claim.proof,selectedEffect);else await entry.service.beforeEffectSend(claim.proof,selectedEffect,check,finalFacts);authorized=true;
+  },async(check,finalFacts)=>{
+   if(acquisitionUsed||used||selectedEffect.kind!=='deployment.vercel'&&!growth||typeof check!=='function'||!entry.service.beforeEffectCredential)return fail();acquisitionUsed=true;
+   await entry.service.beforeEffectCredential(claim.proof,selectedEffect,check,finalFacts);acquisitionGranted=true;
+  },async(check,finalFacts)=>{
+   if(!growth||!acquisitionGranted||used||typeof check!=='function'||!entry.service.assertEffectCredentialCurrent)return fail();
+   await entry.service.assertEffectCredentialCurrent(claim.proof,selectedEffect,check,finalFacts);
   });
   if(!authorized||!result||!['confirmed','refused','unknown'].includes(result.outcome))fail();
   outcome=result.outcome;value=result.value;observation=result.observation;completed=true;

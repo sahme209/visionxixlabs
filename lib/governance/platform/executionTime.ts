@@ -8,7 +8,10 @@ export type ExecutionTimeSource=(signal:AbortSignal)=>Promise<ExecutionTimeInter
 export interface ExecutionTimeWindow {readonly notBefore?:number;readonly expiresAt?:number}
 /** Locked authorization owners may add restrictions, never replace native bounds. */
 export type ExecutionTimeCheck=(restriction?:ExecutionTimeWindow)=>Promise<void>;
-export type ExecutionTimeAuthorization=(timeCheck?:ExecutionTimeCheck)=>Promise<void>;
+/** Optional native facts are read-only and must run after the original owner's
+ * final awaited source/people/order checks, inside that SAME transaction. No
+ * post-commit clock read. Transports requiring this hook verify completion. */
+export type ExecutionTimeAuthorization=(timeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>Promise<void>;
 const fail=():never=>{throw Error('platform_execution_time_unavailable')};
 const stamp=(value:number)=>Number.isSafeInteger(value)&&value>=0;
 

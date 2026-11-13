@@ -1,3 +1,4 @@
+import {syntheticGrowthNative} from './fixtures/syntheticGrowthNative';
 import {syntheticRequestContext} from './fixtures/syntheticRequestContext';
 import {createDeploymentNativeTransport} from '../deploymentNativeTransport';
 import {bindPlatformExecution} from '../effectExecution';
@@ -173,9 +174,9 @@ import {schedulePlatformLinkedInDraft} from '@/lib/growth/linkedin/platformSched
 // Explicitly synthetic time for isolated SQL definitions only. Default server
 // time remains unavailable; this does not qualify a native source.
 async function syntheticGrowthRequest(request:{headers:Headers;signal?:AbortSignal}){
- return createPlatformRequestComposition(syntheticRequestContext(request,new AbortController().signal),{repo:createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}}});
+ return createPlatformRequestComposition(syntheticRequestContext(request,new AbortController().signal),{repo:createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}},growthTransport:timing=>syntheticGrowthNative(timing,timing.actionId,async effect=>{const row=await defaultPrisma.linkedInAccountConnection.findUnique({where:{id:effect.target.connectionId},select:{updatedAt:true}});if(!row)throw Error('synthetic credential metadata missing');return row.updatedAt.toISOString()})});
 }
-async function syntheticGrowthExecution(request:{headers:Headers},id:string){const service=await syntheticGrowthRequest(request);await service.claim(id,1);return bindPlatformExecution(service,id)}
+async function syntheticGrowthExecution(request:{headers:Headers},id:string){const service=await syntheticGrowthRequest(request),saved=await service.inspect(id),binding=saved.plan.effects[0]?.kind==='growth.schedule.change'?bindPlatformExecution(service,id):service.createGrowthExecutionBinding(id);await service.claim(id,1);return binding}
 async function postFixture(schedule=false,scheduleDelay=30000,serverPrepared=false,claimExecution=true,draftId?:string){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');vi.stubEnv('CREDENTIAL_ENCRYPTION_KEY','synthetic-credential-key-'.repeat(3));
  const connection=await defaultPrisma.linkedInAccountConnection.create({data:{ownerEmail:randomUUID()+'@example.test',linkedinUrn:'urn:li:person:fixture',accessToken:encryptCredential('synthetic-linkedin-token'),scopes:'w_member_social',expiresAt:new Date(Date.now()+60000),status:'connected'},select:POST_CONNECTION_SELECT});

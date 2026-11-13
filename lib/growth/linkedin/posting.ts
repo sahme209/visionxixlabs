@@ -4,14 +4,11 @@ import {readDefaultImagePublicationSource} from './platformImageSource';
 import 'server-only';
 import {prisma} from '@/lib/db';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
-import {decryptCredential} from '@/lib/security/credentialVault';
-import {describePlatformExecution,runPlatformEffect} from '@/lib/governance/platform/effectExecution';
-import {readBoundedPlatformJson} from '@/lib/governance/platform/httpResponse';
+import {describePlatformExecution,runPlatformEffect,readPlatformGrowthTransport} from '@/lib/governance/platform/effectExecution';
 import {isPostingEnabled} from './oauth';
 import {writeGrowthAudit} from '../audit';
 import {preparePlatformLinkedInPost,currentLinkedInVersion} from './platformPostingPlan';
 export {renderPostText} from './platformPostingPlan';
-const POSTS_URL='https://api.linkedin.com/rest/posts';
 export const POST_DRAFT_SELECT={id:true,title:true,hook:true,body:true,cta:true,hashtags:true,imageUrn:true,status:true,scheduledFor:true,updatedAt:true} as const;
 export const POST_CONNECTION_SELECT={id:true,linkedinUrn:true,organizationUrn:true,scopes:true,status:true,expiresAt:true,updatedAt:true} as const;
 export type PublishOutcome=
@@ -28,39 +25,27 @@ async function metadata(draftId:string,connectionId:string,imageUploadActionId?:
 async function recordRun(draftId:string,actor:string,outcome:'success'|'failed'|'unknown',data:{httpStatus?:number;linkedinPostUrn?:string;errorDetail?:string;diagnosticsJson?:{platformActionId:string}}){
  try{return (await prisma.linkedInPostPublishRun.create({data:{draftId,triggeredBy:actor,outcome,...data,finishedAt:new Date()}})).id}catch{return null}
 }
-const validUrn=(value:unknown):value is string=>typeof value==='string'&&/^urn:li:(share|ugcPost):[A-Za-z0-9_-]{1,128}$/.test(value);
 export async function publishDraft(input:PublishInput):Promise<PublishOutcome>{
  if(!isPostingEnabled())return {kind:'skipped_disabled',runId:null};
  const {draftId,connectionId,platformExecution,effectId}=input;
- let binding:ReturnType<typeof describePlatformExecution>;
- try{binding=describePlatformExecution(platformExecution)}catch{return {kind:'governance_required',runId:null}}
  if(!connectionId||!platformExecution)return {kind:'governance_required',runId:null};
- let credentialUnavailable=false;
+ let binding:ReturnType<typeof describePlatformExecution>,native:ReturnType<typeof readPlatformGrowthTransport>;
+ try{binding=describePlatformExecution(platformExecution);native=readPlatformGrowthTransport(platformExecution)}catch{return {kind:'governance_required',runId:null}}
+ let credentialUnavailable=false,credentialRevision:Date|undefined;
  try{
   const source=await metadata(draftId,connectionId,input.imageUploadActionId);
   if(!source.draft)return {kind:'http_error',status:404,body:'draft_not_found',runId:null};
   if(!source.connection)return {kind:'skipped_not_connected',runId:null};
   const draft=source.draft,connection=source.connection,prepared=preparePlatformLinkedInPost(draft,connection,currentLinkedInVersion(),Date.now(),effectId,source.imageLineage,input.imageUploadActionId);
-  const receipt=await runPlatformEffect(platformExecution,prepared.effect,async beforeSend=>{
-   const stored=await prisma.linkedInAccountConnection.findUnique({where:{id:connectionId},select:{accessToken:true,updatedAt:true}});
-   if(!stored||stored.updatedAt.getTime()!==connection.updatedAt.getTime())throw Error('posting_source_changed');
-   let accessToken:string;
-   try{accessToken=decryptCredential(stored.accessToken)}catch{
-    credentialUnavailable=true;
-    try{await prisma.linkedInAccountConnection.updateMany({where:{id:connectionId,updatedAt:connection.updatedAt,status:'connected'},data:{status:'expired',lastError:'Stored credential could not be decrypted; reconnect required.'}})}catch{/* no provider send; original claim remains */}
-    throw Error('posting_credential_unavailable');
-   }
-   const latest=await metadata(draftId,connectionId,input.imageUploadActionId);
-   if(!latest.draft||!latest.connection||sha256ContentHash(preparePlatformLinkedInPost(latest.draft,latest.connection,currentLinkedInVersion(),Date.now(),effectId,latest.imageLineage,input.imageUploadActionId).effect)!==sha256ContentHash(prepared.effect))throw Error('posting_source_changed');
-   await beforeSend();
-   if(!isPostingEnabled()||currentLinkedInVersion()!==prepared.version)throw Error('posting_policy_changed');
-   const signal=AbortSignal.timeout(15000),response=await fetch(POSTS_URL,{method:'POST',redirect:'error',signal,cache:'no-store',headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json','LinkedIn-Version':prepared.version,'X-Restli-Protocol-Version':'2.0.0'},body:prepared.body});
-   if(!response.ok)throw Error('posting_response_unconfirmed');
-   let urn:unknown=response.headers.get('x-restli-id');
-   if(!validUrn(urn)){const raw=await readBoundedPlatformJson(response,signal);urn=raw&&typeof raw==='object'&&!Array.isArray(raw)?(raw as {id?:unknown}).id:null}
-   else{void response.body?.cancel().catch(()=>{})}
-   if(!validUrn(urn))throw Error('posting_identity_unconfirmed');
-   return {outcome:'confirmed',value:{urn,status:response.status}};
+  credentialRevision=connection.updatedAt;
+  const receipt=await runPlatformEffect(platformExecution,prepared.effect,async(beforeSend,beforeCredential,credentialCurrent)=>{
+   const result=await native.send(prepared.effect,{kind:'publish',draft,connection,version:prepared.version,...(source.imageLineage?{imageLineage:source.imageLineage}:{}),...(input.imageUploadActionId?{imageUploadActionId:input.imageUploadActionId}:{})},async(check,finalFacts)=>{
+    const latest=await metadata(draftId,connectionId,input.imageUploadActionId);
+    if(!latest.draft||!latest.connection||sha256ContentHash(preparePlatformLinkedInPost(latest.draft,latest.connection,currentLinkedInVersion(),Date.now(),effectId,latest.imageLineage,input.imageUploadActionId).effect)!==sha256ContentHash(prepared.effect))throw Error('posting_source_changed');
+    await beforeSend(check,finalFacts);
+   },beforeCredential,credentialCurrent,()=>{credentialUnavailable=true});
+   if(result.kind!=='published')throw Error('posting_result_unconfirmed');
+   return {outcome:'confirmed',value:result};
   });
   // A known remote post remains known even if local bookkeeping fails.
   let recordingConfirmed=true;
@@ -70,6 +55,7 @@ export async function publishDraft(input:PublishInput):Promise<PublishOutcome>{
   try{await writeGrowthAudit({actor:binding.actor,action:'draft.publish_succeeded',targetKind:'linkedin_draft',targetId:draftId,detail:{urn:receipt.urn,platformActionId:binding.actionId,recordingConfirmed}})}catch{/* platform transition is authoritative */}
   return {kind:'success',urn:receipt.urn,runId,recordingConfirmed};
  }catch{
+  if(credentialUnavailable&&credentialRevision){try{await prisma.linkedInAccountConnection.updateMany({where:{id:connectionId,updatedAt:credentialRevision,status:'connected'},data:{status:'expired',lastError:'Stored credential could not be decrypted; reconnect required.'}})}catch{/* original platform attempt stays consumed */}}
   const runId=await recordRun(draftId,binding.actor,credentialUnavailable?'failed':'unknown',{errorDetail:credentialUnavailable?'posting_credential_unavailable':'posting_outcome_unconfirmed',diagnosticsJson:{platformActionId:binding.actionId}});
   // Never reset a scheduled draft into a retry path after an uncertain send.
   return {kind:credentialUnavailable?'token_expired':'outcome_unknown',runId};

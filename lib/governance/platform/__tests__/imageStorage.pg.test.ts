@@ -1,3 +1,4 @@
+import {syntheticGrowthNative} from './fixtures/syntheticGrowthNative';
 import {beforeAll,afterAll,it,expect} from 'vitest';
 import {randomUUID,createHash} from 'node:crypto';
 import {createDatabaseClient} from '@/lib/database/createDatabaseClient';
@@ -304,7 +305,7 @@ it.skipIf(!enabled)('selects and previews original ready bytes through new authe
  const {encryptCredential}=await import('@/lib/security/credentialVault'),f=await nativeExecutionFixture(false,encryptCredential('synthetic-linkedin-token')),native=interceptImageNative(f),nativeHandler=native.fetch.getMockImplementation()!,h=executionHttp(f);native.fetch.mockRestore();
  const {createPlatformRequestComposition}=await import('../requestComposition'),{createPlatformPreparationHttp}=await import('../preparationHttp'),{createPlatformReviewHttp}=await import('../reviewHttp'),{createPlatformExecutionHttp}=await import('../executionHttp');
  const {createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient}=await import('../../../../desktop/src/lib/platformReview');
- const composition=(request:Request)=>createPlatformRequestComposition(request,{repo:f.r,verifyDesktopToken:h.codec.verifyDesktopToken,readAdminEmails:()=>['image-requester@example.test','image-reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}}});
+ const composition=(request:Request)=>createPlatformRequestComposition(request,{repo:f.r,verifyDesktopToken:h.codec.verifyDesktopToken,readAdminEmails:()=>['image-requester@example.test','image-reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}},growthTransport:timing=>syntheticGrowthNative(timing,timing.actionId,async effect=>{const row=await db.linkedInAccountConnection.findUnique({where:{id:effect.target.connectionId},select:{updatedAt:true}});if(!row)throw Error('synthetic credential metadata missing');return row.updatedAt.toISOString()})});
  const prepare=createPlatformPreparationHttp(composition),review=createPlatformReviewHttp(composition),execute=createPlatformExecutionHttp(composition);let publications=0;
  const transport=vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{
   const url=String(input);if(url==='https://fixture.invalid/api/desktop/platform-governance/image-workflow')return h.http(new Request(url,init));

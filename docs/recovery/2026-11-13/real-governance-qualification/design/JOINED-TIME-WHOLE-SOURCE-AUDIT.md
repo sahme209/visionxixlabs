@@ -23,3 +23,7 @@ Growth's connectionRevision explicitly includes expiresAt and updatedAt; reconst
 Finish/review/record the two narrow corrections, then complete the connected workload design/implementation and scoped growth design decision. Freeze one coherent source checkpoint for fresh actual SQL/build/full source review rather than replaying old one-run grants for each small edit. Earlier228actualSQLPASS is7504a725 only and cannot qualify these later changes. A full ordinary suite does not discharge the above findings or the pending native/time/clock/custody/fleet/credential/provider/human gates.
 
 No real credentials/provider/SQL/native program/service/resource, signing/install, production/flags/schema, GitHub workflow/push/deploy or spending was used in this audit. Real setup and every production/owner decision remain explicit and separate. Never resend the consumed written ServiceNow note or borrow an independent human's decision.
+
+
+## Subsequent local correction — growth finding3
+The separately approved connected post/delete implementation now passes exact local source validation; see GROWTH-PRIVATE-ACQUISITION-LOCAL-RECEIPT.json. This supersedes finding3's missing local design/implementation status only. Real source/profile/clock/custody qualification and actual SQL for this revision remain absent. Workload finding1 remains OPEN; only its private consumed-JWT window hook is implemented so far. No complete Governance/activation or production claim follows.

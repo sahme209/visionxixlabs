@@ -333,21 +333,35 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   /** Private one-use authority to copy an ALREADY-HELD credential only.
    * The original physical target hold commits before any supplier can run.
    * Native issuance/renewal/exchange is not authorized by this method. */
-  async beforeEffectCredential(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck:ExecutionTimeCheck){
+  async beforeEffectCredential(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){
    const binding=observations.get(proof)??fail();if(binding.credentialUsed||binding.sendUsed||typeof nativeCheck!=='function')return fail();binding.credentialUsed=true;
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);let deployment:Readonly<DeploymentReservation>|undefined;
    await locked(binding.actionId,async(tx,state)=>{
-    if(state.status!=='claimed'||effect.kind!=='deployment.vercel'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))return fail();
+    if(state.status!=='claimed'||!['deployment.vercel','growth.post.publish','growth.post.delete'].includes(effect.kind)||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))return fail();
     await actors(tx,state);if(!authority.assertEffectCurrent)return fail();await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor);
+    if(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete'){await timely(tx,state,actor,undefined,nativeCheck);if(finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();return}
+    if(effect.kind!=='deployment.vercel')return fail();
     if(!tx.lockDeploymentTarget||!tx.assertDeploymentTargetAdmission||!tx.readDeploymentTarget||!tx.insertDeploymentTarget||!tx.replaceDeploymentTarget)return fail();
     const key=nativeDeploymentKey(effect);await tx.lockDeploymentTarget(key);await tx.assertDeploymentTargetAdmission(key);const previous=await tx.readDeploymentTarget(key);
     deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);
     if(previous)await tx.replaceDeploymentTarget(previous.version,deployment);else await tx.insertDeploymentTarget(deployment);
-    await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor,undefined,nativeCheck);
+    await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor,undefined,nativeCheck);if(finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
    });
-   if(observations.get(proof)!==binding||!deployment)return fail();binding.deployment=deployment;binding.credentialGranted=true;
+   if(observations.get(proof)!==binding||effect.kind==='deployment.vercel'&&!deployment)return fail();binding.deployment=deployment;binding.credentialGranted=true;
   },
-  async beforeEffectSend(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck?:ExecutionTimeCheck){
+  /** Rechecks ONLY the original admitted child. No claim/reservation/token or
+   * second acquisition slot; a final-send attempt retires this path too. */
+  async assertEffectCredentialCurrent(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){
+   const binding=observations.get(proof)??fail();if(!binding.credentialGranted||binding.sendUsed||typeof nativeCheck!=='function')return fail();
+   const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
+   if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.post.delete')return fail();
+   await locked(binding.actionId,async(tx,state)=>{
+    if(state.status!=='claimed'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))return fail();
+    await actors(tx,state);if(!authority.assertEffectCurrent)return fail();await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor,undefined,nativeCheck);if(finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
+   });
+   if(observations.get(proof)!==binding||binding.sendUsed||!binding.credentialGranted)return fail();
+  },
+  async beforeEffectSend(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){
    const binding=observations.get(proof)??fail();
    if(binding.sendUsed)fail();binding.sendUsed=true;
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
@@ -367,6 +381,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state,actor);
     }
     if(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete'){
+     if(nativeCheck!==undefined&&!binding.credentialGranted)return fail();
      const reserve=(effect.kind==='growth.post.publish'?tx.reservePublication:tx.reservePostDeletion)??fail();await reserve.call(tx,binding.actionId,binding.index,effect.kind==='growth.post.publish'?effect.target.draftId:effect.target.postUrn);
      // Uniqueness can wait on another transaction; authority and expiry must
      // still hold after that wait before committing any send reservation.
@@ -382,7 +397,8 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      await timely(tx,state,actor,{effectId:effect.id,source});
     }
     await authority.assertFinalSend?.(tx,effect);
-    if(effect.kind==='deployment.vercel')await timely(tx,state,actor,undefined,nativeCheck);
+    if(effect.kind==='deployment.vercel'||(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete')&&nativeCheck!==undefined)await timely(tx,state,actor,undefined,nativeCheck);
+    if((effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete')&&finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
    });
    if(observations.get(proof)!==binding)fail();
    binding.deployment=deployment;binding.sendGranted=true;

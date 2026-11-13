@@ -25,6 +25,19 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
  return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
+it('growth credential admission stays one-use while exact-child currentness can repeat without a send or new claim',async()=>{
+ vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');
+ const source={draft:{id:'draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(at-1000)},connection:{id:'connection',linkedinUrn:'urn:li:person:author',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(at+60000),updatedAt:new Date(at-1000)}},f=fixture(source);
+ const saved=await f.service.prepareGrowth({operation:'publish',draftId:'draft',connectionId:'connection',expiresAt:new Date(at+30000).toISOString()},requester,'11111111-1111-4111-8111-111111111111'),id=saved.actionId;
+ await f.service.review(id,0,f.rows().get(id)!.plan.digest,reviewer);await f.service.claim(id,1,requester);const child=await f.service.claimNextEffect(id,requester),check=async()=>{};
+ await expect(f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check)).rejects.toThrow();
+ await f.service.beforeEffectCredential(child.proof,child.effect,requester,check);
+ await expect(f.service.beforeEffectCredential(child.proof,child.effect,requester,check)).rejects.toThrow();
+ await f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check);await f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check);
+ expect(f.rows().get(id)?.attemptCount).toBe(1);expect(f.rows().get(id)?.status).toBe('claimed');
+ f.assertCurrent.mockRejectedValueOnce(Error('revoked'));await expect(f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check)).rejects.toThrow();
+ await f.service.beforeEffectSend(child.proof,child.effect,requester,check);await expect(f.service.assertEffectCredentialCurrent(child.proof,child.effect,requester,check)).rejects.toThrow();await f.service.observeEffect(child.proof,'confirmed');expect(f.rows().get(id)?.status).toBe('confirmed');
+});
 it('never reviews or executes deployment target release through the generic action path',async()=>{
  const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'release',kind:'deployment.target.release',target:{nativeKey:d,generation:1,expectedReservationVersion:1,originalActionId:'platform_action_11111111-1111-4111-8111-111111111111',requestReceiptDigest:d,providerDeploymentId:'dpl_fixture',profileDigest:d,recoveryDigest:d}}]}),id='platform_action_22222222-2222-4222-8222-222222222222',proposed=createPlatformAction(p,requester,at);
  f.rows().set(id,proposed);await expect(f.service.review(id,0,p.digest,reviewer)).rejects.toThrow();expect(f.rows().get(id)).toEqual(proposed);

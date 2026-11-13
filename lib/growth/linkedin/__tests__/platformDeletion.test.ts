@@ -7,10 +7,10 @@ vi.mock('../../audit',()=>({writeGrowthAudit:m.audit}));
 import {deletePlatformLinkedInPost} from '../platformDeletion';
 import {preparePlatformLinkedInDeletion} from '../platformDeletionPlan';
 import {deletionFixture} from './fixtures/platformDeletion';
-import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
+import {syntheticGrowthBinding} from '@/lib/governance/platform/__tests__/fixtures/syntheticGrowthNative';
 let source:ReturnType<typeof deletionFixture>;
 const now=Date.parse('2026-11-12T00:00:00Z');
-function binding(){const effect=preparePlatformLinkedInDeletion(source,'202605',now).effect,service={actorUserId:'requester',claimNextEffect:vi.fn(async()=>({effect,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})};return {value:bindPlatformExecution(service,'fixture-delete-action'),service}}
+function binding(){const effect=preparePlatformLinkedInDeletion(source,'202605',now).effect,service={actorUserId:'requester',claimNextEffect:vi.fn(async()=>({effect,proof:{}})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{})};return {value:syntheticGrowthBinding(service,'fixture-delete-action',source.connection.updatedAt.toISOString()),service}}
 beforeEach(()=>{vi.clearAllMocks();vi.useFakeTimers();vi.setSystemTime(now);vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605');source=deletionFixture();m.read.mockResolvedValue(source);m.transaction.mockImplementation(async fn=>fn({}));m.credential.mockResolvedValue({accessToken:'synthetic-encrypted',updatedAt:source.connection.updatedAt});m.decrypt.mockReturnValue('synthetic-token');});
 afterEach(()=>{vi.useRealTimers();vi.unstubAllEnvs();vi.unstubAllGlobals()});
 it('unadmitted or forged deletion cannot read a source or credential',async()=>{
