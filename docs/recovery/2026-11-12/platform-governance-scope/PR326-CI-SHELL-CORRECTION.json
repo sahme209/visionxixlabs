@@ -1,0 +1,20 @@
+{
+  "format": 1,
+  "pr": 326,
+  "failedHead": "7955df5b5f1de6d41835f788c1fbad207446f894",
+  "jobs": [
+    131882453491,
+    131882453965
+  ],
+  "observedFailure": "/etc/bash.bashrc: line 7: PS1: unbound variable",
+  "correction": "Use --noprofile --norc for the two fixed bash test invocations; strict options, environment, scripts, assertions and deadlines unchanged.",
+  "scope": "test setup only; no runtime or workflow behavior change",
+  "localValidation": {
+    "testFiles": 2,
+    "testsPassed": 6,
+    "testsFailed": 0
+  },
+  "independentReview": "Same final source reviewer: no important finding; source review only.",
+  "ci": "New exact-head checks not yet observed.",
+  "qualification": "No real host/provider/security qualification or enablement performed."
+}
