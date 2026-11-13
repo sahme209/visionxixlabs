@@ -1,0 +1,104 @@
+{
+  "pr": 328,
+  "url": "https://github.com/sahme209/visionxixlabs/pull/328",
+  "head": "4998a6f87a5914f1f47c9d3faa62235982401cbb",
+  "mergedCommit": "294dd41e89443aed14c54c71173c9c4ce7a56a33",
+  "normalMerge": true,
+  "prChecks": [
+    {
+      "id": 131938655801,
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 131936154774,
+      "name": "shots",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 131936101191,
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 131936101132,
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 131936101126,
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 131936101010,
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 131936100992,
+      "name": "isolated-website",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 131936100810,
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "mainChecks": [
+    {
+      "id": 131942342314,
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43441525328/job/131942342314"
+    },
+    {
+      "id": 131940062851,
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43441525328/job/131940062851"
+    },
+    {
+      "id": 131940062814,
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43441525328/job/131940062814"
+    },
+    {
+      "id": 131940062800,
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43441525328/job/131940062800"
+    },
+    {
+      "id": 131940062663,
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43441525328/job/131940062663"
+    },
+    {
+      "id": 131940062052,
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43441525328/job/131940062052"
+    }
+  ],
+  "sourceDeployed": false,
+  "productionRead": "stopped after one unverified metadata response; no decrypted detail/Neon/SQL; authorization consumed",
+  "governanceQualifiedOrEnabled": false
+}
