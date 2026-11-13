@@ -1,0 +1,52 @@
+[
+  {
+    "name": "3.0.0-rc.0",
+    "zipball_url": "https://api.github.com/repos/aws/clock-bound/zipball/refs/tags/3.0.0-rc.0",
+    "tarball_url": "https://api.github.com/repos/aws/clock-bound/tarball/refs/tags/3.0.0-rc.0",
+    "commit": {
+      "sha": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+      "url": "https://api.github.com/repos/aws/clock-bound/commits/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777"
+    },
+    "node_id": "REF_kwDOGR-EVrRyZWZzL3RhZ3MvMy4wLjAtcmMuMA"
+  },
+  {
+    "name": "3.0.0-beta.1",
+    "zipball_url": "https://api.github.com/repos/aws/clock-bound/zipball/refs/tags/3.0.0-beta.1",
+    "tarball_url": "https://api.github.com/repos/aws/clock-bound/tarball/refs/tags/3.0.0-beta.1",
+    "commit": {
+      "sha": "1a39f3aef1f8e13b20517385a76747e7262f718e",
+      "url": "https://api.github.com/repos/aws/clock-bound/commits/1a39f3aef1f8e13b20517385a76747e7262f718e"
+    },
+    "node_id": "REF_kwDOGR-EVrZyZWZzL3RhZ3MvMy4wLjAtYmV0YS4x"
+  },
+  {
+    "name": "3.0.0-beta.0",
+    "zipball_url": "https://api.github.com/repos/aws/clock-bound/zipball/refs/tags/3.0.0-beta.0",
+    "tarball_url": "https://api.github.com/repos/aws/clock-bound/tarball/refs/tags/3.0.0-beta.0",
+    "commit": {
+      "sha": "526b8a89d2a8b8ac461a3ab61cadc8c93d48a479",
+      "url": "https://api.github.com/repos/aws/clock-bound/commits/526b8a89d2a8b8ac461a3ab61cadc8c93d48a479"
+    },
+    "node_id": "REF_kwDOGR-EVrZyZWZzL3RhZ3MvMy4wLjAtYmV0YS4w"
+  },
+  {
+    "name": "3.0.0-alpha.1",
+    "zipball_url": "https://api.github.com/repos/aws/clock-bound/zipball/refs/tags/3.0.0-alpha.1",
+    "tarball_url": "https://api.github.com/repos/aws/clock-bound/tarball/refs/tags/3.0.0-alpha.1",
+    "commit": {
+      "sha": "4072097bab61e516c15377a581b649df49852021",
+      "url": "https://api.github.com/repos/aws/clock-bound/commits/4072097bab61e516c15377a581b649df49852021"
+    },
+    "node_id": "REF_kwDOGR-EVrdyZWZzL3RhZ3MvMy4wLjAtYWxwaGEuMQ"
+  },
+  {
+    "name": "3.0.0-alpha.0",
+    "zipball_url": "https://api.github.com/repos/aws/clock-bound/zipball/refs/tags/3.0.0-alpha.0",
+    "tarball_url": "https://api.github.com/repos/aws/clock-bound/tarball/refs/tags/3.0.0-alpha.0",
+    "commit": {
+      "sha": "13efc43b0355de99d6130e26125e43993c89ade6",
+      "url": "https://api.github.com/repos/aws/clock-bound/commits/13efc43b0355de99d6130e26125e43993c89ade6"
+    },
+    "node_id": "REF_kwDOGR-EVrdyZWZzL3RhZ3MvMy4wLjAtYWxwaGEuMA"
+  }
+]

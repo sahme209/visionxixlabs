@@ -1,0 +1,44 @@
+{
+  "observedAt": "2026-11-13T19:03:08.315195+00:00",
+  "approval": "call_1925e09064b543c89f4659ff2a5c3d0b",
+  "url": "https://api.github.com/repos/aws/clock-bound/tags?per_page=100",
+  "readerSha256": "3431623f310709574003b27fc0d8c74650ac669352c38f2980512797a05e8120",
+  "requestsMade": 1,
+  "unspentSlotsNotReusable": 5,
+  "transport": "successful bounded HTTPS200; raw response saved before selection stopped",
+  "bodyBytes": 2425,
+  "bodySha256": "368e935bd8e09aac92928909030068b5c33bfe0c580b6dbf3d7fc3064259ddca",
+  "observedTags": [
+    {
+      "name": "3.0.0-rc.0",
+      "commit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777"
+    },
+    {
+      "name": "3.0.0-beta.1",
+      "commit": "1a39f3aef1f8e13b20517385a76747e7262f718e"
+    },
+    {
+      "name": "3.0.0-beta.0",
+      "commit": "526b8a89d2a8b8ac461a3ab61cadc8c93d48a479"
+    },
+    {
+      "name": "3.0.0-alpha.1",
+      "commit": "4072097bab61e516c15377a581b649df49852021"
+    },
+    {
+      "name": "3.0.0-alpha.0",
+      "commit": "13efc43b0355de99d6130e26125e43993c89ade6"
+    }
+  ],
+  "stopReason": "No plain stable semantic version in returned tag list; approved stop condition applied. The generic command error is NOT a transport failure.",
+  "originalCommandOutcome": "exit1 first_read_or_stable_candidate_unavailable; original state/error preserved in work/time-client-tag-pass",
+  "noFurtherReads": true,
+  "candidateSelected": false,
+  "interpretation": "Does not prove no stable registry package/other source exists, nor that a pre-release candidate is unsuitable for isolated evaluation. No claim of supported or production-ready client.",
+  "effects": {
+    "clientInstallOrAdoption": false,
+    "nativeClockCredentialProviderAccount": false,
+    "cloudResourcesOrSpending": false,
+    "sqlDeployEnablement": false
+  }
+}

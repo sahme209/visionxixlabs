@@ -1,0 +1,9 @@
+# Source pass stopped — successful read, no admissible stable tag
+
+The new owner-approved bounded pass made exactly ONE public GET to the official AWS ClockBound tags endpoint. Transport succeeded; the saved2425byte JSON contains five tags:3.0.0-rc.0,3.0.0-beta.1,3.0.0-beta.0,3.0.0-alpha.1 and3.0.0-alpha.0. No plain stable semantic tag was present in that returned list. Under the approved policy the pass stopped immediately; calls2–6 were not made and are not reusable permission.
+
+The command's generic `first_read_or_stable_candidate_unavailable` error came after saving and parsing the successful response and finding no stable candidate. It must NOT be reported as a network/HTTP refusal. The original command error/state remain preserved. Exact URL, body/reader hashes, observed commits and effects are in OBSERVED-RESULT.json; exact public response is PUBLIC-TAGS-OBSERVED.json.
+
+This does not prove absence of a stable registry package or other supported source, nor that the pinned release candidate cannot be evaluated in an isolated test. The stable-only research rule cannot substitute for actual source/profile qualification or become an unapproved maturity claim. No candidate was selected, no pinned tree/source was followed, no dependency/client installed, native clock queried, account/credential/resource touched or spending incurred.
+
+Do not repeat the known release/tag listings, retry the stopped pass or silently select a prerelease. A subsequent design decision must explicitly distinguish a pinned prerelease isolated evaluation from production-supported acceptance, or identify a different supported source. Full native host/time/custody/fleet and human/provider qualification remain open. Continue independently authorized local validation rather than another unchanged documentation loop.
