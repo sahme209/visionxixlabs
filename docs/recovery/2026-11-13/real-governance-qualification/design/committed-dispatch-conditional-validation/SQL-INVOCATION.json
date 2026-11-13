@@ -1,0 +1,8 @@
+{
+  "approval": "call_177c57f4ed1545ecb973f7555794a6b0",
+  "sourceCommit": "85749ff6025a5db4b33bd5a7f8695cc48f57878c",
+  "packetSha256": "a23a46a5874db14eaa760ba4d8b28ecae8aa28e66fe619c803566551aed76c47",
+  "expectedCases": 230,
+  "startedAt": "2026-11-13T23:50:01.887881+00:00",
+  "retry": false
+}
