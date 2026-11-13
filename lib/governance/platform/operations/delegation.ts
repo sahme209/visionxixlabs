@@ -1,9 +1,10 @@
 import type {OperationalObservationAuthorization} from './observationAuthorization';
+import {createWorkloadOwnerTime,type OperationalExecutionFacts} from './workloadOwnerTime';
 import {readPlatformPrincipalTimeWindow,assertPlatformPrincipalTime} from '../principalTime';
 import {createEcsDecisionTime,type EcsDecisionTimeSource,type EcsDecisionTiming} from './ecsDecisionTime';
 import type {ExecutionTimeCheck,ExecutionTimeAuthorization} from '../executionTime';
 import {readOperationalFailureHistory} from './failureHistory';
-import type {CustodianIntentStage} from './custodianIntentContract';
+import {readCustodianIntent,type CustodianIntent,type CustodianIntentStage} from './custodianIntentContract';
 import {custodianCredentialObservation,type CustodianCredentialObservation} from './custodianCredentialContract';
 import {readOperationalStabilityHistory} from './stabilityHistory';
 import {createOperationalEcsResult,readOperationalEcsResult,type OperationalEcsResult,type OperationalEcsTransport} from './ecsExecution';
@@ -24,14 +25,14 @@ interface Source extends EcsDecisionTimeSource{
  readManifest(tx:OperationalDelegationTransaction,parent:PlatformAction):Promise<unknown>;
  assertCurrent(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
 }
-type Identity=Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authenticate'|'consume'|'assertConsumedCurrent'>;
+type Identity=Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authenticate'|'consume'|'assertConsumedCurrent'>&Partial<Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'readConsumedTimeWindow'>>;
 type Consumed=Awaited<ReturnType<Identity['consume']>>;
-export interface OperationalIntentAdmission{reserve(tx:OperationalDelegationTransaction,actionId:string,stage:CustodianIntentStage):Promise<unknown>}
+export interface OperationalIntentAdmission{assertCurrent?(tx:OperationalDelegationTransaction,intent:CustodianIntent):Promise<void>;reserve(tx:OperationalDelegationTransaction,actionId:string,stage:CustodianIntentStage):Promise<unknown>}
 export interface OperationalCredentialIssuer{
  assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
  assertSourceCurrent?(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest'],metadata:CustodianCredentialObservation):Promise<void>;
  /** Private fixed issuer; no raw token/role/target from request JSON. */
- issue(manifest:OperationalDelegation['manifest'],beforeIssue:ExecutionTimeAuthorization,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>):Promise<unknown>;
+ issue(manifest:OperationalDelegation['manifest'],beforeIssue:ExecutionTimeAuthorization,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>,beforeSourceRead?:ExecutionTimeAuthorization):Promise<unknown>;
 }
 const privateCredential=z.object({leaseRef:z.string().regex(/^platform_credential_[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/),accessKeyId:z.string().min(1).max(128),secretAccessKey:z.string().min(1).max(8192),sessionToken:z.string().min(1).max(16384),expiresAt:z.number().int().nonnegative().safe()}).strict().refine(v=>[v.accessKeyId,v.secretAccessKey,v.sessionToken].every(s=>!/[\s\x00-\x1f\x7f]/.test(s)));
 const fail=():never=>{throw Error('operational_delegation_unavailable')};
@@ -39,8 +40,9 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private server composition. Workload is never relabeled a human. All phase
  * proofs stay in this instance, never in HTTP JSON or durable state. Optional private issuance is bounded and recorded before any later use;
  * source/profile defaults remain closed and no provider send is exposed. */
-export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'> & Partial<Pick<OperationalTargetReservations,'observe'|'assertTerminalCurrent'|'assertObservedCurrent'>>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport,intents?:OperationalIntentAdmission,timing?:EcsDecisionTiming){
+export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'> & Partial<Pick<OperationalTargetReservations,'observe'|'assertTerminalCurrent'|'assertObservedCurrent'>>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport,intents?:OperationalIntentAdmission,timing?:EcsDecisionTiming,executionFacts?:OperationalExecutionFacts){
  const timelyDecision=createEcsDecisionTime(source,timing);
+ const timelyWorkload=createWorkloadOwnerTime(executionFacts,identity,timing,async(tx,state)=>{if(!targets)return fail();await targets.assertHeld(tx,{actionId:state.actionId,manifest:state.manifest},state.targetReservation)});
  const claims=new WeakMap<object,{actionId:string;identity:Consumed}>(),issuance=new WeakMap<object,{actionId:string;version:number;identity:Consumed}>(),credentials=new WeakMap<object,{actionId:string;identity:Consumed;value:z.infer<typeof privateCredential>}>();
  const binding=(state:OperationalDelegation)=>({actionId:state.actionId,manifestDigest:state.manifest.digest,workload:state.manifest.workload,expiresAt:state.manifest.expiresAt});
  function match(parent:PlatformAction,state:OperationalDelegation){
@@ -100,7 +102,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     });claimed=true;
     const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,authorized=false,used=false,accepted:ReturnType<typeof projectOperationalEcsAcceptance>|null=null;
     try{
-     const beforeSend=async(timeCheck?:ExecutionTimeCheck)=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(held.actionId,async(tx,key)=>{await sendCurrent(tx,key,true);if(intents){await intents.reserve(tx,key,'ecs.send');await sendCurrent(tx,key,true)}if(timeCheck){abort.signal.throwIfAborted();await timeCheck();abort.signal.throwIfAborted();await sendCurrent(tx,key,true)}});abort.signal.throwIfAborted();authorized=true};
+     const beforeSend=async(timeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>{if(used||typeof timeCheck!=='function'||typeof finalNativeFacts!=='function')return fail();used=true;abort.signal.throwIfAborted();await locked(held.actionId,async(tx,key)=>{let state=await sendCurrent(tx,key,true);if(intents){await intents.reserve(tx,key,'ecs.send');state=await sendCurrent(tx,key,true)}if(timeCheck){abort.signal.throwIfAborted();await timelyWorkload(tx,state,held.identity,'ecs',timeCheck,finalNativeFacts);abort.signal.throwIfAborted()}});abort.signal.throwIfAborted();authorized=true};
      const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
      const raw=await Promise.race([transport.send(saved.state.manifest,Object.freeze({accessKeyId:held.value.accessKeyId,secretAccessKey:held.value.secretAccessKey,sessionToken:held.value.sessionToken,expiresAt:held.value.expiresAt}),beforeSend,abort.signal),timeout]);abort.signal.throwIfAborted();if(!authorized)return fail();accepted=projectOperationalEcsAcceptance(saved.state.manifest,saved.priorDeploymentId,raw);
     }catch{accepted=null}finally{if(timer)clearTimeout(timer);abort.abort()}
@@ -121,17 +123,26 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    const abort=new AbortController();let timer:ReturnType<typeof setTimeout>|undefined,value:z.infer<typeof privateCredential>,authorized=false,used=false;
    try{
     const timeout=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
-    const beforeIssue=async(timeCheck?:ExecutionTimeCheck)=>{if(used)return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
+    const beforeIssue=async(timeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>{if(used||typeof timeCheck!=='function'||typeof finalNativeFacts!=='function')return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{
      const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await sourceCurrent(tx,state);if(intents){await intents.reserve(tx,key,'role.acquire');await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await sourceCurrent(tx,state)}
-     if(timeCheck){abort.signal.throwIfAborted();await timeCheck();abort.signal.throwIfAborted();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await sourceCurrent(tx,state);await current(tx,state,'claimed')}
+     if(timeCheck){abort.signal.throwIfAborted();await timelyWorkload(tx,state,pending.identity,'role',timeCheck,finalNativeFacts);abort.signal.throwIfAborted()}
     });abort.signal.throwIfAborted();authorized=true};
-    let sourceUsed=false;
+    let sourceUsed=false,sourceAuthorized=false,sourceReadUsed=false;let sourceIntent:CustodianIntent|undefined;
     const beforeSource=async()=>{
-     if(sourceUsed||!intents)return fail();sourceUsed=true;abort.signal.throwIfAborted();
+     if(sourceUsed||!intents?.assertCurrent)return fail();sourceUsed=true;abort.signal.throwIfAborted();
      await locked(pending.actionId,async(tx,key)=>{
       const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();
       await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);
-      await intents.reserve(tx,key,'source.acquire');await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));
+      sourceIntent=readCustodianIntent(await intents.reserve(tx,key,'source.acquire'));if(sourceIntent.actionId!==key||sourceIntent.manifestDigest!==state.manifest.digest||sourceIntent.stage!=='source.acquire')return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));
+     });abort.signal.throwIfAborted();sourceAuthorized=true;
+    };
+    const beforeSourceRead:ExecutionTimeAuthorization=async(timeCheck,finalFacts)=>{
+     if(!sourceAuthorized||!sourceIntent||!intents?.assertCurrent||sourceReadUsed||typeof timeCheck!=='function'||typeof finalFacts!=='function')return fail();sourceReadUsed=true;abort.signal.throwIfAborted();
+     await locked(pending.actionId,async(tx,key)=>{
+      const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||state.executionPrincipal?.replayKey!==pending.identity.replayKey)return fail();
+      await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));
+      await intents!.assertCurrent!(tx,sourceIntent!);
+      await timelyWorkload(tx,state,pending.identity,'source',timeCheck,async()=>{await intents!.assertCurrent!(tx,sourceIntent!);await finalFacts()});
      });abort.signal.throwIfAborted();
     };
     const recordSource=async(raw:CustodianCredentialObservation)=>{
@@ -140,7 +151,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
       const next=readOperationalDelegation({...state,sourceCredential:{...metadata,status:'issued',requestedAt:state.sourceCredential.requestedAt,observedAt:now},updatedAt:now}),parent=readPlatformAction(await tx.read(key));match(parent,state);await tx.writeOperationalSourceCredential(key,state.version,next);await event(tx,parent,next,'credential.source_observed');
      });abort.signal.throwIfAborted();
     };
-    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,beforeIssue,abort.signal,recordSource,beforeSource),timeout]));abort.signal.throwIfAborted();
+    value=privateCredential.parse(await Promise.race([issuer.issue(manifest,beforeIssue,abort.signal,recordSource,beforeSource,beforeSourceRead),timeout]));abort.signal.throwIfAborted();
    }catch{
     const history=await recordCredential(observation,{status:'unknown'});return {history,credentialHandle:null};
    }finally{if(timer)clearTimeout(timer);abort.abort()}

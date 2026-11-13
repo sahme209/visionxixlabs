@@ -10,7 +10,7 @@ function claims(){return {iss:'https://token.actions.githubusercontent.com',aud:
 async function token(change:Record<string,unknown>={},header:Record<string,unknown>={}){return new SignJWT({...claims(),...change}).setProtectedHeader({alg:'RS256',kid:'synthetic-key',...header}).sign(keys.privateKey)}
 function fixture(){let now=at;const reserved=new Set<string>(),reserve=vi.fn(async(key:string)=>{if(reserved.has(key))throw Error('replayed');reserved.add(key)}),tx={now:async()=>now,reserveWorkloadIdentity:reserve};
  const profile={format:1,issuer:'https://token.actions.githubusercontent.com',audience:'axiom-synthetic-release',subject:claims().sub,repository:workload.repository,repositoryId:'123',repositoryOwnerId:'456',workflowPath:workload.workflowPath,workflowCommit:commit,workflowSha256:d,maximumLifetimeSeconds:300,keys:[{...publicKey,alg:'RS256',use:'sig',kid:'synthetic-key'}]};
- const source={readProfile:vi.fn(async(_tx:OperationalWorkloadTransaction,_binding:OperationalWorkloadBinding):Promise<unknown>=>structuredClone(profile)),assertProfileCurrent:vi.fn(async()=>{})},clock=vi.fn(async()=>({earliest:now,latest:now})),controller=new AbortController(),identity=createOperationalWorkloadIdentity(source,clock,controller.signal);return {tx,reserve,reserved,profile,source,clock,controller,identity,setNow:(n:number)=>{now=n}};
+ const source={readProfile:vi.fn(async(_tx:OperationalWorkloadTransaction,_binding:OperationalWorkloadBinding):Promise<unknown>=>structuredClone(profile)),assertProfileCurrent:vi.fn(async()=>{}),facts:{readProfile:vi.fn(async(_tx:OperationalWorkloadTransaction,_binding:OperationalWorkloadBinding):Promise<unknown>=>structuredClone(profile)),assertProfileCurrent:vi.fn(async()=>{})}},clock=vi.fn(async()=>({earliest:now,latest:now})),controller=new AbortController(),identity=createOperationalWorkloadIdentity(source,clock,controller.signal);return {tx,reserve,reserved,profile,source,clock,controller,identity,setNow:(n:number)=>{now=n}};
 }
 it('verifies the actual signed synthetic JWT and issues only an opaque identity proof consumed once',async()=>{
  const f=fixture(),proof=await f.identity.authenticate(f.tx,await token(),binding);expect(JSON.stringify(proof)).toBe('{}');expect(f.reserve).not.toHaveBeenCalled();
@@ -103,11 +103,20 @@ it('does not expose consumed bounds after profile substitution, revoked qualific
  const f=fixture(),proof=await f.identity.authenticate(f.tx,await token(),binding),consumed=await f.identity.consume(f.tx,proof,binding);
  f.profile.maximumLifetimeSeconds=299;
  await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');
- f.profile.maximumLifetimeSeconds=300;f.source.assertProfileCurrent.mockRejectedValueOnce(Error('private profile revoked'));
+ f.profile.maximumLifetimeSeconds=300;f.source.facts.assertProfileCurrent.mockRejectedValueOnce(Error('private profile revoked'));
  await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');
- f.source.readProfile.mockImplementationOnce(async()=>{f.controller.abort();return structuredClone(f.profile)});
+ f.source.facts.readProfile.mockImplementationOnce(async()=>{f.controller.abort();return structuredClone(f.profile)});
  await expect(f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');
  expect(f.reserve).toHaveBeenCalledOnce();
+});
+it('private bounds use explicit fact-only suppliers, never a fallback to independently timed profile readers',async()=>{
+ const f=fixture(),proof=await f.identity.authenticate(f.tx,await token(),binding),consumed=await f.identity.consume(f.tx,proof,binding),reads=f.source.readProfile.mock.calls.length;
+ f.source.readProfile.mockRejectedValue(Error('independently timed supplier must not run'));f.source.assertProfileCurrent.mockRejectedValue(Error('independent currentness must not run'));
+ expect(await f.identity.readConsumedTimeWindow(f.tx,consumed,binding)).toEqual({notBefore:at,expiresAt:at+120000});expect(f.source.readProfile.mock.calls.length).toBe(reads);
+});
+it('missing explicit fact-only profile contract refuses rather than borrowing the timed source',async()=>{
+ const f=fixture(),legacy={readProfile:f.source.readProfile,assertProfileCurrent:f.source.assertProfileCurrent},identity=createOperationalWorkloadIdentity(legacy,f.clock,f.controller.signal),proof=await identity.authenticate(f.tx,await token(),binding),consumed=await identity.consume(f.tx,proof,binding),reads=f.source.readProfile.mock.calls.length;
+ await expect(identity.readConsumedTimeWindow(f.tx,consumed,binding)).rejects.toThrow('operational_workload_unavailable');expect(f.source.readProfile.mock.calls.length).toBe(reads);expect(f.reserve).toHaveBeenCalledOnce();
 });
 
 it('prevents a profile supplier from rewriting the expected binding during verification',async()=>{

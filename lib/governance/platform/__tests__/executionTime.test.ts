@@ -53,6 +53,16 @@ it('captures additional bounds before the source can mutate them',async()=>{
  const extra={notBefore:50,expiresAt:100};
  await expect(authorizeExecutionWindow(async()=>{extra.notBefore=0;extra.expiresAt=1000;return {earliest:99,latest:100}},{expiresAt:200},async check=>{await check!(extra)},signal())).rejects.toThrow();
 });
+it('required native final facts run inside the acknowledged owner after its final awaited checks',async()=>{
+ const order:string[]=[];await authorizeExecutionWindow(async()=>({earliest:1,latest:2}),{expiresAt:3},async(check,final)=>{await check!();await Promise.resolve();order.push('owner-final-check');await final!();order.push('commit-ack')},signal(),async()=>{order.push('native-facts')});expect(order).toEqual(['owner-final-check','native-facts','commit-ack']);
+});
+it.each(['omitted','repeated','before-time','pending'] as const)('refuses required native final facts that are %s',async mode=>{
+ let finish!:()=>void;const waiting=new Promise<void>(r=>{finish=r});
+ await expect(authorizeExecutionWindow(async()=>({earliest:1,latest:2}),{expiresAt:3},async(check,final)=>{
+  if(mode==='before-time'){await final!();return}await check!();if(mode==='omitted')return;
+  if(mode==='pending'){void final!().catch(()=>{});return}await final!();try{await final!()}catch{}
+ },signal(),async()=>{if(mode==='pending')await waiting})).rejects.toThrow('platform_execution_time_unavailable');finish();
+});
 it.each([{notBefore:NaN},{expiresAt:-1},{notBefore:Infinity},{expiresAt:1.5}])('rejects malformed participant bounds without reading the source: %j',async extra=>{
  let reads=0;await expect(authorizeExecutionWindow(async()=>{reads++;return {earliest:1,latest:2}},{expiresAt:100},async check=>{await check!(extra)},signal())).rejects.toThrow();expect(reads).toBe(0);
 });

@@ -26,6 +26,14 @@ export interface OperationalWorkloadTransaction{
 export interface OperationalWorkloadProfileSupplier{
  readProfile(tx:OperationalWorkloadTransaction,binding:OperationalWorkloadBinding):Promise<unknown>;
  assertProfileCurrent(tx:OperationalWorkloadTransaction,profileDigest:string,bindingDigest:string):Promise<void>;
+ /** Explicit audited opt-in for joined owners. Both operations are read-only
+  * current profile/source facts under the original transaction, with NO clock
+  * decision, renewal, remote acquisition or fallback to the timed supplier.
+  * Supplying functions does not itself establish native qualification. */
+ facts?:{
+  readProfile(tx:OperationalWorkloadTransaction,binding:OperationalWorkloadBinding):Promise<unknown>;
+  assertProfileCurrent(tx:OperationalWorkloadTransaction,profileDigest:string,bindingDigest:string):Promise<void>;
+ };
 }
 const fail=():never=>{throw Error('operational_workload_unavailable')};
 interface Verified{binding:OperationalWorkloadBinding;bindingDigest:string;profileDigest:string;replayKey:string;expiresAt:number;validFrom:number}
@@ -39,11 +47,13 @@ function captureBinding(raw:unknown):OperationalWorkloadBinding{
  * human-session/static-token fallback. Public/default operational use is closed. */
 export function createOperationalWorkloadIdentity(source:OperationalWorkloadProfileSupplier,clock:ExecutionTimeSource,signal:AbortSignal){
  const proofs=new WeakMap<object,Verified>(),consumed=new WeakMap<object,Verified>();
- async function profile(tx:OperationalWorkloadTransaction,binding:OperationalWorkloadBinding){
-  const value=profileSchema.parse(await source.readProfile(tx,binding)),hash=sha256ContentHash(value);
+ const facts=source.facts,factRead=facts?.readProfile?.bind(facts),factCurrent=facts?.assertProfileCurrent?.bind(facts);
+ async function profile(tx:OperationalWorkloadTransaction,binding:OperationalWorkloadBinding,factsOnly=false){
+  if(factsOnly&&(typeof factRead!=='function'||typeof factCurrent!=='function'))return fail();
+  const value=profileSchema.parse(await (factsOnly?factRead!(tx,binding):source.readProfile(tx,binding))),hash=sha256ContentHash(value);
   if(Boolean(binding.workload.environment)!==Boolean(binding.workload.protectionRevision)||value.environment!==binding.workload.environment||value.protectionRevision!==binding.workload.protectionRevision)fail();
   if(new Set(value.keys.map(k=>k.kid)).size!==value.keys.length||value.repository!==binding.workload.repository||value.workflowCommit!==binding.workload.workflowCommit||value.workflowPath!==binding.workload.workflowPath||value.workflowSha256!==binding.workload.workflowSha256)fail();
-  await source.assertProfileCurrent(tx,hash,sha256ContentHash(binding));return {value,hash};
+  if(factsOnly)await factCurrent!(tx,hash,sha256ContentHash(binding));else await source.assertProfileCurrent(tx,hash,sha256ContentHash(binding));return {value,hash};
  }
  async function current(tx:OperationalWorkloadTransaction,verified:Verified,raw:unknown){
   signal.throwIfAborted();const binding=captureBinding(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)fail();
@@ -80,7 +90,7 @@ export function createOperationalWorkloadIdentity(source:OperationalWorkloadProf
    try{
     signal.throwIfAborted();const verified=consumed.get(proof);if(!verified)return fail();
     const binding=captureBinding(raw);if(sha256ContentHash(binding)!==verified.bindingDigest)return fail();
-    const p=await profile(tx,binding);signal.throwIfAborted();
+    const p=await profile(tx,binding,true);signal.throwIfAborted();
     if(p.hash!==verified.profileDigest||consumed.get(proof)!==verified)return fail();
     return Object.freeze({notBefore:verified.validFrom,expiresAt:verified.expiresAt});
    }catch{return fail()}

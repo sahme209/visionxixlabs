@@ -14,7 +14,13 @@ export interface CustodianIntentTransaction extends OperationalDelegationTransac
  readCustodianIntent(id:string):Promise<unknown|null>;
  insertCustodianIntent(state:CustodianIntent):Promise<void>;
 }
+interface AdmissionFacts{
+ readAdmission(tx:CustodianIntentTransaction,manifest:ReturnType<typeof readOperationalManifest>):Promise<unknown>;
+ assertCurrent(tx:CustodianIntentTransaction,selected:z.infer<typeof admission>,manifest:ReturnType<typeof readOperationalManifest>):Promise<void>;
+}
 interface Source{
+ /** Explicit clock-free protected facts; absent means final access is unavailable. */
+ facts?:AdmissionFacts;
  /** Protected issuer metadata only, before any credential supplier is called.
   * Must bind the actual physical custodian/profile/admission, not client JSON. */
  readAdmission(tx:CustodianIntentTransaction,manifest:ReturnType<typeof readOperationalManifest>):Promise<unknown>;
@@ -25,11 +31,31 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Called inside the original action transaction AFTER its current human,
  * workload, source and target checks. No public request/default source exists.
  * Returning an intent cannot bypass those caller checks or authorize a send. */
-export function createCustodianIntentAdmission(source:Source){return Object.freeze({async reserve(tx:OperationalDelegationTransaction,actionId:string,rawStage:CustodianIntentStage){
+export function createCustodianIntentAdmission(source:Source){
+ const facts=source.facts,readFacts=facts?.readAdmission?.bind(facts),assertFacts=facts?.assertCurrent?.bind(facts);
+ return Object.freeze({
+ /** Revalidate the SAME permanent intent under its original custodian lock.
+  * Does not reserve, renew, issue or replace any record. */
+ async assertCurrent(tx:OperationalDelegationTransaction,raw:unknown){
+  if(!supportsIntentStorage(tx)||!readFacts||!assertFacts)return fail();
+  const intent=readCustodianIntent(raw),state=readOperationalDelegation(await tx.readDelegation(intent.actionId)),parent=readPlatformAction(await tx.read(intent.actionId)),manifest=state.manifest;
+  if(intent.stage!=='source.acquire'||state.actionId!==intent.actionId||manifest.kind!=='deployment.ecs'||manifest.digest!==intent.manifestDigest||manifest.issuerProfileDigest!==intent.issuerProfileDigest||state.status!=='claimed'||state.version!==2||!state.executionPrincipal||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||parent.status!=='claimed'||parent.plan.digest!==state.parentPlanDigest||parent.plan.digest!==compileOperationalEcsPlan(manifest).digest||!same(parent.requester,state.requester)||!same(parent.reviewer,state.reviewer))return fail();
+  await tx.lockCustodian(intent.nativeKey);
+  const selected=Object.freeze({nativeKey:intent.nativeKey,issuerProfileDigest:intent.issuerProfileDigest,admissionDigest:intent.admissionDigest,generation:intent.generation,version:intent.barrierVersion});
+  const ownedTx=tx;
+  async function check(){
+   if(!same(readCustodianIntent(await ownedTx.readCustodianIntent(intent.id)),intent)||!same(admission.parse(await readFacts!(tx as CustodianIntentTransaction,manifest)),selected))return fail();
+   await assertFacts!(tx as CustodianIntentTransaction,selected,manifest);
+   const barrier=readCustodianBarrier(await ownedTx.readCustodianBarrier(intent.nativeKey));assertCustodianAdmission(barrier,selected);
+   const now=await tx.now();if(!Number.isSafeInteger(now)||now<Math.max(intent.createdAt,state.updatedAt,barrier.updatedAt)||now>=Date.parse(manifest.expiresAt))return fail();
+  }
+  await check();await check();
+ },
+ async reserve(tx:OperationalDelegationTransaction,actionId:string,rawStage:CustodianIntentStage){
  if(!supportsIntentStorage(tx))return fail();
  const state=readOperationalDelegation(await tx.readDelegation(actionId)),parent=readPlatformAction(await tx.read(actionId)),manifest=state.manifest;
  if(state.actionId!==actionId||manifest.kind!=='deployment.ecs'||!manifest.issuerProfileDigest||state.status!=='claimed'||!state.executionPrincipal||parent.status!=='claimed'||parent.plan.digest!==state.parentPlanDigest||parent.plan.digest!==compileOperationalEcsPlan(manifest).digest||!same(parent.requester,state.requester)||!same(parent.reviewer,state.reviewer))return fail();
- const selected=admission.parse(await source.readAdmission(tx,manifest));if(selected.issuerProfileDigest!==manifest.issuerProfileDigest)return fail();
+ const selected=Object.freeze(admission.parse(await source.readAdmission(tx,manifest)));if(selected.issuerProfileDigest!==manifest.issuerProfileDigest)return fail();
  await tx.lockCustodian(selected.nativeKey);const barrier=readCustodianBarrier(await tx.readCustodianBarrier(selected.nativeKey));assertCustodianAdmission(barrier,selected);await source.assertCurrent(tx,selected,manifest);
  const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now<barrier.updatedAt||now>=Date.parse(manifest.expiresAt))return fail();
  const intent=compileCustodianIntent({format:1,scope:'platform',actionId,manifestDigest:manifest.digest,nativeKey:selected.nativeKey,issuerProfileDigest:selected.issuerProfileDigest,admissionDigest:selected.admissionDigest,generation:selected.generation,barrierVersion:selected.version,stage:rawStage,createdAt:now});

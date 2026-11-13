@@ -34,9 +34,9 @@ export async function assertExecutionWindow(source:ExecutionTimeSource,window:Ex
  * locked transaction and recheck authority afterwards. No new clock I/O occurs
  * after commit acknowledgement. Native validity through dispatch remains a
  * separate qualification requirement, not established by this acknowledgement. */
-export async function authorizeExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,authorize:ExecutionTimeAuthorization,signal:AbortSignal):Promise<void>{
+export async function authorizeExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,authorize:ExecutionTimeAuthorization,signal:AbortSignal,requiredFinalFacts?:()=>Promise<void>):Promise<void>{
  const captured=Object.freeze({notBefore:window.notBefore,expiresAt:window.expiresAt});
- let active=true,started=false,completed=false,invalid=false;
+ let active=true,started=false,completed=false,invalid=false,finalStarted=false,finalCompleted=false;
  const check:ExecutionTimeCheck=async restriction=>{
   if(!active||started){invalid=true;return fail()}started=true;
   try{
@@ -45,5 +45,8 @@ export async function authorizeExecutionWindow(source:ExecutionTimeSource,window
    const joined=Object.freeze({notBefore:captured.notBefore===undefined?notBefore:notBefore===undefined?captured.notBefore:Math.max(captured.notBefore,notBefore),expiresAt:captured.expiresAt===undefined?expiresAt:expiresAt===undefined?captured.expiresAt:Math.min(captured.expiresAt,expiresAt)});
    await assertExecutionWindow(source,joined,signal);signal.throwIfAborted();if(!active)return fail();completed=true}catch{invalid=true;return fail()}
  };
- try{signal.throwIfAborted();if(captured.notBefore!==undefined&&!stamp(captured.notBefore)||captured.expiresAt!==undefined&&!stamp(captured.expiresAt))return fail();await authorize(check);signal.throwIfAborted();if(!completed||invalid)return fail()}catch{invalid=true;return fail()}finally{active=false}
+ const finalFacts=requiredFinalFacts===undefined?undefined:async()=>{
+  try{if(!active||finalStarted||!completed)return fail();finalStarted=true;signal.throwIfAborted();await requiredFinalFacts();signal.throwIfAborted();if(!active)return fail();finalCompleted=true}catch{invalid=true;return fail()}
+ };
+ try{signal.throwIfAborted();if(captured.notBefore!==undefined&&!stamp(captured.notBefore)||captured.expiresAt!==undefined&&!stamp(captured.expiresAt))return fail();await authorize(check,finalFacts);signal.throwIfAborted();if(!completed||invalid||requiredFinalFacts!==undefined&&!finalCompleted)return fail()}catch{invalid=true;return fail()}finally{active=false}
 }
