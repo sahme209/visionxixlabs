@@ -1,0 +1,24 @@
+{
+  "head": "ee7342a901f6c33371957ccc5c0da8566247fc06",
+  "workingDiffSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "scope": "full ordinary suite; clean environment/empty dotenv directory; no real provider or actual PG opt-in flags",
+  "maxWorkers": 4,
+  "productionChanged": false,
+  "exitCode": 0,
+  "sourceUnchanged": true,
+  "passed": 18876,
+  "pending": 1126,
+  "failedTests": 0,
+  "failedSuites": 0,
+  "root": "/private/tmp/axiom-current-full-suite-97i2ahbw",
+  "resultSha256": "41ee67d79038df4dacd3b4e3d662925756f5fcece0fb819fda2e84e8739814f7",
+  "priorFailure": {
+    "root": "/private/tmp/axiom-current-full-suite-kuzqhl18",
+    "passed": 18836,
+    "failedTests": 0,
+    "failedSuites": 1,
+    "pending": 1166,
+    "cause": "Clean PATH omitted /opt/homebrew/bin; GPG setup spawn had null status. Corrected test environment only, not source/assertions or timeouts."
+  },
+  "limits": "Full ordinary suite only; pending/skipped cases are not native/live/PG acceptance. Separate212actual isolated SQL receipt retains its original scope. No real provider, production/schema/flag/deployment or company signing-key use."
+}
