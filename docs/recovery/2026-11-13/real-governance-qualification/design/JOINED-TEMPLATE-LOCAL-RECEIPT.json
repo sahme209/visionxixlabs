@@ -1,0 +1,46 @@
+{
+  "observedAt": "2026-11-13T15:52:17.299290+00:00",
+  "baseCommit": "b2db753e9d1b7822aba87a20c2fe86a73df43b4a",
+  "scope": "approved local template approval/session/output timing; partial Governance",
+  "sourceSha256": {
+    "lib/governance/platform/executionTime.ts": "af285c4bdc9efb7b122c41a6fc88b48cd639c3b0c54cb8c7006046ee94a1570e",
+    "lib/governance/platform/principalTime.ts": "ee1f7e69cacea7f4930a5cf43a1cfaaf9fb7ebdefedd4b17b50dc41cbc5455a3",
+    "lib/governance/platform/templateExecutionStore.ts": "f23de907d79688290fa3cbf8114a503df9bec7719dd44a5c5f94e6032d4c0567",
+    "lib/governance/platform/templateNativeTransport.ts": "f7b039ca41e0c31d7284bd3d5a33b112474013329e3ca564a58c9a2e390a98bf",
+    "lib/governance/platform/templateWorkflowRequest.ts": "b9d60acb6e5dec529fd19cd7408a771ac8126a8a961349d4e35f6d680de6edf8"
+  },
+  "focused": {
+    "files": 8,
+    "passed": 72,
+    "overlapping": true
+  },
+  "ordinary": {
+    "numFailedTestSuites": 0,
+    "numTotalTests": 20127,
+    "numPassedTests": 18985,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "success": true
+  },
+  "broadScopeNote": "Before test-only mocked S3 content-type typing correction; affected9 and all72focused tests pass after correction. Runtime hashes unchanged.",
+  "strictRootTypes": "passed",
+  "actualSql": "NOT RUN; opt-ins pending, current grant excludes SQL",
+  "review": "existing independent final reviewer P2 corrected; no remaining important finding in this slice; source only",
+  "unqualified": [
+    "template credential expiry metadata",
+    "native signing/clock profile",
+    "real source/custody/fleet/runtime",
+    "other time consumers and transitive consistency",
+    "actual SQL and genuine people/provider journeys"
+  ],
+  "effects": {
+    "realProvider": false,
+    "actualSql": false,
+    "newCredential": false,
+    "nativeSigningOrRun": false,
+    "productionChange": false,
+    "enablement": false,
+    "push": false,
+    "spending": false
+  }
+}

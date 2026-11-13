@@ -19,17 +19,17 @@ export async function createTemplateWorkflowRequestComposition(request:RequestCo
  function possessed(){if(session()!==actor.sessionId)return fail()}
  async function guarded<T>(fn:()=>Promise<T>){possessed();const result=await fn();possessed();return result}
  const authority={async assertCurrent(tx:PlatformTransaction,p:PlatformPrincipal){await guarded(()=>assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails))}};
- const r=ports.resources;
+ const r=ports.resources,clock=r?.clock;
  const profiles:TemplatePreparationProfiles|undefined=r?{read:s=>guarded(()=>r.profiles.read(s)),assertQualified:(p,s)=>guarded(()=>r.profiles.assertQualified(p,s))}:undefined;
  const resources:TemplateExecutionResources|undefined=r?{
-  profiles:profiles!,assertQualified:b=>guarded(()=>r.assertQualified(b)),
+  clock:signal=>guarded(()=>clock!.call(r,signal)),profiles:profiles!,assertQualified:b=>guarded(()=>r.assertQualified(b)),
   readCredential:b=>{possessed();const value=r.readCredential(b);possessed();return value},now:()=>{possessed();const value=r.now();possessed();return value},
   ...(r.readArtifactKey?{readArtifactKey:(b:Parameters<NonNullable<TemplateExecutionResources['readArtifactKey']>>[0])=>{possessed();const value=r.readArtifactKey!(b);possessed();return value}}:{}),
   ...(r.assertArtifactKeyCurrent?{assertArtifactKeyCurrent:(b:Parameters<NonNullable<TemplateExecutionResources['assertArtifactKeyCurrent']>>[0])=>guarded(()=>r.assertArtifactKeyCurrent!(b))}:{}),
   ...(r.assertDeliveryChannel?{assertDeliveryChannel:(b:Parameters<NonNullable<TemplateExecutionResources['assertDeliveryChannel']>>[0],ref:string)=>guarded(()=>r.assertDeliveryChannel!(b,ref,request))}:{}),
   ...(r.expiryQualification?{expiryQualification:(b:Parameters<NonNullable<TemplateExecutionResources['expiryQualification']>>[0])=>guarded(()=>r.expiryQualification!(b))}:{}),
  }:undefined;
- const preparation=createTemplatePreparationStore(ports.repo,authority,profiles),execution=createTemplateExecutionStore(ports.repo,authority,resources),actions=createPlatformActionService(ports.repo,authority);
+ const preparation=createTemplatePreparationStore(ports.repo,authority,profiles),execution=createTemplateExecutionStore(ports.repo,authority,resources,request.signal),actions=createPlatformActionService(ports.repo,authority);
  async function inspect(id:string){platformActionId.parse(id);const history=await execution.history(id,actor),action=await actions.inspect(id,actor);if(history.actionId!==action.actionId||history.status!==action.status||history.attemptCount!==action.attemptCount)return fail();return templateWorkflowHistory.parse({action,receipts:history.receipts,deliveries:history.deliveries,authority:history.authority,sourceValidation:history.sourceValidation,executionAuthorized:history.executionAuthorized})}
  async function exact(id:string,digest:string,version?:number){const value=await inspect(id);if(value.action.plan.digest!==digest||version!==undefined&&value.action.version!==version)return fail();return value}
  return Object.freeze({

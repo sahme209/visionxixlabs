@@ -41,3 +41,22 @@ it.each(['omit','double','rejected','pending','lost-ack'] as const)('never grant
 it('accepts only a successfully awaited private check and acknowledged authorization',async()=>{
  let completed=false;await authorizeExecutionWindow(async()=>({earliest:1,latest:2}),{expiresAt:3},async check=>{await check!();completed=true},signal());expect(completed).toBe(true);
 });
+
+it('intersects the locked participant expiry with the original native deadline',async()=>{
+ await expect(authorizeExecutionWindow(async()=>({earliest:49,latest:50}),{expiresAt:100},async check=>{await check!({expiresAt:50})},signal())).rejects.toThrow();
+});
+it('additional participant bounds can never relax the immutable original window',async()=>{
+ await expect(authorizeExecutionWindow(async()=>({earliest:99,latest:100}),{notBefore:50,expiresAt:100},async check=>{await check!({notBefore:0,expiresAt:1000})},signal())).rejects.toThrow();
+ await expect(authorizeExecutionWindow(async()=>({earliest:49,latest:51}),{notBefore:50,expiresAt:100},async check=>{await check!({notBefore:0,expiresAt:1000})},signal())).rejects.toThrow();
+});
+it('captures additional bounds before the source can mutate them',async()=>{
+ const extra={notBefore:50,expiresAt:100};
+ await expect(authorizeExecutionWindow(async()=>{extra.notBefore=0;extra.expiresAt=1000;return {earliest:99,latest:100}},{expiresAt:200},async check=>{await check!(extra)},signal())).rejects.toThrow();
+});
+it.each([{notBefore:NaN},{expiresAt:-1},{notBefore:Infinity},{expiresAt:1.5}])('rejects malformed participant bounds without reading the source: %j',async extra=>{
+ let reads=0;await expect(authorizeExecutionWindow(async()=>{reads++;return {earliest:1,latest:2}},{expiresAt:100},async check=>{await check!(extra)},signal())).rejects.toThrow();expect(reads).toBe(0);
+});
+
+it('cannot hide an invalid original authority bound by intersecting it with a valid restriction',async()=>{
+ await expect(authorizeExecutionWindow(async()=>({earliest:1,latest:2}),{notBefore:-1,expiresAt:100},async check=>{await check!({notBefore:0,expiresAt:50})},signal())).rejects.toThrow();
+});

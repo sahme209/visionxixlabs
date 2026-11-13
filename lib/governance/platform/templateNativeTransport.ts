@@ -1,4 +1,6 @@
 import 'server-only';
+import {NodeHttpHandler} from '@smithy/node-http-handler';
+import {authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';
 import {z} from 'zod';
 import {createHash} from 'node:crypto';
 import {S3Client,CreateBucketCommand,PutObjectCommand,GetObjectCommand,GetBucketVersioningCommand} from '@aws-sdk/client-s3';
@@ -14,7 +16,9 @@ export interface TemplateNativePorts{
  /** Must return only after the exact durable parent/child/resource admission
   * commits. Unknown acknowledgement must reject, never authorize a command. */
  admit(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
- assertCurrent(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
+ assertCurrent(binding:Readonly<TemplateExecutionBinding>,timeCheck?:ExecutionTimeCheck):Promise<void>;
+ clock:ExecutionTimeSource;
+ signal?:AbortSignal;
  assertQualified(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
  /** Private already-held resource only; no environment/file/provider fallback.
   * This metadata interface itself does not qualify actual credential custody. */
@@ -27,20 +31,24 @@ const fail=():never=>{throw Error('platform_template_native_unavailable')};
  * The enclosing service must atomically persist typed evidence/ciphertext with
  * parent/child/event transitions before any separately claimed output. */
 export function createTemplateNativeTransport(ports?:TemplateNativePorts){
+ const clock=ports?.clock;
  const used=new Set<string>(),observations=new WeakMap<object,{bindingDigest:string;value:Readonly<TemplateNativeObservation>}>();
  return {
   async perform(raw:unknown):Promise<object>{let sts:STSClient|undefined,s3:S3Client|undefined;try{
    const b=readTemplateExecutionBinding(raw),e=b.effect;if(!ports||used.has(b.bindingDigest))return fail();used.add(b.bindingDigest);
    if(e.kind!=='template.bucket.create'&&e.kind!=='template.object.put'&&e.kind!=='template.access.grant')return fail();
-   const signal=AbortSignal.timeout(15000),p=ports;let currentKeys:Credential|undefined;
+   const signal=ports.signal?AbortSignal.any([ports.signal,AbortSignal.timeout(15000)]):AbortSignal.timeout(15000),p=ports;let currentKeys:Credential|undefined;
    async function within<T>(fn:()=>Promise<T>):Promise<T>{signal.throwIfAborted();let abort:()=>void=()=>{};const deadline=new Promise<never>((_resolve,reject)=>{abort=()=>reject(Error('platform_template_native_unavailable'));signal.addEventListener('abort',abort,{once:true});if(signal.aborted)abort()});try{return await Promise.race([Promise.resolve().then(fn),deadline])}finally{signal.removeEventListener('abort',abort)}}
    function time(){const now=p.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(b.approvalExpiresAt))return fail();signal.throwIfAborted();return now}
-   async function current(){time();await within(()=>p.assertQualified(b));await within(()=>p.assertCurrent(b));if(currentKeys){const live=credential.parse(p.readCredential(b));if(live.accessKeyId!==currentKeys.accessKeyId||live.secretAccessKey!==currentKeys.secretAccessKey||live.sessionToken!==currentKeys.sessionToken)return fail()}time()}
+   async function current(){time();await within(()=>p.assertQualified(b));await within(()=>authorizeExecutionWindow(clock!,{expiresAt:Date.parse(b.approvalExpiresAt)},check=>p.assertCurrent(b,check),signal));if(currentKeys){const live=credential.parse(p.readCredential(b));if(live.accessKeyId!==currentKeys.accessKeyId||live.secretAccessKey!==currentKeys.secretAccessKey||live.sessionToken!==currentKeys.sessionToken)return fail()}time()}
+   // SDK preparation/signing can await after send() starts. Recheck at the
+   // actual HTTP boundary, using the original locked authorization owner.
+   function finalHandler(){const native=new NodeHttpHandler();return {metadata:native.metadata,destroy:()=>native.destroy(),async handle(request:Parameters<typeof native.handle>[0],options:Parameters<typeof native.handle>[1]){await current();signal.throwIfAborted();return native.handle(request,options)}}}
    await current();await within(()=>p.admit(b));await current();
    const keys=credential.parse(p.readCredential(b));currentKeys=keys;await current();const {accountId,region}=e.target;
-   sts=new STSClient({region,credentials:keys,maxAttempts:1,endpoint:`https://sts.${region}.amazonaws.com`});
+   sts=new STSClient({region,credentials:keys,maxAttempts:1,requestHandler:finalHandler(),endpoint:`https://sts.${region}.amazonaws.com`});
    const identity=await within(()=>sts!.send(new GetCallerIdentityCommand({}),{abortSignal:signal}));await current();if(identity.Account!==accountId)return fail();
-   s3=new S3Client({region,credentials:keys,maxAttempts:1,endpoint:`https://s3.${region}.amazonaws.com`,followRegionRedirects:false,forcePathStyle:false,useAccelerateEndpoint:false,useDualstackEndpoint:false,useFipsEndpoint:false});
+   s3=new S3Client({region,credentials:keys,maxAttempts:1,requestHandler:finalHandler(),endpoint:`https://s3.${region}.amazonaws.com`,followRegionRedirects:false,forcePathStyle:false,useAccelerateEndpoint:false,useDualstackEndpoint:false,useFipsEndpoint:false});
    let value:TemplateNativeObservation;
    if(e.kind==='template.bucket.create'){
     if(region!=='us-east-2')return fail();await current();const response=await within(()=>s3!.send(new CreateBucketCommand({Bucket:e.target.bucket,CreateBucketConfiguration:{LocationConstraint:'us-east-2'}}),{abortSignal:signal}));if(response.$metadata.httpStatusCode!==200)return fail();value={kind:'bucket',providerStatus:200};

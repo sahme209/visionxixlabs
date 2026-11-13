@@ -9,10 +9,16 @@ const session=platformPrincipalSchema.extend({live:z.literal(true),sessionIssued
 /** Additional private time validation, not a role or session issuer. The caller
  * must retain actual principal locks and recheck current authority afterwards.
  * Nonsecret history still uses its existing reader; this grants no new access. */
-export async function assertPlatformPrincipalTime(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,clock:ExecutionTimeSource,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{
+export async function readPlatformPrincipalTimeWindow(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{
  try{
   signal.throwIfAborted();const principal=platformPrincipalSchema.parse(raw),row=session.parse(await tx.readPrincipal(principal));signal.throwIfAborted();
   if(row.userId!==principal.userId||row.sessionId!==principal.sessionId||row.sessionIssuedAtMs>=row.sessionExpiresAtMs)throw Error('unavailable');
-  await assertExecutionWindow(clock,{notBefore:row.sessionIssuedAtMs,expiresAt:row.sessionExpiresAtMs},signal);signal.throwIfAborted();return Object.freeze({notBefore:row.sessionIssuedAtMs,expiresAt:row.sessionExpiresAtMs});
+  return Object.freeze({notBefore:row.sessionIssuedAtMs,expiresAt:row.sessionExpiresAtMs});
  }catch{throw Error('platform_principal_time_unavailable')}
+}
+
+/** Standalone checks reuse the same exact-row parser. Joined final decisions
+ * collect every participant window first, then validate a single intersection. */
+export async function assertPlatformPrincipalTime(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,clock:ExecutionTimeSource,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{
+ try{const window=await readPlatformPrincipalTimeWindow(tx,raw,signal);await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window}catch{throw Error('platform_principal_time_unavailable')}
 }
