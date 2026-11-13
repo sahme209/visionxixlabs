@@ -2,8 +2,8 @@ import {z} from 'zod';
 import {platformActionId} from './viewContract';
 const identity=z.string().min(1).max(256),common={draftId:identity,connectionId:identity,expiresAt:z.string().datetime()};
 export const growthPreparationSelection=z.discriminatedUnion('operation',[
- z.object({operation:z.literal('publish'),...common}).strict(),
- z.object({operation:z.literal('schedule'),...common,scheduledFor:z.string().datetime()}).strict(),
+ z.object({operation:z.literal('publish'),...common,imageUploadActionId:platformActionId.optional()}).strict(),
+ z.object({operation:z.literal('schedule'),...common,imageUploadActionId:platformActionId.optional(),scheduledFor:z.string().datetime()}).strict(),
  z.object({operation:z.literal('delete'),...common}).strict(),
 ]);
 export const platformPreparationRequestId=z.string().uuid().transform(v=>v.toLowerCase());

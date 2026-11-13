@@ -24,7 +24,7 @@ export function createPlatformExecutionHttp(createService:(request:Request)=>Pro
    const effect=action.plan.effects[0];if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change'&&effect.kind!=='growth.post.delete')throw Error('unsupported_execution_profile');
    request.signal.throwIfAborted();await service.claim(selected.actionId,selected.expectedVersion);
    const binding=bindPlatformExecution({actorUserId:service.actorUserId,claimNextEffect:id=>service.claimNextEffect(id),beforeEffectSend:async(proof,exact)=>{request.signal.throwIfAborted();await service.beforeEffectSend(proof,exact);request.signal.throwIfAborted()},observeEffect:(proof,outcome)=>service.observeEffect(proof,outcome)},selected.actionId);
-   const common={draftId:effect.target.draftId,connectionId:effect.target.connectionId,effectId:effect.id,platformExecution:binding};
+   const common={...(effect.kind!=='growth.post.delete'&&effect.target.imageUploadActionId?{imageUploadActionId:effect.target.imageUploadActionId}:{}),draftId:effect.target.draftId,connectionId:effect.target.connectionId,effectId:effect.id,platformExecution:binding};
    if(effect.kind==='growth.post.publish')await publishDraft({...common,triggeredBy:'platform-governance'});
    else if(effect.kind==='growth.schedule.change')await schedulePlatformLinkedInDraft({...common,scheduledFor:new Date(effect.target.scheduledFor)});
    else await deletePlatformLinkedInPost(common);

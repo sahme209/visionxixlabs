@@ -1,3 +1,4 @@
+import {imagePublicationLineagePublic} from './imagePublicationContract';
 import {z} from 'zod';
 import {digest} from './contracts';
 import {platformActionId,platformInspectionSchema} from './viewContract';
@@ -15,6 +16,7 @@ export const imageWorkflowCommand=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('lookup'),requestReference:reference}).strict(),
  z.object({operation:z.literal('inspect'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('preview'),actionId:platformActionId}).strict(),
+ z.object({operation:z.literal('preview_post_image'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('review'),actionId:platformActionId,expectedVersion:z.literal(0),planDigest:digest}).strict(),
  z.object({operation:z.literal('initialize'),actionId:platformActionId,expectedVersion:z.literal(1),planDigest:digest}).strict(),
  z.object({operation:z.literal('put'),actionId:platformActionId,expectedVersion:z.literal(2),planDigest:digest}).strict(),
@@ -51,3 +53,11 @@ export const imageActionLookupResult=z.discriminatedUnion('found',[
  z.object({found:z.literal(true),actionId:platformActionId,authority:z.literal('history_only')}).strict(),
  z.object({found:z.literal(false),authority:z.literal('history_only')}).strict(),
 ]);
+
+/** New post/schedule authority; the original upload is historical provenance. */
+export const postImageWorkflowPreview=z.object({action:platformInspectionSchema,artifact:imagePublicArtifact,lineage:imagePublicationLineagePublic,renderedPost:z.string().max(65536),bytesBase64url:imageCanonicalBase64url,authority:z.literal('post_image_review_preview_only'),executionAuthorized:z.literal(false)}).strict().superRefine((v,c)=>{
+ const bad=()=>c.addIssue({code:'custom',message:'Inconsistent post image preview'}),e=v.action.plan.effects[0],a=v.artifact,l=v.lineage;
+ if(v.action.expired||!['proposed','approved'].includes(v.action.status)||v.action.plan.effects.length!==1||(e.kind!=='growth.post.publish'&&e.kind!=='growth.schedule.change'))return bad();
+ if(e.target.imageUploadActionId!==l.uploadActionId||e.target.imageLineageDigest!==l.lineageDigest||e.target.connectionId!==l.connectionId||e.target.author!==l.author||a.artifactId!==l.artifactId||a.bytesDigest!==l.bytesDigest||a.connectionId!==l.connectionId||a.author!==l.author||Math.floor(v.bytesBase64url.length*6/8)!==a.byteCount)return bad();
+ try{const post=JSON.parse(v.renderedPost);if(post.author!==l.author||post.content?.media?.id!==l.providerImageReference)bad()}catch{bad()}
+});

@@ -13,6 +13,6 @@ export function matchesPreparationSelection(plan:PlatformPlan,raw:unknown){
  const selected=canonicalGrowthSelection(raw);if(plan.effects.length!==1)return false;const e=plan.effects[0];
  if(e.kind!=='growth.post.publish'&&e.kind!=='growth.post.delete'&&e.kind!=='growth.schedule.change')return false;
  const operation=e.kind==='growth.post.publish'?'publish':e.kind==='growth.post.delete'?'delete':'schedule';
- const original=canonicalGrowthSelection({operation,draftId:e.target.draftId,connectionId:e.target.connectionId,expiresAt:plan.expiresAt,...(e.kind==='growth.schedule.change'?{scheduledFor:e.target.scheduledFor}:{})});
+ const original=canonicalGrowthSelection({operation,draftId:e.target.draftId,connectionId:e.target.connectionId,expiresAt:plan.expiresAt,...(e.kind!=='growth.post.delete'&&e.target.imageUploadActionId?{imageUploadActionId:e.target.imageUploadActionId}:{}),...(e.kind==='growth.schedule.change'?{scheduledFor:e.target.scheduledFor}:{})});
  return sha256ContentHash(original)===sha256ContentHash(selected);
 }

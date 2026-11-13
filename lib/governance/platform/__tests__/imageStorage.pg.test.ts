@@ -172,13 +172,14 @@ it.skipIf(!enabled)('keeps legacy confirmed upload records historical without up
 });
 
 import {createImageExecutionStore,type ImageExecutionResources} from '../imageExecutionStore';
-async function nativeExecutionFixture(writeOnly=false){
+async function nativeExecutionFixture(writeOnly=false,encryptedToken?:string,reviewWindowMs=60000){
  const f=await authorityFixture();
+ if(encryptedToken)await db.$executeRawUnsafe('UPDATE "LinkedInAccountConnection" SET "accessToken"=$1,"updatedAt"=clock_timestamp() WHERE id=$2',encryptedToken,f.id);
  if(!writeOnly)await db.$executeRawUnsafe('UPDATE "LinkedInAccountConnection" SET scopes=$1 WHERE id=$2','w_member_social rw_ads',f.id);
  f.resources.readUploadProfile=async()=>({profileId:'synthetic-native-profile',profileDigest:d,destinationOrigin:'https://www.linkedin.com'});
  const grantKey=Buffer.alloc(32,31),credentials=vi.fn(async()=> 'SYNTHETIC_NOT_A_REAL_TOKEN');
  const resources:ImageExecutionResources={...f.resources,version:'202607',now:()=>Date.now(),assertNativeQualified:async()=>{},assertObservationAllowed:async(_b,connection)=>{if(!connection.scopes.split(' ').includes('rw_ads'))throw Error('synthetic_no_observation_permission')},readCredential:credentials,assertCredentialCurrent:async()=>{},readGrantKey:async()=>grantKey,assertGrantKeyCurrent:async(_b,key)=>{if(!Buffer.from(key).equals(grantKey))throw Error('synthetic_grant_key_changed')}};
- const artifact=await f.service.intake(f.selection,f.bytes,actor),proposal=await f.service.prepare(artifact.artifact.artifactId,new Date(Date.now()+60000).toISOString(),randomUUID(),actor),view=await f.service.preview(proposal.actionId,reviewer);await f.service.review(proposal.actionId,0,view.binding.plan.digest,reviewer);view.bytes.fill(0);
+ const artifact=await f.service.intake(f.selection,f.bytes,actor),proposal=await f.service.prepare(artifact.artifact.artifactId,new Date(Date.now()+reviewWindowMs).toISOString(),randomUUID(),actor),view=await f.service.preview(proposal.actionId,reviewer);await f.service.review(proposal.actionId,0,view.binding.plan.digest,reviewer);view.bytes.fill(0);
  const store=createImageExecutionStore(f.r,f.authority,resources);
  return {...f,resources,credentials,proposal,b:view.binding,store};
 }
@@ -282,4 +283,64 @@ it.skipIf(!enabled)('lost execution replies recover only original saved metadata
   const completed=await client.inspect(f.proposal.actionId);expect(completed).toMatchObject({ok:true,data:{action:{status:'confirmed'},upload:{grant:{result:{ready:{mediaReady:true}}}}}});if(!completed.ok)throw Error('fixture');
   expect(await client.put(completed.data)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(writes).toBe(2);
  }finally{transport.mockRestore()}
+});
+it.skipIf(!enabled)('selects a newly confirmed upload for a NEW proposal while leaving draft media NULL and retaining the exact original choice',async()=>{
+ const f=await nativeExecutionFixture(),native=interceptImageNative(f),previous=process.env.LINKEDIN_POSTING_ENABLED;process.env.LINKEDIN_POSTING_ENABLED='true';
+ try{await f.store.initialize(f.proposal.actionId,1,actor);await f.store.put(f.proposal.actionId,2,actor);native.fetch.mockRestore();
+  const draftId='selected-image-post-'+randomUUID();await db.$executeRawUnsafe('INSERT INTO "LinkedInPostDraft" (id,title,hook,body,category,status,"updatedAt") VALUES ($1,$2,$3,$4,$5,$6,clock_timestamp())',draftId,'Selected image','Hook','Body','governance','approved');
+  const service=(await import('../actionStore')).createPlatformActionService(f.r,f.authority),reference=randomUUID(),selection={operation:'publish',draftId,connectionId:f.id,expiresAt:new Date(Date.now()+30000).toISOString(),imageUploadActionId:f.proposal.actionId};
+  const prepared=await service.prepareGrowth(selection,actor,reference),preview=await service.previewGrowth(prepared.actionId,reviewer);expect(JSON.parse(preview.renderedPost!).content.media.id).toBe(native.image);
+  const mediaPreview=(await import('../postImagePreviewService')).createPostImagePreviewService(f.r,f.authority,f.resources);
+  const media=await mediaPreview.preview(prepared.actionId,reviewer);expect(media.bytes).toEqual(f.bytes);expect(media.lineage.uploadActionId).toBe(f.proposal.actionId);expect(JSON.parse(media.renderedPost).content.media.id).toBe(native.image);media.bytes.fill(0);
+  await expect(mediaPreview.preview(f.proposal.actionId,reviewer)).rejects.toThrow();
+  await expect(mediaPreview.preview(prepared.actionId,{...reviewer,sessionId:'unrelated-session'})).rejects.toThrow();
+  expect((await service.inspect(prepared.actionId,actor)).plan.effects[0].target).toMatchObject({imageUploadActionId:f.proposal.actionId});expect((await db.$queryRawUnsafe<Array<{imageUrn:string|null}>>('SELECT "imageUrn" FROM "LinkedInPostDraft" WHERE id=$1',draftId))[0].imageUrn).toBeNull();
+  await expect(service.prepareGrowth({...selection,imageUploadActionId:'platform_action_'+randomUUID()},actor,reference)).rejects.toThrow();
+ }finally{native.fetch.mockRestore();if(previous===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=previous}
+});
+
+it.skipIf(!enabled)('selects and previews original ready bytes through new authenticated post commands then dispatches the default publisher once without draft media mutation',async()=>{
+ const oldPosting=process.env.LINKEDIN_POSTING_ENABLED,oldKey=process.env.CREDENTIAL_ENCRYPTION_KEY;process.env.LINKEDIN_POSTING_ENABLED='true';process.env.CREDENTIAL_ENCRYPTION_KEY='synthetic-credential-key-'.repeat(3);
+ const {encryptCredential}=await import('@/lib/security/credentialVault'),f=await nativeExecutionFixture(false,encryptCredential('synthetic-linkedin-token')),native=interceptImageNative(f),nativeHandler=native.fetch.getMockImplementation()!,h=executionHttp(f);native.fetch.mockRestore();
+ const {createPlatformRequestComposition}=await import('../requestComposition'),{createPlatformPreparationHttp}=await import('../preparationHttp'),{createPlatformReviewHttp}=await import('../reviewHttp'),{createPlatformExecutionHttp}=await import('../executionHttp');
+ const {createPlatformPreparationClient,createPlatformReviewClient,createPlatformExecutionClient}=await import('../../../../desktop/src/lib/platformReview');
+ const composition=(request:Request)=>createPlatformRequestComposition(request,{repo:f.r,verifyDesktopToken:h.codec.verifyDesktopToken,readAdminEmails:()=>['image-requester@example.test','image-reviewer@example.test']});
+ const prepare=createPlatformPreparationHttp(composition),review=createPlatformReviewHttp(composition),execute=createPlatformExecutionHttp(composition);let publications=0;
+ const transport=vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{
+  const url=String(input);if(url==='https://fixture.invalid/api/desktop/platform-governance/image-workflow')return h.http(new Request(url,init));
+  if(url==='https://fixture.invalid/api/desktop/platform-governance/prepare')return prepare(new Request(url,init));
+  if(url==='https://fixture.invalid/api/desktop/platform-governance/review')return review(new Request(url,init));
+  if(url==='https://fixture.invalid/api/desktop/platform-governance/execute')return execute(new Request(url,init));
+  if(url==='https://api.linkedin.com/rest/posts'&&init?.method==='POST'){publications++;expect(JSON.parse(String(init.body)).content.media.id).toBe(native.image);return new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:selected_image'}})}
+  return nativeHandler(input,init);
+ });
+ function context(p=actor){const config={apiBase:'https://fixture.invalid',sessionToken:h.codec.mintDesktopToken(p.sessionId)};return {getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}}}
+ try{
+  const upload=h.client(),before=await upload.inspect(f.proposal.actionId);if(!before.ok)throw Error('history');const initialized=await upload.initialize(before.data);if(!initialized.ok)throw Error('initialize');expect((await upload.put(initialized.data)).ok).toBe(true);
+  const draftId='joined-selected-image-'+randomUUID();await db.$executeRawUnsafe('INSERT INTO "LinkedInPostDraft" (id,title,hook,body,category,status,"updatedAt") VALUES ($1,$2,$3,$4,$5,$6,clock_timestamp())',draftId,'Selected ready image','Hook','Exact body','governance','approved');
+  const proposal=createPlatformPreparationClient(context()),owner=createPlatformReviewClient(context()),other=createPlatformReviewClient(context(reviewer)),requester=createPlatformExecutionClient(context()),receipt=await proposal.prepare({operation:'publish',draftId,connectionId:f.id,imageUploadActionId:f.proposal.actionId,expiresAt:new Date(Date.now()+25000).toISOString()},randomUUID());if(!receipt.ok)throw Error('proposal');
+  const saved=await owner.inspect(receipt.data.actionId);if(!saved.ok)throw Error('post');
+  const preview=await h.client(reviewer).previewPost(saved.data.actionId);expect(preview.ok).toBe(true);if(!preview.ok)throw Error('image_preview');expect(Buffer.from(preview.data.bytesBase64url,'base64url')).toEqual(f.bytes);expect(JSON.parse(preview.data.renderedPost).content.media.id).toBe(native.image);expect(JSON.stringify(preview)).not.toMatch(/envelope|dms-uploads|sessionId|SYNTHETIC_PRIVATE|SYNTHETIC_NOT_A_REAL_TOKEN/);
+  expect((await owner.approve(saved.data)).ok).toBe(false);const approved=await other.approve(saved.data);if(!approved.ok)throw Error('review');expect(publications).toBe(0);
+  expect((await requester.execute(approved.data)).ok).toBe(true);expect(publications).toBe(1);expect((await requester.execute(approved.data)).ok).toBe(false);expect(publications).toBe(1);
+  expect((await h.client(reviewer).previewPost(saved.data.actionId)).ok).toBe(false);
+  expect((await db.$queryRawUnsafe<Array<{imageUrn:string|null}>>('SELECT "imageUrn" FROM "LinkedInPostDraft" WHERE id=$1',draftId))[0].imageUrn).toBeNull();
+  expect((await upload.inspect(f.proposal.actionId))).toMatchObject({ok:true,data:{action:{status:'confirmed',attemptCount:1}}});
+ }finally{transport.mockRestore();if(oldPosting===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=oldPosting;if(oldKey===undefined)delete process.env.CREDENTIAL_ENCRYPTION_KEY;else process.env.CREDENTIAL_ENCRYPTION_KEY=oldKey}
+});
+
+it.skipIf(!enabled)('authorizes later preview through new current people after old windows/reviewer expire, while rejecting new revocation before releasing bytes',async()=>{
+ const old=process.env.LINKEDIN_POSTING_ENABLED;process.env.LINKEDIN_POSTING_ENABLED='true';const f=await nativeExecutionFixture(false,undefined,1800),native=interceptImageNative(f);
+ try{await f.store.initialize(f.proposal.actionId,1,actor);await f.store.put(f.proposal.actionId,2,actor);native.fetch.mockRestore();
+  const next={userId:'new-image-reviewer-'+randomUUID(),sessionId:'new-image-reviewer-session-'+randomUUID()},email=next.userId+'@example.test';
+  await db.$executeRawUnsafe('INSERT INTO "User" (id,email) VALUES ($1,$2)',next.userId,email);await db.$executeRawUnsafe(`INSERT INTO "DesktopSessionRecord" (id,"userId","organizationId","issuedAt","expiresAt") VALUES ($1,$2,'image-pairing-workspace',clock_timestamp()-interval '1 minute',clock_timestamp()+interval '1 hour')`,next.sessionId,next.userId);await db.$executeRawUnsafe(`INSERT INTO "OrgMembership" ("userId","organizationId","acceptedAt") VALUES ($1,'image-pairing-workspace',clock_timestamp())`,next.userId);
+  await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);
+  await new Promise(resolve=>setTimeout(resolve,Math.max(0,Date.parse(f.b.expiresAt)-Date.now()+20)));
+  let admins=['image-requester@example.test',email];const authority=createCurrentPlatformAuthority(()=>admins),service=(await import('../actionStore')).createPlatformActionService(f.r,authority),draftId='historical-selected-image-'+randomUUID();await db.$executeRawUnsafe('INSERT INTO "LinkedInPostDraft" (id,title,hook,body,category,status,"updatedAt") VALUES ($1,$2,$3,$4,$5,$6,clock_timestamp())',draftId,'Historical ready image','Hook','Body','governance','approved');
+  const prepared=await service.prepareGrowth({operation:'publish',draftId,connectionId:f.id,imageUploadActionId:f.proposal.actionId,expiresAt:new Date(Date.now()+25000).toISOString()},actor,randomUUID()),media=(await import('../postImagePreviewService')).createPostImagePreviewService(f.r,authority,f.resources);
+  const view=await media.preview(prepared.actionId,next);expect(view.bytes).toEqual(f.bytes);view.bytes.fill(0);await service.review(prepared.actionId,0,view.state.plan.digest,next);const ownerView=await media.preview(prepared.actionId,actor);ownerView.bytes.fill(0);
+  const readKey=f.resources.readKey;let inspected:Uint8Array|undefined;const inspect=f.resources.decoder.inspect;f.resources.decoder.inspect=async(b,m,s)=>{inspected=b;return inspect(b,m,s)};
+  f.resources.readKey=async(a,s)=>{const key=await readKey(a,s);admins=['image-requester@example.test'];return key};
+  await expect(media.preview(prepared.actionId,actor)).rejects.toThrow();expect(inspected).toBeUndefined();expect(await service.inspect(f.proposal.actionId,actor)).toMatchObject({status:'confirmed',attemptCount:1});
+ }finally{native.fetch.mockRestore();if(old===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=old}
 });

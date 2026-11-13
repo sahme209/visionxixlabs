@@ -1,5 +1,5 @@
 import {postingSourceSchema} from '@/lib/growth/linkedin/platformPostingPlan';
-import {readImagePublicationSource} from './imagePublicationSource';
+import {readImagePublicationSource,readImagePublicationSourceByAction,readReadyImageArtifactSource} from './imagePublicationSource';
 import {createImageStorageSql,imageBindingForParent} from './imageStorageSql';
 import {readTemplateExecutionReceipt} from './templateExecutionContract';
 import {createTemplateStorageSql,templateBindingForParent} from './templateStorageSql';
@@ -96,12 +96,13 @@ export function createPlatformSqlRepository(db:PlatformSqlDatabase):{transaction
     return cursor?sql.$queryRawUnsafe('SELECT id,"createdAt","stateJson","planDigest",version FROM "PlatformGovernanceAction" WHERE ("createdAt",id)<($1::timestamp,$2::text) ORDER BY "createdAt" DESC,id DESC LIMIT 21',new Date(cursor.createdAt),cursor.actionId):sql.$queryRawUnsafe('SELECT id,"createdAt","stateJson","planDigest",version FROM "PlatformGovernanceAction" ORDER BY "createdAt" DESC,id DESC LIMIT 21');
    },
    async readGrowthDeletionSource(draftId,connectionId){if(!locked)fail();return readPlatformDeletionSource(sql,draftId,connectionId)},
-   async readGrowthPostingSource(draftId,connectionId){
+   async readGrowthPostingSource(draftId,connectionId,imageUploadActionId){
     if(!locked)fail();
     const drafts=await sql.$queryRawUnsafe<unknown[]>('SELECT id,title,hook,body,cta,hashtags,"imageUrn",status,"scheduledFor","updatedAt" FROM "LinkedInPostDraft" WHERE id=$1 FOR SHARE',draftId);
     const connections=await sql.$queryRawUnsafe<unknown[]>('SELECT id,"linkedinUrn","organizationUrn",scopes,status,"expiresAt","updatedAt" FROM "LinkedInAccountConnection" WHERE id=$1 FOR SHARE',connectionId);
-    if(drafts.length!==1||connections.length!==1)fail();const source=postingSourceSchema.parse({draft:drafts[0],connection:connections[0]});return source.draft.imageUrn===null?source:{...source,imageLineage:await readImagePublicationSource(sql,source.connection,source.draft.imageUrn)};
+    if(drafts.length!==1||connections.length!==1)fail();const source=postingSourceSchema.parse({draft:drafts[0],connection:connections[0]});if(imageUploadActionId!==undefined)return {...source,imageLineage:await readImagePublicationSourceByAction(sql,source.connection,imageUploadActionId)};return source.draft.imageUrn===null?source:{...source,imageLineage:await readImagePublicationSource(sql,source.connection,source.draft.imageUrn)};
    },
+   async readReadyImageArtifact(uploadActionId,connectionId){if(!locked)fail();const connection=postingSourceSchema.shape.connection.parse(await tx.readImageConnection!(connectionId));return readReadyImageArtifactSource(sql,connection,uploadActionId)},
    ...createPlatformIdentitySqlReader(sql,()=>{if(!locked)fail()}),
    async lock(id){if(locked!==null)fail();await sql.$queryRawUnsafe('SELECT 1 AS locked FROM pg_advisory_xact_lock(hashtextextended($1,0))','axiom-platform-governance:'+id);locked=id},
    async now(){if(!locked)fail();const rows=await sql.$queryRawUnsafe<Array<{now:number}>>('SELECT floor(extract(epoch FROM clock_timestamp())*1000)::double precision AS now');if(rows.length!==1||!Number.isSafeInteger(rows[0].now))fail();return rows[0].now},

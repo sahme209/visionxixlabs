@@ -34,3 +34,6 @@ Approve LOCAL source and pure/mocked/owned-isolated SQL tests for this metadata 
 
 ## Follow-up within the final three-family review
 The same final reviewer confirmed that proposal-bound metadata selection closes the functional gap without draft mutation, and requested the historical-provenance versus new-action authority clarification above. That clarification is now included. No other important design ambiguity was reported. This is reviewed design only, not owner implementation consent or real qualification.
+
+## Owner implementation decision — November13
+Owner selected “Approve local selection and preview implementation” for the exact reviewed request. LOCAL source and pure/mocked/owned-isolated SQL tests for the proposal selection and new-action-bound artifact preview are authorized. Original upload history and all stated exclusions remain; no real resource/provider/key/decoder, production/grant/schema/flag, signing/install/deploy or spending authority is granted.

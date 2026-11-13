@@ -32,3 +32,12 @@ it('binds a separately confirmed compatible upload lineage into the reviewed pos
  const {lineageDigest:originalDigest,...lineageBody}=lineage;expect(originalDigest).toMatch(/^[a-f0-9]{64}$/);for(const wrong of [{...lineage,lineageDigest:'b'.repeat(64)},compileImagePublicationLineage({...lineageBody,author:'urn:li:person:other'})])expect(()=>preparePlatformLinkedInPost(imageDraft,c,'202605',now,undefined,wrong)).toThrow();
  expect(()=>preparePlatformLinkedInPost(d,c,'202605',now,undefined,lineage)).toThrow();
 });
+it('selects a confirmed upload in a NEW post without rewriting draft media or accepting conflicting/provenance swaps',async()=>{
+ const {compileImagePublicationLineage}=await import('@/lib/governance/platform/imagePublicationLineage'),c=connection(),original=draft(),d='a'.repeat(64),selected='platform_action_11111111-1111-4111-8111-111111111111';
+ const lineage=compileImagePublicationLineage({format:1,purpose:'platform_image_publication_lineage_v1',uploadActionId:selected,uploadPlanDigest:d,bindingDigest:d,artifactId:'platform_image_artifact_11111111-1111-4111-8111-111111111111',bytesDigest:d,connectionId:c.id,connectionRevision:linkedInConnectionRevision(c),author:c.linkedinUrn,providerImageReference:'urn:li:image:managed',grantReference:'platform_image_grant_'+d,putReceiptDigest:d});
+ const post=preparePlatformLinkedInPost(original,c,'202605',now,undefined,lineage,selected);
+ expect(JSON.parse(post.body).content.media.id).toBe('urn:li:image:managed');expect(original.imageUrn).toBeNull();expect(post.effect.target).toMatchObject({imageUploadActionId:selected,imageLineageDigest:lineage.lineageDigest});
+ expect(()=>preparePlatformLinkedInPost(original,c,'202605',now,undefined,lineage,'platform_action_22222222-2222-4222-8222-222222222222')).toThrow();
+ expect(()=>preparePlatformLinkedInPost({...original,imageUrn:'urn:li:image:other'},c,'202605',now,undefined,lineage,selected)).toThrow();
+ expect(preparePlatformLinkedInPost({...original,imageUrn:'urn:li:image:managed'},c,'202605',now,undefined,lineage,selected).effect.target.renderedPayloadDigest).not.toBe(post.effect.target.renderedPayloadDigest);
+});

@@ -10,7 +10,7 @@ interface Props{sourceClient?:PlatformSourceClient;client:PlatformPreparationCli
  * a consumed save control has no reset, renewal or automatic retry path. */
 export function PlatformPreparationPanel({sourceClient,client,canPrepare,onSaved}:Props){
  const revision=useSyncExternalStore(desktopClient.subscribeContext,desktopClient.getContextRevision,desktopClient.getContextRevision),owner=useRef({revision,config:desktopClient.config}).current;
- const [operation,setOperation]=useState<Selection['operation']>('publish'),[draftId,setDraftId]=useState(''),[connectionId,setConnectionId]=useState(''),[expiresAt,setExpiresAt]=useState(''),[scheduledFor,setScheduledFor]=useState('');
+ const [operation,setOperation]=useState<Selection['operation']>('publish'),[draftId,setDraftId]=useState(''),[connectionId,setConnectionId]=useState(''),[expiresAt,setExpiresAt]=useState(''),[scheduledFor,setScheduledFor]=useState(''),[imageUploadActionId,setImageUploadActionId]=useState('');
  const [reference,setReference]=useState<{requestId:string;selection:Selection}|null>(null),[submitted,setSubmitted]=useState(false),[busy,setBusy]=useState(false),[message,setMessage]=useState('');
  const ref=useRef<typeof reference>(null),held=useRef(false),running=useRef(false),alive=useRef(true),active=useRef<AbortController|null>(null);
  const owns=()=>alive.current&&owner.revision===desktopClient.getContextRevision()&&owner.config===desktopClient.config;
@@ -18,7 +18,7 @@ export function PlatformPreparationPanel({sourceClient,client,canPrepare,onSaved
  function keep(){
   if(!owns()||!canPrepare||ref.current||held.current)return;
   try{
-   const selection=growthPreparationSelection.parse({operation,draftId:draftId.trim(),connectionId:connectionId.trim(),expiresAt,...(operation==='schedule'?{scheduledFor}:{})});
+   const selection=growthPreparationSelection.parse({operation,draftId:draftId.trim(),connectionId:connectionId.trim(),expiresAt,...(operation==='schedule'?{scheduledFor}:{}),...(operation!=='delete'&&imageUploadActionId.trim()?{imageUploadActionId:imageUploadActionId.trim()}:{})});
    const value={requestId:platformPreparationRequestId.parse(crypto.randomUUID()),selection};ref.current=value;setReference(value);setMessage('Original reference kept. Saving creates a proposal only; it does not approve or execute it.');
   }catch{setMessage('Enter exact source IDs and valid UTC ISO times before keeping a reference.')}
  }
@@ -50,6 +50,7 @@ export function PlatformPreparationPanel({sourceClient,client,canPrepare,onSaved
    <label>Draft ID<input value={draftId} disabled={locked} onChange={e=>setDraftId(e.target.value)}/></label>
    <label>Connected account ID<input value={connectionId} disabled={locked} onChange={e=>setConnectionId(e.target.value)}/></label>
    <label>Review expiry (UTC ISO time)<input value={expiresAt} disabled={locked} placeholder="YYYY-MM-DDTHH:mm:ss.sssZ" onChange={e=>setExpiresAt(e.target.value)}/></label>
+   {operation!=='delete'&&<label>Confirmed image upload reference (optional)<input value={imageUploadActionId} disabled={locked} onChange={e=>setImageUploadActionId(e.target.value)}/><span className="text-xs text-zinc-400">Uses a ready upload for this proposal only. The original draft is unchanged.</span></label>}
    {operation==='schedule'&&<label>Publication time (UTC ISO time)<input value={scheduledFor} disabled={locked} onChange={e=>setScheduledFor(e.target.value)}/></label>}
   </div>
   {!reference?<button type="button" className="btn-secondary" disabled={locked} onClick={keep}>Keep exact proposal reference</button>:<>

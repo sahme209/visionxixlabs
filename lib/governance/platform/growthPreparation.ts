@@ -20,9 +20,9 @@ export async function prepareGrowthPlatformPlan(tx:PlatformTransaction,raw:unkno
   effect=prepared.effect;
   const parsed=z.object({connection:postingConnectionSchema}).passthrough().parse(source);connectionExpires=parsed.connection.expiresAt.getTime();
  }else{
-  const source=postingSourceSchema.parse(await tx.readGrowthPostingSource(selection.draftId,selection.connectionId));
-  const post=preparePlatformLinkedInPost(source.draft,source.connection,version,now,effectId,source.imageLineage);renderedPost=post.body;connectionExpires=source.connection.expiresAt.getTime();
-  effect=selection.operation==='publish'?post.effect:preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(selection.scheduledFor),effectId,source.imageLineage).effect;
+  const source=postingSourceSchema.parse(await tx.readGrowthPostingSource(selection.draftId,selection.connectionId,selection.imageUploadActionId));
+  const post=preparePlatformLinkedInPost(source.draft,source.connection,version,now,effectId,source.imageLineage,selection.imageUploadActionId);renderedPost=post.body;connectionExpires=source.connection.expiresAt.getTime();
+  effect=selection.operation==='publish'?post.effect:preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(selection.scheduledFor),effectId,source.imageLineage,selection.imageUploadActionId).effect;
  }
  if(effect.target.draftId!==selection.draftId||effect.target.connectionId!==selection.connectionId||!isPostingEnabled()||currentLinkedInVersion()!==version||Date.parse(selection.expiresAt)<=now||Date.parse(selection.expiresAt)>connectionExpires)fail();
  const sourceDigest=sha256ContentHash({kind:'platform_growth_source_v1',effect});

@@ -15,3 +15,16 @@ export async function readImagePublicationSource(sql:PlatformSql,connection:{id:
  if(value.connectionId!==connection.id||value.author!==author||value.providerImageReference!==imageUrn)return fail();
  return value;
 }
+
+/** Explicit reuse selection is an original confirmed upload action, never a
+ * caller image URN/address. Old approval/grant expiry is historical; current
+ * post authority is checked separately and no old privilege is transferred. */
+export async function readImagePublicationSourceByAction(sql:PlatformSql,connection:{id:string;linkedinUrn:string;organizationUrn:string|null},rawActionId:string){
+ const actionId=platformActionId.parse(rawActionId);
+ const rows=await sql.$queryRawUnsafe<Array<{image:string}>>(`SELECT "contextJson"->'native'->>'providerImageReference' AS image FROM "PlatformImageUploadGrant" WHERE "actionId"=$1 LIMIT 2 FOR SHARE`,actionId);
+ if(rows.length!==1)return fail();const lineage=await readImagePublicationSource(sql,connection,rows[0].image);if(lineage.uploadActionId!==actionId)return fail();return lineage;
+}
+export async function readReadyImageArtifactSource(sql:PlatformSql,connection:{id:string;linkedinUrn:string;organizationUrn:string|null},actionId:string){
+ const lineage=await readImagePublicationSourceByAction(sql,connection,actionId),storage=createImageStorageSql(sql,()=>actionId),grant=await storage.readGrant();if(!grant||grant.context.binding.artifact.bytesDigest!==lineage.bytesDigest)return fail();
+ return {lineage,artifact:await storage.artifactMatches(grant.context.binding)};
+}

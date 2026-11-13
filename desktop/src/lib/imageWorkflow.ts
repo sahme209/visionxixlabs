@@ -1,5 +1,5 @@
 import {z} from 'zod';
-import {imageWorkflowCommand,imageWorkflowPreview,imageWorkflowHistory,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult} from '../../../lib/governance/platform/imageWorkflowContract';
+import {imageWorkflowCommand,imageWorkflowPreview,imageWorkflowHistory,postImageWorkflowPreview,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult} from '../../../lib/governance/platform/imageWorkflowContract';
 import {platformActionId,type PlatformInspection} from '../../../lib/governance/platform/viewContract';
 import {releaseOperationPlanRequest,type ReleasePlanResult} from './releaseOperationPlanTransport';
 type Context=Parameters<typeof releaseOperationPlanRequest>[0];
@@ -41,6 +41,11 @@ export function createImageWorkflowClient(context:Context){
   }catch{return fail(submitted)}
  }
  return {
+  async previewPost(id:string,signal?:AbortSignal):Promise<ReleasePlanResult<z.infer<typeof postImageWorkflowPreview>>>{
+   const owns=owner(context,signal);if(!secure(context)||!platformActionId.safeParse(id).success)return fail();
+   const result=await releaseOperationPlanRequest(context,'POST',path,{operation:'preview_post_image',actionId:id},(raw):raw is z.infer<typeof postImageWorkflowPreview>=>{const v=postImageWorkflowPreview.safeParse(raw);return v.success&&v.data.action.actionId===id},signal);if(!result.ok)return result;
+   const bytes=decode(result.data.bytesBase64url);try{const {lineageDigest,...body}=result.data.lineage;return await exactPlan(result.data.action)&&await hash(body)===lineageDigest&&bytes.length===result.data.artifact.byteCount&&encode(bytes)===result.data.bytesBase64url&&await bytesHash(bytes)===result.data.artifact.bytesDigest&&Date.parse(result.data.action.plan.expiresAt)>Date.now()&&owns()?result:fail()}catch{return fail()}finally{bytes.fill(0)}
+  },
   initialize:(history:unknown,signal?:AbortSignal)=>execute(history,'initialize',signal),
   put:(history:unknown,signal?:AbortSignal)=>execute(history,'put',signal),
   async intake(connectionId:string,mimeType:'image/png'|'image/jpeg',input:Uint8Array,requestReference:string,signal?:AbortSignal){

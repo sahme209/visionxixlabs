@@ -33,6 +33,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction extends Partial<DeploymentLiabilityTransaction>{
+ readReadyImageArtifact?(uploadActionId:string,connectionId:string):Promise<unknown>;
  imageStorage?:ReturnType<typeof createImageStorageSql>;
  readImageConnection?(id:string):Promise<unknown>;
  readImageBinding?(id:string):Promise<Readonly<ImageUploadBinding>|null>;
@@ -42,7 +43,7 @@ export interface PlatformTransaction extends Partial<DeploymentLiabilityTransact
  readSourcePage?(kind:PlatformSourceKind,cursor:string|null):Promise<unknown>;
  readActionPage?(cursor:PlatformHistoryCursor|null):Promise<unknown>;
  readGrowthDeletionSource?(draftId:string,connectionId:string):Promise<unknown>;
- readGrowthPostingSource(draftId:string,connectionId:string):Promise<unknown>;
+ readGrowthPostingSource(draftId:string,connectionId:string,imageUploadActionId?:string):Promise<unknown>;
  readSessionPrincipal(sessionId:string):Promise<unknown>;
  readPrincipal(principal:PlatformPrincipal):Promise<unknown>;
  now():Promise<number>;lock(id:string):Promise<void>;read(id:string):Promise<unknown|null>;
@@ -195,7 +196,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
     const effect=state.plan.effects[0];if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.post.delete'&&effect.kind!=='growth.schedule.change')return fail();
     const operation=effect.kind==='growth.post.publish'?'publish':effect.kind==='growth.post.delete'?'delete':'schedule';
-    const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);
+    const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind!=='growth.post.delete'&&effect.target.imageUploadActionId?{imageUploadActionId:effect.target.imageUploadActionId}:{}),...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);
     if(prepared.plan.digest!==state.plan.digest)fail();
     await authority.assertCurrent(tx,actor);await timely(tx,state);
     return platformGrowthPreviewSchema.parse({actionId:id,planDigest:state.plan.digest,...prepared.preview,authority:'review_preview_only'});

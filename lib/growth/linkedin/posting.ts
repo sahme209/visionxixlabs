@@ -19,11 +19,11 @@ export type PublishOutcome=
  |{kind:'skipped_disabled'|'skipped_not_connected'|'token_expired'|'governance_required'|'outcome_unknown';runId:string|null}
  |{kind:'http_error';status:number;body:string;runId:string|null}
  |{kind:'network_error';message:string;runId:string|null};
-export interface PublishInput{draftId:string;triggeredBy:string;connectionId?:string;platformExecution?:object;effectId?:string}
-async function metadata(draftId:string,connectionId:string){
+export interface PublishInput{imageUploadActionId?:string;draftId:string;triggeredBy:string;connectionId?:string;platformExecution?:object;effectId?:string}
+async function metadata(draftId:string,connectionId:string,imageUploadActionId?:string){
  const draft=await prisma.linkedInPostDraft.findUnique({where:{id:draftId},select:POST_DRAFT_SELECT});
  const connection=await prisma.linkedInAccountConnection.findUnique({where:{id:connectionId},select:POST_CONNECTION_SELECT});
- return {draft,connection,...(draft&&connection&&draft.imageUrn!==null?{imageLineage:await readDefaultImagePublicationSource(connection,draft.imageUrn)}:{})};
+ return {draft,connection,...(draft&&connection&&(draft.imageUrn!==null||imageUploadActionId!==undefined)?{imageLineage:await readDefaultImagePublicationSource(connection,draft.imageUrn,imageUploadActionId)}:{})};
 }
 async function recordRun(draftId:string,actor:string,outcome:'success'|'failed'|'unknown',data:{httpStatus?:number;linkedinPostUrn?:string;errorDetail?:string;diagnosticsJson?:{platformActionId:string}}){
  try{return (await prisma.linkedInPostPublishRun.create({data:{draftId,triggeredBy:actor,outcome,...data,finishedAt:new Date()}})).id}catch{return null}
@@ -37,10 +37,10 @@ export async function publishDraft(input:PublishInput):Promise<PublishOutcome>{
  if(!connectionId||!platformExecution)return {kind:'governance_required',runId:null};
  let credentialUnavailable=false;
  try{
-  const source=await metadata(draftId,connectionId);
+  const source=await metadata(draftId,connectionId,input.imageUploadActionId);
   if(!source.draft)return {kind:'http_error',status:404,body:'draft_not_found',runId:null};
   if(!source.connection)return {kind:'skipped_not_connected',runId:null};
-  const draft=source.draft,connection=source.connection,prepared=preparePlatformLinkedInPost(draft,connection,currentLinkedInVersion(),Date.now(),effectId,source.imageLineage);
+  const draft=source.draft,connection=source.connection,prepared=preparePlatformLinkedInPost(draft,connection,currentLinkedInVersion(),Date.now(),effectId,source.imageLineage,input.imageUploadActionId);
   const receipt=await runPlatformEffect(platformExecution,prepared.effect,async beforeSend=>{
    const stored=await prisma.linkedInAccountConnection.findUnique({where:{id:connectionId},select:{accessToken:true,updatedAt:true}});
    if(!stored||stored.updatedAt.getTime()!==connection.updatedAt.getTime())throw Error('posting_source_changed');
@@ -50,8 +50,8 @@ export async function publishDraft(input:PublishInput):Promise<PublishOutcome>{
     try{await prisma.linkedInAccountConnection.updateMany({where:{id:connectionId,updatedAt:connection.updatedAt,status:'connected'},data:{status:'expired',lastError:'Stored credential could not be decrypted; reconnect required.'}})}catch{/* no provider send; original claim remains */}
     throw Error('posting_credential_unavailable');
    }
-   const latest=await metadata(draftId,connectionId);
-   if(!latest.draft||!latest.connection||sha256ContentHash(preparePlatformLinkedInPost(latest.draft,latest.connection,currentLinkedInVersion(),Date.now(),effectId,latest.imageLineage).effect)!==sha256ContentHash(prepared.effect))throw Error('posting_source_changed');
+   const latest=await metadata(draftId,connectionId,input.imageUploadActionId);
+   if(!latest.draft||!latest.connection||sha256ContentHash(preparePlatformLinkedInPost(latest.draft,latest.connection,currentLinkedInVersion(),Date.now(),effectId,latest.imageLineage,input.imageUploadActionId).effect)!==sha256ContentHash(prepared.effect))throw Error('posting_source_changed');
    await beforeSend();
    if(!isPostingEnabled()||currentLinkedInVersion()!==prepared.version)throw Error('posting_policy_changed');
    const signal=AbortSignal.timeout(15000),response=await fetch(POSTS_URL,{method:'POST',redirect:'error',signal,cache:'no-store',headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json','LinkedIn-Version':prepared.version,'X-Restli-Protocol-Version':'2.0.0'},body:prepared.body});

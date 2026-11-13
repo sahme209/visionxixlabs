@@ -1,3 +1,4 @@
+import {createPostImagePreviewService} from './postImagePreviewService';
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {bearerFromHeader} from '@/lib/desktop/desktopToken';
@@ -9,7 +10,7 @@ import {readPlatformAction} from './kernel';
 import {imageBindingForParent} from './imageStorageSql';
 import {createImageExecutionStore,type ImageExecutionResources} from './imageExecutionStore';
 import {createImageArtifactService,type ImageArtifactResources} from './imageArtifactService';
-import {imageWorkflowHistory,imageWorkflowPreview,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult} from './imageWorkflowContract';
+import {imageWorkflowHistory,imageWorkflowPreview,postImageWorkflowPreview,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult} from './imageWorkflowContract';
 interface RequestContext{headers:Headers;signal?:AbortSignal}
 interface Ports{repo:PlatformRepository;verifyDesktopToken(token:string):{sessionId:string};readAdminEmails():readonly string[];resources?:ImageArtifactResources;executionResources?:ImageExecutionResources}
 const fail=():never=>{throw Error('platform_image_workflow_unavailable')};
@@ -34,6 +35,7 @@ export async function createImageWorkflowRequestComposition(request:RequestConte
   readCredential:(b,i,s)=>guarded(()=>e.readCredential(b,i,s)),assertCredentialCurrent:(b,k,s)=>guarded(()=>e.assertCredentialCurrent(b,k,s)),
   readGrantKey:(b,s)=>guarded(()=>e.readGrantKey(b,s)),assertGrantKeyCurrent:(b,k,s)=>guarded(()=>e.assertGrantKeyCurrent(b,k,s)),
  }:undefined;
+ const postImages=createPostImagePreviewService(ports.repo,authority,resources,request.signal);
  const artifacts=createImageArtifactService(ports.repo,authority,resources,request.signal),execution=createImageExecutionStore(ports.repo,authority,executionResources,request.signal);
  async function inspect(id:string){platformActionId.parse(id);return ports.repo.transaction(async tx=>{
   await tx.lock(id);await authority.assertCurrent(tx,actor);const state=readPlatformAction(await tx.read(id));if(!tx.readImageBinding||!tx.imageStorage)return fail();
@@ -50,6 +52,12 @@ export async function createImageWorkflowRequestComposition(request:RequestConte
   return inspect(id);
  })}
  return Object.freeze({
+  previewPost:(id:string)=>guarded(async()=>{
+   const v=await postImages.preview(id,actor);try{
+    const s=v.state,action=platformInspectionSchema.parse({actionId:id,version:s.version,status:s.status,attemptCount:s.attemptCount,requesterUserId:s.requester.userId,reviewerUserId:s.reviewer?.userId??null,plan:s.plan,expired:false,effects:s.plan.effects.map(e=>({id:e.id,status:'not_started'})),authority:'history_only',sourceValidation:'not_checked'});
+    return postImageWorkflowPreview.parse({action,artifact:v.artifact,lineage:v.lineage,renderedPost:v.renderedPost,bytesBase64url:v.bytes.toString('base64url'),authority:'post_image_review_preview_only',executionAuthorized:false});
+   }finally{v.bytes.fill(0)}
+  }),
   initialize:(id:string,version:number,digest:string)=>execute('initialize',id,version,digest),
   put:(id:string,version:number,digest:string)=>execute('put',id,version,digest),
   intake:(selection:unknown,bytes:Uint8Array)=>guarded(async()=>imageArtifactIntakeResult.parse(await artifacts.intake(selection,bytes,actor))),

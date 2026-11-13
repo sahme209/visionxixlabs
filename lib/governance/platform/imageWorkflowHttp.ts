@@ -1,9 +1,9 @@
 import 'server-only';
 import {createHash} from 'node:crypto';
 import {readBoundedRequestJsonWithSize} from '@/lib/api/readBoundedRequestJson';
-import {imageWorkflowCommand,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult,imageWorkflowHistory,imageWorkflowPreview} from './imageWorkflowContract';
+import {imageWorkflowCommand,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult,imageWorkflowHistory,imageWorkflowPreview,postImageWorkflowPreview} from './imageWorkflowContract';
 import {createDefaultImageWorkflowRequestService} from './imageWorkflowRequestService';
-interface Service{initialize?(id:string,version:number,digest:string):Promise<unknown>;put?(id:string,version:number,digest:string):Promise<unknown>;intake(selection:unknown,bytes:Uint8Array):Promise<unknown>;lookupArtifact(reference:string):Promise<unknown>;prepare(artifactId:string,expiresAt:string,reference:string):Promise<unknown>;lookup(reference:string):Promise<unknown>;inspect(id:string):Promise<unknown>;preview(id:string):Promise<unknown>;review(id:string,version:number,digest:string):Promise<unknown>}
+interface Service{previewPost?(id:string):Promise<unknown>;initialize?(id:string,version:number,digest:string):Promise<unknown>;put?(id:string,version:number,digest:string):Promise<unknown>;intake(selection:unknown,bytes:Uint8Array):Promise<unknown>;lookupArtifact(reference:string):Promise<unknown>;prepare(artifactId:string,expiresAt:string,reference:string):Promise<unknown>;lookup(reference:string):Promise<unknown>;inspect(id:string):Promise<unknown>;preview(id:string):Promise<unknown>;review(id:string,version:number,digest:string):Promise<unknown>}
 const uncertain={ok:false,error:'platform_image_workflow_unconfirmed',recovery:'inspect_same_action_or_lookup_original_reference_no_automatic_retry'};
 function reply(body:unknown,status=200,max=128*1024){let text=JSON.stringify(body);if(new TextEncoder().encode(text).length>max){text=JSON.stringify(uncertain);status=409}return new Response(text,{status,headers:{'content-type':'application/json','cache-control':'private, no-store','x-content-type-options':'nosniff'}})}
 /** Prepared/unregistered. Exact image bytes occur only in deliberately requested
@@ -26,6 +26,10 @@ export function createImageWorkflowHttp(factory:(request:Request)=>Promise<Servi
    case 'lookup_artifact':{const value=imageArtifactLookupResult.parse(await service.lookupArtifact(c.requestReference));if(value.requestReference!==c.requestReference)throw Error('mismatch');data=value;break}
    case 'prepare':data={...imagePreparedResult.parse(await service.prepare(c.artifactId,c.expiresAt,c.requestReference)),requestReference:c.requestReference};break;
    case 'lookup':data={...imageActionLookupResult.parse(await service.lookup(c.requestReference)),requestReference:c.requestReference};break;
+   case 'preview_post_image':{
+    if(!service.previewPost)throw Error('unavailable');const value=postImageWorkflowPreview.parse(await service.previewPost(c.actionId)),bytes=Buffer.from(value.bytesBase64url,'base64url');
+    try{if(value.action.actionId!==c.actionId||bytes.length!==value.artifact.byteCount||bytes.toString('base64url')!==value.bytesBase64url||createHash('sha256').update(bytes).digest('hex')!==value.artifact.bytesDigest)throw Error('mismatch');data=value}finally{bytes.fill(0)}break;
+   }
    case 'preview':{
     const value=imageWorkflowPreview.parse(await service.preview(c.actionId)),bytes=Buffer.from(value.bytesBase64url,'base64url');
     try{if(value.action.actionId!==c.actionId||bytes.length!==value.artifact.byteCount||bytes.toString('base64url')!==value.bytesBase64url||createHash('sha256').update(bytes).digest('hex')!==value.artifact.bytesDigest)throw Error('mismatch');data=value}finally{bytes.fill(0)}break;
@@ -38,6 +42,6 @@ export function createImageWorkflowHttp(factory:(request:Request)=>Promise<Servi
    }
    default:{const value=imageWorkflowHistory.parse(await(c.operation==='inspect'?service.inspect(c.actionId):service.review(c.actionId,c.expectedVersion,c.planDigest)));if(value.action.actionId!==c.actionId||c.operation==='review'&&(value.action.plan.digest!==c.planDigest||value.action.status!=='approved'))throw Error('mismatch');data=value}
   }
-  request.signal.throwIfAborted();return reply({ok:true,data},200,c.operation==='preview'?3*1024*1024:128*1024);
+  request.signal.throwIfAborted();return reply({ok:true,data},200,(c.operation==='preview'||c.operation==='preview_post_image')?3*1024*1024:128*1024);
  }catch{return reply(uncertain,409)}
 }}
