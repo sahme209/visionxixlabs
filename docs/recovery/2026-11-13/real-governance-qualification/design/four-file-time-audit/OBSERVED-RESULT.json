@@ -1,0 +1,46 @@
+{
+  "approval": "call_102bfd0bf1fc41b88b7264ff38beeebe",
+  "finishedAt": "2026-11-13T23:00:47.835Z",
+  "failed": false,
+  "observations": [
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/shm.rs",
+      "path": "clock-bound/src/shm.rs",
+      "sha1": "7e52241b064f863d3d5a95f3d3339b9883c35871",
+      "bytes": 52818,
+      "filename": "PUBLIC-READ-1.txt",
+      "sha256": "188e700e1c7509c8a1a8de84fbb024b29a9bb9b23bf72fdf94dc6176c27a80b4"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/shm/reader.rs",
+      "path": "clock-bound/src/shm/reader.rs",
+      "sha1": "275608b099ac7dbed8d093857c3d8b717a1cea4d",
+      "bytes": 34950,
+      "filename": "PUBLIC-READ-2.txt",
+      "sha256": "b9f283a14ebecd5e9f90900f1fc3dae7183715002c52492fe9f9f1b9eaef9027"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/shm/tsc.rs",
+      "path": "clock-bound/src/shm/tsc.rs",
+      "sha1": "a1d4b959d7f30106dcd1c06091a8a4ea6598d78a",
+      "bytes": 3095,
+      "filename": "PUBLIC-READ-3.txt",
+      "sha256": "23088c8d5954e5dfc4e0ecf358793dc16625c6d8fe9041d04f823068080af617"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/vmclock/shm_reader.rs",
+      "path": "clock-bound/src/vmclock/shm_reader.rs",
+      "sha1": "b467c7dc654b9efdf02730bc4abf3982cb4dce26",
+      "bytes": 25743,
+      "filename": "PUBLIC-READ-4.txt",
+      "sha256": "ded34cbc6e24cee387eecd6fa7266170e9de8511d662949d337c2de2fc6a126e"
+    }
+  ],
+  "state": {
+    "requests": 4,
+    "stopped": false,
+    "complete": true,
+    "commit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777"
+  },
+  "scope": "public text only; no downloaded source execution or native qualification"
+}
