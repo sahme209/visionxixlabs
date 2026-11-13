@@ -1,0 +1,49 @@
+{
+  "format": 1,
+  "scope": "Approved local original-owner deployment/settings final-native-facts completion and forwarding",
+  "baseCommit": "32af396cbd255252b1405dacb637474aaa7a2622",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "03f712c9493534e9f97668ada48160e02e772c55e9fe41aa8137632028fade2e",
+    "lib/deploy/__tests__/platformDeployment.test.ts": "42c3e1f0196dbd420c0c8b57dc7a4992fa312834e9e99052d203689737a0f5eb",
+    "lib/deploy/__tests__/providerBoundary.test.ts": "cd5c08bb4e9c4553dff2dba050e009dcf0af39e1ea2b1922f060c9feb44b6a8b",
+    "lib/governance/platform/__tests__/deploymentJoinedTime.test.ts": "0a691e05f08a8879e077aad5d67dde13e9492f7ac5b4d71fe18e720310692201",
+    "lib/governance/platform/__tests__/deploymentNativeTransport.test.ts": "7fc23356871b9fa0463887bd61ac173638eae227bcba15f82767e3a65d001691",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "63fcc341374d1a2a99e3964848745ec861b4afcbd395a302f1ce30c345dd7020",
+    "lib/governance/platform/actionStore.ts": "82c862efbdd35d1583e41d5f67cb44fdd2c5f5ff11acad1bf2ae5cf6c4abc65f",
+    "lib/governance/platform/deploymentNativeTransport.ts": "2f09fe7d62172f9657797e7f30b6df6659b18e34eb6b7c6773dd674248689f66",
+    "lib/governance/platform/operations/__tests__/settingsJoinedTime.test.ts": "090785a65f1c4224776aa3b30e56c40f6000a6e60858fd07f456ceb53e5b96aa",
+    "lib/governance/platform/operations/__tests__/settingsVercelTransport.test.ts": "3bc5256c313c19243375ed69cd5f10addf0c0e42991c69806297707ccab097ed",
+    "lib/governance/platform/operations/settingsExecution.ts": "e145e3e4e9646197bc061e865428bb77133e59feb3a9e02522f9691ac05e7818",
+    "lib/governance/platform/operations/settingsTime.ts": "5a74e258726f642ec1738f454006dfc9d6cd79c1ae96fced65f9b23e09abe7f2",
+    "lib/governance/platform/operations/settingsVercelTransport.ts": "4f18a20d7dd8390d9da0d67203b6c09bb60974c1896abb1a500bae66b877fa57",
+    "lib/governance/platform/requestComposition.ts": "43e21e4276b391de76f6f22b853ce9d776c24cbd9e396ad586b100c9a22e922d"
+  },
+  "logsSha256": {
+    "work/final-native-owner-composed-valid-red.log": "beebbc51b8c735f4548f241f6027a07a418a758cf9ac87d56a1a5805ab7bca47",
+    "work/final-native-owner-final-focused.log": "1d0c5a3a6e8483a4302295d4dea25dacb9417b03abed34ae2af4d9a75795aea1",
+    "work/final-native-owner-final-types.log": "3fe8f1d4c885a796efc179822f03d514fb82bfaf636e5d7fdfa27dc0a0fdfa63",
+    "work/final-native-owner-final-ordinary.json": "058e4bb40621436bbc27d841accab19befe9a92304faf3d23183e0593e73d257",
+    "work/final-native-owner-demo.log": "803b8c1b8caac5bb2c0a40687228049f2d749e15751fc047e436b5ed3e9a2f5b"
+  },
+  "regressions": "Four composed failures against original source confirmed: deployment/settings acquire/send last-owner-wait revokes native profile while source windows stay unchanged. Fixed, plus missing-final native boundary cases and general original-proof forwarding.",
+  "focused": {
+    "passed": 154,
+    "files": 8
+  },
+  "types": "PASS exit0",
+  "ordinary": {
+    "numPassedTests": 19270,
+    "numFailedTests": 0,
+    "numPendingTests": 1143,
+    "numTotalTests": 20413,
+    "numFailedTestSuites": 0
+  },
+  "review": "Aggregate source review P2s reproduced/corrected; final exact-delta review no important remaining findings",
+  "actualSqlAndBuild": "NOT RUN for current correction. Prior229actualSQL and304pageofflinebuildPASS remain exact pre-fix source evidence; no permission reused.",
+  "remaining": "Fresh coherent conditional SQL/build batch with new authorization; mandatory-green PR checkpoint; real time/runtime/custody/fleet/human/provider and all master/owner/production gates",
+  "activation": "Incomplete/disabled; no actual provider/credential/production/native action or spending",
+  "demo": {
+    "passed": 15,
+    "wordingOnlyAfterOrdinary": true
+  }
+}

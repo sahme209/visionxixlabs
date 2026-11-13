@@ -43,14 +43,14 @@ it('checks the distinct prospective preview reader before releasing exact saved 
 });
 async function acquire(f:ReturnType<typeof fixture>,p:Awaited<ReturnType<ReturnType<typeof fixture>['claimed']>>){
  const {authorizeExecutionWindow}=await import('../executionTime');
- await authorizeExecutionWindow(f.clock,{expiresAt:at+30000},check=>Reflect.apply(Reflect.get(f.service,'beforeEffectCredential'),f.service,[p.child.proof,p.child.effect,actor,check]),f.controller.signal);
+ await authorizeExecutionWindow(f.clock,{expiresAt:at+30000},(check,finalFacts)=>Reflect.apply(Reflect.get(f.service,'beforeEffectCredential'),f.service,[p.child.proof,p.child.effect,actor,check,finalFacts]),f.controller.signal,async()=>{});
 }
 it('reserves the exact original target before a synthetic held-credential copy and permits that copy once',async()=>{const f=fixture(),p=await f.claimed();let copies=0;await acquire(f,p);expect(f.targets().size).toBe(1);copies++;await expect(acquire(f,p)).rejects.toThrow();expect(copies).toBe(1);expect(f.receipts()).toHaveLength(0)});
 it('unknown held-credential acquisition blocks a separate clone without inventing a provider request receipt',async()=>{const f=fixture(),p=await f.claimed();await acquire(f,p);await f.service.observeEffect(p.child.proof,'unknown');expect(f.rows().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});expect(f.receipts()).toHaveLength(0);const clone=await f.claimed();await expect(acquire(f,clone)).rejects.toThrow();expect(f.targets().size).toBe(1);await expect(acquire(f,p)).rejects.toThrow()});
 it('lost acquisition reservation acknowledgment grants no copy while preserving the original held uncertainty',async()=>{const f=fixture(),p=await f.claimed();f.loseAck();let copied=false;await expect((async()=>{await acquire(f,p);copied=true})()).rejects.toThrow();expect(copied).toBe(false);expect(f.targets().size).toBe(1);await expect(acquire(f,p)).rejects.toThrow();await f.service.observeEffect(p.child.proof,'unknown');expect(f.receipts()).toHaveLength(0);expect(f.rows().get(p.id)?.status).toBe('unknown')});
 it('cannot use the original final send proof without acknowledged private credential acquisition',async()=>{const f=fixture(),p=await f.claimed();await expect(f.service.beforeEffectSend(p.child.proof,p.child.effect,actor)).rejects.toThrow();expect(f.targets().size).toBe(0);await f.service.observeEffect(p.child.proof,'unknown');expect(f.receipts()).toHaveLength(0)});
 
-async function finalSend(f:ReturnType<typeof fixture>,p:Awaited<ReturnType<ReturnType<typeof fixture>['claimed']>>){const {authorizeExecutionWindow}=await import('../executionTime');await authorizeExecutionWindow(f.clock,{expiresAt:at+30000},check=>f.service.beforeEffectSend(p.child.proof,p.child.effect,actor,check),f.controller.signal)}
+async function finalSend(f:ReturnType<typeof fixture>,p:Awaited<ReturnType<ReturnType<typeof fixture>['claimed']>>){const {authorizeExecutionWindow}=await import('../executionTime');await authorizeExecutionWindow(f.clock,{expiresAt:at+30000},(check,finalFacts)=>f.service.beforeEffectSend(p.child.proof,p.child.effect,actor,check,finalFacts),f.controller.signal,async()=>{})}
 
 async function nativeRequestFixture(){
  const {createPlatformRequestComposition}=await import('../requestComposition'),{createDeploymentNativeTransport}=await import('../deploymentNativeTransport'),{createPlatformDeploymentExecutionHttp}=await import('../deploymentExecutionHttp'),f=fixture();
@@ -68,3 +68,18 @@ it('a duplicate HTTP invocation cannot share an in-flight child or acquire a sec
 it('a missing private runtime refuses before the approved parent is claimed',async()=>{const {createPlatformRequestComposition}=await import('../requestComposition'),f=fixture(),p=await f.prepare();await f.service.review(p.id,0,p.plan.digest,reviewer);const request=await createPlatformRequestComposition({headers:new Headers({authorization:'Bearer requester-session'}),signal:f.controller.signal},{repo:f.repo,clock:f.clock,verifyDesktopToken:token=>({sessionId:token}),readAdminEmails:()=>['requester@example.test','reviewer@example.test']});expect(()=>request.createDeploymentExecutionBinding(p.id)).toThrow();expect(f.rows().get(p.id)).toMatchObject({status:'approved',attemptCount:0})});
 
 it('rechecks the original held target and expiry after the final target lock waits',async()=>{const f=fixture(),p=await f.claimed();await acquire(f,p);f.targetWait.mockClear();f.targetWait.mockImplementation(async()=>{f.clock.mockResolvedValue({earliest:at+30000,latest:at+30001})});await expect(finalSend(f,p)).rejects.toThrow();expect(f.targetWait).toHaveBeenCalledOnce();expect(f.targets().size).toBe(1);await f.service.observeEffect(p.child.proof,'unknown');expect(f.receipts()).toHaveLength(0);expect(f.rows().get(p.id)?.status).toBe('unknown')});
+
+it.each(['acquire','send'] as const)('native deployment %s authority must survive the final original-owner wait',async phase=>{
+ const f=await nativeRequestFixture();let revoked=false,arm=false,q=0,c=0;const transaction=f.repo.transaction.bind(f.repo);
+ f.repo.transaction=fn=>transaction(tx=>fn({...tx,readPrincipal:async p=>{const row=await tx.readPrincipal(p);if(arm)revoked=true;return row}}));
+ f.qualified.mockImplementation(async()=>{if(revoked)throw Error('native profile revoked at last owner await');if(phase==='acquire'&&++q===2)arm=true});
+ f.credentialCurrent.mockImplementation(async()=>{if(revoked)throw Error('credential revoked');if(phase==='send'&&++c===2)arm=true});
+ expect((await f.http(f.request())).status).toBe(409);expect(f.fetch).not.toHaveBeenCalled();if(phase==='acquire')expect(f.copy).not.toHaveBeenCalled();else expect(f.copy).toHaveBeenCalledOnce();expect(f.rows().get(f.id)).toMatchObject({status:'unknown',attemptCount:1});expect((await f.http(f.request())).status).toBe(409);
+});
+
+it('general possessed request methods forward both original native-final callbacks',async()=>{
+ const f=await nativeRequestFixture();await f.requester.claim(f.id,1);const child=await f.requester.claimNextEffect(f.id);let finals=0;const {authorizeExecutionWindow}=await import('../executionTime');
+ await authorizeExecutionWindow(f.clock,{expiresAt:at+20000},async(check,finalFacts)=>{if(!check)throw Error('missing check');await f.requester.beforeEffectCredential(child.proof,child.effect,check,finalFacts)},f.controller.signal,async()=>{finals++});
+ await authorizeExecutionWindow(f.clock,{expiresAt:at+20000},(check,finalFacts)=>f.requester.beforeEffectSend(child.proof,child.effect,check,finalFacts),f.controller.signal,async()=>{finals++});
+ expect(finals).toBe(2);expect(f.copy).not.toHaveBeenCalled();expect(f.fetch).not.toHaveBeenCalled();await f.requester.observeEffect(child.proof,'unknown');expect(f.rows().get(f.id)).toMatchObject({status:'unknown',attemptCount:1});
+});

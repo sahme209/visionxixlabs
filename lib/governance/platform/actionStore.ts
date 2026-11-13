@@ -345,7 +345,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     const key=nativeDeploymentKey(effect);await tx.lockDeploymentTarget(key);await tx.assertDeploymentTargetAdmission(key);const previous=await tx.readDeploymentTarget(key);
     deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);
     if(previous)await tx.replaceDeploymentTarget(previous.version,deployment);else await tx.insertDeploymentTarget(deployment);
-    await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor,undefined,nativeCheck);if(finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
+    await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor,undefined,nativeCheck);if(effect.kind==='deployment.vercel'&&typeof finalNativeFacts!=='function')return fail();if(finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
    });
    if(observations.get(proof)!==binding||effect.kind==='deployment.vercel'&&!deployment)return fail();binding.deployment=deployment;binding.credentialGranted=true;
   },
@@ -398,7 +398,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     }
     await authority.assertFinalSend?.(tx,effect);
     if(effect.kind==='deployment.vercel'||(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete')&&nativeCheck!==undefined)await timely(tx,state,actor,undefined,nativeCheck);
-    if((effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete')&&finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
+    if(effect.kind==='deployment.vercel'&&typeof finalNativeFacts!=='function')return fail();if((effect.kind==='deployment.vercel'||effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete')&&finalNativeFacts)await finalNativeFacts();signal?.throwIfAborted();
    });
    if(observations.get(proof)!==binding)fail();
    binding.deployment=deployment;binding.sendGranted=true;

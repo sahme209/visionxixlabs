@@ -25,7 +25,7 @@ function context(raw:unknown):Readonly<SettingsTimeContext>{
  * No Date/DB fallback, cached interval or new capability is installed. */
 export function createSettingsTimePolicy(source:SettingsTimeEvidenceSource,timing?:SettingsTiming){
  const read=source.readTimeWindow?.bind(source),clock=timing?.clock,signal=timing?.signal;
- return async<T>(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown,afterTime:()=>Promise<T>,nativeCheck?:ExecutionTimeCheck):Promise<T>=>{
+ return async<T>(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown,afterTime:()=>Promise<T>,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<T>=>{
   try{
    if(typeof clock!=='function'||typeof read!=='function'||!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();
    const principals=people.map(p=>platformPrincipalSchema.parse(p));if(!principals.length)return fail();
@@ -36,7 +36,7 @@ export function createSettingsTimePolicy(source:SettingsTimeEvidenceSource,timin
    else await assertPlatformParticipantsTime(tx,principals,clock,restriction,signal);signal.throwIfAborted();
    const result=await afterTime();signal.throwIfAborted();
    const after=window.parse(await read(tx,expected));signal.throwIfAborted();
-   if(after.manifestDigest!==evidence.manifestDigest||after.profileId!==evidence.profileId||after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();return result;
+   if(after.manifestDigest!==evidence.manifestDigest||after.profileId!==evidence.profileId||after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();if(finalNativeFacts){if(typeof nativeCheck!=='function')return fail();await finalNativeFacts();signal.throwIfAborted()}return result;
   }catch{return fail()}
  };
 }

@@ -40,8 +40,8 @@ export function createDeploymentNativeTransport(ports:Ports):Readonly<Deployment
    if(typeof clock!=='function'||!(original instanceof AbortSignal)||typeof qualified!=='function'||typeof read!=='function'||typeof current!=='function'||typeof beforeCredential!=='function'||typeof beforeSend!=='function')return fail();
    const signal=AbortSignal.any([original,controller.signal]);signal.throwIfAborted();const effect=exactRequest(raw,body);
    async function authorize(window:ExecutionTimeWindow,owner:ExecutionTimeAuthorization,post:()=>Promise<void>){
-    let active=true,started=false,complete=false,invalid=false;
-    try{await authorizeExecutionWindow(clock,window,check=>{if(!check)return fail();return owner(restriction=>{const pending=(async()=>{try{if(!active||started)return fail();started=true;await check(restriction);signal.throwIfAborted();await post();signal.throwIfAborted();if(!active)return fail();complete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending})},signal);if(!complete||invalid)return fail()}finally{active=false}
+    let active=true,started=false,complete=false,invalid=false,finalStarted=false,finalComplete=false;
+    try{await authorizeExecutionWindow(clock,window,(check,last)=>{if(!check||!last)return fail();return owner(restriction=>{const pending=(async()=>{try{if(!active||started)return fail();started=true;await check(restriction);signal.throwIfAborted();await post();signal.throwIfAborted();if(!active)return fail();complete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending},()=>{const pending=(async()=>{try{if(!active||finalStarted||!complete)return fail();finalStarted=true;await last();if(!active)return fail();finalComplete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending})},signal,post);if(!complete||!finalComplete||invalid)return fail()}finally{active=false}
    }
    const expired=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{controller.abort();reject(Error('platform_deployment_native_unavailable'))},15000)});
    return await Promise.race([expired,(async()=>{

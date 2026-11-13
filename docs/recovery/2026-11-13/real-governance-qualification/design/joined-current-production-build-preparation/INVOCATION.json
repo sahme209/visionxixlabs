@@ -1,0 +1,7 @@
+{
+  "approval": "call_8a662783648c4d158a4a13df81410f3c",
+  "startedAt": "2026-11-13T21:59:07.433354+00:00",
+  "packetSha256": "e2f1c67845b3a450b8dfd021431440845da595364f836c7e56d75afdc15dda42",
+  "sourceCommit": "260d76407bcae72a185f21315d71ec088e900229",
+  "authority": "ONE invocation consumed at start; no retry"
+}

@@ -760,8 +760,8 @@ function settingsFixtureExecutionTransport(transport:FixtureTransport,timing:Set
  // Legacy simulated sends still consume the actual owner's time handshake.
  // No production transport receives this synthetic fixture adapter.
  return {...timing,async send(binding,value,beforeSend,beforeCredential){
-  await authorizeExecutionWindow(timing.clock,{expiresAt:Date.parse(binding.expiresAt)},beforeCredential,signal);
-  return transport.send(binding,value,async()=>authorizeExecutionWindow(timing.clock,{expiresAt:Date.parse(binding.expiresAt)},beforeSend,signal),beforeCredential);
+  await authorizeExecutionWindow(timing.clock,{expiresAt:Date.parse(binding.expiresAt)},beforeCredential,signal,async()=>{});
+  return transport.send(binding,value,async()=>authorizeExecutionWindow(timing.clock,{expiresAt:Date.parse(binding.expiresAt)},beforeSend,signal,async()=>{}),beforeCredential);
  }};
 }
 

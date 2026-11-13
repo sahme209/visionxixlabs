@@ -134,3 +134,11 @@ it('refuses paired possession lost in the last settings source-window read',asyn
  f.source.readTimeWindow.mockImplementation(async(_tx,c)=>{if(++reads===2)request.headers.delete('authorization');return {manifestDigest:c.manifestDigest,profileId:c.profileId,notBefore:at-1000,expiresAt:at+60000}});
  await expect(service.preview(p.id)).rejects.toThrow();expect(f.parents().get(p.id)?.status).toBe('proposed');
 });
+
+it.each(['acquire','send'] as const)('native settings %s authority must survive the last owner source-window read',async phase=>{
+ const f=fixture(),p=await f.executable(),n=f.native();let revoked=false,arm=false,q=0,c=0;const original=f.source.readTimeWindow.getMockImplementation()!;
+ f.source.readTimeWindow.mockImplementation(async(tx,context)=>{const result=await original(tx,context);if(arm)revoked=true;return result});
+ n.qualified.mockImplementation(async()=>{if(revoked)throw Error('native profile revoked at last source window');if(phase==='acquire'&&++q===2)arm=true});
+ n.credentialCurrent.mockImplementation(async()=>{if(revoked)throw Error('native credential revoked');if(phase==='send'&&++c===2)arm=true});
+ await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(n.fetch).not.toHaveBeenCalled();if(phase==='acquire')expect(n.credential).not.toHaveBeenCalled();else expect(n.credential).toHaveBeenCalledOnce();expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
+});

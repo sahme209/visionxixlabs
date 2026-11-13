@@ -32,17 +32,14 @@ export function createSettingsVercelTransport(ports:Ports){
  try{
   if(typeof clock!=='function'||!(parentSignal instanceof AbortSignal)||typeof credentialCurrent!=='function'||typeof beforeCredential!=='function')return unknown();signal.throwIfAborted();
   async function authorizeNative(window:ExecutionTimeWindow,owner:ExecutionTimeAuthorization,afterCheck:()=>Promise<void>){
-   let active=true,started=false,completed=false,invalid=false;
+   let active=true,started=false,completed=false,invalid=false,finalStarted=false,finalCompleted=false;
    try{
-    await authorizeExecutionWindow(clock!,window,check=>{
-     if(!check)throw Error('unavailable');return owner(restriction=>{
-      const pending=(async()=>{try{if(!active||started)throw Error('unavailable');started=true;await check(restriction);signal.throwIfAborted();await afterCheck();signal.throwIfAborted();if(!active)throw Error('unavailable');completed=true}catch{invalid=true;throw Error('unavailable')}})();
-      // An owner that neglects its await cannot leave an unhandled rejection
-      // or use primitive-clock completion to skip later native qualification.
-      void pending.catch(()=>{});return pending;
-     });
-    },signal);
-    if(!completed||invalid)throw Error('unavailable');
+    await authorizeExecutionWindow(clock!,window,(check,last)=>{
+     if(!check||!last)throw Error('unavailable');return owner(restriction=>{
+      const pending=(async()=>{try{if(!active||started)throw Error('unavailable');started=true;await check(restriction);signal.throwIfAborted();await afterCheck();signal.throwIfAborted();if(!active)throw Error('unavailable');completed=true}catch{invalid=true;throw Error('unavailable')}})();void pending.catch(()=>{});return pending;
+     },()=>{const pending=(async()=>{try{if(!active||finalStarted||!completed)throw Error('unavailable');finalStarted=true;await last();if(!active)throw Error('unavailable');finalCompleted=true}catch{invalid=true;throw Error('unavailable')}})();void pending.catch(()=>{});return pending});
+    },signal,afterCheck);
+    if(!completed||!finalCompleted||invalid)throw Error('unavailable');
    }finally{active=false}
   }
   const expired=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});

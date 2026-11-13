@@ -63,8 +63,8 @@ export async function createPlatformRequestComposition(request:{headers:Headers;
    const timing={clock:guardedClock,signal:request.signal},transport=deploymentFactory({...timing,actionId}),beforeCredential=checks?.beforeCredential,beforeSend=checks?.beforeSend,beforeResult=checks?.beforeResult;
    const binding=bindPlatformDeploymentExecution({actorUserId:principal.userId,
     async claimNextEffect(id){assertPossession();const result=await store.claimNextEffect(id,principal);assertPossession();return result},
-    async beforeEffectCredential(proof,effect,check){assertPossession();await beforeCredential?.();assertPossession();await store.beforeEffectCredential(proof,effect,principal,check);assertPossession()},
-    async beforeEffectSend(proof,effect,check){assertPossession();await beforeSend?.();assertPossession();await store.beforeEffectSend(proof,effect,principal,check);assertPossession()},
+    async beforeEffectCredential(proof,effect,check,finalFacts){assertPossession();await beforeCredential?.();assertPossession();await store.beforeEffectCredential(proof,effect,principal,check,finalFacts);assertPossession()},
+    async beforeEffectSend(proof,effect,check,finalFacts){assertPossession();await beforeSend?.();assertPossession();await store.beforeEffectSend(proof,effect,principal,check,finalFacts);assertPossession()},
     observeEffect:store.observeEffect,
     async beforeEffectResult(proof){assertPossession();await beforeResult?.();assertPossession();await store.beforeEffectResult(proof,principal);assertPossession()},
    },actionId,transport,timing);assertPossession();return binding;
@@ -87,8 +87,8 @@ export async function createPlatformRequestComposition(request:{headers:Headers;
   async review(id:string,version:number,planDigest:string){assertPossession();await store.review(id,version,planDigest,principal)},
   async claim(id:string,version:number){assertPossession();await store.claim(id,version,principal)},
   async claimNextEffect(id:string){assertPossession();return store.claimNextEffect(id,principal)},
-  async beforeEffectSend(proof:object,effect:PlatformEffect,check?:ExecutionTimeCheck){assertPossession();await store.beforeEffectSend(proof,effect,principal,check)},
-  async beforeEffectCredential(proof:object,effect:PlatformEffect,check:ExecutionTimeCheck){assertPossession();await store.beforeEffectCredential(proof,effect,principal,check)},
+  async beforeEffectSend(proof:object,effect:PlatformEffect,check?:ExecutionTimeCheck,finalFacts?:()=>Promise<void>){assertPossession();await store.beforeEffectSend(proof,effect,principal,check,finalFacts)},
+  async beforeEffectCredential(proof:object,effect:PlatformEffect,check:ExecutionTimeCheck,finalFacts?:()=>Promise<void>){assertPossession();await store.beforeEffectCredential(proof,effect,principal,check,finalFacts)},
   // Private transport observation may outlive session expiry after a send.
   // No public endpoint may accept a caller's invented outcome/proof.
   observeEffect:store.observeEffect,
