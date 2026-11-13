@@ -1,0 +1,64 @@
+{
+  "observedAt": "2026-11-13T17:34:39.579079+00:00",
+  "parentCommit": "560d47208776455208a31ee22a3e163db3af2acb",
+  "scope": "approved local settings preparation/artifact/preview/review/claim timing; executor/native credential join remains OPEN",
+  "sourceSha256": {
+    "lib/demo/demoScenarios.ts": "eb717a91316f7d781beb50b0768a41cf7484b1fb88c350a11352860df4b23246",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "4fc8993c7fed419f4f74317f8754044f22d973addd8f43756f98183f690e520e",
+    "lib/governance/platform/operations/__tests__/settingsArtifactStore.test.ts": "65309f95bfdf42b8aa0e1d65d4a31e4c0e1bd305f419f27987253a7d604aa5b5",
+    "lib/governance/platform/operations/settingsArtifactRequest.ts": "d9e7a0a3776fe8a3818a2a435d2b71e4aa546fc475ea946794a36f735e251bea",
+    "lib/governance/platform/operations/settingsArtifactStore.ts": "b07dd809760c1fbe7468e3de0be2bfe66f55e7414f18c302a2dbfc076f70e2f4",
+    "lib/governance/platform/operations/settingsPreparation.ts": "ee98e45664a66e402d7b9e6a9b4338ba845abc3b8dcb06de10c4f510de02b048",
+    "lib/governance/platform/operations/settingsRequestService.ts": "7484f1cdf749896dbbf4d31602d12fa9d8a3e16a40560d8ceab0efad270b9244",
+    "lib/governance/platform/operations/settingsTime.ts": "febc9ad40ad122c1969d7638643b35d6b3d9514c967f08f7e6a653d4b9d2d0d5",
+    "lib/governance/platform/operations/__tests__/settingsJoinedTime.test.ts": "9872c846b53687b21d11041476b678f8f2058ac7b71f24ad2b405999900aebab"
+  },
+  "ordinary": {
+    "numPassedTests": 19085,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20227,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "ordinaryScope": "final application timing source and tests; precedes only addition of internal-only walkthrough entry",
+  "relevantSubset": {
+    "files": 4,
+    "passed": 32,
+    "includedInOrdinary": true
+  },
+  "afterWalkthroughEdit": {
+    "files": 2,
+    "passed": 30,
+    "scope": "demo registry and composed settings tests"
+  },
+  "strictRootTypes": "passed after internal walkthrough edit",
+  "independentReview": "existing final source reviewer reports no important finding in this settings decision/custody slice; no execution",
+  "actualSql": "NOT RUN; opt-in PG definitions explicitly wrapped with synthetic clock/source windows only",
+  "simulated": [
+    "people/session/role currentness",
+    "source/profile validity evidence and clock",
+    "memory rows/serialized transaction rollback",
+    "private key supplier"
+  ],
+  "actualLocal": [
+    "settings preparation and artifact-store workflow",
+    "AES-GCM envelope kernel",
+    "private request composition and metadata projections"
+  ],
+  "effects": {
+    "realClockKeyCredentialProvider": false,
+    "actualSql": false,
+    "nativeProfileQualification": false,
+    "resourceInstallSigning": false,
+    "productionSchemaFlagDeploymentEnablement": false,
+    "push": false,
+    "spending": false
+  },
+  "remaining": [
+    "settings executor final-send native credential/source/profile/lifetime join",
+    "nongrowth Vercel deployment/source acquisition and whole transitive/current-participant review",
+    "real native clock/custody/fleet/SQL/genuine human/provider qualification",
+    "frozen build/green PR and owner production gates"
+  ]
+}

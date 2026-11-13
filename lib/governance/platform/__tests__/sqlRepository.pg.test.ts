@@ -656,8 +656,16 @@ it.skipIf(!enabled)('requires qualified prior issued-credential closure and pres
  }finally{vi.unstubAllEnvs()}
 });
 
-import {createSettingsArtifactStore} from '../operations/settingsArtifactStore';
+import {createSettingsArtifactStore as createSettingsArtifactStoreActual} from '../operations/settingsArtifactStore';
 import {compileOperationalSettingsPlan,openSettingsArtifact,deriveSettingsArtifactBinding} from '../operations/settingsArtifact';
+// Synthetic time/evidence in opt-in isolated SQL definitions only. This does
+// not qualify the unavailable native/default source or authorize a SQL run.
+function settingsFixtureTiming(){return {clock:async()=>{const now=Date.now();return {earliest:now,latest:now}},signal:new AbortController().signal}}
+function settingsFixtureSource<T extends import('../operations/settingsTime').SettingsTimeEvidenceSource>(source:T){const start=Date.now()-60000,end=Date.now()+300000;return {...source,readTimeWindow:source.readTimeWindow??(async(_tx:unknown,context:{manifestDigest:string;profileId:string})=>({...context,notBefore:start,expiresAt:end}))}}
+function createSettingsArtifactStore(...[repo,authority,source]:Parameters<typeof createSettingsArtifactStoreActual>){return createSettingsArtifactStoreActual(repo,authority,settingsFixtureSource(source),settingsFixtureTiming())}
+function createSettingsPreparationStore(...[repo,authority,source]:Parameters<typeof createSettingsPreparationStoreActual>){return createSettingsPreparationStoreActual(repo,authority,settingsFixtureSource(source),settingsFixtureTiming())}
+function createSettingsArtifactRequestComposition(...[request,ports]:Parameters<typeof createSettingsArtifactRequestCompositionActual>){const timing=settingsFixtureTiming();return createSettingsArtifactRequestCompositionActual({...request,signal:request.signal??timing.signal},{...ports,clock:timing.clock,source:settingsFixtureSource(ports.source),preparationSource:ports.preparationSource?settingsFixtureSource(ports.preparationSource):undefined})}
+
 it.skipIf(!enabled)('stores one exact private settings envelope in actual SQL and excludes duplicate/reviewed replacements',async()=>{
  await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']);
  const manifest=compileOperationalManifest({format:1,scope:'platform',kind:'settings.vercel',artifactProfileId:'synthetic-profile',expiresAt:new Date(Date.now()+60000).toISOString(),target:{projectId:'synthetic-project',teamId:'synthetic-team'},settings:[{name:'SYNTHETIC',environment:'production',type:'encrypted',sensitivity:'secret',artifactId:'platform_artifact_'+randomUUID(),current:{kind:'absent',receiptId:'platform_evidence_'+randomUUID()}}]});
@@ -674,7 +682,7 @@ it.skipIf(!enabled)('rolls back the actual private envelope when current authori
  await expect(store.save(id,0,actor,'synthetic')).rejects.toThrow('settings_artifact_unavailable');const rows=await db.$queryRawUnsafe('SELECT id FROM "PlatformSettingsArtifact" WHERE "actionId"=$1',id);expect(rows).toEqual([]);expect((await s.inspect(id,actor)).status).toBe('proposed');
 });
 
-import {createSettingsArtifactRequestComposition} from '../operations/settingsArtifactRequest';
+import {createSettingsArtifactRequestComposition as createSettingsArtifactRequestCompositionActual} from '../operations/settingsArtifactRequest';
 it.skipIf(!enabled)('binds private settings save and genuine independent review to actual HMAC sessions and SQL',async()=>{
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-settings-key-'.repeat(3));
  try{
@@ -717,7 +725,7 @@ it.skipIf(!enabled)('refuses a revoked write profile at the final settings send 
 
 import {createSettingsVercelTransport} from '../operations/settingsVercelTransport';
 
-import {createSettingsPreparationStore} from '../operations/settingsPreparation';
+import {createSettingsPreparationStore as createSettingsPreparationStoreActual} from '../operations/settingsPreparation';
 
 it.skipIf(!enabled)('recovers one immutable settings preparation reference without renewing or revalidating old source',async()=>{
  await identityFixtures();const repo=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),authority=createCurrentPlatformAuthority(()=>['requester@example.test','reviewer@example.test']),source={assertCurrent:vi.fn(async()=>{})},store=createSettingsPreparationStore(repo,authority,source),requestId=randomUUID();

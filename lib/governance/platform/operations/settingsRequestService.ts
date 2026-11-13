@@ -9,7 +9,7 @@ const unavailable=async():Promise<never>=>{throw Error('settings_source_qualific
  * signed-session SQL. New actions/custody/execution refuse unqualified sources.
  * No environment credential/key fallback or provider access. */
 export function createDefaultSettingsRequestService(request:Request){return createSettingsArtifactRequestComposition(request,{
- repo:createPlatformSqlRepository(prisma as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:readConfiguredPlatformAdmins,
- preparationSource:{assertCurrent:unavailable},
- source:{readManifest:(tx,id)=>tx.readSettingsManifest(id),assertCurrent:unavailable,readKey:unavailable},
+ repo:createPlatformSqlRepository(prisma as unknown as PlatformSqlDatabase),verifyDesktopToken,readAdminEmails:readConfiguredPlatformAdmins,clock:unavailable,
+ preparationSource:{assertCurrent:unavailable,readTimeWindow:unavailable},
+ source:{readManifest:(tx,id)=>tx.readSettingsManifest(id),assertCurrent:unavailable,readKey:unavailable,readTimeWindow:unavailable},
 })}

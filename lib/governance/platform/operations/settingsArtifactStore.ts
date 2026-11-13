@@ -1,3 +1,4 @@
+import {createSettingsTimePolicy,type SettingsTiming,type SettingsTimeEvidenceSource} from './settingsTime';
 import {settingsPhysicalTargetInput} from './settingsPlanInput';
 import {readSettingsResult} from './settingsResult';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -20,7 +21,7 @@ export interface SettingsArtifactTransaction extends PlatformTransaction{
  insertSettingsArtifact(artifactId:string,row:{binding:SettingsArtifactBinding;envelope:string;createdAt:number}):Promise<void>;
 }
 export interface SettingsArtifactRepository{transaction<T>(fn:(tx:SettingsArtifactTransaction)=>Promise<T>):Promise<T>}
-interface PrivateSource{
+interface PrivateSource extends SettingsTimeEvidenceSource{
  readManifest(tx:SettingsArtifactTransaction,actionId:string):Promise<unknown>;
  assertCurrent(tx:SettingsArtifactTransaction,binding:SettingsArtifactBinding):Promise<void>;
  /** Trusted private qualified custody supplier only. No environment fallback. */
@@ -35,7 +36,8 @@ function checkedRecord(raw:unknown,binding:SettingsArtifactBinding,earliest:numb
 /** Private preparation only. No decrypt/export, provider send or default supplier.
  * Repository implementation must provide transactional rollback and parent locks.
  * The injected authority checks actual current requester permissions/possession. */
-export function createSettingsArtifactStore(repo:SettingsArtifactRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:PrivateSource){
+export function createSettingsArtifactStore(repo:SettingsArtifactRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:PrivateSource,timing?:SettingsTiming){
+ const time=createSettingsTimePolicy(source,timing);
  return Object.freeze({async inspect(rawId:string,rawReader:PlatformPrincipal){
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
    await tx.lock(id);await authority.assertCurrent(tx,reader);const parent=readPlatformAction(await tx.read(id));if(parent.plan.effects.some(e=>e.kind!=='settings.vercel'))return fail();
@@ -49,13 +51,15 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
   try{const id=operationalWorkloadBinding.shape.actionId.parse(rawId),reader=platformPrincipalSchema.parse(rawReader);return await repo.transaction(async tx=>{
    await tx.lock(id);await authority.assertCurrent(tx,reader);const parent=readPlatformAction(await tx.read(id));if(parent.status!=='proposed')return fail();
    const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel')return fail();
-   const settings=[];
+   const sourceCurrent=async()=>{const settings=[];
    for(let index=0;index<manifest.settings.length;index++){
     const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,parent.requester);await source.assertCurrent(tx,binding);
     const row=await tx.readSettingsArtifact(binding.artifactId);if(row!==null)checkedRecord(row,binding,parent.updatedAt);await source.assertCurrent(tx,binding);
     const descriptor=manifest.settings[index];settings.push(Object.freeze({name:descriptor.name,environment:descriptor.environment,type:descriptor.type,sensitivity:descriptor.sensitivity,current:descriptor.current,artifactId:binding.artifactId,artifactStatus:row===null?'missing' as const:'saved' as const}));
    }
    await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();
+   return {settings,now};}
+   const before=await sourceCurrent();await time(tx,[parent.requester,reader],manifest);const after=await sourceCurrent();if(after.now<before.now)return fail();const settings=after.settings;
    return Object.freeze({actionId:id,planDigest:parent.plan.digest,version:parent.version,target:manifest.target,profileId:manifest.artifactProfileId,expiresAt:manifest.expiresAt,settings:Object.freeze(settings),reviewReady:settings.every(s=>s.artifactStatus==='saved'),authority:'review_preview_only' as const,executionAuthorized:false as const});
   })}catch{return fail()}
  },async save(rawId:string,index:number,rawActor:PlatformPrincipal,value:unknown){
@@ -64,11 +68,12 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
     await tx.lock(id);await authority.assertCurrent(tx,actor);
     const parent=readPlatformAction(await tx.read(id));if(parent.status!=='proposed')return fail();
     const binding=deriveSettingsArtifactBinding(id,parent,await source.readManifest(tx,id),index,actor);
-    async function current(){
+    const sourceCurrent=async()=>{
      await authority.assertCurrent(tx,actor);await source.assertCurrent(tx,binding);await authority.assertCurrent(tx,actor);
      const actual=readPlatformAction(await tx.read(id)),now=await tx.now();
      if(actual.status!=='proposed'||actual.version!==parent.version||actual.plan.digest!==parent.plan.digest||actual.requester.userId!==actor.userId||actual.requester.sessionId!==actor.sessionId||!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(binding.expiresAt))return fail();return now;
     }
+    async function current(){const before=await sourceCurrent();await time(tx,[actor],binding);const after=await sourceCurrent();if(after<before)return fail();return after}
     await current();if(await tx.readSettingsArtifact(binding.artifactId))return fail();
     const key=await source.readKey(tx,binding);await current();
     const envelope=sealSettingsArtifact(key,binding,value),createdAt=await current();
@@ -81,7 +86,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
    await tx.lock(id);await authority.assertCurrent(tx,actor);const parent=readPlatformAction(await tx.read(id));
    if(parent.status!=='approved'||parent.version!==version||parent.plan.digest!==planDigest||parent.requester.userId!==actor.userId||parent.requester.sessionId!==actor.sessionId||!parent.reviewer)return fail();
    const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel'||manifest.settings.some(s=>s.current.kind!=='absent'))return fail();const count=manifest.settings.length,reviewer=parent.reviewer;
-   async function current(){
+   const sourceCurrent=async()=>{
     await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);
     for(let index=0;index<count;index++){
      const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,actor);await source.assertCurrent(tx,binding);
@@ -89,6 +94,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
     }
     await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
    }
+   async function current(){const before=await sourceCurrent();await time(tx,[actor,reviewer],manifest);const after=await sourceCurrent();if(after<before)return fail();return after}
    const next=claimPlatformAction(parent,actor,await current());await tx.replace(id,version,next);await tx.event({actionId:id,kind:'claimed',state:next});await current();
    return Object.freeze({actionId:id,planDigest,status:next.status,version:next.version,attemptCount:next.attemptCount,authority:'claim_record_only' as const,executionAuthorized:false as const});
   })}catch{return fail()}
@@ -98,7 +104,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
     await tx.lock(id);await authority.assertCurrent(tx,reviewer);const parent=readPlatformAction(await tx.read(id));
     if(parent.status!=='proposed'||parent.version!==version||parent.plan.digest!==planDigest||parent.requester.userId===reviewer.userId)return fail();
     const manifest=readOperationalManifest(await source.readManifest(tx,id));if(manifest.kind!=='settings.vercel')return fail();const settingCount=manifest.settings.length;
-    async function current(){
+    const sourceCurrent=async()=>{
      await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);
      for(let index=0;index<settingCount;index++){
       const binding=deriveSettingsArtifactBinding(id,parent,manifest,index,parent.requester);
@@ -107,6 +113,7 @@ export function createSettingsArtifactStore(repo:SettingsArtifactRepository,auth
      }
      await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;
     }
+    async function current(){const before=await sourceCurrent();await time(tx,[parent.requester,reviewer],manifest);const after=await sourceCurrent();if(after<before)return fail();return after}
     const next=approvePlatformAction(parent,{...reviewer,planDigest},await current());await tx.replace(id,version,next);await tx.event({actionId:id,kind:'approved',state:next});await current();
     return Object.freeze({actionId:id,planDigest,status:next.status,version:next.version,authority:'review_only' as const,executionAuthorized:false as const});
    });

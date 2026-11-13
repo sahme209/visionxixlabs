@@ -1,3 +1,4 @@
+import type {ExecutionTimeSource} from '../executionTime';
 import {createSettingsExecutor} from './settingsExecution';
 import {createSettingsPreparationStore,type SettingsPreparationSource} from './settingsPreparation';
 import 'server-only';
@@ -7,6 +8,7 @@ import {assertCurrentPlatformPrincipal} from '../currentAuthority';
 import {createSettingsArtifactStore,type SettingsArtifactRepository} from './settingsArtifactStore';
 interface Ports{
  repo:SettingsArtifactRepository;
+ clock?:ExecutionTimeSource;
  preparationSource?:SettingsPreparationSource;
  execution?:{assertWriteProfile:Parameters<typeof createSettingsExecutor>[2]['assertWriteProfile'];transport:Parameters<typeof createSettingsExecutor>[3]};
  source:Parameters<typeof createSettingsArtifactStore>[2];
@@ -23,8 +25,9 @@ export async function createSettingsArtifactRequestComposition(request:{headers:
   if(p.sessionId!==sessionId||session()!==sessionId)return fail();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);if(session()!==sessionId)return fail();return p;
  });
  const possessed=()=>{if(session()!==principal.sessionId)return fail()};
- const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source);
- const preparation=ports.preparationSource?createSettingsPreparationStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.preparationSource):null;
+ const clock=ports.clock,timing={clock:async(signal:AbortSignal)=>{possessed();if(typeof clock!=='function')return fail();const value=await clock(signal);possessed();return value},signal:request.signal};
+ const store=createSettingsArtifactStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.source,timing);
+ const preparation=ports.preparationSource?createSettingsPreparationStore(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},ports.preparationSource,timing):null;
  const executor=ports.execution?createSettingsExecutor(ports.repo,{async assertCurrent(tx,p){possessed();await assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails);possessed()}},{...ports.source,assertWriteProfile:ports.execution.assertWriteProfile},ports.execution.transport):null;
  return Object.freeze({
   async executeNext(id:string,effectIndex:number){possessed();if(!executor)return fail();return executor.executeNext(id,principal,effectIndex)},
