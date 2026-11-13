@@ -1,0 +1,9 @@
+import {it,expect} from 'vitest';
+import {writeFileSync} from 'node:fs';
+import {parseSyntheticCodingPricing,calculateCodingQuote} from "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/lib/ai/codingRequestQuote.ts";
+it('measures existing synthetic quote sensitivity without a model call',()=>{
+ const pricing=parseSyntheticCodingPricing({schema:'synthetic_coding_pricing_v1',model:'synthetic/coding-cost-study',currency:'USD',unit:'nano_dollars_per_token',inputRate:'3000',outputRate:'15000',requestFee:'0',ancillaryFee:'0',route:'anthropic',region:'default',retrievedAt:1,expiresAt:1000000});
+ const rows=[256,512,1024,2048,4096,8192].map(inputTokens=>({inputTokens,...calculateCodingQuote(pricing,inputTokens)}));
+ expect(rows.every(r=>r.reservedCents>=r.providerCents&&Number.isSafeInteger(r.reservedCents))).toBe(true);
+ writeFileSync("/private/tmp/axiom-quote-assessment-_mzwrqc6/measurement.json",JSON.stringify({scope:'Synthetic quote arithmetic only, no tokenizer/provider/inference or invoice',fixedOutputBound:4096,ratesAreSynthetic:true,inputRate:'3000',outputRate:'15000',rows},null,2));
+});

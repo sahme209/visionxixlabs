@@ -62,3 +62,7 @@ Evaluate replacing unnecessary inference with approved deterministic/retrieval/t
 ### November12 existing-context measurement
 
 Source-bound local measurement of existing retrieval/top-five prompt assembly is recorded in ../research/2026-11-12/retrieval-context-byte-measurement.md. Six public questions measure UTF-8bytes only, against a hypothetical all-entry prompt; no current-route improvement, model-token/cost reduction or quality equivalence is claimed. Retain existing facilities before adopting a library. No model/provider/database/billing/production action occurred.
+
+
+### Gap-time coding token-efficiency assessment — no adoption
+Source-bound research and one synthetic arithmetic measurement are saved in docs/research/2026-11-12/coding-quote-efficiency-assessment.md/json/procedure.txt. Current exact-request/quote, cache:none, model-currentness and atomic allowance facilities should be reused before adding libraries. In one invented-rate example, halving4096input tokens to2048changes a fixed4096-output reservation18→17cents, not50%; this is neither production pricing, actual usage/cost nor measured savings. No tokenizer/provider/model/customer read, dependency, runtime, billing or production change. Quality-equivalent real model benchmarks and all adoption gates remain open. Primary image protocol consent/real qualification remains pending; full goal stays active.
