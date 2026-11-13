@@ -1,5 +1,7 @@
 # Proposed bounded live preflight — awaiting fresh owner approval
 
+**Later disposition:** the owner approved this exact sequence. It stopped after the first metadata call because the existing selector could not verify the response; no detail, Neon or SQL call occurred. See LIVE-AUTHORIZATION-2026-11-13.json and LIVE-OBSERVED-RESULT.json. The permission is consumed, not pending or reusable. The proposal below preserves the reviewed scope and does not authorize another attempt.
+
 The new query is `1-PRECHECK-READ-ONLY.sql`, SHA256 `23a6718683fba5baff445e24ab1f648ca8c03e56d478594e2fe37a6d83dc1098`. Its schema/inventory checks and independent source review are recorded separately. It has not been executed. Historical provider/credential allowances are consumed.
 
 ## Exact proposed scope: at most five calls, no retries

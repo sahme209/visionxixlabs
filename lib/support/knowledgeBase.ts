@@ -14,7 +14,7 @@ import headingIndex from "@/lib/docs/guide-heading-index.json";
 import docsCorpus from "./docsCorpus.json";
 import { FAQ_GROUPS } from "./faqData";
 
-export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-11";
+export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-13";
 
 
 export interface KnowledgeEntry {
@@ -34,7 +34,7 @@ const FACTS: readonly KnowledgeEntry[] = [
     body: "Yes. Add Axiom as an MCP server (/api/v1/mcp) with an API key that has governance scopes. Before a consequential action the agent asks Axiom; deploys, merges, infrastructure, migrations and secrets wait for a workspace admin who did not create the key; production secret reads and deletes are refused. Agents report their own actions, so this is a cooperative control point, not a sandbox.",
     keywords: ["mcp", "cursor", "claude", "codex", "copilot", "agent", "agents", "gateway", "govern", "approval"] },
   { id: "fact-ci-gate", kind: "fact", topic: "Agents", href: "/docs/approval-workflow", title: "How do I gate a CI deploy on an approval?",
-    body: "Use the vxl CLI: `vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh`. It exits 0 only when policy allows the action or a person approves it, and exits 1 when it is denied, rejected or still waiting at the timeout.",
+    body: "Use the vxl CLI: `vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh`. It exits 0 only when policy allows the action or a person approves it, and exits 1 when it is denied, rejected or still waiting at the timeout. The vxl ask check is cooperative: it does not deploy or change GitHub or AWS permissions. The workflow's own deploy.sh runs only if that check succeeds.",
     keywords: ["ci", "pipeline", "github actions", "deploy", "cli", "vxl", "gate"] },
   { id: "fact-trust-tools", kind: "fact", topic: "Security", href: "/security", title: "Can I prove the audit log was not edited?",
     body: "Owners and admins can seal the audit log on Trust tools. Each seal fingerprints a window of events and links to the previous seal; verifying shows any edited, deleted or inserted event or a broken link. This is tamper evidence, not prevention, so keep the latest fingerprint outside Axiom.",

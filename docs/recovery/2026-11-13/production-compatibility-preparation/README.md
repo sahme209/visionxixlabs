@@ -1,6 +1,6 @@
 # Current-source production compatibility preparation
 
-**Prepared only. No database, Vercel credential, provider or network access occurred.** The goal's first unresolved release gate remains the November 11 target/schema discrepancy. This preparation replaces neither that historical observation nor its consumed permissions.
+**The SQL remains unexecuted.** Preparation used no provider or network access. A later owner-approved sequence stopped after one Vercel metadata call: the reviewed selector could not verify the returned representation. No decrypted detail, Neon or database call occurred; see LIVE-OBSERVED-RESULT.json. That allowance is consumed. The goal's first unresolved release gate remains the November 11 target/schema discrepancy; its cause is not established.
 
 ## Why the old query is insufficient for the next review
 

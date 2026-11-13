@@ -1,0 +1,12 @@
+{
+  "authorization": "Owner approved the bounded read-only check in this chat",
+  "status": "consumed_stopped_after_metadata",
+  "maximumProviderCalls": 5,
+  "providerCallsObserved": 1,
+  "querySha256": "23a6718683fba5baff445e24ab1f648ca8c03e56d478594e2fe37a6d83dc1098",
+  "noRetries": true,
+  "noWrites": true,
+  "privateTraceRetentionConsent": true,
+  "detailReadPerformed": false,
+  "sqlPerformed": false
+}

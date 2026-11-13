@@ -12,6 +12,7 @@ export default function AskAxiomDocsPage() {
   <Callout variant="warning" title="Never share secrets">Do not paste passwords, API keys or tokens into the chat. Messages that look like secrets are refused and removed from the chat history in your browser. If you shared a real secret, rotate it.</Callout>
   <DocSection id="answers" kicker="01" title="Answers from the docs">
    <p>Answers come from the public FAQ, documentation and reviewed product facts, and always list their sources. No AI model is used for these answers. When Ask Axiom is not confident, it shows the closest guides and offers to send your question to support.</p>
+   <p>Try a plain question such as <em>How do I set up GCP?</em> or <em>How do I block a GitHub Actions deploy until someone approves?</em> The GCP answer explains preview availability; it does not enable a live connection. CI guidance explains a cooperative workflow check, not an approval, deployment or change to GitHub or AWS permissions.</p>
   </DocSection>
   <DocSection id="ai" kicker="02" title="Fuller AI answers">
    <p>Signed-in members of a workspace with AI turned on can choose <strong>Get a fuller AI answer</strong>. It uses prepaid AI credits and the same governed AI path as the Agent. The model sees only the retrieved public passages and must cite them; otherwise the docs answer is kept.</p>
