@@ -1,0 +1,835 @@
+{
+  "preparedOnly": true,
+  "sourceHead": "c22364d92af48cdbde7ea18ffdbe6254cb2e3fd3",
+  "schemaPath": "prisma/schema.prisma",
+  "schemaSha256": "436c0991b65b878aba7754408b7d6bc5afeaf78e4e4f7d52333cc0cec31b6cf4",
+  "baselineSourceCommit": "0caaaaab6c809f2188d1a4c8fdd64980e6ef35f0",
+  "baselineIsLastRecordedOwnerDeploymentNotFreshlyVerified": true,
+  "modelCount": 195,
+  "baselineModelCount": 175,
+  "platformProposedModelCount": 20,
+  "platformProposedTables": [
+    "PlatformCustodianBarrier",
+    "PlatformCustodianIntent",
+    "PlatformDeploymentRequestReceipt",
+    "PlatformDeploymentTarget",
+    "PlatformGovernanceAction",
+    "PlatformGovernanceEffect",
+    "PlatformGovernanceEvent",
+    "PlatformImageArtifact",
+    "PlatformImageUploadGrant",
+    "PlatformManualRelease",
+    "PlatformManualReleaseEvent",
+    "PlatformOperationalDelegation",
+    "PlatformOperationalTarget",
+    "PlatformOperationalTargetReceipt",
+    "PlatformOperationalWorkloadUse",
+    "PlatformSettingsArtifact",
+    "PlatformTemplateArtifact",
+    "PlatformTemplateDelivery",
+    "PlatformTemplateReceipt",
+    "PlatformTemplateResource"
+  ],
+  "models": [
+    "AIInvocation",
+    "AIProviderRate",
+    "AIUsageBillingConfig",
+    "AIUsageBillingPeriod",
+    "AIUsageBillingSettlement",
+    "AIUsageReservation",
+    "AddOnPurchase",
+    "AdvisorCouncilDecision",
+    "AdvisorRecommendation",
+    "AgentActionProposal",
+    "AgentBusMessage",
+    "AgentConversation",
+    "AgentConversationTurn",
+    "AgentEngineerActionAttempt",
+    "AgentEngineerRecord",
+    "AgentGatewayRequest",
+    "AgentJob",
+    "AgentSkillInstallation",
+    "AgentWorkspaceMemory",
+    "AiCallLog",
+    "AiMemoryChatTurn",
+    "AiMemorySummaryLog",
+    "AiRationaleEnrichment",
+    "AirflowAutomation",
+    "AirflowAutomationExecution",
+    "AirflowDagRunSnapshot",
+    "AlertEscalationSession",
+    "AlertEscalationTransition",
+    "ApiKey",
+    "Application",
+    "AuditEvent",
+    "AuditLog",
+    "AuditSeal",
+    "AutonomousTickLog",
+    "AutonomyDecisionRationale",
+    "AwsGuidedConnectionFlow",
+    "AxiomAgentRun",
+    "AxiomAgentTask",
+    "AxiomApprovalChain",
+    "AxiomApprovalItem",
+    "AxiomApprovalPolicy",
+    "AxiomApprovalRequest",
+    "AxiomApprovalVote",
+    "AxiomAuditEvent",
+    "AxiomAutopilotEvent",
+    "AxiomConversation",
+    "AxiomExecutionPlan",
+    "AxiomExecutionPlanItem",
+    "AxiomFinding",
+    "AxiomMessage",
+    "AxiomNotification",
+    "AxiomOrgPreferences",
+    "AxiomRbacAuditEvent",
+    "AxiomRecommendation",
+    "AxiomScheduledRun",
+    "AxiomScoreSnapshot",
+    "AzureGuidedAuthorization",
+    "BillingAlert",
+    "Bot",
+    "BotAiTaskArtifact",
+    "BotAiTaskEvent",
+    "BotAiTaskRun",
+    "BotPullRequestEvidenceArtifact",
+    "BotPullRequestEvidenceEvent",
+    "BotPullRequestEvidenceRun",
+    "BotTaskArtifact",
+    "BotTaskDraft",
+    "BotTaskDraftEvent",
+    "BotTaskRun",
+    "BotTaskRunEvent",
+    "BranchEnvironmentPolicy",
+    "BranchProtectionSnapshot",
+    "ChangeTicket",
+    "CherryPickException",
+    "CloudAccount",
+    "CloudAccountCredential",
+    "CloudAccountEnrollmentAttempt",
+    "CodingTask",
+    "ComplianceControlCheckRun",
+    "Component",
+    "ConnectorSetupSession",
+    "ConnectorSetupTransition",
+    "DeploymentExecution",
+    "DeploymentIncident",
+    "DeploymentTarget",
+    "DesktopHandoffRecord",
+    "DesktopPairingChallengeRecord",
+    "DesktopSessionRecord",
+    "DriftFinding",
+    "DurableAgentWorkflow",
+    "DurableAgentWorkflowEvent",
+    "EcsReleaseReviewCheckpoint",
+    "EcsReleaseReviewDecision",
+    "EcsReleaseReviewPacket",
+    "EmailVerificationToken",
+    "EngineerApprovalDecision",
+    "EngineerApprovalSnapshot",
+    "Environment",
+    "EvalCase",
+    "EvalRun",
+    "ExecutionLog",
+    "FeedbackRecord",
+    "FoundingSupporterPurchase",
+    "GcpGuidedAuthorization",
+    "GitHubInstallation",
+    "GrowthAuditLog",
+    "GrowthAutopilotDecision",
+    "GrowthCampaign",
+    "HelpQueryRecord",
+    "IdempotencyRecord",
+    "InboundWebhookDelivery",
+    "IncidentRecord",
+    "IncidentTriage",
+    "KnowledgeSource",
+    "Lead",
+    "LinkedInAccountConnection",
+    "LinkedInPostAnalyticsSnapshot",
+    "LinkedInPostDraft",
+    "LinkedInPostPublishRun",
+    "ManualFix",
+    "MethodProposal",
+    "MultiCloudReadinessReport",
+    "OperationTraceSpan",
+    "OperationalMemoryRecord",
+    "OrgMembership",
+    "OrganizationAIProviderPolicy",
+    "OrganizationBudgetConfig",
+    "OutboundNotificationRecord",
+    "OutboundNotificationRetry",
+    "PipelineAICallReservation",
+    "PipelineRun",
+    "PipelineStageRun",
+    "PlatformCustodianBarrier",
+    "PlatformCustodianIntent",
+    "PlatformDeploymentRequestReceipt",
+    "PlatformDeploymentTarget",
+    "PlatformGithubAppCredential",
+    "PlatformGovernanceAction",
+    "PlatformGovernanceEffect",
+    "PlatformGovernanceEvent",
+    "PlatformImageArtifact",
+    "PlatformImageUploadGrant",
+    "PlatformManualRelease",
+    "PlatformManualReleaseEvent",
+    "PlatformOperationalDelegation",
+    "PlatformOperationalTarget",
+    "PlatformOperationalTargetReceipt",
+    "PlatformOperationalWorkloadUse",
+    "PlatformSettingsArtifact",
+    "PlatformTemplateArtifact",
+    "PlatformTemplateDelivery",
+    "PlatformTemplateReceipt",
+    "PlatformTemplateResource",
+    "PolicyProposal",
+    "PolicyRule",
+    "PolicyViolation",
+    "ProactiveAgiSuggestion",
+    "PullRequestRecord",
+    "RecurringAnalysis",
+    "Release",
+    "ReleaseEvidencePack",
+    "ReleaseNotesDraft",
+    "ReleaseReadinessSnapshot",
+    "ReleaseTagRecord",
+    "RemediationProposal",
+    "Repository",
+    "SalesPipelineSnapshot",
+    "ScimProvisionedIdentity",
+    "SecureAuditRecord",
+    "SlackNotificationConfig",
+    "SlackNotificationLog",
+    "StagedRemediationRunbook",
+    "StripeBillingEvent",
+    "SupporterStripeEvent",
+    "TauriAuditEvent",
+    "TauriDeploymentOperation",
+    "TauriDeploymentRequest",
+    "TauriDeploymentRequestVersion",
+    "TauriPlaybook",
+    "TenantAutonomyCharter",
+    "TenantBillingPlan",
+    "TenantFeatureFlag",
+    "TenantIdentityProvider",
+    "TenantIntegrationAuthorizationAttempt",
+    "TenantIntegrationConnection",
+    "TenantUsageCounter",
+    "TerraformExecutionJob",
+    "UsageEvent",
+    "User",
+    "WebhookDelivery",
+    "WebhookEndpoint",
+    "WebhookSigningKey",
+    "WorkflowRunRecord",
+    "WorkspaceAgentIdentity",
+    "WorkspaceUsageSummary"
+  ],
+  "migrations": [
+    {
+      "name": "20250225180000_add_lead",
+      "path": "prisma/migrations/20250225180000_add_lead/migration.sql",
+      "sha256": "0b8ccb810ad7df7ed3004dbe06b47a6042928c22b406d269f1eecf08f5117d67"
+    },
+    {
+      "name": "20250226120000_add_axiom_score_snapshot",
+      "path": "prisma/migrations/20250226120000_add_axiom_score_snapshot/migration.sql",
+      "sha256": "a19589697abb5f46735c7106b1fe42d77def589606fcaf16f8ab95101a0b41b1"
+    },
+    {
+      "name": "20250226140000_add_audit_log",
+      "path": "prisma/migrations/20250226140000_add_audit_log/migration.sql",
+      "sha256": "906b16ae9c1349a1bf78dace050967e751dc3896e985361fd2d4fab25ad2be05"
+    },
+    {
+      "name": "20250226160000_phase7_enterprise_hardening",
+      "path": "prisma/migrations/20250226160000_phase7_enterprise_hardening/migration.sql",
+      "sha256": "0cd7a514b19f6f4d70fc1fbb3b9a4d24058615aa34f9d2675ef53b668ce56cab"
+    },
+    {
+      "name": "20250226180000_phase8_recurring_analysis",
+      "path": "prisma/migrations/20250226180000_phase8_recurring_analysis/migration.sql",
+      "sha256": "8fc8cd490ca01ae97684fab8a7a99778b8459196356bf8acf6646a71438ddf3c"
+    },
+    {
+      "name": "20250226200000_phase9_sales_pipeline",
+      "path": "prisma/migrations/20250226200000_phase9_sales_pipeline/migration.sql",
+      "sha256": "174ad0cb8e0dc1e25e5ebcab51bb02fd4bf2b834adb5d1632e06e4d75be013a6"
+    },
+    {
+      "name": "20250226210000_structural_stabilization_fks",
+      "path": "prisma/migrations/20250226210000_structural_stabilization_fks/migration.sql",
+      "sha256": "1e371d62f6abe818f764aa34421f283ead4596e06fc95cde1e5bdd2e6a091d94"
+    },
+    {
+      "name": "20260219120000_add_lead_model",
+      "path": "prisma/migrations/20260219120000_add_lead_model/migration.sql",
+      "sha256": "36c6aaa8ad8e9e303042af7444366772292f42e3cbdf9079ff88b37fcfcca35d"
+    },
+    {
+      "name": "20260225190601_init",
+      "path": "prisma/migrations/20260225190601_init/migration.sql",
+      "sha256": "b12c8c233959bbcb668a907cbcde2dbe6de113c0b6eed245a6e2f7282ffbbdae"
+    },
+    {
+      "name": "20260226120000_add_execution_log",
+      "path": "prisma/migrations/20260226120000_add_execution_log/migration.sql",
+      "sha256": "eb4788badafcb595a32957055ccf622951684e70838caf35adf6922bd2dfc47e"
+    },
+    {
+      "name": "20260226140000_add_ai_invocation",
+      "path": "prisma/migrations/20260226140000_add_ai_invocation/migration.sql",
+      "sha256": "67db65da92262c6061e404026d9ce1148a2b1b5bf283709cae5b2faaf698484d"
+    },
+    {
+      "name": "20260226150000_add_ai_invocation",
+      "path": "prisma/migrations/20260226150000_add_ai_invocation/migration.sql",
+      "sha256": "510a8506180f48085ce796c4a681ce286add073b493880c69873fc271c37210e"
+    },
+    {
+      "name": "20260226160000_execution_log_plugin_fields",
+      "path": "prisma/migrations/20260226160000_execution_log_plugin_fields/migration.sql",
+      "sha256": "be105431ced5c1fb6ca7a5bde519287858c180672e3f996e3f96a43cee025408"
+    },
+    {
+      "name": "20260228100000_add_user_modules",
+      "path": "prisma/migrations/20260228100000_add_user_modules/migration.sql",
+      "sha256": "cfe629afba0b3394350fa2b13fa9b7e4493fe7d2446131edbf758fc61cf691d8"
+    },
+    {
+      "name": "20260301120000_add_agent_job",
+      "path": "prisma/migrations/20260301120000_add_agent_job/migration.sql",
+      "sha256": "5e9b5c97c0dfbe6c6f4cff64208766a644f404d71dc8e4a601c5dc39e7779352"
+    },
+    {
+      "name": "20260303120000_add_axiom_conversation_and_message",
+      "path": "prisma/migrations/20260303120000_add_axiom_conversation_and_message/migration.sql",
+      "sha256": "c847d21ee00a3325524c54daf8608cac3bfd51a31c864b1197fb279343aac9ab"
+    },
+    {
+      "name": "20260303150000_add_recurring_job_type",
+      "path": "prisma/migrations/20260303150000_add_recurring_job_type/migration.sql",
+      "sha256": "e575c57779f0c3d78b573be7b75761aa6a229fb261d49732fc8cf6679ea8095f"
+    },
+    {
+      "name": "20260516120000_add_observability_and_desktop_models",
+      "path": "prisma/migrations/20260516120000_add_observability_and_desktop_models/migration.sql",
+      "sha256": "ae43ac17c5ff19e0173074b0ceb366d922eb86072e377332acc1146fa5315a8c"
+    },
+    {
+      "name": "20260519130000_add_outbound_notification_record",
+      "path": "prisma/migrations/20260519130000_add_outbound_notification_record/migration.sql",
+      "sha256": "e92af6067e4fe2bf4e517e6edbd8804bfa7cb65ef3b4060d02e58e129d71fbfb"
+    },
+    {
+      "name": "20260519140000_add_tenant_autonomy_charter",
+      "path": "prisma/migrations/20260519140000_add_tenant_autonomy_charter/migration.sql",
+      "sha256": "6cf24cc619a89970aeeb99b745f517bc2e4d357635b1c0c37abce41d3fda80c6"
+    },
+    {
+      "name": "20260519150000_add_staged_remediation_runbook",
+      "path": "prisma/migrations/20260519150000_add_staged_remediation_runbook/migration.sql",
+      "sha256": "b851117be0a010bbfc2052f2399cde08581b6e3dfe989dadee20396cd098e51e"
+    },
+    {
+      "name": "20260519160000_add_autonomy_decision_rationale",
+      "path": "prisma/migrations/20260519160000_add_autonomy_decision_rationale/migration.sql",
+      "sha256": "b62d0114a5220b675dc2894be9c46a70038760d06ea2519815e8db6bdba985ad"
+    },
+    {
+      "name": "20260519170000_add_tenant_feature_flag",
+      "path": "prisma/migrations/20260519170000_add_tenant_feature_flag/migration.sql",
+      "sha256": "677b804dc69f2a33fbb764aac77e6ae036ff81b47e6bd45c3783d780b5085cc4"
+    },
+    {
+      "name": "20260519180000_add_help_query_record",
+      "path": "prisma/migrations/20260519180000_add_help_query_record/migration.sql",
+      "sha256": "2bb05ffbc9ed2bdb2197cdaba25810328cec8874b196e9fab8a7daa0840f1ddf"
+    },
+    {
+      "name": "20260519190000_add_outbound_notification_retry",
+      "path": "prisma/migrations/20260519190000_add_outbound_notification_retry/migration.sql",
+      "sha256": "afe7a52d35cfe401c739bc1dff3175af81e2e4f9ee20cc7fb06afa1a20177714"
+    },
+    {
+      "name": "20260519200000_add_tenant_billing_plan_and_feedback",
+      "path": "prisma/migrations/20260519200000_add_tenant_billing_plan_and_feedback/migration.sql",
+      "sha256": "dc472d5b9b266baee5a4e1e3c1c9ccfe29ec1f81ce794dbe111870066a7d47c5"
+    },
+    {
+      "name": "20260519210000_add_tenant_usage_counter",
+      "path": "prisma/migrations/20260519210000_add_tenant_usage_counter/migration.sql",
+      "sha256": "e6ef3f4951422ed76cf25c0bc8a84652801c0f4ebe6401ba34e60a3798e3e684"
+    },
+    {
+      "name": "20260520120000_add_agent_bus_and_method_proposal",
+      "path": "prisma/migrations/20260520120000_add_agent_bus_and_method_proposal/migration.sql",
+      "sha256": "b9ad350576bbf579f81ac43bbc4146f360480e3613f1b35891f1a232debd4ac8"
+    },
+    {
+      "name": "20260522093000_add_agent_engineer_runtime",
+      "path": "prisma/migrations/20260522093000_add_agent_engineer_runtime/migration.sql",
+      "sha256": "250ae08f36a5413f4b0e531d0c640be1db27fba241c1ff2084c8e93e4d09c20e"
+    },
+    {
+      "name": "20260522103000_add_engineer_approval_snapshot",
+      "path": "prisma/migrations/20260522103000_add_engineer_approval_snapshot/migration.sql",
+      "sha256": "2d68fecc7ccb767374430bfa496bde0ad5b25650843f2d50a166a01decbd61ce"
+    },
+    {
+      "name": "20260522110000_add_engineer_approval_decision",
+      "path": "prisma/migrations/20260522110000_add_engineer_approval_decision/migration.sql",
+      "sha256": "19e11a0568b4f48a2bd031d5924650bfb273e95009e2a8ebbf1b6beacc43b7c9"
+    },
+    {
+      "name": "20260522120000_add_engineer_execution_state",
+      "path": "prisma/migrations/20260522120000_add_engineer_execution_state/migration.sql",
+      "sha256": "a2c80e6265e32b344ccb4f50f020d8934f0092e56693539d2bedfa810a8091cb"
+    },
+    {
+      "name": "20260522130000_add_pipeline_runs",
+      "path": "prisma/migrations/20260522130000_add_pipeline_runs/migration.sql",
+      "sha256": "e8de5a346f826cbf2a15c6f545390e79ec08c0c0c0c26b151f0020ded4a817f6"
+    },
+    {
+      "name": "20260522140000_add_pipeline_source_to_snapshot",
+      "path": "prisma/migrations/20260522140000_add_pipeline_source_to_snapshot/migration.sql",
+      "sha256": "820d7ca6298540cc0378200aea4b6e519444f2324df656a299f8daf82fe2e538"
+    },
+    {
+      "name": "20260522150000_add_coding_task",
+      "path": "prisma/migrations/20260522150000_add_coding_task/migration.sql",
+      "sha256": "0e033d975d9eba2ce34a5a66dbb1035f6fc21b484916068ab4ac536894d1043c"
+    },
+    {
+      "name": "20260522160000_add_pricing_economics",
+      "path": "prisma/migrations/20260522160000_add_pricing_economics/migration.sql",
+      "sha256": "6e65e330215411399d85d045784f7afa83e485fa2765ffc0d2e190b7ec4114a0"
+    },
+    {
+      "name": "20260522170000_add_billing_alert",
+      "path": "prisma/migrations/20260522170000_add_billing_alert/migration.sql",
+      "sha256": "f7ae0fc4e3c3c49784b849f7ce4b6e2ba7b1dce3078c603bf00e31efb432d3db"
+    },
+    {
+      "name": "20260522180000_add_addon_packages",
+      "path": "prisma/migrations/20260522180000_add_addon_packages/migration.sql",
+      "sha256": "0a00ec6505dc3487e021f92f61595bd0f8a6017a7a8c3c1465a62ef0c3602951"
+    },
+    {
+      "name": "20260522190000_add_eval_harness",
+      "path": "prisma/migrations/20260522190000_add_eval_harness/migration.sql",
+      "sha256": "804b914c6042adde5c648bd3d9f25cdbb215e3978e60d9fdede72204860b6608"
+    },
+    {
+      "name": "20260522200000_add_api_keys",
+      "path": "prisma/migrations/20260522200000_add_api_keys/migration.sql",
+      "sha256": "84407081250dd6fb07783611019423b17c1f7fca1ed8ff75658014a3686d76d3"
+    },
+    {
+      "name": "20260522210000_add_webhooks",
+      "path": "prisma/migrations/20260522210000_add_webhooks/migration.sql",
+      "sha256": "38c0c1bfd2b71e05b18f34b0852bbaaba370f37d2d9c29f0c615c7a98226eb98"
+    },
+    {
+      "name": "20260522220000_add_stage_telemetry",
+      "path": "prisma/migrations/20260522220000_add_stage_telemetry/migration.sql",
+      "sha256": "380794c157b9f23a7b3f17b94bb5a5105066ba999d4efac7a650052b7b790229"
+    },
+    {
+      "name": "20260523100000_add_organization_budget_config",
+      "path": "prisma/migrations/20260523100000_add_organization_budget_config/migration.sql",
+      "sha256": "8f8a04454ee81d33d379f14366555911ef3d239edaa3ce74fab14ffff79411c1"
+    },
+    {
+      "name": "20260523110000_add_idempotency_record",
+      "path": "prisma/migrations/20260523110000_add_idempotency_record/migration.sql",
+      "sha256": "373199d922032b216852700d7753c10fd7f20e93481d41434e504041007aef42"
+    },
+    {
+      "name": "20260523120000_add_es256_webhook_signing",
+      "path": "prisma/migrations/20260523120000_add_es256_webhook_signing/migration.sql",
+      "sha256": "3a50aad6c273753b1a725b56f6e53f7a2be8ebc50015211cf20d3359c8d81690"
+    },
+    {
+      "name": "20260525150000_add_connector_setup_session",
+      "path": "prisma/migrations/20260525150000_add_connector_setup_session/migration.sql",
+      "sha256": "4d2933c7a949e0437b48530ccc3148ec8ac36f7348db2f9f4445a4ebf2ec7151"
+    },
+    {
+      "name": "20260525160000_add_alert_escalation_session",
+      "path": "prisma/migrations/20260525160000_add_alert_escalation_session/migration.sql",
+      "sha256": "0a982fd196375696911be7742fe4d79a9a0f40deb99a72dd74b8a50a3cbf7f69"
+    },
+    {
+      "name": "20260526110000_add_releaseops_foundation",
+      "path": "prisma/migrations/20260526110000_add_releaseops_foundation/migration.sql",
+      "sha256": "3038b40d9a486e9903fba7b730db1270d535a8e8ae03c3e780a7d26261c97aef"
+    },
+    {
+      "name": "20260526180000_add_git_discovery_and_change_tickets",
+      "path": "prisma/migrations/20260526180000_add_git_discovery_and_change_tickets/migration.sql",
+      "sha256": "7c9447e80b02b263d57a957b8564a5a0dfc0c41780eaa3d8d43eb2ce80b918dd"
+    },
+    {
+      "name": "20260526190000_add_growth_linkedin_phase1",
+      "path": "prisma/migrations/20260526190000_add_growth_linkedin_phase1/migration.sql",
+      "sha256": "1a32b2eb8e3f8d6d9c899087198a3dbe3e83c2e4ff78738ad71dad4dd2c4a5f5"
+    },
+    {
+      "name": "20260526200000_add_growth_autopilot",
+      "path": "prisma/migrations/20260526200000_add_growth_autopilot/migration.sql",
+      "sha256": "92c32459b4ba146cfd2a999c8256cee442c615fd0ddda10ec1a69f57529d7d0a"
+    },
+    {
+      "name": "20260526220000_add_drift_finding",
+      "path": "prisma/migrations/20260526220000_add_drift_finding/migration.sql",
+      "sha256": "54f738f2f48442fb1a200a5ba988da21ce2c4fa24205034129c55c4da4bcbe09"
+    },
+    {
+      "name": "20260526230000_add_manual_fix",
+      "path": "prisma/migrations/20260526230000_add_manual_fix/migration.sql",
+      "sha256": "86c8a3dcb0ec4c78b8bc86d55a8dccaab4049655eb114d30f8bc725b894b3552"
+    },
+    {
+      "name": "20260526240000_add_audit_event",
+      "path": "prisma/migrations/20260526240000_add_audit_event/migration.sql",
+      "sha256": "613a6e44613e37ce581cf09117cef316ae266c801f97bd190375e58a95947a0b"
+    },
+    {
+      "name": "20260526250000_add_webhook_delivery",
+      "path": "prisma/migrations/20260526250000_add_webhook_delivery/migration.sql",
+      "sha256": "a33a4fec684af4f8f45976a31e79c787bf03d58ba5308ef5d921f30789da50ad"
+    },
+    {
+      "name": "20260526260000_add_branch_protection_snapshot",
+      "path": "prisma/migrations/20260526260000_add_branch_protection_snapshot/migration.sql",
+      "sha256": "1d1649e786186e457f1d23637e79be5fe036057d3650788c18aec80cc767081a"
+    },
+    {
+      "name": "20260526270000_add_release_notes_draft",
+      "path": "prisma/migrations/20260526270000_add_release_notes_draft/migration.sql",
+      "sha256": "261c6cc80dcc219be9ef42917af5c659e25e5ff3741a0cad9554701014b25282"
+    },
+    {
+      "name": "20260526280000_add_deployment_incident",
+      "path": "prisma/migrations/20260526280000_add_deployment_incident/migration.sql",
+      "sha256": "1c66c621d4f9edaad1d7cb856956416270436c7505875fd0319656f69b65864c"
+    },
+    {
+      "name": "20260526290000_add_github_installation",
+      "path": "prisma/migrations/20260526290000_add_github_installation/migration.sql",
+      "sha256": "22ca2800c5805c47e81143f97b15a1f36f77765bb37e8db4ceec8ff52c3cee67"
+    },
+    {
+      "name": "20260526300000_add_advisor_recommendation",
+      "path": "prisma/migrations/20260526300000_add_advisor_recommendation/migration.sql",
+      "sha256": "8d83bc5ec779e7e9b650299445ca0c4b38d358a004371c1c304d20bd644b93f6"
+    },
+    {
+      "name": "20260526310000_add_policy_proposal",
+      "path": "prisma/migrations/20260526310000_add_policy_proposal/migration.sql",
+      "sha256": "8a60f0f5cb1276d504ff6ae2ac26b99b5881bc8821baac58442b8ad398148e9d"
+    },
+    {
+      "name": "20260526320000_add_incident_triage",
+      "path": "prisma/migrations/20260526320000_add_incident_triage/migration.sql",
+      "sha256": "73a7d84d4c2c3aaf572d29769d0350f449462d2e7f93b3e789bd777266e1807c"
+    },
+    {
+      "name": "20260528100000_add_remediation_proposal",
+      "path": "prisma/migrations/20260528100000_add_remediation_proposal/migration.sql",
+      "sha256": "78a7ca80d597a4255b6f9030d47cc018ba7cf90495215d2dc002bd7dce8f4eb9"
+    },
+    {
+      "name": "20260528110000_add_autonomous_tick_log",
+      "path": "prisma/migrations/20260528110000_add_autonomous_tick_log/migration.sql",
+      "sha256": "2e804a59e1971258063fb060c941df332fbd601c63f051b3ece02e98bd7522f3"
+    },
+    {
+      "name": "20260528120000_add_advisor_council_decision",
+      "path": "prisma/migrations/20260528120000_add_advisor_council_decision/migration.sql",
+      "sha256": "ca411e6c7a19a7c7ec430140d5f1742ce8965a229210a51a536e391c963b2d68"
+    },
+    {
+      "name": "20260528130000_add_slack_notifications",
+      "path": "prisma/migrations/20260528130000_add_slack_notifications/migration.sql",
+      "sha256": "e8642f0731e5e43995cc50bbbb7251e482e3fecd444706d5c72bb89c8637790a"
+    },
+    {
+      "name": "20260528140000_add_ai_rationale_enrichment",
+      "path": "prisma/migrations/20260528140000_add_ai_rationale_enrichment/migration.sql",
+      "sha256": "db9c259461a88bfefb8501ac13f042e87b8fb04b0a43a25ba3c5d4b3fc2f52d3"
+    },
+    {
+      "name": "20260528150000_add_ai_memory_summary_log",
+      "path": "prisma/migrations/20260528150000_add_ai_memory_summary_log/migration.sql",
+      "sha256": "22de879a6d2810f42db4cd8cd351cdb395844a64896124e2892d399822a67fe0"
+    },
+    {
+      "name": "20260528160000_add_proactive_agi_suggestion",
+      "path": "prisma/migrations/20260528160000_add_proactive_agi_suggestion/migration.sql",
+      "sha256": "5487a097ef2b9d4d0ea8a759c8498239bfec60f13f0aa34e2da0095a1c53080a"
+    },
+    {
+      "name": "20260528170000_add_ai_memory_chat_turn",
+      "path": "prisma/migrations/20260528170000_add_ai_memory_chat_turn/migration.sql",
+      "sha256": "5daeeef4bcad61762d3012a931646691382b50b19501dd2b84444b0b60cbe143"
+    },
+    {
+      "name": "20260528180000_add_chat_citation_details",
+      "path": "prisma/migrations/20260528180000_add_chat_citation_details/migration.sql",
+      "sha256": "0a6b75720299c56c4aafd5d1c31c4898199cedcb9c238a475a98f491d2435365"
+    },
+    {
+      "name": "20260528190000_add_ai_call_log",
+      "path": "prisma/migrations/20260528190000_add_ai_call_log/migration.sql",
+      "sha256": "6f0a2efc7ca87a7dda0d9555060b333c01332f8cf5d5c2e924ac2a581f662ca4"
+    },
+    {
+      "name": "20260924130000_add_tauri_deployment_operations",
+      "path": "prisma/migrations/20260924130000_add_tauri_deployment_operations/migration.sql",
+      "sha256": "a3f093ef4fa6960c7929f7303c48e492ed114ea3fd55accfa0bd57bb52a43d86"
+    },
+    {
+      "name": "20260925211000_add_tauri_request_versions_and_operation_ledger",
+      "path": "prisma/migrations/20260925211000_add_tauri_request_versions_and_operation_ledger/migration.sql",
+      "sha256": "5cb4ba0e9873ee6ec3fefd02981940019e07e0af6c96e472c6ba89e16946e91b"
+    },
+    {
+      "name": "20260927172000_add_desktop_pairing_challenges",
+      "path": "prisma/migrations/20260927172000_add_desktop_pairing_challenges/migration.sql",
+      "sha256": "70cae203c00eb8c52db9dde2d2504afbe55d97633c3b0f68d38dc72942948c4c"
+    },
+    {
+      "name": "20261001190000_add_tenant_integration_connections",
+      "path": "prisma/migrations/20261001190000_add_tenant_integration_connections/migration.sql",
+      "sha256": "14d9e86dc0a1b7aa42470adee895fe033a89f1d0fd4bdcdeb0d1ee5b685d07bb"
+    },
+    {
+      "name": "20261002120000_add_organization_ai_provider_policy",
+      "path": "prisma/migrations/20261002120000_add_organization_ai_provider_policy/migration.sql",
+      "sha256": "3debc540e0ecf4f544fb02da956f78123ef1a8436e7c464a35b39c924bdbdda0"
+    },
+    {
+      "name": "20261002143000_add_workspace_ai_model_selections",
+      "path": "prisma/migrations/20261002143000_add_workspace_ai_model_selections/migration.sql",
+      "sha256": "a113a2d12d5360f921363254cea509b9ce7c1195e0a5ceb7a32f40794e32912b"
+    },
+    {
+      "name": "20261002160000_add_workspace_ai_policy_enabled",
+      "path": "prisma/migrations/20261002160000_add_workspace_ai_policy_enabled/migration.sql",
+      "sha256": "fb5509b5c5a876a5229a4f1c4a24eebda6091ddab95124645fbf1645ea59828f"
+    },
+    {
+      "name": "20261004173000_add_release_evidence_repository_binding",
+      "path": "prisma/migrations/20261004173000_add_release_evidence_repository_binding/migration.sql",
+      "sha256": "747c27d3ea6574bfab5b9f5b356d1c824bdf1a35c74459493ce76a6204d4adbf"
+    },
+    {
+      "name": "20261005020000_add_simulated_audit_event_status",
+      "path": "prisma/migrations/20261005020000_add_simulated_audit_event_status/migration.sql",
+      "sha256": "868eb1ed94c007edaf4e661b07d9757ec010d66e5328bd0a7f18ca05b5d10d5c"
+    },
+    {
+      "name": "20261005130000_add_incident_record",
+      "path": "prisma/migrations/20261005130000_add_incident_record/migration.sql",
+      "sha256": "16c66bf82cef992b2289ca88f64a05d50ecc7517cbdccf93479a102868b8bac2"
+    },
+    {
+      "name": "20261005150000_add_platform_github_app_credential",
+      "path": "prisma/migrations/20261005150000_add_platform_github_app_credential/migration.sql",
+      "sha256": "3c51a987a27e800670d7afa30299c88388e7e5f947c6fe6be5969f49340a1b62"
+    },
+    {
+      "name": "20261006140000_add_org_membership",
+      "path": "prisma/migrations/20261006140000_add_org_membership/migration.sql",
+      "sha256": "4bd184427365390a4f751b4ed734dfbde4ddcf41cc3db9662806544b3945366a"
+    },
+    {
+      "name": "20261006160000_add_deployment_target",
+      "path": "prisma/migrations/20261006160000_add_deployment_target/migration.sql",
+      "sha256": "5fe0aef6cd3647b9e464ecebfc972e06839b19fc85b6e635e40745d3f3295951"
+    },
+    {
+      "name": "20261006180000_add_enterprise_identity",
+      "path": "prisma/migrations/20261006180000_add_enterprise_identity/migration.sql",
+      "sha256": "afabd9675385af6d1c907c264bd18b4358e57be64a883677a1d08ce3b98efba0"
+    },
+    {
+      "name": "20261006190000_add_agent_runtime",
+      "path": "prisma/migrations/20261006190000_add_agent_runtime/migration.sql",
+      "sha256": "8f57403f7618835abb827acf8fa9d6832b6a3cd00726517e7d801aff91d45761"
+    },
+    {
+      "name": "20261006233000_add_agent_workspace_memory",
+      "path": "prisma/migrations/20261006233000_add_agent_workspace_memory/migration.sql",
+      "sha256": "d76573e6647f77fad302e502f64906b3726d5d74c4c641731f9823b12ceba8e1"
+    },
+    {
+      "name": "20261007123000_agent_skill_installations",
+      "path": "prisma/migrations/20261007123000_agent_skill_installations/migration.sql",
+      "sha256": "ee684953f1d0c9fe7145dcd73f739088c681da51673710667dc0ee3c6a527e96"
+    },
+    {
+      "name": "20261007160000_deployment_execution_observation",
+      "path": "prisma/migrations/20261007160000_deployment_execution_observation/migration.sql",
+      "sha256": "eee9105a15b962143e2a58dc2b32e40b540bede8dba169bcd9aed00e73966355"
+    },
+    {
+      "name": "20261007190000_add_compliance_control_check_run",
+      "path": "prisma/migrations/20261007190000_add_compliance_control_check_run/migration.sql",
+      "sha256": "f4fa577fb448d3fbe8df321e70f84d0fd90fffcef3280c4503e579d13c056934"
+    },
+    {
+      "name": "20261007200000_add_deployment_execution_provenance",
+      "path": "prisma/migrations/20261007200000_add_deployment_execution_provenance/migration.sql",
+      "sha256": "1704bc899ae38c6f67bad6d3bb2e06cfda5e1bee10f34da64fc583d126b7aa4f"
+    },
+    {
+      "name": "20261008010000_add_deployment_promotion_chain",
+      "path": "prisma/migrations/20261008010000_add_deployment_promotion_chain/migration.sql",
+      "sha256": "b23801a2f6d26a0b731a3005e2817f737c30389789dea41e8fb63a20a9155068"
+    },
+    {
+      "name": "20261008020000_add_branch_policy_require_tests_passing",
+      "path": "prisma/migrations/20261008020000_add_branch_policy_require_tests_passing/migration.sql",
+      "sha256": "c10313a0fae7cd7ecc422c190b82acdf617dded34f58da2ae6cabec0e0bd57a6"
+    },
+    {
+      "name": "20261008170000_add_airflow_governed_automation",
+      "path": "prisma/migrations/20261008170000_add_airflow_governed_automation/migration.sql",
+      "sha256": "e1381d0a04c54854d96a737c54999b93268da639980a4e0ecd63e4c9db80a42b"
+    },
+    {
+      "name": "20261012173000_add_deployment_dispatch_idempotency",
+      "path": "prisma/migrations/20261012173000_add_deployment_dispatch_idempotency/migration.sql",
+      "sha256": "e3384609c8ed4057d170738b7c4b7e1acf990e12b80a6b6a76f71aae5fa246cc"
+    },
+    {
+      "name": "20261012181500_add_billing_seat_quantity",
+      "path": "prisma/migrations/20261012181500_add_billing_seat_quantity/migration.sql",
+      "sha256": "dd4da266487c2d4acd9bd9905b6e79548b0b939f361e13d54ec8b64ae9a64a2a"
+    },
+    {
+      "name": "20261013120000_add_gateway_usage_reconciliation",
+      "path": "prisma/migrations/20261013120000_add_gateway_usage_reconciliation/migration.sql",
+      "sha256": "589e04e1f0bda4d131192eb6866d4e6f492d574c71d7d5753e09a0199cae8208"
+    },
+    {
+      "name": "20261013153000_add_agent_approval_integrity",
+      "path": "prisma/migrations/20261013153000_add_agent_approval_integrity/migration.sql",
+      "sha256": "5e7638e7656a76e6e6248370d02f19817ac5464eadf3d190777e01223f07f0fc"
+    },
+    {
+      "name": "20261013172000_add_workspace_agent_identity",
+      "path": "prisma/migrations/20261013172000_add_workspace_agent_identity/migration.sql",
+      "sha256": "fa3703cc048fe9f0f7c1285e44e01280725a2a39dd2a39e5411c52edbaca6ec4"
+    },
+    {
+      "name": "20261013193000_add_durable_agent_workflow",
+      "path": "prisma/migrations/20261013193000_add_durable_agent_workflow/migration.sql",
+      "sha256": "8a4885e5ca748fd160cf03abfd6ed2c29ce9a390ff89da66967d769ebd70fb75"
+    },
+    {
+      "name": "20261013220000_add_founding_supporters",
+      "path": "prisma/migrations/20261013220000_add_founding_supporters/migration.sql",
+      "sha256": "ff4b27e0c309b364774948ed47b59b8a42a48af22c6a882ce908f7af8bb792e0"
+    },
+    {
+      "name": "20261014090000_add_ai_usage_stripe_settlement",
+      "path": "prisma/migrations/20261014090000_add_ai_usage_stripe_settlement/migration.sql",
+      "sha256": "5452120f75ffaef7c48e82cb2f6b634f18f853ff23ede3d559a6322b3ee242da"
+    },
+    {
+      "name": "20261014120000_add_email_verification",
+      "path": "prisma/migrations/20261014120000_add_email_verification/migration.sql",
+      "sha256": "ad968345199bb9fa84add0340777631f99d5583aafe1949790051ccdf6d9873f"
+    },
+    {
+      "name": "20261014190000_verified_ai_credit_fulfillment",
+      "path": "prisma/migrations/20261014190000_verified_ai_credit_fulfillment/migration.sql",
+      "sha256": "226d6c1e3fff21fd3a6a1b88906a2524b7cfd6173f78f58af1ea2efa2102f35f"
+    },
+    {
+      "name": "20261014210000_ai_usage_reservations",
+      "path": "prisma/migrations/20261014210000_ai_usage_reservations/migration.sql",
+      "sha256": "edbce376d52c2e941373a045ff1e6029f892f08d670a3708197fc075972bfb8a"
+    },
+    {
+      "name": "20261016010000_cloud_account_enrollment",
+      "path": "prisma/migrations/20261016010000_cloud_account_enrollment/migration.sql",
+      "sha256": "c8069f96117a46bdce012d5727c1b0e17aed3dc68018e884b7177baeafdabc7c"
+    },
+    {
+      "name": "20261016020000_cloud_account_credential_revocation",
+      "path": "prisma/migrations/20261016020000_cloud_account_credential_revocation/migration.sql",
+      "sha256": "888b6fd677f7d1fdcaab10ee375587912bbb102d9e266d263784ffdf9963de37"
+    },
+    {
+      "name": "20261016030000_ecs_release_review_core",
+      "path": "prisma/migrations/20261016030000_ecs_release_review_core/migration.sql",
+      "sha256": "7ecc5ea1180d6bd06cbc1e06081389d79dc6a9b321d0314c8bfa1ea7fec22522"
+    },
+    {
+      "name": "20261023220000_bind_legacy_cloud_tenant_relations",
+      "path": "prisma/migrations/20261023220000_bind_legacy_cloud_tenant_relations/migration.sql",
+      "sha256": "095823adafaa36495edf3c9d97d690a8717bdafc1d8edce656d0bab1cbde4072"
+    },
+    {
+      "name": "20261025174000_add_bot_saved_tasks",
+      "path": "prisma/migrations/20261025174000_add_bot_saved_tasks/migration.sql",
+      "sha256": "bb4204b90b6242d81343a8a74fc77ed711d3b6b0f3ff356f38645a14bf2c3f1e"
+    },
+    {
+      "name": "20261025235500_add_bot_readonly_runs",
+      "path": "prisma/migrations/20261025235500_add_bot_readonly_runs/migration.sql",
+      "sha256": "2b3cc03091c3a2c24f36834dd1b6636bc195967580743b5a84093ffb7db1907b"
+    },
+    {
+      "name": "20261026022000_add_bot_ai_tasks_local",
+      "path": "prisma/migrations/20261026022000_add_bot_ai_tasks_local/migration.sql",
+      "sha256": "1cbf59e9f7fffa28e1ba1dc1afed61bee69b94bf1522e65d9627e8694c35f553"
+    },
+    {
+      "name": "20261026040000_add_bot_pr_evidence_local",
+      "path": "prisma/migrations/20261026040000_add_bot_pr_evidence_local/migration.sql",
+      "sha256": "b3176df72dd3fe4aee50a87f89d1198d7781b2f8319b91275dad3e9269ddf5c5"
+    },
+    {
+      "name": "20261027010000_gcp_guided_authorization",
+      "path": "prisma/migrations/20261027010000_gcp_guided_authorization/migration.sql",
+      "sha256": "1a180883f1b2bfa4c5405ce7d459747fed44de4aab204296a0ed54dbc36432a0"
+    },
+    {
+      "name": "20261027020000_aws_guided_connection_flow",
+      "path": "prisma/migrations/20261027020000_aws_guided_connection_flow/migration.sql",
+      "sha256": "146e74baf84fb960d11bcae7cb94c8b705229f952f7dcf5232f3e4c88ff52ce9"
+    },
+    {
+      "name": "20261027030000_azure_guided_authorization",
+      "path": "prisma/migrations/20261027030000_azure_guided_authorization/migration.sql",
+      "sha256": "b3d0416e5946b323d023bb575a0e416cc4045bb9c212fd6fdfd252ec20f19067"
+    },
+    {
+      "name": "20261108120000_add_pipeline_ai_call_quote_fields",
+      "path": "prisma/migrations/20261108120000_add_pipeline_ai_call_quote_fields/migration.sql",
+      "sha256": "70b815339b0a28ac9f5a57f3e7bd3e82d4b3a2912640e0bdff096216102f32da"
+    },
+    {
+      "name": "20261109090000_add_agent_gateway_request",
+      "path": "prisma/migrations/20261109090000_add_agent_gateway_request/migration.sql",
+      "sha256": "30fdfebae60c9a44f4f31044c67836a7fb388e889f6017784d61e9976b69350e"
+    },
+    {
+      "name": "20261109100000_add_audit_seal",
+      "path": "prisma/migrations/20261109100000_add_audit_seal/migration.sql",
+      "sha256": "4e2dd4100891c0caaf5328503e1b77be2e8334deead96ce7e474ad29ff60428c"
+    }
+  ],
+  "precheckSha256": "23a6718683fba5baff445e24ab1f648ca8c03e56d478594e2fe37a6d83dc1098",
+  "qualificationGranted": false,
+  "executedAgainstAnyDatabase": false
+}

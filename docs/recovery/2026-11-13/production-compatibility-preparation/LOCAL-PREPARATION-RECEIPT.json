@@ -1,0 +1,16 @@
+{
+  "status": "local_source_and_text_assertions_pass",
+  "schemaSha256": "436c0991b65b878aba7754408b7d6bc5afeaf78e4e4f7d52333cc0cec31b6cf4",
+  "querySha256": "23a6718683fba5baff445e24ab1f648ca8c03e56d478594e2fe37a6d83dc1098",
+  "inventorySha256": "b55e0dbfd372836fffa8a03c61f25ec93ef05746c43bc352ae371747bc33d2d7",
+  "modelsRechecked": 195,
+  "baselineModelsRechecked": 175,
+  "platformProposedModelsRechecked": 20,
+  "migrationFileHashesRechecked": 120,
+  "migrationChangesSinceRecordedBaseline": false,
+  "actualSqlParserOrDatabaseExecution": false,
+  "independentReview": "existing final reviewer: no important source finding; no independent rehash/parser/SQL/provider run",
+  "runtimeChange": false,
+  "productionTargetVerified": false,
+  "productionChangeAuthorized": false
+}
