@@ -151,3 +151,12 @@ The [original workflow diagram brief](axiom-workflow-diagram-brief.md) now descr
 ### Catalogue loading — isolated local verification
 
 The later isolated matching-lock test tree resolved the runner startup blockade without installing or altering original dependencies. ONE selected three-case invocation passed3/32skipped; root verified exact source hashes and reviewed the render-only diff. Earlier startup failures remain failures, not behavior RED. [Evidence](../recovery/2026-11-05/catalogue-loading-local/README.md). This is mocked DOM verification only; no signed-app build, native/browser/accessibility or production acceptance.
+
+
+## November13 — distinctive Axiom identity, not a generic AI template
+
+Owner feedback: the current website/application is acceptable but still resembles a generic AI-generated startup product. The next visual acceptance must feel specifically Axiom: **clean, calm, powerful**, grounded in governance and deployment work. This applies across the website and desktop application, not just a hero or Releases page; it supplements Security, Visual quality and Makes sense/ease of use. Do not merely add cards, gradients, glass, animation or more dependencies. Preserve truthful readiness/outcomes and clear review/recovery controls.
+
+Use the existing visual research/tooling lane to evaluate relevant libraries, plugins and open-source repositories against a concrete intended improvement. Record what the candidate adds beyond the existing stack, license/maintenance/privacy and execution risks, bundle/performance cost, keyboard/reduced-motion behavior and a useful accessible fallback. Prefer coherent original typography, spatial hierarchy, interaction and meaningful deployment models; adopt a tool only when it serves those goals and passes existing approvals. No new install, network research, visual rebuild or publication is implied by this recorded request.
+
+Acceptance: compare representative actual website and desktop workflows before/after; each should communicate purpose, current state and the next action without explanation. Axiom's visual language should be recognizable across product, documentation, integrations, work and recovery. Verify dark/light, narrow layouts, focus, motion and performance with real rendered evidence. Show coherent local milestones. This request stays queued alongside core qualification; it does not interrupt Governance or assert a visual redesign has shipped.

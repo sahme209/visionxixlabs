@@ -570,7 +570,7 @@ it.skipIf(!enabled)('rolls manual review/event back atomically and refuses notic
 
 import {generateKeyPair,exportJWK,SignJWT} from 'jose';
 import {createOperationalWorkloadIdentity} from '../operations/workloadIdentity';
-import {createOperationalDelegationStore,type OperationalCredentialIssuer} from '../operations/delegation';
+import {createOperationalDelegationStore as createOperationalDelegationStoreActual,type OperationalCredentialIssuer} from '../operations/delegation';
 import type {OperationalDelegationRepository} from '../operations/delegationContract';
 import {compileOperationalManifest} from '../operations/kernel';
 import {createOperationalTargetReservations} from '../operations/reservationStore';
@@ -832,11 +832,11 @@ it.skipIf(!enabled)('joins installed DescribeServices readback to the saved SQL 
  }finally{restore();vi.unstubAllEnvs()}
 });
 
-import {createOperationalDelegationRequestComposition} from '../operations/operationalRequest';
+import {createOperationalDelegationRequestComposition as createOperationalDelegationRequestCompositionActual} from '../operations/operationalRequest';
 
 import {createOperationalHttp} from '../operations/operationalHttp';
 
-import {createEcsPreparationStore} from '../operations/ecsPreparation';
+import {createEcsPreparationStore as createEcsPreparationStoreActual} from '../operations/ecsPreparation';
 
 it.skipIf(!enabled)('atomically prepares one ECS action for concurrent original references and rejects changed run selection',async()=>{
  try{const f=await operationalFixture(),requestId=randomUUID(),source={assertCurrent:vi.fn(async()=>{})},http=createOperationalHttp(request=>createOperationalDelegationRequestComposition(request,{repo:f.repo,source:f.source,identity:f.identity,preparationSource:source,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test']})),invoke=async(body:unknown)=>{const response=await http(new Request('http://fixture.invalid/operations',{method:'POST',headers:{authorization:'Bearer '+mintDesktopToken(actor.sessionId)},body:JSON.stringify(body)}));const result=await response.json();if(response.status!==200)throw Error(result.error);return result.data},store={prepare:(selection:unknown,requestId:string,_actor:typeof actor)=>invoke({operation:'prepare',selection,requestId}),lookup:(requestId:string,_actor:typeof actor)=>invoke({operation:'lookup',requestId})},{digest:ignoredDigest,authority:ignoredAuthority,executionAuthorized:ignoredExecution,...selection}=f.manifest;
@@ -1371,3 +1371,10 @@ it.skipIf(!enabled).each(['stable','lost-reply','revoked-reader'] as const)('joi
   const recovered=await client.inspect(f.id);expect(requests).toBe(5);expect(recovered).toMatchObject({ok:true,data:{parentStatus:'confirmed',attemptCount:1,stability:{authority:'historical_stability_only'},result:{kind:'accepted'}}});expect(describe).toHaveBeenCalledOnce();expect(transport.send).toHaveBeenCalledOnce();
  }finally{vi.restoreAllMocks();vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
+
+// Explicit synthetic fixture composition; no production/native time supplier.
+function ecsFixtureTiming(){return {clock:async()=>{const now=Date.now();return {earliest:now,latest:now}},signal:new AbortController().signal}}
+function ecsFixtureSource<T extends object>(source:T){const notBefore=Date.now()-60000,expiresAt=Date.now()+600000;return {...source,readTimeWindow:async(_tx:unknown,m:import('../operations/ecsPreparation').EcsManifest)=>({manifestDigest:m.digest,sourceEvidenceId:m.sourceEvidenceId,profileDigest:d,notBefore,expiresAt})}}
+function createEcsPreparationStore(...[repo,authority,source]:Parameters<typeof createEcsPreparationStoreActual>){return createEcsPreparationStoreActual(repo,authority,ecsFixtureSource(source),ecsFixtureTiming())}
+function createOperationalDelegationStore(...[repo,authority,source,identity,targets,issuer,transport,intents]:Parameters<typeof createOperationalDelegationStoreActual>){return createOperationalDelegationStoreActual(repo,authority,ecsFixtureSource(source),identity,targets,issuer,transport,intents,ecsFixtureTiming())}
+function createOperationalDelegationRequestComposition(...[request,ports]:Parameters<typeof createOperationalDelegationRequestCompositionActual>){const timing=ecsFixtureTiming();return createOperationalDelegationRequestCompositionActual(syntheticRequestContext(request,timing.signal),{...ports,clock:timing.clock,source:ecsFixtureSource(ports.source),preparationSource:ports.preparationSource?ecsFixtureSource(ports.preparationSource):undefined})}

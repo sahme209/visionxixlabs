@@ -1,3 +1,4 @@
+import {createEcsDecisionTime,type EcsDecisionTimeSource,type EcsDecisionTiming} from './ecsDecisionTime';
 import type {ExecutionTimeCheck,ExecutionTimeAuthorization} from '../executionTime';
 import {readOperationalFailureHistory} from './failureHistory';
 import type {CustodianIntentStage} from './custodianIntentContract';
@@ -17,7 +18,7 @@ import {readPlatformAction} from '../kernel';
 import {readOperationalManifest} from './kernel';
 import {credentialOutcome,readOperationalDelegation,type OperationalDelegation,type OperationalDelegationRepository,type OperationalDelegationTransaction} from './delegationContract';
 import {operationalWorkloadBinding,type createOperationalWorkloadIdentity} from './workloadIdentity';
-interface Source{
+interface Source extends EcsDecisionTimeSource{
  readManifest(tx:OperationalDelegationTransaction,parent:PlatformAction):Promise<unknown>;
  assertCurrent(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
 }
@@ -36,7 +37,8 @@ const same=(a:unknown,b:unknown)=>sha256ContentHash(a)===sha256ContentHash(b);
 /** Private server composition. Workload is never relabeled a human. All phase
  * proofs stay in this instance, never in HTTP JSON or durable state. Optional private issuance is bounded and recorded before any later use;
  * source/profile defaults remain closed and no provider send is exposed. */
-export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'> & Partial<Pick<OperationalTargetReservations,'observe'|'assertTerminalCurrent'>>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport,intents?:OperationalIntentAdmission){
+export function createOperationalDelegationStore(repo:OperationalDelegationRepository,authority:Pick<PlatformAuthority,'assertCurrent'>,source:Source,identity:Identity,targets?:Pick<OperationalTargetReservations,'reserve'|'assertHeld'> & Partial<Pick<OperationalTargetReservations,'observe'|'assertTerminalCurrent'>>,issuer?:OperationalCredentialIssuer,transport?:OperationalEcsTransport,intents?:OperationalIntentAdmission,timing?:EcsDecisionTiming){
+ const timelyDecision=createEcsDecisionTime(source,timing);
  const claims=new WeakMap<object,{actionId:string;identity:Consumed}>(),issuance=new WeakMap<object,{actionId:string;version:number;identity:Consumed}>(),credentials=new WeakMap<object,{actionId:string;identity:Consumed;value:z.infer<typeof privateCredential>}>();
  const binding=(state:OperationalDelegation)=>({actionId:state.actionId,manifestDigest:state.manifest.digest,workload:state.manifest.workload,expiresAt:state.manifest.expiresAt});
  function match(parent:PlatformAction,state:OperationalDelegation){
@@ -185,7 +187,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
    const parent=readPlatformAction(await tx.read(key));if(parent.status!=='approved'||parent.version!==parentVersion||parent.plan.digest!==parentDigest||!same(actor,parent.requester)||await tx.readDelegation(key))return fail();
    await authority.assertCurrent(tx,actor);const manifest=readOperationalManifest(await source.readManifest(tx,parent));if(manifest.kind!=='deployment.ecs')return fail();
    const state=readOperationalDelegation({actionId:key,parentPlanDigest:parent.plan.digest,manifest,requester:parent.requester,reviewer:parent.reviewer,status:'delegated',version:0,attemptCount:0,executionPrincipal:null,targetReservation:null,credential:{status:'not_requested'},createdAt:await tx.now(),updatedAt:await tx.now()});
-   await current(tx,state,'approved');await tx.insertDelegation(key,state);await event(tx,parent,state,'workload.delegated');await current(tx,state,'approved');return projection(state,await tx.now());
+   await current(tx,state,'approved');await timelyDecision(tx,[state.requester,state.reviewer],manifest,parent.createdAt,()=>current(tx,state,'approved'));await tx.insertDelegation(key,state);await event(tx,parent,state,'workload.delegated');await current(tx,state,'approved');const final=await timelyDecision(tx,[state.requester,state.reviewer],manifest,parent.createdAt,()=>current(tx,state,'approved'));return projection(state,final.now);
   })},
   /** Admission metadata only; it cannot claim an action or spend its token. */
   async preflightWorkload(id:string,expectedVersion:number,token:unknown){return workloadRead(id,token,expectedVersion)},
