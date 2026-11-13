@@ -27,6 +27,7 @@ Task2 storage/schema evidence: `IMAGE-STORAGE-LOCAL-RECEIPT.json`. The later IMA
 - [ ] Private observation capability only; current requester/reviewer/source/bytes/profile/expiry checked around awaits; uncertainty never advances/reinitializes/posts. Later separate post can reference only a compatible confirmed uploaded-image record.
 
 ## Task4 — prepared authenticated client/UI and connected workflow
+Prepared HTTP intake/recovery/preview/review now has actual HMAC/current-SQL local evidence in IMAGE-WORKFLOW-HTTP-LOCAL-RECEIPT.json. This is partial Task4, not native upload/client/UI acceptance; both original task checkboxes remain open.
 - [ ] Exact artifact intake/preview and two-operation review; requester init/PUT progression and typed historical recovery, no extra human review timer after init and no address/token/error leaks.
 - [ ] Full client→HTTP→HMAC/current-SQL positive/adversarial journeys with simulated qualification/native I/O, plus React context/uncertainty checks. Defaults and public registration stay unavailable.
 

@@ -49,3 +49,39 @@ it.skipIf(!enabled)('joins candidate full-raster validation to current SQL intak
  broken=true;await expect(f.service.intake({...f.selection,requestReference:randomUUID()},bytes,requester)).rejects.toThrow();
  const rows=await db.$queryRawUnsafe<Array<{count:bigint}>>('SELECT count(*) AS count FROM "PlatformImageArtifact" WHERE "connectionId"=$1',f.id);expect(Number(rows[0].count)).toBe(1);
 });
+
+import {createPrivateDesktopTokenCodec} from '@/lib/desktop/privateDesktopToken';
+import {createImageWorkflowRequestComposition} from '../imageWorkflowRequest';
+import {createImageWorkflowHttp} from '../imageWorkflowHttp';
+async function imageHttpFixture(){
+ const f=await authorityFixture(),codec=createPrivateDesktopTokenCodec(Buffer.alloc(32,21));
+ const factory=(request:Request)=>createImageWorkflowRequestComposition(request,{repo:f.r,resources:f.resources,verifyDesktopToken:codec.verifyDesktopToken,readAdminEmails:()=>['image-requester@example.test','image-reviewer@example.test']});
+ const http=createImageWorkflowHttp(factory);
+ const request=(body:unknown,p=actor)=>new Request('https://fixture.invalid/image',{method:'POST',headers:{authorization:'Bearer '+codec.mintDesktopToken(p.sessionId)},body:JSON.stringify(body)});
+ return {...f,codec,factory,http,request};
+}
+it.skipIf(!enabled)('connects real signed paired HTTP intake to SQL proposal/private preview/distinct review with explicit public projections',async()=>{
+ const f=await imageHttpFixture(),intake=await f.http(f.request({operation:'intake',...f.selection,bytesBase64url:f.bytes.toString('base64url')}));expect(intake.status).toBe(200);const saved=(await intake.json()).data;expect(saved.artifact.creatorUserId).toBe(actor.userId);expect(JSON.stringify(saved)).not.toMatch(/envelope|sessionId|accessToken/);
+ const reference=randomUUID(),response=await f.http(f.request({operation:'prepare',artifactId:saved.artifact.artifactId,expiresAt:new Date(Date.now()+60000).toISOString(),requestReference:reference}));expect(response.status).toBe(200);const proposal=(await response.json()).data;
+ const previewResponse=await f.http(f.request({operation:'preview',actionId:proposal.actionId},reviewer));expect(previewResponse.status).toBe(200);const preview=(await previewResponse.json()).data;expect(Buffer.from(preview.bytesBase64url,'base64url')).toEqual(f.bytes);expect(preview.action.plan.effects.map((e:{kind:string})=>e.kind)).toEqual(['growth.image.initialize','growth.image.put']);expect(preview.executionAuthorized).toBe(false);expect(JSON.stringify(preview)).not.toMatch(/envelope|sessionId|accessToken|uploadUrl/);
+ const command={operation:'review',actionId:proposal.actionId,expectedVersion:0,planDigest:preview.action.plan.digest};expect((await f.http(f.request(command))).status).toBe(409);const approved=await f.http(f.request(command,reviewer));expect(approved.status).toBe(200);expect((await approved.json()).data.action).toMatchObject({status:'approved',attemptCount:0,reviewerUserId:reviewer.userId});
+ expect((await f.http(f.request({operation:'execute',actionId:proposal.actionId,expectedVersion:1,planDigest:preview.action.plan.digest}))).status).toBe(400);
+ const counts=await db.$queryRawUnsafe<Array<{count:bigint}>>('SELECT count(*) AS count FROM "PlatformImageUploadGrant" WHERE "actionId"=$1',proposal.actionId);expect(Number(counts[0].count)).toBe(0);
+});
+it.skipIf(!enabled)('recovers lost HTTP intake/proposal acknowledgements only by original references without re-decoding or renewing',async()=>{
+ const f=await imageHttpFixture(),lostIntake=createImageWorkflowHttp(async request=>{const service=await f.factory(request);return {...service,intake:async(...args:Parameters<typeof service.intake>)=>{await service.intake(...args);throw Error('synthetic_lost_reply')}}});
+ expect((await lostIntake(f.request({operation:'intake',...f.selection,bytesBase64url:f.bytes.toString('base64url')}))).status).toBe(409);
+ const recovered=await f.http(f.request({operation:'lookup_artifact',requestReference:f.reference}));expect(recovered.status).toBe(200);const saved=(await recovered.json()).data;expect(saved.found).toBe(true);
+ const reference=randomUUID(),lostProposal=createImageWorkflowHttp(async request=>{const service=await f.factory(request);return {...service,prepare:async(...args:Parameters<typeof service.prepare>)=>{await service.prepare(...args);throw Error('synthetic_lost_reply')}}});
+ expect((await lostProposal(f.request({operation:'prepare',artifactId:saved.artifact.artifactId,expiresAt:new Date(Date.now()+60000).toISOString(),requestReference:reference}))).status).toBe(409);
+ const calls=f.inspect.mock.calls.length;f.inspect.mockImplementation(async()=>{throw Error('decoder_unavailable')});const found=await f.http(f.request({operation:'lookup',requestReference:reference}));expect(found.status).toBe(200);const id=(await found.json()).data.actionId;expect(id).toMatch(/^platform_action_/);expect(f.inspect.mock.calls).toHaveLength(calls);
+ const history=await f.http(f.request({operation:'inspect',actionId:id}));expect(history.status).toBe(200);expect((await history.json()).data).toMatchObject({authority:'image_history_only',sourceValidation:'not_checked',executionAuthorized:false,action:{status:'proposed',attemptCount:0}});
+});
+it.skipIf(!enabled)('refuses invalid possession and revoked paired sessions; changed connection blocks preview but preserves readable historical approval',async()=>{
+ const f=await imageHttpFixture();expect((await f.http(new Request('https://fixture.invalid/image',{method:'POST',headers:{authorization:'Bearer invalid'},body:JSON.stringify({operation:'lookup',requestReference:randomUUID()})}))).status).toBe(401);
+ const saved=await f.service.intake(f.selection,f.bytes,actor),proposal=await f.service.prepare(saved.artifact.artifactId,new Date(Date.now()+60000).toISOString(),randomUUID(),actor),view=await f.service.preview(proposal.actionId,reviewer);await f.service.review(proposal.actionId,0,view.binding.plan.digest,reviewer);view.bytes.fill(0);
+ await db.$executeRawUnsafe('UPDATE "LinkedInAccountConnection" SET status=$1 WHERE id=$2','disconnected',f.id);
+ const before=f.readKey.mock.calls.length,denied=await f.http(f.request({operation:'preview',actionId:proposal.actionId},reviewer));expect(denied.status).toBe(409);expect(await denied.text()).not.toContain(f.bytes.toString());expect(f.readKey.mock.calls).toHaveLength(before);
+ const history=await f.http(f.request({operation:'inspect',actionId:proposal.actionId}));expect(history.status).toBe(200);expect((await history.json()).data.action.status).toBe('approved');
+ await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',actor.sessionId);expect((await f.http(f.request({operation:'inspect',actionId:proposal.actionId}))).status).toBe(401);
+});

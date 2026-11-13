@@ -1,0 +1,61 @@
+{
+  "scope": "Prepared/unregistered image intake/recovery/preview/review only. No upload or native qualification",
+  "sourceHashes": {
+    "lib/api/readBoundedRequestJson.ts": "148a9848ab6dda063e75891977e5580ec00168894b986576d13e21275e2e30c8",
+    "lib/governance/platform/imageWorkflowContract.ts": "8a81eae6a33c6c579d941c31c38ef0be2441330633f28367d9379031c2d3fcc9",
+    "lib/governance/platform/imageWorkflowRequest.ts": "c368cfced295d545d4672a31376de49af4a4aa4e60ecb0d459fdcff1fd85d27f",
+    "lib/governance/platform/imageWorkflowRequestService.ts": "edce2f1f9e67cc294fb405b45cbc47961eeb9cf9235fde5d2a0cd33a7bdcbcad",
+    "lib/governance/platform/imageWorkflowHttp.ts": "2aae3fc3f461ad56ad1f3ed9a42057b021041bab85986822e4c414af4bcb6ef7",
+    "lib/governance/platform/__tests__/imageWorkflowContract.test.ts": "835c550c8db86a225411231f6d1079775f2d537f1fb6628724b579225ff7478b",
+    "lib/governance/platform/__tests__/imageWorkflowRequest.test.ts": "84230ee4b12e9ac70a65d0da9e1fbe416d37717a239975658da0b9597eede25d",
+    "lib/governance/platform/__tests__/imageWorkflowHttp.test.ts": "1f7b8342699556ae25a1ee640ce9c3349de1ec77913ff21426695a9440827c18",
+    "lib/governance/platform/__tests__/imageRequestBodySize.test.ts": "0e56f7440e49e2b8c88a5ef96b7195aea352c34f908a06a9c132b68aedfb3034",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "5b520a07f21e996814d9665f79dd16d67c9c30f1721050e2cb9792e1cfd5362f",
+    "scripts/run-platform-governance-postgres.py": "d4a641352cc3fd229e2031dbed352686e21a6254985cda4896e76b8c3b413100"
+  },
+  "tests": {
+    "sharedBatch": 609,
+    "sharedBatchNote": "Predates only later HTTP projection test; unchanged runtime source in that test addition",
+    "laterFocusedHttpFile": 5,
+    "laterFocusedOverlapWithSharedBatch": 4,
+    "actualIsolatedSql": 206,
+    "rootTypes": "PASS after final source/test changes"
+  },
+  "sql": {
+    "root": "/private/tmp/axiom-platform-pg-wx4oxl7d",
+    "stopped": true,
+    "scope": "Actual existing desktop-token HMAC and current identity/session/connection SQL with synthetic token key/users and decoder/artifact-key/upload-profile qualification. No human/native/provider acceptance",
+    "addedCases": [
+      "Full HTTP intake -> proposal -> private explicit preview -> self-review refusal -> distinct synthetic reviewer approval. No image execution command or upload grant exists",
+      "Lost intake/proposal acknowledgements preserved; original references/historical reads work with decoder unavailable and no requalification/renewal",
+      "Invalid HMAC and actual revoked session refused; changed connection blocks image preview before key but leaves explicitly historical approval readable"
+    ]
+  },
+  "redEvidence": [
+    "/private/tmp/axiom-image-workflow-request-red.log",
+    "/private/tmp/axiom-image-workflow-http-red.log",
+    "/private/tmp/axiom-image-body-size-red.log",
+    "/private/tmp/axiom-image-preview-single-effect-red.log"
+  ],
+  "fixedObservedDefect": "Single-effect legacy plan caused public preview refinement to dereference missing PUT. Regression now returns normal validation failure. No old plan upgraded.",
+  "checks": [
+    "/private/tmp/axiom-image-workflow-shared-final.log",
+    "/private/tmp/axiom-image-workflow-http-projection.log",
+    "/private/tmp/axiom-image-workflow-types-projection.log",
+    "/private/tmp/axiom-image-workflow-final-pg.log"
+  ],
+  "securityScope": [
+    "Verify paired possession before any SQL; retain same session around awaited currentness/resource checks",
+    "Explicit public projection excludes private binding/actors/session/envelopes",
+    "Canonical exact-byte base64url/count/SHA checks; copied preview/intake buffers cleared",
+    "3MiB raw intake/preview bounds;16KiB metadata command bound counts original UTF8 whitespace without cloning request stream",
+    "Fixed errors/no-store; no upload address/token/native-error exposure or automatic retry",
+    "Missing real resource suppliers and unregistered route remain unavailable"
+  ],
+  "remaining": [
+    "Qualified real bounded decoder/worker and verified LinkedIn protocol/native init/PUT executor",
+    "Prepared desktop transport/UI and complete upload/post lineage",
+    "Whole-three-family caller audit/full validation/build/final independent review/mandatory-green PR",
+    "All unchanged full Governance/master live/installed/production gates"
+  ]
+}
