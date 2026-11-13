@@ -1,0 +1,41 @@
+{
+  "observedAt": "2026-11-13T17:18:57.193213+00:00",
+  "scope": "actual inspected settings constructors; source findings only, not a complete graph or exploit demonstration",
+  "sourceSha256": {
+    "lib/governance/platform/operations/settingsPreparation.ts": "3675cfa66d779db4ba1d56b6b6ed505e1e9e65abe95172eb24ce7567e0ce09db",
+    "lib/governance/platform/operations/settingsArtifactStore.ts": "86f46e9f9771c345662635bf3305df4cf83cb44fe8306e74744fd16681ccc623",
+    "lib/governance/platform/operations/settingsExecution.ts": "5fe4484a60b8fcc8b0581e7853eb1e54686ebd0f25457f31609a43adeca48f3d",
+    "lib/governance/platform/operations/settingsVercelTransport.ts": "6dfac35048a571091159b2064bccc24e121621d05982867bb4ef71fcb35040a5",
+    "lib/governance/platform/operations/settingsArtifactRequest.ts": "4e3403efda7addea6e6898dbd68972e355c5d191c4a38fdd095b05687fcb0e27",
+    "lib/governance/platform/operations/settingsRequestService.ts": "156dfc4a20eddd5f55680940f042d4e8f7d5e0b4c8019a9eec62f24f80d94ce8",
+    "lib/governance/platform/actionStore.ts": "3efcecdacbca050650dfaf44afbb1a72ad8170fb26345f4d764c4a99fbb50f7f"
+  },
+  "findings": [
+    {
+      "path": "lib/governance/platform/operations/settingsPreparation.ts",
+      "gap": "new preparation uses source.assertCurrent plus DB-only now; no captured interval/participant window"
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsArtifactStore.ts",
+      "gap": "save/preview/review/claim use DB ordering/liveness only; key await is followed by current checks but not joined interval"
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsExecution.ts",
+      "gap": "actual executor current() checks source/profile/artifact/people and DB time, but no private interval; generic service currently applies joined policy only to growth"
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsVercelTransport.ts",
+      "gap": "transport reads credential as a string before original final callback; no independently established valid-from/expiry/held-credential time evidence is carried to original final owner"
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsArtifactRequest.ts",
+      "gap": "private request factory captures no shared clock for its preparation/artifact/executor factories"
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsRequestService.ts",
+      "gap": "default remains unqualified and not route-mounted; no real supplier can be inferred from synthetic code"
+    }
+  ],
+  "requiredNextUnit": "join the actual settings prepare/save/private-preview/review/claim/key-read/final transport under the approved time policy; capture exact source/profile/credential windows without inventing expiry and consume native final check inside original locked owner; preserve history and unknowns",
+  "effects": "read-only local source tracing; no runtime, SQL, provider, credentials, deployment or spending"
+}
