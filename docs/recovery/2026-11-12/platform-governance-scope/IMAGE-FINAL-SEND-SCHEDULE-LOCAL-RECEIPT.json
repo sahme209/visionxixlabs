@@ -1,0 +1,23 @@
+{
+  "scope": "Additional actual SQL final-authorization acceptance, no runtime code change",
+  "actualSql": "/private/tmp/axiom-platform-pg-sol6t73g",
+  "stopped": true,
+  "tests": 212,
+  "rootTypes": "PASS",
+  "newCase": [
+    "Actual current identity and confirmed stored-upload lineage -> post/schedule preparation -> distinct synthetic review -> claim -> child claim",
+    "Changed upload proof after post claim blocks final native-send authorization",
+    "Compatible schedule gets one final authorization; the same opaque capability refuses reuse",
+    "Both cases finish explicit unknown/one-attempt history without an actual native operation"
+  ],
+  "limitations": "Upload observations/decoder/key/profile qualification are synthetic. This proves final service authority boundaries only, not actual scheduling, publication, init/PUT transport, human approval or native/profile acceptance. Prior broader checks are not relabeled as rerun.",
+  "sourceHashes": {
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "e6749fa6cf71b4089c1b3bdd3d30a4f9fc489ee10ea55ce69290c30a5dba1608",
+    "scripts/run-platform-governance-postgres.py": "0760e5e94becbfccafc723b3443c79249cbd10e6c8ac9f22a754bf572284c2f8"
+  },
+  "logs": [
+    "/private/tmp/axiom-image-final-send-schedule-pg.log",
+    "/private/tmp/axiom-image-final-send-schedule-types.log"
+  ],
+  "remaining": "All native image qualification/executor/progression, complete-family review/build/green PR and unchanged master requirements remain."
+}

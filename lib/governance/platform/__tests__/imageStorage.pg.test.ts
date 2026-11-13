@@ -150,3 +150,18 @@ it.skipIf(!enabled)('checks confirmed-image lineage again at real post review an
   await expect(service.claim(proposal.actionId,1,actor)).rejects.toThrow();expect(await service.inspect(proposal.actionId,actor)).toMatchObject({status:'approved',attemptCount:0});
  }finally{if(old===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=old}
 });
+it.skipIf(!enabled)('enforces managed-image evidence at final post send and authorizes an exact schedule once, preserving unknown outcomes',async()=>{
+ const {createPlatformActionService}=await import('../actionStore'),old=process.env.LINKEDIN_POSTING_ENABLED;process.env.LINKEDIN_POSTING_ENABLED='true';
+ try{for(const operation of ['publish','schedule'] as const){
+  const f=await publicationFixture(),service=createPlatformActionService(f.r,f.authority),proposal=await service.prepareGrowth({operation,draftId:f.draftId,connectionId:f.id,expiresAt:new Date(Date.now()+30000).toISOString(),...(operation==='schedule'?{scheduledFor:new Date(Date.now()+120000).toISOString()}:{})},actor,randomUUID()),view=await service.inspect(proposal.actionId,actor);
+  await service.review(proposal.actionId,0,view.plan.digest,reviewer);await service.claim(proposal.actionId,1,actor);const next=await service.claimNextEffect(proposal.actionId,actor);expect(next.effect.target).toHaveProperty('imageLineageDigest');
+  if(operation==='publish'){
+   await db.$executeRawUnsafe('UPDATE "PlatformGovernanceEffect" SET status=$1 WHERE "actionId"=$2 AND index=1','unknown',f.uploadActionId);
+   await expect(service.beforeEffectSend(next.proof,next.effect,actor)).rejects.toThrow();
+  }else await service.beforeEffectSend(next.proof,next.effect,actor);
+  // The same native-send capability cannot be invoked again, even after a
+  // refusal. No native scheduling/publication was performed in this test.
+  await expect(service.beforeEffectSend(next.proof,next.effect,actor)).rejects.toThrow();
+  await service.observeEffect(next.proof,'unknown');expect(await service.inspect(proposal.actionId,actor)).toMatchObject({status:'unknown',attemptCount:1,effects:[{status:'unknown'}]});
+ }}finally{if(old===undefined)delete process.env.LINKEDIN_POSTING_ENABLED;else process.env.LINKEDIN_POSTING_ENABLED=old}
+});
