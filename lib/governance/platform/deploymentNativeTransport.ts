@@ -28,7 +28,7 @@ function exactRequest(raw:Effect,body:string):Effect{
  const effect=platformEffectSchema.parse(raw);if(effect.kind!=='deployment.vercel'||typeof body!=='string'||Buffer.byteLength(body)>8*1024*1024)return fail();
  const parsed=payload.parse(JSON.parse(body)),files=parsed.files.map(file=>{const bytes=Buffer.from(file.data,'base64');if(bytes.toString('base64')!==file.data)return fail();return {path:file.file,content:new TextDecoder('utf-8',{fatal:true}).decode(bytes)}});
  const prepared=preparePlatformVercelDeployment(files,{projectName:parsed.name,teamId:effect.target.teamId,target:parsed.target,effectId:effect.id,...(effect.target.leadId&&effect.target.leadRevision?{source:{leadId:effect.target.leadId,leadRevision:effect.target.leadRevision}}:{})});
- if(prepared.body!==body||sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))return fail();return effect;
+ if(prepared.body!==body||sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))return fail();Object.freeze(effect.target);return Object.freeze(effect);
 }
 /** Private fixed transport. Constructor/factory performs no resource access;
  * real profile/custody/clock validity must be qualified, with no default. */

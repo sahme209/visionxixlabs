@@ -38,6 +38,7 @@ export function createNativeCustodianPorts(qualification:NativeCustodianQualific
   signal.throwIfAborted();await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
   if(expiresAt!==undefined&&expiresAt>capture.maximumExpiresAt)return fail();
   await assertExecutionWindow(clock,{expiresAt:expiresAt??capture.maximumExpiresAt},signal);
+  await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
  }
  return Object.freeze({clock,assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
   async readCustodianCredential(raw:Manifest,signal:AbortSignal){try{

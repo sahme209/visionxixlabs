@@ -47,7 +47,7 @@ export function createSettingsVercelTransport(ports:Ports){
   }
   const expired=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
   return await Promise.race([expired,(async()=>{
-   const binding=settingsArtifactBindingSchema.parse(raw),native=settingsNativeProfile({type:binding.target.type,sensitivity:binding.target.sensitivity});if(typeof value!=='string'||value.includes('\0')||Buffer.byteLength(value,'utf8')>65536||Buffer.from(value,'utf8').toString('utf8')!==value)return unknown();
+   const parsedBinding=settingsArtifactBindingSchema.parse(raw),binding=Object.freeze({...parsedBinding,creator:Object.freeze({...parsedBinding.creator}),target:Object.freeze({...parsedBinding.target})}),native=settingsNativeProfile({type:binding.target.type,sensitivity:binding.target.sensitivity});if(typeof value!=='string'||value.includes('\0')||Buffer.byteLength(value,'utf8')>65536||Buffer.from(value,'utf8').toString('utf8')!==value)return unknown();
    await ports.assertQualified(binding);signal.throwIfAborted();
    await authorizeNative({expiresAt:Date.parse(binding.expiresAt)},beforeCredential,async()=>{await ports.assertQualified(binding);signal.throwIfAborted()});signal.throwIfAborted();
    const credential=Object.freeze(credentialSchema.parse(await ports.readCredential(binding,signal)));signal.throwIfAborted();if(credential.notBefore>=credential.expiresAt)return unknown();

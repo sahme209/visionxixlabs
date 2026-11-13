@@ -54,3 +54,4 @@ it('keeps one captured private clock across awaited profile checks and the expor
  expect(readNativeCustodianResponse).not.toHaveBeenCalled();
  expect(await f.ports.clock(f.signal)).toEqual({earliest:now,latest:f.profile.maximumExpiresAt});
 });
+it('rechecks the same captured qualification after its clock wait before acquiring native credentials',async()=>{const f=setup();f.qualification.clock.mockImplementation(async()=>{f.qualification.assertCurrent.mockRejectedValue(Error('revoked during clock'));return {earliest:now,latest:now+1000}});await expect(f.ports.readCustodianCredential(f.m,f.signal)).rejects.toThrow();expect(readNativeCustodianResponse).not.toHaveBeenCalled()});
