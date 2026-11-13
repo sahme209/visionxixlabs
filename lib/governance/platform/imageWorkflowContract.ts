@@ -16,10 +16,25 @@ export const imageWorkflowCommand=z.discriminatedUnion('operation',[
  z.object({operation:z.literal('inspect'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('preview'),actionId:platformActionId}).strict(),
  z.object({operation:z.literal('review'),actionId:platformActionId,expectedVersion:z.literal(0),planDigest:digest}).strict(),
+ z.object({operation:z.literal('initialize'),actionId:platformActionId,expectedVersion:z.literal(1),planDigest:digest}).strict(),
+ z.object({operation:z.literal('put'),actionId:platformActionId,expectedVersion:z.literal(2),planDigest:digest}).strict(),
 ]);
 export type ImageWorkflowCommand=z.infer<typeof imageWorkflowCommand>;
 function imagePlan(action:z.infer<typeof platformInspectionSchema>){const [a,b]=action.plan.effects;return action.plan.effects.length===2&&a.kind==='growth.image.initialize'&&b.kind==='growth.image.put'&&'profile' in b.target&&b.target.profile==='private_derived_grant_v1'&&a.target.author===b.target.author&&a.target.connectionId===b.target.connectionId&&a.target.connectionRevision===b.target.connectionRevision&&a.target.bytesDigest===b.target.bytesDigest}
-export const imageWorkflowHistory=z.object({action:platformInspectionSchema,authority:z.literal('image_history_only'),sourceValidation:z.literal('not_checked'),executionAuthorized:z.literal(false)}).strict().refine(v=>imagePlan(v.action));
+const stamp=z.number().int().nonnegative().safe();
+export const imageReadyObservation=z.object({providerImageReference:z.string().max(512).regex(/^urn:li:image:[A-Za-z0-9_-]+$/),author:z.string().max(512).regex(/^urn:li:(?:person|organization):[A-Za-z0-9_-]+$/),observedAt:stamp,profileDigest:digest,restVersion:z.string().regex(/^20[0-9]{2}(?:0[1-9]|1[0-2])$/),mediaReady:z.literal(true)}).strict();
+export const imagePutReceipt=z.object({ready:imageReadyObservation.optional(),format:z.literal(1),purpose:z.literal('platform_image_put_result_v1'),actionId:platformActionId,planDigest:digest,grantReference:z.string().regex(/^platform_image_grant_[a-f0-9]{64}$/),outcome:z.enum(['confirmed','refused','unknown']),observedAt:stamp,receiptDigest:digest}).strict();
+const uploadHistory=z.object({artifact:imagePublicArtifact,bindingDigest:digest,grant:z.object({providerImageReference:z.string().max(512).regex(/^urn:li:image:[A-Za-z0-9_-]+$/),expiresAt:stamp,claimedAt:stamp.nullable(),result:imagePutReceipt.nullable()}).strict().nullable()}).strict();
+export const imageWorkflowHistory=z.object({action:platformInspectionSchema,upload:uploadHistory.optional(),authority:z.literal('image_history_only'),sourceValidation:z.literal('not_checked'),executionAuthorized:z.literal(false)}).strict().superRefine((v,c)=>{
+ const bad=()=>c.addIssue({code:'custom',message:'Inconsistent image history'});if(!imagePlan(v.action))return bad();if(!v.upload)return;
+ const a=v.upload.artifact,[init,put]=v.action.plan.effects;if(init.kind!=='growth.image.initialize'||put.kind!=='growth.image.put'||!('artifactId' in put.target))return bad();
+ if(a.artifactId!==put.target.artifactId||a.creatorUserId!==v.action.requesterUserId||a.author!==init.target.author||a.bytesDigest!==init.target.bytesDigest||a.connectionId!==init.target.connectionId||a.connectionRevision!==init.target.connectionRevision)return bad();
+ const g=v.upload.grant;if(!g)return;if(v.action.effects[0]?.status!=='confirmed')return bad();
+ if(g.claimedAt!==null&&(g.claimedAt>=g.expiresAt||g.claimedAt>=Date.parse(v.action.plan.expiresAt)||v.action.effects[1]?.status==='not_started'))return bad();
+ const r=g.result;if(!r)return;
+ if(g.claimedAt===null||r.observedAt<g.claimedAt||r.actionId!==v.action.actionId||r.planDigest!==v.action.plan.digest||r.grantReference!==put.target.grantReference||r.outcome!==v.action.effects[1]?.status||r.outcome!==v.action.status)return bad();
+ if(r.ready&&(r.outcome!=='confirmed'||r.ready.providerImageReference!==g.providerImageReference||r.ready.author!==a.author||r.ready.profileDigest!==put.target.destinationProfileDigest||r.ready.observedAt<g.claimedAt||r.ready.observedAt>r.observedAt||r.ready.observedAt>=g.expiresAt||r.ready.observedAt>=Date.parse(v.action.plan.expiresAt)))bad();
+});
 export const imageWorkflowPreview=z.object({action:platformInspectionSchema,artifact:imagePublicArtifact,bindingDigest:digest,bytesBase64url:imageCanonicalBase64url,authority:z.literal('review_preview_only'),executionAuthorized:z.literal(false)}).strict().superRefine((v,c)=>{
  const [a,b]=v.action.plan.effects,artifact=v.artifact,bad=()=>c.addIssue({code:'custom',message:'Inconsistent image review preview'});
  if(!imagePlan(v.action)||v.action.expired||!['proposed','approved'].includes(v.action.status))return bad();

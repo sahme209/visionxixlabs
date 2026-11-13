@@ -17,16 +17,24 @@ export function ImageWorkflowPanel({actionId,expectedPlanDigest,currentUserId,ca
  function revoke(){if(url.current){URL.revokeObjectURL(url.current);url.current=null}}
  function clear(){revoke();setImageUrl(null);setPreview(null);setChecked(false)}
  const marker='axiom:image-review-attempt:'+currentUserId+':'+actionId+':'+expectedPlanDigest;
- function held(){try{return sessionStorage.getItem(marker)!==null}catch{return true}}
- function remember(){try{sessionStorage.setItem(marker,'attempted');return sessionStorage.getItem(marker)==='attempted'}catch{return false}}
+ function key(kind:'review'|'initialize'|'put'){return kind==='review'?marker:'axiom:image-'+kind+'-attempt:'+currentUserId+':'+actionId+':'+expectedPlanDigest}
+ function held(kind:'review'|'initialize'|'put'='review'){try{return sessionStorage.getItem(key(kind))!==null}catch{return true}}
+ function remember(kind:'review'|'initialize'|'put'){try{sessionStorage.setItem(key(kind),'attempted');return sessionStorage.getItem(key(kind))==='attempted'}catch{return false}}
  useEffect(()=>{alive.current=true;return()=>{alive.current=false;active.current?.abort();revoke()}},[]);
  useEffect(()=>{if(!owns()){active.current?.abort();clear()}},[revision,actionId,expectedPlanDigest,currentUserId,client,desktopClient.config.sessionToken]);
  useEffect(()=>{if(!preview)return;const timer=setTimeout(()=>{clear();setMessage('The image review expired. History does not renew it.')},Math.min(2147483647,Math.max(0,Date.parse(preview.action.plan.expiresAt)-Date.now()+1)));return()=>clearTimeout(timer)},[preview]);
  const reviewable=Boolean(preview&&preview.action.status==='proposed'&&preview.action.requesterUserId!==currentUserId&&canApprove&&Date.parse(preview.action.plan.expiresAt)>Date.now()&&!held());
- async function run(kind:'preview'|'history'|'review'){
+ function step(kind:'initialize'|'put'){
+  if(!history?.upload||history.action.requesterUserId!==currentUserId||history.action.expired||Date.parse(history.action.plan.expiresAt)<=Date.now()||held(kind))return false;
+  const a=history.action,g=history.upload.grant;
+  return kind==='initialize'?a.status==='approved'&&a.version===1&&a.effects[0]?.status==='not_started'&&g===null:a.status==='claimed'&&a.version===2&&a.effects[0]?.status==='confirmed'&&a.effects[1]?.status==='not_started'&&g!==null&&g.claimedAt===null&&g.result===null&&g.expiresAt>Date.now();
+ }
+ useEffect(()=>{if(!history?.upload||!['approved','claimed'].includes(history.action.status))return;const until=Math.min(Date.parse(history.action.plan.expiresAt),history.upload.grant?.expiresAt??Infinity),timer=setTimeout(()=>{setChecked(false);setMessage('The image operation window expired. Keep the original record; no operation was repeated.')},Math.min(2147483647,Math.max(0,until-Date.now()+1)));return()=>clearTimeout(timer)},[history]);
+ async function run(kind:'preview'|'history'|'review'|'initialize'|'put'){
   if(!owns()||running.current||kind==='review'&&(!checked||!reviewable||!latest.current.canApprove))return;
-  if(kind==='review'&&!remember()){setMessage('The local uncertainty marker cannot be kept. No decision was sent.');return}
-  const original=preview;running.current=true;setBusy(true);setChecked(false);setMessage('');clear();setHistory(null);const c=new AbortController();active.current=c;
+  if((kind==='initialize'||kind==='put')&&(!checked||!step(kind)))return;
+  if((kind==='review'||kind==='initialize'||kind==='put')&&!remember(kind)){setMessage('The local uncertainty marker cannot be kept. No decision was sent.');return}
+  const original=preview,originalHistory=history;running.current=true;setBusy(true);setChecked(false);setMessage('');clear();setHistory(null);const c=new AbortController();active.current=c;
   try{
    if(!owns())return;
    if(kind==='preview'){
@@ -35,11 +43,11 @@ export function ImageWorkflowPanel({actionId,expectedPlanDigest,currentUserId,ca
     const binary=atob(value.bytesBase64url.replaceAll('-','+').replaceAll('_','/')+'='.repeat((4-value.bytesBase64url.length%4)%4)),bytes=Uint8Array.from(binary,v=>v.charCodeAt(0));
     try{const next=URL.createObjectURL(new Blob([bytes],{type:value.artifact.mimeType}));if(!owns()){URL.revokeObjectURL(next);return}url.current=next;setImageUrl(next);setPreview(value);setMessage('Exact image loaded. Inspect the image, account and both operations before your own decision.')}finally{bytes.fill(0)}
    }else{
-    const result=kind==='history'?await client.inspect(actionId,c.signal):original?await client.review(original,c.signal):null;if(!owns())return;if(!result?.ok)throw Error('unconfirmed');const value=imageWorkflowHistory.parse(result.data);
-    if(value.action.actionId!==actionId||value.action.plan.digest!==expectedPlanDigest||kind==='review'&&value.action.status!=='approved')throw Error('mismatch');
-    setHistory(value);setMessage(kind==='review'?'Approval recorded. No image upload or post was executed.':'Original history loaded. It does not validate the current image source or authorize execution.');if(kind==='review'){try{onRecorded?.()}catch{/* A known saved decision remains known. */}}
+    const result=kind==='history'?await client.inspect(actionId,c.signal):kind==='review'?(original?await client.review(original,c.signal):null):originalHistory?await client[kind](originalHistory,c.signal):null;if(!owns())return;if(!result?.ok)throw Error('unconfirmed');const value=imageWorkflowHistory.parse(result.data);
+    if(value.action.actionId!==actionId||value.action.plan.digest!==expectedPlanDigest||kind==='review'&&value.action.status!=='approved'||kind==='initialize'&&(value.action.status!=='claimed'||!value.upload?.grant)||kind==='put'&&(value.action.status!=='confirmed'||!value.upload?.grant?.result?.ready))throw Error('mismatch');
+    setHistory(value);setMessage(kind==='review'?'Approval recorded. No image upload or post was executed.':kind==='initialize'?'Initialization saved. Choose Upload image once for the original second operation. No post was published.':kind==='put'?'Image upload and readiness recorded. Publishing needs its own later approval.':'Original history loaded. It does not validate the current image source or authorize execution.');if(kind!=='history'){try{onRecorded?.()}catch{/* A known saved decision remains known. */}}
    }
-  }catch{if(owns()){clear();setMessage(kind==='review'?'Image approval result is unconfirmed. Read this same action; do not submit again automatically.':'Exact image evidence is unavailable. Keep the original action reference; no decision was sent.')}}
+  }catch{if(owns()){clear();setMessage(kind==='review'?'Image approval result is unconfirmed. Read this same action; do not submit again automatically.':kind==='initialize'||kind==='put'?'Image execution result is unconfirmed. Read this same saved record; do not resend or advance automatically.':'Exact image evidence is unavailable. Keep the original action reference; no decision was sent.')}}
   finally{running.current=false;if(owns())setBusy(false)}
  }
  if(!owns())return <p role="status">Account or action changed. Reopen this exact image record.</p>;
@@ -56,7 +64,17 @@ export function ImageWorkflowPanel({actionId,expectedPlanDigest,currentUserId,ca
    <button className="btn-primary" type="button" disabled={busy||!checked||!reviewable} onClick={()=>void run('review')}>Record independent image approval</button>
    {preview.action.requesterUserId===currentUserId&&<p>The requester cannot independently approve their own image.</p>}
   </>}
-  {history&&<div><h3 className="font-medium">Saved review history</h3><p>{history.action.status} · {history.action.attemptCount} attempt</p><p className="text-sm text-zinc-400">Historical evidence only. Current source and execution authority were not established by this read.</p>{['claimed','unknown'].includes(history.action.status)&&<p role="alert">Keep this original consumed or uncertain record. Do not resend, reset or replace it automatically.</p>}</div>}
+  {history&&<div className="space-y-3"><h3 className="font-medium">Saved review history</h3><p>{history.action.status} · {history.action.attemptCount} attempt</p><p className="text-sm text-zinc-400">Historical evidence only. The server must recheck current source and authority for every operation.</p>
+   {history.upload&&<><p>Account: {history.upload.artifact.author}</p><p className="break-all text-xs">Image SHA256: {history.upload.artifact.bytesDigest}</p>
+    {history.upload.grant&&<p>{history.upload.grant.result?.ready?'Ready image recorded':history.upload.grant.result?'Upload result: '+history.upload.grant.result.outcome:history.upload.grant.claimedAt!==null?'Original upload claim consumed':'Initialization recorded · upload not started'}</p>}
+    {history.action.requesterUserId===currentUserId&&['approved','claimed'].includes(history.action.status)&&<div className="space-y-3">
+     <p className="text-sm text-zinc-400">Two separate commands. Initialization does not upload bytes; upload does not publish a post. Qualification must be available on the server.</p>
+     <label className="flex gap-2 text-sm"><input type="checkbox" checked={checked} disabled={busy||(!step('initialize')&&!step('put'))} onChange={event=>setChecked(event.target.checked)}/>I want to run this exact next image operation once.</label>
+     {history.action.status==='approved'?<button type="button" className="btn-primary" disabled={busy||!checked||!step('initialize')} onClick={()=>void run('initialize')}>Initialize image once</button>:<button type="button" className="btn-primary" disabled={busy||!checked||!step('put')} onClick={()=>void run('put')}>Upload image once</button>}
+    </div>}
+   </>}
+   {(history.action.status==='unknown'||history.action.status==='claimed'&&(history.action.effects[0]?.status!=='confirmed'||history.upload?.grant?.claimedAt!==null))&&<p role="alert">Keep this original consumed or uncertain record. Do not resend, reset or replace it automatically.</p>}
+  </div>}
   <details><summary>Exact record references</summary><p className="break-all">{actionId}</p><p className="break-all">Plan: {expectedPlanDigest}</p>{preview&&<p className="break-all">Image SHA256: {preview.artifact.bytesDigest}</p>}</details>
   <p role="status" aria-live="polite">{busy?'Checking this exact image record…':message}</p>
  </section>;

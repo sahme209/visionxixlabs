@@ -3,11 +3,11 @@ import {createHash} from 'node:crypto';
 import {readBoundedRequestJsonWithSize} from '@/lib/api/readBoundedRequestJson';
 import {imageWorkflowCommand,imageArtifactIntakeResult,imageArtifactLookupResult,imagePreparedResult,imageActionLookupResult,imageWorkflowHistory,imageWorkflowPreview} from './imageWorkflowContract';
 import {createDefaultImageWorkflowRequestService} from './imageWorkflowRequestService';
-interface Service{intake(selection:unknown,bytes:Uint8Array):Promise<unknown>;lookupArtifact(reference:string):Promise<unknown>;prepare(artifactId:string,expiresAt:string,reference:string):Promise<unknown>;lookup(reference:string):Promise<unknown>;inspect(id:string):Promise<unknown>;preview(id:string):Promise<unknown>;review(id:string,version:number,digest:string):Promise<unknown>}
+interface Service{initialize?(id:string,version:number,digest:string):Promise<unknown>;put?(id:string,version:number,digest:string):Promise<unknown>;intake(selection:unknown,bytes:Uint8Array):Promise<unknown>;lookupArtifact(reference:string):Promise<unknown>;prepare(artifactId:string,expiresAt:string,reference:string):Promise<unknown>;lookup(reference:string):Promise<unknown>;inspect(id:string):Promise<unknown>;preview(id:string):Promise<unknown>;review(id:string,version:number,digest:string):Promise<unknown>}
 const uncertain={ok:false,error:'platform_image_workflow_unconfirmed',recovery:'inspect_same_action_or_lookup_original_reference_no_automatic_retry'};
 function reply(body:unknown,status=200,max=128*1024){let text=JSON.stringify(body);if(new TextEncoder().encode(text).length>max){text=JSON.stringify(uncertain);status=409}return new Response(text,{status,headers:{'content-type':'application/json','cache-control':'private, no-store','x-content-type-options':'nosniff'}})}
 /** Prepared/unregistered. Exact image bytes occur only in deliberately requested
- * intake/preview. Native upload/credential/address commands are absent. */
+ * intake/preview. Exact initialize/put commands expose no credential, address or observation input. Defaults stay unqualified; no route is registered. */
 export function createImageWorkflowHttp(factory:(request:Request)=>Promise<Service>=createDefaultImageWorkflowRequestService){return async(request:Request)=>{
  if(request.method!=='POST')return reply({ok:false,error:'method_not_allowed'},405);
  let service:Service;try{service=await factory(request)}catch{return reply({ok:false,error:'platform_requester_unavailable'},401)}
@@ -29,6 +29,12 @@ export function createImageWorkflowHttp(factory:(request:Request)=>Promise<Servi
    case 'preview':{
     const value=imageWorkflowPreview.parse(await service.preview(c.actionId)),bytes=Buffer.from(value.bytesBase64url,'base64url');
     try{if(value.action.actionId!==c.actionId||bytes.length!==value.artifact.byteCount||bytes.toString('base64url')!==value.bytesBase64url||createHash('sha256').update(bytes).digest('hex')!==value.artifact.bytesDigest)throw Error('mismatch');data=value}finally{bytes.fill(0)}break;
+   }
+   case 'initialize':case 'put':{
+    const method=c.operation==='initialize'?service.initialize:service.put;if(!method)throw Error('unavailable');
+    const value=imageWorkflowHistory.parse(await method.call(service,c.actionId,c.expectedVersion,c.planDigest));
+    if(value.action.actionId!==c.actionId||value.action.plan.digest!==c.planDigest||!value.upload||c.operation==='initialize'&&(value.action.status!=='claimed'||value.action.effects[0]?.status!=='confirmed'||!value.upload.grant)||c.operation==='put'&&(value.action.status!=='confirmed'||!value.upload.grant?.result?.ready))throw Error('mismatch');
+    data=value;break;
    }
    default:{const value=imageWorkflowHistory.parse(await(c.operation==='inspect'?service.inspect(c.actionId):service.review(c.actionId,c.expectedVersion,c.planDigest)));if(value.action.actionId!==c.actionId||c.operation==='review'&&(value.action.plan.digest!==c.planDigest||value.action.status!=='approved'))throw Error('mismatch');data=value}
   }

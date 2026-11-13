@@ -10,8 +10,7 @@ import {readPlatformAction} from './kernel';
 import {platformActionId} from './viewContract';
 import {digest} from './contracts';
 const fail=():never=>{throw Error('platform_image_storage_unavailable')},stamp=z.number().int().nonnegative().safe();
-export const imageReadyObservation=z.object({providerImageReference:z.string().max(512).regex(/^urn:li:image:[A-Za-z0-9_-]+$/),author:z.string().max(512).regex(/^urn:li:(?:person|organization):[A-Za-z0-9_-]+$/),observedAt:stamp,profileDigest:digest,restVersion:z.string().regex(/^20[0-9]{2}(?:0[1-9]|1[0-2])$/),mediaReady:z.literal(true)}).strict();
-const resultSchema=z.object({ready:imageReadyObservation.optional(),format:z.literal(1),purpose:z.literal('platform_image_put_result_v1'),actionId:platformActionId,planDigest:digest,grantReference:z.string().regex(/^platform_image_grant_[a-f0-9]{64}$/),outcome:z.enum(['confirmed','refused','unknown']),observedAt:stamp,receiptDigest:digest}).strict();
+import {imageReadyObservation,imagePutReceipt as resultSchema} from './imageWorkflowContract';
 export type ImagePutResult=z.infer<typeof resultSchema>;
 export function imageBindingForParent(raw:unknown,parent:PlatformAction,id:string){const b=readImageUploadBinding(raw);if(b.actionId!==id||hash(b.plan)!==hash(parent.plan)||hash(b.requester)!==hash(parent.requester))return fail();return b}
 function envelope(raw:unknown,maxPlain:number){if(typeof raw!=='string'||raw.length>4*Math.ceil((maxPlain+28)/3)+3||!/^v2\.[A-Za-z0-9_-]+$/.test(raw))return fail();const v=raw.slice(3),bytes=Buffer.from(v,'base64url');if(bytes.length<28||bytes.toString('base64url')!==v)return fail();return raw}

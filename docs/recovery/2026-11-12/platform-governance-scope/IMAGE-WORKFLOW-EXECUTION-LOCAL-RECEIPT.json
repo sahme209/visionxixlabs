@@ -1,0 +1,67 @@
+{
+  "scope": "Prepared authenticated exact image initialization/upload commands, metadata-only readiness history and explicit client/panel progression; no real resources/default mounting",
+  "baseHead": "4dd670c0",
+  "sourceHashes": {
+    "lib/governance/platform/imageWorkflowContract.ts": "122f9881fa9af728c6ac0466966ae5d7e77252a94e51d859a63214d647ab0ce2",
+    "lib/governance/platform/imageWorkflowRequest.ts": "360452fe23a27a3dad9e17890c8cd587f169336a31fe62cb37f6b397283c2811",
+    "lib/governance/platform/imageWorkflowHttp.ts": "892965a88af1a2b2cfd32a9899dc102f193ad21753211a04b9dc0d64ba19d54d",
+    "lib/governance/platform/imageStorageSql.ts": "17be92e9cb60c6ccf733fc483d2732ec18d83a2c104471151e0705b2c4b0f9a1",
+    "desktop/src/lib/imageWorkflow.ts": "0ce5c9f0ad28c8f51f96fb4564c9ef786347f17f490651be2b028e41dc6839ea",
+    "desktop/src/components/ImageWorkflowPanel.tsx": "18dca3a37bb3ad55ce00358d6f503f9eee55cbb7228f860155de2c43ae51be7e",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "f37776487a2ad506aa7359be7fdccea3ff7142525a72e425fa6bf64299bc8477",
+    "lib/governance/platform/__tests__/imageWorkflowContract.test.ts": "6630a051eb54d40ad30fbf3ab3b294e82916e2a3b793d8624cd1cc3fdf8236d2",
+    "lib/desktop/__tests__/imageWorkflowClient.test.ts": "093678e80de510ad200a7d609f20c18917ba1c2b75e1e3677ebbf0951f246cd9",
+    "lib/desktop/__tests__/imageWorkflowPanel.test.ts": "72233f1d44cc6668257409b820af9c9429918e09e7971581d848c3f15af9d13a",
+    "scripts/run-platform-governance-postgres.py": "d2d6fc3472a4ad688a22b109bd27e06dce205849a822bc926ef9acc9c4a44a68"
+  },
+  "checks": {
+    "focused": 26,
+    "actualIsolatedSql": 222,
+    "rootTypes": "PASS",
+    "desktopTypes": "PASS",
+    "desktopFrontendBuild": "PASS",
+    "fullOrdinarySuite": {
+      "passed": 18897,
+      "failed": 0,
+      "pending": 1136,
+      "total": 20033,
+      "failedSuites": 0
+    }
+  },
+  "actualSqlRoot": "/private/tmp/axiom-platform-pg-hmdvc6on",
+  "ownedSqlStopped": true,
+  "fullOrdinarySuiteRoot": "/private/tmp/axiom-current-full-suite-7qaaqogz",
+  "sourceBindingLimit": "SQL runner source manifest includes current source/panels/client. Ordinary-suite runner binds tracked HEAD/diff. Later edits are living docs/internal demo wording, separately checked.",
+  "logs": [
+    "/private/tmp/axiom-image-execution-command-red.log",
+    "/private/tmp/axiom-image-client-execution-red.log",
+    "/private/tmp/axiom-image-execution-panel-red.log",
+    "/private/tmp/axiom-image-workflow-final-focused.log",
+    "/private/tmp/axiom-image-workflow-server-types.log",
+    "/private/tmp/axiom-image-workflow-desktop-types.log",
+    "/private/tmp/axiom-image-workflow-desktop-build.log"
+  ],
+  "newSqlJourneys": [
+    "Real desktop client -> strict prepared HTTP -> synthetic paired HMAC/current SQL -> private initializer -> encrypted grant -> original PUT claim -> fixed PUT/exact AVAILABLE GET -> readiness history. Reviewer execution refuses; history remains available after former reviewer revocation/key unavailability. All provider fetches intercepted and decoder/key/profile/native qualification simulated.",
+    "Both initialization and PUT result replies deliberately lost AFTER commit; client reports uncertainty, reads original stored metadata, refuses a repeated original child, and only an explicit separate second-child command proceeds. Exactly one of each native write; no automatic retry."
+  ],
+  "behavior": [
+    "No caller address/outcome/qualification/session fields in execution commands; exact original action/version/plan required",
+    "Paired possession wraps all execution resource callbacks; current version and decoder identity remain live getters, not stale copied settings",
+    "Metadata history reads stored artifact/grant/ready receipts without decoder/key/provider qualification and returns no envelopes, private addresses, credentials or session IDs",
+    "Browser-safe shared readiness/receipt schemas; client rechecks full plan, original artifact/people/binding, exact receipt hash and context around awaits",
+    "Requester panel requires a separate personal confirmation for each next step; durable nonsecret per-step uncertainty markers prevent replay across remount, and only deliberate saved-history recovery can show progress",
+    "Known initialized original grant can advance to its separately requested original PUT; initializer is never replayed or re-reviewed; expired/claimed/unknown PUT stays blocked"
+  ],
+  "limitations": [
+    "No real native/browser visual acceptance, signed app rebuild/relaunch or current production build",
+    "Actual provider/source permission/key/decoder/worker/clock/runtime qualification and default registration remain unavailable",
+    "No public route or production schema/flag enabled; no provider account/credential/signing/install/push/deploy/inference/spending action",
+    "Related-media selection and complete family/caller audit must be checked before final whole-three-family review/frozen build/green PR; master/live requirements remain open"
+  ],
+  "laterDemoWordingChecks": {
+    "passed": 15,
+    "log": "/private/tmp/axiom-image-workflow-demo.log"
+  },
+  "testFixtureCorrection": "Initial root types found existing panel client mocks missing the two new methods. Added typed initialize/put mocks; no existing assertion or source permission check removed."
+}

@@ -247,3 +247,39 @@ it.skipIf(!enabled)('lost PUT claim acknowledgement cannot open either image or 
   const saved=await f.r.transaction(async tx=>{await tx.lock(f.proposal.actionId);return tx.imageStorage!.readGrant()});expect(saved?.claim).toMatchObject({attempt:1});expect(saved?.putResult).toBeNull();await expect(f.store.put(f.proposal.actionId,2,actor)).rejects.toThrow();expect(native.fetch).toHaveBeenCalledTimes(1);grantKeys.mockRestore();
  }finally{native.fetch.mockRestore()}
 });
+function executionHttp(f:Awaited<ReturnType<typeof nativeExecutionFixture>>){
+ const codec=createPrivateDesktopTokenCodec(Buffer.alloc(32,35));
+ const http=createImageWorkflowHttp(request=>createImageWorkflowRequestComposition(request,{repo:f.r,resources:f.resources,executionResources:f.resources,verifyDesktopToken:codec.verifyDesktopToken,readAdminEmails:()=>['image-requester@example.test','image-reviewer@example.test']}));
+ const client=(p=actor)=>{const config={apiBase:'https://fixture.invalid',sessionToken:codec.mintDesktopToken(p.sessionId)};return createImageWorkflowClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}})};
+ return {codec,http,client};
+}
+it.skipIf(!enabled)('joins real desktop execution commands through authenticated HTTP and SQL to both native children and readiness history',async()=>{
+ const f=await nativeExecutionFixture(),native=interceptImageNative(f),handler=native.fetch.getMockImplementation()!,h=executionHttp(f);native.fetch.mockRestore();
+ const transport=vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>String(input).startsWith('https://fixture.invalid/')?h.http(new Request(String(input),init)):handler(input,init));
+ try{
+  const requester=h.client(),other=h.client(reviewer),before=await requester.inspect(f.proposal.actionId);expect(before.ok).toBe(true);if(!before.ok)throw Error('fixture');
+  expect(await other.initialize(before.data)).toMatchObject({ok:false,outcomeUnconfirmed:true});expect(f.credentials).not.toHaveBeenCalled();
+  const initialized=await requester.initialize(before.data);expect(initialized.ok).toBe(true);if(!initialized.ok)throw Error('fixture');expect(initialized.data.upload?.grant).toMatchObject({claimedAt:null,result:null});
+  const done=await requester.put(initialized.data);expect(done.ok).toBe(true);if(!done.ok)throw Error('fixture');expect(done.data).toMatchObject({action:{status:'confirmed',attemptCount:1},upload:{grant:{result:{ready:{mediaReady:true}}}},executionAuthorized:false});
+  const values=JSON.stringify([before,initialized,done]);expect(values).not.toMatch(/dms-uploads|SYNTHETIC_PRIVATE|SYNTHETIC_NOT_A_REAL_TOKEN|envelope|sessionId/);
+  await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',reviewer.sessionId);
+  f.resources.readGrantKey=async()=>{throw Error('key_unavailable')};expect(await requester.inspect(f.proposal.actionId)).toMatchObject({ok:true,data:{action:{status:'confirmed'}}});
+  expect(transport.mock.calls.filter(c=>!String(c[0]).startsWith('https://fixture.invalid/')).map(c=>c[1]?.method)).toEqual(['POST','PUT','GET']);
+ }finally{transport.mockRestore()}
+});
+it.skipIf(!enabled)('lost execution replies recover only original saved metadata and never automatically repeat either native write',async()=>{
+ const f=await nativeExecutionFixture(),native=interceptImageNative(f),handler=native.fetch.getMockImplementation()!,h=executionHttp(f);native.fetch.mockRestore();const lost=new Set<string>();let writes=0;
+ const transport=vi.spyOn(globalThis,'fetch').mockImplementation(async(input,init)=>{
+  if(!String(input).startsWith('https://fixture.invalid/')){if(init?.method==='POST'||init?.method==='PUT')writes++;return handler(input,init)}
+  const command=JSON.parse(String(init?.body)),response=await h.http(new Request(String(input),init));if(['initialize','put'].includes(command.operation)&&response.status===200&&!lost.has(command.operation)){lost.add(command.operation);throw Error('synthetic_saved_reply_lost')}return response;
+ });
+ try{const client=h.client(),before=await client.inspect(f.proposal.actionId);if(!before.ok)throw Error('fixture');
+  expect(await client.initialize(before.data)).toMatchObject({ok:false,outcomeUnconfirmed:true});expect(writes).toBe(1);
+  const recovered=await client.inspect(f.proposal.actionId);expect(recovered).toMatchObject({ok:true,data:{action:{status:'claimed'},upload:{grant:{claimedAt:null}}}});if(!recovered.ok)throw Error('fixture');
+  expect(await client.initialize(recovered.data)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(writes).toBe(1);
+  // A separate deliberate command for the original second child, not a retry.
+  expect(await client.put(recovered.data)).toMatchObject({ok:false,outcomeUnconfirmed:true});expect(writes).toBe(2);
+  const completed=await client.inspect(f.proposal.actionId);expect(completed).toMatchObject({ok:true,data:{action:{status:'confirmed'},upload:{grant:{result:{ready:{mediaReady:true}}}}}});if(!completed.ok)throw Error('fixture');
+  expect(await client.put(completed.data)).toMatchObject({ok:false,outcomeUnconfirmed:false});expect(writes).toBe(2);
+ }finally{transport.mockRestore()}
+});
