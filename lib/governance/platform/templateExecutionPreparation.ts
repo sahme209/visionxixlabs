@@ -7,11 +7,8 @@ import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
 import {platformPrincipalSchema,digest} from './contracts';
 import {compilePlatformPlan} from './kernel';
 import {deriveTemplateRecipient,templateGrantReference,compileTemplateExecutionBinding,readTemplateExecutionBinding} from './templateExecutionContract';
-const base={accountId:z.string().regex(/^\d{12}$/),region:z.enum(['us-east-1','us-east-2']),expiresAt:z.string().datetime()};
-export const templateExecutionSelection=z.discriminatedUnion('operation',[
- z.object({...base,operation:z.literal('create_bucket')}).strict(),z.object({...base,operation:z.literal('upload')}).strict(),
- z.object({...base,operation:z.literal('access'),objectVersion:z.string().min(1).max(256).refine(v=>v!=='null'&&v.trim()===v&&!/[\x00-\x1f]/.test(v)),ttlSeconds:z.number().int().min(1).max(3600),delivery:z.literal('original_requester_session')}).strict()
-]);
+import {templateWorkflowSelection as templateExecutionSelection,templateSelectionBase as base} from './templateWorkflowContract';
+export {templateWorkflowSelection as templateExecutionSelection} from './templateWorkflowContract';
 export const templateExecutionProfile=z.object({accountId:base.accountId,region:base.region,profileDigest:digest,access:z.object({artifactProfileDigest:digest,clockSkewMs:z.number().int().min(1).max(30000)}).strict().nullable()}).strict();
 export type TemplateExecutionSelection=z.infer<typeof templateExecutionSelection>;
 export type TemplateExecutionProfile=z.infer<typeof templateExecutionProfile>;

@@ -1,4 +1,5 @@
 import {z} from 'zod';
+import {templateReceiptBody as receiptBody} from './templateWorkflowContract';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
 import {digest,platformEffectSchema} from './contracts';
 import {platformActionId} from './viewContract';
@@ -17,12 +18,6 @@ export function nativeTemplateKey(raw:unknown,requester:unknown){const e=platfor
 function validate(raw:unknown){const b=body.parse(raw);nativeTemplateKey(b.effect,b.requester);if(b.effect.kind==='template.bucket.create'){if(b.effect.target.region!=='us-east-2'||b.access!==null)return fail()}else if(b.effect.kind==='template.object.put'){if(b.access!==null)return fail()}else if(b.effect.kind==='template.access.grant'){if(!b.access||b.effect.target.objectVersion==='null'||b.effect.target.recipientDigest!==deriveTemplateRecipient(b.requester)||b.access.grantId!==templateGrantReference(b.actionId,b.effectIndex))return fail()}else return fail();return b}
 export function compileTemplateExecutionBinding(raw:unknown):Readonly<TemplateExecutionBinding>{const b=validate(raw);return freeze({...b,bindingDigest:hash(b)})}
 export function readTemplateExecutionBinding(raw:unknown):Readonly<TemplateExecutionBinding>{const v=body.extend({bindingDigest:digest}).strict().parse(raw),{bindingDigest,...b}=v;const result=compileTemplateExecutionBinding(b);if(result.bindingDigest!==bindingDigest)return fail();return result}
-const detail=z.discriminatedUnion('kind',[
- z.object({kind:z.literal('bucket'),providerStatus:z.literal(200)}).strict(),
- z.object({kind:z.literal('object'),providerStatus:z.literal(200),objectVersion:z.string().min(1).max(1024).refine(v=>v!=='null'),versioningEnabled:z.literal(true)}).strict(),
- z.object({kind:z.literal('access'),grantId:access.shape.grantId,artifactRef:z.string().regex(/^platform_template_artifact_[a-f0-9-]{36}$/),artifactProfileDigest:digest,signedAt:stamp,ttlSeconds:positive.max(3600),hardExpiresAt:stamp,clockSkewMs:positive}).strict()
-]);
-const receiptBody=z.object({format:z.literal(1),purpose:z.literal('platform_template_execution_receipt_v1'),receiptId:z.string().regex(/^platform_template_receipt_[a-f0-9-]{36}$/),nativeKey:digest,bindingDigest:digest,actionId:platformActionId,effectIndex:index,planDigest:digest,sourceDigest:digest,profileDigest:digest,generation:positive,operation:z.enum(['create_bucket','upload','access']),outcome:z.enum(['confirmed','refused','unknown']),observedAt:stamp,detail:detail.nullable()}).strict();
 export type TemplateExecutionReceipt=z.infer<typeof receiptBody>&{receiptDigest:string};
 export function createTemplateExecutionReceipt(raw:unknown):Readonly<TemplateExecutionReceipt>{const r=receiptBody.parse(raw),d=r.detail;if(r.outcome==='confirmed'){if(!d||({bucket:'create_bucket',object:'upload',access:'access'}[d.kind])!==r.operation)return fail();if(d.kind==='access'&&(!Number.isSafeInteger(d.signedAt+d.ttlSeconds*1000)||d.hardExpiresAt!==d.signedAt+d.ttlSeconds*1000||d.signedAt%1000!==0||d.signedAt>r.observedAt))return fail()}else if(d!==null)return fail();return freeze({...r,receiptDigest:hash(r)})}
 export function readTemplateExecutionReceipt(raw:unknown):Readonly<TemplateExecutionReceipt>{const r=receiptBody.extend({receiptDigest:digest}).strict().parse(raw),{receiptDigest,...body}=r;const result=createTemplateExecutionReceipt(body);if(result.receiptDigest!==receiptDigest)return fail();return result}
