@@ -68,7 +68,7 @@
     "lib/governance/platform/imagePublicationSource.ts": "0eabaa4f19acbc1f615da96ed4d4c0f437ce95fed6e3e35290fd324852a9ac24",
     "lib/governance/platform/imageNativeTransport.ts": "7664c4f94dde949219989318eb949d013dd409c79ecba653b0c818f1a9bfa343",
     "lib/governance/platform/imageExecutionStore.ts": "cb42c913eee1aceb230e32e0689bd81f3bb43ba67798188de285943624343671",
-    "lib/governance/platform/currentAuthority.ts": "f80e6ca4f97d2e171335f7c134436551ea2ca2fda0874cd04ba1eca55ceaed86",
+    "lib/governance/platform/currentAuthority.ts": "fc97c82ff1b4269a5bd44c98f76cc54b10da1cbfe9b2767e0b06ef09d84f8d5a",
     "lib/governance/platform/templateContract.ts": "b0cb9f73537824cf4d6aee584429d45ff4f59a1380134290daa8ab20b67b303f",
     "lib/governance/platform/requestComposition.ts": "1813846a33a4aa1985c6ddc4ab01dee65ad36a09e0756329480a5c07811e2157",
     "lib/governance/platform/templatePreparation.ts": "4e8ccacc1cb8a9d53255334511bd17d2be67cb4c91871041400deae08cc44fb3",
@@ -83,7 +83,7 @@
     "lib/governance/platform/templatePreparationStore.ts": "8f1390687f23b03b886e24699c64bff7ee171d1b8a0468a63ffb9716cd6c3e79",
     "lib/governance/platform/templateWorkflowRequestService.ts": "57c57282513360d125ba413b18069d4601bfd4036270d6388428a875da6974e5",
     "lib/governance/platform/kernel.ts": "fe707d2ac30ebfe167ea16d230d109b3db7a614432b706ba4bf2ad98a03e3769",
-    "lib/governance/platform/growthPreparation.ts": "69b33326f972d02e339ff69fb42da5c38e67415c34d028e28ac37211a62cf679",
+    "lib/governance/platform/growthPreparation.ts": "b4d48ee743862b9ef847ee49fa0982896e71ec613365fc3e017f6916f2f31598",
     "lib/governance/platform/defaultExecution.ts": "f460fa2215f771fac4af4cceb741e5c7f3e431b8886390155265773bb6c5297f",
     "lib/governance/platform/executionHttp.ts": "2c410aa4dabcfdfd449ba126b28afa703579097f81cc4cd3c5133c0b1e37ea17",
     "lib/governance/platform/historyProjection.ts": "6b8addff09f7aadbb0b6dc4b326870660b102ce1ad331f2bf53edfa9b32d69e0",
@@ -100,5 +100,28 @@
     "desktop/src/lib/releaseOperationPlanTransport.ts": "ad1b5ca113dea197580707ffb11b96c9d7fc64eb28e9327daf434522c9bdf6d9"
   },
   "realQualification": false,
-  "productionChanged": false
+  "productionChanged": false,
+  "firstFullOrdinarySuite": {
+    "runtime": "0a4c4e8e",
+    "root": "/private/tmp/axiom-current-full-suite-y5m5ok75",
+    "passed": 18900,
+    "failed": 2,
+    "pending": 1139,
+    "cause": "Existing text-only tests required original two-argument source reads; unnecessary third undefined argument corrected in product callers. Assertions unchanged."
+  },
+  "firstFrozenBuild": {
+    "runtime": "0a4c4e8e",
+    "root": "/private/tmp/axiom-image-combined-build-57jfrx21",
+    "exitCode": 0,
+    "notFinalRuntime": true
+  },
+  "compatibilityCorrection": {
+    "files": [
+      "growthPreparation.ts",
+      "currentAuthority.ts"
+    ],
+    "focusedPassed": 6,
+    "log": "/private/tmp/axiom-post-legacy-compatibility.log",
+    "types": "/private/tmp/axiom-post-legacy-types.log"
+  }
 }

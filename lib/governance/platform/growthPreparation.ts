@@ -20,7 +20,7 @@ export async function prepareGrowthPlatformPlan(tx:PlatformTransaction,raw:unkno
   effect=prepared.effect;
   const parsed=z.object({connection:postingConnectionSchema}).passthrough().parse(source);connectionExpires=parsed.connection.expiresAt.getTime();
  }else{
-  const source=postingSourceSchema.parse(await tx.readGrowthPostingSource(selection.draftId,selection.connectionId,selection.imageUploadActionId));
+  const source=postingSourceSchema.parse((selection.imageUploadActionId===undefined?await tx.readGrowthPostingSource(selection.draftId,selection.connectionId):await tx.readGrowthPostingSource(selection.draftId,selection.connectionId,selection.imageUploadActionId)));
   const post=preparePlatformLinkedInPost(source.draft,source.connection,version,now,effectId,source.imageLineage,selection.imageUploadActionId);renderedPost=post.body;connectionExpires=source.connection.expiresAt.getTime();
   effect=selection.operation==='publish'?post.effect:preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(selection.scheduledFor),effectId,source.imageLineage,selection.imageUploadActionId).effect;
  }

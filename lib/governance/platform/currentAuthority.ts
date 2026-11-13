@@ -39,7 +39,7 @@ export function createCurrentPlatformAuthority(readAdminEmails:()=>readonly stri
   }
   if((effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change')||!isPostingEnabled())fail();
   if(effect.kind!=='growth.post.publish'&&effect.kind!=='growth.schedule.change')return fail();
-  const source=postingSourceSchema.parse(await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId,effect.target.imageUploadActionId));
+  const source=postingSourceSchema.parse((effect.target.imageUploadActionId===undefined?await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId):await tx.readGrowthPostingSource(effect.target.draftId,effect.target.connectionId,effect.target.imageUploadActionId)));
   const version=currentLinkedInVersion(),now=await tx.now(),prepared=effect.kind==='growth.post.publish'?preparePlatformLinkedInPost(source.draft,source.connection,version,now,effect.id,source.imageLineage,effect.target.imageUploadActionId):preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(effect.target.scheduledFor),effect.id,source.imageLineage,effect.target.imageUploadActionId);
   if(!isPostingEnabled()||currentLinkedInVersion()!==version||sha256ContentHash(prepared.effect)!==sha256ContentHash(effect))fail();
  }};
