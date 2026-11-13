@@ -1,0 +1,18 @@
+{
+  "format": 1,
+  "pr": 327,
+  "reviewedHead": "cc9b4ddad591f689f2e0de24d95fec6df054fab3",
+  "mergeCommit": "f689a3e947633e4a01ee8a0bd8d8d6f850366fd3",
+  "applicablePrChecksPassed": 9,
+  "applicableMainChecksPassed": 8,
+  "mainFailures": 0,
+  "productionDeployed": false,
+  "governanceEnabled": false,
+  "nativeMacPrTests": {
+    "passed": 96,
+    "failed": 0,
+    "ignored": 1,
+    "durationSeconds": 4.29
+  },
+  "observation": "All exact merge-commit checks completed success; no manual rerun or duplicate local suite."
+}
