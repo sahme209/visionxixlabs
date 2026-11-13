@@ -1,0 +1,34 @@
+{
+  "scope": "Owner-approved local decoder preparation: mocked parent job protocol only; no actual worker/process/codec launched",
+  "sourceHashes": {
+    "lib/governance/platform/imageDecoderParent.ts": "23711beb3e0c578a4401b3fc266fd676a51d5f5e230ab9b0a2987f31a2f0dc24",
+    "lib/governance/platform/__tests__/imageDecoderParent.test.ts": "4915f0c42e1f5326cf1fca84ad3d566cf9c1a2d339b27e4b5d54cf9548668062"
+  },
+  "checks": {
+    "parentCases": 5,
+    "parentAndCandidateWorkerChecks": 15,
+    "rootTypes": "PASS"
+  },
+  "bounds": "One consumed parent instance, 2-second whole-job deadline including qualification/startup/queue, then at most1second owned-stop acknowledgment. No retry; missing resource supplier refuses. This is not an OS/native-memory boundary or qualification issuer.",
+  "cases": [
+    "Success withheld until current qualification and confirmed owned stop; input copy cleared",
+    "Qualification timeout prevents late launch",
+    "Hung result plus hung cleanup bounded",
+    "Unknown cleanup, altered bytes, wrong profile and cancelled caller refuse",
+    "Missing real resources never launch"
+  ],
+  "observedDefect": "Synchronous cancellation during owned-handle acquisition left an immediately rejected worker result unobserved. The regression produces an unhandled rejection; the corrected parent observes it before checking cancellation.",
+  "logs": [
+    "/private/tmp/axiom-image-decoder-parent-red.log",
+    "/private/tmp/axiom-image-parent-abort-red.log",
+    "/private/tmp/axiom-image-decoder-parent-final-tests.log",
+    "/private/tmp/axiom-image-decoder-parent-final-types.log"
+  ],
+  "limitations": [
+    "No actual Node/Sharp/process launcher/module execution",
+    "No real OS memory/CPU/filesystem/network/identity/native-package qualification",
+    "No registration/default enablement, credentials, provider, production schema/flags, signing/install, push/deploy or spending",
+    "No SQL rerun for this unmounted module; prior212SQL acceptance not relabeled current-parent qualification"
+  ],
+  "next": "Concrete protected launcher/resource qualification and approved native upload protocol remain separate; full image executor/workflow and whole-master requirements are incomplete"
+}
