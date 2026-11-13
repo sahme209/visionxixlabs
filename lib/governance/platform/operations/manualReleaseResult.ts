@@ -1,4 +1,5 @@
 import 'server-only';
+import {authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeWindow} from '../executionTime';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {operationalEvidenceId} from './contracts';
@@ -17,26 +18,38 @@ export interface ManualReleaseResultSupplier{
  assertQualified(manifest:Manifest,observationDigest:string,signal:AbortSignal):Promise<void>;
  assertReadyEvidence(manifest:Manifest,observationDigest:string,signal:AbortSignal):Promise<void>;
 }
+export interface ManualReleaseResultTiming{clock:ExecutionTimeSource;signal?:AbortSignal;authorize(view:ManualReleaseResultView,check:ExecutionTimeCheck,signal:AbortSignal):Promise<void>}
 const fail=():never=>{throw Error('manual_release_result_unavailable')};
-export function createManualReleaseResultInspector(inspect:(recordId:string)=>Promise<ManualReleaseResultView>,supplier:ManualReleaseResultSupplier){
+export function createManualReleaseResultInspector(inspect:(recordId:string)=>Promise<ManualReleaseResultView>,supplier:ManualReleaseResultSupplier,timing?:ManualReleaseResultTiming){
+ const clock=timing?.clock,authorize=timing?.authorize,parentSignal=timing?.signal;
  return Object.freeze({async inspect(recordId:string,rawDeploymentId:string){
-  const deploymentId=id.parse(rawDeploymentId),abort=new AbortController();
+  if(typeof clock!=='function'||typeof authorize!=='function'||!(parentSignal instanceof AbortSignal))return fail();
+  const deploymentId=id.parse(rawDeploymentId),abort=new AbortController(),signal=AbortSignal.any([abort.signal,parentSignal]);
   let timer:ReturnType<typeof setTimeout>|undefined;
   const timeout=new Promise<never>((_resolve,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('manual_release_result_unavailable'))},10000)});
   try{return await Promise.race([timeout,(async()=>{
-   const before=await inspect(recordId);abort.signal.throwIfAborted();
+   signal.throwIfAborted();const before=await inspect(recordId);signal.throwIfAborted();
    const manifest=readOperationalManifest(before.manifest);if(manifest.kind!=='release.manual')return fail();if(!Number.isSafeInteger(before.inspectedAt)||before.inspectedAt<0||before.recordId!==recordId||!['notice_claimed','notice_recorded'].includes(before.status)||before.version!==(before.status==='notice_claimed'?2:3))fail();
-   const observation=observationSchema.parse(await supplier.readExact(manifest,deploymentId,abort.signal));abort.signal.throwIfAborted();
+   await authorizeExecutionWindow(clock,{},check=>{if(!check)return fail();return authorize(before,check,signal)},signal);signal.throwIfAborted();
+   const observation=observationSchema.parse(await supplier.readExact(manifest,deploymentId,signal));signal.throwIfAborted();
    if(observation.deploymentId!==deploymentId||observation.projectId!==manifest.target.projectId||observation.teamId!==manifest.target.teamId||observation.environment!==manifest.target.environment||observation.commit!==manifest.source.commit)fail();
    const binding=sha256ContentHash(observation);
-   await supplier.assertQualified(manifest,binding,abort.signal);abort.signal.throwIfAborted();
-   if(observation.providerState==='READY'){await supplier.assertReadyEvidence(manifest,binding,abort.signal);abort.signal.throwIfAborted()}
-   await supplier.assertQualified(manifest,binding,abort.signal);abort.signal.throwIfAborted();
+   await supplier.assertQualified(manifest,binding,signal);signal.throwIfAborted();
+   if(observation.providerState==='READY'){await supplier.assertReadyEvidence(manifest,binding,signal);signal.throwIfAborted()}
+   await supplier.assertQualified(manifest,binding,signal);signal.throwIfAborted();
    // This bound reader re-authenticates possession/current admin access after all
    // awaited receipt/qualification reads; it never renews the consumed notice.
-   const after=await inspect(recordId);abort.signal.throwIfAborted();
+   const after=await inspect(recordId);signal.throwIfAborted();
    const now=after.inspectedAt;
    if(after.recordId!==before.recordId||after.version!==before.version||after.status!==before.status||sha256ContentHash(after.manifest)!==sha256ContentHash(manifest)||!Number.isSafeInteger(now)||now<0||now<before.inspectedAt||Date.parse(observation.observedAt)>now||Date.parse(observation.expiresAt)<=now||Date.parse(observation.observedAt)>=Date.parse(observation.expiresAt))fail();
+   const window:ExecutionTimeWindow={notBefore:Date.parse(observation.observedAt),expiresAt:Date.parse(observation.expiresAt)};
+   await authorizeExecutionWindow(clock,window,check=>{
+    if(!check)return fail();return authorize(after,async restriction=>{
+     await check(restriction);signal.throwIfAborted();await supplier.assertQualified(manifest,binding,signal);signal.throwIfAborted();
+     if(observation.providerState==='READY'){await supplier.assertReadyEvidence(manifest,binding,signal);signal.throwIfAborted()}
+     await supplier.assertQualified(manifest,binding,signal);signal.throwIfAborted();
+    },signal);
+   },signal);signal.throwIfAborted();
    const state=observation.providerState==='READY'?'verified_ready':observation.providerState==='UNKNOWN'?'unknown':['ERROR','CANCELED'].includes(observation.providerState)?'terminal_failure':'pending';
    return Object.freeze({recordId,deploymentId,receiptId:observation.receiptId,state,providerState:observation.providerState,observedAt:observation.observedAt,reviewExpired:now>=Date.parse(manifest.expiresAt),providerExecution:false as const,executionAuthorized:false as const,rollbackAuthorized:false as const,ownerAuthorization:'external_not_verified' as const});
   })()])}catch{return fail()}finally{if(timer!==undefined)clearTimeout(timer);abort.abort()}

@@ -1,0 +1,55 @@
+{
+  "observedAt": "2026-11-13T16:49:03.202924+00:00",
+  "parentCommit": "a2a172ceb620d93f98f7675e82cd932dc3c4498a",
+  "scope": "approved local manual-release joined timing; partial Governance only",
+  "sourceSha256": {
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "ee8780738e905136d9d325fb985e1dfac4d79c5770b4d98c6a5fb9ade75ca2d0",
+    "lib/governance/platform/operations/__tests__/manualReleaseRequest.test.ts": "07b482c4eb7b30f0901abefc78fee07a8303b81028e7d9f4e3f47a8b81fea5f2",
+    "lib/governance/platform/operations/__tests__/manualReleaseResult.test.ts": "a315b6f48577cfb265f1125e3faa9aafb0a11a24371ebc304221705bd769a030",
+    "lib/governance/platform/operations/__tests__/manualReleaseStore.test.ts": "c014da85a954876d5f0bd1222bcb060714a4201edbe3b7f736d7b29e4d6b6be6",
+    "lib/governance/platform/operations/__tests__/releasePreparation.test.ts": "bd552f0dd26a33d954b2d6380881c88d16dc7831fa3c2dcba1d9db0d415e411f",
+    "lib/governance/platform/operations/manualReleaseRequest.ts": "813a990d7c48b03ae8305852f6ca0716ba540bb6a24eb530525f696acad940d9",
+    "lib/governance/platform/operations/manualReleaseRequestService.ts": "94e167a81c7dec660c2c3c724fa3c3b65d5886db6b9cc293a246fb796370d382",
+    "lib/governance/platform/operations/manualReleaseResult.ts": "f60fdd29bc3da07903c696040146510804e2d1a1da2b062c0392cbdd23355abe",
+    "lib/governance/platform/operations/manualReleaseStore.ts": "85c4e2317373a73b44d90d606a1c18100491f4877105ae19c76a4b984307640c",
+    "lib/governance/platform/operations/releasePreparation.ts": "7a645e2401e9558ed70a1bcbfbe3c2f6cf3181acf3b83aa8c483c705a3467068"
+  },
+  "ordinary": {
+    "numPassedTests": 19050,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numTotalTests": 20192,
+    "numFailedTestSuites": 0,
+    "success": true
+  },
+  "focusedSubset": {
+    "files": 4,
+    "passed": 36,
+    "includedInOrdinary": true
+  },
+  "strictRootTypes": "passed",
+  "review": "existing independent reviewer reports no important finding, including qualified source-window derivation; source review only",
+  "simulated": [
+    "people/session authority",
+    "time/profile/evidence supplier",
+    "rows and serialized transaction commit acknowledgment",
+    "native deployment result supplier"
+  ],
+  "actualSql": "NOT RUN; opt-in fixture definitions only updated",
+  "nativeQualification": "NOT RUN; no qualified default supplier or activation",
+  "effects": {
+    "provider": false,
+    "actualSql": false,
+    "credentialsOrKey": false,
+    "resourcesInstallSigning": false,
+    "deploymentEnablement": false,
+    "push": false,
+    "spending": false
+  },
+  "remaining": [
+    "publishing/scheduling/deletion/source-acquisition time composition",
+    "whole participant/transitive review",
+    "real SQL/native clock/custody/fleet/human/provider qualification",
+    "frozen production build, green PR and owner production gates"
+  ]
+}
