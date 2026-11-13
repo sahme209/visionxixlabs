@@ -1,6 +1,6 @@
 import {postingSourceSchema} from '@/lib/growth/linkedin/platformPostingPlan';
-import {assertPlatformParticipantsTime} from './principalTime';
-import type {ExecutionTimeSource} from './executionTime';
+import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from './principalTime';
+import type {ExecutionTimeSource,ExecutionTimeCheck} from './executionTime';
 import type {createImageStorageSql,ImagePutResult} from './imageStorageSql';
 import type {ImageUploadBinding} from './imageCustodyContract';
 import type {createTemplateStorageSql} from './templateStorageSql';
@@ -75,11 +75,11 @@ const fail=():never=>{throw Error('platform_governance_action_unavailable')};
 export function createPlatformActionService(repo:PlatformRepository,authority:PlatformAuthority,timing?:{clock:ExecutionTimeSource;signal?:AbortSignal}){
  const clock=timing?.clock,signal=timing?.signal;
  const actionIds=new WeakMap<PlatformTransaction,string>();
- const observations=new WeakMap<object,{actionId:string;index:number;sendUsed:boolean;sendGranted:boolean;deployment?:Readonly<DeploymentReservation>}>();
+ const observations=new WeakMap<object,{actionId:string;index:number;sendUsed:boolean;sendGranted:boolean;credentialUsed?:boolean;credentialGranted?:boolean;deployment?:Readonly<DeploymentReservation>}>();
  const resultProofs=new WeakMap<object,{actionId:string;index:number}>();
  async function load(tx:PlatformTransaction,id:string){const row=await tx.read(id);if(!row)fail();return readPlatformAction(row)}
  async function actors(tx:PlatformTransaction,state:PlatformAction){await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer)}
- async function timely(tx:PlatformTransaction,state:PlatformAction,phaseActor?:PlatformPrincipal,scheduled?:{effectId:string;source:ReturnType<typeof postingSourceSchema.parse>}){
+ async function timely(tx:PlatformTransaction,state:PlatformAction,phaseActor?:PlatformPrincipal,scheduled?:{effectId:string;source:ReturnType<typeof postingSourceSchema.parse>},nativeCheck?:ExecutionTimeCheck){
   async function auditTime(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
   const before=await auditTime(),decisions=state.plan.effects.map((effect,index)=>({effect,index})).filter(({effect})=>effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel');
   if(!decisions.length)return before;
@@ -119,7 +119,12 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   }
   for(const person of people)await authority.assertCurrent(tx,person);
   const windows=await sourceWindows();
-  await assertPlatformParticipantsTime(tx,people,clock,{notBefore:Math.max(decisions.some(({effect})=>effect.kind==='deployment.vercel')?state.createdAt:0,...windows.map(w=>w.notBefore)),expiresAt:Math.min(Date.parse(state.plan.expiresAt),...windows.map(w=>w.expiresAt))},signal);
+  const restriction={notBefore:Math.max(decisions.some(({effect})=>effect.kind==='deployment.vercel')?state.createdAt:0,...windows.map(w=>w.notBefore)),expiresAt:Math.min(Date.parse(state.plan.expiresAt),...windows.map(w=>w.expiresAt))};
+  if(nativeCheck!==undefined){
+   if(typeof nativeCheck!=='function')return fail();
+   for(const person of people){const session=await readPlatformPrincipalTimeWindow(tx,person,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}
+   await nativeCheck(Object.freeze(restriction));
+  }else await assertPlatformParticipantsTime(tx,people,clock,restriction,signal);
   // Original transaction owns source and human authority both before and after
   // the clock await, including waits for permanent send reservations.
   await sourceWindows();for(const person of people)await authority.assertCurrent(tx,person);
@@ -325,7 +330,24 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    // No capability is issued unless the transaction's commit is confirmed.
    const proof=Object.freeze({});observations.set(proof,{actionId:id,index:result.index,sendUsed:false,sendGranted:false});return Object.freeze({effect:result.effect,proof});
   },
-  async beforeEffectSend(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal){
+  /** Private one-use authority to copy an ALREADY-HELD credential only.
+   * The original physical target hold commits before any supplier can run.
+   * Native issuance/renewal/exchange is not authorized by this method. */
+  async beforeEffectCredential(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck:ExecutionTimeCheck){
+   const binding=observations.get(proof)??fail();if(binding.credentialUsed||binding.sendUsed||typeof nativeCheck!=='function')return fail();binding.credentialUsed=true;
+   const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);let deployment:Readonly<DeploymentReservation>|undefined;
+   await locked(binding.actionId,async(tx,state)=>{
+    if(state.status!=='claimed'||effect.kind!=='deployment.vercel'||actor.userId!==state.requester.userId||actor.sessionId!==state.requester.sessionId||await tx.readEffect(binding.actionId,binding.index)!=='claimed'||sha256ContentHash(effect)!==sha256ContentHash(state.plan.effects[binding.index]))return fail();
+    await actors(tx,state);if(!authority.assertEffectCurrent)return fail();await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor);
+    if(!tx.lockDeploymentTarget||!tx.assertDeploymentTargetAdmission||!tx.readDeploymentTarget||!tx.insertDeploymentTarget||!tx.replaceDeploymentTarget)return fail();
+    const key=nativeDeploymentKey(effect);await tx.lockDeploymentTarget(key);await tx.assertDeploymentTargetAdmission(key);const previous=await tx.readDeploymentTarget(key);
+    deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);
+    if(previous)await tx.replaceDeploymentTarget(previous.version,deployment);else await tx.insertDeploymentTarget(deployment);
+    await authority.assertEffectCurrent(tx,effect);await timely(tx,state,actor,undefined,nativeCheck);
+   });
+   if(observations.get(proof)!==binding||!deployment)return fail();binding.deployment=deployment;binding.credentialGranted=true;
+  },
+  async beforeEffectSend(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck?:ExecutionTimeCheck){
    const binding=observations.get(proof)??fail();
    if(binding.sendUsed)fail();binding.sendUsed=true;
    const actor=platformPrincipalSchema.parse(principal),effect=platformEffectSchema.parse(rawEffect);
@@ -340,8 +362,8 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
     if(effect.kind==='deployment.vercel'){
      if(!tx.lockDeploymentTarget||!tx.assertDeploymentTargetAdmission||!tx.readDeploymentTarget||!tx.insertDeploymentTarget||!tx.replaceDeploymentTarget)fail();
      const key=nativeDeploymentKey(effect);await tx.lockDeploymentTarget!(key);await tx.assertDeploymentTargetAdmission!(key);const previous=await tx.readDeploymentTarget!(key);
-     deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);
-     if(previous)await tx.replaceDeploymentTarget!(previous.version,deployment);else await tx.insertDeploymentTarget!(deployment);
+     if(!binding.credentialGranted||!binding.deployment||typeof nativeCheck!=='function'||!previous||sha256ContentHash(previous)!==sha256ContentHash(binding.deployment))return fail();
+     deployment=previous;
      await actors(tx,state);await authority.assertEffectCurrent?.(tx,effect);await timely(tx,state,actor);
     }
     if(effect.kind==='growth.post.publish'||effect.kind==='growth.post.delete'){
@@ -360,6 +382,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      await timely(tx,state,actor,{effectId:effect.id,source});
     }
     await authority.assertFinalSend?.(tx,effect);
+    if(effect.kind==='deployment.vercel')await timely(tx,state,actor,undefined,nativeCheck);
    });
    if(observations.get(proof)!==binding)fail();
    binding.deployment=deployment;binding.sendGranted=true;
@@ -372,7 +395,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    await locked(binding.actionId,async(tx,state)=>{
     let deploymentReceipt:DeploymentRequestReceipt|undefined;
     if(state.status!=='claimed'||await tx.readEffect(binding.actionId,binding.index)!=='claimed')fail();
-    if(binding.deployment){
+    if(binding.deployment&&binding.sendGranted){
      if(!tx.lockDeploymentTarget||!tx.readDeploymentTarget||!tx.insertDeploymentRequestReceipt||!tx.replaceDeploymentTarget)fail();
      await tx.lockDeploymentTarget!(binding.deployment.nativeKey);const current=await tx.readDeploymentTarget!(binding.deployment.nativeKey);
      if(!current||sha256ContentHash(current)!==sha256ContentHash(binding.deployment))fail();

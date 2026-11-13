@@ -1,10 +1,15 @@
 import {afterEach,it,expect,vi} from 'vitest';
 import {preparePlatformVercelDeployment} from '../platformDeployment';
-import {bindPlatformExecution} from '@/lib/governance/platform/effectExecution';
+import {bindPlatformDeploymentExecution} from '@/lib/governance/platform/effectExecution';
+import {createDeploymentNativeTransport} from '@/lib/governance/platform/deploymentNativeTransport';
+import type {ExecutionTimeCheck} from '@/lib/governance/platform/executionTime';
 import {deploySite} from '../provider';
 vi.mock('@/lib/scaffoldGenerator',()=>({generateSiteFiles:()=>[{path:'index.html',content:'fixture'}],generateSiteFilesFromPlan:()=>[{path:'index.html',content:'fixture'}]}));
 const files=[{path:'index.html',content:'fixture'}],context={projectName:'fixture',teamId:'team_fixture',target:'production' as const,effectId:'deployment'};
-function binding(effect:ReturnType<typeof preparePlatformVercelDeployment>['effect']){const service={claimNextEffect:vi.fn(async()=>({effect,proof:Object.freeze({})})),beforeEffectSend:vi.fn(async()=>{}),observeEffect:vi.fn(async()=>{}),beforeEffectResult:vi.fn(async()=>{})};return {value:bindPlatformExecution(service,'fixture-action'),service}}
+// Explicit synthetic native/time suppliers. Real defaults remain unavailable.
+function binding(effect:ReturnType<typeof preparePlatformVercelDeployment>['effect']){
+ const now=Date.now(),timing={clock:async()=>{const current=Date.now();return {earliest:current,latest:current}},signal:new AbortController().signal},transport=createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetch(url,init),assertQualified:async()=>{},readHeldCredential:async()=>({token:'SYNTHETIC_HELD_TOKEN',notBefore:now-60000,expiresAt:now+60000}),assertCredentialCurrent:async()=>{}}),service={claimNextEffect:vi.fn(async()=>({effect,proof:Object.freeze({})})),beforeEffectCredential:vi.fn(async(_proof:object,_effect:typeof effect,check:ExecutionTimeCheck)=>check()),beforeEffectSend:vi.fn(async(_proof:object,_effect:typeof effect,check?:ExecutionTimeCheck)=>{if(!check)throw Error('missing check');await check()}),observeEffect:vi.fn(async()=>{}),beforeEffectResult:vi.fn(async()=>{})};return {value:bindPlatformDeploymentExecution(service,'fixture-action',transport,timing),service};
+}
 afterEach(()=>{vi.unstubAllGlobals();vi.unstubAllEnvs()});
 it('binds exact named-project creation risk, team, files and environment to request bytes',()=>{
  const p=preparePlatformVercelDeployment(files,context);expect(p.effect.target).toMatchObject({projectName:'fixture',teamId:'team_fixture',environment:'production',projectCreation:'may_create_named_project'});

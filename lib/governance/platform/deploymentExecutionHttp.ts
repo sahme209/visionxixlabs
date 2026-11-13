@@ -3,10 +3,9 @@ import {readBoundedRequestJson} from '@/lib/api/readBoundedRequestJson';
 import {deploySite} from '@/lib/deploy/provider';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {createDefaultPlatformRequestService} from './requestService';
-import {bindPlatformExecution} from './effectExecution';
 import {platformExecutionCommandSchema,platformInspectionSchema,type PlatformInspection} from './viewContract';
 import {deploymentHistoryView} from './deploymentHistoryContract';
-type Service=Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'actorUserId'|'inspect'|'readDeploymentExecutionSource'|'inspectDeployment'|'claim'|'claimNextEffect'|'beforeEffectSend'|'observeEffect'|'beforeEffectResult'>;
+type Service=Pick<Awaited<ReturnType<typeof createDefaultPlatformRequestService>>,'createDeploymentExecutionBinding'|'actorUserId'|'inspect'|'readDeploymentExecutionSource'|'inspectDeployment'|'claim'|'claimNextEffect'|'beforeEffectSend'|'observeEffect'|'beforeEffectResult'>;
 export interface PlatformDeploymentQualification {
  /** Protected current native/runtime/credential/target qualification. A stored
   * plan, digest or requester JSON can never supply this private authority. */
@@ -28,8 +27,15 @@ export function createPlatformDeploymentExecutionHttp(factory:(request:Request)=
   await qualification.assertCurrent(action,request.signal);request.signal.throwIfAborted();
   const source=await service.readDeploymentExecutionSource(action.actionId,action.plan.digest);
   if(source.planDigest!==action.plan.digest||source.sourceDigest!==action.plan.sourceDigest||sha256ContentHash(source.effect)!==sha256ContentHash(effect))throw Error('source_mismatch');
-  request.signal.throwIfAborted();await service.claim(action.actionId,selected.expectedVersion);
-  const binding=bindPlatformExecution({actorUserId:service.actorUserId,claimNextEffect:id=>service.claimNextEffect(id),beforeEffectSend:async(proof,exact)=>{request.signal.throwIfAborted();await qualification.assertCurrent(action,request.signal);request.signal.throwIfAborted();await service.beforeEffectSend(proof,exact);request.signal.throwIfAborted()},observeEffect:(proof,outcome,observation)=>service.observeEffect(proof,outcome,observation),beforeEffectResult:async proof=>{request.signal.throwIfAborted();await qualification.assertCurrent(action,request.signal);request.signal.throwIfAborted();await service.beforeEffectResult(proof);request.signal.throwIfAborted()}},action.actionId);
+  request.signal.throwIfAborted();
+  // Constructing this private binding is resource-free and refuses a missing
+  // runtime before consuming the original independently approved parent.
+  const binding=service.createDeploymentExecutionBinding(action.actionId,{
+   beforeCredential:async()=>{request.signal.throwIfAborted();await qualification.assertCurrent(action,request.signal);request.signal.throwIfAborted()},
+   beforeSend:async()=>{request.signal.throwIfAborted();await qualification.assertCurrent(action,request.signal);request.signal.throwIfAborted()},
+   beforeResult:async()=>{request.signal.throwIfAborted();await qualification.assertCurrent(action,request.signal);request.signal.throwIfAborted()},
+  });
+  await service.claim(action.actionId,selected.expectedVersion);
   const submitted=await deploySite('vercel',source.package,{projectName:effect.target.projectName,...(effect.target.environment==='production'?{target:'production'}:{}),effectId:effect.id,source:{leadId:effect.target.leadId,leadRevision:effect.target.leadRevision},platformExecution:binding});
   const history=deploymentHistoryView.parse(await service.inspectDeployment(action.actionId));
   if(history.action.actionId!==action.actionId||history.action.plan.digest!==action.plan.digest||history.action.status!=='confirmed'||history.requests.length!==1||history.requests[0].effectIndex!==0||history.requests[0].outcome!=='accepted'||history.requests[0].providerDeploymentId!==submitted.deploymentId||history.requests[0].providerState!==submitted.state)throw Error('outcome_unconfirmed');

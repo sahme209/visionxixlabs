@@ -1,3 +1,4 @@
+import {createDeploymentNativeTransport} from '../deploymentNativeTransport';
 import {bindPlatformExecution} from '../effectExecution';
 import {createPlatformRequestComposition} from '../requestComposition';
 import {createRequire} from 'node:module';
@@ -100,9 +101,10 @@ import {deploySite,deploySiteFromPlan} from '@/lib/deploy/provider';
 // Explicit synthetic interval source for opt-in deployment SQL fixtures only.
 // This replaces no default supplier and is not actual native qualification.
 async function syntheticDeploymentRequest(request:{headers:Headers;signal?:AbortSignal},repo:PlatformRepository=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase)){
- return createPlatformRequestComposition({...request,signal:request.signal??new AbortController().signal},{repo,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}}});
+ const start=Date.now()-60000,end=Date.now()+300000;
+ return createPlatformRequestComposition({...request,signal:request.signal??new AbortController().signal},{repo,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}},deploymentTransport:timing=>createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetch(url,init),assertQualified:async()=>{},readHeldCredential:async()=>({token:'synthetic-provider-token',notBefore:start,expiresAt:end}),assertCredentialCurrent:async()=>{}})});
 }
-async function syntheticDeploymentExecution(request:{headers:Headers},id:string,version:number){const service=await syntheticDeploymentRequest(request);await service.claim(id,version);return bindPlatformExecution(service,id)}
+async function syntheticDeploymentExecution(request:{headers:Headers},id:string,version:number){const service=await syntheticDeploymentRequest(request),binding=service.createDeploymentExecutionBinding(id);await service.claim(id,version);return binding}
 async function deploymentFixture(options:{projectName?:string;html?:string;executionRepo?:(base:PlatformRepository)=>PlatformRepository}={}){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TOKEN','synthetic-provider-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');
  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await syntheticDeploymentRequest(request);
@@ -110,7 +112,7 @@ async function deploymentFixture(options:{projectName?:string;html?:string;execu
  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[prepared.effect]},compiled=compilePlatformPlan(raw),id=await requester.propose(raw);
  const independent=await syntheticDeploymentRequest({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
  let binding:object;
- if(options.executionRepo){const service=await syntheticDeploymentRequest(request,options.executionRepo(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase)));await service.claim(id,1);binding=bindPlatformExecution(service,id)}else binding=await syntheticDeploymentExecution(request,id,1);
+ if(options.executionRepo){const service=await syntheticDeploymentRequest(request,options.executionRepo(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase)));binding=service.createDeploymentExecutionBinding(id);await service.claim(id,1)}else binding=await syntheticDeploymentExecution(request,id,1);
  return {website,projectName,prepared,id,requester,binding};
 }
 it.skipIf(!enabled)('joins possessed requester, SQL review/claims and actual deployment helper with synthetic time and HTTP',async()=>{
@@ -1326,7 +1328,7 @@ it.skipIf(!enabled)('joins actual default deployment execution HTTP to one admit
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
 it.skipIf(!enabled).each(['before-send','after-send'] as const)('native deployment qualification revoked %s never yields a usable fresh result or replay',async phase=>{
- try{const f=await preparedLeadDeployment(),native=vi.fn(async()=>Response.json({id:'dpl_qualification',readyState:'BUILDING'}));vi.stubGlobal('fetch',native);let checks=0;const http=createPlatformDeploymentExecutionHttp(syntheticDeploymentRequest,{assertCurrent:async()=>{if(++checks===(phase==='before-send'?2:3))throw Error('synthetic profile revoked')}});expect((await http(f.request())).status).toBe(409);expect(native).toHaveBeenCalledTimes(phase==='before-send'?0:1);const history=await f.requester.inspectDeployment(f.action.actionId);expect(history.action).toMatchObject({status:phase==='before-send'?'unknown':'confirmed',attemptCount:1});expect(history.requests).toHaveLength(phase==='before-send'?0:1);if(phase==='after-send')expect(history.requests[0]).toMatchObject({outcome:'accepted',providerDeploymentId:'dpl_qualification',ready:false});expect((await http(f.request())).status).toBe(409);expect(native).toHaveBeenCalledTimes(phase==='before-send'?0:1);
+ try{const f=await preparedLeadDeployment(),native=vi.fn(async()=>Response.json({id:'dpl_qualification',readyState:'BUILDING'}));vi.stubGlobal('fetch',native);let checks=0;const http=createPlatformDeploymentExecutionHttp(syntheticDeploymentRequest,{assertCurrent:async()=>{if(++checks===(phase==='before-send'?3:4))throw Error('synthetic profile revoked')}});expect((await http(f.request())).status).toBe(409);expect(native).toHaveBeenCalledTimes(phase==='before-send'?0:1);const history=await f.requester.inspectDeployment(f.action.actionId);expect(history.action).toMatchObject({status:phase==='before-send'?'unknown':'confirmed',attemptCount:1});expect(history.requests).toHaveLength(phase==='before-send'?0:1);if(phase==='after-send')expect(history.requests[0]).toMatchObject({outcome:'accepted',providerDeploymentId:'dpl_qualification',ready:false});expect((await http(f.request())).status).toBe(409);expect(native).toHaveBeenCalledTimes(phase==='before-send'?0:1);
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
 
