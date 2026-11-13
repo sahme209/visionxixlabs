@@ -14,9 +14,9 @@ const at=Date.parse('2026-11-13T00:00:00Z'),id='platform_action_11111111-1111-41
 function fixture(){
  const draft={id:'draft',title:'Title',hook:'Hook',body:'Body',cta:null,hashtags:[],imageUrn:null,status:'approved',scheduledFor:null,updatedAt:new Date(at-1000)},connection={id:'connection',linkedinUrn:'urn:li:person:abc',organizationUrn:null,scopes:'w_member_social',status:'connected',expiresAt:new Date(at+60000),updatedAt:new Date(at-1000)},request={kind:'publish' as const,draft,connection,version:'202605'},effect=preparePlatformLinkedInPost(draft,connection,'202605',at).effect;
  const abort=new AbortController(),clock=vi.fn(async()=>({earliest:at,latest:at+1})),profile={profileDigest:'a'.repeat(64),actionId:id,effectDigest:sha256ContentHash(effect),credentialVersion:connection.updatedAt.toISOString(),notBefore:at-1000,expiresAt:at+30000},current=vi.fn(async()=>{}),readProfile=vi.fn(async()=>({...profile})),active=vi.fn(()=>{}),http=vi.fn(async(_url:string,_init:RequestInit)=>new Response(null,{status:201,headers:{'x-restli-id':'urn:li:share:123'}})),owner:ExecutionTimeAuthorization=async(check,finalFacts)=>{if(!check)throw Error('missing check');await check({notBefore:at-1000,expiresAt:at+20000});await finalFacts?.()};
- const ports={actionId:id,clock,signal:abort.signal,assertActive:active,readProfile,assertProfileCurrent:current,fetch:http},transport=createGrowthNativeTransport(ports);
+ const dispatch=vi.fn(async()=>{}),ports={assertDispatchCurrent:dispatch,actionId:id,clock,signal:abort.signal,assertActive:active,readProfile,assertProfileCurrent:current,fetch:http},transport=createGrowthNativeTransport(ports);
  m.row.mockResolvedValue({accessToken:'synthetic-ciphertext',updatedAt:connection.updatedAt});m.decrypt.mockReturnValue('synthetic-token');
- return {effect,request,abort,clock,profile,current,readProfile,active,http,owner,transport,send:(send:ExecutionTimeAuthorization=owner,acquire:ExecutionTimeAuthorization=owner,recheck:ExecutionTimeAuthorization=owner)=>transport.send(effect,request,send,acquire,recheck)};
+ return {ports,dispatch,effect,request,abort,clock,profile,current,readProfile,active,http,owner,transport,send:(send:ExecutionTimeAuthorization=owner,acquire:ExecutionTimeAuthorization=owner,recheck:ExecutionTimeAuthorization=owner)=>transport.send(effect,request,send,acquire,recheck)};
 }
 beforeEach(()=>{vi.clearAllMocks();vi.stubEnv('LINKEDIN_POSTING_ENABLED','true');vi.stubEnv('LINKEDIN_REST_VERSION','202605')});
 afterEach(()=>{vi.useRealTimers();vi.unstubAllEnvs()});
@@ -55,7 +55,7 @@ it('joins the actual action owner and native transport: final human-row wait rev
  const actionId=saved.actionId;await service.review(actionId,0,rows.get(actionId)!.plan.digest,reviewer);await service.claim(actionId,1,requester);
  const effect=rows.get(actionId)!.plan.effects[0];if(effect.kind!=='growth.post.publish')throw Error('fixture');
  const timing={clock:f.clock,signal:f.abort.signal,assertActive:()=>f.abort.signal.throwIfAborted()},native=createGrowthNativeTransport({...timing,actionId,
-  readProfile:async()=>({...f.profile,actionId,effectDigest:sha256ContentHash(effect)}),assertProfileCurrent:async()=>{if(revoked)throw Error('profile revoked in owner await')},fetch:f.http,
+  assertDispatchCurrent:async()=>{if(revoked)throw Error('dispatch revoked')},readProfile:async()=>({...f.profile,actionId,effectDigest:sha256ContentHash(effect)}),assertProfileCurrent:async()=>{if(revoked)throw Error('profile revoked in owner await')},fetch:f.http,
  });
  const binding=bindPlatformGrowthExecution({claimNextEffect:key=>service.claimNextEffect(key,requester),
   beforeEffectCredential:(proof,selected,check,finalFacts)=>service.beforeEffectCredential(proof,selected,requester,async restriction=>{await check!(restriction);armed=true},finalFacts),
@@ -66,3 +66,16 @@ it('joins the actual action owner and native transport: final human-row wait rev
  expect(revoked).toBe(true);expect(m.row).not.toHaveBeenCalled();expect(m.decrypt).not.toHaveBeenCalled();expect(f.http).not.toHaveBeenCalled();expect(rows.get(actionId)?.status).toBe('unknown');expect(rows.get(actionId)?.attemptCount).toBe(1);
  await expect(runPlatformEffect(binding,effect,async()=>({outcome:'confirmed',value:null}))).rejects.toThrow();expect(m.row).not.toHaveBeenCalled();
 });
+
+it.each(['credential-read','credential-decrypt','publish'] as const)('postcommit expiry at %s prevents the next resource effect under the same attempt',async phase=>{
+ const f=fixture();let rechecks=0;const expired:ExecutionTimeAuthorization=async(check,last)=>{await f.owner(check,last);f.clock.mockResolvedValue({earliest:at,latest:at+20000})};
+ const current:ExecutionTimeAuthorization=async(check,last)=>{if(++rechecks===1&&phase==='credential-decrypt')await expired(check,last);else await f.owner(check,last)};
+ await expect(f.send(phase==='publish'?expired:f.owner,phase==='credential-read'?expired:f.owner,current)).rejects.toThrow();
+ if(phase==='credential-read')expect(m.row).not.toHaveBeenCalled();if(phase!=='publish')expect(m.decrypt).not.toHaveBeenCalled();expect(f.http).not.toHaveBeenCalled();
+});
+it('missing explicit native dispatch facts refuses before selected credential access',async()=>{const f=fixture();Reflect.deleteProperty(f.ports,'assertDispatchCurrent');await expect(createGrowthNativeTransport(f.ports).send(f.effect,f.request,f.owner,f.owner,f.owner)).rejects.toThrow();expect(m.row).not.toHaveBeenCalled();expect(f.http).not.toHaveBeenCalled()});
+
+it.each(['credential-read','credential-decrypt','publish'] as const)('native-only dispatch revocation at %s prevents access without repeating authorization',async phase=>{
+ const f=fixture();f.dispatch.mockImplementation(async(...args:unknown[])=>{if(args[2]===phase)throw Error('original dispatch binding revoked')});await expect(f.send()).rejects.toThrow();if(phase==='credential-read')expect(m.row).not.toHaveBeenCalled();if(phase!=='publish')expect(m.decrypt).not.toHaveBeenCalled();expect(f.http).not.toHaveBeenCalled();
+});
+it('postcommit cancellation at publish cannot send or repeat the final owner',async()=>{const f=fixture(),owner=vi.fn(async(check:Parameters<ExecutionTimeAuthorization>[0],last?:()=>Promise<void>)=>{await f.owner(check,last);f.abort.abort()});await expect(f.send(owner)).rejects.toThrow();expect(owner).toHaveBeenCalledOnce();expect(f.http).not.toHaveBeenCalled()});

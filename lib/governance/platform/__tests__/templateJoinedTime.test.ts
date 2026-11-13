@@ -24,7 +24,7 @@ async function fixture(){
   } as unknown as PlatformTransaction;
   const result=await fn(tx);state=staged;effect=stagedEffect;resource=stagedResource;receipts=stagedReceipts;return result;
  }},authority={assertCurrent:async()=>{if(!live)throw Error('revoked')}},credential=vi.fn(()=>({accessKeyId:'synthetic',secretAccessKey:'synthetic',expiresAt:credentialExpiry}));
- const resources={profiles:{read:async()=>profile,assertQualified:async()=>{}},assertQualified:async()=>{},readCredential:credential,now:()=>now,clock:async()=>({earliest:now,latest:now+1})};
+ const resources={assertCredentialCurrent:async()=>{},assertDispatchCurrent:async()=>{},profiles:{read:async()=>profile,assertQualified:async()=>{}},assertQualified:async()=>{},readCredential:credential,now:()=>now,clock:async()=>({earliest:now,latest:now+1})};
  let writes=0;
  vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async request=>{
   if(request.hostname.startsWith('sts.'))return {response:{statusCode:200,headers:{'content-type':'text/xml'},body:Readable.from(['<GetCallerIdentityResponse><GetCallerIdentityResult><Account>123456789012</Account></GetCallerIdentityResult></GetCallerIdentityResponse>'])}};

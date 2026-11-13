@@ -1,4 +1,4 @@
-import {authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeAuthorization,type ExecutionTimeWindow} from '../executionTime';
+import {prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization,type ExecutionTimeWindow} from '../executionTime';
 import {settingsNativeProfile} from './settingsNativeProfile';
 import 'server-only';
 import {z} from 'zod';
@@ -13,6 +13,8 @@ interface Ports{
  readCredential(binding:SettingsArtifactBinding,signal:AbortSignal):Promise<unknown>;
  /** Actual held credential/profile/lifetime authority, never a metadata match. */
  assertCredentialCurrent?(binding:SettingsArtifactBinding,credential:Readonly<SettingsWriteCredential>,signal:AbortSignal):Promise<void>;
+ /** Clock-free, read-only SAME original native/runtime/source/credential facts, not human or transaction authorization. No fallback. */
+ assertDispatchCurrent?(binding:SettingsArtifactBinding,phase:'settings.credential.copy'|'settings.request.create',signal:AbortSignal,credential?:Readonly<SettingsWriteCredential>):Promise<void>;
 }
 const credentialSchema=z.object({token:z.string().min(1).max(8192).regex(/^[^\s\x00-\x1f\x7f]+$/),notBefore:z.number().int().nonnegative().safe(),expiresAt:z.number().int().nonnegative().safe()}).strict();
 type SettingsWriteCredential=z.infer<typeof credentialSchema>;
@@ -26,35 +28,40 @@ async function boundedJson(response:Response,signal:AbortSignal){
  * IDs, upsert, environment arrays, branches, raw result callbacks or deploys.
  * A source-qualified profile and final execution callback remain mandatory. */
 export function createSettingsVercelTransport(ports:Ports){
- const clock=ports.clock,parentSignal=ports.signal,credentialCurrent=ports.assertCredentialCurrent;
+ const clock=ports.clock,parentSignal=ports.signal,credentialCurrent=ports.assertCredentialCurrent,dispatchCurrent=ports.assertDispatchCurrent,qualified=ports.assertQualified,read=ports.readCredential,send=ports.fetch;
  return Object.freeze({clock,signal:parentSignal,async send(raw:SettingsArtifactBinding,value:string,beforeSend:ExecutionTimeAuthorization,beforeCredential?:ExecutionTimeAuthorization){
  const abort=new AbortController(),signal=parentSignal instanceof AbortSignal?AbortSignal.any([abort.signal,parentSignal]):abort.signal;let timer:ReturnType<typeof setTimeout>|undefined;
  try{
-  if(typeof clock!=='function'||!(parentSignal instanceof AbortSignal)||typeof credentialCurrent!=='function'||typeof beforeCredential!=='function')return unknown();signal.throwIfAborted();
-  async function authorizeNative(window:ExecutionTimeWindow,owner:ExecutionTimeAuthorization,afterCheck:()=>Promise<void>){
+  if(typeof clock!=='function'||!(parentSignal instanceof AbortSignal)||typeof credentialCurrent!=='function'||typeof dispatchCurrent!=='function'||typeof beforeCredential!=='function')return unknown();signal.throwIfAborted();
+  async function authorizeNative(window:ExecutionTimeWindow,owner:ExecutionTimeAuthorization,afterCheck:()=>Promise<void>,binding:object,dispatchFacts:()=>Promise<void>){
    let active=true,started=false,completed=false,invalid=false,finalStarted=false,finalCompleted=false;
    try{
-    await authorizeExecutionWindow(clock!,window,(check,last)=>{
+    const checkpoint=await prepareExecutionDispatch(clock!,window,(check,last)=>{
      if(!check||!last)throw Error('unavailable');return owner(restriction=>{
       const pending=(async()=>{try{if(!active||started)throw Error('unavailable');started=true;await check(restriction);signal.throwIfAborted();await afterCheck();signal.throwIfAborted();if(!active)throw Error('unavailable');completed=true}catch{invalid=true;throw Error('unavailable')}})();void pending.catch(()=>{});return pending;
      },()=>{const pending=(async()=>{try{if(!active||finalStarted||!completed)throw Error('unavailable');finalStarted=true;await last();if(!active)throw Error('unavailable');finalCompleted=true}catch{invalid=true;throw Error('unavailable')}})();void pending.catch(()=>{});return pending});
-    },signal,afterCheck);
-    if(!completed||!finalCompleted||invalid)throw Error('unavailable');
+    },signal,binding,dispatchFacts,afterCheck);
+    if(!completed||!finalCompleted||invalid)throw Error('unavailable');return checkpoint;
    }finally{active=false}
   }
   const expired=new Promise<never>((_,reject)=>{timer=setTimeout(()=>{abort.abort();reject(Error('unavailable'))},10000)});
   return await Promise.race([expired,(async()=>{
    const parsedBinding=settingsArtifactBindingSchema.parse(raw),binding=Object.freeze({...parsedBinding,creator:Object.freeze({...parsedBinding.creator}),target:Object.freeze({...parsedBinding.target})}),native=settingsNativeProfile({type:binding.target.type,sensitivity:binding.target.sensitivity});if(typeof value!=='string'||value.includes('\0')||Buffer.byteLength(value,'utf8')>65536||Buffer.from(value,'utf8').toString('utf8')!==value)return unknown();
-   await ports.assertQualified(binding);signal.throwIfAborted();
-   await authorizeNative({expiresAt:Date.parse(binding.expiresAt)},beforeCredential,async()=>{await ports.assertQualified(binding);signal.throwIfAborted()});signal.throwIfAborted();
-   const credential=Object.freeze(credentialSchema.parse(await ports.readCredential(binding,signal)));signal.throwIfAborted();if(credential.notBefore>=credential.expiresAt)return unknown();
-   await credentialCurrent(binding,credential,signal);signal.throwIfAborted();await ports.assertQualified(binding);signal.throwIfAborted();
+   await qualified(binding);signal.throwIfAborted();
+   const copyBinding=Object.freeze({phase:'settings.credential.copy',binding});
+   const copyCheckpoint=await authorizeNative({expiresAt:Date.parse(binding.expiresAt)},beforeCredential,async()=>{await qualified(binding);signal.throwIfAborted()},copyBinding,()=>dispatchCurrent!(binding,'settings.credential.copy',signal));
+   await consumeExecutionDispatch(copyCheckpoint,copyBinding);signal.throwIfAborted();
+   const credential=Object.freeze(credentialSchema.parse(await read(binding,signal)));signal.throwIfAborted();if(credential.notBefore>=credential.expiresAt)return unknown();
+   await credentialCurrent(binding,credential,signal);signal.throwIfAborted();await qualified(binding);signal.throwIfAborted();
    const url=new URL('https://api.vercel.com/v10/projects/'+encodeURIComponent(binding.target.projectId)+'/env');url.searchParams.set('teamId',binding.target.teamId);
    const body=JSON.stringify({key:binding.target.name,value,type:native.type,visibility:native.visibility,target:[binding.target.environment]});
-   await authorizeNative({notBefore:credential.notBefore,expiresAt:Math.min(credential.expiresAt,Date.parse(binding.expiresAt))},beforeSend,async()=>{
-    await ports.assertQualified(binding);signal.throwIfAborted();await credentialCurrent(binding,credential,signal);signal.throwIfAborted();await ports.assertQualified(binding);signal.throwIfAborted();
-   });signal.throwIfAborted();
-   const response=await ports.fetch(url.href,{method:'POST',headers:{authorization:'Bearer '+credential.token,'content-type':'application/json'},body,redirect:'error',cache:'no-store',signal});signal.throwIfAborted();
+   // Exact body is an immutable lexical string; the private phase binding holds no secret serialization.
+   const sendBinding=Object.freeze({phase:'settings.request.create',binding,credential});
+   const sendCheckpoint=await authorizeNative({notBefore:credential.notBefore,expiresAt:Math.min(credential.expiresAt,Date.parse(binding.expiresAt))},beforeSend,async()=>{
+    await qualified(binding);signal.throwIfAborted();await credentialCurrent(binding,credential,signal);signal.throwIfAborted();await qualified(binding);signal.throwIfAborted();
+   },sendBinding,()=>dispatchCurrent!(binding,'settings.request.create',signal,credential));
+   await consumeExecutionDispatch(sendCheckpoint,sendBinding);signal.throwIfAborted();
+   const response=await send(url.href,{method:'POST',headers:{authorization:'Bearer '+credential.token,'content-type':'application/json'},body,redirect:'error',cache:'no-store',signal});signal.throwIfAborted();
    if(response.status!==201||response.redirected){void response.body?.cancel().catch(()=>{});return unknown()}
    const parsed=responseSchema.parse(await boundedJson(response,signal)),created=parsed.created;
    if(created.key!==binding.target.name||created.target[0]!==binding.target.environment||created.type!==native.type||created.visibility!==native.visibility||created.gitBranch)return unknown();

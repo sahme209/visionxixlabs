@@ -1,4 +1,4 @@
-import {assertExecutionWindow,authorizeExecutionWindow,type ExecutionTimeAuthorization} from '../executionTime';
+import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeAuthorization} from '../executionTime';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -52,7 +52,10 @@ export function createNativeCustodianPorts(qualification:NativeCustodianQualific
    const capture=Object.freeze({profileDigest:supplied.profileDigest,relativePath:supplied.relativePath,sourceRoleArn:supplied.sourceRoleArn,maximumExpiresAt:supplied.maximumExpiresAt});
    if(capture.profileDigest!==manifest.issuerProfileDigest||!/^\/v2\/credentials\/[A-Za-z0-9_-]{1,128}$/.test(capture.relativePath)||!/^arn:aws:iam::[0-9]{12}:role\/[A-Za-z0-9_+=,.@\/-]+$/.test(capture.sourceRoleArn)||capture.sourceRoleArn===manifest.roleArn||!capture.sourceRoleArn.startsWith(`arn:aws:iam::${manifest.target.accountId}:role/`)||!Number.isSafeInteger(capture.maximumExpiresAt))return fail();
    await current(manifest,capture,signal);
-   await authorizeExecutionWindow(clock,{expiresAt:Math.min(capture.maximumExpiresAt,Date.parse(manifest.expiresAt))},beforeRead,signal,async()=>{await assertFacts(manifest,capture,signal);signal.throwIfAborted()});
+   const binding=Object.freeze({phase:'source.acquire',manifestDigest:manifest.digest,...capture});
+   const facts=async()=>{await assertFacts(manifest,capture,signal);signal.throwIfAborted()};
+   const checkpoint=await prepareExecutionDispatch(clock,{expiresAt:Math.min(capture.maximumExpiresAt,Date.parse(manifest.expiresAt))},beforeRead,signal,binding,facts,facts);
+   await consumeExecutionDispatch(checkpoint,binding);
    const text=await readNativeCustodianResponse(capture.relativePath,signal);signal.throwIfAborted();
    const native=response.parse(JSON.parse(text)),expiresAt=Date.parse(native.Expiration);
    if(native.RoleArn!==capture.sourceRoleArn||!Number.isSafeInteger(expiresAt))return fail();

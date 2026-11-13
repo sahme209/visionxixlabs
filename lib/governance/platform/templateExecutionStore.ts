@@ -17,6 +17,8 @@ import {deriveTemplateGrantContext,sealTemplateGrant,openTemplateGrant} from './
 export interface TemplateExecutionResources{
  profiles:TemplatePreparationProfiles;
  clock:ExecutionTimeSource;
+ assertDispatchCurrent?:TemplateNativePorts['assertDispatchCurrent'];
+ assertCredentialCurrent?:TemplateNativePorts['assertCredentialCurrent'];
  assertQualified(binding:Readonly<TemplateExecutionBinding>):Promise<void>;
  readCredential:TemplateNativePorts['readCredential'];
  now():number;
@@ -32,7 +34,7 @@ const fail=(code='platform_template_execution_unavailable'):never=>{throw Error(
  * public route. Test ports cannot become JSON authority. Native results enter
  * only through the real adapter's private once-only observation capability. */
 export function createTemplateExecutionStore(repo:PlatformRepository,authority:PlatformAuthority,resources?:TemplateExecutionResources,signal?:AbortSignal){
- const clock=resources?.clock;
+ const clock=resources?.clock,nativeDispatch=resources?.assertDispatchCurrent?.bind(resources),nativeCredential=resources?.assertCredentialCurrent?.bind(resources);
  function controllingSignal(){if(!(signal instanceof AbortSignal)||signal.aborted)return fail();return signal}
  async function joinedTime(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>,expiresAt=Date.parse(state.plan.expiresAt),check?:ExecutionTimeCheck){
   const active=controllingSignal();if(!state.reviewer||typeof clock!=='function')return fail();
@@ -70,6 +72,7 @@ export function createTemplateExecutionStore(repo:PlatformRepository,authority:P
    async function externalCurrent(terminal=false,nativeGuard=false,timeCheck?:ExecutionTimeCheck){if(nativeGuard&&nativeFinished)return fail();await locked(id,async(tx,state)=>{if(terminal?state.status!=='confirmed':!['approved','claimed'].includes(state.status))return fail();await current(tx,id,state,b,actor)});if(nativeGuard&&nativeFinished)return fail();await checkKey(nativeGuard);await locked(id,async(tx,state)=>{if((terminal?state.status!=='confirmed':!['approved','claimed'].includes(state.status))||hash(state.requester)!==hash(actor)||hash(await binding(tx,id,state))!==hash(b))return fail();await people(tx,state);await timely(tx,state,b);await joinedTime(tx,state,Date.parse(b.approvalExpiresAt),timeCheck);await sourceCurrent(tx,id,state,b,actor);await checkKey(nativeGuard);await timely(tx,state,b);await people(tx,state)});if(nativeGuard&&nativeFinished)return fail()}
 
    const transport=createTemplateNativeTransport({
+    assertDispatchCurrent:nativeDispatch,assertCredentialCurrent:nativeCredential,
     assertQualified:async()=>{await r.assertQualified(b);await checkKey(true)},assertCurrent:async(_binding,check)=>externalCurrent(false,true,check),clock:clock!,signal:controllingSignal(),readCredential:binding=>{if(nativeFinished)return fail();return r.readCredential(binding)},now:()=>r.now(),
     admit:async()=>{
      const committed=await locked(id,async(tx,state)=>{if(state.status!=='approved'||state.version!==version)return fail();await current(tx,id,state,b,actor);const now=await timely(tx,state,b),claimed=claimPlatformAction(state,actor,now);await tx.replace(id,state.version,claimed);await tx.writeEffect(id,b.effectIndex,null,'claimed');await tx.event({actionId:id,kind:'claimed',state:claimed});await tx.event({actionId:id,kind:'effect.claimed',state:claimed,effectIndex:b.effectIndex});const qualification=await r.expiryQualification?.(b),held=await storage(tx).reserve(b,qualification);await current(tx,id,claimed,b,actor);return held});

@@ -1,5 +1,5 @@
 import 'server-only';
-import {authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeWindow} from './executionTime';
+import {authorizeExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeWindow} from './executionTime';
 import {createHash} from 'node:crypto';
 import {z} from 'zod';
 import {sha256ContentHash as hash} from '@/lib/tauri/contentHash';
@@ -8,10 +8,12 @@ import {readImageUploadBinding,type ImageUploadBinding} from './imageCustodyCont
 import {readImageUploadGrantContext} from './imageCustodyCodec';
 import {imageInitializationRequest,readImageInitialization,readImageUploadAddress,readImagePutAcceptance,readImageAvailability} from './imageUploadProtocol';
 
+export type ImageDispatchPhase='credential-read'|'initialize'|'put'|'readiness';
 export interface ImageNativePorts {
  /** Fixed private profile input; the supplier must bind this exact version to
   * the reviewed profile. No environment-selected version or endpoint fallback. */
  version:string;
+ assertDispatchCurrent?(binding:Readonly<ImageUploadBinding>,index:0|1,phase:ImageDispatchPhase,credential:string|undefined,signal:AbortSignal):Promise<void>;
  clock:ExecutionTimeSource;
  now():number;
  assertQualified(binding:Readonly<ImageUploadBinding>,version:string,signal:AbortSignal):Promise<void>;
@@ -34,7 +36,7 @@ const credentialSchema=z.string().min(1).max(8192).regex(/^[\x21-\x7e]+$/);
  * enclosing execution store must persist them atomically with original claims.
  * No client, generic adapter, source hash or caller JSON can create a proof. */
 export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal?:AbortSignal){
- const clock=ports?.clock;
+ const clock=ports?.clock,dispatchFacts=ports?.assertDispatchCurrent?.bind(ports);
  const used=new Set<string>();
  const observations=new WeakMap<object,{bindingDigest:string;index:0|1;value:ImageNativeObservation}>();
  async function perform(raw:unknown,index:0|1,put?:{context:unknown;address:unknown;bytes:unknown}):Promise<object>{
@@ -64,25 +66,28 @@ export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal
     lastNow=now;return now;
    }
    async function within<T>(fn:()=>Promise<T>):Promise<T>{signal.throwIfAborted();const result=await withGithubAbort(Promise.resolve().then(()=>{signal.throwIfAborted();return fn()}),signal);signal.throwIfAborted();return result;}
-   async function current(extra?:ExecutionTimeWindow){
+   async function current(extra?:ExecutionTimeWindow,phase?:ImageDispatchPhase){
     time();if(p.version!==version)return fail();
     await within(()=>p.assertQualified(b,version,signal));
     await within(()=>p.assertObservationAllowed(b,signal));
     const window={notBefore:Math.max(grant?.native.issuedAt??0,extra?.notBefore??0),expiresAt:Math.min(Date.parse(b.expiresAt),grant?.native.expiresAt??Number.MAX_SAFE_INTEGER,extra?.expiresAt??Number.MAX_SAFE_INTEGER)};
-    await within(()=>authorizeExecutionWindow(clock!,window,check=>{if(!check)return fail();return p.assertCurrent(b,index,signal,async restriction=>{
+    const phaseBinding=phase?Object.freeze({bindingDigest:b.bindingDigest,index,phase,version,providerImageReference:grant?.native.providerImageReference??null,bytesDigest:b.artifact.bytesDigest}):undefined,heldCredential=credential;
+    const owner=async(check?:ExecutionTimeCheck)=>{if(!check)return fail();return p.assertCurrent(b,index,signal,async restriction=>{
      await check(restriction);if(credential)await within(()=>p.assertCredentialCurrent(b,credential!,signal));signal.throwIfAborted();if(p.version!==version)return fail();
-    })},signal));
-    if(p.version!==version)return fail();time();
+    })};
+    const checkpoint=phaseBinding?await within(()=>prepareExecutionDispatch(clock!,window,owner,signal,phaseBinding,async()=>{if(!dispatchFacts)return fail();await within(()=>dispatchFacts(b,index,phase!,heldCredential,signal));if(p.version!==version)return fail()})):await within(()=>authorizeExecutionWindow(clock!,window,owner,signal));
+    if(p.version!==version)return fail();time();return phaseBinding&&checkpoint?{checkpoint,binding:phaseBinding}:undefined;
    }
    await current();await within(()=>p.admit(b,index,signal));await current();
-   credential=credentialSchema.parse(await within(()=>p.readCredential(b,index,signal)));
+   const readDispatch=await current(undefined,'credential-read');if(!readDispatch)return fail();
+   credential=credentialSchema.parse(await within(async()=>{await consumeExecutionDispatch(readDispatch.checkpoint,readDispatch.binding);time();return p.readCredential(b,index,signal)}));
    await current();
-   async function send(url:string,init:RequestInit){
-    await current();
+   async function send(url:string,init:RequestInit,phase:Exclude<ImageDispatchPhase,'credential-read'>){
+    const dispatch=await current(undefined,phase);if(!dispatch)return fail();
     // No await between this point-clock/abort guard and fetch. Native
     // interval validity through final authorization/commit/dispatch still
     // requires separate qualification; a timer is not that evidence.
-    return within(()=>{time();return fetch(url,{...init,headers:{...initial.headers,authorization:'Bearer '+credential,...(init.headers??{})},redirect:'error',cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal})});
+    return within(async()=>{await consumeExecutionDispatch(dispatch.checkpoint,dispatch.binding);time();return fetch(url,{...init,headers:{...initial.headers,authorization:'Bearer '+credential,...(init.headers??{})},redirect:'error',cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal})});
    }
    async function json(response:Response){
     const body=await readBoundedGithubBody(response,signal,65536);
@@ -90,13 +95,13 @@ export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal
    }
    let value:ImageNativeObservation;
    if(index===0){
-    const response=await send(initial.url,{method:initial.method,body:initial.body});
+    const response=await send(initial.url,{method:initial.method,body:initial.body},'initialize');
     if(response.status!==200||response.redirected){void response.body?.cancel().catch(()=>{});return fail()}
     const result=readImageInitialization(response.status,await json(response),time(),Date.parse(b.expiresAt));
     value=Object.freeze({kind:'initialized',...result});
    }else{
     if(!grant||!bytes||!address)return fail();
-    const response=await send(address,{method:'PUT',headers:{'Content-Type':b.artifact.mimeType},body:bytes as unknown as BodyInit});
+    const response=await send(address,{method:'PUT',headers:{'Content-Type':b.artifact.mimeType},body:bytes as unknown as BodyInit},'put');
     if(response.status!==201||response.redirected){void response.body?.cancel().catch(()=>{});return fail()}
     // A null body is the documented empty response too. Any nonempty stream
     // or dishonest Content-Length refuses, including chunked overflow.
@@ -105,7 +110,7 @@ export function createImageNativeTransport(ports?:ImageNativePorts,requestSignal
     else if(response.headers.get('content-length')!==null&&response.headers.get('content-length')!=='0')return fail();
     readImagePutAcceptance(response.status,count);await current();
     const url='https://api.linkedin.com/rest/images/'+encodeURIComponent(grant.native.providerImageReference);
-    const observed=await send(url,{method:'GET'});
+    const observed=await send(url,{method:'GET'},'readiness');
     if(observed.status!==200||observed.redirected){void observed.body?.cancel().catch(()=>{});return fail()}
     const ready=readImageAvailability(await json(observed),b.artifact.author,grant.native.providerImageReference);
     if(!ready.mediaReady)return fail();

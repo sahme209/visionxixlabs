@@ -17,6 +17,7 @@ import {createImageNativeTransport,type ImageNativePorts,type ImageNativeObserva
 
 export interface ImageExecutionResources extends ImageArtifactResources {
  version:string;
+ assertDispatchCurrent?:ImageNativePorts['assertDispatchCurrent'];
  clock:ExecutionTimeSource;
  now():number;
  assertNativeQualified(binding:Readonly<ImageUploadBinding>,version:string,signal:AbortSignal):Promise<void>;
@@ -42,7 +43,7 @@ type Scope=ReturnType<typeof scope>;
  * fixed adapter, never a caller observation command. No real resource supplier
  * exists by default. Source tests cannot enable production custody or transport. */
 export function createImageExecutionStore(repo:PlatformRepository,authority:PlatformAuthority,resources?:ImageExecutionResources,requestSignal?:AbortSignal){
- const fixedVersion=resources?.version,clock=resources?.clock;
+ const fixedVersion=resources?.version,clock=resources?.clock,nativeDispatch=resources?.assertDispatchCurrent?.bind(resources);
  function storage(tx:PlatformTransaction){return tx.imageStorage??fail()}
  async function locked<T>(id:string,c:Scope,fn:(tx:PlatformTransaction,state:State)=>Promise<T>){platformActionId.parse(id);return c.within(()=>repo.transaction(async tx=>{await c.within(()=>tx.lock(id));return fn(tx,readPlatformAction(await c.within(()=>tx.read(id))))}))}
  async function binding(tx:PlatformTransaction,id:string,state:State,c:Scope){if(!tx.readImageBinding)return fail();return imageBindingForParent(await c.within(()=>tx.readImageBinding!(id)),state,id)}
@@ -121,7 +122,7 @@ export function createImageExecutionStore(repo:PlatformRepository,authority:Plat
     // Acknowledged commit only. A lost reply can leave a hold, never a send.
     c.check();claimedPut=saved;admitted=true;await fresh();
    }
-   const transport=createImageNativeTransport({version:r.version,clock:clock!,now:()=>r.now(),assertQualified:async(_b,v)=>c.within(()=>r.assertNativeQualified(selected,v,c.signal)),assertObservationAllowed:async()=>{await locked(id,c,async(tx,state)=>current(tx,id,state,selected,actor,c))},assertCurrent:async(_b,_index,_signal,check)=>{if(admitted)await fresh(check);else await locked(id,c,async(tx,state)=>{if(state.status!==(index===0?'approved':'claimed')||state.version!==version)return fail();await current(tx,id,state,selected,actor,c,check)})},admit,readCredential:(_b,i)=>c.within(()=>r.readCredential(selected,i,c.signal)),assertCredentialCurrent:async(_b,key)=>{await c.within(()=>r.assertCredentialCurrent(selected,key,c.signal))}},c.signal);
+   const transport=createImageNativeTransport({assertDispatchCurrent:nativeDispatch,version:r.version,clock:clock!,now:()=>r.now(),assertQualified:async(_b,v)=>c.within(()=>r.assertNativeQualified(selected,v,c.signal)),assertObservationAllowed:async()=>{await locked(id,c,async(tx,state)=>current(tx,id,state,selected,actor,c))},assertCurrent:async(_b,_index,_signal,check)=>{if(admitted)await fresh(check);else await locked(id,c,async(tx,state)=>{if(state.status!==(index===0?'approved':'claimed')||state.version!==version)return fail();await current(tx,id,state,selected,actor,c,check)})},admit,readCredential:(_b,i)=>c.within(()=>r.readCredential(selected,i,c.signal)),assertCredentialCurrent:async(_b,key)=>{await c.within(()=>r.assertCredentialCurrent(selected,key,c.signal))}},c.signal);
    let proof:object;
    if(index===0)proof=await transport.initialize(selected);
    else{

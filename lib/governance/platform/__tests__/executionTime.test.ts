@@ -1,5 +1,5 @@
 import {it,expect} from 'vitest';
-import {assertExecutionWindow,authorizeExecutionWindow} from '../executionTime';
+import {assertExecutionWindow,authorizeExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch} from '../executionTime';
 const signal=()=>new AbortController().signal;
 it('retains the original deadline if the source changes the caller object while awaited',async()=>{
  const window={expiresAt:100};
@@ -69,4 +69,34 @@ it.each([{notBefore:NaN},{expiresAt:-1},{notBefore:Infinity},{expiresAt:1.5}])('
 
 it('cannot hide an invalid original authority bound by intersecting it with a valid restriction',async()=>{
  await expect(authorizeExecutionWindow(async()=>({earliest:1,latest:2}),{notBefore:-1,expiresAt:100},async check=>{await check!({notBefore:0,expiresAt:50})},signal())).rejects.toThrow();
+});
+
+
+it('committed dispatch retains the original tighter window when acknowledgement arrives at expiry',async()=>{
+ let now=1,owners=0,facts=0;const binding=Object.freeze({phase:'test.send'});
+ const proof=await prepareExecutionDispatch(async()=>({earliest:now,latest:now}),{expiresAt:100},async check=>{owners++;await check!({expiresAt:5});now=5},signal(),binding,async()=>{facts++});
+ await expect(consumeExecutionDispatch(proof,binding)).rejects.toThrow('platform_execution_time_unavailable');expect(owners).toBe(1);expect(facts).toBe(0);
+ await expect(consumeExecutionDispatch(proof,binding)).rejects.toThrow();
+});
+it('dispatch consumes before awaits, refuses clone/substitution/reentry and never reauthorizes',async()=>{
+ let owners=0,reads=0,release!:()=>void;const wait=new Promise<void>(r=>{release=r});const binding=Object.freeze({phase:'test.send'});
+ const proof=await prepareExecutionDispatch(async()=>{if(++reads===2)await wait;return {earliest:1,latest:2}},{expiresAt:5},async check=>{owners++;await check!()},signal(),binding,async()=>{});
+ await expect(consumeExecutionDispatch({...proof},binding)).rejects.toThrow();
+ const pending=consumeExecutionDispatch(proof,binding);await expect(consumeExecutionDispatch(proof,binding)).rejects.toThrow();release();await pending;expect(owners).toBe(1);expect(reads).toBe(2);
+ const second=await prepareExecutionDispatch(async()=>({earliest:1,latest:2}),{expiresAt:5},async c=>{await c!()},signal(),binding,async()=>{});
+ await expect(consumeExecutionDispatch(second,Object.freeze({phase:'test.send'}))).rejects.toThrow();await expect(consumeExecutionDispatch(second,binding)).rejects.toThrow();
+});
+it('dispatch captures restrictions before mutation and rechecks original currentness after its clock',async()=>{
+ let now=1,live=true;const extra={expiresAt:5},binding=Object.freeze({phase:'test.read'});let count=0;
+ const proof=await prepareExecutionDispatch(async()=>{if(++count===2){live=false;return {earliest:1,latest:2}}return {earliest:now,latest:now}},{expiresAt:100},async c=>{await c!(extra);extra.expiresAt=100},signal(),binding,async()=>{if(!live)throw Error('revoked')});
+ await expect(consumeExecutionDispatch(proof,binding)).rejects.toThrow();
+});
+it('failed owner acknowledgement creates no checkpoint and canceled final clock never reaches dispatch facts',async()=>{
+ const binding=Object.freeze({phase:'test.send'});let checks=0;
+ await expect(prepareExecutionDispatch(async()=>({earliest:1,latest:2}),{expiresAt:5},async c=>{await c!();throw Error('lost ack')},signal(),binding,async()=>{checks++})).rejects.toThrow();
+ const abort=new AbortController();let n=0;const proof=await prepareExecutionDispatch(async()=>{if(++n===2)abort.abort();return {earliest:1,latest:2}},{expiresAt:5},async c=>{await c!()},abort.signal,binding,async()=>{checks++});
+ await expect(consumeExecutionDispatch(proof,binding)).rejects.toThrow();expect(checks).toBe(0);
+});
+it('checkpoint preparation rejects mutable bindings before owner or clock work',async()=>{
+ let owners=0;await expect(prepareExecutionDispatch(async()=>({earliest:1,latest:2}),{expiresAt:5},async c=>{owners++;await c!()},signal(),{phase:'mutable'},async()=>{})).rejects.toThrow();expect(owners).toBe(0);
 });
