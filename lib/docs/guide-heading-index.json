@@ -351,7 +351,7 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "b18468c5d32d537fdec87ca1463a85c01c0598c54e682d73889f35f4a49f3538",
+      "sourceSha256": "8141156c7266f92c1f07fb4a082d58ec13b0800b4c320a8d29e6f3c648ab42f3",
       "fields": [
         "Ask Axiom.",
         "The support chat answers from Axiom's public docs with sources, and can help with your own workspace when you are signed in.",

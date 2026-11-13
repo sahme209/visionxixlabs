@@ -1,0 +1,25 @@
+{
+  "status": "stopped_unverified",
+  "phase": "production_variable_metadata",
+  "providerCalls": 1,
+  "valuesReturned": false,
+  "detailReadPerformed": false,
+  "sqlPerformed": false,
+  "metadataShape": {
+    "toolError": false,
+    "structuredObject": false,
+    "structuredString": false,
+    "directEnvironmentArray": false,
+    "resultEnvironmentArray": false,
+    "singleTextBlock": true
+  },
+  "querySha256": "23a6718683fba5baff445e24ab1f648ca8c03e56d478594e2fe37a6d83dc1098",
+  "authorizationConsumed": true,
+  "maximumCalls": 5,
+  "remainingCallsNotUsedOrReusable": 4,
+  "rawResponseRetainedInWorkspace": false,
+  "credentialValueReadPerformed": false,
+  "neonCallPerformed": false,
+  "databaseWritePerformed": false,
+  "assessment": "The reviewed selector refused the returned metadata representation. Fixed shape categories do not establish the service, permission or serialization cause. No further call or repair follows."
+}

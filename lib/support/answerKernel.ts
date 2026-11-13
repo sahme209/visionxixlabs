@@ -9,7 +9,7 @@
  */
 import type { KnowledgeEntry } from "./knowledgeBase";
 
-const STOP = new Set("a an and are as at be but by can do does for from how i if in is it me my of on or our so that the this to was we what when where which who why will with you your much many any some there get say says tell about".split(" "));
+const STOP = new Set("a an and are as at be but by can do does for from how i if in is it me my of on or our so that the this to was we what when where which who why will with you your much many any some someone there until get say says tell about".split(" "));
 const SYNONYMS: Record<string, string> = {
   price: "pricing", cost: "pricing", costs: "pricing", pay: "pricing", paid: "pricing", charge: "pricing", billing: "pricing", credit: "credits",
   install: "download", installer: "download", setup: "download", mac: "macos", windows: "windows", linux: "linux",
@@ -23,7 +23,7 @@ const SYNONYMS: Record<string, string> = {
 };
 
 export function tokenize(text: string): string[] {
-  return text.toLowerCase().replace(/\broll(ing|ed)?\s+back\b/g, "rollback").replace(/\bsign(ing|ed)?\s+in\b/g, "signin").replace(/\blog(ging|ged)?\s+in\b/g, "signin").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
+  return text.toLowerCase().replace(/\bset\s+up\b/g, "setup").replace(/\broll(ing|ed)?\s+back\b/g, "rollback").replace(/\bsign(ing|ed)?\s+in\b/g, "signin").replace(/\blog(ging|ged)?\s+in\b/g, "signin").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
     .map((t) => SYNONYMS[t] ?? t)
     .map((t) => (t.length > 4 && t.endsWith("ing") ? t.slice(0, -3) : t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t))
     .map((t) => SYNONYMS[t] ?? t);
@@ -104,7 +104,9 @@ export function answerQuestion(index: AnswerIndex, question: string, opts: { k1?
   const page = (h: string) => h.split("#")[0];
   const rival = scored.find((x) => page(x.d.entry.href) !== page(top.d.entry.href));
   const margin = rival ? top.score / rival.score : 2;
-  const confidence = Math.max(0, Math.min(1, top.coverage * 0.8 + Math.min(1, (margin - 1)) * 0.2));
+  // Being ahead of weak alternatives cannot compensate for an unsupported
+  // part of the question. Keep confidence within actual query coverage.
+  const confidence = Math.max(0, Math.min(1, top.coverage, top.coverage * 0.8 + Math.min(1, (margin - 1)) * 0.2));
   const sources = scored.slice(0, 3).map((s) => ({ title: s.d.entry.title, href: s.d.entry.href, kind: s.d.entry.kind }));
   if (confidence < 0.4) return { status: "suggestions", answer: "I'm not sure which of these you mean. Here are the closest answers.", sources, confidence };
   return { status: "answered", answer: top.d.entry.body, sources, confidence };

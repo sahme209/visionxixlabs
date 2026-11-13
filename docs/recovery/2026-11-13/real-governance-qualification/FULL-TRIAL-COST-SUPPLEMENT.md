@@ -1,0 +1,9 @@
+# Cost scope correction and actual Ohio rates — November13
+
+The initial worker-only estimate is not a complete end-to-end bill. The actual rendered AWS Fargate public Linux/X86 table selected US East (Ohio) us-east-2 and showed CPU$0.04048/vCPU-hour and RAM$0.004445/GB-hour. Raw nonsecret observation is preserved locally; pricing source:https://aws.amazon.com/fargate/pricing/ . IPv4$0.005/hour:https://aws.amazon.com/vpc/pricing/ . No account pricing/API or resource change occurred.
+
+Illustrative baseline for30minutes: one issuer1vCPU/2GiB + one separate DB0.25vCPU/0.5GiB + one separate target0.25vCPU/0.5GiB = **$0.0370275 compute**. Three public IPv4s for the same interval add$0.0075, for **$0.0445275 compute+IP**. Networking and fixture sizes are provisional; public addresses mean outbound reachability only, never permission for inbound listeners. A healthy deployment target may briefly overlap replacement tasks or incur native retry/pull/stop overhead; this is not a fixed total quote.
+
+Image storage, logs, transfer, requests, retention, taxes, replacement overlap and any additional bootstrap/identity/network/observer component must be priced before approval. Do not consume free credits automatically or assume remaining allowances cover these costs. No NAT/ALB/managedDB or public-facing endpoint is silently added. The$1trial allowance remains a proposal, not approved spending or a hard native billing cap.
+
+The proposed first role-free protection diagnostic needs just one bounded task, not the full topology:1vCPU/2GiB for5minutes gives$0.00411417compute+$0.00041667IPv4≈$0.00453, excluding the same extras. It proves no credential authority or genuine application end-to-end acceptance. Separate exact artifact/build/resource/run/cleanup approvals remain. Source credential lifetimes may extend beyond compute shutdown; stopping billing does not close those security liabilities.

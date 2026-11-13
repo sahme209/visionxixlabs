@@ -1,0 +1,60 @@
+{
+  "workingTreeBase": "9af0608c05633c6f0c4ba31ae9fdbfcc0611f1e1",
+  "red": {
+    "focusedTestFailures": 2,
+    "reason": "correct public source ranked first, but normal phrase/function words lowered confidence into suggestions"
+  },
+  "additionalNegativeRed": "setup normalization exposed a confident answer to GCP quantum teleportation; query-coverage cap corrected it",
+  "focusedRelatedTestsPassed": 82,
+  "fixedEvaluationQuestions": 42,
+  "fixedEvaluationMisses": 0,
+  "ordinarySuite": {
+    "success": true,
+    "numTotalTests": 20054,
+    "numPassedTests": 18912,
+    "numFailedTests": 0,
+    "numPendingTests": 1142,
+    "numFailedTestSuites": 0
+  },
+  "ordinaryReportSha256": "e7ab46d34196457155785e68c1ca2b6e2d5f192277aa1d32f25633a688afb517",
+  "rootNativeTypes": "pass",
+  "desktopTypesAndFrontendBuild": "pass; existing large-chunk and dynamic-import warnings remain",
+  "pythonCliTestsPassed": 36,
+  "independentReview": "existing final source reviewer reports no important findings; no programs or provider operations by reviewer",
+  "sourceFiles": [
+    {
+      "path": "lib/support/answerKernel.ts",
+      "sha256": "9e78baebf7362f94e5cfab65837f1886368e5fd5d797f544fa001c78ed4121d9"
+    },
+    {
+      "path": "lib/support/knowledgeBase.ts",
+      "sha256": "814fca0d2f48cb2ea1b2acebeabd239d4c77e1a15c5359893eccf5ce03e98d5f"
+    },
+    {
+      "path": "lib/support/__tests__/answerEval.test.ts",
+      "sha256": "070e70c1d2223962f21e7522a6e7c9cedddb886c5fcec488a3469ec7c96cb494"
+    },
+    {
+      "path": "app/docs/ask-axiom/page.tsx",
+      "sha256": "8141156c7266f92c1f07fb4a082d58ec13b0800b4c320a8d29e6f3c648ab42f3"
+    },
+    {
+      "path": "lib/docs/guide-heading-index.json",
+      "sha256": "c9bfa952f23fcd787a4e85996da0d0806918159d7c423f83d59bf5b892001833"
+    },
+    {
+      "path": "lib/support/docsCorpus.json",
+      "sha256": "2d6cee6128475ca5f80e61de619d9e30cd7372435c8f344208915366eac3abcb"
+    },
+    {
+      "path": "lib/demo/demoScenarios.ts",
+      "sha256": "f57d26c93a343d4ae04d61de9d6e5128e89540f8a319e890bb5ca0d24e40c6ec"
+    }
+  ],
+  "aiCalls": 0,
+  "supportProviderCalls": 0,
+  "productionChange": false,
+  "nativeGovernanceQualification": false,
+  "fullProductionBuildAtThisSource": false,
+  "prCiObserved": false
+}

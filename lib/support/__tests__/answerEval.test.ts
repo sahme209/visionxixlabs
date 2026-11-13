@@ -57,6 +57,14 @@ const CASES: readonly Case[] = [
 const BAR = 0.9;
 
 describe("Ask Axiom evaluation set", () => {
+  it.each([
+    ["how do I block a github actions deploy until someone approves", "/docs/approval-workflow"],
+    ["how do I set up GCP", "/docs/gcp-setup"],
+  ])("finds the documented next step for %s", (question, href) => {
+    const answer = answerQuestion(buildIndex(knowledgeEntries()), question);
+    expect(answer.status, JSON.stringify(answer.sources)).toBe("answered");
+    if (answer.status === "answered") expect(answer.sources[0]?.href.split("#")[0]).toBe(href);
+  });
   it.each(CASES.slice(-4))("cites the authored workspace guide for %s", (question, expected) => {
     const answer = answerQuestion(buildIndex(knowledgeEntries()), question);
     expect(answer.status).toBe("answered");
@@ -75,11 +83,12 @@ describe("Ask Axiom evaluation set", () => {
     }
     const accuracy = 1 - misses.length / CASES.length;
     expect(accuracy, misses.join("\n")).toBeGreaterThanOrEqual(BAR);
+    expect(misses).toEqual([]);
   });
 
   it("declines off-topic questions instead of guessing", () => {
     const index = buildIndex(knowledgeEntries());
-    for (const q of ["what color is the sky", "tell me a joke", "who won the election", "asdf qwer", "weather tomorrow"]) expect(answerQuestion(index, q).status).toBe("suggestions");
+    for (const q of ["what color is the sky", "tell me a joke", "who won the election", "asdf qwer", "weather tomorrow", "how do I set up a telescope", "how do I block someone on a social network", "can I set up GCP for quantum teleportation"]) expect(answerQuestion(index, q).status, q).toBe("suggestions");
   });
 
   it("never answers a guarded case with product text", () => {

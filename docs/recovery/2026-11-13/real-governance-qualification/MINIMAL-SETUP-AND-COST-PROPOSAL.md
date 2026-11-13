@@ -16,7 +16,7 @@ The task's initial purpose is qualifying the actual AWS credential source, exact
 - Prepare full preflight/setup/test/verify/owned-cleanup manifests and required permission diffs. Use a separately isolated fixture database, not production Neon; select its safe placement and account for any residual lifetime before provisioning.
 - Independently review the exact executable/run packet. Missing actual source/profile/custody evidence still refuses. No simulator or caller-supplied qualifier becomes a default.
 
-## Budget illustration, not an Ohio quote or spending approval
+## Initial budget illustration — actual Ohio follow-up recorded separately
 
 Public AWS pages were read on November 13. The Fargate page's *published Northern Virginia Linux/x86 example*, not a verified Ohio regional quote, gives CPU $0.000011244/vCPU-second and RAM $0.000001235/GiB-second. For one 1-vCPU/2-GiB task lasting 1,800 seconds: compute = **$0.0246852**. Its default 20 GiB ephemeral storage needs no additional storage allocation. Pricing covers image pull through termination and has a 60-second Linux minimum. [AWS Fargate pricing](https://aws.amazon.com/fargate/pricing/).
 
@@ -37,3 +37,10 @@ Qualify one genuine independently reviewed disposable action only after the envi
 ## Decision after preparation
 
 Review this architecture and close the named Linux custody, fixture placement and complete regional quote gaps before authorizing implementation/provisioning. Approval of this document alone would not authorize AWS account/IAM/service changes, credential acquisition, a test run, production database work, deployment, feature enablement or spending.
+
+
+## November13 current follow-up
+
+The actual rendered Ohio table has now been read and matches CPU$0.04048/vCPU-hour and memory$0.004445/GB-hour. FULL-TRIAL-COST-SUPPLEMENT.md includes the separate DB/target baseline and all outstanding cost exclusions; this worker-only arithmetic is not the complete end-to-end bill. No spending is approved.
+
+Use the connected full-runtime design and same compiled consumer, not a standalone diagnostic image as a substitute. Any role-free protection observations belong inside that exact immutable runtime's qualification plan. Mac, live source/clock/custody, genuine human/provider and complete coverage requirements remain. This proposal authorizes no implementation, resource creation, native experiment or enablement.
