@@ -1,0 +1,78 @@
+{
+  "scope": "Prepared unregistered desktop intake/recovery client and saved-action review UI. No intake/preparation form yet; no upload execution or native/provider qualification",
+  "sourceHashes": {
+    "desktop/src/lib/imageWorkflow.ts": "8d33af82ddab7d42a0269d249cf92a925ad551fddc282ec59e6540f6b9a38e6b",
+    "desktop/src/components/ImageWorkflowPanel.tsx": "c778e8391497834d40d8d967869e3fc8de29b5467b3530c8a976447fb47747de",
+    "desktop/src/components/PlatformGovernanceWorkflow.tsx": "e473442739b66515416110988b116572c9c0821494e4830e68d4863d4eefe4f9",
+    "desktop/src/lib/releaseOperationPlanTransport.ts": "8334523ab0d08bb60b808c9d69dfc8db5a88b326685b62dce3640bb9890d342e",
+    "lib/desktop/__tests__/imageWorkflowClient.test.ts": "b64eeccc06229907507c1283f9acfad03b47ebf01e350e3cacf6e31cd8a4d57a",
+    "lib/desktop/__tests__/imageWorkflowPanel.test.ts": "fb25cfb76873dfd2ebd0253e9fe4176cfc53de986a2b4d07627b13863607c3a4",
+    "lib/desktop/__tests__/imageWorkflowTransport.test.ts": "74432bcd99aba2e29b808438ff2d30e4ee530c8e6ebedf555ca0bbef6035ceef",
+    "lib/desktop/__tests__/platformGovernanceWorkflow.test.ts": "4eaae481d1f601509a15053a30a583148b537c4dbb82ee46ac08bb4e83d1f61d",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "a986c5700a30c3ed0d544855c565228557b0841473d9b1428b30af0eb0102099",
+    "scripts/run-platform-governance-postgres.py": "3232c5eaa2c4a093b205227d2c9f7465f2128fe920016ac0c3f5b9ffdafe1ef5"
+  },
+  "tests": {
+    "desktopDirectory": {
+      "passed": 3404,
+      "skipped": 180,
+      "note": "Runtime suite before only test literal/callable annotation correction; production source unchanged afterward"
+    },
+    "laterSharedPlusImagePanel": {
+      "passed": 617,
+      "sqlOptinsSkippedOnlyHere": 208,
+      "overlapWithDesktop": 7
+    },
+    "actualIsolatedSql": 208,
+    "rootTypes": "PASS after test-only correction",
+    "desktopTypes": "PASS",
+    "desktopFrontendBuild": "PASS"
+  },
+  "sql": {
+    "root": "/private/tmp/axiom-platform-pg-d6m_m0t0",
+    "stopped": true,
+    "newJourneys": [
+      "Actual desktop client and shared bounded transport -> image HTTP -> genuine synthetic-token HMAC -> current SQL -> intake/proposal/preview/distinct synthetic reviewer approval. No upload or extra provider command",
+      "Lost committed intake/proposal replies remain uncertain; same original reference lookups recover without second submission"
+    ],
+    "limits": "Decoder/key/profile/native I/O qualification synthetic; no human or real endpoint. UI is source-hash bound, not executed by this PG run."
+  },
+  "ui": {
+    "scope": "React/jsdom with injected client, synthetic metadata and Blob URL stubs only; no browser/native image decoding or visual acceptance",
+    "cases": [
+      "Deliberate preview and explicit personal independent approval",
+      "Both exact operation labels; no image/base64/key stored in sessionStorage",
+      "Self-review refusal and uncertain review marker retained across remount",
+      "Account/action retirement clears preview and discards late response",
+      "Unavailable local marker prevents decision",
+      "Blob URL revoked on approval/expiry/unmount/account change",
+      "Mismatched saved plan rejected before Blob URL",
+      "Legacy image family never falls through generic approval/execution, even without dedicated client"
+    ]
+  },
+  "client": "Browser-safe exact plan/byte hashes, original-reference recovery, current context around awaits, secure fixed route, bounded preview-only larger response, no native execute method or automatic retry",
+  "redEvidence": [
+    "/private/tmp/axiom-image-client-transport-red.log",
+    "/private/tmp/axiom-image-client-red.log",
+    "/private/tmp/axiom-image-panel-red.log",
+    "/private/tmp/axiom-image-workflow-route-red.log"
+  ],
+  "logs": [
+    "/private/tmp/axiom-image-client-first.log",
+    "/private/tmp/axiom-image-desktop-all-tests.log",
+    "/private/tmp/axiom-image-desktop-final-root-types.log",
+    "/private/tmp/axiom-image-desktop-root-types-fixed.log",
+    "/private/tmp/axiom-image-desktop-final-types.log",
+    "/private/tmp/axiom-image-desktop-final-build.log",
+    "/private/tmp/axiom-image-desktop-final-pg.log",
+    "/private/tmp/axiom-image-desktop-final-shared.log"
+  ],
+  "buildWarnings": "Frontend compiler reports chunk-size and existing static/dynamic plugin-shell import warnings; not suppressed. No native/signing/build publication acceptance inferred.",
+  "remaining": [
+    "Desktop intake/proposal form and original uncertainty recovery controls",
+    "Real decoder/protected worker qualification and approved LinkedIn protocol sources",
+    "Private native init/PUT executor and compatible later-post lineage",
+    "Whole-three-family caller audit/full validation/frozen production build/final independent review/green PR",
+    "Unchanged full master/live/installed/security/production requirements"
+  ]
+}

@@ -85,3 +85,28 @@ it.skipIf(!enabled)('refuses invalid possession and revoked paired sessions; cha
  const history=await f.http(f.request({operation:'inspect',actionId:proposal.actionId}));expect(history.status).toBe(200);expect((await history.json()).data.action.status).toBe('approved');
  await db.$executeRawUnsafe('UPDATE "DesktopSessionRecord" SET "revokedAt"=clock_timestamp() WHERE id=$1',actor.sessionId);expect((await f.http(f.request({operation:'inspect',actionId:proposal.actionId}))).status).toBe(401);
 });
+
+import {createImageWorkflowClient} from '../../../../desktop/src/lib/imageWorkflow';
+function imageClient(f:Awaited<ReturnType<typeof imageHttpFixture>>,p=actor){const config={apiBase:'https://fixture.invalid',sessionToken:f.codec.mintDesktopToken(p.sessionId)};return createImageWorkflowClient({getConfig:()=>config,getRevision:()=>0,subscribe:()=>()=>{}})}
+it.skipIf(!enabled)('joins the real desktop client/transport to image HTTP, HMAC and SQL through exact distinct-principal review',async()=>{
+ const f=await imageHttpFixture(),old=globalThis.fetch;globalThis.fetch=async(input,init)=>f.http(new Request(String(input),init));
+ try{
+  const requester=imageClient(f),other=imageClient(f,reviewer),saved=await requester.intake(f.id,'image/png',f.bytes,f.reference);expect(saved.ok).toBe(true);if(!saved.ok)throw Error('fixture');
+  const reference=randomUUID(),proposal=await requester.prepare(saved.data.artifact.artifactId,new Date(Date.now()+60000).toISOString(),reference);expect(proposal.ok).toBe(true);if(!proposal.ok)throw Error('fixture');
+  const preview=await other.preview(proposal.data.actionId);expect(preview.ok).toBe(true);if(!preview.ok)throw Error('fixture');expect(Buffer.from(preview.data.bytesBase64url,'base64url')).toEqual(f.bytes);
+  expect(await requester.review(preview.data)).toMatchObject({ok:false,outcomeUnconfirmed:true});const approved=await other.review(preview.data);expect(approved.ok).toBe(true);if(!approved.ok)throw Error('fixture');expect(approved.data.action).toMatchObject({status:'approved',attemptCount:0,reviewerUserId:reviewer.userId});
+  const history=await requester.inspect(proposal.data.actionId);expect(history.ok).toBe(true);if(!history.ok)throw Error('fixture');expect(history.data.executionAuthorized).toBe(false);
+  expect(await requester.lookup(reference)).toMatchObject({ok:true,data:{found:true,actionId:proposal.data.actionId}});
+ }finally{globalThis.fetch=old}
+});
+it.skipIf(!enabled)('the real image desktop client keeps lost intake/proposal replies uncertain and uses only the original references for recovery',async()=>{
+ const f=await imageHttpFixture(),old=globalThis.fetch;let lostIntake=false,lostProposal=false,intakes=0,proposals=0;
+ globalThis.fetch=async(input,init)=>{const command=JSON.parse(String(init?.body));if(command.operation==='intake')intakes++;if(command.operation==='prepare')proposals++;const response=await f.http(new Request(String(input),init));if(command.operation==='intake'&&!lostIntake){lostIntake=true;throw Error('synthetic_lost_reply')}if(command.operation==='prepare'&&!lostProposal){lostProposal=true;throw Error('synthetic_lost_reply')}return response};
+ try{
+  const requester=imageClient(f);expect(await requester.intake(f.id,'image/png',f.bytes,f.reference)).toMatchObject({ok:false,outcomeUnconfirmed:true});
+  const saved=await requester.lookupArtifact(f.reference);expect(saved.ok).toBe(true);if(!saved.ok||!saved.data.found)throw Error('fixture');
+  const reference=randomUUID();expect(await requester.prepare(saved.data.artifact.artifactId,new Date(Date.now()+60000).toISOString(),reference)).toMatchObject({ok:false,outcomeUnconfirmed:true});
+  const proposal=await requester.lookup(reference);expect(proposal.ok).toBe(true);if(!proposal.ok||!proposal.data.found)throw Error('fixture');
+  const history=await requester.inspect(proposal.data.actionId);expect(history).toMatchObject({ok:true,data:{action:{status:'proposed',attemptCount:0}}});expect(intakes).toBe(1);expect(proposals).toBe(1);
+ }finally{globalThis.fetch=old}
+});
