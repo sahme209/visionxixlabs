@@ -1,0 +1,43 @@
+{
+  "scope": "Prepared authenticated template HTTP composition, unregistered/local only",
+  "actualPostgres": {
+    "cases": 183,
+    "root": "/private/tmp/axiom-platform-pg-oykn87b7",
+    "stopped": true,
+    "newCases": [
+      "actual paired HMAC/current identity SQL proposal, safe bucket preview, genuine review, requester execution, history after reviewer revocation",
+      "exact YAML preview, access issuance, original-session one-use output and nonsecret history",
+      "request cancellation after awaited qualification before credentials/native attempt"
+    ],
+    "qualification": "Synthetic native/profile/key/clock/channel sources; intercepted installed AWS SDK calls; actual SQL and HMAC mechanics"
+  },
+  "ordinaryChecks": {
+    "passed": 551,
+    "sqlOptinsSkipped": 183,
+    "rootNativeTypes": "PASS",
+    "logs": [
+      "/private/tmp/axiom-template-workflow-http-shared.log",
+      "/private/tmp/axiom-template-workflow-http-final-types.log"
+    ]
+  },
+  "notVerified": [
+    "desktop client/UI and composed browser workflow",
+    "actual qualified native/key/clock/channel suppliers",
+    "registered route/native visual acceptance",
+    "whole-batch independent review/full build/mandatory-green PR",
+    "production schema/provider/deployment acceptance"
+  ],
+  "productionChangedByCodex": false,
+  "sourceHashes": {
+    "lib/governance/platform/templateWorkflowContract.ts": "0245b386d521f7daed2074d6da21238511e1c2e0dc10f3de2b9b056bffd98401",
+    "lib/governance/platform/templateWorkflowRequest.ts": "6e9c75345e0b85a8489d9610390d00427a26e0a7387e9489caea2f8f2bb955a7",
+    "lib/governance/platform/templateWorkflowRequestService.ts": "57c57282513360d125ba413b18069d4601bfd4036270d6388428a875da6974e5",
+    "lib/governance/platform/templateWorkflowHttp.ts": "22c7683cb4517c6a22cc86010b483e9429e9b3b2fe27614d52545e2be7dad4e1",
+    "lib/governance/platform/templatePreparationStore.ts": "8f1390687f23b03b886e24699c64bff7ee171d1b8a0468a63ffb9716cd6c3e79",
+    "lib/governance/platform/__tests__/templateWorkflowView.test.ts": "475a713600ebd499fa26d6f1b23bba781d839b4583e95324eeeb5f713193d14e",
+    "lib/governance/platform/__tests__/templateWorkflowRequest.test.ts": "909563fce03666266e327e4476fbcb6cc78a60d827757065e68a38a7e316c9ac",
+    "lib/governance/platform/__tests__/templateWorkflowHttp.test.ts": "8749794ad5cbffa338b2cdbd84b08c940120cb818b20d60b24f73dfcad3254e5",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "d3d0cb0f6fe42025a1c1f74dcbf7da5eb15080128153f2a5e5ae6efc487575a6",
+    "scripts/run-platform-governance-postgres.py": "67eb2ed1b8fa7c46b9df9fe4db81ea7a266e3b1c3a18f056b3a3c8b9d27e3304"
+  }
+}
