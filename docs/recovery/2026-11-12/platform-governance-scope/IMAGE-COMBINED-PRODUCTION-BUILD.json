@@ -1,0 +1,26 @@
+{
+  "head": "57f7045c87846d2a8ab5217218d5095077d92133",
+  "sourceCount": 13326,
+  "networkDenied": true,
+  "databaseUrlSupplied": false,
+  "loadedEnvironmentFilesAbsent": true,
+  "trackedExampleOnly": true,
+  "scope": "ordinary local production compilation only; no native issuer launch/deploy",
+  "exitCode": 0,
+  "buildLogSha256": "2cce1c3f256e96143b59894bc77eeee9f5de3b3928ded11fbde69160dc06979a",
+  "sourceUnchanged": true,
+  "stage": "/private/tmp/axiom-image-combined-build-dh4lrmp_",
+  "staticPages": 304,
+  "sourceManifestSha256": "cc4a6508b30218e8aec09ed1fc172512bb845069e7fc743513e88b5b36e3027f",
+  "archiveSha256": "774f0069ca90a6601a49b2108f8da376109c6aa9707abb01e659c48b6257581b",
+  "heapMiB": 8192,
+  "prismaEngineSha256": "6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1",
+  "setupCorrections": [
+    "Python3.9 lacks tar extraction filter; validated members before extraction",
+    "Only tracked .env.example is allowed; actual dotenv inputs absent",
+    "Selected installed7.10.1 engine matching existing pin; legacy605cache was a wrong path, not a changed engine. No pin changed."
+  ],
+  "buildInvocations": 1,
+  "warnings": "Three dynamic dependency-expression warnings in existing verified-issuer import graph, not suppressed",
+  "remaining": "Native protocol/decoder/worker qualification, actual init/PUT executor/progression, full suite/final three-family review/green PR and all master/live gates remain. Compilation is not runtime/provider/issuer acceptance; no deployment."
+}
