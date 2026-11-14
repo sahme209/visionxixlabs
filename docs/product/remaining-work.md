@@ -1,5 +1,10 @@
 # Axiom remaining work
 
+## Focused diagnostic completed — November14, source47adbce
+
+The approved ONE diagnostic run43592176140 completed: ordinary Rust spawn succeeds; no-op pre_exec refuses errno1; tiny Cargo exits101 with316stderr bytes/no output/unclassified cause; every owned child group stopped. All7existing exact-head CI checks PASS. Full compiler is correctly SKIPPED and remains UNACCEPTED, so PR331 staysOPEN/UNMERGED; Governance remains incomplete/disabled. This permission isCONSUMED. My classifier discarded the unrecognized Cargo message; a separately reviewed Cargo-only/path-redacted-error amendment is now PENDING, not authorized. No retry, profile change, full build or production action follows. Complete observation/checks/proposal: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/{RUST-SPAWN-RESULT.md,RUST-SPAWN-PR331-CHECKS.json,CARGO-ERROR-OBSERVATION-PROPOSAL.md}`. Active authoring checkout is the recovered non-Documents path stated below; original source/storage preserved.
+
+
 ## Approved focused diagnostic — November14, prepared
 
 Owner explicitly approved one conditional focused diagnostic. The unchanged-profile Rust ordinary/pre-exec comparison and tiny offline dependency-free Cargo compile are prepared;22pure/mocked/source checks PASS and independent10-file final packet review CLEAR. PacketSHA38d27aa4c1a7c186b097778317fec008225b046f40ad8bc300288477bb3797f4. ONE samePR331 transition from remote010444b7/five-minute standard public runner is next; no diagnostic/native invocation has occurred at this documentation checkpoint. Earlier compiler failures remain; a diagnostic success cannot replace the full Rust/link/real qualification gate or authorize merge/activation. Exact prepared evidence: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/RUST-SPAWN-PREPARED-RECEIPT.json`. No profile widening, full-build retry, credentials, deployment or spending is included. Older pending-decision paragraphs below are historical, superseded only by this exact approval.

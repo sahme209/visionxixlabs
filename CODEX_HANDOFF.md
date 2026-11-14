@@ -1,5 +1,10 @@
 # CODEX HANDOFF — VisionXIXLabs / Axiom (read this whole file before doing anything)
 
+## Focused diagnostic completed — November14, source47adbce
+
+The approved ONE diagnostic run43592176140 completed: ordinary Rust spawn succeeds; no-op pre_exec refuses errno1; tiny Cargo exits101 with316stderr bytes/no output/unclassified cause; every owned child group stopped. All7existing exact-head CI checks PASS. Full compiler is correctly SKIPPED and remains UNACCEPTED, so PR331 staysOPEN/UNMERGED; Governance remains incomplete/disabled. This permission isCONSUMED. My classifier discarded the unrecognized Cargo message; a separately reviewed Cargo-only/path-redacted-error amendment is now PENDING, not authorized. No retry, profile change, full build or production action follows. Complete observation/checks/proposal: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/{RUST-SPAWN-RESULT.md,RUST-SPAWN-PR331-CHECKS.json,CARGO-ERROR-OBSERVATION-PROPOSAL.md}`. Active authoring checkout is the recovered non-Documents path stated below; original source/storage preserved.
+
+
 ## Active authoring checkout — November14 local Git recovery
 
 The original Documents checkout's Git pack reports logical36MB but reads zero bytes. Do not delete/repack it or repeat the failed commit. A separate checkout at `/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14` was recovered from existing remote PR331/head010444b7; ALL13771staged index entries match exactly, including27copied changed files. Original files/storage remain preserved. Continue Git authoring in that recovered checkout; this original goal file remains a pointer for the active goal. Current recovery evidence: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/RUST-SPAWN-LOCAL-RECOVERY.json` in the recovered checkout. No CI/native run or production action occurred during recovery.

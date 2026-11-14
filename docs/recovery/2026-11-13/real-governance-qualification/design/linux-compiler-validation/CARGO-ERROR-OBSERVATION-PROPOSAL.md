@@ -1,0 +1,19 @@
+# One Cargo-only error observation — proposed conditional bundle
+
+Status: design only; not implemented or authorized. The approved Rust/Cargo diagnostic run43592176140 is complete and consumed. No full build or repeat follows automatically.
+
+## What the actual run establishes
+
+Exact source47adbced23b378f4f4789a6bec8d836641785240 and packet38d27aa4 pass the ordinary Rust child launch; the no-op pre_exec path refuses with errno1. The actual tiny Cargo invocation exits101 in0.019seconds, emits316stderr bytes and produces no rlib. Every owned child group is confirmed stopped. The Rust/Cargo binaries match the preceding full compiler attempt. The full compiler workflow was correctly skipped, not retried or accepted.
+
+The error classifier retained only a fixed unknown category for this Cargo message. Its private stderr was deliberately not echoed/uploaded under the approved output contract, and that ephemeral runner file is unavailable now. This is an evidence limitation in our diagnostic. The tiny crate, explicit lockfile, standalone workspace, clean environment and fixed command have been independently inspected with no concrete static error found. Neither the316byte size nor the pre_exec probe proves Cargo's actual failing operation. Do not widen the filter based on that inference.
+
+## Smallest next run and changed output scope
+
+Prepare/test/independently review the fixed Cargo-only driver and a new exact packet, then ONE five-minute public standardUbuntu24.04 job in the existing PR331, using an exact transition from current47adbced23b378f4f4789a6bec8d836641785240 after fresh remote verification. Existing required CI remains intact. The previous diagnostic and full compiler results stay historical.
+
+Recompile only the unchanged trusted C launcher against captured installed headers, and verify the same filter program. Reuse the accepted tiny dependency-free no_std rlib crate/lockfile, unchanged offline/locked command, fresh private homes/target and no ancestor Cargo configuration. Bind actual installed rustc/Cargo/std/core identities to the saved accepted diagnostic inputs; mismatch stops. No new toolchain/dependency download, upstream source, Rust spawn fixture, ordinary/pre_exec repeat, full compiler/link or Governance output is run. Only the ONE Cargo invocation receives15active seconds plus at most5seconds owned cleanup; fixed metadata and launcher commands have short deadlines within the five-minute job. No retry or profile widening.
+
+**The requested output amendment is explicit:** retain at most16KiB of actual Cargo stderr in the result after replacing the exact known owned-root, checkout and toolchain paths with fixed labels, then JSON-escape it on one receipt line. This replaces the classifier-only output for this one synthetic invocation. Do not publish environment values, file contents, stdout dumps or arbitrary fallback logs. The tiny source contains no customer data and the child environment contains no credentials/wrappers/config. Preserve the raw stderr byte count and SHA256 plus status/exit/tool/source hashes. If the message exceeds16KiB, decoding fails or cleanup/source currentness is uncertain, publish only fixed failure facts and stop; do not widen or repeat. Tests must cover exact path replacement without erasing nonpath error text, newline/control escaping, over-limit refusal and unchanged result history.
+
+No Security/API/credential authority is gained by a diagnostic receipt. No account access, customer files, real secrets, database/provider action, cloud resources, installation, deployment, enablement or spending is included. A diagnostic success never replaces the full Rust/C/link checkpoint or permits merging PR331. Any later local-IPC/profile change or full compile still needs its own concrete reviewed authorization.
