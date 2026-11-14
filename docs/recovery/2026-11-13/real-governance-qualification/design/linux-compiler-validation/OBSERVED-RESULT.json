@@ -1,0 +1,28 @@
+{
+  "kind": "actual-once-linux-compiler-attempt",
+  "approval": "call_9a8b934ad6414d8d806bfbe78463f38a",
+  "consumed": true,
+  "repository": "sahme209/visionxixlabs",
+  "pr": 331,
+  "head": "ecfb83c98b809a6a6cbe0d80c0fd309ba9a99769",
+  "runId": 43552654814,
+  "jobId": 132318365256,
+  "conclusion": "failure",
+  "phase": "isolation-preflight",
+  "observedError": "unshare: write failed /proc/self/uid_map: Operation not permitted",
+  "dependenciesFetched": false,
+  "upstreamSourceExecuted": false,
+  "compilerInvoked": false,
+  "runtimeLaunched": false,
+  "governanceEnabled": false,
+  "retry": false,
+  "productionChanged": false,
+  "observedToolVersions": {
+    "rustc": "1.99.1",
+    "cargo": "1.99.1",
+    "host": "x86_64-unknown-linux-gnu",
+    "c": "Ubuntu 13.3.0-6ubuntu2~24.04.1",
+    "runner": "ubuntu-24.04 /20261111.370.1"
+  },
+  "limitation": "Setup/tool identity checks ran; actual source materialization, dependency download, compilation and linkage did not. Other required PR checks are pending; no red merge."
+}

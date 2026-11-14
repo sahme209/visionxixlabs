@@ -1,0 +1,29 @@
+{
+  "approval": "call_e3e539fb001c4f829937a054ae807064",
+  "operations": 3,
+  "consumed": true,
+  "repository": "octokit/webhooks",
+  "defaultBranchObserved": "main",
+  "visibility": "public",
+  "treeSha": "aa80c24a3f55354465b8b1438d33dd5602956d0d",
+  "treeEntries": 1150,
+  "truncated": false,
+  "schemaPath": "payload-schemas/api.github.com/pull_request/synchronize.schema.json",
+  "schemaBlobSha": "6df627907059bc7d97ad506c46ca57f2f4bb7b01",
+  "schemaBytes": 876,
+  "schemaSha256": "d1bf68c4ae9c4b3da5cfa981d872e531f805125e8b1adeaf6e38489ac24ef820",
+  "established": [
+    "action=synchronize",
+    "top-level number",
+    "top-level before",
+    "top-level after",
+    "pull_request object reference",
+    "repository object reference"
+  ],
+  "limitations": [
+    "Referenced common object schemas were not fetched; actual exact head/base/repository guards remain required and missing fields refuse."
+  ],
+  "implementationAuthority": "conditional bundle call_6dc9f8a11b974095997307183698245f; native attempt still unused",
+  "sourceExecuted": false,
+  "extraReads": 0
+}

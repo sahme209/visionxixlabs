@@ -1,0 +1,45 @@
+{
+  "actualFileSha256": {
+    ".github/workflows/linux-time-compile.yml": "5388fdc443a8a1029cdfb17d854307f3628936dcc142b1ab12e9888a5bbfe14b",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-DIRECT-READ-RESULT.json": "338bc3417ae601edd3b24a9dee5f2b142f3847527a57e0bbf5fa8b7baa9bc416",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-SYNCHRONIZE-SCHEMA.json": "d1bf68c4ae9c4b3da5cfa981d872e531f805125e8b1adeaf6e38489ac24ef820",
+    "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch": "ce791c7fb9757d6d00ba754161364926dd422cce366c7813b5b0dc87f0906ab1",
+    "packages/verified-issuer-runtime/linux/time_publication.c": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+    "packages/verified-issuer-runtime/linux/time_publication.h": "04997b0be3d56b6e0399e2e6a3a01236eb9995b2ffb3e8acbccccf1e1dda79c6",
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+    "packages/verified-issuer-runtime/linux/vendor/EXPECTED-PATCHED-SHA256.json": "1b6cc9ea0ae9d1a7e2a6dd4eb0e26da5487d451c6b2b99a2ed2fcf0f54a56cff",
+    "packages/verified-issuer-runtime/linux/vendor/LICENSE.Apache-2.0": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "packages/verified-issuer-runtime/linux/vendor/LICENSE.MIT": "04f8eb9dc1d7079de38b1dce5e9c9c2968e31b88e14301d58ea76562c418b1a2",
+    "packages/verified-issuer-runtime/linux/vendor/README.md": "95dd70479d77143fc86a34f0b30b596db7eb6edb1a3834b0612e8000aad85d23",
+    "packages/verified-issuer-runtime/linux/vendor/UPSTREAM-TREE.json": "dc5518ce9b96bce6fa4a59e468287c02f970f843bc722ea26567ccc04b4f8b2c",
+    "packages/verified-issuer-runtime/linux/vendor/clock-bound-371058f8-source.tar.gz": "468fde829962d7c2a9fbb9cb981c07ccc2e44c34eed48d43dafce95bda2c2f02",
+    "scripts/governance_linux_compile.py": "201c4c75a8d41a422b940d05ae57b2d5695875343c24e3fc508b9ab3bf6e0afb",
+    "scripts/governance_linux_compile_inputs.py": "2e6ae367bc3480681fa1c7c11ff28943f0cfe7a3cbc756f3163be4b264ae17da",
+    "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
+    "scripts/linux-compile/benign_fixture.c": "6bb8c6d2d5758f4d593763770b937f65e464a7e7faefb0e86060e41d54a3d446",
+    "scripts/linux-compile/compiler_profile.h": "a9037954185e1b7e5e87ace0050df6dd76df9f1ec9b64ca8ae78d874bf080beb",
+    "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
+    "scripts/tests/test_governance_linux_compile.py": "009bcd8513406cb1f4bd58892f1181a6ebb8f0f55deb809e7c12dc6fbdc9b3cd",
+    "scripts/tests/test_governance_linux_compile_inputs.py": "0b4ed62dc74a8ea37f5533fa430f29cc3a79bb87530d8926e50982e39cbad98c",
+    "scripts/tests/test_governance_linux_compile_supervisor.py": "24b956056848cc04aaa7b418ae355a6a5b0f50dc51be091ebc75732fd07d9e13",
+    "scripts/tests/test_network_launcher_source.py": "ebe67c978057ddf97beb99c7cfc3914cad6bc837bc4065a855d6999876739cda"
+  },
+  "allOther21InputsUnchanged": true,
+  "changedFromPacket2": [
+    ".github/workflows/linux-time-compile.yml",
+    "scripts/governance_linux_compile.py",
+    "scripts/tests/test_governance_linux_compile.py"
+  ],
+  "executionAuthority": "Fresh exact owner grant REQUIRED before push/native attempt; old grant not reused.",
+  "guard": "PR331, same public repository/branch, base main, one synchronize from 12d5c45e7883bc50e9142dfa1e38cc1602b77a43, after=head SHA, actual git HEAD, attempt1, Ubuntu24.04 45minute job/no retry.",
+  "limits": [
+    "Source/file-only verification; no tests, compiler, children, native security calls, external reads or network.",
+    "Prior archive timeout cause remains unknown. Actual Rust build and final native link remain unproved.",
+    "Actual passed preflight is historical parent-supplied evidence; independently verified identical source inputs do not become a new native execution result."
+  ],
+  "packetSha256": "6c37456bc5c0b41796d0a19dd31753e65fc198c4071b91f0327b17b5c50a7fdf",
+  "scope": "Same full Rust daemon staticlib with retained dead code, final whole-library system link and explicit time_publication.o, all four C symbols and actual Rust paths; no separate C archive, filter widening, tracing, new tool, launched Governance runtime or qualification claim.",
+  "verdict": "CLEAR",
+  "verifiedFileCount": 24
+}

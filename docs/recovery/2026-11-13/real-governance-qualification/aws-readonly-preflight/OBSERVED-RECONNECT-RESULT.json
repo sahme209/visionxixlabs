@@ -1,0 +1,12 @@
+{
+  "approval": "call_69bfd3f177ca47529d481ccd3b7a8a88",
+  "scriptSha256": "fddd625ae2a7a7d8ade3a49c0fceb60453f4ba7fa1a6fe15fbb74534d4c59bce",
+  "connectorInvocations": 1,
+  "outcome": "connection-reauthentication-required-after-owner-reconnect",
+  "accountDataReturned": false,
+  "apiCallsConfirmed": 0,
+  "apiCallEvidence": "Connector UNAUTHORIZED before script execution; no api_calls evidence.",
+  "authority": "consumed; no retry or browser fallback performed",
+  "resourcesChanged": false,
+  "spending": false
+}

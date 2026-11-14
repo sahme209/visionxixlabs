@@ -1,0 +1,14 @@
+{
+  "approval": "call_6dc9f8a11b974095997307183698245f",
+  "stage": "one GitHub event schema reference read",
+  "url": "https://raw.githubusercontent.com/octokit/webhooks-schemas/main/payload-schemas/api.github.com/pull_request/synchronize.schema.json",
+  "result": "404 Not Found",
+  "cause": "Incorrect repository URL chosen by assistant; no schema returned",
+  "readAllowanceConsumed": true,
+  "eventContractEstablished": false,
+  "implementationStarted": false,
+  "compilerAttemptUsed": false,
+  "workflowChanged": false,
+  "pushOrRetry": false,
+  "next": "Fresh permission for one official source lookup and its matching reference; other conditional gates and original failure remain."
+}

@@ -1,0 +1,54 @@
+{
+  "approval": "call_44015c479d3344ed8f09d2fcadb4ecd3",
+  "finishedAt": "2026-11-14T01:00:15.926Z",
+  "failed": false,
+  "observations": [
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/shm/shm_header.rs",
+      "path": "clock-bound/src/shm/shm_header.rs",
+      "sha1": "02392ad46608739f0e42de99bef019c0663b1a35",
+      "bytes": 11388,
+      "filename": "PUBLIC-READ-1.txt",
+      "sha256": "8186d14bee57df185e56b1137d59e9113484c6cab8521ca549898d7119bf2618"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/shm/writer.rs",
+      "path": "clock-bound/src/shm/writer.rs",
+      "sha1": "fae6b1c1a9e4bb386e09248c409c811318e59e71",
+      "bytes": 31430,
+      "filename": "PUBLIC-READ-2.txt",
+      "sha256": "155954dad2dbd16634c2f061df69ab8e57701cb1128506a38c36712ea8db88d0"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon/clock_state/shm_writer.rs",
+      "path": "clock-bound/src/daemon/clock_state/shm_writer.rs",
+      "sha1": "1bf2e2c54d5963a1878bed75446efdc06930d1e8",
+      "bytes": 1411,
+      "filename": "PUBLIC-READ-3.txt",
+      "sha256": "9fbadcbdfb039503fb49bbafe50692600917f3c5ff98b5699ac7d53a17fb9d4f"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon/clock_state/shm_writer/shm0.rs",
+      "path": "clock-bound/src/daemon/clock_state/shm_writer/shm0.rs",
+      "sha1": "7a16ca5ebbe42f5b4754ad80e24c90327c99e303",
+      "bytes": 13511,
+      "filename": "PUBLIC-READ-4.txt",
+      "sha256": "99dd4fe0b9ab154383df0355563d9e77f4b8357619306f96506488cecfd7e2cd"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon/clock_state/shm_writer/shm1.rs",
+      "path": "clock-bound/src/daemon/clock_state/shm_writer/shm1.rs",
+      "sha1": "8dba8a36fb082f08504b5ba8851ea5bdb3e8dc95",
+      "bytes": 10094,
+      "filename": "PUBLIC-READ-5.txt",
+      "sha256": "4afff762a69b6906799345e2d71d16b6ee9ec2eaa2e0e15b47d1b2279603ab52"
+    }
+  ],
+  "state": {
+    "requests": 5,
+    "stopped": false,
+    "complete": true,
+    "commit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777"
+  },
+  "scope": "public text only; no downloaded source execution or native qualification"
+}

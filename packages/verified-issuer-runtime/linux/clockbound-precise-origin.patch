@@ -1,0 +1,914 @@
+--- a/clock-bound/src/daemon.rs
++++ b/clock-bound/src/daemon.rs
+@@ -1,4 +1,7 @@
+ //! Clock Synchronization Daemon
++
++#[cfg(feature = "daemon")]
++mod time_publication_adapter;
+ 
+ #[cfg(feature = "algorithm")]
+ pub mod algo_analysis;
+@@ -217,6 +220,104 @@
+         }
+     }
+ 
++    /// Qualified private construction requires the owned publisher context.
++    pub async fn construct_axiom(
++        configured_sources: SourcesConfig,
++        cancellation_token: CancellationToken,
++        axiom_publisher: time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        let daemon_info = DaemonInfo {
++            major_version: 2,
++            minor_version: 200,
++            startup_id: rng().next_u64(),
++        };
++
++        let clock_state_cancellation_token = CancellationToken::new();
++
++        let selected_clock = Arc::new(SelectedClockSource::default());
++
++        // Initialize IO components.
++        let (dns_message_tx, dns_message_rx) = mpsc::channel(DAEMON_MESSAGE_CAPACITY);
++        let mut io_front_end =
++            io::SourceIO::construct(selected_clock.clone(), daemon_info, dns_message_tx);
++        let clock_disruption_receiver = io_front_end.clock_disruption_receiver();
++
++        let mut receiver_stream = ReceiverStream::default();
++        // The daemon runs the algorithm with its production tunables and nothing else.
++        let ff_sync_params = FfSyncParams::default();
++        let mut clock_sync_algorithm = ClockSyncAlgorithm::builder()
++            .selected_clock(selected_clock.clone())
++            .selector(Selector::new(ff_sync_params.max_dispersion))
++            .build();
++
++        let mut source_mutator = SourceMutator::new(
++            &mut io_front_end,
++            &mut clock_sync_algorithm,
++            &mut receiver_stream,
++        );
++
++        // Platform auto-detection: determine which sources to install.
++        let autodetect_result = match Autodetect::detect() {
++            Ok(result) => result,
++            Err(e) => {
++                warn!(
++                    ?e,
++                    "Platform auto-detection failed; defaulting to non-Amazon."
++                );
++                Autodetect::Other
++            }
++        };
++
++        // Install Amazon-conditional sources.
++        source_mutator
++            .init_from_autodetect_results(&autodetect_result, &ff_sync_params)
++            .await;
++
++        // Install the default public pool (may be added later at runtime via `DnsMessage::AddPool`)
++        source_mutator.add_default_public_pool(&autodetect_result);
++
++        // Install sources from the configuration file.
++        Self::install_configured_sources(&mut source_mutator, &configured_sources, &ff_sync_params);
++
++        // Read VMClock params (the source may have been created by init_amazon_sources above).
++        let vmclock_params = io_front_end.vmclock_params();
++
++        // Initialize the Clock State component
++        let (clock_state_tx, clock_state) = {
++            let (tx, rx) = async_ring_buffer::create(1);
++            let clock_state = ClockState::construct_axiom(
++                rx,
++                clock_disruption_receiver.clone(),
++                clock_state_cancellation_token.clone(),
++                vmclock_params,
++                ClockStatus::Unknown,
++                ff_sync_params.max_dispersion,
++                axiom_publisher,
++            );
++            (tx, clock_state)
++        };
++        let task_tracker = TaskTracker::new();
++        let clock_state_handle = ClockStateHandle {
++            clock_state: Some(clock_state),
++            tx: clock_state_tx,
++            cancellation_token: clock_state_cancellation_token,
++            task_tracker,
++        };
++
++        Self {
++            io_front_end,
++            clock_sync_algorithm,
++            ff_sync_params,
++            receiver_stream,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_state_handle,
++            dns_message_rx,
++            sources_snapshot_interval: sources_snapshot_interval(),
++            configured_sources,
++        }
++    }
++
+     /// Install the NTP sources from the configuration file into the daemon.
+     ///
+     /// Each configured source maps onto a `SourceMutator` action:
+--- a/clock-bound/src/daemon/clock_state.rs
++++ b/clock-bound/src/daemon/clock_state.rs
+@@ -4,6 +4,7 @@
+ pub mod system_clock_discipliner;
+ 
+ use shm_writer::{Shm0, Shm1};
++use shm_writer::shm0::Shm0Writer;
+ 
+ use std::path::Path;
+ use std::sync::{Arc, Mutex};
+@@ -128,7 +129,79 @@
+             .expect("max_dispersion is a valid ppb value");
+ 
+         let shm0 = Shm0::builder()
+-            .shm_writer(Box::new(shm_writer_0))
++            .shm_writer(Shm0Writer::Stock(Box::new(shm_writer_0)))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        let shm1 = Shm1::builder()
++            .shm_writer(Box::new(shm_writer_1))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        #[cfg(not(feature = "test-side-by-side"))]
++        let system_clock_discipliner = SystemClockDiscipliner::with_kernel_clock_adjuster();
++        #[cfg(feature = "test-side-by-side")]
++        let system_clock_discipliner = SystemClockDiscipliner::with_noop_clock_adjuster();
++
++        Self::new(
++            shm0,
++            shm1,
++            system_clock_discipliner,
++            clock_params_receiver,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_status,
++            vmclock_state,
++        )
++    }
++
++    /// Qualified private construction requires the owned publisher context.
++    pub fn construct_axiom(
++        clock_params_receiver: Receiver<SyncParameters>,
++        clock_disruption_receiver: watch::Receiver<ClockDisruptionEvent>,
++        cancellation_token: CancellationToken,
++        vmclock_params: Option<VMClockParams>,
++        clock_status: ClockStatus,
++        max_dispersion: Skew,
++        axiom_publisher: super::time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        // Clock disruption support is enabled whenever a VMClock source exists (i.e. we expected
++        // one on this platform), even if it failed to initialize.
++        let clock_disruption_support_enabled = vmclock_params.is_some();
++        let disruption_marker = vmclock_params
++            .as_ref()
++            .map_or(0, |params| params.disruption_marker);
++        let vmclock_state = vmclock_params.map(|params| params.shared_state);
++
++        // Build two writers, each writing to a specific shared memory segment path.
++        //
++        // FIXME: given these path are const strings, would be worth looking into moving the
++        // creation of these writers to the Shm0::new()/Shm1::new() methods.
++        //
++        let shm_writer_0 = ShmWriter::new(
++            Path::new(CLOCKBOUND_SHM_DEFAULT_PATH_V0),
++            ClockErrorBoundLayoutVersion::V2,
++            ClockErrorBoundLayoutVersion::V2,
++        )
++        .unwrap();
++
++        let shm_writer_1 = ShmWriter::new(
++            Path::new(CLOCKBOUND_SHM_DEFAULT_PATH_V1),
++            ClockErrorBoundLayoutVersion::V3,
++            ClockErrorBoundLayoutVersion::V3,
++        )
++        .unwrap();
++
++        // The same oscillator bound the synchronization algorithm uses; always representable
++        // (validated positive and far below 1e9 ppb).
++        let max_drift_ppb = max_dispersion
++            .to_ppb()
++            .expect("max_dispersion is a valid ppb value");
++
++        let shm0 = Shm0::builder()
++            .shm_writer(Shm0Writer::Axiom(axiom_publisher.wrap_v2(Box::new(shm_writer_0), max_dispersion.get())))
+             .clock_disruption_support_enabled(clock_disruption_support_enabled)
+             .max_drift_ppb(max_drift_ppb)
+             .disruption_marker(disruption_marker)
+@@ -276,6 +349,8 @@
+ 
+         if let Some(sp) = &self.sync_parameters {
+             let parameters = &sp.clock_parameters;
++            // Synchronous publication ACK precedes every actual correction.
++            self.shm0.invalidate_unknown();
+             match self
+                 .system_clock_discipliner
+                 .handle_clock_parameters(parameters)
+@@ -344,10 +419,11 @@
+ 
+         let val = clock_disruption_receiver.borrow_and_update().clone();
+         if let Some(disruption_marker) = val.disruption_marker {
++            // Invalidate even before the first sync or on repeated disruptions.
++            shm0.invalidate_disruption(disruption_marker);
+             // Update the clock status on the shared memory segments.
+             if let Some(sp) = sync_parameters {
+                 shm1.handle_disruption(&sp.clock_parameters, disruption_marker);
+-                shm0.handle_disruption(&sp.clock_parameters, disruption_marker);
+             }
+ 
+             *sync_parameters = None;
+@@ -387,7 +463,7 @@
+     /// `ClockStatus` written at the `ShmWrite` seam, so the field values here are not significant.
+     fn mock_shm0(mock: MockShmWriter) -> Shm0 {
+         Shm0::builder()
+-            .shm_writer(Box::new(mock))
++            .shm_writer(Shm0Writer::Stock(Box::new(mock)))
+             .clock_disruption_support_enabled(false)
+             .max_drift_ppb(0)
+             .disruption_marker(0)
+@@ -422,6 +498,7 @@
+             period: Period::from_frequency(Frequency::from_hz(1_000_000_000.0)),
+             period_max_error: Period::from_seconds(0.0),
+             as_of_monotonic: realtime_now,
++            axiom_origin: None,
+         }
+     }
+ 
+@@ -439,6 +516,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(1e-11),
+             as_of_monotonic: Instant::from_nanos(1000),
++            axiom_origin: None,
+         };
+ 
+         let mut mock_shm_writer_1 = MockShmWriter::new();
+--- a/clock-bound/src/daemon/clock_parameters.rs
++++ b/clock-bound/src/daemon/clock_parameters.rs
+@@ -16,6 +16,7 @@
+ /// [`ClockParametersLog`](crate::daemon::logging::ffevents::types::ClockParametersLog).
+ #[derive(Debug, Clone, PartialEq)]
+ pub struct ClockParameters {
++    pub axiom_origin: Option<crate::daemon::time::clocks::PreciseOrigin>,
+     /// The tsc values that these account for
+     pub tsc_count: TscCount,
+     /// The time at `tsc_count`
+@@ -96,6 +97,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(0.0),
+             as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None,
+         };
+ 
+         assert_eq!(
+@@ -116,7 +118,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         },
+         // Second event (identical)
+         event::Ntp::builder()
+@@ -143,7 +146,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         },
+         // Second event with worse RTT
+         event::Ntp::builder()
+@@ -170,7 +174,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         },
+         // Second event (newer, 1 second later)
+         event::Ntp::builder()
+@@ -197,7 +202,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         },
+         // Second event
+         event::Ntp::builder()
+@@ -224,7 +230,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         },
+         // Second event
+         event::Ntp::builder()
+@@ -259,7 +266,8 @@
+             clock_error_bound: second.calculate_clock_error_bound(period),
+             period,
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         };
+         let result = val.more_accurate_than(&first, max_dispersion);
+         assert_eq!(result, expected);
+@@ -274,7 +282,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         },
+         // Second event (new, 10 seconds later)
+         event::Ntp::builder()
+@@ -309,7 +318,8 @@
+             clock_error_bound: second.calculate_clock_error_bound(period),
+             period,
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500), // unused
++            as_of_monotonic: Instant::from_days(1) + Duration::from_nanos(500),
++            axiom_origin: None, // unused
+         };
+         let result = val.more_accurate_than(&first, max_dispersion);
+         assert_eq!(result, expected);
+--- a/clock-bound/src/daemon/clock_sync_algorithm.rs
++++ b/clock-bound/src/daemon/clock_sync_algorithm.rs
+@@ -536,6 +536,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(1e-11),
+             as_of_monotonic: Instant::new(0),
++            axiom_origin: None,
+         };
+         csa.selector
+             .update(&params(1_000, 10_000), displaced.clone());
+@@ -566,6 +567,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(1e-11),
+             as_of_monotonic: Instant::new(0),
++            axiom_origin: None,
+         };
+         csa.selector
+             .update(&params, SourceInfo::NtpSource(selected_addr));
+--- a/clock-bound/src/daemon/io/phc.rs
++++ b/clock-bound/src/daemon/io/phc.rs
+@@ -497,7 +497,7 @@
+     ///
+     /// If the `PhcReader` and `PhcClockErrorBoundReader` are not initialized, then this
+     async fn read_phc_sample(&self) -> Result<event::Phc, PhcError> {
+-        let (ptp_clock_time, counter_pre, counter_post) = self
++        let (ptp_clock_time, counter_pre, counter_post, axiom_origin) = self
+             .reader
+             .ptp_sys_offset_extended2_with_counter_pre_and_counter_post(PHC_SOURCE_TIMEOUT)
+             .await?;
+@@ -522,6 +522,7 @@
+             .counter_pre(tsc_pre)
+             .counter_post(tsc_post)
+             .data(data)
++            .axiom_origin(axiom_origin)
+             .build()
+             .ok_or(PhcError::TscOrder {
+                 pre: counter_pre,
+@@ -868,7 +869,7 @@
+     async fn ptp_sys_offset_extended2_with_counter_pre_and_counter_post(
+         &self,
+         timeout_duration: tokio::time::Duration,
+-    ) -> Result<(PtpClockTime, u64, u64), PhcError> {
++    ) -> Result<(PtpClockTime, u64, u64, crate::daemon::time::clocks::PreciseOrigin), PhcError> {
+         let mut ptp_sys_offset_extended = PtpSysOffsetExtended {
+             n_samples: 1,
+             ..Default::default()
+@@ -878,6 +879,7 @@
+         let result = timeout(
+             timeout_duration,
+             task::spawn_blocking(move || {
++                let axiom_origin_lower = crate::daemon::time::clocks::MonotonicPrecise::lower_ns();
+                 let counter_pre = read_timestamp_counter_begin();
+                 // SAFETY: The ptp_sys_offset_extended2() function is generated by the
+                 // nix::ioctl_readwrite! macro and the call is safe because the arguments
+@@ -896,7 +898,7 @@
+                     }
+                 };
+                 let counter_post = read_timestamp_counter_end();
+-                Ok((ptp_clock_time, counter_pre, counter_post))
++                Ok((ptp_clock_time, counter_pre, counter_post, crate::daemon::time::clocks::PreciseOrigin::bind(axiom_origin_lower, i64::try_from(counter_pre).expect("TSC range"), i64::try_from(counter_post).expect("TSC range"), crate::daemon::time::clocks::OriginSourceKind::Phc)))
+             }),
+         )
+         .await?;
+--- a/clock-bound/src/daemon/io/ntp.rs
++++ b/clock-bound/src/daemon/io/ntp.rs
+@@ -494,7 +494,7 @@
+         ),
+     );
+ 
+-    let (send_timestamp, ntp_data, received_timestamp) = match fut.await? {
++    let (send_timestamp, ntp_data, received_timestamp, axiom_origin) = match fut.await? {
+         Ok(sample) => sample,
+         Err(InnerSamplePacketError::Io(e)) => return Err(NtpIoError::SampleIo(e)),
+         Err(InnerSamplePacketError::UnusableNtpResponse {
+@@ -518,7 +518,8 @@
+     let builder = event::Ntp::builder()
+         .counter_pre(tsc_pre)
+         .counter_post(tsc_post)
+-        .ntp_data(ntp_data);
++        .ntp_data(ntp_data)
++        .axiom_origin(axiom_origin);
+ 
+     let ntp_event = {
+         #[cfg(not(test))]
+@@ -556,7 +557,8 @@
+     send_recv_buffer: &mut [u8],
+     expected_counter: u64,
+     request_sent: &mut bool,
+-) -> Result<(u64, NtpData, u64), InnerSamplePacketError> {
++) -> Result<(u64, NtpData, u64, crate::daemon::time::clocks::PreciseOrigin), InnerSamplePacketError> {
++    let axiom_origin_lower = crate::daemon::time::clocks::MonotonicPrecise::lower_ns();
+     let send_timestamp = read_timestamp_counter_begin();
+     socket.send_to(send_recv_buffer, addr).await?;
+     *request_sent = true;
+@@ -582,7 +584,7 @@
+         }
+ 
+         match NtpData::try_from(ntp_packet) {
+-            Ok(ntp_data) => return Ok((send_timestamp, ntp_data, received_timestamp)),
++            Ok(ntp_data) => return Ok((send_timestamp, ntp_data, received_timestamp, crate::daemon::time::clocks::PreciseOrigin::bind(axiom_origin_lower, i64::try_from(send_timestamp).expect("TSC range"), i64::try_from(received_timestamp).expect("TSC range"), crate::daemon::time::clocks::OriginSourceKind::Ntp))),
+             Err(source) => {
+                 trace!(error = ?source, "Server responded with an unusable NTP sample.");
+                 return Err(InnerSamplePacketError::UnusableNtpResponse {
+--- a/clock-bound/src/daemon/clock_state/system_clock_discipliner.rs
++++ b/clock-bound/src/daemon/clock_state/system_clock_discipliner.rs
+@@ -115,6 +115,7 @@
+             clock_error_bound: Duration::new(0),
+             period_max_error: Period::from_seconds(0.0),
+             as_of_monotonic: realtime_now,
++            axiom_origin: None,
+         }
+     }
+ 
+--- a/clock-bound/src/daemon/clock_state/shm_writer.rs
++++ b/clock-bound/src/daemon/clock_state/shm_writer.rs
+@@ -3,7 +3,7 @@
+ //! Each shared memory segment is written by its own concrete writer: [`Shm0`] writes the
+ //! `ClockErrorBoundV2` layout (used by ClockBound 2.0 clients, which lean on the kernel system
+ //! clock), and [`Shm1`] writes the `ClockErrorBoundV3` layout.
+-mod shm0;
++pub(super) mod shm0;
+ mod shm1;
+ pub(crate) use shm0::Shm0;
+ pub(crate) use shm1::Shm1;
+@@ -35,6 +35,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(1e-11),
+             as_of_monotonic: Instant::from_nanos(time_nanos),
+-        }
++        
++            axiom_origin: None,}
+     }
+ }
+--- a/clock-bound/src/daemon/clock_state/system_clock_discipliner/state_machine.rs
++++ b/clock-bound/src/daemon/clock_state/system_clock_discipliner/state_machine.rs
+@@ -191,6 +191,7 @@
+             clock_error_bound: Duration::new(0),
+             period_max_error: Period::from_seconds(0.0),
+             as_of_monotonic: realtime_now,
++            axiom_origin: None,
+         }
+     }
+ 
+--- a/clock-bound/src/daemon/clock_state/shm_writer/shm0.rs
++++ b/clock-bound/src/daemon/clock_state/shm_writer/shm0.rs
+@@ -17,10 +17,27 @@
+     },
+ };
+ 
++pub enum Shm0Writer {
++    Stock(Box<dyn ShmWrite + Send + Sync>),
++    Axiom(crate::daemon::time_publication_adapter::NativeTimePublisher),
++}
++impl Shm0Writer {
++    fn invalidate(&mut self, value: &ClockErrorBound) {
++        match self { Self::Stock(w) => w.write(value), Self::Axiom(w) => w.invalidate_then_delegate(value) }
++    }
++    fn publish(&mut self, value: &ClockErrorBound, parameters: &ClockParameters, configured_drift: u32, rtt_ns: i64) {
++        match self {
++            Self::Stock(w) => w.write(value),
++            Self::Axiom(w) => w.publish_precise_then_delegate(parameters.axiom_origin.as_ref(),
++                parameters.period.get(), parameters.period_max_error.get(), configured_drift, value, rtt_ns),
++        }
++    }
++}
++
+ /// Writes the `ClockErrorBoundV2` layout to the shm0 memory segment.
+ #[derive(bon::Builder)]
+ pub struct Shm0 {
+-    shm_writer: Box<dyn ShmWrite + Send + Sync>,
++    shm_writer: Shm0Writer,
+     clock_disruption_support_enabled: bool,
+     max_drift_ppb: u32,
+     disruption_marker: u64,
+@@ -42,17 +59,32 @@
+         info!(
+             "Initializing SHM segment to status `ClockStatus::Unknown` and zeroing other fields."
+         );
+-        let clock_parameters = ClockParameters {
+-            tsc_count: TscCount::new(0),
+-            time: Instant::new(0),
+-            clock_error_bound: Duration::new(0),
+-            period: Period::from_seconds(0.0),
+-            period_max_error: Period::from_seconds(0.0),
+-            as_of_monotonic: Instant::new(0),
+-        };
+-        if let Some(ceb) = self.create_shm_snapshot(&clock_parameters, ClockStatus::Unknown) {
+-            self.shm_writer.write(&ceb);
+-        }
++        self.invalidate_unknown();
++    }
++
++    // Deliberately unusable sentinel, not a measured time bound. Unknown and
++    // Disrupted records are rejected before interval arithmetic. No clock read,
++    // skew conversion or optional snapshot builder can skip this write.
++    fn invalidate(&mut self, status: ClockStatus) {
++        let ceb = ClockErrorBoundGeneric::builder()
++            .as_of(TimeSpec::new(0, 0))
++            .void_after(TimeSpec::new(0, 1))
++            .bound_nsec(0)
++            .disruption_marker(self.disruption_marker)
++            .max_drift_ppb(0)
++            .clock_status(status)
++            .clock_disruption_support_enabled(self.clock_disruption_support_enabled)
++            .build(ClockErrorBoundLayoutVersion::V2);
++        self.shm_writer.invalidate(&ceb);
++    }
++
++    pub fn invalidate_unknown(&mut self) {
++        self.invalidate(ClockStatus::Unknown);
++    }
++
++    pub fn invalidate_disruption(&mut self, marker: u64) {
++        self.disruption_marker = marker;
++        self.invalidate(ClockStatus::Disrupted);
+     }
+ 
+     /// Handles `ClockParameters` for SHM0 (`ClockErrorBoundV2`)
+@@ -78,7 +110,7 @@
+             ..clock_parameters.clone()
+         };
+         if let Some(ceb) = self.create_shm_snapshot(&shm0_clock_parameters, clock_status) {
+-            self.shm_writer.write(&ceb);
++            self.shm_writer.publish(&ceb, &shm0_clock_parameters, self.max_drift_ppb, offset_and_rtt.rtt().as_nanos());
+         }
+     }
+ 
+@@ -93,7 +125,7 @@
+     ) {
+         self.disruption_marker = new_disruption_marker;
+         if let Some(ceb) = self.create_shm_snapshot(clock_parameters, ClockStatus::Disrupted) {
+-            self.shm_writer.write(&ceb);
++            self.shm_writer.invalidate(&ceb);
+         }
+     }
+ 
+@@ -183,7 +215,7 @@
+         shm_writer.expect_write().times(0);
+ 
+         let shm0 = Shm0::builder()
+-            .shm_writer(Box::new(shm_writer))
++            .shm_writer(Shm0Writer::Stock(Box::new(shm_writer)))
+             .clock_disruption_support_enabled(clock_disruption_support_enabled)
+             .max_drift_ppb(max_drift_ppb)
+             .disruption_marker(disruption_marker)
+@@ -211,7 +243,7 @@
+         shm_writer.expect_write().times(0);
+ 
+         let shm0 = Shm0::builder()
+-            .shm_writer(Box::new(shm_writer))
++            .shm_writer(Shm0Writer::Stock(Box::new(shm_writer)))
+             .clock_disruption_support_enabled(true)
+             .max_drift_ppb(15_000)
+             .disruption_marker(0)
+@@ -249,7 +281,7 @@
+             .return_const(());
+ 
+         let mut shm0 = Shm0::builder()
+-            .shm_writer(Box::new(shm_writer))
++            .shm_writer(Shm0Writer::Stock(Box::new(shm_writer)))
+             .clock_disruption_support_enabled(clock_disruption_support_enabled)
+             .max_drift_ppb(max_drift_ppb)
+             .disruption_marker(disruption_marker)
+@@ -277,7 +309,7 @@
+             .times(1)
+             .return_const(());
+         let mut shm0 = Shm0::builder()
+-            .shm_writer(Box::new(shm_writer))
++            .shm_writer(Shm0Writer::Stock(Box::new(shm_writer)))
+             .clock_disruption_support_enabled(clock_disruption_support_enabled)
+             .max_drift_ppb(expected_max_drift_ppb)
+             .disruption_marker(expected_disruption_marker)
+@@ -313,7 +345,7 @@
+             .return_const(());
+ 
+         let mut shm0 = Shm0::builder()
+-            .shm_writer(Box::new(shm_writer))
++            .shm_writer(Shm0Writer::Stock(Box::new(shm_writer)))
+             .clock_disruption_support_enabled(clock_disruption_support_enabled)
+             .max_drift_ppb(max_drift_ppb)
+             .disruption_marker(initial_disruption_marker)
+--- a/clock-bound/src/daemon/clock_sync_algorithm/selector.rs
++++ b/clock-bound/src/daemon/clock_sync_algorithm/selector.rs
+@@ -201,7 +201,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         },
+         // Second event (identical)
+         event::Ntp::builder()
+@@ -228,7 +229,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         },
+         // Second event with worse RTT
+         event::Ntp::builder()
+@@ -255,7 +257,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         },
+         // Second event (newer, 1 second later)
+         event::Ntp::builder()
+@@ -282,7 +285,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         },
+         // Second event
+         event::Ntp::builder()
+@@ -309,7 +313,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         },
+         // Second event
+         event::Ntp::builder()
+@@ -344,7 +349,8 @@
+             clock_error_bound: second.calculate_clock_error_bound(period),
+             period,
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1),        // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None,        // unused
+         };
+         let mut selector = Selector {
+             current: Some(SyncParameters {
+@@ -370,7 +376,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         };
+         let mut selector = test_selector(Skew::from_ppm(0.0));
+         assert!(selector.current().is_none());
+@@ -399,7 +406,8 @@
+             clock_error_bound: Duration::from_nanos(10_500),
+             period: Period::from_seconds(1e-9), // unused
+             period_max_error: Period::from_seconds(1e-11), // unused
+-            as_of_monotonic: Instant::from_days(1), // unused
++            as_of_monotonic: Instant::from_days(1),
++            axiom_origin: None, // unused
+         };
+         let skew = Skew::from_ppm(1.0);
+         let mut selector = test_selector(skew);
+@@ -423,6 +431,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(1e-11),
+             as_of_monotonic: Instant::new(0),
++            axiom_origin: None,
+         }
+     }
+ 
+--- a/clock-bound/src/daemon/clock_sync_algorithm/ff/phc.rs
++++ b/clock-bound/src/daemon/clock_sync_algorithm/ff/phc.rs
+@@ -109,6 +109,7 @@
+         // This could be eliminated once we decide to stop supporting ClockBound 2.0 clients.
+         let as_of_monotonic = MonotonicCoarse.get_time();
+ 
++        let axiom_origin = event.axiom_origin();
+         let tsc_midpoint = event.tsc_midpoint();
+ 
+         // First update the internal local (current SKM) and estimate (long term)
+@@ -192,6 +193,7 @@
+         let time = uncorrected_clock.time_at(tsc_midpoint) - theta;
+ 
+         let clock_parameters = ClockParameters {
++            axiom_origin,
+             tsc_count: tsc_midpoint,
+             time,
+             clock_error_bound,
+--- a/clock-bound/src/daemon/clock_sync_algorithm/ff/ntp.rs
++++ b/clock-bound/src/daemon/clock_sync_algorithm/ff/ntp.rs
+@@ -104,6 +104,7 @@
+             Instant::from_millis(0)
+         };
+ 
++        let axiom_origin = event.axiom_origin();
+         let tsc_midpoint = event.tsc_midpoint();
+ 
+         // First update the internal local (current SKM) and estimate (long term)
+@@ -187,6 +188,7 @@
+         let time = uncorrected_clock.time_at(tsc_midpoint) - theta;
+ 
+         let clock_parameters = ClockParameters {
++            axiom_origin,
+             tsc_count: tsc_midpoint,
+             time,
+             clock_error_bound,
+--- a/clock-bound/src/daemon/time/clocks.rs
++++ b/clock-bound/src/daemon/time/clocks.rs
+@@ -182,8 +182,41 @@
+             period,
+             period_max_error,
+             as_of_monotonic,
+-        };
++        
++            axiom_origin: None,};
+         let clockbound_clock = ClockBound::new(clock_parameters, mock_read_tsc);
+         assert_eq!(clockbound_clock.get_time(), expected_time);
+     }
+ }
++
++/// Actual I/O origin only; never synthesized from logs or feed-time scheduling.
++#[derive(Debug, Clone, Copy, PartialEq, Eq)]
++pub enum OriginSourceKind { Ntp, Phc }
++#[derive(Clone, PartialEq, Eq)]
++pub struct PreciseOrigin {
++    pub(crate) kind: OriginSourceKind,
++    pub(crate) lower_ns: u64,
++    pub(crate) counter_pre: i64,
++    pub(crate) counter_post: i64,
++}
++impl std::fmt::Debug for PreciseOrigin {
++    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result { f.write_str("PreciseOrigin(REDACTED)") }
++}
++pub(crate) struct MonotonicPrecise;
++impl MonotonicPrecise {
++    pub(crate) fn lower_ns() -> u64 {
++        let t = clock_gettime(ClockId::CLOCK_MONOTONIC).expect("precise origin clock failed");
++        let sec = u64::try_from(t.tv_sec()).expect("negative precise origin");
++        let ns = u64::try_from(t.tv_nsec()).expect("negative precise fraction");
++        let value = sec.checked_mul(1_000_000_000).and_then(|s| s.checked_add(ns))
++            .filter(|v| ns < 1_000_000_000 && *v <= i64::MAX as u64)
++            .expect("precise origin overflow");
++        value
++    }
++}
++impl PreciseOrigin {
++    pub(crate) fn bind(lower_ns: u64, counter_pre: i64, counter_post: i64, kind: OriginSourceKind) -> Self {
++        assert!(lower_ns <= i64::MAX as u64 && counter_pre >= 0 && counter_post > counter_pre);
++        Self { lower_ns, counter_pre, counter_post, kind }
++    }
++}
+--- a/clock-bound/src/daemon/event/phc.rs
++++ b/clock-bound/src/daemon/event/phc.rs
+@@ -16,6 +16,7 @@
+     counter_pre: TscCount,
+     /// TSC value after reading reference clock
+     counter_post: TscCount,
++    axiom_origin: Option<crate::daemon::time::clocks::PreciseOrigin>,
+     /// PHC reference clock info
+     data: PhcData,
+     #[cfg(not(test))]
+@@ -32,8 +33,10 @@
+         counter_pre: TscCount,
+         counter_post: TscCount,
+         data: PhcData,
++        axiom_origin: Option<crate::daemon::time::clocks::PreciseOrigin>,
+         #[cfg(not(test))] system_clock: Option<super::SystemClockMeasurement>,
+     ) -> Option<Self> {
++        if axiom_origin.as_ref().is_some_and(|o| o.kind != crate::daemon::time::clocks::OriginSourceKind::Phc || o.counter_pre != counter_pre.get() || o.counter_post != counter_post.get()) { return None; }
+         if counter_post <= counter_pre {
+             return None;
+         }
+@@ -41,6 +44,7 @@
+         Some(Self {
+             counter_pre,
+             counter_post,
++            axiom_origin,
+             data,
+             #[cfg(not(test))]
+             system_clock,
+@@ -49,6 +53,8 @@
+ }
+ 
+ impl Phc {
++    pub(crate) fn axiom_origin(&self) -> Option<crate::daemon::time::clocks::PreciseOrigin> { self.axiom_origin.clone() }
++
+     /// `counter_pre` getter
+     pub fn counter_pre(&self) -> TscCount {
+         self.counter_pre
+--- a/clock-bound/src/daemon/event/ntp.rs
++++ b/clock-bound/src/daemon/event/ntp.rs
+@@ -19,6 +19,7 @@
+     counter_pre: TscCount,
+     /// TSC value after sending event
+     counter_post: TscCount,
++    axiom_origin: Option<crate::daemon::time::clocks::PreciseOrigin>,
+     /// NTP Packet data
+     data: NtpData,
+     #[cfg(not(test))]
+@@ -35,12 +36,15 @@
+         counter_pre: TscCount,
+         counter_post: TscCount,
+         ntp_data: NtpData,
++        axiom_origin: Option<crate::daemon::time::clocks::PreciseOrigin>,
+         #[cfg(not(test))] system_clock: Option<super::SystemClockMeasurement>,
+     ) -> Option<Self> {
++        if axiom_origin.as_ref().is_some_and(|o| o.kind != crate::daemon::time::clocks::OriginSourceKind::Ntp || o.counter_pre != counter_pre.get() || o.counter_post != counter_post.get()) { return None; }
+         if counter_post > counter_pre {
+             Some(Self {
+                 counter_pre,
+                 counter_post,
++                axiom_origin,
+                 data: ntp_data,
+                 #[cfg(not(test))]
+                 system_clock,
+@@ -52,6 +56,8 @@
+ }
+ 
+ impl Ntp {
++    pub(crate) fn axiom_origin(&self) -> Option<crate::daemon::time::clocks::PreciseOrigin> { self.axiom_origin.clone() }
++
+     /// `counter_pre` getter
+     pub fn counter_pre(&self) -> TscCount {
+         self.counter_pre
+--- a/clock-bound/src/daemon/logging/synchronization.rs
++++ b/clock-bound/src/daemon/logging/synchronization.rs
+@@ -204,6 +204,7 @@
+             period: Period::from_seconds(1e-9),
+             period_max_error: Period::from_seconds(1e-11),
+             as_of_monotonic: Instant::new(0),
++            axiom_origin: None,
+         }
+     }
+ 
+--- a/clock-bound/src/daemon/logging/ffevents.rs
++++ b/clock-bound/src/daemon/logging/ffevents.rs
+@@ -146,6 +146,7 @@
+             period: Period::from_seconds(4.0e-10),
+             period_max_error: Period::from_seconds(1.0e-16),
+             as_of_monotonic: Instant::new(0),
++            axiom_origin: None,
+         }
+     }
+ 
+--- a/clock-bound/src/daemon/logging/ffevents/types.rs
++++ b/clock-bound/src/daemon/logging/ffevents/types.rs
+@@ -249,6 +249,7 @@
+             period,
+             period_max_error,
+             as_of_monotonic: _,
++            axiom_origin: _,
+         } = params;
+         Self {
+             counter_sync: *tsc_count,
+@@ -277,6 +278,7 @@
+             period_max_error,
+             // Reconstruct the same default the old `#[serde(skip)]` produced.
+             as_of_monotonic: Instant::default(),
++            axiom_origin: None,
+         }
+     }
+ }
