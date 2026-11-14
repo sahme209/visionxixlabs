@@ -3,6 +3,10 @@
 ## Concrete problem
 The exact four-file audit establishes that the unmodified high-level ClockBound3.0.0-rc.0 result lacks the source/freshness metadata and demonstrated conservative arithmetic/deadline contract needed by Axiom. Installing it or merely rounding its output cannot resolve this. Owner accepted isolated prerelease evaluation DESIGN ONLY; a new reviewed implementation boundary is required before code.
 
+## Completed structural audit and mechanism correction
+
+The five-file pass completed once under owner call_44015c479d3344ed8f09d2fcadb4ecd3; its allowance is consumed. See five-file-structural-audit/ASSESSMENT.md. The V2 payload/header/writer protocol and distinct V3 writer are now source-backed. Descriptor-only read/pread plus equal sequence fields does not establish the actual mapped atomic publication contract;16-bit wrap/reset also needs lifecycle/no-ABA evidence. The earlier descriptor candidate is not ready for implementation. Resolve one supported bounded reader/current-use contract from these facts before requesting actual native extraction; no automatic next-source traversal or new generic kernel follows. Native implementation/qualification and provisioning remain unapproved.
+
 ## One joined local unit
 Prepare the actual private bridge contract and pure decision/arithmetic components with intercepted suppliers, keeping the real native supplier unavailable until qualification. This is not a new general policy engine or a second clock: it must feed the existing original time-policy/final-facts path. No additional claim, clock repair, reservation, retry or credential may be created.
 

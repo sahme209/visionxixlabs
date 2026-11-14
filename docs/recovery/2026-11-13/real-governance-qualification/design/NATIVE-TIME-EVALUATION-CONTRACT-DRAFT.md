@@ -2,7 +2,11 @@
 
 This records the three parallel assessments after the completed four-file audit. It is DESIGN ONLY, not code, library adoption or real qualification. The authorization/physical-send boundary decision in AUTHORIZATION-LINEARIZATION-DECISION.md takes priority over implementing a new generic time port.
 
-## Selected bounded capture candidate
+## Current structural-audit correction
+
+The approved five-file source pass completed and is consumed; see five-file-structural-audit/ASSESSMENT.md and OBSERVED-RESULT.json. It establishes header/publication and separate V2/V3 writers, but does NOT establish descriptor-copy consistency. The real reader uses mapped atomic Acquire/volatile semantics; inode/size/equal16-bit generation alone does not prove lifecycle continuity or absence of ABA. The earlier descriptor-only candidate below is preserved as a rejected/unqualified mechanism candidate, not an implementation instruction. Choose and review a supported bounded reader and complete conservative sampling contract before native code; no mmap/cache fallback or new fetch is authorized. Native ABI/source/host/time/custody qualification remains open.
+
+## Earlier bounded capture candidate — not implementation-ready
 One fresh supervised fixed raw-snapshot child per observation; no retained vendor Client/cache or mutable shared mmap. Fixed protected source IDs/paths and reviewed ABI, no caller path. Proposed engineering limits:4KiB/read,8snapshot attempts,32reads/128KiBtotal,500ms parent deadline through parsed result plus at most100ms termination/reap. These are proposed limits, NOT measured Linux guarantees. No restart/retry/fallback. Parent termination/owned-child isolation must itself qualify; a missing confirmed stop remains unknown/unavailable.
 
 Require exact before/after source identity/type/size and matching nonzero even initial/copied/final sequence, supported unchanged layout, bounded complete payload and immutable owned output. No old/default record. Child receives only fixed descriptors/result pipe, no network/credentials/inherited resources; this isolation remains unverified. Output carries artifact/ABI/source identity, layout/byteorder/counter/time type, three sequences, read/attempt/bytecounts, raw timestamp/horizon/error/drift/status/disruption fields, parent elapsed capture disposition, and explicit `timeAuthority:false`/`executionAuthorized:false`. It does not self-certify trusted writer/provenance.
