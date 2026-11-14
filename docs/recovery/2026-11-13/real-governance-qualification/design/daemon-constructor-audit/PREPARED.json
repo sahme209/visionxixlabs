@@ -1,0 +1,19 @@
+{
+  "approval": "call_81a3cd488b7e4b65b8ee6e8787f88568",
+  "scope": "one exact four-file constructor integration pass",
+  "files": {
+    "docs/recovery/2026-11-13/real-governance-qualification/design/daemon-constructor-audit/reader.cjs": "76bbeb3767e156c16c934adba66bf96124cbbfa3d84e4e86b47cd9bcbb0f4391",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/daemon-constructor-audit/reader.test.cjs": "b242e9c648c69052d7156bdf26e3a4790aee7bac4d7c29c5ca258529a1e05e65",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/daemon-constructor-audit/run-once.cjs": "7261ba17b4ba973ed77066cd3038eabd773c0ab8480aeee3d9f1ab98b7158d3d",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/DAEMON-CONSTRUCTOR-FOUR-READ-PROPOSAL.md": "058c006209b4af195184f5d802926fafa736098fd4ad373a1528d52631bf7623"
+  },
+  "actualReads": 0,
+  "readLimits": {
+    "requests": 4,
+    "perRequestSeconds": 10,
+    "responseBytes": 262144,
+    "retries": 0,
+    "redirects": 0,
+    "authentication": false
+  }
+}

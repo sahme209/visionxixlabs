@@ -36,3 +36,28 @@ dependencies/licenses, native filesystem behavior/persistence/crash cases and
 actual protected bootstrap/producer/consumer integration. Keep the native
 launcher/profile supplier unavailable until that evidence exists. Old files,
 backups, unknown attempts and production resources stay intact.
+
+## Actual pinned constructor patch (local source only)
+
+`clockbound-daemon-integration.patch` applies to the three exact saved upstream
+files at revision371058f8f6a1786d4a4ab3eed9f5f2f16eea7777. The original stock
+constructors remain unchanged and unqualified. Separate `construct_axiom` paths
+move one explicit owned context through Daemon and ClockState into only the V2
+writer. The materializer must place `time_publication_adapter.rs` at
+`clock-bound/src/daemon/time_publication_adapter.rs`; no Cargo, native linkage,
+entrypoint, source configuration or protected resource supplier is provided here.
+
+The patch makes initial Unknown publication unconditional, publishes Unknown
+before each correction, and updates/publishes disruption even without existing
+clock parameters. Its zero-to-one-nanosecond Unknown/Disrupted records are
+structural unusable sentinels, never measured time bounds. The actual application
+codec accepts their representation and the interval reader rejects their status
+before reading timing premises. V3 and the kernel correction algorithm remain
+unchanged. Unknown publication does not assert that ongoing PLL correction stops.
+
+The source-order tests apply the real patch in memory and check saved call sites;
+they do not compile or execute Rust or prove native stop/failure behavior. Native
+compilation, full daemon build/launcher wiring, source configuration, filesystem,
+clock, liveness and real qualification remain required. Historical pre-RED draft
+is preserved separately and must not be applied. See
+`clockbound-daemon-integration-apply-proof.json` and the recovery integration plan.

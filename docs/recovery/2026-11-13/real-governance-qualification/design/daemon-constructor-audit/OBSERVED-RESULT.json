@@ -1,0 +1,46 @@
+{
+  "approval": "call_81a3cd488b7e4b65b8ee6e8787f88568",
+  "finishedAt": "2026-11-14T01:54:45.191Z",
+  "failed": false,
+  "observations": [
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon.rs",
+      "path": "clock-bound/src/daemon.rs",
+      "sha1": "44650a6306fc180bcf5279b81fb5404aefc6c6fb",
+      "bytes": 37992,
+      "filename": "PUBLIC-READ-1.txt",
+      "sha256": "bd45a24d82a516c7bbf33fdc75daee38ec1985a3042e1a86cc4c203934d648b5"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon/clock_state.rs",
+      "path": "clock-bound/src/daemon/clock_state.rs",
+      "sha1": "0abef5835e44275920d1c397dae5e89f4b7a42da",
+      "bytes": 30558,
+      "filename": "PUBLIC-READ-2.txt",
+      "sha256": "d8c955afabeab7b0eae3e1b915dce76763d6d7ee7de0d9350e6df511aa258abc"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon/io.rs",
+      "path": "clock-bound/src/daemon/io.rs",
+      "sha1": "58fecfb0bc1a37d828be8ac6a9693766c9c1f207",
+      "bytes": 35932,
+      "filename": "PUBLIC-READ-3.txt",
+      "sha256": "2c34d38c4270a8a9367d22b4f0a645e8f5391f74be6cee7de97193050a0cfdd2"
+    },
+    {
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/daemon/clock_state/system_clock_discipliner.rs",
+      "path": "clock-bound/src/daemon/clock_state/system_clock_discipliner.rs",
+      "sha1": "d1563766e01cf48a5296de7179cb8cae8b5f8750",
+      "bytes": 5842,
+      "filename": "PUBLIC-READ-4.txt",
+      "sha256": "83abca63f75ceed198cfb56aeca29587d363cf301b66dc9fef13e549b2417b29"
+    }
+  ],
+  "state": {
+    "requests": 4,
+    "stopped": false,
+    "complete": true,
+    "commit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777"
+  },
+  "scope": "public text only; no downloaded source execution or native qualification"
+}

@@ -50,6 +50,28 @@ fn encode(value: &ClockErrorBound, generation: &str, counter: u64) -> Option<Vec
 /// Resource identity is not attestation. The actual private constructor must
 /// qualify and transfer a NEW generation directory and the fixed daemon hook;
 /// caller JSON/environment cannot construct the production source context.
+/// Owned bootstrap-only resource. No environment/JSON/default supplier exists.
+/// The qualified constructor moves this once into ONLY the actual V2 writer.
+pub struct NativeTimePublisherContext {
+    directory: OwnedFd,
+    generation: String,
+    publisher_uid: u32,
+    reader_gid: u32,
+    directory_device: u64,
+    directory_inode: u64,
+}
+impl NativeTimePublisherContext {
+    pub fn from_protected_resource(directory: OwnedFd, generation: String,
+        publisher_uid: u32, reader_gid: u32, directory_device: u64, directory_inode: u64) -> Self {
+        if !generation_ok(&generation) { fatal(); }
+        Self { directory, generation, publisher_uid, reader_gid, directory_device, directory_inode }
+    }
+    pub fn wrap_v2(self, delegate: Box<dyn ShmWrite + Send + Sync>) -> NativeTimePublisher {
+        NativeTimePublisher::new(self.directory, self.generation, self.publisher_uid,
+            self.reader_gid, self.directory_device, self.directory_inode, delegate)
+    }
+}
+
 pub struct NativeTimePublisher {
     _directory: OwnedFd,
     context: AxiomTimeContext,
@@ -59,7 +81,7 @@ pub struct NativeTimePublisher {
     delegate: Box<dyn ShmWrite + Send + Sync>,
 }
 impl NativeTimePublisher {
-    pub fn new(directory: OwnedFd, generation: String, publisher_uid: u32, reader_gid: u32,
+    fn new(directory: OwnedFd, generation: String, publisher_uid: u32, reader_gid: u32,
         directory_device: u64, directory_inode: u64, delegate: Box<dyn ShmWrite + Send + Sync>) -> Self {
         if !generation_ok(&generation) { fatal(); }
         let context = AxiomTimeContext { directory_fd: directory.as_raw_fd(), source_fd: -1,
