@@ -1,0 +1,13 @@
+# Independent review — same-profile symbol observation
+
+Verdict: CLEAR for the stated fresh conditional observation decision and current local evidence-collection correction. No compiler, native/symbol tool, external read, push or workflow action was performed for this review.
+
+Reviewed the proposal and actual controller/workflow/test delta. The strict verify_symbols implementation is unchanged. Candidate collection records actual matching rows and complete-output byte count/digest; it neither normalizes crate hashes/inherent-impl formatting nor converts observed names into acceptance. Candidate overflow marks incomplete and refuses. Missing the original full path still leaves accepted=false; the second path is not falsely reported adjudicated after the first failure.
+
+Artifact hashes and ELF64/x86_64 checks now precede collection/gating, so the observation is tied to the actual frozen staticlib/C object/linked file. Raw and demangled nm execute against that same output under the same profile and per-command limits. Final source/lock/packet/tool/header checks precede the unchanged name gate, with explicit completion facts retained. Finally rechecks frozen inputs and invalidates acceptance/currentness on mismatch. These changes preserve enough same-artifact evidence for a later local parser decision rather than treating source spelling or cached demangler output as a binary result.
+
+The new event coordinate7c35aec14a424caab5c4a52cb0d163a5583ad0fa is correctly separated from OBSERVED_INPUT_HEAD207cf145a15b87c07206027fc2e2f08511b3523a. Advancing the one-run transition does not silently rewrite the previously accepted tool/std evidence source. Existing PR331/main/repository/branch/head/attempt guards, historical packets, native fixtures, tiny gate, exact source and final link/profile remain intact.
+
+The actual output-row limits and JSON receipt escaping must continue to be retained before failure; no raw6.7MB dump or unbounded symbol record is introduced. The existing whole-receipt log cap remains a separate defensive limit, not permission to assert symbol acceptance if evidence is incomplete. The new collected rows are observations only until independently adjudicated against actual defined function identities.
+
+No important gate weakening or scope contradiction found. Old failure/cause remains as recorded; a fresh full rebuild is requested only because the prior ephemeral artifact is unavailable. This proposal grants no retry after an inconclusive observation, forced legacy mangling, parser waiver, Governance/runtime qualification or production authority. Exact new packet/source/free-runner/current-remote review and owner approval still precede its ONE job.

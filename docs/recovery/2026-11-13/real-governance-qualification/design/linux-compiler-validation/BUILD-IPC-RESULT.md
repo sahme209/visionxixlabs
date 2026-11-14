@@ -1,0 +1,9 @@
+# Conditional compatibility batch result
+
+## November14 — real Linux compilation/linking pass; final symbol evidence remains blocked
+
+The one approved compatibility run at `7c35aec14a424caab5c4a52cb0d163a5583ad0fa` completed and its authority is CONSUMED. Actual restricted C/Rust fixtures, tiny offline Cargo, full daemon-feature Rust compilation and whole Rust+C/no-undefined linkage PASS. The existing strict symbol checker rejects its first required Rust path (`missing_actual_rust_path`). Actual symbol rows were not retained; formatting is a source-supported hypothesis, not an established cause. ELF/output checks after the old gate were not reached. No accepted artifact or completed Governance qualification exists. All seven ordinary exact-head CI checks PASS; PR331 stays OPEN/UNMERGED, main/production unchanged.
+
+Evidence: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-IPC-OBSERVED-RESULT.json` and `BUILD-IPC-PR331-CHECKS.json`. A LOCAL correction now captures same-artifact raw/demangled names, hashes, ELF and final source checks before the byte-identical strict gate; an independently bounded primary receipt prevents bulk metadata losing evidence again. All39 focused pure tests PASS. Frozen35-input packet SHA256 `3ecb86f637d86aa8610e9544895b7a6cbe073a8319c77d6994bb73fc8aa0014c`. Fresh explicit approval is required before ONE same-profile compiler observation; it is NOT yet authorized or pushed. Original failed results remain unchanged.
+
+Full Governance remains INCOMPLETE/DISABLED. After artifact acceptance, actual Linux worker/private bootstrap and custody, protected policy/time/lifetime/fleet qualification, genuine independent-review and real end-to-end provider/closure journeys, and production acceptance remain. Local/simulated tests do not substitute for these. All master-plan, owner decisions, cost/security/database/deployment restrictions remain. Older snapshots below are historical.

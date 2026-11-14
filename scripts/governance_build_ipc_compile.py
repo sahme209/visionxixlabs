@@ -11,10 +11,11 @@ import time
 REPOSITORY = 'sahme209/visionxixlabs'
 BRANCH = 'codex/governance-live-qualification-setup'
 TARGET = 'x86_64-unknown-linux-gnu'
-PACKET = 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-IPC-INPUT-PACKET.json'
+PACKET = 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-INPUT-PACKET.json'
 PR_NUMBER=331
-BEFORE='207cf145a15b87c07206027fc2e2f08511b3523a'
-PACKET_KIND='one-sync-pr331-build-ipc-v1'
+BEFORE='7c35aec14a424caab5c4a52cb0d163a5583ad0fa'
+OBSERVED_INPUT_HEAD='207cf145a15b87c07206027fc2e2f08511b3523a'
+PACKET_KIND='one-sync-pr331-build-symbol-evidence-v1'
 HEX = re.compile(r'[0-9a-f]{40}\Z')
 NATIVE = frozenset(['-lgcc_s','-lutil','-lrt','-lpthread','-lm','-ldl','-lc'])
 
@@ -181,6 +182,31 @@ def verify_observed_inputs(saved,tools,stdlib,version):
     need(set(stdlib)=={'std','core'} and stdlib==saved.get('standardLibrarySha256'),'observed_stdlib_changed')
     need(version==saved.get('toolchain'),'observed_version_changed')
 
+def collect_symbol_evidence(text):
+    """Observe real nm output only; never normalize or accept a Rust path."""
+    raw=text.encode('utf-8','strict');need(len(raw)<=16*1024*1024,'symbol_output_limit')
+    tokens=('construct_axiom','publish_precise_then_delegate','axiom_time_publish_or_die','axiom_time_capture_v2','axiom_time_capture_current','axiom_time_capture_release')
+    rows=[];count=0;size=0;complete=True
+    for line in text.splitlines():
+        if not any(token in line for token in tokens):continue
+        count+=1;length=len(json.dumps(line,ensure_ascii=True).encode('ascii'))+1
+        if len(rows)>=256 or length>16384 or size+length>256*1024:
+            complete=False;continue
+        rows.append(line);size+=length
+    return {'stdoutBytes':len(raw),'stdoutSha256':hashlib.sha256(raw).hexdigest(),'candidateCount':count,'candidateRows':rows,'complete':complete}
+
+def render_symbol_receipt(result):
+    """Always retain bounded required evidence, independent of bulk metadata."""
+    fields=('accepted','head','packetSha256','failurePhase','errorCategory','outputs','elfHeader','rawSymbolEvidence','demangledSymbolEvidence','inputsReceiptSha256','toolchain','standardLibrarySha256','tools','finalSourceChecksPassed','finalFrozenInputsMatched')
+    data={key:result[key] for key in fields if key in result}
+    data['evidenceKind']='same-artifact-symbol-observation-v1'
+    data['filterProgramSha256']=result.get('filter',{}).get('programSha256')
+    data['evidenceComplete']=bool(result.get('finalSourceChecksPassed') is True and result.get('finalFrozenInputsMatched') is True and result.get('rawSymbolEvidence',{}).get('complete') is True and result.get('demangledSymbolEvidence',{}).get('complete') is True and isinstance(result.get('outputs'),dict) and len(result['outputs'])==3 and 'ELF64' in result.get('elfHeader','') and 'Advanced Micro Devices X86-64' in result.get('elfHeader',''))
+    text=json.dumps(data,sort_keys=True,ensure_ascii=True)
+    if len(text.encode('ascii'))>1024*1024:
+        return json.dumps({'evidenceKind':data['evidenceKind'],'accepted':False,'evidenceComplete':False,'reason':'wire-limit','head':result.get('head'),'packetSha256':result.get('packetSha256')},sort_keys=True)
+    return text
+
 def main():
     # CLI is deliberately limited to the one reviewed hosted PR context.
     need(sys.argv[1:] == ['--approved-ci-once'])
@@ -262,7 +288,7 @@ def main():
         for name,pattern in [('std','libstd-*.rlib'),('core','libcore-*.rlib')]:
             found=list((sysroot/'lib/rustlib'/TARGET/'lib').glob(pattern));need(len(found)==1,'stdlib_missing');add_frozen(frozen_files,found[0]);stdlib[name]=frozen_files[found[0]]
         saved=json.loads((repo/'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/CARGO-ERROR-OBSERVED-RESULT.json').read_text())
-        need(saved.get('head')==BEFORE and saved.get('diagnosticCompleted') is True,'observed_receipt_invalid')
+        need(saved.get('head')==OBSERVED_INPUT_HEAD and saved.get('diagnosticCompleted') is True,'observed_receipt_invalid')
         observed_tools={name:frozen_files[path] for name,path in {**{n:tools[n] for n in ['cc','git','true']},**{n:paths[n] for n in ['rustc','cargo']}}.items()}
         verify_observed_inputs(saved,observed_tools,stdlib,version)
         result['toolchain']=version;result['standardLibrarySha256']=stdlib
@@ -349,12 +375,19 @@ def main():
             run('whole-library-link',link_command(tools['cc'],native,static,libraries),isolated=True,timeout=120)
             need(executable.is_file() and not executable.is_symlink(),'linked_output_missing')
             add_frozen(frozen_files,executable)
-            symbols,_=run('linked-symbols',[str(tools['nm']),'--demangle','--defined-only',str(executable)],isolated=True,timeout=30)
-            verify_symbols(symbols)
+            result['outputs']={str(p.relative_to(root)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in [static,native/'time_publication.o',executable]}
             elf,_=run('elf-header',[str(tools['readelf']),'-h',str(executable)],isolated=True,timeout=10)
             need('ELF64' in elf and 'Advanced Micro Devices X86-64' in elf,'wrong_link_target')
-            result['outputs']={str(p.relative_to(root)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in [static,native/'time_publication.o',executable]}
+            need(len(elf.encode())<=16384,'elf_header_limit');result['elfHeader']=elf
+            raw_symbols,_=run('raw-linked-symbols',[str(tools['nm']),'--defined-only',str(executable)],isolated=True,timeout=30)
+            result['rawSymbolEvidence']=collect_symbol_evidence(raw_symbols)
+            symbols,_=run('linked-symbols',[str(tools['nm']),'--demangle','--defined-only',str(executable)],isolated=True,timeout=30)
+            result['demangledSymbolEvidence']=collect_symbol_evidence(symbols)
             verify_packet(repo,frozen_packet);verify_source(source,inputs['manifest'])
+            need((source/'Cargo.lock').read_bytes()==lock,'lock_changed');verify_frozen_files(frozen_files)
+            result['finalSourceChecksPassed']=True
+            need(result['rawSymbolEvidence']['complete'] and result['demangledSymbolEvidence']['complete'],'symbol_evidence_incomplete')
+            verify_symbols(symbols) # Original strict acceptance gate, unchanged.
             return True
         result['accepted']=gated_pipeline(fixtures_stage,tiny_stage,full_stage)
     except BaseException as error:
@@ -365,8 +398,16 @@ def main():
         signal.signal(signal.SIGTERM,previous_term)
         try:
             verify_packet(repo,frozen_packet);verify_frozen_files(frozen_files)
+            result['finalFrozenInputsMatched']=True
         except BaseException:
             result['accepted']=False;result.pop('failureDiagnostic',None);result['errorCategory']='final_currentness_unavailable'
+            result['finalFrozenInputsMatched']=False;result['finalSourceChecksPassed']=False
+        # This bounded primary receipt is emitted even if the bulk package/header
+        # record is too large. Never lose the actual names behind a size marker.
+        evidence=render_symbol_receipt(result)
+        if result['accepted'] and not json.loads(evidence)['evidenceComplete']:
+            result['accepted']=False;result['errorCategory']='symbol_evidence_not_retained';evidence=render_symbol_receipt(result)
+        print(evidence,flush=True)
         # Plain build receipt only: never qualifications, credentials or runtime authority.
         receipt=json.dumps(result,sort_keys=True,indent=2)+'\n'
         (root/'RESULT.json').write_text(receipt)

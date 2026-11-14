@@ -1,0 +1,13 @@
+{
+  "head": "7c35aec14a424caab5c4a52cb0d163a5583ad0fa",
+  "nativeRun": 43609722051,
+  "nativeJob": 132491873716,
+  "nativeConclusion": "failure",
+  "nativeError": "missing_actual_rust_path",
+  "ordinaryChecks": "7 passed",
+  "testRun": 43609721959,
+  "websiteRun": 43609721870,
+  "acceptedArtifact": false,
+  "governanceEnabled": false,
+  "productionChanged": false
+}
