@@ -1,0 +1,42 @@
+{
+  "actualFileSha256": {
+    ".github/workflows/linux-time-compile.yml": "d4d9c5bcd2c9c741652c01bea4f3b2db37d8c8689ef1b875eacb1dbd6bc7549f",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-DIRECT-READ-RESULT.json": "338bc3417ae601edd3b24a9dee5f2b142f3847527a57e0bbf5fa8b7baa9bc416",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-SYNCHRONIZE-SCHEMA.json": "d1bf68c4ae9c4b3da5cfa981d872e531f805125e8b1adeaf6e38489ac24ef820",
+    "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch": "ce791c7fb9757d6d00ba754161364926dd422cce366c7813b5b0dc87f0906ab1",
+    "packages/verified-issuer-runtime/linux/time_publication.c": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+    "packages/verified-issuer-runtime/linux/time_publication.h": "04997b0be3d56b6e0399e2e6a3a01236eb9995b2ffb3e8acbccccf1e1dda79c6",
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+    "packages/verified-issuer-runtime/linux/vendor/EXPECTED-PATCHED-SHA256.json": "1b6cc9ea0ae9d1a7e2a6dd4eb0e26da5487d451c6b2b99a2ed2fcf0f54a56cff",
+    "packages/verified-issuer-runtime/linux/vendor/LICENSE.Apache-2.0": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+    "packages/verified-issuer-runtime/linux/vendor/LICENSE.MIT": "04f8eb9dc1d7079de38b1dce5e9c9c2968e31b88e14301d58ea76562c418b1a2",
+    "packages/verified-issuer-runtime/linux/vendor/README.md": "95dd70479d77143fc86a34f0b30b596db7eb6edb1a3834b0612e8000aad85d23",
+    "packages/verified-issuer-runtime/linux/vendor/UPSTREAM-TREE.json": "dc5518ce9b96bce6fa4a59e468287c02f970f843bc722ea26567ccc04b4f8b2c",
+    "packages/verified-issuer-runtime/linux/vendor/clock-bound-371058f8-source.tar.gz": "468fde829962d7c2a9fbb9cb981c07ccc2e44c34eed48d43dafce95bda2c2f02",
+    "scripts/governance_linux_compile.py": "a48a6bba958fdd4a7cf8ffec85f3941c0bcc35d28b3ffd8c9c7819adecb87961",
+    "scripts/governance_linux_compile_inputs.py": "2e6ae367bc3480681fa1c7c11ff28943f0cfe7a3cbc756f3163be4b264ae17da",
+    "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
+    "scripts/linux-compile/benign_fixture.c": "6bb8c6d2d5758f4d593763770b937f65e464a7e7faefb0e86060e41d54a3d446",
+    "scripts/linux-compile/compiler_profile.h": "a9037954185e1b7e5e87ace0050df6dd76df9f1ec9b64ca8ae78d874bf080beb",
+    "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
+    "scripts/tests/test_governance_linux_compile.py": "b5aa5bdf4f24df9c87ecc8b3757f89be0b306c28424dc77ae28b57bbab220e04",
+    "scripts/tests/test_governance_linux_compile_inputs.py": "0b4ed62dc74a8ea37f5533fa430f29cc3a79bb87530d8926e50982e39cbad98c",
+    "scripts/tests/test_governance_linux_compile_supervisor.py": "24b956056848cc04aaa7b418ae355a6a5b0f50dc51be091ebc75732fd07d9e13",
+    "scripts/tests/test_network_launcher_source.py": "ebe67c978057ddf97beb99c7cfc3914cad6bc837bc4065a855d6999876739cda"
+  },
+  "approval": "call_6dc9f8a11b974095997307183698245f",
+  "eventReadAmendment": "call_e3e539fb001c4f829937a054ae807064",
+  "history": "Original INPUT-PACKET.json and OBSERVED-RESULT.json have no working diff against HEAD; retained rather than replaced.",
+  "limits": [
+    "Actual installed C/header/kernel/filter/compiler compatibility is not established by source review.",
+    "Remote PR/public repository observations are parent-supplied; this reviewer made no remote access.",
+    "The source pin is the prior reviewed f8bf76cb runtime; actual new reviewed checkout is validated by event after/head equality and git HEAD at runtime, without a cyclic self HEAD pin."
+  ],
+  "packetSha256": "3344f9aa780c025750e128b2ed29fa541f1aff16c975db7625081423073a3d27",
+  "reviewKind": "file-only; no compiler, child, native, test, network or CI execution",
+  "scope": "One exact existing PR331 synchronize from ecfb83c98b809a6a6cbe0d80c0fd309ba9a99769, same branch/repository, base main, attempt1; one Ubuntu24.04 45minute job. Trusted restriction launcher/fixture may run; Governance output never launches. No retry, native clock/runtime qualification or enablement.",
+  "sourceReview": "CORRECTION-FINAL-SOURCE-REVIEW.md",
+  "verdict": "CLEAR",
+  "verifiedFileCount": 24
+}

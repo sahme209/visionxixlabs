@@ -1,0 +1,19 @@
+{
+  "approval": "call_6dc9f8a11b974095997307183698245f",
+  "packetSha256": "3344f9aa780c025750e128b2ed29fa541f1aff16c975db7625081423073a3d27",
+  "localTests": {
+    "pythonPureMockOwnedFiles": 46,
+    "sourceContractOnly": 7,
+    "native": 0
+  },
+  "logs": [
+    "/private/tmp/axiom-linux-correction-python-tests.log",
+    "/private/tmp/axiom-linux-correction-source-tests.log"
+  ],
+  "independentSourceReview": "CORRECTION-FINAL-SOURCE-REVIEW.md",
+  "independentPacketReview": "CORRECTION-FINAL-PACKET-REVIEW.json",
+  "runtimeSource": "f8bf76cb",
+  "actualAttemptUsed": false,
+  "previousFailurePreserved": true,
+  "noDeployment": true
+}
