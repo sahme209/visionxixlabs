@@ -11,3 +11,9 @@ Owner call_69bfd3f177ca47529d481ccd3b7a8a88 reported reconnection and approved o
 ## Separately approved browser fallback
 
 Owner call_e5878e0048c54d3cb09aa14896a0a367 approved a read-only console fallback. The existing Safari ECS tab showed matching account/region URL coordinates but an explicit “You have been signed out” modal. The cached zero-cluster table was not accepted as fresh evidence. Stopped at the expired-session boundary without sign-in, alternate account, network-page exploration or mutation. Owner must complete AWS account-console sign-in; plugin reconnection and AWS Builder ID alone do not establish this session. See CONSOLE-OBSERVED-RESULT.json.
+
+## Owner restored session — approved inspection completed
+
+After the owner reported SIGNED IN, the same approved read-only console scope completed. The account-menu project link matched the expected test account in us-east-2. Fresh ECS refresh showed zero clusters; exactly one Available default VPC, three Available public/default subnets with auto-assigned public IPv4, one main route table with active local and IPv4-default Internet Gateway routes, and one default security group were observed. Its inbound permits all traffic from itself; outbound permits all IPv4 traffic. No default-group or network mutation occurred. Details retained only as sanitized aggregate facts in CONSOLE-SIGNED-IN-RESULT.json; raw IDs/rules remain private tool context.
+
+This resolves the console-read blocker, not native runtime/custody/time/host/IAM qualification. Do not repeat this inspection or reconnect loop. Next is the exact native-source/artifact and setup/cost proposal before separately approved implementation or resources.

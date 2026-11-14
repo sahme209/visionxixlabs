@@ -1,5 +1,10 @@
 # Minimal real Governance test environment — proposal only
 
+## Current proposal supersedes historical worker-only topology
+
+The account-grounded ECS-on-EC2 executor/separate role-free Fargate fixture and target proposal is BROWSER-VERIFIED-SETUP-PROPOSAL.md. The Fargate-only worker and dollar illustrations below are historical, not the selected full trial or spending authority. Current console facts are in aws-readonly-preflight/CONSOLE-SIGNED-IN-RESULT.json; full native/runtime/cost approval remains open.
+
+
 Owner chose preparation on November 13 after the existing console's us-east-2 ECS inventory showed zero clusters. No new account, cluster, service, task, role, credential, image repository, database, network or billing change is approved or created. Other regions are uninspected; this is not an account-wide absence claim.
 
 ## Recommendation

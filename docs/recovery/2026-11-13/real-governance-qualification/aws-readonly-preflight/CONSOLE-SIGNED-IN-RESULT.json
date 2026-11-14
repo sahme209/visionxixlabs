@@ -1,0 +1,51 @@
+{
+  "approval": "call_e5878e0048c54d3cb09aa14896a0a367",
+  "ownerSessionRestored": "SIGNED IN",
+  "method": "existing Safari AWS account console; accessibility observations",
+  "date": "2026-11-13",
+  "outcome": "bounded-read-only-console-inspection-complete",
+  "accountMatched": true,
+  "accountMatchEvidence": "Active account-menu project link and console coordinates matched expected test account; no signed-out modal after owner login. This is console identity evidence, not STS/IAM qualification.",
+  "region": "us-east-2",
+  "scopesCompleted": [
+    "account identity",
+    "ECS cluster inventory",
+    "default VPC",
+    "default VPC subnets",
+    "main route table/routes",
+    "default security-group inbound/outbound"
+  ],
+  "ecs": {
+    "clusterCount": 0,
+    "refreshCompleted": true,
+    "nextPageDisabled": true
+  },
+  "network": {
+    "vpcCount": 1,
+    "defaultAvailableVpcCount": 1,
+    "availableDefaultSubnetCount": 3,
+    "availabilityZoneCount": 3,
+    "allSubnetsPublic": true,
+    "allSubnetsAutoAssignPublicIPv4": true,
+    "mainRouteTableCount": 1,
+    "explicitSubnetAssociations": 0,
+    "routeCount": 2,
+    "activeLocalRoute": true,
+    "activeIPv4DefaultInternetGatewayRoute": true,
+    "defaultSecurityGroupCount": 1,
+    "defaultInboundRuleCount": 1,
+    "defaultInbound": "all protocols/ports from same security group only",
+    "defaultOutboundRuleCount": 1,
+    "defaultOutbound": "all IPv4 protocols/ports to any destination"
+  },
+  "limitations": [
+    "No IAM, quota, AMI, instance availability, pricing, execution-role, network-ACL detail or credential-isolation inspection.",
+    "No entire-account or other-region absence claim.",
+    "Console pagination completed for observed tables; underlying API calls/counts not instrumented.",
+    "Existing resources are not authorized for mutation or qualified for execution."
+  ],
+  "rawIdentifiersPersisted": false,
+  "resourcesChanged": false,
+  "spending": false,
+  "next": "Complete exact Linux native-source/artifact design and resource/cost proposal; obtain separate implementation/provisioning/run approvals."
+}
