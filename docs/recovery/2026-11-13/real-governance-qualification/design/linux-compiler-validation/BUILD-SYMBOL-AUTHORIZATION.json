@@ -1,0 +1,13 @@
+{
+  "ownerDecision": "Approve one same-profile symbol observation",
+  "questionId": "call_a049f497b2a04edc9739843216f08865",
+  "packetSha256": "3ecb86f637d86aa8610e9544895b7a6cbe073a8319c77d6994bb73fc8aa0014c",
+  "preparedSource": "ca8cf43feff7167073076ece5954e737e2834c3b",
+  "before": "7c35aec14a424caab5c4a52cb0d163a5583ad0fa",
+  "oneAttempt": true,
+  "noRetry": true,
+  "maxMinutes": 45,
+  "runtimeLaunch": false,
+  "deployment": false,
+  "spending": false
+}
