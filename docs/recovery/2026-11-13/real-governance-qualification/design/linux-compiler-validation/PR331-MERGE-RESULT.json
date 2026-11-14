@@ -1,0 +1,16 @@
+{
+  "pr": 331,
+  "merged": true,
+  "mergeSha": "a36a894743159daaa1552a38ed638d1ca1ec0546",
+  "head": "5a5ac25cacb48051ebad7fc14269aa9915d5df37",
+  "nativeAcceptedSource": "7b341565f527299eeef172d54baa506f7da07671",
+  "nativeRun": 43612814611,
+  "nativeJob": 132501347725,
+  "currentPrChecks": "all seven passed",
+  "mainRun": 43613804667,
+  "mainChecks": "all six passed including Typecheck + Vitest",
+  "mainRequiredJob": 132505460993,
+  "all36NativeInputHashesPreserved": true,
+  "productionChanged": false,
+  "governanceEnabled": false
+}

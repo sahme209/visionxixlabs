@@ -1,0 +1,9 @@
+{
+  "currentSchemaSha256": "436c0991b65b878aba7754408b7d6bc5afeaf78e4e4f7d52333cc0cec31b6cf4",
+  "cachedInlineSchemaSha256": "d8db7f8e8d761cce8171499b376470e6c0c536e77a965aea1f569e556490fe4d",
+  "allBlocksAndTokenizedDeclarationMultisetsEqual": true,
+  "blocks": 225,
+  "difference": "formatting/declaration order only",
+  "sameMachineCachedGeneratedClient": true,
+  "generationOrExecution": false
+}

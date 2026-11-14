@@ -1,0 +1,9 @@
+# Root integration review — source/mock scope
+
+Reviewed the actual TS adapter after the final ownership fixes, its real source-supervisor integration tests and the native protocol/parent C source. Complete native C behavioral qualification is outside this grant.
+
+The raw adapter snapshots original bytes/identity/generation/pub/marker and exact BigInts; stores private capture ownership; observes available promises before later getters can throw; retains available cleanup on malformed handoff; and requires both completion and termination before final raw P2. Mutation/substitution, missing handoff, concurrency, late acquisition, abort/cleanup and unqualified-source integration cases are exercised by actual production TypeScript with intercepted native ports. No default time premises, zero-width interval conversion or qualification callback is introduced. Admitted current/start/observe stay unavailable and no runtime mounts the factory.
+
+Native-source review corrected child/held/extracted-function reference lifetime, stale termination references, one-hold reservation, failed-clone pipe cleanup, deferred original-FD close and close-ack uncertainty, queue-state data races and exact protocol return semantics. Protocol source uses closed canonical widths/EOF and pairs original generation/publication/marker. These are source review conclusions, not execution proof. Independent parent/protocol reviews and frozen hashes accompany the receipt.
+
+Final focused55 mocked TS checks,17 explicitly source-contract checks and strict project type checking PASS. Cached local client declarations were checked against all225 current schema blocks; restored ignored same-Mac dependencies only. No code generation, SQL, native C compilation/launch, resource/provider/credential/flag/deployment or spend occurred. New C behavior, target ABI/headers, private bootstrap/policy and all real qualification remain unverified.

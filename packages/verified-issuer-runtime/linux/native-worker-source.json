@@ -1,0 +1,46 @@
+{
+  "format": "axiom-linux-native-worker-source-v1",
+  "status": "local-source-only-uncompiled-unqualified",
+  "target": "linux-x86_64-candidate",
+  "authority": "none; not a runtime profile or acceptance receipt",
+  "sourceInputs": {
+    "time_publication.c": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+    "time_publication.h": "04997b0be3d56b6e0399e2e6a3a01236eb9995b2ffb3e8acbccccf1e1dda79c6",
+    "time_worker.c": "b4de84f1fb11d348cf8902a7991ef21465435349b1025df674c9e6c4b00fea3d",
+    "time_worker_protocol.c": "004401d5983bea27b0a1d7cada6a7e56ddd604fbab289c150dbc69138f9aa6e3",
+    "time_worker_protocol.h": "d7bdd5ba397034cc0380d2d8a33800294ad14e8f4cbb6fd83d33e333a8b6792a",
+    "time_parent_binding.c": "22728ae5341713776d1dcfd8f6850a99ca0f1f817c440c07f77b01e6de937bfb",
+    "time_parent_binding.h": "90309565b1844013a547188ae5b4b7476925c0c0163b387f28a126a50c5a2245"
+  },
+  "candidateOutputs": {
+    "time_worker": {
+      "kind": "ELF executable",
+      "sources": [
+        "time_worker.c",
+        "time_worker_protocol.c",
+        "time_publication.c"
+      ],
+      "measuredSha256": null,
+      "executed": false
+    },
+    "time_parent_binding.o": {
+      "kind": "ELF relocatable private-initializer object",
+      "sources": [
+        "time_parent_binding.c"
+      ],
+      "laterLinkSources": [
+        "time_worker_protocol.c",
+        "time_publication.c"
+      ],
+      "nodeApiMinimum": 8,
+      "acceptedNodeHeaderIdentity": null,
+      "measuredSha256": null,
+      "executed": false
+    }
+  },
+  "publicAddonRegistration": false,
+  "protectedBootstrapInstalled": false,
+  "acceptedPolicySupplier": false,
+  "governanceEnabled": false,
+  "nextBuild": "separately reviewed fixed tool/header/ABI/command packet and explicit compilation approval required"
+}

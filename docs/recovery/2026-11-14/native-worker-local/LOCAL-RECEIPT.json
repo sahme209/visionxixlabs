@@ -1,0 +1,57 @@
+{
+  "scope": "approved local source/mock unit only",
+  "ownerDecision": "call_7c986ff7c0d045938ce09a17cc615af6",
+  "baseMain": "a36a894743159daaa1552a38ed638d1ca1ec0546",
+  "branch": "codex/governance-native-worker",
+  "sourceSha256": {
+    "packages/verified-issuer-runtime/linux/time_worker.c": "b4de84f1fb11d348cf8902a7991ef21465435349b1025df674c9e6c4b00fea3d",
+    "packages/verified-issuer-runtime/linux/time_worker_protocol.c": "004401d5983bea27b0a1d7cada6a7e56ddd604fbab289c150dbc69138f9aa6e3",
+    "packages/verified-issuer-runtime/linux/time_worker_protocol.h": "d7bdd5ba397034cc0380d2d8a33800294ad14e8f4cbb6fd83d33e333a8b6792a",
+    "packages/verified-issuer-runtime/linux/time_parent_binding.c": "22728ae5341713776d1dcfd8f6850a99ca0f1f817c440c07f77b01e6de937bfb",
+    "packages/verified-issuer-runtime/linux/time_parent_binding.h": "90309565b1844013a547188ae5b4b7476925c0c0163b387f28a126a50c5a2245",
+    "lib/governance/platform/nativeTime/nativeLinuxPorts.ts": "03084761a1ee63d82627fcd0c69d8a91f6ef2f55e4ab5ea1361c41fa45a45e90",
+    "lib/governance/platform/nativeTime/__tests__/nativeLinuxPorts.test.ts": "bddadf6859c9a46fb70931d0d61c82f56fb6bddb828a495a7b2d017d0a32914a",
+    "scripts/tests/test_governance_time_worker_protocol.py": "9891cc1f2c8abb7209385ac28bfa1a3d876da01ff8381cc883400b41da3bcd0a",
+    "scripts/tests/test_governance_time_parent_binding.py": "620ceedaa2e530cdff64d09b200b2985fee18fc3d6bdf239380d2da78e1c6947"
+  },
+  "verification": {
+    "actualTsAdapterAndExistingSupervisorMockedTests": 55,
+    "CSourceContractChecksOnly": 17,
+    "projectStrictNoEmitTypes": "PASS with existing matching same-machine dependency/client caches",
+    "nativeCCompilation": "NOT RUN",
+    "nativeWorkerParentOrClockAPIs": "NOT RUN",
+    "newPRorCI": "NOT STARTED"
+  },
+  "logSha256": {
+    "axiom-native-worker-adapter-aggregate.log": "f4d59ea6fe5794918ef25490477ab284f736a5913a353dbfbbf11e73daa335b6",
+    "axiom-native-worker-source-final.log": "64e97fef4d71b60dbc333f1c83173aafdf2158e11c065edb202d68f0be8bd0a4",
+    "axiom-native-worker-types-restored.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "axiom-native-linux-ports-final-ownership-red.log": "aae5569e8a05655ff71bf99643c8709dda112414341b7b0f2ea69526561a1cf2",
+    "axiom-native-worker-types.log": "b618b0a58618b4ba871119de0eba2bf4b8610a894829941868e7b02f09bebde0"
+  },
+  "typeEnvironmentRecovery": {
+    "legacyJsCheckerOomPreserved": true,
+    "missingGeneratedClientAndDesktopCacheFailuresPreserved": true,
+    "generatedClient225SchemaDeclarationBlocksEquivalent": true,
+    "noGenerationDownloadSchemaOrSQL": true,
+    "cacheLinksLocalOnly": true
+  },
+  "reviewFindingsClosed": [
+    "worker/parent protocol ABI alignment",
+    "owned child/held/function reference lifetime",
+    "same completed promise after natural reap",
+    "one native parent hold at a time",
+    "close acknowledgment uncertainty refuses",
+    "release waits for actual native quiescence",
+    "mutex-protected state snapshots",
+    "early promise rejection handoff ownership",
+    "final raw P2 waits for both completed and terminated",
+    "NAPI resource-name construction failure ownership",
+    "callback-info status before pointer use"
+  ],
+  "admittedTime": "UNAVAILABLE: no accepted policy/bootstrap/lifecycle/sampling supplier",
+  "runtimeRegistration": false,
+  "deployment": false,
+  "spending": false,
+  "finalIndependentNativeSourceReview": "FINAL-SOURCE-AND-NEXT-BUILD-REVIEW.md"
+}

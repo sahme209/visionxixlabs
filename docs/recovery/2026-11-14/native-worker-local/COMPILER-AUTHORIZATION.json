@@ -1,0 +1,16 @@
+{
+  "questionId": "call_8a84e47fa6dc4cdca3375650ad74cf3a",
+  "decision": "Approve conditional compiler checkpoint",
+  "maxWorkflowMinutes": 15,
+  "sharedControllerSeconds": 600,
+  "oneRun": true,
+  "retry": false,
+  "governanceOutputLaunch": false,
+  "compilationTargets": [
+    "worker ELF",
+    "private parent relocatable object"
+  ],
+  "SDK": "fixed installed Node24.22.2 headers only; no fallback/download",
+  "deployment": false,
+  "spending": false
+}

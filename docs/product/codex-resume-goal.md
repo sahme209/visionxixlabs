@@ -1,5 +1,23 @@
 # Axiom continuation goal — November 11, 2026
 
+## November14 — actual native worker source unit locally implemented; not compiled or enabled
+
+PR331/maina36a8947 remains green, including post-merge checks; its daemon compiler milestone is closed. The separately approved local unit now adds fixed worker/protocol C source, private owned Node-API parent and thin raw TS adapter. Focused55 actual TS adapter/supervisor mocked tests,17 C SOURCE-CONTRACT checks and strict project type checking PASS. These17 checks are not native behavior tests. Reviewed ownership/cleanup/protocol findings are corrected; exact source inventory and recovery proof are saved in `docs/recovery/2026-11-14/native-worker-local/LOCAL-RECEIPT.json` and `packages/verified-issuer-runtime/linux/native-worker-source.json`.
+
+New C worker/parent code is UNCOMPILED/UNEXECUTED; no addon is loaded or production route installed. Missing accepted sampling/policy/bootstrap/lifecycle evidence still refuses admitted current/start/final observation, including before child launch through the existing supervisor. Existing producer/history/compiler packets/package exports/schema/credentials remain unchanged. Current work is local `codex/governance-native-worker`, not a new PR/deployment.
+
+Next coherent checkpoint is the separately reviewed conditional compile-only worker ELF/private parent object proposal (`docs/recovery/2026-11-14/native-worker-local/NEXT-COMPILER-PROPOSAL.md`), requiring fresh owner approval before workflow/compiler/fixture execution. It reuses existing accepted build restrictions and fixed installed SDK; no daemon rebuild or downloaded dependency is selected. Actual native behavior/protected bootstrap/policy/private packaging/custody/fleet/genuine people/provider/end-to-end/closure, whole coverage/security/production and every other master requirement remain OPEN. Governance INCOMPLETE/DISABLED; no activation or spending.
+
+
+## November14 — PR331 merged green; actual native worker local unit approved
+
+PR331 merged normally as `a36a894743159daaa1552a38ed638d1ca1ec0546`, after all seven final PR checks passed. All six post-merge main checks, including Typecheck + Vitest, PASS in run43613804667. The real Linux compiler/artifact checkpoint is CLOSED:29 actual supervised phases/cleanup and exact artifact/symbol/source proof PASS at7b341565; final PR/merged tree preserves all36 frozen native inputs. Proof: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/PR331-MERGE-RESULT.json`. Production unchanged.
+
+Next actual worker/parent unit is owner-approved (call_7c986ff7c0d045938ce09a17cc615af6): fixed C capture worker/protocol, private Node-API owned parent, thin existing-runtime adapter and pure/mocked tests. Concrete plan/review: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/NATIVE-WORKER-IMPLEMENTATION-PLAN.md` and `NATIVE-WORKER-NEXT-UNIT-REVIEW.md`. Implementation is in progress on local `codex/governance-native-worker`; no next PR or native compiler/run authorized. Raw transport is not accepted time authority: missing protected policy/bootstrap/lifecycle/sampling evidence must still refuse admission. No public arbitrary descriptor/credential/qualification constructor.
+
+This grant excludes actual native compilation/launch/API tests, installation, credentials, SQL, account/cloud/provider work, deployment, activation and spending. Full Governance remains INCOMPLETE/DISABLED: actual native qualification, protected bootstrap and trusted policy/private packaging, custody/fleet, genuine separate people/provider/end-to-end/closure, full coverage/security and production acceptance remain. Every other master/owner gate persists. Historical prior blocked/compiler snapshots below are superseded only at the explicitly closed compiler milestone.
+
+
 ## November14 — Linux compiler/artifact checkpoint PASSED
 
 Approved final run43612814611/job132501347725 at `7b341565f527299eeef172d54baa506f7da07671` SUCCEEDED. All29 supervised phases PASS with confirmed cleanup: actual restricted fixtures/tiny Cargo/full pinned daemon-feature Rust+C/no-undefined link/ELF/exact paired Rust and C primary symbols. Primary and full receipts agree: accepted=true, complete=true, final source/frozen checks=true. Independent actual-evidence review CLEAR;36frozen inputs verified. Linked ELF, staticlib and C object are byte-identical to the earlier observation; historical failed jobs/receipts remain unchanged. One-run approval is CONSUMED, no retry. This closes compiler-artifact acceptance only; no Governance output was launched.
