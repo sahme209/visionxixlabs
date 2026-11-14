@@ -1,0 +1,355 @@
+{
+  "accepted": true,
+  "records": [
+    {
+      "command": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "phase": "source-head",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0016535960000041428,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 41
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-M",
+        "/home/runner/work/visionxixlabs/visionxixlabs/scripts/linux-compile/network_launcher.c"
+      ],
+      "phase": "launcher-headers",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.16702107500000096,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 8463
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "/home/runner/work/visionxixlabs/visionxixlabs/scripts/linux-compile/network_launcher.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher"
+      ],
+      "phase": "launcher-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.141755646,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-M",
+        "/home/runner/work/visionxixlabs/visionxixlabs/scripts/linux-compile/benign_fixture.c"
+      ],
+      "phase": "fixture-headers",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.020283138000003476,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 7715
+      }
+    },
+    {
+      "command": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "/home/runner/work/visionxixlabs/visionxixlabs/scripts/linux-compile/benign_fixture.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_fixture"
+      ],
+      "phase": "fixture-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.054212145000001044,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--describe"
+      ],
+      "phase": "filter-description",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0007412389999998936,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 11959
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_fixture",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/fixture-owned-file",
+        "/usr/bin/true"
+      ],
+      "phase": "isolation-preflight",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.07793779,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 67
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-fPIE",
+        "-pie",
+        "-M",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_worker.c"
+      ],
+      "phase": "worker-headers-0",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.008318086000002722,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 3288
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-fPIE",
+        "-pie",
+        "-M",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_worker_protocol.c"
+      ],
+      "phase": "worker-headers-1",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0074753239999978405,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 2070
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-fPIE",
+        "-pie",
+        "-M",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_publication.c"
+      ],
+      "phase": "worker-headers-2",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.012925492000000816,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 6322
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-DNAPI_VERSION=8",
+        "-fPIC",
+        "-pthread",
+        "-I",
+        "/opt/hostedtoolcache/node/24.22.2/x64/include/node",
+        "-M",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_parent_binding.c"
+      ],
+      "phase": "parent-headers",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0170005230000001,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 8252
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-fPIE",
+        "-pie",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_worker.c",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_worker_protocol.c",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_publication.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/time_worker"
+      ],
+      "phase": "worker-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.2071813180000035,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 2843,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-readelf",
+        "-h",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/time_worker"
+      ],
+      "phase": "worker-elf",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.10687239599999998,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 979
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-nm",
+        "--defined-only",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/time_worker"
+      ],
+      "phase": "worker-symbols",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.6532783820000034,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 1687
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-O2",
+        "-Wall",
+        "-Wextra",
+        "-DNAPI_VERSION=8",
+        "-fPIC",
+        "-pthread",
+        "-I",
+        "/opt/hostedtoolcache/node/24.22.2/x64/include/node",
+        "-c",
+        "/home/runner/work/visionxixlabs/visionxixlabs/packages/verified-issuer-runtime/linux/time_parent_binding.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/time_parent_binding.o"
+      ],
+      "phase": "parent-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.2491570230000022,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 4367,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-readelf",
+        "-h",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/time_parent_binding.o"
+      ],
+      "phase": "parent-elf",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.10189775799999978,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 953
+      }
+    },
+    {
+      "command": [
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-nm",
+        "--defined-only",
+        "/home/runner/work/_temp/axiom-native-worker-compile-once/outputs/time_parent_binding.o"
+      ],
+      "phase": "parent-symbols",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.040495309000000645,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 1731
+      }
+    }
+  ]
+}
