@@ -1,0 +1,15 @@
+{
+  "approval": "call_e5878e0048c54d3cb09aa14896a0a367",
+  "method": "Safari existing AWS console tab",
+  "outcome": "signed-out-session",
+  "accountCoordinateMatched": true,
+  "regionCoordinateMatched": true,
+  "authenticatedIdentityVerified": false,
+  "freshClusterInventoryVerified": false,
+  "staleContentNotAccepted": true,
+  "networkPagesOpened": 0,
+  "signInAttempted": false,
+  "resourcesChanged": false,
+  "spending": false,
+  "next": "Owner completes sign-in to the existing test-account console before a fresh authenticated read."
+}
