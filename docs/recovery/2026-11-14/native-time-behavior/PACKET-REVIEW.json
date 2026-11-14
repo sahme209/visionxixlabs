@@ -1,0 +1,45 @@
+{
+  "verdict": "CLEAR_PACKET_CURRENTNESS",
+  "packetSha256": "82aa2c0c62e27eb1c36b4f1bf65c096d8f72eeacf97aa276eca2e0edfb9c709f",
+  "inputCount": 27,
+  "all27CurrentHashesMatch": true,
+  "hashMismatches": [],
+  "invalidInputShapes": [],
+  "sourceAstClosedSetMatches": true,
+  "oldCompilerProfileGitHeadSha256": "9706421ed659d4b30a7d82e39e30af5dff944988bc3957ab2f7f84513470a8fe",
+  "oldCompilerProfileCurrentSha256": "9706421ed659d4b30a7d82e39e30af5dff944988bc3957ab2f7f84513470a8fe",
+  "oldCompilerProfileUnchangedFromGit": true,
+  "approvedProposalHashMatches": true,
+  "ownerApproval": "call_37037d62a37247b0ac88721ba25e9d42",
+  "event": "opened",
+  "branch": "codex/governance-native-time-behavior",
+  "prBinding": "Positive actual event number equals nested PR number, same public repository/main/exact branch/head; actual PR recorded in receipt. No guessed PR number, synchronize or rerun.",
+  "limits": {
+    "standardRunner": "ubuntu-24.04",
+    "jobMinutes": 15,
+    "controllerSeconds": 300,
+    "buildSeconds": 60,
+    "nodeSeconds": 10,
+    "cleanupSeconds": 5
+  },
+  "authority": {
+    "trustedFixedTestSourceOnly": true,
+    "productionIsolationClaim": false,
+    "timeAuthority": false,
+    "governanceEnabled": false
+  },
+  "reviewScope": "Independent frozen-packet/file-hash/currentness review; controller was authored by this reviewer, its code review belongs to other reviewers.",
+  "remainingPreRunConditions": [
+    "Parent must receive final independent fixture/instrumentation source review; this packet review does not assert that pending review is complete.",
+    "All required source/profile/packet reviews and frozen inputs must remain current before the ONE opened-PR attempt."
+  ],
+  "performed": [
+    "Ordinary file reads, AST inspection and SHA256 comparisons",
+    "Read-only git show of historical compiler profile"
+  ],
+  "notPerformed": [
+    "No tests rerun",
+    "No compiler/native/Node/target SDK execution or inspection",
+    "No workflow, push, network, provider, database or production action"
+  ]
+}

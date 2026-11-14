@@ -1,3 +1,11 @@
+## November14 — merged worker and dependency fixes; approved native behavior preparation
+
+PR332 merged green as `f9dae18159d5927057812ebe71a0680a630cc98e`; its post-merge main checks also PASS. PR333, the required workflow-generated replacement for conflicted/red PR318, merged normally as `d0920603869cc42a2ede43f549aa8061045d7ea4` after all eight exact-head checks PASS. JOSE6.2.16 and two reviewed transitive Hono patches are backed up on main; no hand-edited lock, production deployment or enablement occurred. PR318 itself was not merged; its requested dependency change is included through PR333.
+
+Owner-approved native behavior batch call_37037d62a37247b0ac88721ba25e9d42 is prepared locally: fixed instrumented parent/worker cases, original-file capture/replacement refusal/deterministic cancellation and same-child cleanup, plus a separate inherited network/group/privilege test restriction. Final49 pure/source checks PASS; independent controller/profile review CLEAR. Final independent fixture/instrumentation and27-input packet reviews are CLEAR; the sole standard-free Linux attempt is next, with no retry. No native behavior result exists yet. New packet binds current instrumented sources; historical compiler inventories/evidence remain unchanged. Evidence: `docs/recovery/2026-11-14/native-time-behavior/`.
+
+This is trusted fixed-source testing, not hostile-code/filesystem isolation, qualified UTC/policy/custody, genuine human/provider end-to-end acceptance or full Governance. Governance remains INCOMPLETE/DISABLED. Credentials, database, cloud resources, installation, deployment, flags, spending and independent human decisions remain separately gated; no automatic retry.
+
 ## November14 — PR332 merged; dependency patch and real native test next
 
 PR332 merged normally as `f9dae18159d5927057812ebe71a0680a630cc98e` after all seven final ordinary checks passed, including Typecheck + Vitest. The separately approved actual worker/parent compile proof remains accepted; the final documentation head preserves all22 compiled inputs. No worker was launched by that checkpoint; full Governance remains INCOMPLETE/DISABLED.

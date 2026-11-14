@@ -1,0 +1,17 @@
+{
+  "localChecks": 49,
+  "localCheckKind": "Pure and source-only; no native execution",
+  "initialRootTestInvocation": "Module discovery failed before tests; corrected file-based loader ran all49 successfully",
+  "parentInstrumentation": "AXIOM_TIME_BEHAVIOR_TEST only; uninstrumented production interface retained",
+  "compilerProfileUnchanged": true,
+  "attemptConsumed": false,
+  "governanceEnabled": false,
+  "productionChanged": false,
+  "independentControllerProfileReview": "CLEAR",
+  "independentFixtureInstrumentationReview": "CLEAR",
+  "independentPacketCurrentnessReview": "CLEAR",
+  "packetSha256": "82aa2c0c62e27eb1c36b4f1bf65c096d8f72eeacf97aa276eca2e0edfb9c709f",
+  "inputCount": 27,
+  "localRootReview": "Actual BPF branch offsets, fixed launcher/supervisor pipe interface, real codec inputs and fixture lifecycle traced; no important remaining source finding",
+  "actualNativeResult": "NOT RUN at this prepared checkpoint"
+}
