@@ -1,0 +1,160 @@
+{
+  "revision": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "sourceOnly": true,
+  "files": [
+    {
+      "sourcePath": "clock-bound/src/daemon.rs",
+      "fixturePath": "clock-bound/src/daemon.rs.txt",
+      "size": 37992,
+      "sha256": "bd45a24d82a516c7bbf33fdc75daee38ec1985a3042e1a86cc4c203934d648b5",
+      "gitBlobSha1": "44650a6306fc180bcf5279b81fb5404aefc6c6fb"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_parameters.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_parameters.rs.txt",
+      "size": 12756,
+      "sha256": "bbad380abb97d834e94ecced40bb951d874406a8f27ac27984be410e62905925",
+      "gitBlobSha1": "9201e30c6a18e805eb43393e67404d39f21a1138"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_state.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_state.rs.txt",
+      "size": 30558,
+      "sha256": "d8c955afabeab7b0eae3e1b915dce76763d6d7ee7de0d9350e6df511aa258abc",
+      "gitBlobSha1": "0abef5835e44275920d1c397dae5e89f4b7a42da"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_state/shm_writer/shm0.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_state/shm_writer/shm0.rs.txt",
+      "size": 13511,
+      "sha256": "99dd4fe0b9ab154383df0355563d9e77f4b8357619306f96506488cecfd7e2cd",
+      "gitBlobSha1": "7a16ca5ebbe42f5b4754ad80e24c90327c99e303"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/time/clocks.rs",
+      "fixturePath": "clock-bound/src/daemon/time/clocks.rs.txt",
+      "size": 7107,
+      "sha256": "2dbc9bc01d184dc39a3e77aaba64125147665430278e276395d0caeeece6a6b1",
+      "gitBlobSha1": "9d8f3ebe0cb8e697fcbc29fe28e79824b50e847a"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/time/tsc.rs",
+      "fixturePath": "clock-bound/src/daemon/time/tsc.rs.txt",
+      "size": 23992,
+      "sha256": "d5e2e23b67b42e4e2e178d26600cf05c9c32fbb83f94820a4a303adde839b636",
+      "gitBlobSha1": "e8d296277765007c3c448318d2390c44e2733e84"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/event/ntp.rs",
+      "fixturePath": "clock-bound/src/daemon/event/ntp.rs.txt",
+      "size": 31188,
+      "sha256": "ce9da5cc3ebf0e4edffe6ef3e5f3ca82f374189df7b3b29e79f39e0d5b4ed91e",
+      "gitBlobSha1": "c9f84c50e4b1cf3c60e0443553d0f7a4d0612b5f"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/event/phc.rs",
+      "fixturePath": "clock-bound/src/daemon/event/phc.rs.txt",
+      "size": 20763,
+      "sha256": "45a86a228dcac03de1952a6486a0a91e7dcfdc430872542319a723b2ea0fc5af",
+      "gitBlobSha1": "6765ea3026fa17b6f32d7a2fead5316c27c54fdb"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/io/ntp.rs",
+      "fixturePath": "clock-bound/src/daemon/io/ntp.rs.txt",
+      "size": 29407,
+      "sha256": "f489b3384969ca92e2cd23a410200fd6151152b366f45a882bde76bc0d935766",
+      "gitBlobSha1": "1747760c4cc7e29d3eac9285d379ae4e1953a6ec"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/io/phc.rs",
+      "fixturePath": "clock-bound/src/daemon/io/phc.rs.txt",
+      "size": 44094,
+      "sha256": "ab1849a833b7a0ce1874d20126291dee5f203438b4b111dc796e397e68fcdf3a",
+      "gitBlobSha1": "1969aedb39e17be633971ba53d7dae1ca7210a1b"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_sync_algorithm/ff/ntp.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_sync_algorithm/ff/ntp.rs.txt",
+      "size": 49819,
+      "sha256": "e302c6c26a0540b5cd893d9f95b8107f88c7cc5e8913d57be1e11cfb8e4acabb",
+      "gitBlobSha1": "3c694efbbe878fb4ba8c0aa7ab783818ea6bfbaf"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_sync_algorithm/ff/phc.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_sync_algorithm/ff/phc.rs.txt",
+      "size": 45586,
+      "sha256": "293525e7da35d5e981c891c9f15dc9620abd9a1f25e5c6f5edcd03d1a91a7530",
+      "gitBlobSha1": "647ba7173d470552d2731741436785ea0c4766f2"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_sync_algorithm/selector.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_sync_algorithm/selector.rs.txt",
+      "size": 28631,
+      "sha256": "54301927ac525f8f43d63ff7cda6285086fb08f6c6d36c85cda6cb6642e6bbdc",
+      "gitBlobSha1": "d03387849ec22b9e69802518e80a9fd1e482ee65"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/logging/ffevents/types.rs",
+      "fixturePath": "clock-bound/src/daemon/logging/ffevents/types.rs.txt",
+      "size": 17404,
+      "sha256": "8473c22e9724b5528a01c8008c373e2de59dd7304881c781a78d0bc80ac5d89f",
+      "gitBlobSha1": "75cd1e987e74dbd8fc1497b6c11300dafbd0a26a"
+    },
+    {
+      "sourcePath": "clock-bound/LICENSE.Apache-2.0",
+      "fixturePath": "clock-bound/LICENSE.Apache-2.0.txt",
+      "size": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "gitBlobSha1": "d645695673349e3947e8e5ae42332d0ac3164cd7"
+    },
+    {
+      "sourcePath": "clock-bound/LICENSE.MIT",
+      "fixturePath": "clock-bound/LICENSE.MIT.txt",
+      "size": 1107,
+      "sha256": "04f8eb9dc1d7079de38b1dce5e9c9c2968e31b88e14301d58ea76562c418b1a2",
+      "gitBlobSha1": "9a3be1574512302da08c885870e89fe68e7a42b2"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_state/shm_writer.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_state/shm_writer.rs.txt",
+      "size": 1411,
+      "sha256": "9fbadcbdfb039503fb49bbafe50692600917f3c5ff98b5699ac7d53a17fb9d4f",
+      "gitBlobSha1": "1bf2e2c54d5963a1878bed75446efdc06930d1e8"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_sync_algorithm.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_sync_algorithm.rs.txt",
+      "size": 23530,
+      "sha256": "37547ed5b1df442ca68bec22de9f54ecbb6c99dfb4272977e521703924bc299a",
+      "gitBlobSha1": "f24d0707de1dda62751d517e2875c74388e75dea"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_state/system_clock_discipliner.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_state/system_clock_discipliner.rs.txt",
+      "size": 5842,
+      "sha256": "83abca63f75ceed198cfb56aeca29587d363cf301b66dc9fef13e549b2417b29",
+      "gitBlobSha1": "d1563766e01cf48a5296de7179cb8cae8b5f8750"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/clock_state/system_clock_discipliner/state_machine.rs",
+      "fixturePath": "clock-bound/src/daemon/clock_state/system_clock_discipliner/state_machine.rs.txt",
+      "size": 8946,
+      "sha256": "e5dd504a13722e6f96e505d6dc46bc39ae2e8b68d32d5efe71ff426ce17dadb2",
+      "gitBlobSha1": "27420d676b86d1ad1c95c037dbe63fce6ec21019"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/logging/synchronization.rs",
+      "fixturePath": "clock-bound/src/daemon/logging/synchronization.rs.txt",
+      "size": 18635,
+      "sha256": "85e999ce08dcd77332ce383ae9d23068ccd3417ae3d3e1ad54f58560e9bd74bb",
+      "gitBlobSha1": "27d805056f85b7fae86b75c3f48b7953c2a6f77d"
+    },
+    {
+      "sourcePath": "clock-bound/src/daemon/logging/ffevents.rs",
+      "fixturePath": "clock-bound/src/daemon/logging/ffevents.rs.txt",
+      "size": 8478,
+      "sha256": "da901d493ab9122a9b01d589ade28689b534477ab65cb3f36d00bf7a80d305e4",
+      "gitBlobSha1": "a643b7d772aa908576f14f05a1e322d24a65f4f6"
+    }
+  ]
+}

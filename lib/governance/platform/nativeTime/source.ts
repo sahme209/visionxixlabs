@@ -61,7 +61,7 @@ export function createNativeExecutionTimeSource(ports:NativeTimeSourcePorts):Exe
     worker=Object.freeze({result,completed,terminate});same();
     const outcome=await Promise.race([worker.result,worker.completed.then(ok=>ok?new Promise<never>(()=>{}):({ok:false}as const))]);same();if(!outcome.ok)return fail();const raw=outcome.value;if(!(raw.bytes instanceof Uint8Array)||raw.bytes.byteLength>limits.maxBytes||raw.identity!==identity||raw.sourceGeneration!==generation||raw.disruptionMarker!==marker)return fail();
     const originalBytes=new Uint8Array(raw.bytes),bytes=new Uint8Array(originalBytes),snapshot=sampleCopy(raw.sample),capture=Object.freeze({bytes,sample:snapshot,identity,sourceGeneration:generation,disruptionMarker:marker});
-    const publication=decodeTimePublication(bytes);if(publication.sourceGeneration!==generation||publication.disruptionMarker!==marker)return fail();
+    const publication=decodeTimePublication(bytes);if(publication.version!==2||publication.layout!=='clockbound-precise-origin-v1'||publication.sourceGeneration!==generation||publication.disruptionMarker!==marker)return fail();
     await clean();same();await current(held,signal);same();
     const final=await observe(held,capture,signal);same();const sample=sampleCopy(final.sample);
     if(sample.realtimeNs!==snapshot.realtimeNs||sample.p0.low!==snapshot.p0.low||sample.p0.high!==snapshot.p0.high||sample.p1.low!==snapshot.p1.low||sample.p1.high!==snapshot.p1.high||sample.p2.low<snapshot.p2.low||sample.p2.high<snapshot.p2.high)return fail();

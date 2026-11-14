@@ -1,0 +1,247 @@
+//! Clock Adjustment state machine.
+//!
+//! On initialization (when we receive valid `ClockParameters`), the adjuster measures the
+//! phase offset between `CLOCK_REALTIME` and the `ClockBound` internal clock.
+//!
+//! - If `|offset| > Timex::MAX_PHASE_OFFSET` (100 ms), the clock is stepped
+//!   (`apply_phase_correction_step`). This handles stale RTCs and booting to the Unix epoch.
+//! - Otherwise the offset is fed into the kernel PLL (`apply_phase_correction_smooth`)
+//!   for a slew. This covers the possible case of a daemon restart where the
+//!   clock is already close.
+//!
+//! After either action the state moves to `Running`. In `Running` every tick measures
+//! the offset the same way and submits it to the kernel PLL via `apply_phase_correction_smooth`.
+//! The kernel slews at a constant rate over the following second, re-calculated each
+//! second, decaying logarithmically.
+//!
+//! ```text
+//!   ┌─────────────┐
+//!   │ Initializing│  No adjustments made yet.
+//!   └──────┬──────┘
+//!          │ first clock_params: measure offset
+//!          │   |offset| > MAX_PHASE_OFFSET → apply_phase_correction_step
+//!          │   |offset| ≤ MAX_PHASE_OFFSET → apply_phase_correction_smooth
+//!          v
+//!   ┌─────────┐
+//!   │ Running │  Every tick: measure offset, apply_phase_correction_smooth → kernel PLL.
+//!   └─────────┘
+//! ```
+use tracing::{debug, info};
+
+use crate::daemon::{
+    clock_parameters::ClockParameters,
+    io::tsc::ReadTscImpl,
+    time::{
+        ClockExt,
+        clocks::{ClockBound, RealTime},
+        timex::Timex,
+    },
+};
+
+use super::ClockCorrection;
+use super::ntp_adjtime::NtpAdjTimeExt;
+
+// ─── State types ─────────────────────────────────────────────────────────────
+
+#[derive(Debug, PartialEq)]
+pub(super) struct Initializing {
+    sealed: Sealed,
+}
+
+#[derive(Debug, PartialEq)]
+pub(super) struct Running {
+    _sealed: Sealed,
+}
+
+#[derive(Debug, PartialEq)]
+pub(super) enum State {
+    Initializing(Initializing),
+    Running(Running),
+}
+
+impl From<Running> for State {
+    fn from(running: Running) -> Self {
+        State::Running(running)
+    }
+}
+
+impl State {
+    #[must_use]
+    pub(super) fn initializing() -> Self {
+        State::Initializing(Initializing::new())
+    }
+
+    // allow tests to break the transition rules
+    #[cfg(test)]
+    pub(super) fn running() -> Self {
+        State::Running(Running::new())
+    }
+}
+
+/// ZST to prevent mis-construction
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
+struct Sealed;
+
+// ─── Transitions ─────────────────────────────────────────────────────────────
+
+impl Initializing {
+    /// Constructor
+    pub(super) fn new() -> Self {
+        Self { sealed: Sealed }
+    }
+
+    /// On the first tick, measure the phase offset and either step or smooth-slew
+    /// `CLOCK_REALTIME` into alignment, then move to `Running`.
+    ///
+    /// Returns how the clock was corrected ([`ClockCorrection::Step`] when the
+    /// offset exceeded the step threshold, otherwise [`ClockCorrection::Smooth`]).
+    //
+    // TODO: this to_running function does a lot more than "transition to running"
+    // It also makes it harder to test as this function mixes system IO with
+    #[must_use]
+    pub(super) fn to_running(
+        &self,
+        ntp_adjtime: &dyn NtpAdjTimeExt,
+        clock_params: &ClockParameters,
+    ) -> (Running, ClockCorrection) {
+        let clockbound = ClockBound::new(clock_params.clone(), ReadTscImpl);
+        let offset = clockbound.get_offset_and_rtt(&RealTime).offset();
+        let threshold = Timex::MAX_PHASE_OFFSET;
+        let correction = if offset.abs() > threshold {
+            ntp_adjtime
+                .apply_phase_correction_step(offset)
+                .expect("failed to step clock on startup");
+            info!("Clock stepped by {} nanoseconds.", offset.as_nanos());
+            ClockCorrection::Step {
+                step_ns: offset.as_nanos(),
+            }
+        } else {
+            ntp_adjtime
+                .apply_phase_correction_smooth(offset, clock_params.clock_error_bound)
+                .expect("failed to smooth-apply phase correction on startup");
+            info!("Clock smooth-slewed by {} nanoseconds.", offset.as_nanos());
+            ClockCorrection::Smooth {
+                correction_ns: offset.as_nanos(),
+            }
+        };
+        debug!("Initializing now transitioning to Running.");
+        (
+            Running {
+                _sealed: self.sealed,
+            },
+            correction,
+        )
+    }
+}
+
+impl Running {
+    /// Test-only constructor
+    #[cfg(test)]
+    pub(super) fn new() -> Self {
+        Self { _sealed: Sealed }
+    }
+
+    /// On every subsequent tick, measure the offset and feed it into the kernel PLL.
+    ///
+    /// Always returns [`ClockCorrection::Smooth`] (the `Running` state never steps).
+    #[must_use]
+    #[expect(clippy::unused_self)]
+    pub(super) fn apply_offset(
+        &self,
+        ntp_adjtime: &dyn NtpAdjTimeExt,
+        clock_params: &ClockParameters,
+    ) -> ClockCorrection {
+        let clockbound = ClockBound::new(clock_params.clone(), ReadTscImpl);
+        let offset = clockbound.get_offset_and_rtt(&RealTime).offset();
+        let result = ntp_adjtime
+            .apply_phase_correction_smooth(offset, clock_params.clock_error_bound)
+            .expect("failed to smooth-apply phase correction");
+        debug!(
+            "ntp_adjtime apply_phase_correction_smooth returned kernel state: {:?}.",
+            result
+        );
+        ClockCorrection::Smooth {
+            correction_ns: offset.as_nanos(),
+        }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::daemon::{
+        clock_state::system_clock_discipliner::ntp_adjtime::MockNtpAdjTimeExt,
+        time::{
+            Clock, Duration, TscCount,
+            tsc::{Frequency, Period},
+        },
+    };
+
+    use super::*;
+
+    /// Build clock parameters anchored to the current TSC and wall clock, then
+    /// shift `time` by `target_offset` so `ClockBound` reads approximately
+    /// `RealTime + target_offset`.
+    fn clock_params_with_offset(target_offset: Duration) -> ClockParameters {
+        let tsc_now = TscCount::new(crate::daemon::io::tsc::read_timestamp_counter_begin() as i64);
+        let realtime_now = crate::daemon::time::clocks::RealTime.get_time();
+        ClockParameters {
+            tsc_count: tsc_now,
+            period: Period::from_frequency(Frequency::from_hz(1_000_000_000.0)),
+            time: realtime_now + target_offset,
+            clock_error_bound: Duration::new(0),
+            period_max_error: Period::from_seconds(0.0),
+            as_of_monotonic: realtime_now,
+        }
+    }
+
+    #[test]
+    fn initializing_small_offset_smooth_slews_to_running() {
+        let mut mock = MockNtpAdjTimeExt::new();
+        mock.expect_apply_phase_correction_smooth()
+            .once()
+            .returning(|_, _| Ok(crate::daemon::time::timex::Timex::retrieve()));
+
+        let (state, correction) = Initializing::new()
+            .to_running(&mock, &clock_params_with_offset(Duration::from_millis(10)));
+        let state = State::from(state);
+        assert!(matches!(state, State::Running(..)));
+        assert!(
+            matches!(correction, ClockCorrection::Smooth { .. }),
+            "a small offset is smooth-slewed, so a smooth correction should be reported"
+        );
+    }
+
+    #[test]
+    fn initializing_large_offset_steps_to_running() {
+        let mut mock = MockNtpAdjTimeExt::new();
+        mock.expect_apply_phase_correction_step()
+            .once()
+            .returning(|_| Ok(crate::daemon::time::timex::Timex::retrieve()));
+
+        let (state, correction) = Initializing::new()
+            .to_running(&mock, &clock_params_with_offset(Duration::from_secs(1)));
+        let state = State::from(state);
+        assert!(matches!(state, State::Running(..)));
+        assert!(
+            matches!(correction, ClockCorrection::Step { .. }),
+            "a large offset is stepped, not smooth-slewed"
+        );
+    }
+
+    #[test]
+    fn running_calls_apply_phase_correction_smooth() {
+        let mut mock = MockNtpAdjTimeExt::new();
+        mock.expect_apply_phase_correction_smooth()
+            .once()
+            .returning(|_, _| Ok(crate::daemon::time::timex::Timex::retrieve()));
+
+        let running = Running::new();
+        let correction =
+            running.apply_offset(&mock, &clock_params_with_offset(Duration::from_millis(50)));
+
+        assert!(
+            matches!(correction, ClockCorrection::Smooth { .. }),
+            "Running always smooth-slews"
+        );
+    }
+}

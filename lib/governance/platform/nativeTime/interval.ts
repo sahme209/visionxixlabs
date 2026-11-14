@@ -3,8 +3,9 @@ import type {TimePublication} from './record';
 export interface NanoInterval {low:bigint;high:bigint}
 export interface NativeTimeSample {realtimeNs:bigint;p0:NanoInterval;p1:NanoInterval;p2:NanoInterval}
 export interface TimePremises {
- /** Qualified precise-monotonic projections of THIS publication's coarse fields.
-  * Binding those projections to actual source/clock evidence is the private
+ /** Qualified precise-origin policy for THIS V2 publication. asOf/voidAfter
+  * must be exact points matching its explicit anchor/expiry, never coarse projections.
+  * Binding these exact points and policy to actual source/clock evidence is the private
   * supplier's responsibility; these plain values are not qualification. */
  asOf:NanoInterval;voidAfter:NanoInterval;maxAgeNs:bigint;
  lambdaMin:{numerator:bigint;denominator:bigint};
@@ -27,10 +28,11 @@ export function encloseTimePublication(raw:Readonly<TimePublication>,rawSample:R
   // Capture caller primitives once before validating; nothing is awaited or
   // mutated. Real source identity/currentness must be checked by the supplier.
   const publication={version:raw.version,layout:raw.layout,sourceGeneration:raw.sourceGeneration,publication:raw.publication,asOfNs:raw.asOfNs,voidAfterNs:raw.voidAfterNs,boundNs:raw.boundNs,driftPpb:raw.driftPpb,status:raw.status,disruptionMarker:raw.disruptionMarker,disruptionSupported:raw.disruptionSupported};
-  if(publication.version!==1||publication.layout!=='clockbound-v2'||typeof publication.sourceGeneration!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(publication.sourceGeneration)||natural(publication.publication,MAX_COUNTER)===BigInt("0")||publication.status!=='synchronized'||publication.disruptionSupported!==true)return fail();
+  if(publication.version!==2||publication.layout!=='clockbound-precise-origin-v1'||typeof publication.sourceGeneration!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(publication.sourceGeneration)||natural(publication.publication,MAX_COUNTER)===BigInt("0")||publication.status!=='synchronized'||publication.disruptionSupported!==true)return fail();
   const originalAsOf=natural(publication.asOfNs),originalVoidAfter=natural(publication.voidAfterNs),bound=natural(publication.boundNs),drift=natural(publication.driftPpb);natural(publication.disruptionMarker,MAX_COUNTER);
   if(originalVoidAfter<=originalAsOf||drift>=PPB)return fail();
   const realtime=natural(rawSample.realtimeNs),p0=interval(rawSample.p0),p1=interval(rawSample.p1),p2=interval(rawSample.p2),asOf=interval(rawPremises.asOf),voidAfter=interval(rawPremises.voidAfter),maxAge=natural(rawPremises.maxAgeNs),minimum=rate(rawPremises.lambdaMin),maximum=rate(rawPremises.lambdaMax);
+  if(asOf.low!==originalAsOf||asOf.high!==originalAsOf||voidAfter.low!==originalVoidAfter||voidAfter.high!==originalVoidAfter)return fail();
   if(!maxAge||minimum.numerator*maximum.denominator>maximum.numerator*minimum.denominator||voidAfter.low<=asOf.high||p0.low<asOf.high||p0.low>p1.low||p0.high>p1.high||p1.low>p2.low||p1.high>p2.high||p2.high>=voidAfter.low||p2.high>=asOf.low+maxAge)return fail();
   const deltaR=p1.high-asOf.low,error=bound+ceil(drift*deltaR,PPB);
   const deltaMin=positive(p2.low-p1.high),deltaMax=positive(p2.high-p0.low);

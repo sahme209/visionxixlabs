@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stddef.h>
 #define AXIOM_TIME_RECORD_MAX 4096u
+#define AXIOM_TIME_MAGIC "AXIOM_TIME_V2"
+#define AXIOM_TIME_LAYOUT "clockbound-precise-origin-v1"
 /* Source-only Linux adapter. Context MUST come from the protected native
  * initializer, never argv, request JSON or environment. These fields identify
  * resources; they do not attest the producer or qualify its clock. */

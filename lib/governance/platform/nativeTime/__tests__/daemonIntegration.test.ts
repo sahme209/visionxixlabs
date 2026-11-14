@@ -97,7 +97,7 @@ it('unusable sentinel reaches the actual writer directly and contains explicit V
 });
 
 it.each(['unknown','disrupted'] as const)('real codec accepts the exact %s sentinel but interval refuses it before sample/premise arithmetic',status=>{
- const raw:TimePublication={version:1,layout:'clockbound-v2',sourceGeneration:'synthetic-owned-generation',publication:BigInt('1'),asOfNs:BigInt('0'),voidAfterNs:BigInt('1'),boundNs:BigInt('0'),driftPpb:BigInt('0'),status,disruptionMarker:BigInt('7'),disruptionSupported:true};
+ const raw:TimePublication={version:2,layout:'clockbound-precise-origin-v1',sourceGeneration:'synthetic-owned-generation',publication:BigInt('1'),asOfNs:BigInt('0'),voidAfterNs:BigInt('1'),boundNs:BigInt('0'),driftPpb:BigInt('0'),status,disruptionMarker:BigInt('7'),disruptionSupported:true};
  const decoded=decodeTimePublication(encodeTimePublication(raw));expect(decoded).toEqual(raw);
  let sampleReads=0,premiseReads=0;
  const sample:NativeTimeSample={get realtimeNs(): bigint {sampleReads++;throw Error('sample must not be read')},get p0(): NativeTimeSample['p0'] {sampleReads++;throw Error('sample must not be read')},get p1(): NativeTimeSample['p1'] {sampleReads++;throw Error('sample must not be read')},get p2(): NativeTimeSample['p2'] {sampleReads++;throw Error('sample must not be read')}};

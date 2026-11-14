@@ -41,3 +41,7 @@ The rendered page describes Linux per-second compute billing and region/service-
 ## Consequence
 
 The process ownership/completion mechanism can now be specified with its real preconditions. The strict clock-premise supplier is still missing; these API pages cannot qualify one. The cost pass identifies actual fee dimensions but does not make missing Ohio data or image/retention quantities zero. Do not request implementation of unspecified authority callbacks or provisioning against an incomplete quote. The next design decision must address the actual clock authority and connected worker mechanism, not another broad release/document search.
+
+## Same-page rendered price clarification
+
+The approved EC2 public page was also inspected in the browser because its dynamic table was absent from text extraction. US East(Ohio)/us-east-2 was explicitly selected; the rendered table shows internet inbound0.00USD/GB and outbound first10TB0.09USD/GB (higher tiers0.085/0.07/0.05). No free allowance is assumed. This supersedes only the missing-rendered-egress-number observation above; no seventh source page/account access occurred. Screenshot and fixed categories: OHIO-RENDERED-TRANSFER-OBSERVATION.json. It does not make the full resource quote ready.

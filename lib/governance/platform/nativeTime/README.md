@@ -1,7 +1,10 @@
 # Local native-time preparation — unavailable as a qualified supplier
 
-Owner call_b89fcae7bf464e1a850e93d59ab1de5c permits source and ordinary
-pure/mocked tests only. The reviewed design is
+Owner call_b89fcae7bf464e1a850e93d59ab1de5c permits the initial local source
+and ordinary pure/mocked tests. Later call_e7c2c3a622a1491f8a32158859a96c66
+approves the precise-origin local correction/tests; its exact design is
+`docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/PRECISE-ORIGIN-CORRECTION-DESIGN.md`.
+The initial reviewed design is
 `docs/recovery/2026-11-13/real-governance-qualification/design/IMMUTABLE-TIME-PUBLICATION-LOCAL-DESIGN.md`.
 
 - `record.ts`: bounded canonical twelve-line V2 integer format, not provenance.
@@ -9,7 +12,9 @@ pure/mocked tests only. The reviewed design is
   immutable snapshot, synchronous fail-stop lifecycle and no delegate after
   failure. Native fatal behavior cannot be established by a mocked throw.
 - `interval.ts`: exact conditional enclosure at the declared P2 sample, with
-  qualified coarse/precise projections, rates and lifetimes supplied privately.
+  exact point premises matching the record's precise origin/expiry, plus
+  independently qualified rate and lifetime premises supplied privately.
+  V1 coarse records are historical only and cannot enter the live path.
   No arbitrary return/commit/receipt-time guarantee or guessed defaults.
 - `source.ts`: one worker/captured context per observation, 4096-byte record
   limit, 500ms deadline and 100ms cleanup limit; original parent descriptor

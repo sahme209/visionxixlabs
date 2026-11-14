@@ -1,4 +1,4 @@
-import {encodeTimePublication,decodeTimePublication,type TimePublication} from './record';
+import {encodeTimePublication,decodeTimePublication,type TimePublication,type PreciseTimePublication} from './record';
 export interface TimePublisherPorts {
  assertCurrent():void;
  /** Fixed native preparation must return its own opaque stage; no execution or filesystem default exists here. */
@@ -22,11 +22,11 @@ export function createTimePublisher(generation:string,ports:TimePublisherPorts){
  const active=()=>{if(failed)return unavailable()};
  function sync(fn:()=>unknown){const value=fn();if(value instanceof Promise)void value.catch(()=>{});if(value!==undefined)return unavailable();active()}
  if(typeof generation!=='string'||!/^[A-Za-z0-9_-]{1,128}$/.test(generation))return die();
- return Object.freeze({publish(raw:Omit<TimePublication,'version'|'sourceGeneration'|'publication'>):void{
+ return Object.freeze({publish(raw:Omit<PreciseTimePublication,'version'|'sourceGeneration'|'publication'>):void{
   try{
    if(failed||busy)return unavailable();busy=true;
    if(counter===(BigInt("1")<<BigInt("64"))-BigInt("1"))return unavailable();counter++;
-   const bytes=encodeTimePublication({...raw,version:1,sourceGeneration:generation,publication:counter}),snapshot=decodeTimePublication(bytes);active();
+   const bytes=encodeTimePublication({...raw,version:2,sourceGeneration:generation,publication:counter}),snapshot=decodeTimePublication(bytes);active();
    if(counter===BigInt("1")&&snapshot.status!=='unknown')return unavailable();
    sync(current);
    const supplied=bytes.slice(),stage=create(supplied,'axiom_time_'+generation+'_'+counter);active();

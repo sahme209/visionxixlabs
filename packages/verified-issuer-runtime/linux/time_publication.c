@@ -51,7 +51,7 @@ static int parse(const unsigned char *bytes,size_t n,const char *g,uint64_t *pub
  for(size_t i=0;i<n;i++)if(bytes[i]<10||bytes[i]>126||bytes[i]==13)return 0;
  char *lines[12];size_t count=0;char *start=copy;
  for(size_t i=0;i<n;i++)if(copy[i]=='\n'){if(count>=12)return 0;copy[i]=0;lines[count++]=start;start=copy+i+1;}
- if(count!=12||start!=copy+n||strcmp(lines[0],"AXIOM_TIME_V1")||strcmp(lines[1],"clockbound-v2")||strcmp(lines[2],g)||strcmp(lines[11],"END"))return 0;
+ if(count!=12||start!=copy+n||strcmp(lines[0],AXIOM_TIME_MAGIC)||strcmp(lines[1],AXIOM_TIME_LAYOUT)||strcmp(lines[2],g)||strcmp(lines[11],"END"))return 0;
  uint64_t a,v,b,d;
  if(!uint_line(lines[3],UINT64_MAX,pub)||!*pub||!uint_line(lines[4],INT64_MAX,&a)||!uint_line(lines[5],INT64_MAX,&v)||v<=a
  ||!uint_line(lines[6],INT64_MAX,&b)||!uint_line(lines[7],999999999,&d)||!uint_line(lines[9],UINT64_MAX,marker))return 0;

@@ -1,3 +1,37 @@
+# Current Linux source preparation — precise I/O origin
+
+The CURRENT prepared patch is `clockbound-precise-origin.patch`, applied ONCE
+to the exact pinned upstream base. It incorporates the earlier constructor/
+invalidation changes. Do not stack it on `clockbound-daemon-integration.patch`;
+that older patch and its pre-RED draft remain historical evidence only.
+
+Current private wire is `AXIOM_TIME_V2 / clockbound-precise-origin-v1`. Stock
+ClockBound V2/V3 bytes stay unchanged. The live C/TS path refuses old private V1
+records; TS decoding retains them for historical inspection only. An exact
+precise-monotonic lower anchor is captured inside the NTP/PHC I/O operation
+before its first TSC read, associated with its source kind and counters, then
+retained with the selected parameter object. Rejected newer samples do not
+refresh an older parameter's origin. Logs/reconstructed values lack origin.
+
+The prepared Rust adapter uses one closed Stock/Axiom ownership path; Axiom
+publication acknowledgment precedes its compatibility delegate. Private drift
+conversion uses checked exact rationals of represented numeric inputs and
+outward rounding; this does NOT prove their physical or upstream model bounds.
+The private accepted-policy type has NO production mint. Its absence always
+emits Unknown. A private type is not a qualified evidence supplier; no real
+profile, launcher, source, rate, lifetime or numerical guarantee is fabricated.
+
+All native source remains UNCOMPILED/UNLINKED/UNEXECUTED. Actual native
+arithmetic, worker/parent/IPC, resource/bootstrap, ABI, profile issuance and
+qualified clock/lifecycle/credential/provider behavior remain later gates.
+Source tests inspect exact patched call sites and real TS codec/interval
+refusal, not Rust execution. Current licensed upstream fixtures and hash
+manifest are in recovery design/precise-origin-local.
+
+---
+
+## Preserved historical adapter notes
+
 # Dormant Linux time-publication adapters
 
 These files are local SOURCE PREPARATION ONLY. They have not been compiled,
