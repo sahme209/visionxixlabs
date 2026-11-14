@@ -21,9 +21,13 @@ The private accepted-policy type has NO production mint. Its absence always
 emits Unknown. A private type is not a qualified evidence supplier; no real
 profile, launcher, source, rate, lifetime or numerical guarantee is fabricated.
 
-All native source remains UNCOMPILED/UNLINKED/UNEXECUTED. Actual native
-arithmetic, worker/parent/IPC, resource/bootstrap, ABI, profile issuance and
-qualified clock/lifecycle/credential/provider behavior remain later gates.
+The November14 Linux job at source010444b7 compiled the real C source and
+passed its restricted process fixture. Cargo then refused rustc child launch
+with EPERM; Rust compilation and final C/Rust linkage remain unverified.
+No Governance output was executed. Actual native arithmetic, worker/parent/IPC,
+resource/bootstrap, ABI, profile issuance and qualified clock/lifecycle/
+credential/provider behavior remain later gates. The complete result is
+`docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/DIRECT-OBJECT-RESULT.md`.
 Source tests inspect exact patched call sites and real TS codec/interval
 refusal, not Rust execution. Current licensed upstream fixtures and hash
 manifest are in recovery design/precise-origin-local.

@@ -1,5 +1,24 @@
 # Axiom continuation goal — November 11, 2026
 
+## Active authoring checkout — November14 local Git recovery
+
+The original Documents checkout's Git pack reports logical36MB but reads zero bytes. Do not delete/repack it or repeat the failed commit. A separate checkout at `/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14` was recovered from existing remote PR331/head010444b7; ALL13771staged index entries match exactly, including27copied changed files. Original files/storage remain preserved. Continue Git authoring in that recovered checkout; this original goal file remains a pointer for the active goal. Current recovery evidence: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/RUST-SPAWN-LOCAL-RECOVERY.json` in the recovered checkout. No CI/native run or production action occurred during recovery.
+
+
+## Approved focused diagnostic — November14, prepared
+
+Owner explicitly approved one conditional focused diagnostic. The unchanged-profile Rust ordinary/pre-exec comparison and tiny offline dependency-free Cargo compile are prepared;22pure/mocked/source checks PASS and independent10-file final packet review CLEAR. PacketSHA38d27aa4c1a7c186b097778317fec008225b046f40ad8bc300288477bb3797f4. ONE samePR331 transition from remote010444b7/five-minute standard public runner is next; no diagnostic/native invocation has occurred at this documentation checkpoint. Earlier compiler failures remain; a diagnostic success cannot replace the full Rust/link/real qualification gate or authorize merge/activation. Exact prepared evidence: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/RUST-SPAWN-PREPARED-RECEIPT.json`. No profile widening, full-build retry, credentials, deployment or spending is included. Older pending-decision paragraphs below are historical, superseded only by this exact approval.
+
+
+## Current compiler checkpoint — November 14, PR331 head010444b7
+
+The latest one-run direct-object approval is consumed. Actual run43560429085 passes the restricted launch fixture and real C compilation, then Cargo cannot start rustc children (`never executed`, EPERM); Rust/final linkage remain unverified. All seven existing exact-head checks PASS, including website build and Typecheck + Vitest, but the additional native compiler check FAILS: PR331 stays OPEN/UNMERGED. No production change or Governance activation. Full terminal evidence: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/DIRECT-OBJECT-RESULT.md`.
+
+Source-backed November14 audit: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/NOVEMBER14-COMPLETION-AUDIT.md`. It confirms actual missing native worker/parent/bootstrap/policy/packaging and real-workflow qualification beyond the compiler blocker; these are not completed suppliers waiting for a flag.
+
+The next proposed step is a small actual Rust/Cargo spawn diagnostic under the unchanged profile, not another full build or blind permission widening. Cached Rust source suggests an anonymous socketpair prerequisite; exact CI cause is unconfirmed. Fresh reviewed native permission is required. Preserve all previous consumed attempts, every master requirement, genuine human approvals and the disabled activation gate.
+
+
 ## Current execution snapshot — November13, after PR330
 
 This entry supersedes older status claims only; preserve all historical requirements, receipts and approval limits.

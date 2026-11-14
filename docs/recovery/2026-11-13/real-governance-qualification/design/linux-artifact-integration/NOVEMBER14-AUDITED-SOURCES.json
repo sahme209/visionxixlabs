@@ -1,0 +1,15 @@
+{
+  "scope": "source-only completion audit, no test or qualification run",
+  "files": {
+    "lib/governance/platform/nativeTime/source.ts": "aa77df502698c6b834ad5ec6bce199ddbc19ce50d41bf55b49c6efa74f31a73f",
+    "lib/governance/platform/nativeTime/linuxComposition.ts": "ca0d4783368f5a831986f7facb9a01032de3c80e6c16789ad1c2b96fdc9b70ca",
+    "packages/verified-issuer-runtime/linux/time_publication.c": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+    "packages/verified-issuer-runtime/package.json": "732bc4c5c946fad540589a2bdec4016c2ad67d793a55bf32d29cef4dcfc37d5b",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "eaf96c93b4e66a696404b0fda7e4a158517395a42f14f902c4e3c8b07f7c4237",
+    "lib/governance/platform/operations/operationalRequestService.ts": "1a5313cec347fedfbb52ac9282327e5c11df3598aeb000a5c70f40440e1892ec",
+    "lib/governance/intelligence/requestServiceCore.ts": "bb7f35cc8fe780800873de8d1da01e0e8e23cf25a018607d4897b30d56835039",
+    "lib/governance/intelligence/requestService.ts": "329b6076e5b4b60d62230496ff62e22b5546a9d69e807a75d5f6481c0c01f498",
+    "lib/governance/intelligence/revisionStore.ts": "2a2180c78ec88a96347786baf2f5d2ab5adbf1abc64e7327ad54687e30eb7525"
+  }
+}

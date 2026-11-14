@@ -1,0 +1,30 @@
+error: could not compile `proc-macro2` (build script)
+
+Caused by:
+  could not execute process `/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name build_script_build --edition=2021 /home/runner/work/_temp/axiom-linux-compiler-once/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/proc-macro2-1.0.106/build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --cfg 'feature="default"' --cfg 'feature="proc-macro"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "nightly", "proc-macro", "span-locations"))' -C metadata=931d4afc22756eaf -C extra-filename=-7027fc7ee3be2a63 --out-dir /home/runner/work/_temp/axiom-linux-compiler-once/target/debug/build/proc-macro2-7027fc7ee3be2a63 -L dependency=/home/runner/work/_temp/axiom-linux-compiler-once/target/debug/deps --cap-lints allow` (never executed)
+
+Caused by:
+  Operation not permitted (os error 1)
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `unicode-ident` (lib)
+
+Caused by:
+  could not execute process `/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name unicode_ident --edition=2021 /home/runner/work/_temp/axiom-linux-compiler-once/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/unicode-ident-1.0.24/src/lib.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type lib --emit=dep-info,metadata,link -C embed-bitcode=no -C debuginfo=2 --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values())' -C metadata=68c5027f37bb7da4 -C extra-filename=-3d289a65cc9a0635 --out-dir /home/runner/work/_temp/axiom-linux-compiler-once/target/debug/deps -L dependency=/home/runner/work/_temp/axiom-linux-compiler-once/target/debug/deps --cap-lints allow` (never executed)
+
+Caused by:
+  Operation not permitted (os error 1)
+error: could not compile `libc` (build script)
+
+Caused by:
+  could not execute process `/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name build_script_build --edition=2021 /home/runner/work/_temp/axiom-linux-compiler-once/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/libc-0.2.186/build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --cfg 'feature="default"' --cfg 'feature="extra_traits"' --cfg 'feature="std"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("align", "const-extern-fn", "default", "extra_traits", "rustc-dep-of-std", "rustc-std-workspace-core", "std", "use_std"))' -C metadata=d2882d45bccaf4a9 -C extra-filename=-269c98db03142692 --out-dir /home/runner/work/_temp/axiom-linux-compiler-once/target/debug/build/libc-269c98db03142692 -L dependency=/home/runner/work/_temp/axiom-linux-compiler-once/target/debug/deps --cap-lints allow` (never executed)
+
+Caused by:
+  Operation not permitted (os error 1)
+error: could not compile `quote` (build script)
+
+Caused by:
+  could not execute process `/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc --crate-name build_script_build --edition=2021 /home/runner/work/_temp/axiom-linux-compiler-once/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/quote-1.0.46/build.rs --error-format=json --json=diagnostic-rendered-ansi,artifacts,future-incompat --crate-type bin --emit=dep-info,link -C embed-bitcode=no -C debuginfo=2 --cfg 'feature="default"' --cfg 'feature="proc-macro"' --check-cfg 'cfg(docsrs,test)' --check-cfg 'cfg(feature, values("default", "proc-macro"))' -C metadata=8d6fef44b3f77be2 -C extra-filename=-1712259388be9065 --out-dir /home/runner/work/_temp/axiom-linux-compiler-once/target/debug/build/quote-1712259388be9065 -L dependency=/home/runner/work/_temp/axiom-linux-compiler-once/target/debug/deps --cap-lints allow` (never executed)
+
+Caused by:
+  Operation not permitted (os error 1)
+{

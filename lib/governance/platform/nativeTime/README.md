@@ -29,9 +29,12 @@ The initial reviewed design is
   qualifies a native profile.
 
 `packages/verified-issuer-runtime/linux` contains the dormant C/Rust native
-publication/capture hook source. No native compilation, clock/filesystem test,
-daemon inclusion, source-provenance adoption, runtime/host qualification,
-installation, resources, real credentials/provider calls, deployment or
-Governance activation occurred. Existing source/approval/attempt/custody gates
+publication/capture hook source. The actual November14 Linux job compiled its
+C source and passed the restricted process fixture, but Cargo could not launch
+rustc children. Rust compilation/final linkage remain unverified; this did not
+run Governance outputs or qualify the clock/filesystem, daemon inclusion,
+source provenance or runtime/host. No installation, resources, real
+credentials/provider calls, deployment or Governance activation occurred.
+Existing source/approval/attempt/custody gates
 are retained. Real producer lifecycle/disruption, constructor wiring, native
 filesystem/ABI and conservative clock premises remain required.
