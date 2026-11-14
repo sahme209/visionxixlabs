@@ -1,0 +1,18 @@
+{
+  "questionId": "call_7c986ff7c0d045938ce09a17cc615af6",
+  "decision": "Approve local worker/parent implementation",
+  "planSha256": "cfc6fa0ce20317c6e6f958f96866ca361917991c6380de575b609628ca97eb3a",
+  "scope": [
+    "source",
+    "pure tests",
+    "mocked tests"
+  ],
+  "nativeCompilation": false,
+  "nativeLaunch": false,
+  "SQL": false,
+  "credentials": false,
+  "cloudResources": false,
+  "deployment": false,
+  "enablement": false,
+  "spending": false
+}

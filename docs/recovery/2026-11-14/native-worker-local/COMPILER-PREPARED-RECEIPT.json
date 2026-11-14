@@ -1,0 +1,15 @@
+{
+  "ownerDecision": "call_8a84e47fa6dc4cdca3375650ad74cf3a",
+  "packetSha256": "bfaf5cb28f6c9576ce0dd3ada7dcc0f743c780a72e18208ff378ce0504ef8e66",
+  "sourceInputs": 22,
+  "pureControllerAndWorkflowTests": 30,
+  "independentSourceReview": "CLEAR",
+  "independentPacketReview": "CLEAR",
+  "runtimeLaunchAllowed": false,
+  "attemptUsed": false,
+  "historicalSourceUnitLocalTests": {
+    "mockedTs": 55,
+    "CSourceContractsOnly": 17,
+    "strictProjectTypes": "PASS"
+  }
+}
