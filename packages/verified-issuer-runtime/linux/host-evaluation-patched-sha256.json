@@ -1,0 +1,7 @@
+{
+  "clock-bound/Cargo.toml": "bb23790728dc812f7aedc82850c219e6091043fa9c66e798ef163547f372f316",
+  "clock-bound/src/daemon.rs": "574c6bf57304ccab3f4ca87237f062a294905eb24bd59a72610526a5e50c4a59",
+  "clock-bound/src/daemon/clock_state.rs": "04a4bf3a468d669739e51c0d978addaacd9645e59a7a5be5d6169c20b1681451",
+  "clock-bound/src/daemon/io.rs": "53af48d61634ae29e765142782dcac0557c05f73c821e66a5185f6b41f88ef4a",
+  "clock-bound/src/daemon/io/amazon_time_sync.rs": "23a1d6128e378e23f5c019c397f591aab36fa3e1130ec3a5b9f89a55aa84f7af"
+}

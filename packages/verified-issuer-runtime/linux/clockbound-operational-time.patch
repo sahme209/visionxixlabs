@@ -1,0 +1,318 @@
+--- a/clock-bound/Cargo.toml
++++ b/clock-bound/Cargo.toml
+@@ -84,6 +84,7 @@
+ 
+ [features]
+ axiom-host-evaluation = ["daemon"]
++axiom-operational-time = ["daemon"]
+ daemon = [
+   "dep:clap",
+   "dep:serde",
+@@ -165,3 +166,8 @@
+ name = "axiom-host-evaluation"
+ path = "src/bin/axiom-host-evaluation.rs"
+ required-features = ["axiom-host-evaluation"]
++
++[[bin]]
++name = "axiom-operational-daemon"
++path = "src/bin/axiom-operational-daemon.rs"
++required-features = ["axiom-operational-time"]
+--- a/clock-bound/src/bin/axiom-operational-daemon.rs
++++ b/clock-bound/src/bin/axiom-operational-daemon.rs
+@@ -0,0 +1,2 @@
++#[tokio::main(flavor = "multi_thread", worker_threads = 4)]
++async fn main() { clock_bound::daemon::operational_publication::run_fixed().await; }
+--- a/clock-bound/src/daemon.rs
++++ b/clock-bound/src/daemon.rs
+@@ -4,6 +4,7 @@
+ mod time_publication_adapter;
+ #[cfg(feature = "axiom-host-evaluation")]
+ pub mod host_evaluation;
++pub mod operational_publication;
+ 
+ #[cfg(feature = "algorithm")]
+ pub mod algo_analysis;
+@@ -394,9 +395,107 @@
+         }
+     }
+ 
++    #[cfg(feature = "axiom-operational-time")]
++    pub(crate) async fn construct_operational(
++        cancellation_token: CancellationToken,
++        axiom_publisher: time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        let daemon_info = DaemonInfo {
++            major_version: 2,
++            minor_version: 200,
++            startup_id: rng().next_u64(),
++        };
++
++        let clock_state_cancellation_token = CancellationToken::new();
++
++        let selected_clock = Arc::new(SelectedClockSource::default());
++
++        // Initialize IO components.
++        let (dns_message_tx, dns_message_rx) = mpsc::channel(DAEMON_MESSAGE_CAPACITY);
++        let mut io_front_end =
++            io::SourceIO::construct(selected_clock.clone(), daemon_info, dns_message_tx);
++        let clock_disruption_receiver = io_front_end.clock_disruption_receiver();
++
++        let mut receiver_stream = ReceiverStream::default();
++        // The daemon runs the algorithm with its production tunables and nothing else.
++        let ff_sync_params = FfSyncParams::default();
++        let mut clock_sync_algorithm = ClockSyncAlgorithm::builder()
++            .selected_clock(selected_clock.clone())
++            .selector(Selector::new(ff_sync_params.max_dispersion))
++            .build();
++
++        let mut source_mutator = SourceMutator::new(
++            &mut io_front_end,
++            &mut clock_sync_algorithm,
++            &mut receiver_stream,
++        );
++
++        // Exact isolated evaluation: one managed ordinary NTP source only.
++        // No autodetection, PHC, public pool, DNS pool or additive source config.
++        source_mutator.set_amazon_time_sync(&ff_sync_params);
++        // No VMClock device is opened; disruption support remains false.
++
++        // Initialize the Clock State component
++        let (clock_state_tx, clock_state) = {
++            let (tx, rx) = async_ring_buffer::create(1);
++            let clock_state = ClockState::construct_operational(
++                rx,
++                clock_disruption_receiver.clone(),
++                clock_state_cancellation_token.clone(),
++                ClockStatus::Unknown,
++                ff_sync_params.max_dispersion,
++                axiom_publisher,
++            );
++            (tx, clock_state)
++        };
++        let task_tracker = TaskTracker::new();
++        let clock_state_handle = ClockStateHandle {
++            clock_state: Some(clock_state),
++            tx: clock_state_tx,
++            cancellation_token: clock_state_cancellation_token,
++            task_tracker,
++        };
++
++        Self {
++            io_front_end,
++            clock_sync_algorithm,
++            ff_sync_params,
++            receiver_stream,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_state_handle,
++            dns_message_rx,
++            sources_snapshot_interval: tokio::time::interval(tokio::time::Duration::from_secs(1)),
++            configured_sources: SourcesConfig::default(),
++        }
++    }
++
+     /// Same actual IO/algorithm/clock-state run path, with bounded source facts.
+     #[cfg(feature = "axiom-host-evaluation")]
+     pub(crate) async fn run_host_evaluation(mut self: Box<Self>) {
++        self.clock_sync_algorithm.init_repro();
++        self.io_front_end.spawn_host_evaluation_ntp_only();
++        let mut clock_state = self.clock_state_handle.clock_state.take().expect("owned clock state");
++        self.clock_state_handle.task_tracker.spawn(async move { clock_state.run().await; });
++        self.clock_state_handle.task_tracker.close();
++        let mut next_observation = tokio::time::Instant::now();
++        loop {
++            // Complete the real run_once, including cancellation cleanup. The
++            // observer never races/drops that future at a timer boundary.
++            if self.run_once().await == RunLoopControl::Exit { break; }
++            if tokio::time::Instant::now() >= next_observation {
++                let snapshot = self.sources_snapshot();
++                assert_eq!(snapshot.sources.len(), 1, "one source required");
++                let source = &snapshot.sources[0];
++                assert!(matches!(&source.source_info, SourceInfo::AmazonTimeSync(..)));
++                println!("{{\"format\":1,\"event\":\"ntp_observation\",\"requests\":{},\"responses\":{},\"strictTimeAuthority\":false,\"vmclockSupport\":false}}", source.requests, source.responses);
++                next_observation = tokio::time::Instant::now() + tokio::time::Duration::from_secs(1);
++            }
++        }
++    }
++
++    #[cfg(feature = "axiom-operational-time")]
++    pub(crate) async fn run_operational(mut self: Box<Self>) {
+         self.clock_sync_algorithm.init_repro();
+         self.io_front_end.spawn_host_evaluation_ntp_only();
+         let mut clock_state = self.clock_state_handle.clock_state.take().expect("owned clock state");
+--- a/clock-bound/src/daemon/clock_state.rs
++++ b/clock-bound/src/daemon/clock_state.rs
+@@ -267,6 +267,84 @@
+ 
+         let shm_writer_1 = ShmWriter::new(
+             Path::new("/run/axiom-host-evaluation/compat/v3"),
++            ClockErrorBoundLayoutVersion::V3,
++            ClockErrorBoundLayoutVersion::V3,
++        )
++        .unwrap();
++
++        // The same oscillator bound the synchronization algorithm uses; always representable
++        // (validated positive and far below 1e9 ppb).
++        let max_drift_ppb = max_dispersion
++            .to_ppb()
++            .expect("max_dispersion is a valid ppb value");
++
++        let shm0 = Shm0::builder()
++            .shm_writer(Shm0Writer::Axiom(axiom_publisher.wrap_v2(Box::new(shm_writer_0), max_dispersion.get())))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        let shm1 = Shm1::builder()
++            .shm_writer(Box::new(shm_writer_1))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        #[cfg(not(feature = "test-side-by-side"))]
++        let system_clock_discipliner = SystemClockDiscipliner::with_kernel_clock_adjuster();
++        #[cfg(feature = "test-side-by-side")]
++        let system_clock_discipliner = SystemClockDiscipliner::with_noop_clock_adjuster();
++
++        Self::new(
++            shm0,
++            shm1,
++            system_clock_discipliner,
++            clock_params_receiver,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_status,
++            vmclock_state,
++        )
++    }
++
++    #[cfg(feature = "axiom-operational-time")]
++    pub(super) fn construct_operational(
++        clock_params_receiver: Receiver<SyncParameters>,
++        clock_disruption_receiver: watch::Receiver<ClockDisruptionEvent>,
++        cancellation_token: CancellationToken,
++        clock_status: ClockStatus,
++        max_dispersion: Skew,
++        axiom_publisher: super::time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        let vmclock_params: Option<VMClockParams> = None;
++        // Clock disruption support is enabled whenever a VMClock source exists (i.e. we expected
++        // one on this platform), even if it failed to initialize.
++        let clock_disruption_support_enabled = vmclock_params.is_some();
++        let disruption_marker = vmclock_params
++            .as_ref()
++            .map_or(0, |params| params.disruption_marker);
++        let vmclock_state = vmclock_params.map(|params| params.shared_state);
++
++        // Build two writers, each writing to a specific shared memory segment path.
++        //
++        // FIXME: given these path are const strings, would be worth looking into moving the
++        // creation of these writers to the Shm0::new()/Shm1::new() methods.
++        //
++        for path in ["/run/axiom-operational-time/compat/v2", "/run/axiom-operational-time/compat/v3"] {
++            match std::fs::symlink_metadata(path) {
++                Err(error) if error.kind() == std::io::ErrorKind::NotFound => (),
++                _ => panic!("preexisting or unknown compatibility resource"),
++            }
++        }
++        let shm_writer_0 = ShmWriter::new(
++            Path::new("/run/axiom-operational-time/compat/v2"),
++            ClockErrorBoundLayoutVersion::V2,
++            ClockErrorBoundLayoutVersion::V2,
++        )
++        .unwrap();
++
++        let shm_writer_1 = ShmWriter::new(
++            Path::new("/run/axiom-operational-time/compat/v3"),
+             ClockErrorBoundLayoutVersion::V3,
+             ClockErrorBoundLayoutVersion::V3,
+         )
+--- a/clock-bound/src/daemon/io.rs
++++ b/clock-bound/src/daemon/io.rs
+@@ -511,7 +511,7 @@
+     /// This function will spawn all initialized io tasks. If a task is not initialized it will be
+     /// skipped. Spawning will occur in an arbitrary order.
+     /// Fixed evaluation runner; stock spawn_all and routing fallback unchanged.
+-    #[cfg(feature = "axiom-host-evaluation")]
++    #[cfg(any(feature = "axiom-host-evaluation", feature = "axiom-operational-time"))]
+     pub(crate) fn spawn_host_evaluation_ntp_only(&mut self) {
+         assert!(self.phc.is_none() && self.vmclock.is_none());
+         assert!(self.partition_resolver.is_none() && self.ip_addr_sources.is_empty() && self.dns_pools.is_empty());
+--- a/clock-bound/src/daemon/io/amazon_time_sync.rs
++++ b/clock-bound/src/daemon/io/amazon_time_sync.rs
+@@ -137,7 +137,7 @@
+         Ok(())
+     }
+ 
+-    #[cfg(feature = "axiom-host-evaluation")]
++    #[cfg(any(feature = "axiom-host-evaluation", feature = "axiom-operational-time"))]
+     pub(super) async fn run_host_evaluation_ipv4(&mut self) -> Result<(), NtpIoError> {
+         debug!("Starting Amazon Time Sync sampling loop.");
+         let mut seen_failures = [false; 8];
+@@ -190,7 +190,7 @@
+         Ok(())
+     }
+ 
+-    #[cfg(feature = "axiom-host-evaluation")]
++    #[cfg(any(feature = "axiom-host-evaluation", feature = "axiom-operational-time"))]
+     fn host_evaluation_error(error: &NtpIoError) -> (usize, &'static str) {
+         use std::io::ErrorKind;
+         use super::ntp::UnusableNtpResponse;
+--- a/clock-bound/src/daemon/time_publication_adapter.rs
++++ b/clock-bound/src/daemon/time_publication_adapter.rs
+@@ -1,5 +1,6 @@
+ //! DORMANT Linux source integration. No native compile, linkage or supplier qualified.
+ #![cfg(all(target_os = "linux", target_pointer_width = "64"))]
++use super::operational_publication::OperationalPublisherState;
+ use crate::shm::{ClockErrorBound, ClockStatus, ShmWrite};
+ use crate::daemon::time::clocks::PreciseOrigin;
+ use std::ffi::{CString, c_char, c_int};
+@@ -15,16 +16,17 @@
+ struct AcceptedPreciseTimePolicy { max_age_ns:u64 }
+ pub struct NativeTimePublisherContext {
+  directory:OwnedFd,generation:String,publisher_uid:u32,reader_gid:u32,directory_device:u64,directory_inode:u64,
+- accepted_policy:Option<AcceptedPreciseTimePolicy>,
++ accepted_policy:Option<AcceptedPreciseTimePolicy>,operational:Option<OperationalPublisherState>,
+ }
+ impl NativeTimePublisherContext {
+  pub fn from_protected_resource(directory:OwnedFd,generation:String,publisher_uid:u32,reader_gid:u32,directory_device:u64,directory_inode:u64)->Self {
+   if !generation_ok(&generation){fatal()}
+-  Self{directory,generation,publisher_uid,reader_gid,directory_device,directory_inode,accepted_policy:None}
++  Self{directory,generation,publisher_uid,reader_gid,directory_device,directory_inode,accepted_policy:None,operational:None}
+  }
++ pub(crate) fn with_operational(mut self,state:OperationalPublisherState)->Self { self.operational=Some(state);self }
+  pub fn wrap_v2(self,delegate:Box<dyn ShmWrite+Send+Sync>,oscillator_dispersion:f64)->NativeTimePublisher {
+   let context=AxiomTimeContext{directory_fd:self.directory.as_raw_fd(),source_fd:-1,publisher_uid:self.publisher_uid,reader_gid:self.reader_gid,directory_device:self.directory_device,directory_inode:self.directory_inode};
+-  NativeTimePublisher{_directory:self.directory,context,generation:CString::new(self.generation).unwrap_or_else(|_|fatal()),counter:0,initialized_unknown:false,delegate,oscillator_dispersion,accepted_policy:self.accepted_policy}
++  NativeTimePublisher{_directory:self.directory,context,generation:CString::new(self.generation).unwrap_or_else(|_|fatal()),counter:0,initialized_unknown:false,delegate,oscillator_dispersion,accepted_policy:self.accepted_policy,operational:self.operational}
+  }
+ }
+ /// Exact rational of finite nonnegative represented IEEE input. Unrepresentable
+@@ -60,7 +62,7 @@
+ 
+ pub struct NativeTimePublisher {
+  _directory:OwnedFd,context:AxiomTimeContext,generation:CString,counter:u64,initialized_unknown:bool,
+- delegate:Box<dyn ShmWrite+Send+Sync>,oscillator_dispersion:f64,accepted_policy:Option<AcceptedPreciseTimePolicy>,
++ delegate:Box<dyn ShmWrite+Send+Sync>,oscillator_dispersion:f64,accepted_policy:Option<AcceptedPreciseTimePolicy>,operational:Option<OperationalPublisherState>,
+ }
+ impl NativeTimePublisher {
+  fn emit(&mut self,anchor:u64,expiry:u64,bound:u64,drift:u32,status:ClockStatus,value:&ClockErrorBound){
+@@ -79,8 +81,10 @@
+  pub fn invalidate_then_delegate(&mut self,value:&ClockErrorBound){
+   let status=if self.initialized_unknown&&value.clock_status()==ClockStatus::Disrupted{ClockStatus::Disrupted}else{ClockStatus::Unknown};
+   self.emit(0,1,0,0,status,value);
++  if let Some(state)=self.operational.as_mut(){state.invalidate(self.counter,value);}
+  }
+  pub fn publish_precise_then_delegate(&mut self,origin:Option<&PreciseOrigin>,period:f64,error:f64,_compatibility_drift_ppb:u32,value:&ClockErrorBound,rtt_ns:i64){
++  let mut operational=self.operational.take();
+   // Accepted policy has no production issuer: actual missing evidence leaves
+   // Unknown while preserving the original compatibility publication/delegate.
+   let prepared=(||{
+@@ -97,5 +101,7 @@
+    Some((anchor,expiry,bound,drift)) if value.clock_status()==ClockStatus::Synchronized=>self.emit(anchor,expiry,bound,drift,ClockStatus::Synchronized,value),
+    _=>self.invalidate_then_delegate(value),
+   }
++  if let Some(state)=operational.as_mut(){state.publication_acknowledged(self.counter,origin,value);}
++  self.operational=operational;
+  }
+ }

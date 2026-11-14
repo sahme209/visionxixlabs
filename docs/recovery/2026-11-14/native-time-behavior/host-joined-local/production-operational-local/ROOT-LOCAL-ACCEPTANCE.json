@@ -1,0 +1,71 @@
+{
+  "ownerApproval": "call_36a6c98e0c5d46d5b545378bfb0e4506",
+  "localSourceImplemented": true,
+  "independentSourceReviews": "no remaining important findings after preserved corrections",
+  "rootTypes": "PASS",
+  "desktopTypes": "PASS",
+  "diffCheck": "PASS",
+  "ordinaryInitialRun": {
+    "exitCode": 1,
+    "passed": 19508,
+    "failed": 13,
+    "expectedFailure": 1,
+    "skipped": 1184,
+    "failedFiles": 5,
+    "historicalFailedRunPreserved": true
+  },
+  "affectedCurrentChecks": {
+    "compatibility": "50 PASS / 4 files",
+    "sdkAndTemplate": "26 PASS / 3 files; separately reviewed strict compatibility correction",
+    "typeFixture": "8 PASS / 1 file",
+    "nativeSource": "15 SOURCE assertions PASS; not native behavior"
+  },
+  "fullSuiteRerun": false,
+  "interpretation": "Original failing scopes were corrected and passed focused rechecks; no claim that the original complete command exited successfully. Required exact-head CI remains before merge.",
+  "sourceManifestSha256": "f87f8db51ae769fef64f1cdfdfdbd27492960af68d2ae5e563e15475f168dbb4",
+  "logs": {
+    "axiom-operational-final-ordinary.log": {
+      "path": "/private/tmp/axiom-operational-final-ordinary.log",
+      "sha256": "23ccefcf13109de02ac846a47c7d2cb7b9dd338d63d9db390da7a60689126e65"
+    },
+    "axiom-operational-final-types.log": {
+      "path": "/private/tmp/axiom-operational-final-types.log",
+      "sha256": "4f9d5178978b87970653569541311d7de8354257c8378fbf60a71c0defc22f70"
+    },
+    "axiom-operational-final-desktop-types.log": {
+      "path": "/private/tmp/axiom-operational-final-desktop-types.log",
+      "sha256": "4f9d5178978b87970653569541311d7de8354257c8378fbf60a71c0defc22f70"
+    },
+    "axiom-operational-final-types-accepted.log": {
+      "path": "/private/tmp/axiom-operational-final-types-accepted.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "axiom-operational-final-desktop-types-accepted.log": {
+      "path": "/private/tmp/axiom-operational-final-desktop-types-accepted.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "axiom-operational-final-type-fixture-test.log": {
+      "path": "/private/tmp/axiom-operational-final-type-fixture-test.log",
+      "sha256": "eccf17458ff729542f2d6ef606c7246bdf114374f147633bbb7b21a877cced96"
+    },
+    "axiom-operational-final-affected-compatibility.log": {
+      "path": "/private/tmp/axiom-operational-final-affected-compatibility.log",
+      "sha256": "153ccef7172311497ae77ae4ca7c19b8c8650d1c3f8c44a68e1861c48b5c4372"
+    }
+  },
+  "notPerformed": [
+    "native compile/load/run or clock/service/ACL experiment",
+    "actual SQL or production/provider calls",
+    "credentials or cloud resources",
+    "dependency download or lock edit",
+    "CI/push/merge/deployment/activation/spending"
+  ],
+  "remaining": [
+    "real protected package/main and native artifact/ABI/host qualification",
+    "qualified provider runtime boundary; current role-free profile denies sockets",
+    "actual custody/fleet/expiry provenance and current DB authority qualification",
+    "genuine separate human/provider end-to-end and whole coverage/security/production acceptance"
+  ],
+  "requestCancellationLimit": "Closure owner checks/rollback retain request abort; native closure capture is runtime-signal bounded, not immediate per-request cancellation.",
+  "nextOwnerPriority": "website AND desktop visuals; no new host/time research loop"
+}

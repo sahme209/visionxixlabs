@@ -1,0 +1,24 @@
+{
+  "questionId": "call_4d8c280337f549fbba52c7170b951505",
+  "answer": "Design explicit AWS/Linux operational trust (Recommended)",
+  "proposalSha256": "45f650d8fc26d4fa3f08e694ab2a266839b31db45700e79ed799007bceeeb95d",
+  "scope": "production assurance design only",
+  "notAuthorized": [
+    "production operational implementation",
+    "native tests",
+    "credentials",
+    "resources",
+    "deployment",
+    "enablement",
+    "spending"
+  ],
+  "retainedGates": [
+    "real custody and credential closure",
+    "independent human approvals",
+    "current permissions",
+    "one attempt and UNKNOWN retention",
+    "provider journeys",
+    "complete coverage",
+    "activation review"
+  ]
+}

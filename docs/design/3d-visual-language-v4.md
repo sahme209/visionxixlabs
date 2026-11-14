@@ -61,3 +61,8 @@ The Product page `ControlPlaneModel` is the reference.
 - **Interior heroes (`PageHero`):** title on the left, lead, actions and scope note on the right, bottom-aligned, with a hairline below. Used by Integrations, Security, Demo and Download; Product, Plans and Support already followed it.
 - **Rhythm:** sections `py-16`; hero top `pt-24` / `lg:pt-28`; closing CTA reduced to about 4.25rem; section H2s about 34–44px.
 - **Pipe flow:** the stage rail and the detail panel are the same height; panel content is spread evenly.
+
+
+## November14 local presentation source update
+
+The centered homepage introduction is now followed by the existing illustrative deployment model, then detailed record inspection and the retained media showcase. Model scenario controls, caption and stage selector participate in normal document flow; the no-WebGL stage list has natural height and wrapping labels. Explicit sample-values guidance accompanies usage/credit/status gauges. The scene engine, model facts and action boundaries are unchanged. This supersedes the earlier media-first composition for current LOCAL source only. Build and rendered/native/performance/owner acceptance remain pending. See `../recovery/2026-11-14/calm-instrument-presentation/LOCAL-RESULT.json`.

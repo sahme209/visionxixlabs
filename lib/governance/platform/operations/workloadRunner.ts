@@ -1,3 +1,4 @@
+import type {ObservedProviderExpiry} from './providerExpiryProvenance';
 import {assertPlatformPrincipalTime} from '../principalTime';
 import {operationalWorkloadCommand as command} from './workloadCommand';
 import 'server-only';
@@ -15,6 +16,7 @@ const fail=():never=>{throw Error('operational_workload_result_unconfirmed')};
  * Durable parent/identity claims prevent another invocation from replaying. */
 export function createOperationalWorkloadRunner(ports:Ports){
  const custodianClock=ports.custodian.clock;
+ const observedExpiries=new Map<string,Readonly<ObservedProviderExpiry>>();
  function select(raw:unknown,token:unknown,signal:AbortSignal){
   const selected=command.parse(raw);signal.throwIfAborted();if(typeof token!=='string'||token.length>16384||token.startsWith('axm.desk.')||!/^[-A-Za-z0-9_]+\.[-A-Za-z0-9_]+\.[-A-Za-z0-9_]+$/.test(token))return fail();
   if(!ports.custodian||!ports.intents||typeof ports.intents.reserve!=='function')return fail();return {selected,token};
@@ -26,11 +28,12 @@ export function createOperationalWorkloadRunner(ports:Ports){
   const identity:StoreArgs[3]={async authenticate(tx,value,binding){stopped();const proof=await ports.identity.authenticate(tx,value,binding);stopped();return proof},async consume(tx,proof,binding){stopped();const principal=await ports.identity.consume(tx,proof,binding);stopped();return principal},async assertConsumedCurrent(tx,proof,binding){stopped();await ports.identity.assertConsumedCurrent(tx,proof,binding);stopped()},...(readWindow?{async readConsumedTimeWindow(tx,proof,binding){stopped();const result=await readWindow(tx,proof,binding);stopped();return result}}:{})};
   const targets:NonNullable<StoreArgs[4]>={async reserve(tx,binding){stopped();const ref=await ports.targets.reserve(tx,binding);stopped();return ref},async assertHeld(tx,binding,ref){stopped();await ports.targets.assertHeld(tx,binding,ref);stopped()}};
   const sts=createPrivateOperationalStsIssuer({clock:internalSignal=>custodianClock.call(ports.custodian,AbortSignal.any([signal,internalSignal])),assertSourceLeaseCurrent:async(tx,manifest,metadata)=>{stopped();await ports.custodian.assertSourceLeaseCurrent(tx,manifest,metadata);stopped()},assertQualified:async(tx,manifest)=>{stopped();await ports.custodian.assertQualified(tx,manifest);stopped()},readCustodianCredential:async(manifest,internalSignal,beforeRead)=>{stopped();const credential=await ports.custodian.readCustodianCredential(manifest,AbortSignal.any([signal,internalSignal]),beforeRead);stopped();return credential},assertCustodianCurrent:async(manifest,credential,internalSignal)=>{stopped();await ports.custodian.assertCustodianCurrent(manifest,credential,AbortSignal.any([signal,internalSignal]));stopped()},...(ports.custodian.assertCustodianFactsCurrent?{assertCustodianFactsCurrent:ports.custodian.assertCustodianFactsCurrent.bind(ports.custodian)}:{})});
-  const issuer:OperationalCredentialIssuer={assertQualified:sts.assertQualified,assertSourceCurrent:sts.assertSourceCurrent,issue:(manifest,before,internalSignal,recordSource,beforeSource,beforeRead)=>sts.issue(manifest,before,AbortSignal.any([signal,internalSignal]),recordSource,beforeSource,beforeRead)};
+  const issuer:OperationalCredentialIssuer={assertQualified:sts.assertQualified,assertSourceCurrent:sts.assertSourceCurrent,issue:async(manifest,before,internalSignal,recordSource,beforeSource,beforeRead)=>{const credential=await sts.issue(manifest,before,AbortSignal.any([signal,internalSignal]),recordSource,beforeSource,beforeRead);if(credential&&typeof credential==='object'&&'leaseRef' in credential&&typeof credential.leaseRef==='string'){const metadata=sts.readObservedProviderExpiry?.(credential.leaseRef);if(metadata)observedExpiries.set(metadata.leaseRef,metadata)}return credential}};
   const transport:OperationalEcsTransport={async assertQualified(tx,manifest){stopped();await ports.transport.assertQualified(tx,manifest);stopped()},send:(manifest,credential,before,internalSignal)=>ports.transport.send(manifest,credential,before,AbortSignal.any([signal,internalSignal]))};
   return createOperationalDelegationStore(ports.repo,authority,source,identity,targets,issuer,transport,{async assertCurrent(tx,intent){stopped();if(!ports.intents.assertCurrent)return fail();await ports.intents.assertCurrent(tx,intent);stopped()},async reserve(tx,id,stage){stopped();const result=await ports.intents.reserve(tx,id,stage);stopped();return result}},{clock:internal=>custodianClock.call(ports.custodian,AbortSignal.any([signal,internal])),signal,assertActive:stopped},ports.executionFacts);
  }
  return Object.freeze({
+  readObservedProviderExpiry:(leaseRef:string)=>observedExpiries.get(leaseRef)??null,
   async preflight(raw:unknown,webIdentityToken:unknown,signal:AbortSignal){try{
    const {selected,token}=select(raw,webIdentityToken,signal),result=await storeFor(signal).preflightWorkload(selected.actionId,selected.delegationVersion,token);signal.throwIfAborted();return result;
   }catch{return fail()}},
@@ -38,7 +41,7 @@ export function createOperationalWorkloadRunner(ports:Ports){
    const {selected,token}=select(raw,webIdentityToken,signal),result=await storeFor(signal).checkWorkloadSource(selected.actionId,token);signal.throwIfAborted();return result;
   }catch{return fail()}},
   async run(raw:unknown,webIdentityToken:unknown,signal:AbortSignal){try{
-   const {selected,token}=select(raw,webIdentityToken,signal);if(!ports.intents.assertCurrent||!ports.executionFacts||!ports.identity.readConsumedTimeWindow||!ports.custodian.assertCustodianFactsCurrent)return fail();const store=storeFor(signal);
+   const {selected,token}=select(raw,webIdentityToken,signal);if(observedExpiries.size>=128||!ports.intents.assertCurrent||!ports.executionFacts||!ports.identity.readConsumedTimeWindow||!ports.custodian.assertCustodianFactsCurrent)return fail();const store=storeFor(signal);
    const claimed=await store.claim(selected.actionId,selected.delegationVersion,token),pending=await store.beginCredential(claimed.proof),issued=await store.issueCredential(pending.proof);
    if(!issued.credentialHandle)return fail();const result=await store.executeCredential(issued.credentialHandle);signal.throwIfAborted();return result;
   }catch{return fail()}}

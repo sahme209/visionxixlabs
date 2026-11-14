@@ -1,0 +1,10 @@
+{
+  "decision": "APPROVED_ONE_DESKTOP_ONLY_RETRY",
+  "ownerCall": "call_9971972981e84a1183c5d5db60323e9a",
+  "packetSha256": "cd0e044f1e97bbc499c66a1a0ecdb9bf4f92e9f809333bc078a7bf6976f4e2fa",
+  "activeSeconds": 600,
+  "cleanupSeconds": 5,
+  "retryAllowed": false,
+  "noWebsiteRepeat": true,
+  "noDeploymentOrSpend": true
+}

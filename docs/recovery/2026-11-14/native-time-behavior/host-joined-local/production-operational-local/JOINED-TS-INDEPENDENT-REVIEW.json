@@ -1,0 +1,83 @@
+{
+  "reviewer": "operational_sdk_review independent of TS author",
+  "verdict": "one_important_finding_correction_required",
+  "criticalFindings": [],
+  "importantFindings": [
+    {
+      "id": "TS-P2-1",
+      "severity": "important",
+      "file": "lib/governance/platform/operations/operationalClosureSource.ts",
+      "startLine": 38,
+      "endLine": 45,
+      "title": "Check original expiry eligibility before fresh native capture",
+      "trigger": "Snapshot contains pending/unknown source or derived acquisition, or an issued lease is absent/mismatched in its original private provider-expiry registry, while native assertReadAllowed succeeds.",
+      "actual": "assertReadAllowed issues a permit without checking registry eligibility; readEvidence calls captureEvidence before inspecting lease status and original registry records. The request is later refused, but fresh native evidence acquisition has already occurred.",
+      "requirement": "Approved section5 requires original expiry plus complete native custody/fleet eligibility resolved before source.readEvidence/fresh acquisition; unknown and unsupported scopes must refuse before acquisition.",
+      "fix": "Extract exact original issued-lease/provider/expiry/profile/manifest eligibility preflight. Run it in assertReadAllowed before granting a permit and recheck immediately before captureEvidence after consuming that permit. Retain subsequent native scope receipt checks, immutable metadata comparison and after-await currentness.",
+      "validation": "Add source-level intercepted cases for pending/unknown and missing/mismatched source/derived registry metadata; assert captureEvidence is never called and original store emits no event. Existing positive eligible source/owner/drain behavior must remain."
+    }
+  ],
+  "reviewedFileSha256": {
+    "lib/governance/platform/executionTime.ts": "e3804ccb19acffe1134d796d311431f5af77b5617f2dc11e1390059876595b8a",
+    "lib/governance/platform/executionTimeEvidence.ts": "ab3534693bbdead7f339a36804fd1eee76f961cd2d6859cf9a9398a62f912608",
+    "lib/governance/platform/executionTimeView.ts": "5eb3e2254769084f162acdd55583b4c5f9b1f36efe109918a147cf0d40a5cf13",
+    "lib/governance/platform/principalTime.ts": "eb1ea49a4b0b9b3c53bcd5f79a9062a59b0bcfa1e1b380b2b09f0f5f14f6160e",
+    "lib/governance/platform/actionStore.ts": "6cb65c56eb4c7b101eef5726ed03b883b0d6d74a37ff9009e3853b71336ddc6b",
+    "lib/governance/platform/sqlRepository.ts": "5c8d8cdf830544da66f79e063c9aceb77d045dedf385ae914f44b5c494b352b5",
+    "lib/governance/platform/viewContract.ts": "29c78d374da81dbbf6a198fccfc3ad1f644d8d17e4e42548becb19cabf98fd72",
+    "lib/governance/platform/templatePreparationStore.ts": "e2a713f27d95115371f64b9f0b2c94d93dc38234068d7bddd6ecae92d575e7f1",
+    "lib/governance/platform/templateWorkflowRequest.ts": "cc9b79a3200441bd9d80c77a340b8dc64776af97d7106329dc86876aaf31fa53",
+    "lib/governance/platform/templateExecutionStore.ts": "4000b2b778bc81cd4d6240bf40805b7e71f0e5552023f83ded64d4e7d495d692",
+    "lib/governance/platform/imageExecutionStore.ts": "506d60d63c5051b50b5e0befd76530abed1ed39517c44e3ab9e95052178fb5f1",
+    "lib/governance/platform/nativeTime/operationalSource.ts": "80cf2c6c9c2a4c0207eb024db93056428135881aa975bb7ef70fca1b25b77f31",
+    "lib/governance/platform/nativeTime/linuxComposition.ts": "eb8044c9c580646227dc356f3bd691f3243a5fa1dcd9adba47b3c2e9dfaaf0ea",
+    "lib/governance/platform/operations/operationalClosureSource.ts": "0bcb815fb029fbc5c21b91792ab90ef46a1f006585673b1e0a936f3cae49961c",
+    "lib/governance/platform/operations/operationalClosureObservation.ts": "e83df17eeafc5bd0205b26096ae422c2f9f09e199f4a232e55c60e4a13e93066",
+    "lib/governance/platform/operations/providerExpiryProvenance.ts": "5133b2a59f7fc55a11227961d3531e4a23894948b7a2c2e02d12ca95e4f403bb",
+    "lib/governance/platform/operations/closureTime.ts": "3836c0575eb88835b8563d3fd07ea48bc3cba3a05db3b969819f0d13905cbbeb",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "2f3dc46d7d0d5a22be9c16009326eb3918141f0aa5398120c63b569582159749",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "17acf21887e7dfcb7041fad867ba68dc0445d305380a20db53f050ad0bc2b804",
+    "lib/governance/platform/operations/workloadRunner.ts": "cff1c918dfe13521f62052a268cf50d42a3e22b9394346d25a222ef249aa33cb",
+    "lib/governance/platform/operations/workloadIdentity.ts": "242894bf87279eef8fce515bbaa46a610301037d7bcbceb6841f1cd7e8e91405",
+    "lib/governance/platform/operations/delegation.ts": "b33590b5461fda86b7b1aa69533f6a42e3a031ef9c313d027deeda99f1ee81b8",
+    "lib/governance/platform/operations/custodianClosureStore.ts": "8806acc292fa07d0ddd354530d6b6995f3ee2dea6c1cf1b8873362a1ca099dd0",
+    "lib/governance/platform/operations/custodianClosureSnapshot.ts": "3c3d2d29902011d3ab50dc4372dbf946cc8f9bc8cd51c9f739c50a681b708120",
+    "lib/governance/platform/operations/custodianClosureObservation.ts": "9d171c94047d30c03bf37f8aef6a6b77c5a0edaa42ead1f4cc60cff7da169e27",
+    "lib/governance/platform/operations/custodianClosureSummary.ts": "0111aa1f76781228515c9be38bc25649c235535a786e18cfaf3c1dfebebf0353",
+    "lib/governance/platform/operations/custodianDrainStore.ts": "a84e2d59820f2a28901881da4e6a14a3a9e3d8a22b4babe0bc5ec289a7015722",
+    "lib/governance/platform/operations/custodianDrainSql.ts": "e2bf16d8469b7db47e8692077e0e6c1f6b4096e1f6957c6a214581918e67475c",
+    "lib/governance/platform/operations/custodianClientContract.ts": "78872e63cd5358c9b16863998a12eda917615fad10dc7c7fbce956da77ef17ac",
+    "lib/governance/platform/operations/custodianRequest.ts": "d69bddda698d5085aa21650cc1bb6c76b9ea299d220aa6ec267e2fff921d4ef6",
+    "lib/governance/platform/operations/custodianRequestService.ts": "5dbb3a5642ddb4899284ccf83b4f2eb571e2dc9b99a3ac37dbeba42ca8ede146",
+    "lib/governance/platform/operations/workloadOwnerTime.ts": "ec1dd86d0caaff640f9b078ca52108c2203dea559b0c0c2942ca8c9276f62c9c",
+    "lib/governance/platform/operations/settingsTime.ts": "f6cd8eb2caa7b475e11970461d3dff26573cec541e1412acc0144217b5b7ee65",
+    "lib/governance/platform/operations/ecsOutcomeSource.ts": "4820a64f000e2463046011825e7af267a1c3c5b3a802e60634d998303dcf178e",
+    "lib/governance/platform/operations/manualReleaseStore.ts": "aa4834d7718947edde6d9d3315fa974e56692a9ea5e21446981a825af4867e22"
+  },
+  "testsRerun": false,
+  "codeEdited": false,
+  "excluded": "Pending native wrapper beginObservation/interface/deadline patch and native C/Rust; prior SDK report reused",
+  "nativeProviderSqlQualification": false,
+  "correctionReview": {
+    "verdict": "clear_TS-P2-1_closed",
+    "currentSourceSha256": {
+      "lib/governance/platform/operations/operationalClosureSource.ts": "0fb7f8c90cd2d8dac2b010b40b007b3ed2c38edfbfd4b5262fbbfdc563135d3d",
+      "lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts": "4c458439137f8aa0bddc4fdcf9c9fe12c9d3e1f0df8175db4e1b91c29bc68e76"
+    },
+    "logSha256": {
+      "/private/tmp/axiom-operational-closure-preflight-red.log": "4ace48f06fb231fa557ebbf88204c671d3f12e6fc944379256c6d1521f236a13",
+      "/private/tmp/axiom-operational-closure-preflight-green.log": "9b3dc3ee33364cb4969304337ea5b9f51ef289047525626a46d7ee6ff70de4f2"
+    },
+    "savedRed": {
+      "failed": 2,
+      "passed": 6
+    },
+    "savedGreen": {
+      "passed": 27,
+      "files": 3
+    },
+    "testsRerunByReviewer": false,
+    "remainingCriticalImportantFindings": [],
+    "originalReviewPreserved": true
+  }
+}

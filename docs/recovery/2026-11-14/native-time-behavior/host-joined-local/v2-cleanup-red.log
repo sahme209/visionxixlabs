@@ -1,0 +1,13 @@
+...F.....
+======================================================================
+FAIL: test_cancellation_during_cleanup_does_not_abort_cleanup_or_report_success (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 60, in test_cancellation_during_cleanup_does_not_abort_cleanup_or_report_success
+    self.assertFalse(value['observed']);self.assertEqual(value['reason'],'cancelled');self.assertTrue(value['cleanupKnown']);self.assertEqual(ops.calls[-2:],['stop','close'])
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.018s
+
+FAILED (failures=1)

@@ -1,0 +1,14 @@
+# One bounded host-evaluation packet preparation scope
+
+Design/read-only preparation only; no implementation, installation, resource creation, IAM change, credentials, native run, database, production, enablement or spending. Existing raw/native checkpoint is accepted and must not be rerun.
+
+Requested owner choice: use an explicitly trusted AWS/Linux operational clock model for an isolated role-free evaluation, retaining strict production time assurance and disabled Governance. This does not claim physical UTC proof or close production G3.
+
+Requested research/metadata amendment, only after owner approval:
+
+- Up to six primary public AWS/GitHub documentation or pricing reads, using official search to locate exact references: supported image/time-source/kernel requirements; regional instance/disk/IP pricing gaps only if not already covered; required source/artifact delivery and free bounded public CI artifact retention. Reuse already saved Ohio transfer pricing; do not repeat old release/source searches. No custom collector, dependencies, binaries or code execution.
+- One same-account us-east-2 signed-in AWS console inspection, maximum six logical read-only operations: verify the known test account; inspect ONE official public AWS-owned x86_64 Linux AMI candidate and its metadata/requirements; inspect matching instance-type/source support and regional availability; inspect only the saved default VPC and specifically selected subnet/route facts needed for exact egress; inspect the applicable instance-family quota/availability metadata. The unused sixth operation is not permission to expand discovery. No IAM, secret, credential, billing-setting or customer-data reads; no private AMI, bucket, ECR/stored-image, volume, snapshot, object or other customer-storage inventory; no unrelated network or region-wide listing. Proposed delivery/storage quantities use explicit size/lifetime caps instead of customer inspection. Existing AWS Core authentication refusals are not retried; use the previously signed-in console and stop if session/account is wrong. No speculative region search.
+
+Deliver one exact proposed role-free host/profile/artifact/network/IAM-diff/owned-cleanup manifest and complete fixed-quantity quote, with separate bootstrap/test/cleanup/storage/IP/delivery/evidence-retention lifetimes, explicit bounded unknown quantities and residual-risk assumptions. The first slice must not create later PostgreSQL, provider target or requester/reviewer infrastructure prematurely; later stages remain in the full plan and quote. Resource/spend/native-operation approval follows only after that concrete packet is independently reviewed.
+
+No calls may be performed under this proposed scope until the owner approves. No automatic retry or implicit broader provider access.

@@ -1,4 +1,5 @@
-import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeAuthorization} from '../executionTime';
+import type {ObservedProviderExpiry} from './providerExpiryProvenance';
+import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeAuthorization,type ExecutionTimeSource} from '../executionTime';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -25,7 +26,7 @@ export interface NativeCustodianQualification {
  /** Audited clock-free current native ownership/profile facts for the final
   * original owner. No timed qualifier fallback or real default is installed. */
  assertCurrentFacts?(manifest:Manifest,capture:Readonly<NativeCustodianCapture>,signal:AbortSignal):Promise<void>;
- clock(signal:AbortSignal):Promise<{earliest:number;latest:number}>;
+ clock:ExecutionTimeSource;
 }
 const credentialText=(max:number)=>z.string().min(1).max(max).refine(v=>!/[\s\x00-\x1f\x7f]/.test(v));
 const response=z.object({RoleArn:z.string().max(2048),AccessKeyId:credentialText(128),SecretAccessKey:credentialText(8192),Token:credentialText(16384),Expiration:z.string().datetime()}).strict();
@@ -37,6 +38,7 @@ const fail=():never=>{throw Error('custodian_native_supplier_unavailable')};
 export function createNativeCustodianPorts(qualification:NativeCustodianQualification):PrivateOperationalStsPorts {
  const clock=qualification.clock.bind(qualification);
  const assertFacts=qualification.assertCurrentFacts?.bind(qualification);
+ const expiryRecords=new Map<string,Readonly<ObservedProviderExpiry>>();
  const issued=new WeakMap<object,{manifestDigest:string;capture:Readonly<NativeCustodianCapture>}>();
  async function current(manifest:Manifest,capture:Readonly<NativeCustodianCapture>,signal:AbortSignal,expiresAt?:number){
   signal.throwIfAborted();await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
@@ -44,9 +46,9 @@ export function createNativeCustodianPorts(qualification:NativeCustodianQualific
   await assertExecutionWindow(clock,{expiresAt:expiresAt??capture.maximumExpiresAt},signal);
   await qualification.assertCurrent(manifest,capture,signal);signal.throwIfAborted();
  }
- return Object.freeze({clock,assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
+ return Object.freeze({clock,readObservedProviderExpiry:(leaseRef:string)=>expiryRecords.get(leaseRef)??null,assertQualified:qualification.assertQualified,assertSourceLeaseCurrent:qualification.assertSourceLeaseCurrent,
   async readCustodianCredential(raw:Manifest,signal:AbortSignal,beforeRead?:ExecutionTimeAuthorization){try{
-   if(typeof beforeRead!=='function'||typeof assertFacts!=='function')return fail();
+   if(expiryRecords.size>=128||typeof beforeRead!=='function'||typeof assertFacts!=='function')return fail();
    const manifest=readOperationalManifest(raw);if(manifest.kind!=='deployment.ecs'||!manifest.issuerProfileDigest)return fail();signal.throwIfAborted();
    const supplied=await qualification.capture(manifest,signal);signal.throwIfAborted();
    const capture=Object.freeze({profileDigest:supplied.profileDigest,relativePath:supplied.relativePath,sourceRoleArn:supplied.sourceRoleArn,maximumExpiresAt:supplied.maximumExpiresAt});
@@ -61,7 +63,7 @@ export function createNativeCustodianPorts(qualification:NativeCustodianQualific
    if(native.RoleArn!==capture.sourceRoleArn||!Number.isSafeInteger(expiresAt))return fail();
    await current(manifest,capture,signal,expiresAt);
    const credential=Object.freeze({leaseRef:'platform_credential_'+randomUUID(),profileDigest:capture.profileDigest,accessKeyId:native.AccessKeyId,secretAccessKey:native.SecretAccessKey,sessionToken:native.Token,expiresAt});
-   issued.set(credential,{manifestDigest:manifest.digest,capture});return credential;
+   issued.set(credential,{manifestDigest:manifest.digest,capture});expiryRecords.set(credential.leaseRef,Object.freeze({leaseRef:credential.leaseRef,expiresAt,scope:'source',provider:'aws-sts-temporary',manifestDigest:manifest.digest,issuerProfileDigest:capture.profileDigest}));return credential;
   }catch{return fail()}},
   async assertCustodianCurrent(raw:Manifest,credential:Credential,signal:AbortSignal){try{
    const manifest=readOperationalManifest(raw),held=issued.get(credential);

@@ -1,0 +1,28 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion
+
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts [ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts ]
+Error: Cannot find module '../sdkOperationalSigning' imported from /Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts
+ ❯ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:6:1
+      4| import {S3Client,GetBucketVersioningCommand,GetObjectCommand} from '@a…
+      5| import {getSignedUrl} from '@aws-sdk/s3-request-presigner';
+      6| import {bindOperationalSdkSigning} from '../sdkOperationalSigning';
+       | ^
+      7| import {createOperationalExecutionTimeSource} from '../operationalSour…
+      8| const at=Date.parse('2024-01-02T03:04:05Z'),keys={accessKeyId:'SYNTHET…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  14:19:11
+   Duration  119ms (worker 97%, environment 3%)
+

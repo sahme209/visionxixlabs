@@ -1,0 +1,24 @@
+{
+  "format": 1,
+  "scope": "local-source-preparation-only",
+  "nativeCompiled": false,
+  "nativeExecuted": false,
+  "files": {
+    "packages/verified-issuer-runtime/linux/time_operational_binding.c": "224658bfd076b447dfdaea63c220031a1d402fa735eeb06498d98b4d285647c9",
+    "packages/verified-issuer-runtime/linux/time_operational_binding.h": "f895c94d23b6c9d265db0e65001d76cf89503bbc69810452bb98ef74af37de68",
+    "packages/verified-issuer-runtime/linux/time_operational_status.h": "321d5cfc88f1eec252f52280b1400b14b7d48d5f698e9c47ddff7e607f218528",
+    "packages/verified-issuer-runtime/linux/time_operational_status.c": "3ec69a4c62ca0b9b192de401cd1692103a9a9c982ff997b5389f378162e792f1",
+    "packages/verified-issuer-runtime/linux/time_operational_owner.c": "a8dc19d2bb55a28d98e2fad186a8ddd835330166d0541fbb162194a47c8d915b",
+    "packages/verified-issuer-runtime/linux/operational_publication.rs": "8b9b1bea1fe80bd6951d9ca012e4e7e4f4fa784969303f2581bbf1bacf721457",
+    "packages/verified-issuer-runtime/linux/clockbound-operational-time.patch": "34ff9f5a1c4b1971de4cffdca13ddae14996f2e1b7b5d483d716161bd534fe0e",
+    "packages/verified-issuer-runtime/linux/time_parent_binding.c": "dc98d3f38255611ee4b5d2de72561f1cd4df405c44bbef58e6b7ac254006e1c8",
+    "packages/verified-issuer-runtime/linux/time_parent_binding.h": "783f5360c6dd731838f277d16446571e63ec65acc8362e5d0c269cf2eb6f9320",
+    "scripts/tests/test_governance_operational_native.py": "72793d2caaa71b7239a39c348920ac360b89d36f819693d49a3119ac4907a7fc"
+  },
+  "previousManifestSha256": "88a2d57c0539a51538b1216baa89ce4b8ecbd14bba1fa32110f4751d3077c96e",
+  "corrections": [
+    "N1-original-deadline-at-execute-exit-and-completion-entry",
+    "N2-sticky-owner-withdrawal-after-first-ready"
+  ],
+  "sourceTests": 13
+}

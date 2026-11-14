@@ -1,0 +1,41 @@
+{
+  "scope": "Ordinary file-read identity supplement, not execution authority",
+  "tools": {
+    "rootTypeScriptResolver": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/@typescript/native/lib/getExePath.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@typescript/native/lib/getExePath.js",
+      "sha256": "96c10fd3a18e165d7323de8e314ac8d755ad96811f9fbc304a5b3ba4e05285cc",
+      "bytes": 3051
+    },
+    "rootTypeScriptExecutable": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/@typescript/typescript-darwin-arm64/lib/tsc",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@typescript/typescript-darwin-arm64/lib/tsc",
+      "sha256": "a82f731365ad69d5c4c15f5e18fba4584bf3b7b839960172a76c3462b5114bf2",
+      "bytes": 23653616
+    },
+    "desktopTypeScriptResolver": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/desktop/node_modules/@typescript/native/lib/getExePath.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/@typescript/native/lib/getExePath.js",
+      "sha256": "96c10fd3a18e165d7323de8e314ac8d755ad96811f9fbc304a5b3ba4e05285cc",
+      "bytes": 3051
+    },
+    "desktopTypeScriptExecutable": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/desktop/node_modules/@typescript/typescript-darwin-arm64/lib/tsc",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/@typescript/typescript-darwin-arm64/lib/tsc",
+      "sha256": "a82f731365ad69d5c4c15f5e18fba4584bf3b7b839960172a76c3462b5114bf2",
+      "bytes": 23653616
+    },
+    "prismaCLIImplementation": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/prisma/build/cli.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/prisma/build/cli.js",
+      "sha256": "4ab8a95f0072dfa7c3db869a5ff8f775499f22c346a4556991c0ae28eb1220fd",
+      "bytes": 2748673
+    },
+    "prismaGeneratorWasm": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/prisma/build/prisma_schema_build_bg.wasm",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/prisma/build/prisma_schema_build_bg.wasm",
+      "sha256": "e77f37d7e9bdae4100769cbcd5a59918796943f6bed0f8ee99d9eeb7f75fde58",
+      "bytes": 3165164
+    }
+  }
+}

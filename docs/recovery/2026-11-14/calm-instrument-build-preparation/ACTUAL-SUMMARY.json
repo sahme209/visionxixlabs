@@ -1,0 +1,16 @@
+{
+  "batchAccepted": false,
+  "websiteBuild": "PASS",
+  "desktopReleaseAlignment": "PASS",
+  "desktopTypes": "PASS",
+  "desktopFrontendBuild": "FAIL_STAGE_TEMP_ALIAS",
+  "cleanupConfirmed": true,
+  "finalInputsMatched": true,
+  "retryAllowed": false,
+  "sourceSnapshotSha256": "96a7d10c6190e30a4f7ecf2ad2bff18bb70a117e00314269c68307bb7a9d0c46",
+  "resultSha256": "f227231d8ed71ddf89f0b445e4af1b21fb6ece85031002ba99ad265904c7b3f3",
+  "websiteOutputManifestSha256": "86d32a73474d89039dc21eb314cab739c3659a230a7a54de079e3485998d22fc",
+  "websiteOutputFiles": 6587,
+  "scope": "Offline ordinary compilation only; no rendered/native/Governance/production acceptance",
+  "next": "Prepare reviewed stage-owned Vite temp-folder correction and ask for one desktop-only attempt; do not repeat website"
+}

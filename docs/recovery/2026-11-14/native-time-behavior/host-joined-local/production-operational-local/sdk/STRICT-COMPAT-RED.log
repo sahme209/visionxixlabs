@@ -1,0 +1,97 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+···xx·x···xxxx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > new path creates only the reviewed regional bucket using fixed endpoints and no retry
+Error: platform_template_native_unavailable
+ ❯ fail lib/governance/platform/templateNativeTransport.ts:35:29
+     33|  now():number;
+     34| }
+     35| const fail=():never=>{throw Error('platform_template_native_unavailabl…
+       |                             ^
+     36| /** Prepared real SDK adapter. Unregistered; missing real supplier alw…
+     37|  * Opaque, once-only observations remain inside private server composi…
+ ❯ Object.perform lib/governance/platform/templateNativeTransport.ts:94:17
+ ❯ Object.send lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:20:1097
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:28:164
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > new conditional upload preserves old objects and returns the exact version
+Error: platform_template_native_unavailable
+ ❯ fail lib/governance/platform/templateNativeTransport.ts:35:29
+     33|  now():number;
+     34| }
+     35| const fail=():never=>{throw Error('platform_template_native_unavailabl…
+       |                             ^
+     36| /** Prepared real SDK adapter. Unregistered; missing real supplier alw…
+     37|  * Opaque, once-only observations remain inside private server composi…
+ ❯ Object.perform lib/governance/platform/templateNativeTransport.ts:94:17
+ ❯ Object.send lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:20:1097
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:29:98
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > new access signs only after exact version/bytes readback and fresh authorization
+Error: platform_template_native_unavailable
+ ❯ fail lib/governance/platform/templateNativeTransport.ts:35:29
+     33|  now():number;
+     34| }
+     35| const fail=():never=>{throw Error('platform_template_native_unavailabl…
+       |                             ^
+     36| /** Prepared real SDK adapter. Unregistered; missing real supplier alw…
+     37|  * Opaque, once-only observations remain inside private server composi…
+ ❯ Object.perform lib/governance/platform/templateNativeTransport.ts:94:17
+ ❯ Object.send lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:20:1097
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:31:182
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > unverified or disabled versioning cannot upload
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:35:300
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > revocation during async signing prevents any usable observation
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:36:407
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > expiry during post-sign authorization refuses without resigning
+AssertionError: expected "vi.fn()" to be called 1 times, but got 0 times
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:37:471
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  lib/cloud/aws/__tests__/platformTemplateHosting.test.ts > a recorded native observation is historical evidence, not permission to deliver an expired grant
+Error: platform_template_native_unavailable
+ ❯ fail lib/governance/platform/templateNativeTransport.ts:35:29
+     33|  now():number;
+     34| }
+     35| const fail=():never=>{throw Error('platform_template_native_unavailabl…
+       |                             ^
+     36| /** Prepared real SDK adapter. Unregistered; missing real supplier alw…
+     37|  * Opaque, once-only observations remain inside private server composi…
+ ❯ Object.perform lib/governance/platform/templateNativeTransport.ts:94:17
+ ❯ Object.send lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:20:1097
+ ❯ lib/cloud/aws/__tests__/platformTemplateHosting.test.ts:38:298
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed | 7 passed (14)
+   Start at  14:54:32
+   Duration  181ms (import 43%, transform 29%, tests 27%, worker 1%)
+

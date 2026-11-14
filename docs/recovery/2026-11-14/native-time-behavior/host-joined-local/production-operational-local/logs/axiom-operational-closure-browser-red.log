@@ -1,0 +1,40 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/operations/__tests__/operationalClosure.test.ts (5 tests | 1 failed) 15ms
+   × projects operational assurance into actual strict browser history DTO without granting execution 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/operations/__tests__/operationalClosure.test.ts > projects operational assurance into actual strict browser history DTO without granting execution
+ZodError: [
+  {
+    "origin": "string",
+    "code": "invalid_format",
+    "format": "regex",
+    "pattern": "/^platform_closure_[a-f0-9]{64}$/",
+    "path": [
+      "id"
+    ],
+    "message": "Invalid string: must match pattern /^platform_closure_[a-f0-9]{64}$/"
+  },
+  {
+    "code": "custom",
+    "path": [],
+    "message": "Invalid input"
+  }
+]
+ ❯ lib/governance/platform/operations/__tests__/operationalClosure.test.ts:15:295
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 4 passed (5)
+   Start at  14:19:37
+   Duration  196ms (import 56%, transform 30%, tests 13%, worker 1%)
+

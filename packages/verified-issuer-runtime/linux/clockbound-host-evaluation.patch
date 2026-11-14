@@ -1,0 +1,333 @@
+--- a/clock-bound/Cargo.toml
++++ b/clock-bound/Cargo.toml
+@@ -83,6 +83,7 @@
+ wiremock = "0.6.5"
+ 
+ [features]
++axiom-host-evaluation = ["daemon"]
+ daemon = [
+   "dep:clap",
+   "dep:serde",
+@@ -158,3 +159,9 @@
+   { source = "assets/clockbound.service", dest = "/usr/lib/systemd/system/clockbound.service", mode = "644" },
+   { source = "assets/configure_phc", dest = "/usr/sbin/configure_phc", mode = "755" },
+ ]
++
++# Nondefault fixed source-bound evaluation executable; never the stock entry.
++[[bin]]
++name = "axiom-host-evaluation"
++path = "src/bin/axiom-host-evaluation.rs"
++required-features = ["axiom-host-evaluation"]
+--- a/clock-bound/src/daemon.rs
++++ b/clock-bound/src/daemon.rs
+@@ -2,6 +2,8 @@
+ 
+ #[cfg(feature = "daemon")]
+ mod time_publication_adapter;
++#[cfg(feature = "axiom-host-evaluation")]
++pub mod host_evaluation;
+ 
+ #[cfg(feature = "algorithm")]
+ pub mod algo_analysis;
+@@ -317,6 +319,105 @@
+             configured_sources,
+         }
+     }
++    #[cfg(feature = "axiom-host-evaluation")]
++    pub(crate) async fn construct_host_evaluation(
++        cancellation_token: CancellationToken,
++        axiom_publisher: time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        let daemon_info = DaemonInfo {
++            major_version: 2,
++            minor_version: 200,
++            startup_id: rng().next_u64(),
++        };
++
++        let clock_state_cancellation_token = CancellationToken::new();
++
++        let selected_clock = Arc::new(SelectedClockSource::default());
++
++        // Initialize IO components.
++        let (dns_message_tx, dns_message_rx) = mpsc::channel(DAEMON_MESSAGE_CAPACITY);
++        let mut io_front_end =
++            io::SourceIO::construct(selected_clock.clone(), daemon_info, dns_message_tx);
++        let clock_disruption_receiver = io_front_end.clock_disruption_receiver();
++
++        let mut receiver_stream = ReceiverStream::default();
++        // The daemon runs the algorithm with its production tunables and nothing else.
++        let ff_sync_params = FfSyncParams::default();
++        let mut clock_sync_algorithm = ClockSyncAlgorithm::builder()
++            .selected_clock(selected_clock.clone())
++            .selector(Selector::new(ff_sync_params.max_dispersion))
++            .build();
++
++        let mut source_mutator = SourceMutator::new(
++            &mut io_front_end,
++            &mut clock_sync_algorithm,
++            &mut receiver_stream,
++        );
++
++        // Exact isolated evaluation: one managed ordinary NTP source only.
++        // No autodetection, PHC, public pool, DNS pool or additive source config.
++        source_mutator.set_amazon_time_sync(&ff_sync_params);
++        // No VMClock device is opened; disruption support remains false.
++
++        // Initialize the Clock State component
++        let (clock_state_tx, clock_state) = {
++            let (tx, rx) = async_ring_buffer::create(1);
++            let clock_state = ClockState::construct_host_evaluation(
++                rx,
++                clock_disruption_receiver.clone(),
++                clock_state_cancellation_token.clone(),
++                ClockStatus::Unknown,
++                ff_sync_params.max_dispersion,
++                axiom_publisher,
++            );
++            (tx, clock_state)
++        };
++        let task_tracker = TaskTracker::new();
++        let clock_state_handle = ClockStateHandle {
++            clock_state: Some(clock_state),
++            tx: clock_state_tx,
++            cancellation_token: clock_state_cancellation_token,
++            task_tracker,
++        };
++
++        Self {
++            io_front_end,
++            clock_sync_algorithm,
++            ff_sync_params,
++            receiver_stream,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_state_handle,
++            dns_message_rx,
++            sources_snapshot_interval: tokio::time::interval(tokio::time::Duration::from_secs(1)),
++            configured_sources: SourcesConfig::default(),
++        }
++    }
++
++    /// Same actual IO/algorithm/clock-state run path, with bounded source facts.
++    #[cfg(feature = "axiom-host-evaluation")]
++    pub(crate) async fn run_host_evaluation(mut self: Box<Self>) {
++        self.clock_sync_algorithm.init_repro();
++        self.io_front_end.spawn_host_evaluation_ntp_only();
++        let mut clock_state = self.clock_state_handle.clock_state.take().expect("owned clock state");
++        self.clock_state_handle.task_tracker.spawn(async move { clock_state.run().await; });
++        self.clock_state_handle.task_tracker.close();
++        let mut next_observation = tokio::time::Instant::now();
++        loop {
++            // Complete the real run_once, including cancellation cleanup. The
++            // observer never races/drops that future at a timer boundary.
++            if self.run_once().await == RunLoopControl::Exit { break; }
++            if tokio::time::Instant::now() >= next_observation {
++                let snapshot = self.sources_snapshot();
++                assert_eq!(snapshot.sources.len(), 1, "one source required");
++                let source = &snapshot.sources[0];
++                assert!(matches!(&source.source_info, SourceInfo::AmazonTimeSync(..)));
++                println!("{{\"format\":1,\"event\":\"ntp_observation\",\"requests\":{},\"responses\":{},\"strictTimeAuthority\":false,\"vmclockSupport\":false}}", source.requests, source.responses);
++                next_observation = tokio::time::Instant::now() + tokio::time::Duration::from_secs(1);
++            }
++        }
++    }
++
+ 
+     /// Install the NTP sources from the configuration file into the daemon.
+     ///
+--- a/clock-bound/src/daemon/clock_state.rs
++++ b/clock-bound/src/daemon/clock_state.rs
+@@ -189,6 +189,84 @@
+ 
+         let shm_writer_1 = ShmWriter::new(
+             Path::new(CLOCKBOUND_SHM_DEFAULT_PATH_V1),
++            ClockErrorBoundLayoutVersion::V3,
++            ClockErrorBoundLayoutVersion::V3,
++        )
++        .unwrap();
++
++        // The same oscillator bound the synchronization algorithm uses; always representable
++        // (validated positive and far below 1e9 ppb).
++        let max_drift_ppb = max_dispersion
++            .to_ppb()
++            .expect("max_dispersion is a valid ppb value");
++
++        let shm0 = Shm0::builder()
++            .shm_writer(Shm0Writer::Axiom(axiom_publisher.wrap_v2(Box::new(shm_writer_0), max_dispersion.get())))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        let shm1 = Shm1::builder()
++            .shm_writer(Box::new(shm_writer_1))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        #[cfg(not(feature = "test-side-by-side"))]
++        let system_clock_discipliner = SystemClockDiscipliner::with_kernel_clock_adjuster();
++        #[cfg(feature = "test-side-by-side")]
++        let system_clock_discipliner = SystemClockDiscipliner::with_noop_clock_adjuster();
++
++        Self::new(
++            shm0,
++            shm1,
++            system_clock_discipliner,
++            clock_params_receiver,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_status,
++            vmclock_state,
++        )
++    }
++
++    #[cfg(feature = "axiom-host-evaluation")]
++    pub(super) fn construct_host_evaluation(
++        clock_params_receiver: Receiver<SyncParameters>,
++        clock_disruption_receiver: watch::Receiver<ClockDisruptionEvent>,
++        cancellation_token: CancellationToken,
++        clock_status: ClockStatus,
++        max_dispersion: Skew,
++        axiom_publisher: super::time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        let vmclock_params: Option<VMClockParams> = None;
++        // Clock disruption support is enabled whenever a VMClock source exists (i.e. we expected
++        // one on this platform), even if it failed to initialize.
++        let clock_disruption_support_enabled = vmclock_params.is_some();
++        let disruption_marker = vmclock_params
++            .as_ref()
++            .map_or(0, |params| params.disruption_marker);
++        let vmclock_state = vmclock_params.map(|params| params.shared_state);
++
++        // Build two writers, each writing to a specific shared memory segment path.
++        //
++        // FIXME: given these path are const strings, would be worth looking into moving the
++        // creation of these writers to the Shm0::new()/Shm1::new() methods.
++        //
++        for path in ["/run/axiom-host-evaluation/compat/v2", "/run/axiom-host-evaluation/compat/v3"] {
++            match std::fs::symlink_metadata(path) {
++                Err(error) if error.kind() == std::io::ErrorKind::NotFound => (),
++                _ => panic!("preexisting or unknown compatibility resource"),
++            }
++        }
++        let shm_writer_0 = ShmWriter::new(
++            Path::new("/run/axiom-host-evaluation/compat/v2"),
++            ClockErrorBoundLayoutVersion::V2,
++            ClockErrorBoundLayoutVersion::V2,
++        )
++        .unwrap();
++
++        let shm_writer_1 = ShmWriter::new(
++            Path::new("/run/axiom-host-evaluation/compat/v3"),
+             ClockErrorBoundLayoutVersion::V3,
+             ClockErrorBoundLayoutVersion::V3,
+         )
+--- a/clock-bound/src/daemon/io.rs
++++ b/clock-bound/src/daemon/io.rs
+@@ -510,6 +510,22 @@
+     ///
+     /// This function will spawn all initialized io tasks. If a task is not initialized it will be
+     /// skipped. Spawning will occur in an arbitrary order.
++    /// Fixed evaluation runner; stock spawn_all and routing fallback unchanged.
++    #[cfg(feature = "axiom-host-evaluation")]
++    pub(crate) fn spawn_host_evaluation_ntp_only(&mut self) {
++        assert!(self.phc.is_none() && self.vmclock.is_none());
++        assert!(self.partition_resolver.is_none() && self.ip_addr_sources.is_empty() && self.dns_pools.is_empty());
++        self.task_tracker.reopen();
++        let source = self.amazon_time_sync.as_mut().expect("fixed Amazon source");
++        match source.state.transition_to_running() {
++            SourceState::Initialized(mut amazon_time_sync) => {
++                self.task_tracker.spawn(async move { amazon_time_sync.run_host_evaluation_ipv4().await });
++            }
++            SourceState::Running => panic!("evaluation source already running"),
++        }
++        self.task_tracker.close();
++    }
++
+     pub fn spawn_all(&mut self) {
+         self.task_tracker.reopen();
+         // Spawn Amazon Time Sync source
+--- a/clock-bound/src/daemon/io/amazon_time_sync.rs
++++ b/clock-bound/src/daemon/io/amazon_time_sync.rs
+@@ -137,6 +137,81 @@
+         Ok(())
+     }
+ 
++    #[cfg(feature = "axiom-host-evaluation")]
++    pub(super) async fn run_host_evaluation_ipv4(&mut self) -> Result<(), NtpIoError> {
++        debug!("Starting Amazon Time Sync sampling loop.");
++        let mut seen_failures = [false; 8];
++        loop {
++            let branches = self.ntp.select_branches();
++            tokio::select! {
++                biased; // priority order is disruption, commands, and ticks
++                val = branches.clock_disruption_receiver.changed() => {
++                    if let Err(e) = val {
++                        error!(?e, "Clock disruption receiver dropped.");
++                        break;
++                    }
++                    if self.ntp.handle_disruption() {
++                        info!("Amazon Time Sync source transitioning from `Normal` mode to `Burst` mode.");
++                    }
++                }
++                ctrl_req = branches.ctrl_receiver.recv() => {
++                    match ctrl_req {
++                        None => {
++                            // this select can happen if `SourceIO` drops the ctrl_sender
++                            break;
++                        },
++                        Some(ControlRequest::Shutdown) => {
++                            debug!("Received shutdown signal. Exiting.");
++                            break;
++                        },
++                    }
++                }
++                _ = branches.interval.tick() => {
++                    // Source-bound ordinary IPv4 evaluation: never call the stock
++                    // routing-failure stack switch or substitute another source.
++                    assert_eq!(self.ntp.socket_address(), SocketAddr::new(IpAddr::from(ADDRESS_V4), PORT));
++                    match self.ntp.sample().await {
++                        Ok(event) => self.ntp.send_event(&event).expect("owned NTP receiver"),
++                        Err(error) => {
++                            let (index, category) = Self::host_evaluation_error(&error);
++                            // At most one fixed event per category per owned runner.
++                            // No raw errno strings, packet contents or error Display.
++                            if !seen_failures[index] {
++                                seen_failures[index] = true;
++                                println!("{{\"format\":1,\"event\":\"ntp_failure\",\"category\":\"{}\",\"strictTimeAuthority\":false}}", category);
++                            }
++                        }
++                    }
++                    self.ntp.handle_burst_expiry();
++                }
++            }
++        }
++        debug!("Amazon Time Sync runner exiting.");
++        Ok(())
++    }
++
++    #[cfg(feature = "axiom-host-evaluation")]
++    fn host_evaluation_error(error: &NtpIoError) -> (usize, &'static str) {
++        use std::io::ErrorKind;
++        use super::ntp::UnusableNtpResponse;
++        match error {
++            NtpIoError::Bind(error) | NtpIoError::SampleIo(error)
++                if error.kind() == ErrorKind::PermissionDenied => (0, "permission_refused"),
++            NtpIoError::Bind(_) => (1, "bind_failure"),
++            NtpIoError::Timeout(_) => (2, "sample_timeout"),
++            NtpIoError::SampleIo(error) if error.kind() == ErrorKind::TimedOut => (2, "sample_timeout"),
++            NtpIoError::SampleIo(error) if error.kind() == ErrorKind::InvalidData => (3, "malformed_response"),
++            NtpIoError::UnusableNtpResponse { source, .. } => match source {
++                UnusableNtpResponse::InvalidStratum(_) | UnusableNtpResponse::BadTimestamps => (3, "malformed_response"),
++                UnusableNtpResponse::Unsynchronized => (4, "source_unsynchronized"),
++                UnusableNtpResponse::KissODeath(_) => (5, "source_unavailable"),
++            },
++            NtpIoError::SampleIo(error) if matches!(error.kind(), ErrorKind::NetworkUnreachable | ErrorKind::HostUnreachable | ErrorKind::ConnectionRefused | ErrorKind::AddrNotAvailable) => (5, "source_unavailable"),
++            NtpIoError::TscOrder { .. } => (6, "counter_order_failure"),
++            NtpIoError::SampleIo(_) => (7, "sample_io_failure"),
++        }
++    }
++
+     async fn handle_interval_tick(&mut self) {
+         let ntp_result = self.ntp.sample().await;
+         self.handle_ntp_sample_result(ntp_result);

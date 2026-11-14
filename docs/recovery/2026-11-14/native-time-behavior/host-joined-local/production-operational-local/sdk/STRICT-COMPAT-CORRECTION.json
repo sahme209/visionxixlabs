@@ -1,0 +1,28 @@
+{
+  "scope": "finite strict SDK compatibility correction, original SDK evidence preserved",
+  "cause": "Strict branch unconditionally accessed client.config.signer before assurance dispatch; legacy strict SDK doubles have no resolved config/signer.",
+  "change": "Capture and validate installed provider only inside operational branch; strict branch never reads or changes signer/config. Operational missing signer still refuses.",
+  "inputSha256": {
+    "lib/governance/platform/nativeTime/sdkOperationalSigning.ts": "189b49a2ea07ee5f29377fe215f967add25af5b11ebf75c40a765f197900317c",
+    "lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts": "61d2c824efc8b4d30dc596373e13ba2fe68b3340a769b5e4860c225fb29b3082"
+  },
+  "logs": {
+    "STRICT-COMPAT-RED.log": {
+      "sha256": "3a13f154725af5048a3b88e89413ae2c51fbeb9573b42d9ce06f6c749a5377a8"
+    },
+    "STRICT-COMPAT-GREEN.log": {
+      "sha256": "9a3710cf6b4c87a99b9dddfc89af901126c8f80320e6c8d998f0eec68c191b33"
+    },
+    "STRICT-COMPAT-FINAL.log": {
+      "sha256": "440241ec1e9144dad1218a53f2c644639360b8ae8569e70f21f8d8bf640c557b"
+    }
+  },
+  "summaries": {
+    "RED": "7 failed / 7 passed in unchanged platformTemplateHosting.test.ts",
+    "GREEN": "25 passed / 3 files before explicit missing operational signer test",
+    "FINAL": "26 passed / 3 files with explicit missing operational signer refusal"
+  },
+  "oldSdkReceiptHistorical": true,
+  "nativeOrSqlOrNetworkOrCiOrDependencyOperations": false,
+  "wholeSuiteNotRerun": true
+}

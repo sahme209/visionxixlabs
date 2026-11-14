@@ -45,7 +45,7 @@ export default function Home() {
     <div className="axiom-canvas min-h-screen text-[#ecece8]">
       <Navigation />
       <main>
-        {/* Hero: one centred column (headline, lead, two actions), then the product itself full width. */}
+        {/* A clear introduction, then one primary deployment explanation. */}
         <section className="mx-auto max-w-[1280px] px-5 pb-16 pt-28 sm:px-8 lg:px-10 lg:pt-32">
           <div className="mx-auto max-w-[880px] text-center">
             <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Axiom Agent · the governed engineering workspace</p>
@@ -69,8 +69,9 @@ export default function Home() {
               <Link href="/docs/approval-workflow" className="text-zinc-300 underline underline-offset-4">Read the approval workflow</Link>.
             </p>
           </div>
-          <div className="mt-14"><HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} /></div>
         </section>
+
+        <GovernedDeploymentModel />
 
         <WorksWithStrip />
 
@@ -78,7 +79,14 @@ export default function Home() {
           <div className="mx-auto max-w-[1200px]"><GovernanceAssembly /></div>
         </section>
 
-        <GovernedDeploymentModel />
+        <section aria-labelledby="workspace-preview-title" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10">
+          <div className="mb-8 max-w-2xl">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Inside the workspace</p>
+            <h2 id="workspace-preview-title" className="mt-3 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-[40px] sm:leading-[1.1]">See the workflow in context.</h2>
+            <p className="mt-4 text-sm leading-7 text-zinc-400">Explore the product presentation below. When recorded product media is unavailable, a clearly labelled scripted tour illustrates the workflow.</p>
+          </div>
+          <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
+        </section>
 
         <section className="border-y border-white/6 bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
           <div className="mx-auto max-w-[1200px]">

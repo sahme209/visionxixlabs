@@ -1,0 +1,117 @@
+EEEEEEE
+======================================================================
+ERROR: test_closed_fd_and_wire_contract (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 9, in test_closed_fd_and_wire_contract
+    s=self.read('time_operational_status.h');self.assertIn('AXIOM_OPERATIONAL_ACCEPT_FD 8',s);self.assertIn('AXIOM_OPERATIONAL_CHECK_FD 9',s);self.assertIn('AXIOM_OPERATIONAL_STATUS_FD 10',s);self.assertIn('4096',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/time_operational_status.h'
+
+======================================================================
+ERROR: test_daemon_ready_requires_source_and_ack (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 17, in test_daemon_ready_requires_source_and_ack
+    s=self.read('operational_publication.rs');self.assertIn('ClockStatus::Synchronized',s);self.assertIn('OriginSourceKind::Ntp',s);self.assertIn('publication_acknowledged',s);self.assertIn('Unknown',s);self.assertNotIn('AcceptedPreciseTimePolicy',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/operational_publication.rs'
+
+======================================================================
+ERROR: test_native_bracket_between_status_checks (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 13, in test_native_bracket_between_status_checks
+    s=self.read('time_operational_binding.c');start=s.index('static int sample_original(');s=s[start:s.index('\n}',start)];self.assertLess(s.index('check_owner'),s.index('CLOCK_MONOTONIC'));self.assertLess(s.index('CLOCK_REALTIME'),s.rindex('check_owner'));self.assertIn('axiom_time_parent_pin_original',s);self.assertIn('axiom_time_parent_original_current',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/time_operational_binding.c'
+
+======================================================================
+ERROR: test_original_sample_private_tag_and_no_constructor (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 15, in test_original_sample_private_tag_and_no_constructor
+    s=self.read('time_operational_binding.c');self.assertIn('napi_check_object_type_tag',s);self.assertIn('axiom_time_operational_create_private',s);self.assertNotIn('NAPI_MODULE(',s);self.assertNotIn('getenv(',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/time_operational_binding.c'
+
+======================================================================
+ERROR: test_owner_checks_real_services_and_original_child (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 19, in test_owner_checks_real_services_and_original_child
+    s=self.read('time_operational_owner.c');self.assertIn('/proc',s);self.assertIn('/sys/power/suspend_stats/success',s);self.assertIn('pidfd',s);self.assertIn('chronyd.service',s);self.assertNotIn('system(',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/time_operational_owner.c'
+
+======================================================================
+ERROR: test_parser_canonical_and_no_json (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 11, in test_parser_canonical_and_no_json
+    s=self.read('time_operational_status.c');self.assertIn('UINT64_MAX',s);self.assertIn('AXIOM_CHECK_V1',s);self.assertIn('AXIOM_STATUS_V1',s);self.assertNotIn('strtoull',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/time_operational_status.c'
+
+======================================================================
+ERROR: test_patch_hooks_actual_publication_and_invalidation (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 21, in test_patch_hooks_actual_publication_and_invalidation
+    s=self.read('clockbound-operational-time.patch');self.assertIn('publish_precise_then_delegate',s);self.assertIn('publication_acknowledged',s);self.assertIn('invalidate_then_delegate',s)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 7, in read
+    def read(self,name):return (BASE/name).read_text()
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1256, in read_text
+    with self.open(mode='r', encoding=encoding, errors=errors) as f:
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1242, in open
+    return io.open(self, mode, buffering, encoding, errors, newline,
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1110, in _opener
+    return self._accessor.open(self, flags, mode)
+FileNotFoundError: [Errno 2] No such file or directory: '/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime/linux/clockbound-operational-time.patch'
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.001s
+
+FAILED (errors=7)

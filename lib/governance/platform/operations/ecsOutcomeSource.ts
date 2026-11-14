@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from '../executionTimeEvidence';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {z} from 'zod';
@@ -45,13 +46,13 @@ export function createOperationalEcsOutcomeSource(ports:Ports){
     const pending=(async()=>{try{
      if(!open||started)return fail();started=true;active(scope,owner);
      const extra:ExecutionTimeWindow=restriction??{},notBefore=extra.notBefore===undefined?bounds.notBefore:Math.max(bounds.notBefore,stamp.parse(extra.notBefore)),expiresAt=extra.expiresAt===undefined?bounds.expiresAt:Math.min(bounds.expiresAt,stamp.parse(extra.expiresAt));
-     if(nativeCheck)await nativeCheck({notBefore,expiresAt});else await assertExecutionWindow(clock!,{notBefore,expiresAt},scope);
+     if(nativeCheck){await nativeCheck({notBefore,expiresAt});recordExecutionTimeCheckForOwner(tx,nativeCheck)}else{const observation=await assertExecutionWindow(clock!,{notBefore,expiresAt},scope);recordExecutionTimeEvidence(tx,observation,{notBefore,expiresAt})}
      active(scope,owner);await exact(tx,p,scope,owner);if(!open)return fail();complete=true;
     }catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending;
    };
    try{await owner.authorize(check);active(scope,owner);if(!complete||invalid)return fail();return await exact(tx,p,scope,owner)}finally{open=false}
   }
-  await assertExecutionWindow(clock!,bounds,scope);active(scope);return exact(tx,p,scope);
+  const observation=await assertExecutionWindow(clock!,bounds,scope);recordExecutionTimeEvidence(tx,observation,bounds);active(scope);return exact(tx,p,scope);
  }
  return Object.freeze({async readOutcome(tx:OperationalTargetTransaction,raw:OperationalTarget,owner?:OperationalObservationAuthorization){try{
   if(!owner)return fail();const scope=scopeFor(owner);active(scope,owner);

@@ -1,0 +1,61 @@
+EFFEEE
+======================================================================
+ERROR: test_actual_orchestration_source_before_reader_cleanup_last (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 21, in test_actual_orchestration_source_before_reader_cleanup_last
+    f=Fake();value=boot.evaluate(f,{})
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_host_evaluation_bootstrap.py", line 3, in evaluate
+    raise NotImplementedError('actual host orchestration not prepared')
+NotImplementedError: actual host orchestration not prepared
+
+======================================================================
+ERROR: test_preownership_failure_never_kills (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 31, in test_preownership_failure_never_kills
+    f=Fake('producer');value=boot.evaluate(f,{})
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_host_evaluation_bootstrap.py", line 3, in evaluate
+    raise NotImplementedError('actual host orchestration not prepared')
+NotImplementedError: actual host orchestration not prepared
+
+======================================================================
+ERROR: test_source_failure_never_reads_or_restarts_and_still_reaps (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 25, in test_source_failure_never_reads_or_restarts_and_still_reaps
+    f=Fake('source');value=boot.evaluate(f,{})
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_host_evaluation_bootstrap.py", line 3, in evaluate
+    raise NotImplementedError('actual host orchestration not prepared')
+NotImplementedError: actual host orchestration not prepared
+
+======================================================================
+ERROR: test_unknown_cleanup_never_success (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 28, in test_unknown_cleanup_never_success
+    f=Fake('stop');value=boot.evaluate(f,{})
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_host_evaluation_bootstrap.py", line 3, in evaluate
+    raise NotImplementedError('actual host orchestration not prepared')
+NotImplementedError: actual host orchestration not prepared
+
+======================================================================
+FAIL: test_actual_private_binding_and_harness_have_no_fixture_publication (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 34, in test_actual_private_binding_and_harness_have_no_fixture_publication
+    c=ROOT/'packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c';self.assertTrue(c.exists());s=c.read_text()
+AssertionError: False is not true
+
+======================================================================
+FAIL: test_fixed_bootstrap_and_reader_ownership (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 40, in test_fixed_bootstrap_and_reader_ownership
+    for x in ['mask','chronyd.service','ntpd.service','systemd-timesyncd.service','ecs.service','start_new_session=True','extra_groups=()','O_EXCL','O_NOFOLLOW']:self.assertIn(x,s)
+AssertionError: 'mask' not found in '"""Fixed NEW-disposable-host source only. Never invoked during local tests."""\ndef evaluate(ops,packet):\n raise NotImplementedError(\'actual host orchestration not prepared\')\n'
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.001s
+
+FAILED (failures=2, errors=4)

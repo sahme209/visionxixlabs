@@ -1,0 +1,29 @@
+
+> axiom-desktop@0.1.22 build
+> npm run check:release && npm run typecheck && vite build
+
+
+> axiom-desktop@0.1.22 check:release
+> node ../scripts/check-desktop-release.mjs
+
+Desktop release alignment passed: Axiom Agent v0.1.22
+
+> axiom-desktop@0.1.22 typecheck
+> node ../scripts/run-native-typecheck.mjs --desktop --noEmit
+
+[31mfailed to load config from /private/tmp/axiom-calm-frozen-build-fo_6hvj5/source/desktop/vite.config.ts[39m
+[31merror during build:
+Error: EPERM: operation not permitted, open '/private/tmp/axiom-calm-frozen-build-fo_6hvj5/source/desktop/node_modules/.vite-temp/vite.config.ts.timestamp-1794690403020-e2ed23139dd448.mjs'
+    at async open (node:internal/fs/promises:1345:25)
+    at async Object.writeFile (node:internal/fs/promises:1965:14)
+    at async loadConfigFromBundledFile (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/chunks/node.js:38146:3)
+    at async bundleAndLoadConfigFile (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/chunks/node.js:37994:21)
+    at async loadConfigFromFile (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/chunks/node.js:37954:42)
+    at async resolveConfig (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/chunks/node.js:37555:22)
+    at async createBuilder (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/chunks/node.js:35160:17)
+    at async CAC.<anonymous> (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/dist/node/cli.js:778:19) {
+  errno: -1,
+  code: 'EPERM',
+  syscall: 'open',
+  path: '/private/tmp/axiom-calm-frozen-build-fo_6hvj5/source/desktop/node_modules/.vite-temp/vite.config.ts.timestamp-1794690403020-e2ed23139dd448.mjs'
+}[39m

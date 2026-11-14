@@ -1,0 +1,64 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/operations/__tests__/operationalClosure.test.ts (4 tests | 1 failed) 12ms
+   × compiles distinct operational closure without strict trustedNow and preserves its historical assurance 7ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/operations/__tests__/operationalClosure.test.ts > compiles distinct operational closure without strict trustedNow and preserves its historical assurance
+ZodError: [
+  {
+    "code": "invalid_value",
+    "values": [
+      1
+    ],
+    "path": [
+      "format"
+    ],
+    "message": "Invalid input: expected 1"
+  },
+  {
+    "code": "invalid_value",
+    "values": [
+      "platform_custodian_native_lifetime_evidence_v1"
+    ],
+    "path": [
+      "purpose"
+    ],
+    "message": "Invalid input: expected \"platform_custodian_native_lifetime_evidence_v1\""
+  },
+  {
+    "expected": "object",
+    "code": "invalid_type",
+    "path": [
+      "trustedNow"
+    ],
+    "message": "Invalid input: expected object, received undefined"
+  },
+  {
+    "code": "unrecognized_keys",
+    "keys": [
+      "operationalTime",
+      "custodyScopeDigest",
+      "leases"
+    ],
+    "path": [],
+    "message": "Unrecognized keys: \"operationalTime\", \"custodyScopeDigest\", \"leases\""
+  }
+]
+ ❯ compileCustodianClosureObservation lib/governance/platform/operations/custodianClosureObservation.ts:15:93
+
+ ❯ lib/governance/platform/operations/__tests__/operationalClosure.test.ts:8:157
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 3 passed (4)
+   Start at  14:07:24
+   Duration  220ms (transform 47%, import 43%, tests 9%, worker 1%)
+

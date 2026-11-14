@@ -1,0 +1,11 @@
+{
+  "pr": 334,
+  "head": "876da65ffe727c584b6f682d72a22b66feed9199",
+  "merged": true,
+  "mergeCommit": "ff0e381844326d00bca086d3c894b0aa0653925d",
+  "finalOrdinaryChecks": "7 PASS",
+  "actualNativeRun": 43622733276,
+  "nativeRunResult": "PASS; consumed; final docs preserve27inputs",
+  "productionChanged": false,
+  "governanceEnabled": false
+}

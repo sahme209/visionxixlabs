@@ -1,0 +1,11 @@
+# Immutable binding and whole observation budget — v3
+
+Original v1/v2 source inventories, independent reviews and failure logs are retained. N3's source regression failed before the freeze change (1 failure/13 passes), then passed14. N4's source regression failed before native invocation begin existed (1 failure/14 passes). Final result: **15 source-only checks PASS** with `python3 -m unittest discover -s scripts/tests -p test_governance_operational_native.py`.
+
+N3: the C-created context is checked-frozen before its reference/exposure. Every successful C sample is checked-frozen after its exact native fields/tag are set and BEFORE `napi_wrap` transfers cleanup ownership. A freeze failure therefore follows existing native unpin/free, without a later finalizer double-free. No mutable JS summary can relabel an authentic object before the TS snapshot. Actual N-API behavior is still uncompiled/unexecuted.
+
+N4: one private synchronous, no-argument `beginObservation()` captures native monotonic plus the original500ms before the trusted wrapper calls rawhold. It refuses active/pending/retired invocation and checked-add overflow. Native sample admission requires that invocation and caps the original child deadline with its captured begin deadline. Both status exchanges/sample/actual currentness and execute/completion endpoint checks use that same bound. A successful currentness consume/unpin clears the invocation; retirement is sticky, timeout cannot renew it. Existing strict/raw parent behavior was not changed. The original500ms request bound and100ms owned-cleanup bound do not claim impossible protection against arbitrary suspension after the final instruction.
+
+The existing worker-deadline regression was narrowed to its actual execute function, since the NEW once-before-hold begin necessarily creates the original invocation deadline; it still forbids renewal inside native execute/currentness. No authority assertion was removed.
+
+The TS integrator owns the required interface/method capture and before-hold invocation tests separately. No native compiler/linker, N-API addon load, real clock/ACL/process, network/provider/SQL, CI, installation or spend was performed. All previously documented host/package/custody/provider/runtime-network qualification gaps remain.

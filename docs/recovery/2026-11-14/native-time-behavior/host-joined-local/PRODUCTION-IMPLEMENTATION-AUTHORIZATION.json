@@ -1,0 +1,22 @@
+{
+  "questionId": "call_36a6c98e0c5d46d5b545378bfb0e4506",
+  "answer": "Approve local contract implementation and tests",
+  "designSha256": "fe944a67bfe2b7ae412b4ffe674e44a01ae40986ef3f60a4de77518e7278e87a",
+  "scope": "local operational-time supplier/consumer contract and eligible provider-expiry closure; code and simulated tests",
+  "riskAcceptedForContractImplementation": "a fast trusted AWS/Linux clock may declare a proven provider-issued expiry too early",
+  "retainedRefusals": [
+    "unknown credentials",
+    "incomplete native custody/fleet evidence",
+    "in-flight work",
+    "unsupported static tokens"
+  ],
+  "notAuthorized": [
+    "real credentials",
+    "actual SQL",
+    "native compilation or execution",
+    "cloud actions or resources",
+    "deployment",
+    "Governance activation",
+    "spending"
+  ]
+}

@@ -1,0 +1,16 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+········stderr | lib/governance/platform/nativeTime/__tests__/sdkOperationalTransport.test.ts > joins the actual ECS reader factory to installed operational signing and original final owner
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+···
+
+ Test Files  2 passed (2)
+      Tests  11 passed (11)
+   Start at  14:24:32
+   Duration  228ms (import 65%, tests 17%, transform 17%, worker 1%)
+

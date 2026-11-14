@@ -1,0 +1,13 @@
+...F.
+======================================================================
+FAIL: test_run_once_cleanup_is_never_cancelled_by_observer (test_governance_host_evaluation.HostEvaluationSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_evaluation.py", line 34, in test_run_once_cleanup_is_never_cancelled_by_observer
+    self.assertNotIn('tokio::select!',s);self.assertIn('self.run_once().await',s)
+AssertionError: 'tokio::select!' unexpectedly found in '(mut self: Box<Self>) {\n        self.clock_sync_algorithm.init_repro();\n        self.io_front_end.spawn_all();\n        let mut clock_state = self.clock_state_handle.clock_state.take().expect("owned clock state");\n        self.clock_state_handle.task_tracker.spawn(async move { clock_state.run().await; });\n        self.clock_state_handle.task_tracker.close();\n        let mut observations = tokio::time::interval(tokio::time::Duration::from_secs(1));\n        loop {\n            tokio::select! {\n                control = self.run_once() => {\n                    if control == RunLoopControl::Exit { break; }\n                }\n                _ = observations.tick() => {\n                    // Actual IO counters, not log replay or fabricated readiness.\n                    let snapshot = self.sources_snapshot();\n                    assert_eq!(snapshot.sources.len(), 1, "one source required");\n                    let source = &snapshot.sources[0];\n                    assert!(matches!(source.source_info, SourceInfo::AmazonTimeSync(..)));\n                    println!("{{\\"format\\":1,\\"event\\":\\"ntp_observation\\",\\"requests\\":{},\\"responses\\":{},\\"strictTimeAuthority\\":false,\\"vmclockSupport\\":false}}", source.requests, source.responses);\n                }\n            }\n        }\n    }\n\n\n    '
+
+----------------------------------------------------------------------
+Ran 5 tests in 0.038s
+
+FAILED (failures=1)

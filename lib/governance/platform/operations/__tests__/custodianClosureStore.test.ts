@@ -11,7 +11,7 @@ function fixture(){
  const plan=compileCustodianDrainPlatformPlan(control),parent=finishPlatformAction(claimPlatformAction(approvePlatformAction(createPlatformAction(plan,requester,1000),{...reviewer,planDigest:plan.digest},1500),requester,2000),'confirmed',3000);
  expect(control.digest).toBe(snapshot.barrier.controlDigest);
  const evidence={format:1,purpose:'platform_custodian_native_lifetime_evidence_v1',nativeKey:f.barrier.nativeKey,issuerProfileDigest:a,generation:f.barrier.generation,barrierVersion:f.barrier.version,controlDigest:control.digest,snapshotDigest:snapshot.digest,fleetReceiptId:ref,runtimeReceiptId:ref,lifetimeReceiptId:ref,timeReceiptId:ref,lastPossibleIssueAt:4500,credentialNotAfter:10000,trustedNow:{earliest:10001,latest:10002},expiresAt:20000};
- const source={readEvidence:vi.fn(async()=>evidence),assertCurrent:vi.fn(async()=>{}),clock:vi.fn(async()=>({earliest:10001,latest:10002}))},authority={assertCurrent:vi.fn(async()=>{})};
+ const source={assertReadAllowed:vi.fn(async()=>{}),readEvidence:vi.fn(async()=>evidence),assertCurrent:vi.fn(async()=>{}),clock:vi.fn(async()=>({earliest:10001,latest:10002}))},authority={assertCurrent:vi.fn(async()=>{})};
  let events:unknown[]=[],saved:unknown=null,staged=false,loseAck=false,sessionEnd=30000;
  const repo:CustodianClosureRepository={transaction:async fn=>{
   const pending:unknown[]=[];let next=saved;

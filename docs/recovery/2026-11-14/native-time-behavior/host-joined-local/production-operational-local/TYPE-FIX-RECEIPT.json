@@ -1,0 +1,14 @@
+{
+  "scope": "Test-only discriminated-union fixture narrowing; no production source or assertions changed",
+  "file": "lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts",
+  "beforeSha256": "4c458439137f8aa0bddc4fdcf9c9fe12c9d3e1f0df8175db4e1b91c29bc68e76",
+  "afterSha256": "8ebf5c7b580f2e599ed3985532627d89be69267cf766a4000d7821d70f019118",
+  "delta": "Require the compiled fixture's existing format 2 before modifying its evidence; preserves correlated observation/evidence union and refuses an unexpected strict fixture.",
+  "initialTypecheck": {
+    "outcome": "failed with one TS2322 fixture union error",
+    "log": "docs/recovery/2026-11-14/native-time-behavior/host-joined-local/production-operational-local/logs/root-final-types-initial-error.log",
+    "sha256": "4f9d5178978b87970653569541311d7de8354257c8378fbf60a71c0defc22f70"
+  },
+  "validation": "No tests or typecheck rerun by this agent; parent owns ongoing ordinary suite and subsequent typecheck.",
+  "priorFrozenTsManifestSha256": "6f60a4fd30c6607575bef9a0649f7e74f39d09f636f36d73ccc099775dff3bea"
+}

@@ -1,0 +1,61 @@
+FFFEFFE
+======================================================================
+ERROR: test_fixed_failure_event_rejects_unknown_and_raw_details (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 52, in test_fixed_failure_event_rejects_unknown_and_raw_details
+    self.assertEqual(boot.source_event(value),('failure','permission_refused'))
+AttributeError: module 'governance_host_evaluation_bootstrap' has no attribute 'source_event'
+
+======================================================================
+ERROR: test_signal_callback_only_sets_flag (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 42, in test_signal_callback_only_sets_flag
+    c=boot.DeferredCancellation();c.request(15,None);self.assertTrue(c.requested)
+AttributeError: module 'governance_host_evaluation_bootstrap' has no attribute 'DeferredCancellation'
+
+======================================================================
+FAIL: test_cancel_before_ownership_never_launches (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 34, in test_cancel_before_ownership_never_launches
+    self.assertFalse(value['observed']);self.assertEqual(value['reason'],'cancelled');self.assertEqual(ops.calls,['close'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_cancel_during_reader_retains_result_and_cleanup_ignores_flag (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 40, in test_cancel_during_reader_retains_result_and_cleanup_ignores_flag
+    self.assertFalse(value['observed']);self.assertEqual(value['reason'],'cancelled');self.assertIn('rawObservation',value);self.assertEqual(ops.calls[-2:],['stop','close'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_cancel_during_start_records_owner_then_stops (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 37, in test_cancel_during_start_records_owner_then_stops
+    self.assertFalse(value['observed']);self.assertEqual(value['reason'],'cancelled');self.assertNotIn('source',ops.calls);self.assertEqual(ops.calls[-2:],['stop','close']);self.assertTrue(value['cleanupKnown'])
+AssertionError: True is not false
+
+======================================================================
+FAIL: test_fixed_runner_preserves_actual_error_variants (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 47, in test_fixed_runner_preserves_actual_error_variants
+    self.assertIn('Err(error)',selected);self.assertIn('ntp_failure',selected)
+AssertionError: 'Err(error)' not found in '(&mut self) -> Result<(), NtpIoError> {\n        debug!("Starting Amazon Time Sync sampling loop.");\n        loop {\n            let branches = self.ntp.select_branches();\n            tokio::select! {\n                biased; // priority order is disruption, commands, and ticks\n                val = branches.clock_disruption_receiver.changed() => {\n                    if let Err(e) = val {\n                        error!(?e, "Clock disruption receiver dropped.");\n                        break;\n                    }\n                    if self.ntp.handle_disruption() {\n                        info!("Amazon Time Sync source transitioning from `Normal` mode to `Burst` mode.");\n                    }\n                }\n                ctrl_req = branches.ctrl_receiver.recv() => {\n                    match ctrl_req {\n                        None => {\n                            // this select can happen if `SourceIO` drops the ctrl_sender\n                            break;\n                        },\n                        Some(ControlRequest::Shutdown) => {\n                            debug!("Received shutdown signal. Exiting.");\n                            break;\n                        },\n                    }\n                }\n                _ = branches.interval.tick() => {\n                    // Source-bound ordinary IPv4 evaluation: never call the stock\n                    // routing-failure stack switch or substitute another source.\n                    assert_eq!(self.ntp.socket_address(), SocketAddr::new(IpAddr::from(ADDRESS_V4), PORT));\n                    if let Ok(event) = self.ntp.sample().await {\n                        self.ntp.send_event(&event).expect("owned NTP receiver");\n                    }\n                    self.ntp.handle_burst_expiry();\n                }\n            }\n        }\n        debug!("Amazon Time Sync runner exiting.");\n        Ok(())\n    }\n\n    '
+
+======================================================================
+FAIL: test_runnable_recipe_compiles_then_links_actual_publisher_object (test_governance_host_corrections.HostReviewCorrections)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_corrections.py", line 29, in test_runnable_recipe_compiles_then_links_actual_publisher_object
+    self.assertIn('time_publication.c',item['sources']);self.assertIn('time_publication.h',item['sources'])
+AssertionError: 'time_publication.c' not found in ['clockbound-host-evaluation.patch', 'host_evaluation.rs', 'host_evaluation_main.rs']
+
+----------------------------------------------------------------------
+Ran 7 tests in 0.018s
+
+FAILED (failures=5, errors=2)

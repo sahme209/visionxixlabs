@@ -1,0 +1,40 @@
+F......F..
+======================================================================
+FAIL: test_actual_orchestration_source_before_reader_cleanup_last (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 23, in test_actual_orchestration_source_before_reader_cleanup_last
+    self.assertEqual(f.calls,['validate','reserve','services','producer','source','live','reader','live','stop'])
+AssertionError: Lists differ: ['val[23 chars]vices', 'producer', 'source', 'reader', 'stop'] != ['val[23 chars]vices', 'producer', 'source', 'live', 'reader', 'live', 'stop']
+
+First differing element 5:
+'reader'
+'live'
+
+Second list contains 2 additional elements.
+First extra element 7:
+'live'
+
+- ['validate', 'reserve', 'services', 'producer', 'source', 'reader', 'stop']
++ ['validate',
++  'reserve',
++  'services',
++  'producer',
++  'source',
++  'live',
++  'reader',
++  'live',
++  'stop']
+
+======================================================================
+FAIL: test_retired_during_read_refuses_but_retains_original_observation (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 60, in test_retired_during_read_refuses_but_retains_original_observation
+    self.assertFalse(value['observed']);self.assertEqual(value['reason'],'producer_exited');self.assertIn('rawObservation',value);self.assertTrue(value['cleanupKnown']);self.assertEqual(f.calls.count('reader'),1)
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.001s
+
+FAILED (failures=2)

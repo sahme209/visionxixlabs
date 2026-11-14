@@ -14,6 +14,7 @@ const sources=[
  'lib/governance/platform/operations/ecsResultContract.ts',
  'lib/governance/platform/contracts.ts',
  'lib/governance/platform/viewContract.ts',
+ 'lib/governance/platform/executionTimeView.ts',
  'lib/tauri/contentHash.ts',
  'lib/connectors/github/boundedGithubRead.ts',
 ];

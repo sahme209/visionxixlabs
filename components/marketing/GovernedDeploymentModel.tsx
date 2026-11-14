@@ -100,10 +100,8 @@ export function GovernedDeploymentModel() {
         </p>
       </div>
 
-      <div ref={frameRef} className="relative mt-12 h-[560px] overflow-hidden rounded-2xl border border-white/8 bg-[#03050a] shadow-[0_40px_120px_-40px_rgba(111,195,255,0.25)] sm:h-[620px]">
-        <canvas ref={canvasRef} aria-hidden="true" className={`h-full w-full ${mode === "3d" ? "block cursor-grab" : "hidden"}`} />
-
-        <div className="absolute inset-x-3 top-3 flex flex-wrap items-center justify-between gap-2">
+      <div className="mt-12 overflow-hidden rounded-2xl border border-white/8 bg-[#03050a] shadow-[0_40px_120px_-40px_rgba(111,195,255,0.18)]">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-4 py-4 sm:px-5">
           <div role="group" aria-label="Scenario" className="flex flex-wrap gap-1 rounded-full border border-white/10 bg-black/50 p-1 backdrop-blur-sm">
             {FLOW_SCENARIOS.map((s) => (
               <button key={s.id} type="button" aria-pressed={s.id === scenarioId} onClick={() => setScenarioId(s.id)}
@@ -123,30 +121,33 @@ export function GovernedDeploymentModel() {
           </div>
         </div>
 
-        {mode !== "3d" && (
-          <ol aria-label="Stages in this scenario" className="grid h-full grid-cols-2 content-center gap-2 px-4 pb-32 pt-20 sm:grid-cols-4 sm:px-10">
-            {FLOW_STATIONS.map((s, i) => {
-              const state = flowStationState(scenario, i, shown);
-              return (
-                <li key={s.id} className={`rounded-xl border bg-white/2 px-4 py-3 text-sm ${STATE_CLASS[state]}`}>
-                  <span className="font-mono text-xs opacity-70">{String(i + 1).padStart(2, "0")}</span> {s.name}
-                  <span className="mt-0.5 block text-xs opacity-80">{STATE_TEXT[state]}</span>
-                </li>
-              );
-            })}
-          </ol>
-        )}
+        <div ref={frameRef} className={mode === "3d" ? "relative h-[420px] sm:h-[560px]" : "relative h-auto"}>
+          <canvas ref={canvasRef} aria-hidden="true" className={`h-full w-full ${mode === "3d" ? "block cursor-grab" : "hidden"}`} />
+          {mode !== "3d" && (
+            <ol aria-label="Stages in this scenario" className="grid grid-cols-1 gap-3 px-4 py-8 sm:grid-cols-2 sm:px-5 lg:grid-cols-4">
+              {FLOW_STATIONS.map((s, i) => {
+                const state = flowStationState(scenario, i, shown);
+                return (
+                  <li key={s.id} className={`rounded-xl border bg-white/2 px-4 py-3 text-sm ${STATE_CLASS[state]}`}>
+                    <span className="font-mono text-xs opacity-70">{String(i + 1).padStart(2, "0")}</span> {s.name}
+                    <span className="mt-0.5 block text-xs opacity-80">{STATE_TEXT[state]}</span>
+                  </li>
+                );
+              })}
+            </ol>
+          )}
+        </div>
 
-        <div className="absolute inset-x-3 bottom-3 space-y-2">
-          <p className="pointer-events-none px-1 text-sm text-zinc-200">{scenario.caption}</p>
-          <div role="group" aria-label="Inspect a stage" className="grid grid-cols-4 gap-1 rounded-xl border border-white/10 bg-black/55 p-1 backdrop-blur-sm lg:grid-cols-8">
+        <div className="space-y-4 border-t border-white/8 px-4 py-4 sm:px-5">
+          <p className="text-sm leading-6 text-zinc-200">{scenario.caption}</p>
+          <div role="group" aria-label="Inspect a stage" className="grid grid-cols-2 gap-1 rounded-xl border border-white/10 bg-white/2 p-1 sm:grid-cols-4 lg:grid-cols-8">
             {FLOW_STATIONS.map((s, i) => {
               const state = flowStationState(scenario, i, shown);
               return (
                 <button key={s.id} type="button" aria-pressed={i === selected} aria-controls={`${id}-inspector`} onClick={() => choose(i)}
-                  className={`flex min-w-0 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${i === selected ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"}`}>
+                  className={`flex min-h-11 min-w-0 items-center gap-2 rounded-lg px-2.5 py-2 text-left text-xs transition-colors ${i === selected ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5 hover:text-zinc-100"}`}>
                   <span aria-hidden="true" className={`h-1.5 w-1.5 shrink-0 rounded-full ${stateDot[state]}`} />
-                  <span className="truncate"><span className="font-mono text-zinc-500">{String(i + 1).padStart(2, "0")}</span> {s.name}</span>
+                  <span className="min-w-0 wrap-break-word"><span className="font-mono text-zinc-500">{String(i + 1).padStart(2, "0")}</span> {s.name}</span>
                   <span className="sr-only">, {STATE_TEXT[state]}</span>
                 </button>
               );
@@ -155,7 +156,8 @@ export function GovernedDeploymentModel() {
         </div>
       </div>
 
-      <dl className="mt-3 grid grid-cols-2 overflow-hidden rounded-xl border border-white/8 bg-white/2 font-mono sm:grid-cols-5 sm:divide-x sm:divide-white/6" aria-live="polite">
+      <p id={`${id}-gauge-label`} className="mt-5 text-xs leading-6 text-zinc-400">Illustrative scenario values · sample AI usage, credits and status · not your workspace activity</p>
+      <dl aria-describedby={`${id}-gauge-label`} className="mt-2 grid grid-cols-2 overflow-hidden rounded-xl border border-white/8 bg-white/2 font-mono sm:grid-cols-5 sm:divide-x sm:divide-white/6" aria-live="polite">
         {([["Stage", gauges.stage], ["AI tokens", gauges.tokens.toLocaleString("en-US")],
           [gauges.aiCreditState === "held" ? "AI credit held" : "AI credit settled", `$${gauges.aiCreditUsd.toFixed(2)}`],
           ["Approval", gauges.approval], ["Rollout / health", gauges.outcome]] as const).map(([k, v]) => (

@@ -1,0 +1,29 @@
+{
+  "scope": "Fixed executor implementation and pure/mock tests only; actual build invocation unused",
+  "files": {
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/executor.py": "0ed844cb6ce7c0b3cdac381a1ef273c02df38f72785c411eb04252c177df0024",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/test_executor.py": "36434267c9f330814c7b369fe7b9f35b4aa676c547cc64647918e2f182d8678a"
+  },
+  "testEvidence": {
+    "initialRed": "/private/tmp/axiom-calm-executor-red.log",
+    "initialRedSha256": "92e6f161b6816949db3f7cb000a7c9ac2fa8dbcc5ae0813e90374ebcda116655",
+    "initialRedMeaning": "Missing implementation import error; not claimed as behavioral RED",
+    "intermediateResult": "11 passed / 1 failed due mock /var vs /private/var fixture canonicalization; fixture root corrected, assertion retained",
+    "finalGreen": "/private/tmp/axiom-calm-executor-green.log",
+    "finalGreenSha256": "3a1fa8d01acb6052e49782e9340deff6cde989f09b0a66bfc57f3aa2095fab5b",
+    "tests": 18,
+    "actualChildren": 0
+  },
+  "mechanics": [
+    "Exact frozen13933regular-member archive and ordered80source provenance; no live-tree copy",
+    "Read-only complete reachable dependency inventory including native compiler executable implementations; frozen observed delegated metadata",
+    "Fresh root/desktop namespaces and stage-local .bin, archived @axiom file dependency; physical root Zod for closed compiler identity",
+    "Pinned Node24.21.0+schema engine6032ea1b..., fixed npm/sandbox/sh/env; no install or arbitrary command",
+    "Clean stage-only HOME/cache/temp/npm config; network deny and outside-stage write deny with literal/dev/null sink",
+    "One marker-protected attempt; shared1800seconds and total5seconds cleanup;32MiB per-phase logs; fail/unknown skips desktop",
+    "Typed phase exit/cleanup/log facts saved before postchild checks; final drift always acceptedfalse; output hashes retained, emitted outputs never launched"
+  ],
+  "entrypoint": "After independent executor+packet review ONLY: executor.execute(exactFinalPacketPath, independentlyVerifiedPacketSha256). CLI accepts only --approved-packet PATH --packet-sha256 SHA. No prepare CLI and no execute called by tests.",
+  "freezeInstructions": "INPUT-PACKET-FINAL.json is sole intended packet; preliminary INPUT-PACKET.json retained as superseded pre-system-shell freeze. Do not mutate pinned executor/tests/authorization/provenance/tools/cache/source80 after final freeze. Missing prerequisite/refusal consumes the attempt once marker is created; no retry.",
+  "limits": "Sandbox enforcement/tool versions/compilation have NOT been executed by this local mocked checkpoint. Build success is not visual/native/Governance/provider/schema/production acceptance."
+}

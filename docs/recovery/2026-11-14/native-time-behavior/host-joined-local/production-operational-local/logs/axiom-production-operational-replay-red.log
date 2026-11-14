@@ -1,0 +1,52 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts (6 tests | 1 failed) 6ms
+   ❯ authenticated operational time through actual common window (6)
+     × consumes the original observation once through the common window 3ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > authenticated operational time through actual common window > consumes the original observation once through the common window
+AssertionError: promise resolved "{ …(12) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "assurance": "aws-linux-operational-v1",
++   "context": {
++     "hostGeneration": "host-1",
++     "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++     "revision": 1,
++     "source": "amazon-ipv4-ntp",
++     "sourceGeneration": "source-1",
++   },
++   "disruptionMarker": 0n,
++   "hostGeneration": "host-1",
++   "monotonicAfterNs": 103000000n,
++   "monotonicBeforeNs": 102000000n,
++   "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++   "publication": 1n,
++   "revision": 1,
++   "source": "amazon-ipv4-ntp",
++   "sourceGeneration": "source-1",
++   "unixTimeNs": 1000000000n,
+  }
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:16:279
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  14:02:38
+   Duration  106ms (transform 55%, tests 22%, import 17%, worker 6%)
+

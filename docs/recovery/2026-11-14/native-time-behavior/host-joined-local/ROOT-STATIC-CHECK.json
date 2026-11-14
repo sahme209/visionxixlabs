@@ -1,0 +1,12 @@
+{
+  "check": "Node --check (syntax only; no module execution/import/addon load)",
+  "tool": "existing local Node24.21.0",
+  "file": "scripts/linux-compile/host_evaluation_reader.mjs",
+  "sha256": "0de4778ed72f219f6120b02be705a5eccc52de2356c11c196ba08f263a1ab42b",
+  "exitCode": 0,
+  "notProven": [
+    "target Node24.22.2 ABI",
+    "native addon",
+    "actual reader or host behavior"
+  ]
+}

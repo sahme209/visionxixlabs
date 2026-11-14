@@ -1,0 +1,83 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts (5 tests | 5 failed) 4ms
+   ❯ authenticated operational time through actual common window (5)
+     × compares exact nanoseconds without manufacturing a strict interval 2ms
+     × refuses equality at expiry and accepts one nanosecond before 1ms
+     × refuses a copied operational observation with identical serialized fields 0ms
+     × allows routine publications under original accepted generation and retires withdrawal 0ms
+     × uses operational returned-expiration policy without a strict lower endpoint 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > authenticated operational time through actual common window > compares exact nanoseconds without manufacturing a strict interval
+Error: platform_execution_time_unavailable
+ ❯ fail lib/governance/platform/executionTime.ts:15:29
+     13|  * post-commit clock read. Transports requiring this hook verify compl…
+     14| export type ExecutionTimeAuthorization=(timeCheck?:ExecutionTimeCheck,…
+     15| const fail=():never=>{throw Error('platform_execution_time_unavailable…
+       |                             ^
+     16| const stamp=(value:number)=>Number.isSafeInteger(value)&&value>=0;
+     17|
+ ❯ assertExecutionWindow lib/governance/platform/executionTime.ts:30:16
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:12:114
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > authenticated operational time through actual common window > refuses equality at expiry and accepts one nanosecond before
+AssertionError: promise rejected "Error: platform_execution_time_unavailable" instead of resolving
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:13:226
+
+
+Caused by: Error: platform_execution_time_unavailable
+ ❯ fail lib/governance/platform/executionTime.ts:15:29
+ ❯ assertExecutionWindow lib/governance/platform/executionTime.ts:30:16
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > authenticated operational time through actual common window > refuses a copied operational observation with identical serialized fields
+Error: operational_time_unavailable
+ ❯ Object.clock lib/governance/platform/nativeTime/operationalSource.ts:2:113
+      1| import 'server-only';
+      2| export function createOperationalExecutionTimeSource(_native:unknown):…
+       |                                                                                                                 ^
+      3|
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:14:165
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > authenticated operational time through actual common window > allows routine publications under original accepted generation and retires withdrawal
+Error: operational_time_unavailable
+ ❯ Object.clock lib/governance/platform/nativeTime/operationalSource.ts:2:113
+      1| import 'server-only';
+      2| export function createOperationalExecutionTimeSource(_native:unknown):…
+       |                                                                                                                 ^
+      3|
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:15:165
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > authenticated operational time through actual common window > uses operational returned-expiration policy without a strict lower endpoint
+Error: platform_execution_time_unavailable
+ ❯ fail lib/governance/platform/executionTime.ts:15:29
+     13|  * post-commit clock read. Transports requiring this hook verify compl…
+     14| export type ExecutionTimeAuthorization=(timeCheck?:ExecutionTimeCheck,…
+     15| const fail=():never=>{throw Error('platform_execution_time_unavailable…
+       |                             ^
+     16| const stamp=(value:number)=>Number.isSafeInteger(value)&&value>=0;
+     17|
+ ❯ assertExecutionWindow lib/governance/platform/executionTime.ts:30:16
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:16:159
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  14:01:06
+   Duration  108ms (transform 58%, import 19%, tests 17%, worker 6%)
+

@@ -1,0 +1,65 @@
+{
+  "verdict": "clear_for_local_sdk_signing_slice",
+  "criticalFindings": [],
+  "importantFindings": [],
+  "minorObservations": [
+    "Future dynamic switching sources require explicit assurance/context capture; no reachable switch in intended fixed private composition."
+  ],
+  "reviewedInputSha256": {
+    "lib/governance/platform/nativeTime/sdkOperationalSigning.ts": {
+      "receipt": "42e54bea51cafa26d0aaaafaab5de4a62244970dc660e9dd625c9459809fba3e",
+      "current": "7db8318fff5df2afcd33cf31b15ba3b813785bd286a48e18bfa6bd19627ebdef"
+    },
+    "lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts": {
+      "receipt": "f4ff681f51dce4719d8aad38f6e5798323cc427c1ecca204debb18bc16fb6f26",
+      "current": "f4ff681f51dce4719d8aad38f6e5798323cc427c1ecca204debb18bc16fb6f26"
+    },
+    "lib/governance/platform/nativeTime/__tests__/sdkOperationalTransport.test.ts": {
+      "receipt": "53a2f2a89eea7293577eccb88e663f73dba3849339053d65842212e70362ac97",
+      "current": "53a2f2a89eea7293577eccb88e663f73dba3849339053d65842212e70362ac97"
+    },
+    "lib/governance/platform/operations/privateStsIssuer.ts": {
+      "receipt": "17acf21887e7dfcb7041fad867ba68dc0445d305380a20db53f050ad0bc2b804",
+      "current": "17acf21887e7dfcb7041fad867ba68dc0445d305380a20db53f050ad0bc2b804"
+    },
+    "lib/governance/platform/operations/ecsSdkTransport.ts": {
+      "receipt": "340a6ed7b911d254526236657853f1b44a6f5300e3b92f3e274ed07222f5e224",
+      "current": "340a6ed7b911d254526236657853f1b44a6f5300e3b92f3e274ed07222f5e224"
+    },
+    "lib/governance/platform/templateNativeTransport.ts": {
+      "receipt": "10760a62006640c3e80b4faf72fa50c8d9206feeee5afce8e5f71cb8ff60a537",
+      "current": "10760a62006640c3e80b4faf72fa50c8d9206feeee5afce8e5f71cb8ff60a537"
+    }
+  },
+  "initialSixReceiptInputsMatched": true,
+  "currentReceiptMatches": 5,
+  "currentHelperChange": "1000000n to BigInt(1000000), equivalent divisor, separately source reviewed; saved test evidence not renewed",
+  "allNineLogHashesMatch": true,
+  "allFourInstalledSignerAuditHashesMatch": true,
+  "testsRerun": false,
+  "savedEvidence": {
+    "focusedCases": 11,
+    "focusedFiles": 2,
+    "integrationCases": 60,
+    "integrationFiles": 4
+  },
+  "excluded": "Non-signing provider-expiry provenance/lifetime registry work; native/closure and whole-unit review",
+  "runtimeOrProviderQualification": false,
+  "reviewer": "operational_sdk_review independent of SDK author",
+  "strictCompatibilityCorrectionReview": {
+    "verdict": "clear",
+    "reviewedInputSha256": {
+      "lib/governance/platform/nativeTime/sdkOperationalSigning.ts": "189b49a2ea07ee5f29377fe215f967add25af5b11ebf75c40a765f197900317c",
+      "lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts": "61d2c824efc8b4d30dc596373e13ba2fe68b3340a769b5e4860c225fb29b3082"
+    },
+    "reviewedLogSha256": {
+      "STRICT-COMPAT-RED.log": "3a13f154725af5048a3b88e89413ae2c51fbeb9573b42d9ce06f6c749a5377a8",
+      "STRICT-COMPAT-GREEN.log": "9a3710cf6b4c87a99b9dddfc89af901126c8f80320e6c8d998f0eec68c191b33",
+      "STRICT-COMPAT-FINAL.log": "440241ec1e9144dad1218a53f2c644639360b8ae8569e70f21f8d8bf640c557b"
+    },
+    "savedFinalCases": 26,
+    "savedFinalFiles": 3,
+    "testsRerunByReviewer": false,
+    "originalReceiptHistorical": true
+  }
+}

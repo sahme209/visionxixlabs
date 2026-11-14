@@ -1,0 +1,30 @@
+{
+  "format": 2,
+  "scope": "host-evaluation-local-source-only",
+  "authorization": "call_f6dcdebf10844849a6653dafd5fd9805",
+  "supersedesSourceSnapshotOnly": "SOURCE-MANIFEST.json",
+  "reviewCorrections": [
+    "explicit-target-C-publisher-final-link",
+    "deferred-controller-cancellation-owned-cleanup",
+    "closed-native-NTP-error-facts"
+  ],
+  "nativeCompiled": false,
+  "nativeExecuted": false,
+  "hostConfigured": false,
+  "strictTimePolicyIssued": false,
+  "inputSha256": {
+    "packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch": "ebc1f8288f3b74d10ff52258a01129d19186e0027719350b89bf166ddcc52708",
+    "packages/verified-issuer-runtime/linux/host-evaluation-patched-sha256.json": "fbfe5fa4d3d2fba0867093b9421bc9e4eff2d2ecc562fef6a2e96ee16b82104a",
+    "packages/verified-issuer-runtime/linux/host_evaluation.rs": "b219b61b9be809e7ee9b0178726b61a6912e8fb2e845a8043fb64fb7bc54f6db",
+    "packages/verified-issuer-runtime/linux/host_evaluation_main.rs": "bde1c6bb82bf85d8b7d537f594d8cf04c9e83345fbd57cf6f285488e96bbaa7e",
+    "packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c": "3c6dd52dd5dcdf2a3cbd0befa9109f1d9b7a252803d168edb6ef98234bc15571",
+    "packages/verified-issuer-runtime/linux/host_reader_launcher.c": "9c8df9f2cf6f26801b7702f46bdd2eb07eb4b018cc239847ec0104cd328d3c74",
+    "packages/verified-issuer-runtime/linux/host-evaluation-package.json": "c16deacf0a5fba98117b5b17e10a7570c202c5152e5545b4cb233614c45c16b7",
+    "scripts/governance_host_evaluation_inputs.py": "6e013e95c027c2f2c45a277d3ebb60c0a24f4ddccd83833cab4804757941c741",
+    "scripts/governance_host_evaluation_bootstrap.py": "a526438fb7db965bb3ef6971dfed3e44e4d2f3dbedaf80764af30ac7e27bfa36",
+    "scripts/linux-compile/host_evaluation_reader.mjs": "0de4778ed72f219f6120b02be705a5eccc52de2356c11c196ba08f263a1ab42b",
+    "scripts/tests/test_governance_host_evaluation.py": "9c2cf8d938e6c78eea5b903851f38487d4e69169f47d5fa10721a0a1c02580ed",
+    "scripts/tests/test_governance_host_bootstrap.py": "33e981cead1b6a5adcef39d042e7bf23d9e8738af01afa22059a6db51b005bc3",
+    "scripts/tests/test_governance_host_corrections.py": "c2894883b44c8beb468e92e859fc172ff4740d1470088df70e61325cb6f84947"
+  }
+}

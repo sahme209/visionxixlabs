@@ -1,0 +1,130 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts (5 tests | 2 failed) 17ms
+   × joins actual private expiry source through original locked closure store, retaining distinct history 3ms
+   × does not call a fresh evidence reader when original private read eligibility refuses 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts > joins actual private expiry source through original locked closure store, retaining distinct history
+Error: platform_custodian_closure_unavailable
+ ❯ fail lib/governance/platform/operations/custodianClosureStore.ts:21:29
+
+ ❯ Object.observe lib/governance/platform/operations/custodianClosureStore.ts:45:16
+ ❯ lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts:29:190
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts > does not call a fresh evidence reader when original private read eligibility refuses
+AssertionError: expected "vi.fn()" to not be called at all, but actually been called 1 times
+
+Received:
+
+  1st vi.fn() call:
+
+    Array [
+      Object {
+        "event": [Function event],
+        "lock": [Function lock],
+        "lockCustodian": [Function lockCustodian],
+        "now": [Function now],
+        "read": [Function read],
+        "readCustodianClosure": [Function readCustodianClosure],
+        "readCustodianClosureSnapshot": [Function readCustodianClosureSnapshot],
+        "readCustodianControl": [Function readCustodianControl],
+        "readEffect": [Function readEffect],
+        "readPrincipal": [Function readPrincipal],
+      },
+      Object {
+        "barrier": Object {
+          "admissionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "closureObserved": false,
+          "controlActionId": "platform_action_44444444-4444-4444-8444-444444444444",
+          "controlDigest": "ed1b5296ce9445be527ee49ac0dbc716a281f9f606ebb8c90a552451cf3df9c3",
+          "custodian": Object {
+            "accountId": "123456789012",
+            "roleArn": "arn:aws:iam::123456789012:role/private",
+          },
+          "executionAuthorized": false,
+          "format": 1,
+          "generation": 2,
+          "issuerProfileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "mode": "draining",
+          "nativeKey": "d11cdcbf2a8ebb3ab5aca40c6f606f4d122351771bf422359bb3b7a73955e7f0",
+          "scope": "platform",
+          "sourceEvidenceDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "updatedAt": 4000,
+          "version": 2,
+        },
+        "closureObserved": false,
+        "coverage": "recorded_issuer_intents_only",
+        "digest": "ceba5b2b80ea3d513b0a75de57c9b4e8b44cc064cd723af357bd9bb676bd8061",
+        "entries": Array [
+          Object {
+            "credential": Object {
+              "expiresAt": 10000,
+              "leaseRef": "platform_credential_11111111-1111-4111-8111-111111111111",
+              "observedAt": 3500,
+              "requestedAt": 2000,
+              "status": "issued",
+            },
+            "delegationDigest": "ef4218d5dcd43613abc9770a45099dbed276b75223b8a7a820320d457804dcd4",
+            "intent": Object {
+              "actionId": "platform_action_11111111-1111-4111-8111-111111111111",
+              "admissionDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "barrierVersion": 1,
+              "closureObserved": false,
+              "createdAt": 3000,
+              "digest": "5fd59d78d868ebf9ebaa05db545f84dd4254e8336f70789fb46b8a5190d35a89",
+              "executionAuthorized": false,
+              "format": 1,
+              "generation": 1,
+              "hold": true,
+              "id": "platform_intent_5a21701bbb2c5ea225c42b1f0410bf0ecac9c83f1c79c47319047986b23ae86a",
+              "issuerProfileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "manifestDigest": "1a79036da3c95f487e67f8ecd537728a408ba7b7f3c53d875e6f08529892fc13",
+              "nativeKey": "d11cdcbf2a8ebb3ab5aca40c6f606f4d122351771bf422359bb3b7a73955e7f0",
+              "scope": "platform",
+              "stage": "source.acquire",
+              "status": "native_ready",
+            },
+            "parentDigest": "7c0991a2794b35573a3f02b712ff710dbccd665f14635112ae0d0feb319c8eec",
+            "source": Object {
+              "expiresAt": 10000,
+              "leaseRef": "platform_credential_11111111-1111-4111-8111-111111111111",
+              "observedAt": 3500,
+              "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+              "requestedAt": 2000,
+              "status": "issued",
+            },
+            "targetReservation": Object {
+              "generation": 1,
+              "nativeKey": "d4d5c452e52b7ad268d4e1ed46b37dad0a5a6055f0e8f06939a1020ebb2297d1",
+            },
+          },
+        ],
+        "executionAuthorized": false,
+        "format": 1,
+        "providerOutcomeReconciled": false,
+        "purpose": "platform_custodian_closure_snapshot_v1",
+      },
+    ]
+
+
+Number of calls: 1
+
+ ❯ lib/governance/platform/operations/__tests__/operationalClosureSource.test.ts:30:383
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 3 passed (5)
+   Start at  14:16:58
+   Duration  171ms (import 52%, transform 28%, tests 18%, worker 1%)
+

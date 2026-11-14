@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from '../executionTimeEvidence';
 import 'server-only';
 import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
@@ -72,7 +73,7 @@ export function createWorkloadOwnerTime(raw:OperationalExecutionFacts|undefined,
     if(window.notBefore>=window.expiresAt)return fail();return Object.freeze({source,jwt,requester,reviewer,window});
    }
    await current();const before=await capture();
-   if(nativeCheck)await nativeCheck(before.window);else await assertExecutionWindow(clock,before.window,signal);
+   if(nativeCheck){await nativeCheck(before.window);recordExecutionTimeCheckForOwner(tx,nativeCheck)}else{const observation=await assertExecutionWindow(clock,before.window,signal);recordExecutionTimeEvidence(tx,observation,before.window)}
    active();await current();const after=await capture();if(!same(before,after))return fail();
    await facts.assertFinalCurrent!(tx,state,phase,before);active();
    // Last native facts remain INSIDE this original transaction, after all

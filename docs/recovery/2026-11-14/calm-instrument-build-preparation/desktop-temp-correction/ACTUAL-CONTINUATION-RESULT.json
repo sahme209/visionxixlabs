@@ -1,0 +1,33 @@
+{
+  "accepted": true,
+  "priorCombinedAccepted": false,
+  "packetSha256": "cd0e044f1e97bbc499c66a1a0ecdb9bf4f92e9f809333bc078a7bf6976f4e2fa",
+  "scope": "one desktop frontend build only; website not repeated",
+  "websiteRebuilt": false,
+  "networkDenied": true,
+  "outsideStageWritesDenied": true,
+  "retryAllowed": false,
+  "originalTempTarget": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/.vite-temp",
+  "repair": {
+    "path": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5/source/desktop/node_modules/.vite-temp",
+    "mode": 448,
+    "cacheTargetUnmodified": true
+  },
+  "desktop": {
+    "exitCode": 0,
+    "reason": null,
+    "cleanupConfirmed": true,
+    "logBytesObserved": 1776,
+    "logSha256": "cf320ed022d65329aeba21d67c18c4a39694bf60079c4bec2ed6427e56189eca",
+    "logPath": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5/desktop-continuation.log"
+  },
+  "desktopOutputs": {
+    "assets/dist-js-DGUrIxgu.js": "888f19b5817cfb0c84097ade033bddcb5fddc44e266171bc1d6c47a98720a059",
+    "assets/index-C4mAtmtL.css": "03aac73e6f74147c81d7c9adc10b35ffcb28951db9393aeb41c5b7cf0a7ecaa3",
+    "assets/index-CazQ6XLd.js": "161270d8d2f5c858753d4acbf7378a0455e545a1880b26e3f73254c38ea39109",
+    "assets/servicenow-B5BT0v3W.png": "5d8ad5f9badc5eda5a42df74a6d4133425ed3144226249bdaf50d3e8732e6318",
+    "axiom-logo.png": "680c38d3c8bd178f2fbc1dbc9d079e16b7b6c130ebe90a0c9c2479d7ec98bee9",
+    "index.html": "6bb7f75cc9a80fcca2f30b0736bae17a1fb682adb722ffe67bdb2549893e3c24"
+  },
+  "finalInputsMatched": true
+}

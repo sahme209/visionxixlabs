@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from '../executionTimeEvidence';
 import type {OperationalObservationAuthorization} from './observationAuthorization';
 import {createWorkloadOwnerTime,type OperationalExecutionFacts} from './workloadOwnerTime';
 import {readPlatformPrincipalTimeWindow,assertPlatformPrincipalTime} from '../principalTime';
@@ -29,6 +30,7 @@ type Identity=Pick<ReturnType<typeof createOperationalWorkloadIdentity>,'authent
 type Consumed=Awaited<ReturnType<Identity['consume']>>;
 export interface OperationalIntentAdmission{assertCurrent?(tx:OperationalDelegationTransaction,intent:CustodianIntent):Promise<void>;reserve(tx:OperationalDelegationTransaction,actionId:string,stage:CustodianIntentStage):Promise<unknown>}
 export interface OperationalCredentialIssuer{
+ readObservedProviderExpiry?:import('./providerExpiryProvenance').ProviderExpiryReader['readObservedProviderExpiry'];
  assertQualified(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
  assertSourceCurrent?(tx:OperationalDelegationTransaction,manifest:OperationalDelegation['manifest'],metadata:CustodianCredentialObservation):Promise<void>;
  /** Private fixed issuer; no raw token/role/target from request JSON. */
@@ -170,7 +172,7 @@ export function createOperationalDelegationStore(repo:OperationalDelegationRepos
     const clock=timing?.clock,signal=timing?.signal,assertActive=()=>{if(!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();timing?.assertActive?.();signal.throwIfAborted()};
     async function readerCurrent(check?:ExecutionTimeCheck){
      if(storedTerminal)return;assertActive();if(typeof clock!=='function')return fail();await authority.assertCurrent(tx,reader);assertActive();
-     if(check){const window=await readPlatformPrincipalTimeWindow(tx,reader,signal!);await check(window)}else await assertPlatformPrincipalTime(tx,reader,clock,signal!);
+     if(check){const window=await readPlatformPrincipalTimeWindow(tx,reader,signal!);await check(window);recordExecutionTimeCheckForOwner(tx,check)}else await assertPlatformPrincipalTime(tx,reader,clock,signal!);
      assertActive();await authority.assertCurrent(tx,reader);assertActive();
     }
     let owner:OperationalObservationAuthorization|undefined;

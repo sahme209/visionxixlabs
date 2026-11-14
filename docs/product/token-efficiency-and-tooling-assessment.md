@@ -66,3 +66,8 @@ Source-bound local measurement of existing retrieval/top-five prompt assembly is
 
 ### Gap-time coding token-efficiency assessment — no adoption
 Source-bound research and one synthetic arithmetic measurement are saved in docs/research/2026-11-12/coding-quote-efficiency-assessment.md/json/procedure.txt. Current exact-request/quote, cache:none, model-currentness and atomic allowance facilities should be reused before adding libraries. In one invented-rate example, halving4096input tokens to2048changes a fixed4096-output reservation18→17cents, not50%; this is neither production pricing, actual usage/cost nor measured savings. No tokenizer/provider/model/customer read, dependency, runtime, billing or production change. Quality-equivalent real model benchmarks and all adoption gates remain open. Primary image protocol consent/real qualification remains pending; full goal stays active.
+
+
+### November14 — existing Agent context controls assessed during build-permission wait
+
+The [source-bound Agent context assessment](../research/2026-11-14/agent-context-reuse-assessment.md) verifies existing transcript/fresh-evidence limits, shared decision/repair budgets and the separate final-input byte bound. One synthetic pure-helper measurement passes five cases; no model/provider/database calls, new runtime optimization, token/cost-saving claim, dependency or pricing change. The earlier retrieval measurements are preserved, not rerun. Reuse current controls before new libraries; real quality/cost/adoption gates and the pending presentation-build decision remain open.

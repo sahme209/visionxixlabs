@@ -1,0 +1,19 @@
+{
+  "decision": "APPROVED_CONDITIONAL_LOCAL_BUILD_BATCH",
+  "source": "Owner replied Approved immediately after blocked conditional-build request; goal explicitly set active",
+  "approvedScope": "Prepare/test/independently review fixed executor and exact inputs, then ONE offline website build and desktop frontend only if website passes",
+  "snapshotSha256": "96a7d10c6190e30a4f7ecf2ad2bff18bb70a117e00314269c68307bb7a9d0c46",
+  "sharedChildBudgetSeconds": 1800,
+  "ownedCleanupSeconds": 5,
+  "retry": false,
+  "executionAttemptConsumed": false,
+  "exclusions": [
+    "Downloads/install",
+    "Actual SQL or provider calls",
+    "Credentials/account/service/grant changes",
+    "Governance/native runtime or app launch",
+    "Rust/Tauri/signing/installation/version publication",
+    "Browser-policy workaround",
+    "CI/push/deployment/spending"
+  ]
+}

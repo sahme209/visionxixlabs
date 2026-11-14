@@ -1,0 +1,48 @@
+{
+  "scope": "SDK operational signing local source/intercepted tests only",
+  "authorization": "call_36a6c98e0c5d46d5b545378bfb0e4506",
+  "nativeCompiledOrExecuted": false,
+  "networkOrProviderContact": false,
+  "realCredentials": false,
+  "reviewedByAuthor": false,
+  "independentReviewRequired": true,
+  "inputSha256": {
+    "lib/governance/platform/nativeTime/sdkOperationalSigning.ts": "42e54bea51cafa26d0aaaafaab5de4a62244970dc660e9dd625c9459809fba3e",
+    "lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts": "f4ff681f51dce4719d8aad38f6e5798323cc427c1ecca204debb18bc16fb6f26",
+    "lib/governance/platform/nativeTime/__tests__/sdkOperationalTransport.test.ts": "53a2f2a89eea7293577eccb88e663f73dba3849339053d65842212e70362ac97",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "17acf21887e7dfcb7041fad867ba68dc0445d305380a20db53f050ad0bc2b804",
+    "lib/governance/platform/operations/ecsSdkTransport.ts": "340a6ed7b911d254526236657853f1b44a6f5300e3b92f3e274ed07222f5e224",
+    "lib/governance/platform/templateNativeTransport.ts": "10760a62006640c3e80b4faf72fa50c8d9206feeee5afce8e5f71cb8ff60a537"
+  },
+  "logSha256": {
+    "FINAL-FOCUSED.log": "8f6c73e8f9136e05a262458feb77fc9a6dc6ac3ea4682e7f1f60d2b0aa0ad73e",
+    "GREEN.log": "b38c26f3d0c70279e9b13591e46948e8851e14b8a4d845a3649f515428c0b561",
+    "INTEGRATION.log": "c4f48d648d4bbfceca26724ae0fe12519bea9194b2f8fabbad88220f8e03b604",
+    "OPERATIONAL-TRANSPORT-FIRST-FAIL.log": "785b0e52a0a2fb7d6c72d8126cfdde4822643c1e5e583afff6e5a4bb39e9f346",
+    "OPERATIONAL-TRANSPORT-IMPORT-FAIL.log": "163d2be1efe6b487385db7933c3ad530158a494f0f4ad117937810e75aaaeb63",
+    "OPERATIONAL-TRANSPORT.log": "a878b5927fead23cf98b0a5a415fcfd51862edc84901b3919d904353264b758f",
+    "RED.log": "72c6c0811d70f35edc76962905abdcfaeda2f408f0a62a2d93a8596ff63862e4",
+    "WRONG-CHECKOUT-MODULE-FAIL.log": "5c7d6d5e5730f4e656698e7d0188ce256d78214d6aaf4166124902f25ab0090a",
+    "WRONG-CHECKOUT-MODULE-RED.log": "4292702d5cf5fdff26572cee91d493299969d12506c62eec6ce919bfb01e4717"
+  },
+  "summaries": {
+    "RED.log": "Actual installed default SDK behavior with unbound helper scaffold: 5 failed, 1 passed; current host date/implicit presign and missing expiry interception reproduced",
+    "GREEN.log": "Initial implemented helper: 6 passed",
+    "INTEGRATION.log": "Initial helper plus 3 existing transport suites: 60 passed / 4 files",
+    "OPERATIONAL-TRANSPORT.log": "Actual production ECS reader, private STS issuer, template STS/S3/presign with authentic operational source: 3 passed",
+    "FINAL-FOCUSED.log": "11 passed / 2 files: 8 helper tests plus 3 actual production transport cases"
+  },
+  "excludedFromBehaviorRed": [
+    "WRONG-CHECKOUT-MODULE-RED.log",
+    "WRONG-CHECKOUT-MODULE-FAIL.log",
+    "OPERATIONAL-TRANSPORT-IMPORT-FAIL.log",
+    "OPERATIONAL-TRANSPORT-FIRST-FAIL.log"
+  ],
+  "limitations": [
+    "No target ABI/native/host qualification",
+    "Existing genuine profile/custody/source qualification remains required",
+    "Actual Node TLS/external identity clock dependencies remain broader-unit acceptance",
+    "Not an independent author code review",
+    "Other files/lanes remain work in progress"
+  ]
+}

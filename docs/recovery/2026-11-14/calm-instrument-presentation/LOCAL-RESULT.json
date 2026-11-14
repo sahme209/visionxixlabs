@@ -1,0 +1,55 @@
+{
+  "approval": "call_53171088367e42a8b7a4e3930160ebef",
+  "scope": "Local presentation source and ordinary isolated checks only",
+  "sourceFiles": {
+    "app/page.tsx": "112eb0699dda968bcf5ee958b299ac95bf191bebae928634979168e667cbfe67",
+    "components/marketing/GovernedDeploymentModel.tsx": "eab66257557e46447118dbacbcebd74632710f329bcd4e1f02ba997159e0833a",
+    "components/marketing/__tests__/GovernanceAssembly.test.ts": "30cdfa0efcb400f20fc2fe87d6683e88e0044e98fcce79fdcde469873f34ef41",
+    "desktop/src/styles.css": "d5e8ab4d97cb04429ac79588df40c6eb157ec7d02db44a28716318f8917d481e",
+    "desktop/src/components/BotTaskComposer.tsx": "754c3d67e7b41e806dc3591064647e1fdf33ccc098dc07a8879437b8c81ccf05",
+    "desktop/src/views/DeploymentRequestsView.tsx": "fd67938625f9d22d5fdf17dcc05b114a778dcaa7c7bd6cf2338c3a009afb5e3a"
+  },
+  "initialFocusedBatch": {
+    "files": 7,
+    "passed": 92,
+    "failed": 1,
+    "failure": "Prior test expected media inside hero; current approved sequence moves it later. Historical failed log preserved."
+  },
+  "correctedAssemblySuite": {
+    "files": 1,
+    "passed": 9,
+    "failed": 0
+  },
+  "currentAffectedScopes": "Six unchanged passing files from initial batch, plus corrected nine-case assembly suite; no second full batch or full repository suite claimed.",
+  "rootTypesFinal": "PASS",
+  "desktopTypes": "PASS",
+  "sourceReview": "CLEAR; no critical/important findings",
+  "backendSourcesPreserved": 61,
+  "rendered": false,
+  "buildRun": false,
+  "appRestarted": false,
+  "productionChanged": false,
+  "dependenciesChanged": false,
+  "logs": {
+    "axiom-calm-instrument-focused.log": {
+      "path": "/private/tmp/axiom-calm-instrument-focused.log",
+      "sha256": "6909e5c79d34958d3aac2fbf66011712699b26b7d8d38abbcb9f1622b4a899fe"
+    },
+    "axiom-calm-instrument-layout-correction.log": {
+      "path": "/private/tmp/axiom-calm-instrument-layout-correction.log",
+      "sha256": "c5ca863d0c3891a55ff2dd4f438b614fa321759aa898157e4ead0fb847e4a5f6"
+    },
+    "axiom-calm-instrument-types.log": {
+      "path": "/private/tmp/axiom-calm-instrument-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "axiom-calm-instrument-final-types.log": {
+      "path": "/private/tmp/axiom-calm-instrument-final-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "axiom-calm-instrument-desktop-types.log": {
+      "path": "/private/tmp/axiom-calm-instrument-desktop-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

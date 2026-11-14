@@ -1,0 +1,3 @@
+# Preserve reviewed recovery evidence and native patches byte-for-byte.
+docs/recovery/2026-11-14/** -text
+packages/verified-issuer-runtime/linux/*.patch -text

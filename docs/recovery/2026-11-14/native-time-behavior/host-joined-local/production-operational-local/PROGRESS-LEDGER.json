@@ -1,0 +1,149 @@
+{
+  "authority": "call_36a6c98e0c5d46d5b545378bfb0e4506",
+  "status": "final TS source frozen after TS-P2-1; root combined ordinary/types and independent exact delta review pending",
+  "tests": [
+    {
+      "slice": "core observation/common owner",
+      "red": "5 fail after import-only refusal scaffold",
+      "green": "39 pass across new5+existing34"
+    },
+    {
+      "slice": "one-use operational observation",
+      "red": "1 fail/5 pass",
+      "green": "40 pass/2 files"
+    },
+    {
+      "slice": "returned credential positive lifetime",
+      "red": "1 fail/5 pass",
+      "green": "6 pass"
+    },
+    {
+      "slice": "all live tracked template phases",
+      "red": "4 fail",
+      "green": "7 pass/2files; preinsert binding lookup preparation mistake corrected"
+    },
+    {
+      "slice": "review corrections: last profile await time/role and retired token",
+      "red": "3 fail/10 pass",
+      "green": "13 pass/2files"
+    },
+    {
+      "slice": "operational closure pure variant",
+      "red": "1 positive fail/3 existing refusal pass",
+      "green": "8 pass including old strict compiler"
+    },
+    {
+      "slice": "original provider expiry metadata",
+      "red": "2 fail/16 pass",
+      "green": "18 pass actual custodian/STS HTTP-intercept factories"
+    },
+    {
+      "slice": "closure actual source/owner",
+      "red": "initial missing-module error; original read gate mutation removes permission and reproduces failures (not initial TDD evidence)",
+      "green": "14 pass with strict store and actual memory composed source; direct binder fixture initially missed predecessor digest, corrected test only"
+    },
+    {
+      "slice": "native wrapper",
+      "red": "initial missing-module error, not native behavioral proof",
+      "green": "5 ordinary mocked tests; unknown completed cleanup regression RED1/5pass\u2192GREEN6"
+    },
+    {
+      "slice": "private operational Linux source\u2192RSA/JWT\u2192source credential\u2192STS/ECS",
+      "red": "1 fail/3 pass (missing new composition)",
+      "green": "4 pass, native boundaries simulated and HTTP intercepted"
+    },
+    {
+      "slice": "legacy generic template fallback",
+      "red": "2 fail/23 pass",
+      "green": "25 pass; original claims remain refused"
+    },
+    {
+      "slice": "combined focused checkpoint",
+      "green": "188 pass/19files at recorded checkpoint before final public history summary addition"
+    },
+    {
+      "slice": "public assurance summary",
+      "red": "missing new export failure",
+      "green": "35 pass/2files core+actual action store"
+    },
+    {
+      "slice": "types",
+      "status": "initial snapshot narrowing fixed; second pass passed; later ES2017 test literals/unknown result/fixture inferred-null corrected; final root check pending final-source freeze"
+    },
+    {
+      "slice": "native synchronous whole-invocation begin before hold",
+      "red": "2 fail/6 pass",
+      "green": "12 pass/2files original wrapper8+actual Linuxcomposition4",
+      "native": "C deadline implementation/source contracts owned by native agent; no native run"
+    },
+    {
+      "slice": "TS-P2-1 original expiry eligibility before fresh native capture",
+      "red": "2 fail/6 pass",
+      "green": "27 pass/3files",
+      "change": "original issued source/derived lease provenance copied before admission and immediately before capture; postcapture original expiry metadata/native source checks retained"
+    }
+  ],
+  "sdk": "See sdk/IMPLEMENTATION-REPORT.md and independent review; equivalent BigInt target syntax and exact type narrowing subsequently applied without changing assertions. Historical SDK logs/hash scope retained.",
+  "native": "See native/ independent review and source-only manifests; final immutable native field binding correction pending at this ledger snapshot. No native compiler/run.",
+  "logs": {
+    "logs/axiom-production-operational-combined-focused.log": "444552d07f44367a1786852d79c7833ee4d09d511065e87439ee0269b72f4bc8",
+    "logs/axiom-production-operational-core-green.log": "49768438551b7e1f3a43c848a086d40b7893a5560ccbe55809dfeea6e69e59be",
+    "logs/axiom-production-operational-core-red.log": "0ec8314e6b1d14bc6bbd6ed41fdc4e8964bb4cf84544d35453904feeb5d9caf2",
+    "logs/axiom-production-operational-replay-green.log": "5b4ecf3b07d9f8761ab1f10d5558c2ee8e5dc0fcf95e050c3482542b8b8dbb72",
+    "logs/axiom-production-operational-replay-red.log": "140cd5eae9cd18b932e3d65dfb67fcc93d68a03a02d2cc0ae5607051f0fde96a",
+    "logs/axiom-production-operational-types-final-candidate.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/axiom-production-operational-types-initial.log": "d5d530c0acebba7f56f064083d5b6c6646a764ba52e3e2b402e0d59fd5f5c3ad",
+    "logs/axiom-production-operational-types-intermediate.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "logs/axiom-production-operational-types-joined.log": "c94338a718e2cb8afcfc61a34dde8532e9c0221331f035938f2f2497961c53e9",
+    "logs/axiom-operational-closure-binding-green.log": "a1538085aca353665ca74868fb0e4eca2d7b94dedcaaf5f7824ab23b0fc4b1c2",
+    "logs/axiom-operational-closure-browser-green.log": "b20a0cbb1bcecfec5583a8cd171c10b1cd9ea8ae367b7ebf4e8ef532d9e660bd",
+    "logs/axiom-operational-closure-browser-red.log": "05f1ea932cb146bc25eabf92ee9cb8de5cc68e68664807b724dac411414bf9ae",
+    "logs/axiom-operational-closure-drain-green.log": "30a286339b0c69c39c5b44a26644202fcfaf5dbc9cbba9b063c2d897446ca39b",
+    "logs/axiom-operational-closure-green.log": "6e84cb9b42118823258e53142f41563507ab1e904f952e7d359bdc4b98e58bf5",
+    "logs/axiom-operational-closure-owner-gate-green.log": "7de62b6cc5ca4bb587144f7f6416ef3866696ce86abac78f13fb8955c409834d",
+    "logs/axiom-operational-closure-owner-gate-red.log": "f868e61a8b4c3b9da76da07d06eef0f7ed2ac3b4ee9aa13f8cd87662494ddca4",
+    "logs/axiom-operational-closure-owner-green.log": "9690fc9388e81e67cb490ac72e8cf105c98cce8a88d8776fd60cbb241d762429",
+    "logs/axiom-operational-closure-red.log": "30a29600d04b1e0228b811fccea6323da03cdc092fafcc993296d551c30ffc54",
+    "logs/axiom-operational-closure-source-green.log": "5d10b47136c27924e3f4270cae225aba595c84e1fd68e846f9bd935bc3ca9d99",
+    "logs/axiom-operational-closure-source-red.log": "d4dbeab4c8f87f5f8cf2254f6c91c1e740d86947631e0de815ae488133b16e8e",
+    "logs/axiom-operational-history-summary-green.log": "80ed0406f8f6f4af140b208fc82f16bb1ae425b0698d4c783e8ce1ac1bef8212",
+    "logs/axiom-operational-history-summary-red.log": "5c885180f7d358c63df1ec2fb166b7b3e7f0d27e664bc69c658e7bc34079eef7",
+    "logs/axiom-operational-legacy-template-green.log": "4c22610828344d9635b58e566750020516c6ba8fb51b65a1d3051dfaf9ce603f",
+    "logs/axiom-operational-legacy-template-red.log": "ab60dd3b743ac5fca0fa2cb7613f04c32acd9d78d035984fd640b3a0ae46597e",
+    "logs/axiom-operational-linux-composition-green.log": "b8e7940965cd5841082f7171cd231d08c3fb054c3cec020cfdd0dc372a7de4ff",
+    "logs/axiom-operational-linux-composition-red.log": "603a40867c26f1ec22b2185d0e623f3c4d5f250bcb6056842b2194e1b1642f40",
+    "logs/axiom-operational-native-cleanup-green.log": "d6f54733ebc965418a54ba71d450fe5e5a87714dce30919e0f08f19d22f9605a",
+    "logs/axiom-operational-native-cleanup-red.log": "b31b4b21525e1b2793a78fe067fe2b387a1d86d20f7137fdd8e43499daeff8c3",
+    "logs/axiom-operational-native-green.log": "107c5c58a93f234b4eedbc7bbb493a73524fe2a57bbb091eeefd5b5404a89d38",
+    "logs/axiom-operational-native-initializer-red.log": "deea85fe527d0a02af7472aec23cd2cdaae8cfb6fa40d960842a0b28fda898bc",
+    "logs/axiom-operational-native-red.log": "9c9c7b943afbafbe902d9a07be7d5c95817777f87aa6cca7d25b665c5fceb9b1",
+    "logs/axiom-operational-native-v2-green.log": "efbb8956ab708762706b73115389ded4c72525d106e5fe1f433e3224e440abfc",
+    "logs/axiom-operational-native-v2-red.log": "9036002c78541654ccafa284997bc97502aa26b7c5ccf53c3a60376c48e3706d",
+    "logs/axiom-operational-native-v3-freeze-green.log": "98e2c1e6dafa9adb3a4f63f209231ed30ebe6a2630338bfd8598bb714b880db7",
+    "logs/axiom-operational-native-v3-freeze-red.log": "5db8ef2236e3efad7572a44a821a081dc65ace331eddb6ec585b36349ee59410",
+    "logs/axiom-operational-native-wrapper-green.log": "1a47d3e3f04fa69d3aa7ca7c1849939395afa7ccc6f0bc0ded150bf873d4a444",
+    "logs/axiom-operational-native-wrapper-red.log": "5759692156c00de66aa8f70f3e29924253df4b5656eefb82268c3a3910678ff3",
+    "logs/axiom-operational-receipt-green.log": "f8c2092515d412b47670a31ecd2cde806936a2b209dca3c95eae61b61041935b",
+    "logs/axiom-operational-receipt-red.log": "6fc66479a428ab2261d92be66edad6da943ecda07f06e5daaf79ffa8bc4ad0e9",
+    "logs/axiom-operational-retire-green.log": "76e1a925370696505ede5b2110309f8ca03e3def39cfde11ca13af2175f6622f",
+    "logs/axiom-operational-retire-red.log": "80d9086e6d9913c6e9fb7a3606faea3efca5eaa0e19ca3392b0e0b8fff4f3534",
+    "logs/axiom-operational-review-findings-green.log": "7e15daf5a54d67a28c14e59fe157df40394648d54b8ce23051458e1f602a624b",
+    "logs/axiom-operational-review-findings-red.log": "c5ac5a014df48409296daff372aa0661cd7dafe05d1604347f726db04311a492",
+    "logs/axiom-provider-expiry-provenance-green.log": "9fc02527fd9c43d51922da504be58589c1db81fc795a5e3ed85aaae86f1a2b42",
+    "logs/axiom-provider-expiry-provenance-red.log": "38b37f9e59ab6d78dca9bb3998e7ae961ae42401ca272330f8c17e2ce7c5984d",
+    "logs/axiom-production-template-green.log": "84746d27c8819601b71c4c677e015c72be351532175ff11b3211d23a7ad28926",
+    "logs/axiom-production-template-red.log": "14bcf43ebb88a53e5ca56b0d52d56ec739827abf4456083c7e7eba925f0e9345"
+  },
+  "excludedOperationsPerformed": false,
+  "exclusions": [
+    "native compile/run/addon/clock/service/ACL",
+    "actual SQL/provider/cloud/real credentials",
+    "dependencies/network/CI/push/activation/spend"
+  ],
+  "sourceManifestSha256": "2861f8a591e3cacaf740ca2900fe6da418460223ef45aed09a30e156c64bf9a0",
+  "finalTypeScriptManifestSha256": "6f60a4fd30c6607575bef9a0649f7e74f39d09f636f36d73ccc099775dff3bea",
+  "finalNativeManifest": {
+    "path": "docs/recovery/2026-11-14/native-time-behavior/host-joined-local/production-operational-local/native/SOURCE-MANIFEST-v3.json",
+    "sha256": "ea80412e1827005f1f9c4410d7a4ff754ea59bf1a6f62a3bfcf8d34a98e7ec89"
+  }
+}

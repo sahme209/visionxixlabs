@@ -1,0 +1,39 @@
+{
+  "accepted": false,
+  "packetSha256": "c57d84b7c1f5dbebecbff00838346d5b94f4b41f09e58245d03b59450826b6c3",
+  "snapshotSha256": "96a7d10c6190e30a4f7ecf2ad2bff18bb70a117e00314269c68307bb7a9d0c46",
+  "stage": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5",
+  "scope": "ordinary website+desktop frontend compilation only",
+  "networkDenied": true,
+  "outsideStageWritesDenied": true,
+  "databaseUrlSupplied": false,
+  "nativeRuntimeLaunched": false,
+  "retryAllowed": false,
+  "phases": {
+    "website": {
+      "exitCode": 0,
+      "reason": null,
+      "cleanupConfirmed": true,
+      "logBytesObserved": 43893,
+      "logSha256": "86122f3d798afcb1db47a55d8cc519e8d2c3ea8710e65ee210aa1fd3ff29e497",
+      "logPath": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5/website.log"
+    },
+    "desktop": {
+      "exitCode": 1,
+      "reason": null,
+      "cleanupConfirmed": true,
+      "logBytesObserved": 2110,
+      "logSha256": "0ddde53f21f91f23b77b852ee68ac3c97ac84fc24b6f6491df3a0302d195204d",
+      "logPath": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5/desktop.log"
+    }
+  },
+  "desktop": {
+    "exitCode": 1,
+    "reason": null,
+    "cleanupConfirmed": true,
+    "logBytesObserved": 2110,
+    "logSha256": "0ddde53f21f91f23b77b852ee68ac3c97ac84fc24b6f6491df3a0302d195204d",
+    "logPath": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5/desktop.log"
+  },
+  "finalInputsMatched": true
+}

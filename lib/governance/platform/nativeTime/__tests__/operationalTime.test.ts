@@ -1,0 +1,27 @@
+import {projectExecutionTimeEvidence,executionTimeEvidenceForOwner} from '../../executionTimeEvidence';
+import {assertPlatformParticipantsTime} from '../../principalTime';
+import {describe,it,expect,vi} from 'vitest';
+import {assertExecutionWindow,assertReturnedCredentialLifetime} from '../../executionTime';
+import * as operational from '../operationalSource';
+const ns=(n:number)=>BigInt(n)*BigInt(1000000);
+function fixture(){
+ const context=Object.freeze({profileDigest:'a'.repeat(64),revision:1,hostGeneration:'host-1',sourceGeneration:'source-1',source:'amazon-ipv4-ntp' as const});
+ let unixTimeNs=ns(1000),publication=BigInt(1),withdrawn=false,tick=100;
+ const native={context,async observe(){if(withdrawn)throw Error('withdrawn');tick+=2;return Object.freeze({context,unixTimeNs,monotonicBeforeNs:ns(tick),monotonicAfterNs:ns(tick+1),publication,disruptionMarker:BigInt(0)})},async assertObservationCurrent(){if(withdrawn)throw Error('withdrawn')},retire:vi.fn()};
+ return {native,clock:operational.createOperationalExecutionTimeSource(native),set(n:bigint){unixTimeNs=n},advance(){publication++},withdraw(){withdrawn=true}};
+}
+describe('authenticated operational time through actual common window',()=>{
+ it('compares exact nanoseconds without manufacturing a strict interval',async()=>{const f=fixture();const value=await assertExecutionWindow(f.clock,{notBefore:1000,expiresAt:1001},new AbortController().signal);expect(value).toMatchObject({assurance:'aws-linux-operational-v1',unixTimeNs:ns(1000)});expect('earliest' in value).toBe(false)});
+ it('refuses equality at expiry and accepts one nanosecond before',async()=>{const f=fixture(),signal=new AbortController().signal;f.set(ns(1001)-BigInt(1));await expect(assertExecutionWindow(f.clock,{expiresAt:1001},signal)).resolves.toBeDefined();f.set(ns(1001));await expect(assertExecutionWindow(f.clock,{expiresAt:1001},signal)).rejects.toThrow()});
+ it('refuses a copied operational observation with identical serialized fields',async()=>{const f=fixture(),signal=new AbortController().signal;const value=await f.clock(signal);await expect(assertExecutionWindow(async()=>({...value}),{},signal)).rejects.toThrow()});
+ it('allows routine publications under original accepted generation and retires withdrawal',async()=>{const f=fixture(),signal=new AbortController().signal;await f.clock(signal);f.advance();await f.clock(signal);f.withdraw();await expect(f.clock(signal)).rejects.toThrow();expect(f.native.retire).toHaveBeenCalledTimes(1)});
+ it('consumes the original observation once through the common window',async()=>{const f=fixture(),signal=new AbortController().signal,value=await f.clock(signal);await assertExecutionWindow(async()=>value,{},signal);await expect(assertExecutionWindow(async()=>value,{},signal)).rejects.toThrow()});
+ it('invalidates an unconsumed observation when the original native source retires',async()=>{const f=fixture(),signal=new AbortController().signal,value=await f.clock(signal);f.withdraw();await expect(f.clock(signal)).rejects.toThrow();await expect(assertExecutionWindow(async()=>value,{},signal)).rejects.toThrow()});
+ it('uses operational returned-expiration policy without a strict lower endpoint',async()=>{const f=fixture(),signal=new AbortController().signal;const value=await assertExecutionWindow(f.clock,{},signal);expect(()=>assertReturnedCredentialLifetime(value,901000,900000)).not.toThrow();expect(()=>assertReturnedCredentialLifetime(value,901001,900000)).toThrow();expect(()=>assertReturnedCredentialLifetime(value,1000,900000)).toThrow();expect(()=>assertReturnedCredentialLifetime(value,999,900000)).toThrow()});
+});
+
+it('records explicitly operational nonsecret assurance at the actual original participant owner',async()=>{const f=fixture(),tx={readPrincipal:async(p:{userId:string;sessionId:string})=>({...p,live:true,sessionIssuedAtMs:0,sessionExpiresAtMs:2000})};await assertPlatformParticipantsTime(tx,[{userId:'reader',sessionId:'session'}],f.clock,{expiresAt:1500},new AbortController().signal);expect(executionTimeEvidenceForOwner(tx)).toMatchObject({format:1,assurance:'aws-linux-operational-v1',profileDigest:'a'.repeat(64),physicalUtcClosureProven:false,window:{expiresAt:1500}});expect(executionTimeEvidenceForOwner(tx)).not.toHaveProperty('context')});
+
+it('keeps retirement failure sticky without exposing a native private error',async()=>{const f=fixture();f.native.retire.mockImplementation(()=>{throw Error('PRIVATE NATIVE')});f.withdraw();await expect(f.clock(new AbortController().signal)).rejects.toThrow('operational_time_unavailable');await expect(f.clock(new AbortController().signal)).rejects.toThrow('operational_time_unavailable');expect(f.native.retire).toHaveBeenCalledOnce()});
+
+it('projects only explicit non-capability assurance category/profile to a browser history summary',async()=>{const f=fixture(),tx={readPrincipal:async(p:{userId:string;sessionId:string})=>({...p,live:true,sessionIssuedAtMs:0,sessionExpiresAtMs:2000})};await assertPlatformParticipantsTime(tx,[{userId:'reader',sessionId:'session'}],f.clock,{},new AbortController().signal);expect(projectExecutionTimeEvidence(executionTimeEvidenceForOwner(tx))).toEqual({format:1,assurance:'aws-linux-operational-v1',profileDigest:'a'.repeat(64),physicalUtcClosureProven:false,authority:'history_only',executionAuthorized:false});expect(()=>projectExecutionTimeEvidence({...executionTimeEvidenceForOwner(tx),qualified:true})).toThrow()});

@@ -1,0 +1,15 @@
+{
+  "status": "AWAITING_OWNER_CONDITIONAL_BUILD_APPROVAL",
+  "snapshotSha256": "96a7d10c6190e30a4f7ecf2ad2bff18bb70a117e00314269c68307bb7a9d0c46",
+  "snapshotFiles": 13933,
+  "snapshotBytes": 183932294,
+  "designReview": "CLEAR; actual executor and final packet still need independent review",
+  "actualExecutorPrepared": false,
+  "compilerRun": false,
+  "sourceSnapshotVerified": true,
+  "governanceEnabled": false,
+  "productionChanged": false,
+  "reviewSha256": "c857a58b067d9983d65612c7a10c4670ce4dd9c332cd18633c747bd7df437674",
+  "independentReviewSha256": "8edc9a64a07bcb9a6ad67ec3e682569bf60a523f551251a3b76566284652275a",
+  "permissionRequest": "One conditional offline website then desktop frontend build;30minute shared budget/no retry; owner answer pending"
+}

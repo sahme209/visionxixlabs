@@ -1,3 +1,4 @@
+import {recordExecutionTimeEvidence} from './executionTimeEvidence';
 import 'server-only';
 import {z} from 'zod';
 import {platformPrincipalSchema,type PlatformPrincipal} from './contracts';
@@ -20,7 +21,7 @@ export async function readPlatformPrincipalTimeWindow(tx:Pick<PlatformTransactio
 /** Standalone checks reuse the same exact-row parser. Joined final decisions
  * collect every participant window first, then validate a single intersection. */
 export async function assertPlatformPrincipalTime(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,clock:ExecutionTimeSource,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{
- try{const window=await readPlatformPrincipalTimeWindow(tx,raw,signal);await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window}catch{throw Error('platform_principal_time_unavailable')}
+ try{const window=await readPlatformPrincipalTimeWindow(tx,raw,signal);const observation=await assertExecutionWindow(clock,window,signal);recordExecutionTimeEvidence(tx,observation,window);signal.throwIfAborted();return window}catch{throw Error('platform_principal_time_unavailable')}
 }
 
 /** Supplemental time check for the actual phase's locked principals. It never
@@ -32,6 +33,6 @@ export async function assertPlatformParticipantsTime(tx:Pick<PlatformTransaction
   const principals=actors.map(p=>platformPrincipalSchema.parse(p));
   let notBefore=restriction.notBefore===undefined?0:stamp.parse(restriction.notBefore),expiresAt=restriction.expiresAt===undefined?Number.MAX_SAFE_INTEGER:stamp.parse(restriction.expiresAt);
   for(const principal of principals){const row=await readPlatformPrincipalTimeWindow(tx,principal,signal);notBefore=Math.max(notBefore,row.notBefore);expiresAt=Math.min(expiresAt,row.expiresAt)}
-  const window=Object.freeze({notBefore,expiresAt});await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window;
+  const window=Object.freeze({notBefore,expiresAt});const observation=await assertExecutionWindow(clock,window,signal);recordExecutionTimeEvidence(tx,observation,window);signal.throwIfAborted();return window;
  }catch{throw Error('platform_principal_time_unavailable')}
 }

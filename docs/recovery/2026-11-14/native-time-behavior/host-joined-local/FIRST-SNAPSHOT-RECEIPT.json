@@ -1,0 +1,12 @@
+{
+  "format": 1,
+  "status": "preserved-before-three-reviewed-corrections",
+  "allTwelveSourceHashesMatched": true,
+  "references": {
+    "SOURCE-MANIFEST.json": "b72188a5c82195b60d4076a1b23a3a23a8642e66ed2315085ade80de15d4459c",
+    "IMPLEMENTATION-REPORT.md": "bcff5f68dff5b2aa57e08d2d77f8cf4b76b0003558e120f317780129f6079f6d",
+    "TEST-LEDGER.json": "8e18cc1e71080fecde91b923cd690e3e389fc22cfc1d6bee798457f36729969b",
+    "WHOLE-UNIT-REVIEW.md": "837d50e1a971b8687484389f5a014ee0da3c5e0061834f1d9b3b8b332d67cf38",
+    "WHOLE-UNIT-REVIEW.diff": "ea449076cafe41cc85bc38c30ed8a25f8a6dd2b1c2f95789933ac31347cfa827"
+  }
+}

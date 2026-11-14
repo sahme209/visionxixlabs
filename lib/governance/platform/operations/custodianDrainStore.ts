@@ -1,3 +1,4 @@
+import {assertClosureEvidenceTime} from './closureTime';
 import {assertPlatformPrincipalTime} from '../principalTime';
 import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';
 import {custodianClosureSummary} from './custodianClosureSummary';
@@ -39,7 +40,8 @@ export function createCustodianDrainService(repo:CustodianDrainRepository,author
   await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);
   if(!signal||signal.aborted)return fail();
   const people=[await assertPlatformPrincipalTime(tx,actor,clock,signal),await assertPlatformPrincipalTime(tx,state.requester,clock,signal)];if(state.reviewer)people.push(await assertPlatformPrincipalTime(tx,state.reviewer,clock,signal));
-  await assertExecutionWindow(clock,{expiresAt:Math.min(Date.parse(control.expiresAt),closure?.evidence.expiresAt??Date.parse(control.expiresAt),...people.map(p=>p.expiresAt)),notBefore:Math.max(closure?closure.evidence.credentialNotAfter+1:0,...people.map(p=>p.notBefore))},signal);
+  const restriction={expiresAt:Math.min(Date.parse(control.expiresAt),...people.map(p=>p.expiresAt)),notBefore:Math.max(...people.map(p=>p.notBefore))};
+  if(closure)await assertClosureEvidenceTime(clock,closure.evidence,restriction,signal);else await assertExecutionWindow(clock,restriction,signal);
   await source.assertCurrent(tx,control);signal.throwIfAborted();
   await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,state.requester);if(state.reviewer)await authority.assertCurrent(tx,state.reviewer);
   const now=await tx.now();signal.throwIfAborted();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(control.expiresAt))fail();return now;

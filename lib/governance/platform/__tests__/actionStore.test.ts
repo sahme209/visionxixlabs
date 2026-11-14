@@ -6,11 +6,11 @@ const requester={userId:'requester',sessionId:'requester-session'},reviewer={use
 const at=Date.parse('2026-11-12T00:00:00Z');
 const plan=()=>compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'one',kind:'settings.vercel',target:{projectId:'project',settingsDigest:d}},{id:'two',kind:'settings.vercel',target:{projectId:'other',settingsDigest:d}}]});
 function fixture(growthSource?:unknown,withSourceAuthority=true){
- let rows=new Map<string,PlatformAction>(),events:unknown[]=[],effects=new Map<string,unknown>(),publications=new Map<string,string>(),queue=Promise.resolve(),now=at,failEvent=false;
+ let rows=new Map<string,PlatformAction>(),events:unknown[]=[],effects=new Map<string,unknown>(),publications=new Map<string,string>(),queue=Promise.resolve(),now=at,failEvent=false,reviewerEnd=at+120000;
  const repo:PlatformRepository={transaction:async fn=>{
   const before=queue;let release!:()=>void;queue=new Promise(r=>{release=r});await before;
   const next=new Map(rows),nextEvents=[...events],nextEffects=new Map(effects),nextPublications=new Map(publications);
-  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async p=>({...p,live:true,sessionIssuedAtMs:at-2000,sessionExpiresAtMs:at+120000}),now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
+  const tx:PlatformTransaction={readGrowthPostingSource:async()=>growthSource??null,readSessionPrincipal:async()=>null,readPrincipal:async p=>({...p,live:true,sessionIssuedAtMs:at-2000,sessionExpiresAtMs:p.userId===reviewer.userId?reviewerEnd:at+120000}),now:async()=>now,lock:async()=>{},read:async id=>next.get(id)??null,
    insert:async(id,state)=>{if(next.has(id))throw Error('duplicate');next.set(id,state)},
    replace:async(id,version,state)=>{if(next.get(id)?.version!==version)throw Error('stale');next.set(id,state)},
    event:async event=>{if(failEvent)throw Error('event_unavailable');nextEvents.push(event)},
@@ -22,7 +22,7 @@ function fixture(growthSource?:unknown,withSourceAuthority=true){
  }};
  const assertCurrent=vi.fn(async(_tx:PlatformTransaction,_actor:typeof requester)=>{});
  const service=createPlatformActionService(repo,{assertCurrent,...(withSourceAuthority?{assertEffectCurrent:async()=>{}}:{})},{clock:async()=>({earliest:at,latest:at+1}),signal:new AbortController().signal});
- return {service,assertCurrent,rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
+ return {service,assertCurrent,repo,expireReviewer:()=>{reviewerEnd=at},rows:()=>rows,events:()=>events,setNow:(v:number)=>{now=v},failEvents:()=>{failEvent=true}};
 }
 async function ready(f:ReturnType<typeof fixture>){const id=await f.service.propose(plan(),requester);await f.service.review(id,0,plan().digest,reviewer);return id}
 it('growth credential admission stays one-use while exact-child currentness can repeat without a send or new claim',async()=>{
@@ -182,3 +182,6 @@ it('keeps ECS out of human execution even after a distinct workload parent claim
 
 it('refuses ECS review through the generic path that has no qualified saved operational source',async()=>{const f=fixture(),p=compilePlatformPlan({format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(at+60000).toISOString(),effects:[{id:'ecs',kind:'deployment.ecs',target:{accountId:'123456789012',region:'us-east-2',cluster:'cluster',service:'service',taskDefinitionArn:'task:1',operation:'force',configurationDigest:d}}]}),id=await f.service.propose(p,requester);await expect(f.service.review(id,0,p.digest,reviewer)).rejects.toThrow();expect(f.rows().get(id)?.status).toBe('proposed')});
 it('does not generically review or execute a custodian control without its dedicated source and barrier verifier',async()=>{const {compileCustodianDrainPlan,compileCustodianDrainPlatformPlan}=await import('../operations/custodianDrainContract'),control=compileCustodianDrainPlan({format:1,scope:'platform',operation:'begin',custodian:{accountId:'123456789012',roleArn:'arn:aws:iam::123456789012:role/private'},issuerProfileDigest:d,sourceEvidenceDigest:d,predecessorAdmissionDigest:d,expectedGeneration:0,expectedVersion:null,expiresAt:new Date(at+60000).toISOString()}),p=compileCustodianDrainPlatformPlan(control),f=fixture(),id=await f.service.propose(p,requester);await expect(f.service.review(id,0,p.digest,reviewer)).rejects.toThrow();expect(f.rows().get(id)?.status).toBe('proposed');const approved=approvePlatformAction(f.rows().get(id)!,{...reviewer,planDigest:p.digest},at);f.rows().set(id,approved);await expect(f.service.claim(id,1,requester)).rejects.toThrow();expect(f.rows().get(id)?.status).toBe('approved')});
+
+it('does not let legacy template preview bypass prospective reviewer session time',async()=>{const f=fixture(),saved=await f.service.prepareTemplate({operation:'create_bucket',accountId:'123456789012',region:'us-east-2',expiresAt:new Date(at+60000).toISOString()},requester,'55555555-5555-4555-8555-555555555555');f.expireReviewer();await expect(f.service.previewTemplate(saved.actionId,reviewer)).rejects.toThrow()});
+it('legacy new template preparation refuses missing private clock while original-reference recovery remains separate',async()=>{const f=fixture(),service=createPlatformActionService(f.repo,{assertCurrent:f.assertCurrent,assertEffectCurrent:async()=>{}});await expect(service.prepareTemplate({operation:'create_bucket',accountId:'123456789012',region:'us-east-2',expiresAt:new Date(at+60000).toISOString()},requester,'66666666-6666-4666-8666-666666666666')).rejects.toThrow();expect(f.events()).toHaveLength(0)});

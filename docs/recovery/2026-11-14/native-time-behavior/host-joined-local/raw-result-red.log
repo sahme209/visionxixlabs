@@ -1,0 +1,13 @@
+....E........
+======================================================================
+ERROR: test_exact_raw_reader_output_domains (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 79, in test_exact_raw_reader_output_domains
+    self.assertEqual(boot.validate_reader_result(record),record)
+AttributeError: module 'governance_host_evaluation_bootstrap' has no attribute 'validate_reader_result'
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.071s
+
+FAILED (errors=1)

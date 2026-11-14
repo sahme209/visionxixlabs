@@ -1,0 +1,13 @@
+.....F........
+======================================================================
+FAIL: test_n3_native_context_and_sample_are_frozen_before_exposure (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 69, in test_n3_native_context_and_sample_are_frozen_before_exposure
+    self.assertIn('napi_object_freeze(e,out)!=napi_ok',complete)
+AssertionError: 'napi_object_freeze(e,out)!=napi_ok' not found in 'static void complete(napi_env e,napi_status status,void*data){\n struct task*t=data;napi_value out=NULL;struct operational*o=t->owner;\n /* N-API delivery can be delayed after execute returned. Do not promote a\n  * queued, expired result into an authentic operational observation. */\n uint64_t delivered;if(axiom_operational_monotonic(&delivered)||delivered>=t->sample->deadline||status!=napi_ok||!live(o))t->success=0;\n if(t->success&&!t->current){\n  napi_value context;struct original_sample*s=t->sample;\n  if(napi_create_object(e,&out)!=napi_ok||napi_get_reference_value(e,o->context,&context)!=napi_ok||napi_set_named_property(e,out,"context",context)!=napi_ok||!bigint(e,out,"unixTimeNs",s->realtime)||!bigint(e,out,"monotonicBeforeNs",s->before)||!bigint(e,out,"monotonicAfterNs",s->after)||!bigint(e,out,"publication",s->publication)||!bigint(e,out,"disruptionMarker",s->marker)||napi_type_tag_object(e,out,&sample_tag)!=napi_ok||napi_wrap(e,out,s,sample_finalizer,NULL,NULL)!=napi_ok)t->success=0;\n }\n if(t->current||!t->success){if(o->active==t->sample)o->active=NULL;dispose_sample(t->sample);}else o->active=t->sample;\n if(t->success){if(t->current)napi_get_undefined(e,&out);napi_resolve_deferred(e,t->deferred,out);}\n else {retire_native(o);napi_reject_deferred(e,t->deferred,unavailable(e));}\n if(!t->current&&!t->success){unref(o);free(t->sample);}\n pthread_mutex_lock(&o->lock);o->busy=0;pthread_mutex_unlock(&o->lock);\n if(t->argument)napi_delete_reference(e,t->argument);napi_delete_async_work(e,t->work);unref(o);free(t);\n}\n'
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.027s
+
+FAILED (failures=1)
