@@ -1,0 +1,35 @@
+{
+  "verdict": "CLEAR",
+  "reviewKind": "independent-file-only-frozen-packet-review",
+  "packetSha256": "79d6b84306e6f8731ba588ec1861d19fe62e03ea1b4b72424d9c6524f05b6232",
+  "inputCount": 36,
+  "allInputHashesMatch": true,
+  "hashMismatches": [],
+  "sourceAstRequiredSetMatches": true,
+  "changedPriorInputs": [
+    ".github/workflows/linux-build-ipc-compile.yml",
+    "scripts/governance_build_ipc_compile.py",
+    "scripts/tests/test_governance_build_ipc_compile.py",
+    "scripts/tests/test_governance_build_ipc_workflow.py"
+  ],
+  "addedInputs": [
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-PRIMARY-EVIDENCE.json"
+  ],
+  "nativeProfileProducerLockInputsUnchangedFromPriorPacket": true,
+  "before": "8aefbd599cd921eff685295ae8eacb89e59499a4",
+  "separateObservedToolAnchor": "207cf145a15b87c07206027fc2e2f08511b3523a",
+  "approval": "call_8429a77caf02416583214c6faa0face7",
+  "jobMinutes": 45,
+  "controllerSeconds": 2400,
+  "noRetry": true,
+  "sourceReview": "Exact complete Rust primary names and observed raw identities, exactly one each; matching current address and T/t type, plus four C exact primary pairs. No normalization or closure fallback. Historical addresses not pinned as future locations. Missing/mismatching rows refuse. Existing same-artifact observations and source/frozen/ELF guards retained.",
+  "independentCompletedSourceReviewAvailableAtInspection": true,
+  "limitations": [
+    "File/hash/AST inspection only; no tests or project module imports executed.",
+    "No compiler, native tool, workflow, provider or network action performed.",
+    "This packet review does not itself establish fresh native acceptance or Governance runtime qualification."
+  ],
+  "completedSourceReview": "BUILD-SYMBOL-FORMAT-SOURCE-REVIEW.md",
+  "sourceReviewVerdict": "CLEAR",
+  "sourceReviewFourSourceAndAuthenticFixtureHashesMatchPacket": true
+}

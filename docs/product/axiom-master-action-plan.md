@@ -1,5 +1,14 @@
 # Axiom master action plan
 
+## November14 — actual symbol evidence captured; exact correction prepared
+
+Run43612023366/job132498917778 at8aefbd599cd921eff685295ae8eacb89e59499a4 completed; its one-run permission is CONSUMED. All29 commands PASS: safety fixtures, tiny Cargo, full Rust+C compile/no-undefined link, ELF and raw/demangled symbol reads. Complete bounded same-artifact evidence, hashes, final source/frozen checks are saved. Both required primary methods are proven present as GNU `<Type>::method` text definitions; the old substring checker rejected that spelling. The historical job remains FAILED/accepted=false. All seven ordinary exact-head CI checks PASS. PR331 stays OPEN/UNMERGED and production unchanged.
+
+Owner approved exact primary-name/raw-identity/address/type pairing, pure regression tests/review, then ONE corrected same-profile validation (call_8429a77caf02416583214c6faa0face7). Local45 focused checks PASS after RED19errors; missing/closure-only/wrong-type/duplicate/raw-identity/address/oversize cases refuse. Native source/profile/tool/producer/link remain unchanged;36-input packet adds authentic saved symbol evidence for tests. Final independent source and packet reviews must pass before a single free45minute job/no retry. No new native invocation at this preparation checkpoint. Proposal/receipts: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-FORMAT-CORRECTION-PROPOSAL.md`, `BUILD-SYMBOL-PRIMARY-EVIDENCE.json`, `BUILD-SYMBOL-OBSERVED-RESULT.json`, `BUILD-SYMBOL-PR331-CHECKS.json`.
+
+Full Governance remains INCOMPLETE/DISABLED: actual worker/bootstrap/custody, trusted time/lifetime/fleet qualification, genuine independent human/provider/end-to-end/closure and production acceptance remain. Compiler evidence is not runtime qualification. Every master-plan/owner/security/cost/database/deployment requirement remains; older snapshots below are historical.
+
+
 ## November14 — real Linux compilation/linking pass; final symbol evidence remains blocked
 
 The one approved compatibility run at `7c35aec14a424caab5c4a52cb0d163a5583ad0fa` completed and its authority is CONSUMED. Actual restricted C/Rust fixtures, tiny offline Cargo, full daemon-feature Rust compilation and whole Rust+C/no-undefined linkage PASS. The existing strict symbol checker rejects its first required Rust path (`missing_actual_rust_path`). Actual symbol rows were not retained; formatting is a source-supported hypothesis, not an established cause. ELF/output checks after the old gate were not reached. No accepted artifact or completed Governance qualification exists. All seven ordinary exact-head CI checks PASS; PR331 stays OPEN/UNMERGED, main/production unchanged.

@@ -23,9 +23,9 @@ class BuildGateTests(unittest.TestCase):
   with self.assertRaises(ValueError):self.m.gated_pipeline(lambda:True,tiny,lambda:seen.append('full'))
   self.assertEqual(seen,['tiny'])
  def test_exact_source_transition_not_old_grant(self):
-  e={'action':'synchronize','number':331,'before':'7c35aec14a424caab5c4a52cb0d163a5583ad0fa','after':'a'*40,'repository':{'full_name':'sahme209/visionxixlabs','private':False},'pull_request':{'number':331,'base':{'ref':'main','repo':{'full_name':'sahme209/visionxixlabs'}},'head':{'ref':'codex/governance-live-qualification-setup','sha':'a'*40,'repo':{'full_name':'sahme209/visionxixlabs'}}}}
+  e={'action':'synchronize','number':331,'before':'8aefbd599cd921eff685295ae8eacb89e59499a4','after':'a'*40,'repository':{'full_name':'sahme209/visionxixlabs','private':False},'pull_request':{'number':331,'base':{'ref':'main','repo':{'full_name':'sahme209/visionxixlabs'}},'head':{'ref':'codex/governance-live-qualification-setup','sha':'a'*40,'repo':{'full_name':'sahme209/visionxixlabs'}}}}
   self.assertEqual(self.m.validate_event(e,'pull_request','1'),'a'*40)
-  for key,value in [('before','47adbced23b378f4f4789a6bec8d836641785240'),('after','b'*40),('number',332)]:
+  for key,value in [('before','7c35aec14a424caab5c4a52cb0d163a5583ad0fa'),('before','47adbced23b378f4f4789a6bec8d836641785240'),('after','b'*40),('number',332)]:
    c=copy.deepcopy(e);c[key]=value
    with self.assertRaises(ValueError):self.m.validate_event(c,'pull_request','1')
   with self.assertRaises(ValueError):self.m.validate_event(e,'pull_request','2')
@@ -44,7 +44,7 @@ class BuildGateTests(unittest.TestCase):
   self.assertEqual(observed['candidateRows'],['00000001 T <clock_bound[abc]::daemon::Daemon>::construct_axiom','00000003 T axiom_time_capture_v2','00000004 T axiom_time_publish_or_die','00000005 T axiom_time_capture_current','00000006 T axiom_time_capture_release'])
   self.assertTrue(observed['complete']);self.assertEqual(observed['stdoutBytes'],len(text.encode()))
   # Observing an unfamiliar spelling must NOT turn it into an accepted path.
-  with self.assertRaisesRegex(ValueError,'missing_actual_rust_path'):self.m.verify_symbols(text)
+  with self.assertRaises(ValueError):self.m.verify_symbols(text,text)
  def test_symbol_observation_overflow_cannot_appear_complete(self):
   text=('00000001 T construct_axiom\n')*257
   observed=self.m.collect_symbol_evidence(text)
@@ -60,4 +60,32 @@ class BuildGateTests(unittest.TestCase):
   import json
   data=json.loads(self.m.render_symbol_receipt({'accepted':True,'outputs':'x'*(2*1024*1024)}))
   self.assertFalse(data['accepted']);self.assertFalse(data['evidenceComplete']);self.assertEqual(data['reason'],'wire-limit')
+ def actual_symbols(self):
+  import json
+  evidence=Path(__file__).resolve().parents[2]/'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-PRIMARY-EVIDENCE.json'
+  data=json.loads(evidence.read_text())
+  return '\n'.join(data['demangledSymbolEvidence']['candidateRows']), '\n'.join(data['rawSymbolEvidence']['candidateRows'])
+ def test_actual_primary_pairs_accept_while_old_failure_stays_preserved(self):
+  text,raw=self.actual_symbols();self.m.verify_symbols(text,raw)
+ def test_primary_pair_rejects_missing_closure_only_wrong_receiver_and_suffix(self):
+  text,raw=self.actual_symbols()
+  primary='000000000020a440 T <clock_bound::daemon::Daemon>::construct_axiom'
+  for replacement in ['',primary+'::{closure#0}',primary.replace('::Daemon>','::Other>'),primary+'suffix']:
+   with self.subTest(replacement=replacement),self.assertRaises(ValueError):self.m.verify_symbols(text.replace(primary,replacement),raw)
+ def test_primary_pair_rejects_duplicate_data_undefined_and_case_drift(self):
+  text,raw=self.actual_symbols();primary='000000000020a440 T <clock_bound::daemon::Daemon>::construct_axiom'
+  for replacement in [primary+'\n'+primary,primary.replace(' T ',' D '),primary.replace(' T ',' U '),primary.replace('construct_axiom','Construct_axiom')]:
+   with self.subTest(replacement=replacement),self.assertRaises(ValueError):self.m.verify_symbols(text.replace(primary,replacement),raw)
+ def test_primary_pair_rejects_raw_address_type_identity_and_duplicate(self):
+  text,raw=self.actual_symbols();primary=next(x for x in raw.splitlines() if x.startswith('000000000020a440 T '))
+  for replacement in ['',primary.replace('20a440','20a441'),primary.replace(' T ',' t '),primary+'suffix',primary+'\n'+primary]:
+   with self.subTest(replacement=replacement),self.assertRaises(ValueError):self.m.verify_symbols(text,raw.replace(primary,replacement))
+ def test_c_pair_rejects_wrong_type_duplicate_or_unpaired(self):
+  text,raw=self.actual_symbols();primary='0000000000751103 T axiom_time_capture_current'
+  for changed,raw_changed in [(text.replace(primary,primary.replace(' T ',' D ')),raw),(text+'\n'+primary,raw),(text,raw.replace(primary,'')),(text,raw.replace(primary,primary.replace('751103','751104')))]:
+   with self.subTest(changed=changed[-90:]),self.assertRaises(ValueError):self.m.verify_symbols(changed,raw_changed)
+ def test_pair_rejects_oversize_and_missing_raw_table(self):
+  text,raw=self.actual_symbols()
+  for changed,raw_changed in [(text,None),(text,'x'*(16*1024*1024+1)),('x'*(16*1024*1024+1),raw)]:
+   with self.assertRaises(ValueError):self.m.verify_symbols(changed,raw_changed)
 if __name__=='__main__':unittest.main()

@@ -11,11 +11,11 @@ import time
 REPOSITORY = 'sahme209/visionxixlabs'
 BRANCH = 'codex/governance-live-qualification-setup'
 TARGET = 'x86_64-unknown-linux-gnu'
-PACKET = 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-INPUT-PACKET.json'
+PACKET = 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-FORMAT-INPUT-PACKET.json'
 PR_NUMBER=331
-BEFORE='7c35aec14a424caab5c4a52cb0d163a5583ad0fa'
+BEFORE='8aefbd599cd921eff685295ae8eacb89e59499a4'
 OBSERVED_INPUT_HEAD='207cf145a15b87c07206027fc2e2f08511b3523a'
-PACKET_KIND='one-sync-pr331-build-symbol-evidence-v1'
+PACKET_KIND='one-sync-pr331-build-symbol-format-v1'
 HEX = re.compile(r'[0-9a-f]{40}\Z')
 NATIVE = frozenset(['-lgcc_s','-lutil','-lrt','-lpthread','-lm','-ldl','-lc'])
 
@@ -141,17 +141,31 @@ def verify_source(source, manifest):
         actual.add(name)
     need(actual==set(expected),'source_missing')
 
-def verify_symbols(text):
-    definitions=[]
-    for line in text.splitlines():
-        match=re.match(r'^[0-9a-fA-F]+\s+([A-Za-z])\s+(.+)$',line.strip())
-        if match and match.group(1) not in ('U','u'): definitions.append(match.group(2))
-    for symbol in ['axiom_time_publish_or_die','axiom_time_capture_v2','axiom_time_capture_current','axiom_time_capture_release']:
-        need(symbol in definitions, 'missing_native_symbol')
-    for path in ['clock_bound::daemon::Daemon::construct_axiom','clock_bound::daemon::time_publication_adapter::NativeTimePublisher::publish_precise_then_delegate']:
-        need(any(path in symbol for symbol in definitions), 'missing_actual_rust_path')
+# Exact observed names for this pinned producer/toolchain, not a general demangler.
+RUST_PRIMARY_SYMBOLS={
+    '<clock_bound::daemon::Daemon>::construct_axiom':'_RNvMNtCs2gjoHvujPN_11clock_bound6daemonNtB2_6Daemon15construct_axiom',
+    '<clock_bound::daemon::time_publication_adapter::NativeTimePublisher>::publish_precise_then_delegate':'_RNvMs_NtNtCs2gjoHvujPN_11clock_bound6daemon24time_publication_adapterNtB4_19NativeTimePublisher29publish_precise_then_delegate',
+}
+C_PRIMARY_SYMBOLS=('axiom_time_publish_or_die','axiom_time_capture_v2','axiom_time_capture_current','axiom_time_capture_release')
 
-REQUIRED_INPUTS=frozenset({'scripts/linux-compile/build_ipc_fixture.c', 'packages/verified-issuer-runtime/linux/vendor/UPSTREAM-TREE.json', 'packages/verified-issuer-runtime/linux/time_publication.h', 'scripts/tests/test_governance_build_ipc_profile.py', 'packages/verified-issuer-runtime/linux/vendor/EXPECTED-PATCHED-SHA256.json', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-DIRECT-READ-RESULT.json', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-SYNCHRONIZE-SCHEMA.json', 'packages/verified-issuer-runtime/linux/time_publication.c', 'scripts/tests/test_network_launcher_source.py', 'scripts/tests/test_governance_build_ipc_workflow.py', 'scripts/linux-compile/benign_fixture.c', 'packages/verified-issuer-runtime/linux/vendor/clock-bound-371058f8-source.tar.gz', 'packages/verified-issuer-runtime/linux/vendor/LICENSE.MIT', 'packages/verified-issuer-runtime/linux/vendor/LICENSE.Apache-2.0', 'scripts/tests/test_governance_linux_compile_supervisor.py', 'scripts/linux-compile/build_ipc_fixture.rs', '.github/workflows/linux-build-ipc-compile.yml', 'scripts/governance_rust_spawn_diagnostic.py', 'scripts/governance_linux_compile.py', 'packages/verified-issuer-runtime/linux/vendor/README.md', 'scripts/governance_cargo_error_diagnostic.py', 'scripts/linux-compile/compiler_profile.h', 'packages/verified-issuer-runtime/linux/time_publication_adapter.rs', 'scripts/governance_build_ipc_compile.py', 'scripts/governance_linux_compile_supervisor.py', 'scripts/tests/test_governance_linux_compile_inputs.py', '.github/workflows/linux-time-compile.yml', 'scripts/linux-compile/network_launcher.c', 'scripts/tests/test_governance_build_ipc_compile.py', 'packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch', 'scripts/tests/test_governance_build_ipc_fixtures.py', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py', 'scripts/governance_linux_compile_inputs.py', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/CARGO-ERROR-OBSERVED-RESULT.json', 'scripts/tests/test_governance_linux_compile.py'})
+def verify_symbols(text,raw_text):
+    def table(value):
+        need(isinstance(value,str) and len(value.encode('utf-8'))<=16*1024*1024,'symbol_table_missing_or_oversize')
+        rows={}
+        for line in value.splitlines():
+            match=re.fullmatch(r'([0-9a-fA-F]+)\s+([A-Za-z])\s+(.+)',line.strip())
+            if match:
+                address,kind,name=match.groups()
+                rows.setdefault(name,[]).append((int(address,16),kind))
+        return rows
+    demangled=table(text);raw=table(raw_text)
+    for name,raw_name in [*((name,name) for name in C_PRIMARY_SYMBOLS),*RUST_PRIMARY_SYMBOLS.items()]:
+        actual=demangled.get(name,[]);original=raw.get(raw_name,[])
+        need(len(actual)==1 and len(original)==1,'missing_or_ambiguous_primary_symbol')
+        need(actual[0][1] in ('T','t') and original[0][1] in ('T','t'),'primary_symbol_not_text')
+        need(actual[0]==original[0],'primary_symbol_pair_mismatch')
+
+REQUIRED_INPUTS=frozenset({'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-PRIMARY-EVIDENCE.json','scripts/linux-compile/build_ipc_fixture.c', 'packages/verified-issuer-runtime/linux/vendor/UPSTREAM-TREE.json', 'packages/verified-issuer-runtime/linux/time_publication.h', 'scripts/tests/test_governance_build_ipc_profile.py', 'packages/verified-issuer-runtime/linux/vendor/EXPECTED-PATCHED-SHA256.json', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-DIRECT-READ-RESULT.json', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/EVENT-SYNCHRONIZE-SCHEMA.json', 'packages/verified-issuer-runtime/linux/time_publication.c', 'scripts/tests/test_network_launcher_source.py', 'scripts/tests/test_governance_build_ipc_workflow.py', 'scripts/linux-compile/benign_fixture.c', 'packages/verified-issuer-runtime/linux/vendor/clock-bound-371058f8-source.tar.gz', 'packages/verified-issuer-runtime/linux/vendor/LICENSE.MIT', 'packages/verified-issuer-runtime/linux/vendor/LICENSE.Apache-2.0', 'scripts/tests/test_governance_linux_compile_supervisor.py', 'scripts/linux-compile/build_ipc_fixture.rs', '.github/workflows/linux-build-ipc-compile.yml', 'scripts/governance_rust_spawn_diagnostic.py', 'scripts/governance_linux_compile.py', 'packages/verified-issuer-runtime/linux/vendor/README.md', 'scripts/governance_cargo_error_diagnostic.py', 'scripts/linux-compile/compiler_profile.h', 'packages/verified-issuer-runtime/linux/time_publication_adapter.rs', 'scripts/governance_build_ipc_compile.py', 'scripts/governance_linux_compile_supervisor.py', 'scripts/tests/test_governance_linux_compile_inputs.py', '.github/workflows/linux-time-compile.yml', 'scripts/linux-compile/network_launcher.c', 'scripts/tests/test_governance_build_ipc_compile.py', 'packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch', 'scripts/tests/test_governance_build_ipc_fixtures.py', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py', 'scripts/governance_linux_compile_inputs.py', 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/CARGO-ERROR-OBSERVED-RESULT.json', 'scripts/tests/test_governance_linux_compile.py'})
 
 def verify_packet(repo, frozen=None):
     raw=(repo/PACKET).read_bytes()
@@ -387,7 +401,7 @@ def main():
             need((source/'Cargo.lock').read_bytes()==lock,'lock_changed');verify_frozen_files(frozen_files)
             result['finalSourceChecksPassed']=True
             need(result['rawSymbolEvidence']['complete'] and result['demangledSymbolEvidence']['complete'],'symbol_evidence_incomplete')
-            verify_symbols(symbols) # Original strict acceptance gate, unchanged.
+            verify_symbols(symbols,raw_symbols) # Exact reviewed primary pairs; no substring/closure acceptance.
             return True
         result['accepted']=gated_pipeline(fixtures_stage,tiny_stage,full_stage)
     except BaseException as error:

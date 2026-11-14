@@ -15,7 +15,7 @@ class BuildIpcWorkflowTests(unittest.TestCase):
             self.assertNotIn(forbidden,text)
     def test_exact_consumed_transition_pr_and_attempt(self):
         text=self.text()
-        for condition in ['github.event.number == 331','github.event.pull_request.number == 331',"github.event.before == '7c35aec14a424caab5c4a52cb0d163a5583ad0fa'",'github.event.after == github.event.pull_request.head.sha','github.run_attempt == 1']:
+        for condition in ['github.event.number == 331','github.event.pull_request.number == 331',"github.event.before == '8aefbd599cd921eff685295ae8eacb89e59499a4'",'github.event.after == github.event.pull_request.head.sha','github.run_attempt == 1']:
             self.assertIn(condition,text)
     def test_same_public_repository_main_and_branch(self):
         text=self.text()
