@@ -1,0 +1,80 @@
+{
+  "pr": {
+    "baseRefOid": "0a240c617e035ea76755241b85ddc6900f617cf8",
+    "headRefOid": "8d1fe8af3b5cd63b67009090ea12a3ff34cefdae",
+    "mergeCommit": {
+      "oid": "ece70e38bffa068f7ea73cd8f904da9eba28fe3e"
+    },
+    "mergedAt": "2026-11-14T00:05:21Z",
+    "state": "MERGED",
+    "url": "https://github.com/sahme209/visionxixlabs/pull/330"
+  },
+  "checks": [
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960681/job/132249886488",
+      "name": "Typecheck + Vitest",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960549/job/132248235682",
+      "name": "isolated-website",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960681/job/132248236074",
+      "name": "Type check",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960681/job/132248236158",
+      "name": "Vitest (1/3)",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960681/job/132248236232",
+      "name": "Vitest (2/3)",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960681/job/132248235842",
+      "name": "Build and offline checks",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/sahme209/visionxixlabs/actions/runs/43530960681/job/132248235955",
+      "name": "Vitest (3/3)",
+      "state": "SUCCESS"
+    }
+  ],
+  "mergedNormally": true,
+  "expectedHeadGuard": true,
+  "adminOrBypassUsed": false,
+  "sourceRuntime": "85749ff6025a5db4b33bd5a7f8695cc48f57878c",
+  "localValidation": {
+    "ordinaryPassed": 19332,
+    "failed": 0,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "strictTypes": "PASS",
+    "actualIsolatedSqlPassed": 230,
+    "actualIsolatedSqlFailed": 0,
+    "actualIsolatedSqlSkipped": 0,
+    "ownServerStopped": true,
+    "offlineBuildPages": 304,
+    "offlineBuildSourceFiles": 13568
+  },
+  "mainCheckRun": 43531775622,
+  "mainChecks": "pending; verified live before this receipt; not claimed green",
+  "repositoryVisibility": "public verified via GitHub metadata",
+  "workflowsPackageLocksVercelConfigChanged": false,
+  "vercelGitDeploymentEnabled": false,
+  "deploymentOrActivationPerformed": false,
+  "realNativeCredentialHumanProviderAcceptance": false
+}

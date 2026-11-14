@@ -1,6 +1,18 @@
 # Axiom current execution board
 
-## Current execution snapshot — November13, after PR329
+## Current execution snapshot — November13, after PR330
+
+This entry supersedes older status claims only; preserve all historical requirements, receipts and approval limits.
+
+- **Source merged:** PR330, normal squashece70e38bffa068f7ea73cd8f904da9eba28fe3e; ALL7exact-head checks passed, including required Typecheck + Vitest. Expected reviewed head8d1fe8af matched. Main run43531775622 completed SUCCESS on exact merged ece70e38; ALL6main jobs passed, including Typecheck + Vitest. Terminal receipt: docs/recovery/2026-11-13/real-governance-qualification/pr330-merged/MAIN-RESULT.json. Receipt: docs/recovery/2026-11-13/real-governance-qualification/pr330-merged/RESULT.json.
+- **Exact local acceptance:** runtime85749ff6 passes strict root types,19332ordinary/0fail/1expectedfailure/1144skipped,230actual isolatedSQL/0fail0skip/ownserverstopped, and coherent304page offline production build with13568source/archive hashes exact. Native runtime/time/keys/custody/fleet/humans/providers remain synthetic/intercepted in these fixtures. Full Governance incomplete/disabled.
+- **Accepted semantic boundary implemented:** original durable authorization, exact narrowed original window and one-use postcommit native dispatch checks; no renewed approval/credential/deadline/attempt or replay. Provider-enforced receipt expiry is not established and ordinary scheduling race is explicit. All three lanes/whole source reviewed clear.
+- **Avoid unsupported extra gates:** original settings/image/template admission ACK already precedes custody effects; a later currentness/resultTX lostACK alone is NOT an authorization defect. Proposed extra custody state machines/output handles are optional unless a completed test proves a real invariant failure. Native key/source/time/output qualification is still required, not waived. See CUSTODY-SCOPE-REASSESSMENT.md.
+- **Next core work:** main confirmation complete; obtain fresh bounded read-only test-account metadata for complete real-runtime setup/cost proposal, then actual explicitly approved qualification. Proposed six-logical-operation AWS inspection is prepared/reviewed only, owner decision pending. No new account/source/credential/native/resource authority follows. All prior public-read and SQL/build grants remain consumed.
+- **Production/master preserved:** no deployment, production schema/settings/flags, real provider/credential action, resources or spending performed. Git auto-deploy remains disabled. Last owner production pointer0caaaaab is historical/unrefreshed; production compatibility and all owner/live/master/visual requirements remain open. ServiceNow's existing UNKNOWN written note must never resend/reset/renew; genuine human lifecycle/closure remains required.
+
+
+## Historical execution snapshot — November13, after PR329
 
 This entry supersedes older status claims only; preserve all historical scope, evidence and approval rules below.
 
