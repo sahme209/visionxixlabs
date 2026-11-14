@@ -1,5 +1,8 @@
 # Governance completion audit — November 14
 
+**Current November14 compiler correction:** actual full C/Rust/no-undefined linkage, ELF and exact paired symbol verification PASS at7b341565/run43612814611; accepted same-artifact proof and independent review are saved in `../linux-compiler-validation/BUILD-SYMBOL-FORMAT-RESULT.md`. The compiler blocker in older rows below is CLOSED. Actual worker/parent/bootstrap/policy/custody/packaging and real qualification remain OPEN; activation unavailable. This supersedes compiler-failure statements only; preserve all other requirements/evidence.
+
+
 Scope: read-only inspection of current source and saved acceptance evidence after PR331 head010444b7. This records existing requirements, not new security gates or authorization. No new compiler/test/native/provider/account operation occurred. Three independent source reviews informed the audit; root checked the actual clock composition, C capture, Rust policy constructor and package manifest.
 
 **Conclusion: Governance is not one passing compiler test away from completion.** The application execution graph and many local/database checks exist, but the real Linux suppliers, installed workflow and live qualification are still absent. Do not describe these as already implemented and merely waiting for a flag.

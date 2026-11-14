@@ -1,5 +1,8 @@
 # Current Governance qualification critical path
 
+**Current November14 compiler correction:** actual full C/Rust/no-undefined linkage, ELF and exact paired symbol verification PASS at7b341565/run43612814611; accepted same-artifact proof and independent review are saved in `../linux-compiler-validation/BUILD-SYMBOL-FORMAT-RESULT.md`. The compiler blocker in older rows below is CLOSED. Actual worker/parent/bootstrap/policy/custody/packaging and real qualification remain OPEN; activation unavailable. This supersedes compiler-failure statements only; preserve all other requirements/evidence.
+
+
 **November14 correction:** use [the source-backed completion audit](NOVEMBER14-COMPLETION-AUDIT.md)
 for current implementation gaps. The real C compile/restriction fixture now pass;
 Rust child launch fails at head010444b7. Real worker/parent/IPC, accepted policy
