@@ -1,0 +1,42 @@
+name: One approved build IPC compatibility checkpoint
+
+# One conditional batch; fixtures and tiny Cargo precede the full pinned build.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'scripts/governance_build_ipc_compile.py'
+      - 'scripts/tests/test_governance_build_ipc_workflow.py'
+      - '.github/workflows/linux-build-ipc-compile.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compile-link:
+    name: Build IPC fixtures and compile (no Governance runtime)
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.repository.private == false &&
+      github.event.action == 'synchronize' &&
+      github.event.number == 331 &&
+      github.event.pull_request.number == 331 &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-live-qualification-setup' &&
+      github.event.before == '207cf145a15b87c07206027fc2e2f08511b3523a' &&
+      github.event.after == github.event.pull_request.head.sha &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact reviewed batch head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One bounded conditional build batch
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_build_ipc_compile.py --approved-ci-once

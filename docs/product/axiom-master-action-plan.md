@@ -1,5 +1,10 @@
 # Axiom master action plan
 
+## Approved build-only compatibility batch — November14, prepared
+
+Owner approved one conditional compatibility batch. Candidateprofile adds only FIONBIO, exactanonymousAF_UNIXseqpacketCLOEXEC/proto0 and8byte/zero-flag/null-addressreceive; allothernetwork/group/session restrictions remain.35newpure/source/filter-DATA checks plus7legacy source checksPASS; independentwholecode and35input finalpacket reviewCLEAR. PacketSHA787b94d5800d58bf5de73e1f715a5a89437db4b73bae3b66769e2f608e044630. Among24priorinputs ONLYtheapprovedprofile changed; nativepublisher/patch/archive/materializer/supervisor remainexact. ONEsamePR331transitionfromremote207cf14 isnext, shared45minutejob/2400secondcontroller: actualfixturesALL→tinyofflineCargo→fullpinneddaemonC/Rust+nonrunningwholelink. Anyfailurestops, no retries/fallback/profilewidening. No native invocation yet atthispreparationcheckpoint. Receipt: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-IPC-PREPARED-RECEIPT.json`. FullGovernance/runtime/time/custody/people/provider/master/owner/production gates remainOPEN; no activation/deployment/spending. Olderpendingdesignsnapshots below are historical, superseded ONLYbythisboundedapproval.
+
+
 ## Cargo-only cause identified — November14, source207cf14
 
 One approved Cargo-only run43607174394 completed/CONSUMED: actual316byte bounded error identifies Rust process.rs2488 output-collection panic/EPERM. Matching cached source traces captured pipes to Linux ioctl(FIONBIO), omitted by the build filter. All7existing exact-head checks PASS; full compiler and old Rust probe remainSKIPPED/UNACCEPTED, not renewed. This is distinct from the earlier forced-pre_exec errno1; Cargo's actual fallback selection/full-build success is not proven. Complete result/checks/source trace: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/{CARGO-ERROR-RESULT.md,CARGO-ERROR-PR331-CHECKS.json,CARGO-ERROR-CACHED-SOURCE-TRACE.json}`.
