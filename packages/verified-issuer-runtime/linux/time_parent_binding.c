@@ -355,3 +355,32 @@ napi_status axiom_time_parent_create_private(napi_env e,const struct axiom_time_
  if(napi_add_finalizer(e,fn,p,method_finalizer,NULL,NULL)!=napi_ok){parent_unref(p);s=napi_generic_failure;break;}}
  }else parent_unref(p);return s;
 }
+
+/* Operational source private seam. Runtime JS never receives this pointer. */
+struct axiom_time_original { struct held *hold; struct child *capture; };
+int axiom_time_parent_pin_original(napi_env e,napi_value bridge,napi_value held,
+ napi_value capture,struct axiom_time_original **out,uint64_t *publication,uint64_t *marker,uint64_t *deadline){
+ struct parent *p=NULL;struct held *h=NULL;struct child *c=NULL;
+ if(!out||!publication||!marker||!deadline||napi_unwrap(e,bridge,(void**)&p)!=napi_ok||!p||
+ !tagged(e,held,&held_tag)||!tagged(e,capture,&capture_tag)||
+ napi_unwrap(e,held,(void**)&h)!=napi_ok||!h||h->parent!=p||
+ napi_unwrap(e,capture,(void**)&c)!=napi_ok||!c||c->hold!=h)return -1;
+ struct axiom_time_original *v=calloc(1,sizeof *v);if(!v)return -1;
+ pthread_mutex_lock(&p->lock);
+ int ok=!p->retired&&!h->closed&&!h->release_requested&&h->started&&
+ c->success&&c->state==REAPED&&c->reaped&&c->io_done;
+ if(ok){h->refs++;h->operation_refs++;c->refs++;}
+ pthread_mutex_unlock(&p->lock);
+ if(!ok){free(v);return -1;}v->hold=h;v->capture=c;
+ if(!current(h)){child_unref(c);end_operation(h);free(v);return -1;}
+ *publication=h->original.publication;*marker=h->original.disruption_marker;*deadline=c->deadline;*out=v;return 0;
+}
+int axiom_time_parent_original_current(struct axiom_time_original *v){
+ if(!v)return -1;struct parent *p=v->hold->parent;
+ pthread_mutex_lock(&p->lock);int ok=!p->retired&&!v->hold->closed&&
+ !v->hold->release_requested&&v->capture->success&&v->capture->state==REAPED&&v->capture->io_done;
+ pthread_mutex_unlock(&p->lock);return ok&&current(v->hold)?0:-1;
+}
+void axiom_time_parent_unpin_original(struct axiom_time_original *v){
+ if(!v)return;child_unref(v->capture);end_operation(v->hold);free(v);
+}

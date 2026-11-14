@@ -1,0 +1,46 @@
+{
+  "format": 1,
+  "scope": "independent-completed-core-template-slice-source-review",
+  "baseline": "876da65ffe727c584b6f682d72a22b66feed9199",
+  "authorization": "call_36a6c98e0c5d46d5b545378bfb0e4506",
+  "verdict": "with-fixes",
+  "criticalFindings": 0,
+  "importantFindings": [
+    {"id": "core-template-final-profile-await", "path": "lib/governance/platform/templatePreparationStore.ts", "lines": [25, 28], "reason": "Final joined time and actor checks precede subsequent profile awaits without repeating those checks."},
+    {"id": "core-retired-observation-first-use", "path": "lib/governance/platform/nativeTime/operationalSource.ts", "lines": [35, 39, 58, 59], "reason": "Registered unused tokens retain authority eligibility after their source lifecycle is known retired."}
+  ],
+  "testsExecuted": false,
+  "nativeCompiledOrExecuted": false,
+  "wholeUnitFrozenOrAccepted": false,
+  "inputSha256": {
+    "lib/governance/platform/executionTime.ts": "44a4ccb258cd35dd42ead878d584e253f3ce7ece45673426d6d2faffc560cd6d",
+    "lib/governance/platform/templatePreparationStore.ts": "87313beaf5c3b1aa155bc94df1ba5e234d161f256665f4e2e1be03bfdd415c34",
+    "lib/governance/platform/templateWorkflowRequest.ts": "cc9b79a3200441bd9d80c77a340b8dc64776af97d7106329dc86876aaf31fa53",
+    "lib/governance/platform/nativeTime/operationalSource.ts": "4e54f578231509f02c932262dd02c195a6fbcb60018a6fe6bbee7b30d1b42f2f",
+    "lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts": "871a0fbd95acba6a094ae4a6ef882ae9f17a38134ab49df5789040b56246f403",
+    "lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts": "5fc4467124ff7a7f08782a48241caa6c25eeb3f05255a247907687c4770479b6",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "78695834da6660eb7310b435593b5a0e4aab84ddf10e81993e9c4838adfa69ce"
+  },
+  "partialFileReview": {
+    "lib/governance/platform/operations/privateStsIssuer.ts": "Only common assertReturnedCredentialLifetime helper call and removal of direct earliest use; provider-expiry registries remain excluded WIP."
+  },
+  "remainingUnitExcluded": ["native composition and bridge", "closure/drain and expiry registries", "selected-library and whole-family integration"],
+  "performed": ["local source/diff/document reads", "review-input hashing", "requested review document output"],
+  "correctionReview": {
+    "scope": "Only the two original important findings and their correction/regressions",
+    "verdict": "clear-for-original-findings",
+    "closedFindings": ["core-template-final-profile-await", "core-retired-observation-first-use"],
+    "reviewerExecutedTests": false,
+    "wholeUnitFrozenOrAccepted": false,
+    "inputSha256": {
+      "lib/governance/platform/templatePreparationStore.ts": "e2a713f27d95115371f64b9f0b2c94d93dc38234068d7bddd6ecae92d575e7f1",
+      "lib/governance/platform/nativeTime/operationalSource.ts": "58e5198fe090560c51695c67f711f093347ceefd57368679f62f61badf05ba80",
+      "lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts": "9dfc6bb8f866699c4fc369be564f308450180d9b880c6aad6031b8e0c0f50dd2",
+      "lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts": "7b9597006d5f3b15d2b25ae5ecb34b304602eac03a24ffb2e6cff3dd615ecd91"
+    },
+    "inspectedImplementerLogs": [
+      {"path": "/private/tmp/axiom-operational-review-findings-red.log", "sha256": "c5ac5a014df48409296daff372aa0661cd7dafe05d1604347f726db04311a492", "summary": "3 failed, 10 passed; 2 failed files"},
+      {"path": "/private/tmp/axiom-operational-review-findings-green.log", "sha256": "7e15daf5a54d67a28c14e59fe157df40394648d54b8ce23051458e1f602a624b", "summary": "13 passed; 2 passed files"}
+    ]
+  }
+}

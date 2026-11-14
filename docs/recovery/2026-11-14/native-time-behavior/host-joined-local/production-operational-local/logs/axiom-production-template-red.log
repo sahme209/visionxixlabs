@@ -1,0 +1,273 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts (4 tests | 4 failed) 18ms
+   × refuses new preparation without captured timing before insert 11ms
+   × joins live preview and prospective review in original owner without renewing reference history 3ms
+   × refuses prospective reviewer expiry before private template bytes 2ms
+   × withholds preview when the real source read crosses the original deadline 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts > refuses new preparation without captured timing before insert
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "actionId": "platform_action_e4622e02-16ed-890d-a8fa-990ac7efa732",
++   "authority": "proposal_reference_only",
++   "historical": false,
+  }
+
+ ❯ lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts:18:210
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
+ FAIL  lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts > joins live preview and prospective review in original owner without renewing reference history
+AssertionError: promise resolved "{ …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "authority": "private_review_source_only",
++   "binding": {
++     "access": null,
++     "actionId": "platform_action_e4622e02-16ed-890d-a8fa-990ac7efa732",
++     "approvalExpiresAt": "1970-01-01T00:00:50.000Z",
++     "bindingDigest": "bfdeee3377a0cf034e989754a9853a6a73b21eb627d6da1f8e41d832e4f44617",
++     "effect": {
++       "id": "platform-template-object",
++       "kind": "template.object.put",
++       "target": {
++         "accountId": "123456789012",
++         "bucket": "axiom-cfn-templates-123456789012",
++         "bytesDigest": "49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba",
++         "key": "templates/axiom-agent-quick-deploy-49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba.yaml",
++         "region": "us-east-2",
++       },
++     },
++     "effectIndex": 0,
++     "format": 1,
++     "planDigest": "bc9cc073fee5eb3f0dc2ff751a15a01159d1e4036b5333f141bca7f6b0439c28",
++     "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++     "purpose": "platform_template_execution_binding_v1",
++     "requester": {
++       "sessionId": "requester-session",
++       "userId": "requester",
++     },
++     "sourceDigest": "7e3767cbacfa5bea8817d03b935b02abeb4df5495d1fa0dbbfd8b89fe957bb98",
++   },
++   "sourceContent": "Resources: {}
++ ",
++   "state": {
++     "attemptCount": 0,
++     "createdAt": 1000,
++     "plan": {
++       "digest": "bc9cc073fee5eb3f0dc2ff751a15a01159d1e4036b5333f141bca7f6b0439c28",
++       "effects": [
++         {
++           "id": "platform-template-object",
++           "kind": "template.object.put",
++           "target": {
++             "accountId": "123456789012",
++             "bucket": "axiom-cfn-templates-123456789012",
++             "bytesDigest": "49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba",
++             "key": "templates/axiom-agent-quick-deploy-49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba.yaml",
++             "region": "us-east-2",
++           },
++         },
++       ],
++       "expiresAt": "1970-01-01T00:00:50.000Z",
++       "format": 1,
++       "scope": "platform",
++       "sourceDigest": "7e3767cbacfa5bea8817d03b935b02abeb4df5495d1fa0dbbfd8b89fe957bb98",
++     },
++     "requester": {
++       "sessionId": "requester-session",
++       "userId": "requester",
++     },
++     "reviewer": null,
++     "status": "proposed",
++     "updatedAt": 1000,
++     "version": 0,
++   },
+  }
+
+ ❯ lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts:19:303
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/4]⎯
+
+ FAIL  lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts > refuses prospective reviewer expiry before private template bytes
+AssertionError: promise resolved "{ …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "authority": "private_review_source_only",
++   "binding": {
++     "access": null,
++     "actionId": "platform_action_e4622e02-16ed-890d-a8fa-990ac7efa732",
++     "approvalExpiresAt": "1970-01-01T00:00:50.000Z",
++     "bindingDigest": "bfdeee3377a0cf034e989754a9853a6a73b21eb627d6da1f8e41d832e4f44617",
++     "effect": {
++       "id": "platform-template-object",
++       "kind": "template.object.put",
++       "target": {
++         "accountId": "123456789012",
++         "bucket": "axiom-cfn-templates-123456789012",
++         "bytesDigest": "49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba",
++         "key": "templates/axiom-agent-quick-deploy-49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba.yaml",
++         "region": "us-east-2",
++       },
++     },
++     "effectIndex": 0,
++     "format": 1,
++     "planDigest": "bc9cc073fee5eb3f0dc2ff751a15a01159d1e4036b5333f141bca7f6b0439c28",
++     "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++     "purpose": "platform_template_execution_binding_v1",
++     "requester": {
++       "sessionId": "requester-session",
++       "userId": "requester",
++     },
++     "sourceDigest": "7e3767cbacfa5bea8817d03b935b02abeb4df5495d1fa0dbbfd8b89fe957bb98",
++   },
++   "sourceContent": "Resources: {}
++ ",
++   "state": {
++     "attemptCount": 0,
++     "createdAt": 1000,
++     "plan": {
++       "digest": "bc9cc073fee5eb3f0dc2ff751a15a01159d1e4036b5333f141bca7f6b0439c28",
++       "effects": [
++         {
++           "id": "platform-template-object",
++           "kind": "template.object.put",
++           "target": {
++             "accountId": "123456789012",
++             "bucket": "axiom-cfn-templates-123456789012",
++             "bytesDigest": "49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba",
++             "key": "templates/axiom-agent-quick-deploy-49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba.yaml",
++             "region": "us-east-2",
++           },
++         },
++       ],
++       "expiresAt": "1970-01-01T00:00:50.000Z",
++       "format": 1,
++       "scope": "platform",
++       "sourceDigest": "7e3767cbacfa5bea8817d03b935b02abeb4df5495d1fa0dbbfd8b89fe957bb98",
++     },
++     "requester": {
++       "sessionId": "requester-session",
++       "userId": "requester",
++     },
++     "reviewer": null,
++     "status": "proposed",
++     "updatedAt": 1000,
++     "version": 0,
++   },
+  }
+
+ ❯ lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts:20:251
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/4]⎯
+
+ FAIL  lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts > withholds preview when the real source read crosses the original deadline
+AssertionError: promise resolved "{ …(4) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "authority": "private_review_source_only",
++   "binding": {
++     "access": null,
++     "actionId": "platform_action_e4622e02-16ed-890d-a8fa-990ac7efa732",
++     "approvalExpiresAt": "1970-01-01T00:00:50.000Z",
++     "bindingDigest": "bfdeee3377a0cf034e989754a9853a6a73b21eb627d6da1f8e41d832e4f44617",
++     "effect": {
++       "id": "platform-template-object",
++       "kind": "template.object.put",
++       "target": {
++         "accountId": "123456789012",
++         "bucket": "axiom-cfn-templates-123456789012",
++         "bytesDigest": "49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba",
++         "key": "templates/axiom-agent-quick-deploy-49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba.yaml",
++         "region": "us-east-2",
++       },
++     },
++     "effectIndex": 0,
++     "format": 1,
++     "planDigest": "bc9cc073fee5eb3f0dc2ff751a15a01159d1e4036b5333f141bca7f6b0439c28",
++     "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++     "purpose": "platform_template_execution_binding_v1",
++     "requester": {
++       "sessionId": "requester-session",
++       "userId": "requester",
++     },
++     "sourceDigest": "7e3767cbacfa5bea8817d03b935b02abeb4df5495d1fa0dbbfd8b89fe957bb98",
++   },
++   "sourceContent": "Resources: {}
++ ",
++   "state": {
++     "attemptCount": 0,
++     "createdAt": 1000,
++     "plan": {
++       "digest": "bc9cc073fee5eb3f0dc2ff751a15a01159d1e4036b5333f141bca7f6b0439c28",
++       "effects": [
++         {
++           "id": "platform-template-object",
++           "kind": "template.object.put",
++           "target": {
++             "accountId": "123456789012",
++             "bucket": "axiom-cfn-templates-123456789012",
++             "bytesDigest": "49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba",
++             "key": "templates/axiom-agent-quick-deploy-49cbd1e9008e8b67dec76613bb4d6468c822c99701820526928d43b382f35fba.yaml",
++             "region": "us-east-2",
++           },
++         },
++       ],
++       "expiresAt": "1970-01-01T00:00:50.000Z",
++       "format": 1,
++       "scope": "platform",
++       "sourceDigest": "7e3767cbacfa5bea8817d03b935b02abeb4df5495d1fa0dbbfd8b89fe957bb98",
++     },
++     "requester": {
++       "sessionId": "requester-session",
++       "userId": "requester",
++     },
++     "reviewer": null,
++     "status": "proposed",
++     "updatedAt": 1000,
++     "version": 0,
++   },
+  }
+
+ ❯ lib/governance/platform/__tests__/templatePreparationOperationalTime.test.ts:21:310
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/4]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  4 failed (4)
+   Start at  14:04:14
+   Duration  158ms (import 41%, transform 33%, tests 24%, worker 2%)
+

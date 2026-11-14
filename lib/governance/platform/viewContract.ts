@@ -1,8 +1,10 @@
+import {executionTimeSummarySchema} from './executionTimeView';
 import {z} from 'zod';
 import {platformPlanSchema,digest} from './contracts';
 export const platformActionId=z.string().regex(/^platform_action_[a-f0-9-]{36}$/);
 const userId=z.string().min(1).max(256);
 export const platformInspectionSchema=z.object({
+ timeAssurance:executionTimeSummarySchema.optional(),
  actionId:platformActionId,version:z.number().int().min(0).max(3),status:z.enum(['proposed','approved','claimed','confirmed','refused','unknown']),attemptCount:z.number().int().min(0).max(1),
  requesterUserId:userId,reviewerUserId:userId.nullable(),plan:platformPlanSchema.extend({digest}).strict(),expired:z.boolean(),
  effects:z.array(z.object({id:z.string().min(1).max(256),status:z.enum(['not_started','claimed','confirmed','refused','unknown'])}).strict()).min(1).max(32),

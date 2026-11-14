@@ -1,0 +1,28 @@
+{
+  "scope": "Large local-only evidence preserved by hash; not product assets or omitted runtime source",
+  "files": {
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/INPUT-PACKET-FINAL.json": {
+      "sha256": "c57d84b7c1f5dbebecbff00838346d5b94f4b41f09e58245d03b59450826b6c3",
+      "bytes": 88451999
+    },
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/INPUT-PACKET.json": {
+      "sha256": "df64153726f63ebd908eeccb34473c760b426431ade466cc01ad9d10d749f33c",
+      "bytes": 88451828
+    },
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/WEBSITE-OUTPUT-MANIFEST.json": {
+      "sha256": "86d32a73474d89039dc21eb314cab739c3659a230a7a54de079e3485998d22fc",
+      "bytes": 868937
+    },
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/DESKTOP-INPUT-PACKET-FINAL.json": {
+      "sha256": "cd0e044f1e97bbc499c66a1a0ecdb9bf4f92e9f809333bc078a7bf6976f4e2fa",
+      "bytes": 2036455
+    },
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/DESKTOP-INPUT-PACKET.json": {
+      "sha256": "220e61045270a8d4cb35a947a6997308c242524daa424f22e9fcce82b2f7386d",
+      "bytes": 2036304
+    }
+  },
+  "verifiedPriorArchive": "/Users/samirahmed/.codex/axiom-local-backups/calm-build-evidence-20261114-162009/evidence.tar.gz",
+  "archiveSha256": "a377449137e7999296367a8b931421acf87ca09386268ea9b5df1157d35b118f",
+  "note": "Original source/packets/receipts remain locally; never replace historical pinned packets with this index."
+}

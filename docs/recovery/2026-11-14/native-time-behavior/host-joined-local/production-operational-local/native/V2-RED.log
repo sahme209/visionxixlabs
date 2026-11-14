@@ -1,0 +1,21 @@
+...FF........
+======================================================================
+FAIL: test_n1_execute_and_delivery_recheck_original_deadline (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 52, in test_n1_execute_and_delivery_recheck_original_deadline
+    self.assertIn('axiom_operational_monotonic(&finished)||finished>=t->sample->deadline',execute)
+AssertionError: 'axiom_operational_monotonic(&finished)||finished>=t->sample->deadline' not found in 'static void execute(napi_env e,void*data){\n (void)e;struct task*t=data;uint64_t now;if(axiom_operational_monotonic(&now)||now>=t->sample->deadline)return;\n uint64_t deadline=t->sample->deadline;\n if(!t->current)t->success=sample_original(t->owner,t->sample,deadline)==0;\n else {struct axiom_operational_status status;t->success=live(t->owner)&&t->sample->original&&!axiom_time_parent_original_current(t->sample->original)&&!check_owner(t->owner,t->sample,&status,deadline)&&axiom_operational_same(&status,&t->sample->status)&&!axiom_time_parent_original_current(t->sample->original);}\n if(!t->success)retire_native(t->owner);\n}\n'
+
+======================================================================
+FAIL: test_n2_discontinuity_sticky_retires_after_startup (test_governance_operational_native.OperationalNativeSource)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_native.py", line 62, in test_n2_discontinuity_sticky_retires_after_startup
+    self.assertIn('int retire_generation=event.state!=AXIOM_OP_READY',steady)
+AssertionError: 'int retire_generation=event.state!=AXIOM_OP_READY' not found in 'while(!withdrawing&&alive(npidfd)){\n  if(all_current(dpidfd,policy,daemon,node,directory,boot,suspend,&a))break;\n  struct pollfd fds[2]={{updates[0],POLLIN,0},{request[0],POLLIN,0}};int ready=poll(fds,2,20);if(ready<0){if(errno==EINTR)continue;break;}if(!ready)continue;\n  uint64_t now;if(axiom_operational_monotonic(&now))break;uint64_t deadline=now+500000000;size_t length;\n  if(fds[0].revents){struct axiom_operational_status event;if(axiom_operational_read_frame(updates[0],bytes,&length,deadline)||axiom_operational_status_decode(bytes,length,&event)||event.sequence||event.revision!=a.revision||strcmp(event.profile,a.profile)||strcmp(event.host,a.host)||strcmp(event.source_generation,a.source_generation)||event.publication<=actual.publication||event.transition!=actual.transition+1||(!actual.publication&&event.state!=AXIOM_OP_UNKNOWN)||event.marker<actual.marker||all_current(dpidfd,policy,daemon,node,directory,boot,suspend,&a))break;actual=event;if(axiom_operational_status_encode(&actual,bytes,&length)||axiom_operational_write_frame(ack[1],bytes,length,deadline))break;}\n  if(fds[1].revents){struct axiom_operational_status q,answer;if(axiom_operational_read_frame(request[0],bytes,&length,deadline)||axiom_operational_check_decode(bytes,length,&q)||sequence==UINT64_MAX||q.sequence!=sequence+1||q.revision!=actual.revision||q.publication!=actual.publication||q.marker!=actual.marker||strcmp(q.profile,actual.profile)||strcmp(q.host,actual.host)||strcmp(q.source_generation,actual.source_generation)||actual.state!=AXIOM_OP_READY||all_current(dpidfd,policy,daemon,node,directory,boot,suspend,&a))break;sequence=q.sequence;answer=actual;answer.sequence=sequence;if(axiom_operational_status_encode(&answer,bytes,&length)||axiom_operational_write_frame(reply[1],bytes,length,deadline))break;}\n }\n '
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.023s
+
+FAILED (failures=2)

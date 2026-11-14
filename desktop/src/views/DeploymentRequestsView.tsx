@@ -851,13 +851,13 @@ function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boo
         <p className={`text-xs font-semibold ${readiness ? "text-emerald-100" : "text-zinc-100"}`}>
           {readiness ? "Ready for human approval" : "Not ready for human approval"}
         </p>
-        <p className="mt-0.5 text-[10px] text-zinc-500">
+        <p className="operational-note mt-0.5 text-zinc-500">
           {readiness
             ? "Required recorded signals are present. Approval is still required; nothing can deploy from this view."
             : `${context.readiness.blockers.length} recorded item${context.readiness.blockers.length === 1 ? "" : "s"} needs attention before approval.`}
         </p>
         {!readiness && (
-          <ul className="mt-2 space-y-1 text-[10px] text-zinc-100/80">
+          <ul className="operational-note mt-2 space-y-1 text-zinc-100/80">
             {context.readiness.blockers.map((blocker) => <li key={blocker}>• {blocker}</li>)}
           </ul>
         )}

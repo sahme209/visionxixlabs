@@ -1,3 +1,4 @@
+import {bindOperationalSdkSigning} from '../nativeTime/sdkOperationalSigning';
 import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization} from '../executionTime';
 import 'server-only';
 import {ECSClient,DescribeServicesCommand} from '@aws-sdk/client-ecs';
@@ -14,17 +15,18 @@ const fail=():never=>{throw Error('operational_ecs_transport_unavailable')};
 /** Private fixed-operation boundary shared by update and describe. The exact
  * action header and serialized input prevent a read command becoming a write. */
 async function signedRequest(clock:ExecutionTimeSource,region:string,rawCredential:Credential,operation:'UpdateService'|'DescribeServices',input:unknown,beforeRequest:ExecutionTimeAuthorization,signal:AbortSignal,send:(client:ECSClient)=>Promise<unknown>,actionExpiresAt?:number,dispatchCurrent?:OperationalEcsDispatchCurrent){
- let client:ECSClient|undefined;
+ let client:ECSClient|undefined;let signing:Awaited<ReturnType<typeof bindOperationalSdkSigning>>|undefined;
  try{
   const credential=credentialSchema.parse(rawCredential);if(typeof dispatchCurrent!=='function')return fail();if(!(signal instanceof AbortSignal)||signal.aborted||[credential.accessKeyId,credential.secretAccessKey,credential.sessionToken].some(s=>/[\s\x00-\x1f\x7f]/.test(s)))return fail();
   await assertExecutionWindow(clock,{expiresAt:Math.min(credential.expiresAt,actionExpiresAt??credential.expiresAt)},signal);
   const endpoint=new URL(awsReadEndpoint('ecs',region,'aws')),expected=sha256ContentHash(input),bounded=boundedAwsHandler(signal,{remaining:65536},{maxBytes:65536,timeoutMs:6000});let used=false;
   const handler={metadata:bounded.metadata,destroy:()=>bounded.destroy(),async handle(request:Parameters<typeof bounded.handle>[0],options:Parameters<typeof bounded.handle>[1]){
+   signing?.assertSignedRequest(request);if(!signing)return fail();
    if(used||signal.aborted||request.protocol!=='https:'||request.hostname!==endpoint.hostname||request.port!==undefined&&request.port!==443||request.path!=='/'||request.method!=='POST'||Object.keys(request.query??{}).length||request.headers['x-amz-target']!=='AmazonEC2ContainerServiceV20141113.'+operation)return fail();used=true;
    const bytes=typeof request.body==='string'?Buffer.from(request.body,'utf8'):request.body instanceof Uint8Array?Buffer.from(request.body):null;
    if(!bytes||bytes.byteLength>16384||sha256ContentHash(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(bytes)))!==expected||!request.headers.authorization?.startsWith('AWS4-HMAC-SHA256 Credential='+credential.accessKeyId+'/')||!request.headers.authorization.includes('/'+region+'/ecs/aws4_request')||request.headers['x-amz-security-token']!==credential.sessionToken)return fail();
    const authorization=request.headers.authorization;
-   const requestCurrent=()=>{
+   const requestCurrent=()=>{signing!.assertSignedRequest(request);
     const body=typeof request.body==='string'?Buffer.from(request.body,'utf8'):request.body instanceof Uint8Array?Buffer.from(request.body):null;
     if(request.protocol!=='https:'||request.hostname!==endpoint.hostname||request.port!==undefined&&request.port!==443||request.path!=='/'||request.method!=='POST'||Object.keys(request.query??{}).length||request.headers['x-amz-target']!=='AmazonEC2ContainerServiceV20141113.'+operation||request.headers.authorization!==authorization||request.headers['x-amz-security-token']!==credential.sessionToken||!body||body.byteLength>16384||sha256ContentHash(JSON.parse(new TextDecoder('utf-8',{fatal:true}).decode(body)))!==expected)return fail();
    };
@@ -34,6 +36,7 @@ async function signedRequest(clock:ExecutionTimeSource,region:string,rawCredenti
    await consumeExecutionDispatch(checkpoint,binding);signal.throwIfAborted();return bounded.handle(request,options);
   }};
   client=new ECSClient({region,credentials:{accessKeyId:credential.accessKeyId,secretAccessKey:credential.secretAccessKey,sessionToken:credential.sessionToken,expiration:new Date(credential.expiresAt)},endpoint:endpoint.href,ignoreConfiguredEndpointUrls:true,useFipsEndpoint:false,useDualstackEndpoint:false,maxAttempts:1,requestHandler:handler});
+  signing=await bindOperationalSdkSigning(client,clock,{expiresAt:Math.min(credential.expiresAt,actionExpiresAt??credential.expiresAt)},signal);
   const result=await send(client);signal.throwIfAborted();return result;
  }catch{return fail()}finally{client?.destroy()}
 }

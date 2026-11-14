@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from './executionTimeEvidence';
 import 'server-only';
 import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';
 import {readPlatformPrincipalTimeWindow} from './principalTime';
@@ -40,7 +41,7 @@ export function createTemplateExecutionStore(repo:PlatformRepository,authority:P
   const active=controllingSignal();if(!state.reviewer||typeof clock!=='function')return fail();
   const requester=await readPlatformPrincipalTimeWindow(tx,state.requester,active),reviewer=await readPlatformPrincipalTimeWindow(tx,state.reviewer,active);
   const window=Object.freeze({notBefore:Math.max(requester.notBefore,reviewer.notBefore),expiresAt:Math.min(expiresAt,Date.parse(state.plan.expiresAt),requester.expiresAt,reviewer.expiresAt)});
-  if(check)await check(window);else await assertExecutionWindow(clock,window,active);active.throwIfAborted();await people(tx,state);
+  if(check){await check(window);recordExecutionTimeCheckForOwner(tx,check)}else{const observation=await assertExecutionWindow(clock,window,active);recordExecutionTimeEvidence(tx,observation,window)}active.throwIfAborted();await people(tx,state);
  }
  async function locked<T>(id:string,fn:(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>)=>Promise<T>){platformActionId.parse(id);return repo.transaction(async tx=>{await tx.lock(id);return fn(tx,readPlatformAction(await tx.read(id)))})}
  function storage(tx:PlatformTransaction){return tx.templateStorage??fail()}

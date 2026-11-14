@@ -1,0 +1,24 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts (10 tests | 1 failed) 7ms
+   × projects only explicit non-capability assurance category/profile to a browser history summary 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts > projects only explicit non-capability assurance category/profile to a browser history summary
+TypeError: projectExecutionTimeEvidence is not a function
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:27:381
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  14:37:01
+   Duration  128ms (import 48%, transform 35%, tests 14%, worker 3%)
+

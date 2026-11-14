@@ -1,10 +1,13 @@
+import {recordExecutionTimeCheck} from './executionTimeEvidence';
 import 'server-only';
+import {consumeOperationalTimeObservation,readOperationalTimeObservation,type OperationalTimeObservation} from './nativeTime/operationalSource';
 
 export interface ExecutionTimeInterval {readonly earliest:number;readonly latest:number}
 /** Private composition port, never request JSON or a default clock. Its native
  * origin/profile, current-use validity and time scale need real qualification;
  * structural validation here does not establish any of those guarantees. */
-export type ExecutionTimeSource=(signal:AbortSignal)=>Promise<ExecutionTimeInterval>;
+export type ExecutionTimeObservation=ExecutionTimeInterval|OperationalTimeObservation;
+export type ExecutionTimeSource=(signal:AbortSignal)=>Promise<ExecutionTimeObservation>;
 export interface ExecutionTimeWindow {readonly notBefore?:number;readonly expiresAt?:number}
 /** Locked authorization owners may add restrictions, never replace native bounds. */
 export type ExecutionTimeCheck=(restriction?:ExecutionTimeWindow)=>Promise<void>;
@@ -18,12 +21,13 @@ const stamp=(value:number)=>Number.isSafeInteger(value)&&value>=0;
 /** Read afresh at each decision, including after awaited authority checks.
  * No caching, tolerance, drift extrapolation or process/database-clock fallback.
  * Audit ordering remains the transaction's separate existing responsibility. */
-export async function assertExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,signal:AbortSignal):Promise<Readonly<ExecutionTimeInterval>>{
+export async function assertExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,signal:AbortSignal):Promise<Readonly<ExecutionTimeObservation>>{
  try{
   signal.throwIfAborted();
   const notBefore=window.notBefore,expiresAt=window.expiresAt;
   if(typeof source!=='function'||notBefore!==undefined&&!stamp(notBefore)||expiresAt!==undefined&&!stamp(expiresAt))return fail();
   const raw=await source(signal);signal.throwIfAborted();
+  if('assurance' in raw){const value=consumeOperationalTimeObservation(raw);if(!value||notBefore!==undefined&&value.unixTimeNs<BigInt(notBefore)*BigInt(1000000)||expiresAt!==undefined&&value.unixTimeNs>=BigInt(expiresAt)*BigInt(1000000))return fail();return value}
   const earliest=raw.earliest,latest=raw.latest;
   if(!stamp(earliest)||!stamp(latest)||latest<earliest||notBefore!==undefined&&earliest<notBefore||expiresAt!==undefined&&latest>=expiresAt)return fail();
   return Object.freeze({earliest,latest});
@@ -44,7 +48,7 @@ async function acknowledgedExecutionWindow(source:ExecutionTimeSource,window:Exe
    const notBefore=restriction?.notBefore,expiresAt=restriction?.expiresAt;
    if(notBefore!==undefined&&!stamp(notBefore)||expiresAt!==undefined&&!stamp(expiresAt))return fail();
    const joined=Object.freeze({notBefore:captured.notBefore===undefined?notBefore:notBefore===undefined?captured.notBefore:Math.max(captured.notBefore,notBefore),expiresAt:captured.expiresAt===undefined?expiresAt:expiresAt===undefined?captured.expiresAt:Math.min(captured.expiresAt,expiresAt)});
-   await assertExecutionWindow(source,joined,signal);signal.throwIfAborted();if(!active)return fail();acceptedWindow=joined;completed=true}catch{invalid=true;return fail()}
+   const observation=await assertExecutionWindow(source,joined,signal);recordExecutionTimeCheck(check,observation,joined);signal.throwIfAborted();if(!active)return fail();acceptedWindow=joined;completed=true}catch{invalid=true;return fail()}
  };
  const finalFacts=requiredFinalFacts===undefined?undefined:async()=>{
   try{if(!active||finalStarted||!completed)return fail();finalStarted=true;signal.throwIfAborted();await requiredFinalFacts();signal.throwIfAborted();if(!active)return fail();finalCompleted=true}catch{invalid=true;return fail()}
@@ -88,4 +92,13 @@ export async function consumeExecutionDispatch(checkpoint:ExecutionDispatchCheck
   await assertExecutionWindow(state.source,state.window,state.signal);state.signal.throwIfAborted();
   await state.assertCurrent();state.signal.throwIfAborted();
  }catch{return fail()}
+}
+
+/** A returned provider expiration is checked under the selected assurance. This
+ * maximum issuance policy does not prove unknown-credential/native closure. */
+export function assertReturnedCredentialLifetime(observation:ExecutionTimeObservation,expiresAt:number,maximumMs:number):void{
+ if(!stamp(expiresAt)||!stamp(maximumMs)||maximumMs===0)return fail();
+ const operational=readOperationalTimeObservation(observation);
+ if('assurance' in observation){if(!operational||BigInt(expiresAt)*BigInt(1000000)<=operational.unixTimeNs||BigInt(expiresAt)*BigInt(1000000)-operational.unixTimeNs>BigInt(maximumMs)*BigInt(1000000))return fail()}
+ else if(!stamp(observation.earliest)||!stamp(observation.latest)||expiresAt<=observation.latest||expiresAt-observation.earliest>maximumMs)return fail();
 }

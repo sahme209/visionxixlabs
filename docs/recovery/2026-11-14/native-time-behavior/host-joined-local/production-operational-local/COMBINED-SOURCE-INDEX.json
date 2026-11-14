@@ -1,0 +1,16 @@
+{
+  "format": 1,
+  "scope": "approved local operational time source checkpoint only; not installed/native/runtime/SQL/provider/activation qualification",
+  "authority": "call_36a6c98e0c5d46d5b545378bfb0e4506",
+  "typescriptManifest": {
+    "path": "docs/recovery/2026-11-14/native-time-behavior/host-joined-local/production-operational-local/TS-SOURCE-MANIFEST-v2.json",
+    "sha256": "6f60a4fd30c6607575bef9a0649f7e74f39d09f636f36d73ccc099775dff3bea"
+  },
+  "nativeManifest": {
+    "path": "docs/recovery/2026-11-14/native-time-behavior/host-joined-local/production-operational-local/native/SOURCE-MANIFEST-v3.json",
+    "sha256": "ea80412e1827005f1f9c4410d7a4ff754ea59bf1a6f62a3bfcf8d34a98e7ec89"
+  },
+  "nativeCodeExecuted": false,
+  "sqlExecuted": false,
+  "governanceEnabled": false
+}

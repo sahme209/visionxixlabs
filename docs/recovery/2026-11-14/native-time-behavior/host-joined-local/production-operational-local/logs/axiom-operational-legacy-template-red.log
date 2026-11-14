@@ -1,0 +1,65 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/__tests__/actionStore.test.ts (25 tests | 2 failed) 41ms
+   × does not let legacy template preview bypass prospective reviewer session time 3ms
+   × legacy new template preparation refuses missing private clock while original-reference recovery remains separate 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/__tests__/actionStore.test.ts > does not let legacy template preview bypass prospective reviewer session time
+AssertionError: promise resolved "{ kind: 'template.bucket', …(7) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "actionId": "platform_action_d3965739-0881-899c-ad70-01434a114126",
++   "authority": "review_preview_only",
++   "effectId": "platform-template-bucket",
++   "kind": "template.bucket",
++   "ownership": "not_observed",
++   "planDigest": "22e58c5d2c6714e345ab690ad43a06136e63e36fc8be407549f5fef321b5e48b",
++   "sourceDigest": "9b3455b6d036ed02dd8f51adbdfb9ebfb24aa81f884078d7e02e2c99264a6860",
++   "target": {
++     "accountId": "123456789012",
++     "bucket": "axiom-cfn-templates-123456789012",
++     "region": "us-east-2",
++   },
+  }
+
+ ❯ lib/governance/platform/__tests__/actionStore.test.ts:186:398
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/governance/platform/__tests__/actionStore.test.ts > legacy new template preparation refuses missing private clock while original-reference recovery remains separate
+AssertionError: promise resolved "{ …(3) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "actionId": "platform_action_2ed9a708-fd83-8206-aefb-9c5fd1ce13e2",
++   "authority": "proposal_reference_only",
++   "historical": false,
+  }
+
+ ❯ lib/governance/platform/__tests__/actionStore.test.ts:187:457
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 23 passed (25)
+   Start at  14:30:04
+   Duration  201ms (transform 36%, tests 34%, import 29%, worker 1%)
+

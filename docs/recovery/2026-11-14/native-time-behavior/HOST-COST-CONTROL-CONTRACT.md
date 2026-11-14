@@ -1,0 +1,60 @@
+# Proposed L3 host cost, control and owned-cleanup contract
+
+Design-only consolidation of the six consumed public references and saved observations. No fresh read, account/UI access, native/code execution, resource/IAM change, publication or spending. No owner setup decision is requested by this document. This contract is not run-ready or a complete current quote.
+
+## One proposed bounded slice
+
+One newly owned Ohio Linux/x86_64 m6i.large host, exact observed Amazon-owned AL2023 ECS image candidate recorded privately in HOST-EVALUATION-MANIFEST.md, one30GiB baseline-gp3 root disk and one auto-assigned public IPv4. No key pair, host instance profile, application/provider/customer credentials, SSH, SSM, ECS Exec, public listener, ECS cluster/task, DB or deployment target. Host-only is a **proposed L3 substage** for the eventual combined owner decision, not silent replacement of later ECS task-credential-origin custody/human/provider acceptance.
+
+Host and IPv4 planned maximum lifetime:60minutes, including bootstrap, one finite joined evaluation and cleanup; exact phase budgets must sum to≤60minutes and be justified by the final package size/commands. Disk maximum planned lifetime:24hours from creation, including running time, not24hours extra. Aggregate internet outbound planning allowance:1GiB, including evidence export and other actual outbound payload; no hidden replacement host or repeated run. No automatic retry/restart/repair, extra disk, EIP allocation, NAT, endpoint, managed log service, registry, observer host or paid builder. A process deadline or failed bootstrap cannot extend these operational limits automatically.
+
+Use managed ordinary local NTP under the owner's accepted isolated operational-trust preparation model. No PHC/enhanced-time claim on m6i, no independent physical UTC bound, strict-qualified interval fallback or production registration. The package must select one clock-steering owner, handle default chrony and prevent implicit ECS joining; these are unresolved exact bootstrap details, not commands authorized here.
+
+## Enumerated cost envelope — dated rates, not all-in quote
+
+| Component | Bounded planning quantity and saved rate | USD |
+| --- | --- | ---: |
+| Linux m6i.large |1host×1hour×$0.096/hour |0.0960000000 |
+| Public IPv4 |1address×1hour×$0.005/hour |0.0050000000 |
+| Root gp3 baseline |30GiB×24hours×$0.08/GB-month÷720hours/month |0.0800000000 |
+| Internet outbound |Conservatively budget1GiB as1.073741824decimalGB×$0.09/GB, no free allowance |0.0966367642 |
+| **Enumerated subtotal** |Only the four lines above |**0.2776367642** |
+
+Using1decimalGB instead of1GiB would give$0.271; do not conflate the byte units. The saved table labels transfer GB, so the larger decimal conversion is a planning allowance, not a new assertion of AWS meter semantics. Likewise the saved EBS rate is labelled GB-month while the proposed volume is30GiB; this table retains the existing30-unit AWS volume arithmetic and720-hour planning month. The final quote must confirm selected service billing units/proration; do not claim native enforcement from this arithmetic.
+
+Public-release delivery is a **nonsecret candidate**, not a hosted asset already available. The saved GitHub release reference documents per-asset<2GiB and no total release/bandwidth limit; that is not proof of a zero-priced build/publication/storage/download route. No Actions artifact delivery/retention allowance is assumed. Freeze actual compressed bytes/hash, one bounded download, release/asset coordinates and retention/cleanup; publication needs its applicable explicit owner authority. Choose a fixed comfortably bounded asset and installed verified fetch/decompression capabilities; the2GiB page limit is not our allowed package size.
+
+Inbound internet's saved Ohio rate0 does not make artifact production/delivery, request/service fees, inter-AZ traffic or external observer operation free. No ECR, CloudWatch or snapshots are selected; absence must remain true in the executable plan. Add any required selected delivery/build/management/export charges, taxes and owner-selected contingency or explicitly document their absence. No free credits/discounts are assumed. The subtotal is **not a spending request, maximum possible AWS charge, account offer, final all-in quote or hard billing cap**. Cleanup delay can continue compute/IP/disk charges. The external operational supervisor limits intended exposure but cannot guarantee provider control-plane success.
+
+## Operator authority versus zero host identity
+
+The external operator uses a separately authenticated existing control environment; no credentials are placed in user data, the public package, host environment, files or IMDS role. The proposed host has no IAM instance profile or task role. No iam:PassRole/CreateRole/AttachRolePolicy, SSM/logging role, registry credential or ambient AWS SDK chain is needed or authorized by this candidate. Access to empty IMDS is not a substitute for the later genuine task-source contract; the final launch must bind its metadata options explicitly.
+
+The final reviewed operator policy/action manifest must name only the exact proposed work: inspect the selected AMI/block mapping/type/quota and exact VPC/subnet/route/group; create/tag ONE dedicated SG; set its exact egress/no-ingress rules; RunInstances ONCE with fixed image/type/subnet/disk/metadata/user-data/no-key/no-profile, no autoscaling; describe that original instance/volume/interface/address/status; GetConsoleOutput for that exact instance; stop/terminate that original host under the chosen cleanup policy; inspect/delete only its new retained root volume if expressly approved; remove the new SG after dependent resources are gone. Candidate EC2 API action names must be rendered and validated as an executable least-privilege policy with exact resource/tag conditions before approval; this prose neither proves effective permissions nor authorizes broad Describe*/EC2FullAccess. If dynamic IDs cannot be permission-scoped until creation, bind them immediately from the single acknowledged creation and retain them for all later operations. A lost creation reply stops new creation and requires original owned-resource reconciliation, never a second RunInstances.
+
+No public shell/remote-command path is available as a fallback. Preferred management is fixed nonsecret user-data bootstrap (saved16KB raw ceiling) plus external EC2 status/console-output observation. Complete bounded receipt export through that path is **unproven**; a timestamped/base64 console API response does not prove completeness, authenticated guest origin or retention. Bind that contract before selecting the path. Do not silently install SSM, open SSH, attach a role or add a listener when output is missing.
+
+## Dedicated network contract
+
+Reuse only one exact rechecked existing public subnet/VPC/main-route foundation. Attach only the new dedicated SG; never the default group. Ingress: **zero rules** IPv4/IPv6. No assigned IPv6 is proposed. Egress candidate: TCP443 to internet only for the fixed public immutable package origin/redirect destinations and any expressly selected receipt path; use the VPC resolver and link-local local NTP169.254.169.123. No public NTP pool or arbitrary DNS/server fallback. The final rule/host configuration must account for actual resolver/NTP behavior and provider exemptions; a written SG rule is not proof those services are filtered by SGs.
+
+TCP443 to0.0.0.0/0 is **not hostname isolation**. Under the reviewed trusted fixed-source model, package/hash/redirect/TLS and source controls must bound actual uses; if stronger destination enforcement is required, specify and quote a concrete supported mechanism rather than pretending SG names filter names. No unpriced proxy/NAT/private endpoint is implied. A host public address only supplies this selected host's reachability, not a later task network-mode proof. Exact routes, source/destination checks, DNS, downloaded bytes and no-ingress state must be in the final before/after manifest.
+
+## External supervision, manual fallback and retention
+
+Before launch, freeze the outside supervisor's actual identity, existing control environment, independent monotonic60minute deadline, polling/receipt budgets and approved stop/terminate actions. A guest timeout alone is insufficient. Persist the ONE creation response and immutable instance/volume/SG/interface identity plus unique owned run tag before later operations. Never select cleanup by a loose prefix/account-wide search. A failed/unavailable external supervisor is a failed/unknown attempt, not permission for automatic replacement or extending lifetime.
+
+At the finite run end or timeout, collect the bounded complete receipt if possible, request the expressly authorized stop/termination for the original host and verify its provider terminal state. Confirm public address association release independently; no retained EIP is proposed. Stopping rather than terminating retains root storage and may retain other charges; record actual state and all residual exposure. Verify process/producer quiescence when observable; EC2 terminal state is not strict credential closure. The role-free slice acquired no such credential, and later liabilities remain separate.
+
+Proposed disk policy: retain only the NEW root disk for at most24hours for inspection, then delete only with explicit final approval and known volume identity/state; configure DeleteOnTermination=false if that retention is chosen. Alternatively an explicitly approved delete-on-termination policy changes actual retention/bill and must replace this line in the frozen packet. Do not mix the two policies, detach a live/unknown disk blindly, delete existing evidence/backups, or claim data was exported merely because an instance terminated. Keep the sanitized external receipt in its selected already-owned retention location, with its size/lifetime/cost explicit. Delete the new SG only after its original interfaces no longer depend on it.
+
+Manual fallback means the named human operator receives the exact retained original IDs, known/unknown states, incurred/exposed charges and authorized cleanup steps, and deliberately completes only those steps through the existing authenticated control plane. It is not a host login, generic command or new agent. If ownership, IAM, deletion scope or provider acknowledgement is uncertain: stop new effects, preserve the original record and escalate for that exact decision. Do not report cleanup or cost closure; retain residual billing exposure and do not rerun the evaluation.
+
+## Essential unresolved contracts before ONE execution/spend decision
+
+1. Exact image/block mapping/kernel/package and source-bound startup artifact; one steering owner; actual joined operational-evaluation policy/lifecycle and protected administrative/resource delivery. Current raw fixture success cannot fill these bytes or make a strict supplier qualified.
+2. One real external operator/supervisor and complete bounded receipt transport/retention, not merely a browser session or documented console endpoint. Exact artifact release/build/publication/delivery bounds and any fees must be fixed.
+3. Exact target subnet/routes, metadata options, dedicated SG/egress, effective least-privilege operator policy, quota/capacity handling and creation/cleanup acknowledgements. Historical network and blank quota are not successful preflight results. No launch retry if capacity fails.
+4. Final selected lifetimes/phase budgets,24hour disk-retention/deletion authority, actual meter units/taxes/contingency/remaining fee or absence evidence and owner maximum proposed spend/residual exposure. The numeric subtotal above is only the starting four-line envelope.
+
+Resolve these together in the existing complete host packet. All six public references are consumed; no new research/read or resource authority is created here. Full ECS credential custody, real independent humans, provider trial/closure and production assurance/activation remain separate and open.

@@ -1,0 +1,85 @@
+{
+  "scope": "pure/source/mocked only; no native/compiler/host/API operation",
+  "tests": [
+    {
+      "file": "upstream-red.log",
+      "sha256": "b8710d9ab6a78caea9ab04733e2de6924e08c6b6e61e2cfd44105ae3ab0d0231",
+      "summary": [
+        "Ran 4 tests in 0.021s",
+        "FAILED (failures=3)"
+      ]
+    },
+    {
+      "file": "bootstrap-red.log",
+      "sha256": "c1088df9a2d7d1ec1f61ed6f0ef9f255978786c35189b6e8e674f776228860a5",
+      "summary": [
+        "Ran 6 tests in 0.001s",
+        "FAILED (failures=2, errors=4)"
+      ]
+    },
+    {
+      "file": "cancel-red.log",
+      "sha256": "6f8dc244557d87740966f1aba644f321276869d03324006b693d218a63d546e2",
+      "summary": [
+        "Ran 5 tests in 0.038s",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "file": "ipv4-red.log",
+      "sha256": "df88acc1a5e0dae19ccfdeae6210de8e71f2250c2a11956f7df9b95c958b6803",
+      "summary": [
+        "Ran 6 tests in 0.038s",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "file": "bounds-red.log",
+      "sha256": "a91c69b510264e0c379a59e41fe990992d8bb3cc404f90e57ea37a3138ddaf11",
+      "summary": [
+        "Ran 9 tests in 0.001s",
+        "FAILED (failures=3)"
+      ]
+    },
+    {
+      "file": "lifecycle-red.log",
+      "sha256": "d00e75b6790d81a43e1ab73ac5991155ed6078e4d12f0ee05e336cfc86adaa03",
+      "summary": [
+        "Ran 10 tests in 0.001s",
+        "FAILED (failures=2)"
+      ]
+    },
+    {
+      "file": "raw-result-red.log",
+      "sha256": "8931d033c5b8bb14307eb399f81b9611c095b3be78f4247a30e587b58f149736",
+      "summary": [
+        "Ran 13 tests in 0.071s",
+        "FAILED (errors=1)"
+      ]
+    },
+    {
+      "file": "privilege-red.log",
+      "sha256": "c59e1d1d7d4fe16dcd464bcd9b0205ae1c902b2918337f8d1a124e16ab2e8d53",
+      "summary": [
+        "Ran 14 tests in 0.014s",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "file": "source-green.log",
+      "sha256": "1a5eea5c0b37bca09e33403d67f3c80a2e8543ad0339f036be7bfc2893e691f0",
+      "summary": [
+        "Ran 6 tests in 0.036s",
+        "OK"
+      ]
+    },
+    {
+      "file": "bootstrap-green.log",
+      "sha256": "2688e3aac5879831defab5e5f231a6f331e395be82e99f6caef62e863a873ffe",
+      "summary": [
+        "Ran 14 tests in 0.013s",
+        "OK"
+      ]
+    }
+  ]
+}

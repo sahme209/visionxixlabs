@@ -1,0 +1,28 @@
+{
+  "status": "PREPARATION_ONLY_NO_RETRY_AUTHORITY",
+  "cause": "Existing desktop cache .vite-temp was aliased into stage; Vite attempted to create its bundled config there; outside-stage write denial correctly returned EPERM.",
+  "originalStage": "/private/tmp/axiom-calm-frozen-build-fo_6hvj5",
+  "actualDesktopLogSha256": "0ddde53f21f91f23b77b852ee68ac3c97ac84fc24b6f6491df3a0302d195204d",
+  "originalExecutorSha256": "0ed844cb6ce7c0b3cdac381a1ef273c02df38f72785c411eb04252c177df0024",
+  "originalPacketSha256": "c57d84b7c1f5dbebecbff00838346d5b94f4b41f09e58245d03b59450826b6c3",
+  "originalAttemptMarkerSha256": "0db32b68757d2b4d6542d6a1c1ac6bd22a32972c7549afae38a632a63e7c4b56",
+  "correctionFiles": {
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/namespace_correction.py": "1fb1c14b20bffdcb2b5dddf5b27a73d8388de5ffac8a3012e70eaa9691a10c81",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/test_namespace_correction.py": "181b036ca0ee43bf591f9d3e134b6c10ee925d2816495017689e5fccbcc3ddc5"
+  },
+  "tests": {
+    "genuineExistingNamespaceRed": {
+      "failed": 1,
+      "log": "/private/tmp/axiom-calm-vite-temp-red.log",
+      "sha256": "27304c81b1d2633991d823381cdbe694446d94152239871f6e4941741d363d9d"
+    },
+    "green": {
+      "passed": 3,
+      "log": "/private/tmp/axiom-calm-vite-temp-green.log",
+      "sha256": "5279d1fc9a1ced44f9c96da1414ef59e4676f963fbad52e7a1a2903538819b0d"
+    }
+  },
+  "actualStageMutated": false,
+  "buildChildrenStarted": 0,
+  "remainingAuthority": "New desktop-only continuation executor/input review and explicit owner approval required; original grant consumed."
+}

@@ -1,0 +1,15 @@
+{
+  "ownerApproval": "call_23e75a63881349f497a1ce2130c4744e",
+  "maximumCalls": 5,
+  "callsUsed": 1,
+  "stopped": true,
+  "reason": "metadata_selection_unavailable",
+  "metadataAccepted": false,
+  "detailRead": false,
+  "neonRead": false,
+  "sqlRun": false,
+  "retryAllowed": false,
+  "valuesStoredOrPrinted": false,
+  "deploymentReady": false,
+  "interpretation": "Reviewed selector could not select a single unchanged production database metadata record. No cause inferred, no secret read or target chase. Prior grants remain consumed."
+}

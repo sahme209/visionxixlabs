@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from './executionTimeEvidence';
 import 'server-only';
 import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';
 import {readPlatformPrincipalTimeWindow} from './principalTime';
@@ -69,7 +70,7 @@ export function createImageExecutionStore(repo:PlatformRepository,authority:Plat
   const connection=await sourceCurrent(tx,id,state,b,actor,c);if(!state.reviewer||typeof clock!=='function')return fail();
   const requester=await c.within(()=>readPlatformPrincipalTimeWindow(tx,state.requester,c.signal)),reviewer=await c.within(()=>readPlatformPrincipalTimeWindow(tx,state.reviewer!,c.signal));
   const window=Object.freeze({notBefore:Math.max(requester.notBefore,reviewer.notBefore),expiresAt:Math.min(Date.parse(b.expiresAt),requester.expiresAt,reviewer.expiresAt,connection.expiresAt.getTime())});
-  if(check)await c.within(()=>check(window));else await c.within(()=>assertExecutionWindow(clock,window,c.signal));
+  if(check){await c.within(()=>check(window));recordExecutionTimeCheckForOwner(tx,check)}else{const observation=await c.within(()=>assertExecutionWindow(clock,window,c.signal));recordExecutionTimeEvidence(tx,observation,window)}
   await sourceCurrent(tx,id,state,b,actor,c);
  }
  async function withKey<T>(c:Scope,read:()=>Promise<Uint8Array>,assert:(key:Buffer)=>Promise<void>,fn:(key:Buffer)=>Promise<T>){

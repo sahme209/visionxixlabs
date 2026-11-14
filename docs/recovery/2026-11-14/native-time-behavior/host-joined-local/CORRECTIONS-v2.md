@@ -1,0 +1,15 @@
+# Three reviewed source corrections — v2
+
+All three important findings in WHOLE-UNIT-REVIEW.md were addressed in one local correction pass. The original SOURCE-MANIFEST.json, twenty-pass ledger/report, frozen whole-unit diff and review remain unchanged. FIRST-SNAPSHOT-RECEIPT.json verifies all twelve original hashes matched before correction. This is a new corrected source snapshot, not renewal of the old compile/native evidence.
+
+1. The package recipe now enumerates the actual time_publication.c/header, compiles one target-sysroot C object first, and uses cargo rustc final-bin link arguments for that exact object, no-undefined, libc and librt. Stock/default build paths and historical compiler driver are unchanged. No recipe/compiler was executed.
+2. Controller ordinary SIGTERM/SIGINT/SIGHUP handlers set a deferred flag only. Ownership is assigned before checkpoints; bounded source/read/wait loops observe cancellation; exact owned reader/service cleanup and producer shutdown ignore cancellation while completing; local descriptors always close. Cancellation during cleanup still produces a canceled observation without aborting cleanup. SIGKILL/power loss are explicitly unknown and require external owned-host cleanup. No actual signal was sent or handler installed by tests.
+3. The actual fixed IPv4 runner now matches all NtpIoError branches into eight fixed categories: permission_refused, bind_failure, sample_timeout, malformed_response, source_unsynchronized, source_unavailable, counter_order_failure and sample_io_failure. It emits at most one structured event per category per runner, never raw errno/messages/packet bytes, preserves original valid send handling and never calls stock address fallback. The bootstrap parses closed events and retains categories in its receipt even when the observation fails. A malformed packet hidden by upstream parsing until timeout is not falsely claimed distinguishable from that returned timeout.
+
+## Focused verification
+
+Actual-source recipe/error-branch and mocked cancellation regressions first failed in v2-red.log; cleanup-stage cancellation first failed in v2-cleanup-red.log. Final: **9 correction checks PASS;6 actual patched-source checks PASS;14 existing pure/mocked/source bootstrap checks PASS**. Total29 source/pure/mocked checks; none is native behavior evidence.
+
+Exact commands: `python3 -m unittest discover -s scripts/tests -p test_governance_host_corrections.py`; replace final filename with `test_governance_host_evaluation.py` and `test_governance_host_bootstrap.py` for the two covering suites. Saved logs/hashes/summaries in TEST-LEDGER-v2.json; exact13source hashes in SOURCE-MANIFEST-v2.json.
+
+Native C/Rust compile/link/ABI, installed signals/services/clock/ACL/process behavior, actual host/source/network/custody, source adoption/production mode, package delivery and resource/cost/cleanup authority remain unverified and unperformed. No dependency, compiler, native/API/host/provider/SQL/cloud/CI/publication/spend action, commit or push occurred. Minor formatting suggestions were deferred; no new feature or authority was added.

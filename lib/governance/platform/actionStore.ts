@@ -1,3 +1,4 @@
+import {projectExecutionTimeEvidence,recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from './executionTimeEvidence';
 import {postingSourceSchema} from '@/lib/growth/linkedin/platformPostingPlan';
 import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from './principalTime';
 import type {ExecutionTimeSource,ExecutionTimeCheck} from './executionTime';
@@ -36,6 +37,7 @@ import {createPlatformAction,approvePlatformAction,claimPlatformAction,finishPla
 import {platformEffectSchema,platformPrincipalSchema,type PlatformPlan,type PlatformAction,type PlatformPrincipal,type PlatformEffect} from './contracts';
 export type EffectStatus='claimed'|'confirmed'|'refused'|'unknown';
 export interface PlatformTransaction extends Partial<DeploymentLiabilityTransaction>{
+ readTimeAssurance?(id:string):Promise<unknown|null>;
  readReadyImageArtifact?(uploadActionId:string,connectionId:string):Promise<unknown>;
  imageStorage?:ReturnType<typeof createImageStorageSql>;
  readImageConnection?(id:string):Promise<unknown>;
@@ -82,7 +84,12 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
  async function timely(tx:PlatformTransaction,state:PlatformAction,phaseActor?:PlatformPrincipal,scheduled?:{effectId:string;source:ReturnType<typeof postingSourceSchema.parse>},nativeCheck?:ExecutionTimeCheck){
   async function auditTime(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}
   const before=await auditTime(),decisions=state.plan.effects.map((effect,index)=>({effect,index})).filter(({effect})=>effect.kind.startsWith('growth.')||effect.kind==='deployment.vercel');
-  if(!decisions.length)return before;
+  if(!decisions.length){
+   if(!state.plan.effects.some(e=>e.kind.startsWith('template.')))return before;
+   if(typeof clock!=='function'||!(signal instanceof AbortSignal))return fail();
+   const people=[state.requester,...(state.reviewer?[state.reviewer]:[]),...(phaseActor?[phaseActor]:[])];
+   await assertPlatformParticipantsTime(tx,people,clock,{notBefore:state.createdAt,expiresAt:Date.parse(state.plan.expiresAt)},signal);for(const person of people)await authority.assertCurrent(tx,person);signal.throwIfAborted();return auditTime();
+  }
   if(typeof clock!=='function'||!(signal instanceof AbortSignal))return fail();signal.throwIfAborted();
   const actionId=actionIds.get(tx);if(!actionId)return fail();
   const people=[state.requester,...(state.reviewer?[state.reviewer]:[]),...(phaseActor?[phaseActor]:[])];
@@ -123,7 +130,7 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
   if(nativeCheck!==undefined){
    if(typeof nativeCheck!=='function')return fail();
    for(const person of people){const session=await readPlatformPrincipalTimeWindow(tx,person,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}
-   await nativeCheck(Object.freeze(restriction));
+   await nativeCheck(Object.freeze(restriction));recordExecutionTimeCheckForOwner(tx,nativeCheck);
   }else await assertPlatformParticipantsTime(tx,people,clock,restriction,signal);
   // Original transaction owns source and human authority both before and after
   // the clock await, including waits for permanent send reservations.
@@ -165,18 +172,20 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
      if(status!==null&&!['claimed','confirmed','refused','unknown'].includes(String(status)))fail();
      effects.push({id:state.plan.effects[index].id,status:status===null?'not_started':String(status)});
     }
+    const storedAssurance=await tx.readTimeAssurance?.(id),timeAssurance=storedAssurance==null?undefined:projectExecutionTimeEvidence(storedAssurance);
     const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();
     await authority.assertCurrent(tx,actor);
-    return platformInspectionSchema.parse({actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
+    return platformInspectionSchema.parse({...(timeAssurance?{timeAssurance}:{}),actionId:id,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,plan:state.plan,expired:now>=Date.parse(state.plan.expiresAt),effects,authority:'history_only',sourceValidation:'not_checked'});
    });
   },
   async prepareTemplate(raw:unknown,principal:PlatformPrincipal,requestId:string){
    const actor=platformPrincipalSchema.parse(principal),selected=platformTemplateSelection.parse(raw),id=preparationActionReference(requestId,actor,'platform_template_preparation_v1');
    return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const existing=await tx.read(id);
     if(existing){const state=readPlatformAction(existing);if(state.requester.userId!==actor.userId||state.requester.sessionId!==actor.sessionId||!matchesTemplateSelection(state.plan,selected))fail();await authority.assertCurrent(tx,actor);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}
+    if(typeof clock!=='function'||!(signal instanceof AbortSignal))return fail();await assertPlatformParticipantsTime(tx,[actor],clock,{expiresAt:Date.parse(selected.expiresAt)},signal);
     const plan=await prepareTemplatePlatformPlan(selected,await tx.now()),state=createPlatformAction(plan,actor,await tx.now());
     const check=authority.assertEffectCurrent??fail();await check.call(authority,tx,state.plan.effects[0]);
-    await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});
+    await tx.insert(id,state);await authority.assertCurrent(tx,actor);await timely(tx,state);await tx.event({actionId:id,kind:'proposed',state});await timely(tx,state,actor);
     return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const};
    });
   },
@@ -191,17 +200,17 @@ export function createPlatformActionService(repo:PlatformRepository,authority:Pl
    const actor=platformPrincipalSchema.parse(principal);
    return locked(id,async(tx,state)=>{
     await authority.assertCurrent(tx,actor);if(!['proposed','approved'].includes(state.status)||state.plan.effects.length!==1)fail();
-    const effect=state.plan.effects[0];
+    await timely(tx,state,actor);const effect=state.plan.effects[0];
     if(effect.kind==='template.bucket.create'){
      const current=await prepareTemplatePlatformPlan({operation:'create_bucket',accountId:effect.target.accountId,region:effect.target.region,expiresAt:state.plan.expiresAt},await tx.now());
-     if(current.digest!==state.plan.digest)fail();await authority.assertCurrent(tx,actor);await timely(tx,state);
+     if(current.digest!==state.plan.digest)fail();await authority.assertCurrent(tx,actor);await timely(tx,state,actor);
      return platformTemplateBucketPreview.parse({kind:'template.bucket',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,target:effect.target,ownership:'not_observed',authority:'review_preview_only'});
     }
     if(effect.kind!=='template.object.put'&&effect.kind!=='template.access.grant')return fail();
     const bytes=await readPlatformTemplateBytes(),bytesDigest=createHash('sha256').update(bytes).digest('hex');
     if(bytesDigest!==effect.target.bytesDigest)fail();
     const yaml=new TextDecoder('utf-8',{fatal:true,ignoreBOM:true}).decode(bytes);
-    await authority.assertCurrent(tx,actor);await timely(tx,state);
+    await authority.assertCurrent(tx,actor);await timely(tx,state,actor);
     return platformTemplatePreview.parse({kind:'template.source',actionId:id,planDigest:state.plan.digest,sourceDigest:state.plan.sourceDigest,effectId:effect.id,bytesDigest,yaml,authority:'review_preview_only'});
    });
   },

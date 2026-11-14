@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from '../executionTimeEvidence';
 import 'server-only';
 import {z} from 'zod';
 import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from '../principalTime';
@@ -32,7 +33,7 @@ export function createSettingsTimePolicy(source:SettingsTimeEvidenceSource,timin
    const expected=context(rawContext),evidence=window.parse(await read(tx,expected));signal.throwIfAborted();
    if(evidence.manifestDigest!==expected.manifestDigest||evidence.profileId!==expected.profileId||evidence.notBefore>=evidence.expiresAt)return fail();
    const restriction={notBefore:evidence.notBefore,expiresAt:Math.min(expected.expiresAt,evidence.expiresAt)};
-   if(nativeCheck!==undefined){if(typeof nativeCheck!=='function')return fail();for(const principal of principals){const session=await readPlatformPrincipalTimeWindow(tx,principal,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}await nativeCheck(Object.freeze(restriction))}
+   if(nativeCheck!==undefined){if(typeof nativeCheck!=='function')return fail();for(const principal of principals){const session=await readPlatformPrincipalTimeWindow(tx,principal,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}await nativeCheck(Object.freeze(restriction));recordExecutionTimeCheckForOwner(tx,nativeCheck)}
    else await assertPlatformParticipantsTime(tx,principals,clock,restriction,signal);signal.throwIfAborted();
    const result=await afterTime();signal.throwIfAborted();
    const after=window.parse(await read(tx,expected));signal.throwIfAborted();

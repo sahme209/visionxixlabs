@@ -1,0 +1,15 @@
+{
+  "scope": "Finite internal source guide only; not complete B4/B5",
+  "guideSha256": "6d42027d3f4dfb5e23a873dc7195da39a05ed7b1ed3ed5a8473faf12addcc5e7",
+  "ledgerSha256": "261c405e212c3ef2621c5322e1f05cbe4515c5a98097c38427e6013db892dbf8",
+  "reviewSha256": "6b4dbe101800c1c9ef31fe6740937ac0ee9b62b358e67d65670d0c3873dbf563",
+  "sourceHashesMatched": 7,
+  "documentationIdentifiersUnique": 15,
+  "newTestsRun": false,
+  "independentSourceReview": "CLEAR; no important factual mistakes",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "retrievalEligible": false,
+  "renderedAcceptance": false,
+  "buildRun": false
+}

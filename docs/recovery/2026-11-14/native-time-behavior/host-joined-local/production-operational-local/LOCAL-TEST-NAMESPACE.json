@@ -1,0 +1,9 @@
+{
+  "purpose": "same-Mac test namespace; no dependency download, package/lock edit or shared-cache modification",
+  "originalLinkText": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules",
+  "cache": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules",
+  "backup": "/Users/samirahmed/.codex/axiom-local-backups/borrowed-node-modules-20261114-145813",
+  "issuerResolvesToCurrentCheckout": true,
+  "zodCachedFileCount": 840,
+  "zodCopyBytesVerified": true
+}

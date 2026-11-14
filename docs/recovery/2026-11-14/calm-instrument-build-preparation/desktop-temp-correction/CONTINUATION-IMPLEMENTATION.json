@@ -1,0 +1,26 @@
+{
+  "status": "PREPARED_NOT_EXECUTED_FRESH_OWNER_APPROVAL_REQUIRED",
+  "sourceFiles": {
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/desktop_only.py": "9af005286cef72d0639ed9f0892dbf6d5700dd8c6d828710b69b0e5b96e9d947",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/test_desktop_only.py": "2c0e3bbef37be5e7c9c29baa49959add3e7b363e8083ca0ff38d49542bb22db1",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/namespace_correction.py": "1fb1c14b20bffdcb2b5dddf5b27a73d8388de5ffac8a3012e70eaa9691a10c81",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/test_namespace_correction.py": "181b036ca0ee43bf591f9d3e134b6c10ee925d2816495017689e5fccbcc3ddc5"
+  },
+  "ordinaryMockedTests": {
+    "passed": 10,
+    "log": "/private/tmp/axiom-desktop-only-green.log",
+    "logSha256": "006ac55040db8bd82eeb2e5abab682d80dc719e313b23af3bbac2921bafb69a1",
+    "initialMissingModuleRedLog": "/private/tmp/axiom-desktop-only-red.log",
+    "initialRedMeaning": "Missing implementation import; not a behavioral source failure. Namespace regression genuine RED retained separately."
+  },
+  "scope": "Fixed old stage only, exact immutable13933source files/website6587file manifest/generatedPrisma artifacts/prior receipts/original tool+cache packet; deterministic stage aliases and clean config; one exact desktop npm run build600+5, no website repeat",
+  "corrections": [
+    "Unchanged original archive source map, not a freshly blessed changed-stage map",
+    "Reconstructed original staged bin/node/.bin/packages/filedependency/Zod/config identities; only .vite-temp may transition",
+    "Typed desktop outcome stored before postchecks; late failures always acceptedfalse"
+  ],
+  "actualChildrenStarted": 0,
+  "actualStageMutated": false,
+  "entrypoint": "desktop_only.py --approved-desktop-once --packet <reviewed FINAL packet> --packet-sha256 <independently verified SHA>; root invokes ONLY after fresh owner approval.",
+  "historicalInputs": "Original failed batch/executor/packets/attempt marker unchanged. Preliminary DESKTOP-INPUT-PACKET.json is superseded by final corrected packet."
+}

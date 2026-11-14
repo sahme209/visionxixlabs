@@ -1,0 +1,106 @@
+{
+  "scope": "Ordinary filesystem reads only; no tool executed by this observation",
+  "tools": {
+    "node": {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "realpath": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node",
+      "sha256": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+      "bytes": 122129232
+    },
+    "npmLauncher": {
+      "path": "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/npm",
+      "realpath": "/Users/samirahmed/.nvm/versions/node/v24.21.0/lib/node_modules/npm/bin/npm-cli.js",
+      "sha256": "8e5f6f3429f8cdbe693cdc29904e9d5a7b127a494bd15c804bd54c7403bfcbe7",
+      "bytes": 54
+    },
+    "sandboxExec": {
+      "path": "/usr/bin/sandbox-exec",
+      "realpath": "/usr/bin/sandbox-exec",
+      "sha256": "10cf4a46a575e4747d2419cf343800db0d11ae6e6e9b8415998d3d8f336b2a92",
+      "bytes": 135136
+    },
+    "schemaEngine": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/@prisma/engines/schema-engine-darwin-arm64",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@prisma/engines/schema-engine-darwin-arm64",
+      "sha256": "6032ea1bdbd6dc3d453c36a22838d1d3b3554053083bf7695c104e9993637ba1",
+      "bytes": 25594512
+    },
+    "prismaCLI": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/prisma/build/index.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/prisma/build/index.js",
+      "sha256": "763611d694b08952ced7c5abb3b9d61906fed0a8997d9214ac918a43928e0fc8",
+      "bytes": 110
+    },
+    "nextCLI": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/next/dist/bin/next",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/next/dist/bin/next",
+      "sha256": "760b5b8059d08cc2120112344dd80570fa022e09ef0d993452172d0ac469a48b",
+      "bytes": 28419
+    },
+    "rootTypeScriptWrapper": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/@typescript/native/lib/tsc.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@typescript/native/lib/tsc.js",
+      "sha256": "cbdfbf11c26ed00dfc073155e316a42d6d6d8a387be61006b82fa9aa93ac572e",
+      "bytes": 609
+    },
+    "desktopTypeScriptWrapper": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/desktop/node_modules/@typescript/native/lib/tsc.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/@typescript/native/lib/tsc.js",
+      "sha256": "cbdfbf11c26ed00dfc073155e316a42d6d6d8a387be61006b82fa9aa93ac572e",
+      "bytes": 609
+    },
+    "viteCLI": {
+      "path": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/desktop/node_modules/vite/bin/vite.js",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/bin/vite.js",
+      "sha256": "de5833362e640673962f16e255bf8738d4380a68601b9af26217eee4e1bac36d",
+      "bytes": 2995
+    }
+  },
+  "packages": {
+    "node_modules/next/package.json": {
+      "name": "next",
+      "version": "16.4.5",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/next/package.json",
+      "sha256": "76f5b7ef447577c2855eee017ae8a47aeefc1e4c95e71387b66c2671283682c8"
+    },
+    "node_modules/prisma/package.json": {
+      "name": "prisma",
+      "version": "7.10.1",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/prisma/package.json",
+      "sha256": "6cdfef6df08d9a37f28908855797fe8bfc97a2d3d886a8d5cbe2e502d6848151"
+    },
+    "node_modules/@typescript/native/package.json": {
+      "name": "typescript",
+      "version": "7.0.2",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@typescript/native/package.json",
+      "sha256": "3722b30210616a13a3213ded11575ba6b2dbab10c32a5ef67afca8513e27017e"
+    },
+    "node_modules/zod/package.json": {
+      "name": "zod",
+      "version": "4.6.7",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules/zod/package.json",
+      "sha256": "c2d190d9ee4e0bdb60332aaa2130a6a98d65ddb903fe1d29248b15de57832c45"
+    },
+    "desktop/node_modules/vite/package.json": {
+      "name": "vite",
+      "version": "8.3.6",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/vite/package.json",
+      "sha256": "c190c4c3dadb457bedc5d756a2269cd648b134a293da9f4d873c01fc66f4186c"
+    },
+    "desktop/node_modules/@typescript/native/package.json": {
+      "name": "typescript",
+      "version": "7.0.2",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/@typescript/native/package.json",
+      "sha256": "3722b30210616a13a3213ded11575ba6b2dbab10c32a5ef67afca8513e27017e"
+    },
+    "desktop/node_modules/react/package.json": {
+      "name": "react",
+      "version": "19.3.1",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/react/package.json",
+      "sha256": "9cc9c3de5441a2eea7f41f52f3f2a15a4fc51f90c0b72741f0d7638643a85e67"
+    }
+  },
+  "rootCache": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/node_modules",
+  "desktopCache": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules",
+  "fileDependencyTarget": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/packages/verified-issuer-runtime"
+}

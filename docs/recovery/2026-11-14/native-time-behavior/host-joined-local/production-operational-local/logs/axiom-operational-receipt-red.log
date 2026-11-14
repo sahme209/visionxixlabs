@@ -1,0 +1,26 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts [ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts ]
+Error: Cannot find module '../../executionTimeEvidence' imported from /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalTime.test.ts:1:1
+      1| import {executionTimeEvidenceForOwner} from '../../executionTimeEviden…
+       | ^
+      2| import {assertPlatformParticipantsTime} from '../../principalTime';
+      3| import {describe,it,expect,vi} from 'vitest';
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  14:26:12
+   Duration  95ms (worker 97%, environment 3%)
+

@@ -1,0 +1,20 @@
+{
+  "scope": "Local source inspection plus one synthetic pure-helper measurement; not deployed or provider-qualified",
+  "sourceHashes": {
+    "lib/axiom/agentRuntime/conversationPromptBudget.ts": "ccc124a07b27c3bc54de91f89fc8910015514c142cb10c4eb4cefa78ea171700",
+    "lib/axiom/agentRuntime/decisionLoop.ts": "56fe4020e44ef702db6e5ef5a9ce9cd7ab365621e141194308a04b88675d8743",
+    "lib/axiom/agentRuntime/governedAiCall.ts": "4fa3a47970503a3c285e4d653c7dd9a94a12018751d1c0d8338b0785d6f7ec31",
+    "lib/ai/inputByteBound.ts": "8f0c16847304a5b9a228923d3dcd69de8ec25219b3bd16dee02c52108cbdefab",
+    "app/api/support/answer/route.ts": "70a734d5ed3beda92150b896bab0ebfaeb26de05191dd0466d0dc01ec0ed66b3",
+    "lib/support/answerKernel.ts": "9e78baebf7362f94e5cfab65837f1886368e5fd5d797f544fa001c78ed4121d9"
+  },
+  "procedureSha256": "0a5af00722f3478c75d13bbdda0d9f0930794bbbc6065fadf91b6dd087a7e8af",
+  "measurementSha256": "bbd6d9b59d537d6ba166a2317e1b0864aa7b659ca755a1e937f1e45f229d5d7a",
+  "processExitCode": 0,
+  "sourceUnchanged": true,
+  "noRuntimeCodeChange": true,
+  "nativeBuild": false,
+  "providerCalls": 0,
+  "liveInference": false,
+  "pricingChange": false
+}

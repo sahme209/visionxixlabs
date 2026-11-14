@@ -1,0 +1,53 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalNativePorts.test.ts (8 tests | 2 failed) 9ms
+   × captures the original native deadline synchronously before the first hold await 1ms
+   × does not acquire after native begin refuses or reset an uncertain native deadline 2ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalNativePorts.test.ts > captures the original native deadline synchronously before the first hold await
+AssertionError: expected "vi.fn()" to be called once, but got 0 times
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalNativePorts.test.ts:14:317
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/operationalNativePorts.test.ts > does not acquire after native begin refuses or reset an uncertain native deadline
+AssertionError: promise resolved "{ context: { …(5) }, …(5) }" instead of rejecting
+
+- Expected
++ Received
+
+- Error {
+-   "message": "rejected promise",
++ {
++   "context": {
++     "hostGeneration": "h1",
++     "profileDigest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
++     "revision": 1,
++     "source": "amazon-ipv4-ntp",
++     "sourceGeneration": "s1",
++   },
++   "disruptionMarker": 0n,
++   "monotonicAfterNs": 5n,
++   "monotonicBeforeNs": 4n,
++   "publication": 3n,
++   "unixTimeNs": 100n,
+  }
+
+ ❯ lib/governance/platform/nativeTime/__tests__/operationalNativePorts.test.ts:15:278
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 6 passed (8)
+   Start at  14:41:28
+   Duration  113ms (transform 48%, tests 31%, import 16%, worker 5%)
+

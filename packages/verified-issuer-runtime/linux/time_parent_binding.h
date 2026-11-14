@@ -24,4 +24,11 @@ struct axiom_time_parent_bootstrap {
 };
 napi_status axiom_time_parent_create_private(napi_env,
  const struct axiom_time_parent_bootstrap *,napi_value *);
+/* Private native-only lease: authenticated original held/capture pair, after
+ * actual owned REAPED+I/O completion. No JS-exported pointer or constructor. */
+struct axiom_time_original;
+int axiom_time_parent_pin_original(napi_env,napi_value,napi_value,napi_value,
+ struct axiom_time_original **,uint64_t *,uint64_t *,uint64_t *);
+int axiom_time_parent_original_current(struct axiom_time_original *);
+void axiom_time_parent_unpin_original(struct axiom_time_original *);
 #endif

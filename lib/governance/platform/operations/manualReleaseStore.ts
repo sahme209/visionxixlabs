@@ -1,3 +1,4 @@
+import {recordExecutionTimeCheckForOwner,recordExecutionTimeEvidence} from '../executionTimeEvidence';
 import 'server-only';
 import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from '../principalTime';
 import type {ExecutionTimeSource,ExecutionTimeCheck} from '../executionTime';
@@ -84,7 +85,7 @@ export function createManualReleaseStore(repo:ManualReleaseRepository,authority:
    const actor=platformPrincipalSchema.parse(principal),scope=AbortSignal.any([active(),observationSignal]);scope.throwIfAborted();if(typeof check!=='function')return fail();
    await locked(expected.recordId,async(tx,state)=>{
     if(!['notice_claimed','notice_recorded'].includes(state.status)||state.status!==expected.status||state.version!==expected.version||state.manifest.digest!==expected.manifest.digest)return fail();
-    await authority.assertCurrent(tx,actor);const window=await readPlatformPrincipalTimeWindow(tx,actor,scope);await check(window);scope.throwIfAborted();await authority.assertCurrent(tx,actor);
+    await authority.assertCurrent(tx,actor);const window=await readPlatformPrincipalTimeWindow(tx,actor,scope);await check(window);recordExecutionTimeCheckForOwner(tx,check);scope.throwIfAborted();await authority.assertCurrent(tx,actor);
     const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now<expected.inspectedAt)return fail();await authority.assertCurrent(tx,actor);scope.throwIfAborted();
    });scope.throwIfAborted();
   },

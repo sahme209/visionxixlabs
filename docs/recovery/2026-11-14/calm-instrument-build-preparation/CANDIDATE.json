@@ -1,0 +1,13 @@
+{
+  "scope": "Prepared source-only candidate; no install/build/execution authority",
+  "sourceCheckout": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14",
+  "baseHead": "876da65ffe727c584b6f682d72a22b66feed9199",
+  "snapshotPath": "/Users/samirahmed/.codex/axiom-local-backups/calm-instrument-build-source-20261114-153158/source.tar.gz",
+  "snapshotSha256": "96a7d10c6190e30a4f7ecf2ad2bff18bb70a117e00314269c68307bb7a9d0c46",
+  "fileCount": 13933,
+  "sourceBytes": 183932294,
+  "acceptedDeltaFiles": 80,
+  "sourceVerifiedBeforeAfter": true,
+  "archiveMembersVerified": true,
+  "compilerRun": false
+}

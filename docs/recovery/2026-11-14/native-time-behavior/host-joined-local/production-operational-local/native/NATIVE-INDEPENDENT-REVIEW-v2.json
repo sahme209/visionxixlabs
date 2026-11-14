@@ -1,0 +1,33 @@
+{
+  "format": 1,
+  "scope": "focused source-only correction closure for N1/N2",
+  "status": "clear-for-reviewed-local-source-scope",
+  "manifestSha256": "f9fa1e6d3da3a131b910f21103c64e899aca8062031042973247a3eaceffba75",
+  "sourceHashes": {
+    "packages/verified-issuer-runtime/linux/time_operational_binding.c": "224658bfd076b447dfdaea63c220031a1d402fa735eeb06498d98b4d285647c9",
+    "packages/verified-issuer-runtime/linux/time_operational_binding.h": "f895c94d23b6c9d265db0e65001d76cf89503bbc69810452bb98ef74af37de68",
+    "packages/verified-issuer-runtime/linux/time_operational_status.h": "321d5cfc88f1eec252f52280b1400b14b7d48d5f698e9c47ddff7e607f218528",
+    "packages/verified-issuer-runtime/linux/time_operational_status.c": "3ec69a4c62ca0b9b192de401cd1692103a9a9c982ff997b5389f378162e792f1",
+    "packages/verified-issuer-runtime/linux/time_operational_owner.c": "a8dc19d2bb55a28d98e2fad186a8ddd835330166d0541fbb162194a47c8d915b",
+    "packages/verified-issuer-runtime/linux/operational_publication.rs": "8b9b1bea1fe80bd6951d9ca012e4e7e4f4fa784969303f2581bbf1bacf721457",
+    "packages/verified-issuer-runtime/linux/clockbound-operational-time.patch": "34ff9f5a1c4b1971de4cffdca13ddae14996f2e1b7b5d483d716161bd534fe0e",
+    "packages/verified-issuer-runtime/linux/time_parent_binding.c": "dc98d3f38255611ee4b5d2de72561f1cd4df405c44bbef58e6b7ac254006e1c8",
+    "packages/verified-issuer-runtime/linux/time_parent_binding.h": "783f5360c6dd731838f277d16446571e63ec65acc8362e5d0c269cf2eb6f9320",
+    "scripts/tests/test_governance_operational_native.py": "72793d2caaa71b7239a39c348920ac360b89d36f819693d49a3119ac4907a7fc"
+  },
+  "allSourceHashesMatch": true,
+  "evidenceHashes": {
+    "CORRECTIONS-v2.md": "f0ccc934a1890a9fbfbe254e266153b2f51c89ef2856d47a0792ec134ea54e9a",
+    "V2-RED.log": "9036002c78541654ccafa284997bc97502aa26b7c5ccf53c3a60376c48e3706d",
+    "V2-GREEN.log": "efbb8956ab708762706b73115389ded4c72525d106e5fe1f433e3224e440abfc"
+  },
+  "findings": {
+    "N1": "closed in source: same deadline checked at execute exit and actual complete entry; failed/expired outcomes retain reject/retire/dispose/unpin",
+    "N2": "closed in source: post-startup non-Ready latches withdrawing before bounded ACK then breaks, before consumer CHECK handling; startup Unknown-to-Ready unchanged"
+  },
+  "savedTestEvidence": "V2-RED: 13 source checks, 2 failures; V2-GREEN: 13 source checks pass",
+  "reviewerExecutedTests": false,
+  "nativeCompiled": false,
+  "nativeExecuted": false,
+  "remainingQualificationGatesUnchanged": true
+}

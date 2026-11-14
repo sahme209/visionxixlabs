@@ -1,0 +1,48 @@
+{
+  "scope": "Existing pure helper; synthetic UTF8-byte measurements only. No model/token/cost/quality benchmark.",
+  "sourceSha256": "ccc124a07b27c3bc54de91f89fc8910015514c142cb10c4eb4cefa78ea171700",
+  "limits": {
+    "historyTurns": 32,
+    "executionHistoryChars": 2000,
+    "currentRequestBytes": 32768,
+    "transcriptBytes": 65536,
+    "historicalBytes": 32768,
+    "olderTurnBytes": 4096,
+    "toolResultBytes": 8192
+  },
+  "cases": [
+    {
+      "name": "long synthetic prior history",
+      "inputContentBytes": 109011,
+      "promptTranscriptBytes": 32923,
+      "savedInputUnchanged": true
+    },
+    {
+      "name": "newest request at its byte limit",
+      "inputContentBytes": 32768,
+      "promptTranscriptBytes": 32775,
+      "savedInputUnchanged": true
+    },
+    {
+      "name": "fresh Unicode tool evidence retained whole",
+      "inputContentBytes": 1381,
+      "promptTranscriptBytes": 1404,
+      "savedInputUnchanged": true
+    },
+    {
+      "name": "oversized newest request",
+      "refused": true,
+      "limitBytes": 32768
+    },
+    {
+      "name": "fresh evidence cannot fit",
+      "refused": true,
+      "toolContentBytes": 70000,
+      "partialEvidenceProduced": false
+    }
+  ],
+  "sourceUnchanged": true,
+  "modelCalls": 0,
+  "providerCalls": 0,
+  "databaseCalls": 0
+}

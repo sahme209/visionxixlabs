@@ -1,0 +1,17 @@
+{
+  "questionId": "call_f6dcdebf10844849a6653dafd5fd9805",
+  "answer": "Approve local implementation and simulated tests",
+  "scope": "joined evaluation startup source, fixed-source NTP selection, real raw reader connection, exclusive time-service bootstrap/package compatibility preparation, ordinary simulated/source tests",
+  "contractSha256": "5ba28dfa8325412d16fe2d1ba15b22bf787785bcc2ff4938a7ec07129bd23537",
+  "excluded": [
+    "actual clock/service changes",
+    "native compilation or runtime tests",
+    "AWS resources",
+    "real credentials",
+    "production SQL",
+    "deployment",
+    "Governance enablement",
+    "spending"
+  ],
+  "productionTimeAssurance": "open, unchanged"
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "source-level review of one correction pass; no native qualification",
+  "correctedSourceManifestSha256": "496a9cd26310fb681fb964e7287fe67d3ffad2e3c44613530c008743741d4660",
+  "independentOriginalReview": "WHOLE-UNIT-REVIEW.md",
+  "threeImportantFindings": "addressed by explicit C object final-link recipe, deferred ordinary signal cancellation/owned cleanup, and bounded NtpIoError categories",
+  "coveringEvidence": "TEST-LEDGER-v2.json: 9 correction + 6 patched-source + 14 pure/mocked/source checks PASS; hashes and summaries independently matched",
+  "prior27NativeInputs": "unchanged; actual historical native tests not repeated",
+  "deferredMinor": "dense source formatting remains a maintenance improvement",
+  "notProven": [
+    "actual compile/link/target ABI",
+    "native behavior",
+    "AWS host or clock configuration",
+    "credentials/custody",
+    "full Governance"
+  ]
+}

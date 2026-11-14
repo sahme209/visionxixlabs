@@ -1,0 +1,44 @@
+{
+  "status": "INTERNAL SOURCE GUIDE",
+  "customerEligible": false,
+  "publicationApproved": false,
+  "humanEditorialOwner": null,
+  "sourceKind": "Current uncommitted local source; baseHead is ancestry only",
+  "baseHead": "876da65ffe727c584b6f682d72a22b66feed9199",
+  "scope": "Homepage GovernedDeploymentModel only: five scenario choices, eight stage choices and two conditional playback/camera controls; separate assembly/media/site navigation excluded",
+  "sources": [
+    {
+      "path": "app/page.tsx",
+      "sha256": "112eb0699dda968bcf5ee958b299ac95bf191bebae928634979168e667cbfe67"
+    },
+    {
+      "path": "components/marketing/GovernedDeploymentModel.tsx",
+      "sha256": "eab66257557e46447118dbacbcebd74632710f329bcd4e1f02ba997159e0833a"
+    },
+    {
+      "path": "lib/marketing/governedFlowModel.ts",
+      "sha256": "5335ef7aeee6b779b5883996d8d245bc9f159d6c5f0ac15afa68da9e9dba3926"
+    },
+    {
+      "path": "components/marketing/governedScene/createGovernedScene.ts",
+      "sha256": "2062506e66ebd57dee3b3a840cdff5739eba73c707b7679f95c7ce3fd357bdfa"
+    },
+    {
+      "path": "components/marketing/webglSupport.ts",
+      "sha256": "7c2d34c7089ad080f430fa56aa9c71f75870c3239f2c8c952f905d0b5662e5e2"
+    },
+    {
+      "path": "components/marketing/__tests__/GovernedDeploymentModel.test.ts",
+      "sha256": "42a3a884bcc3d1d7e168dfe5a1275e0d6c9c79b2f60bb9e4c9a77e1daf0658ce"
+    },
+    {
+      "path": "docs/product/knowledge/website-governed-model-controls.md",
+      "sha256": "6d42027d3f4dfb5e23a873dc7195da39a05ed7b1ed3ed5a8473faf12addcc5e7"
+    }
+  ],
+  "renderedAcceptance": false,
+  "runtimeHelpBindingInstalled": false,
+  "retrievalEligible": false,
+  "newTestsRun": false,
+  "existingEvidence": "docs/recovery/2026-11-14/calm-instrument-presentation/LOCAL-RESULT.json"
+}

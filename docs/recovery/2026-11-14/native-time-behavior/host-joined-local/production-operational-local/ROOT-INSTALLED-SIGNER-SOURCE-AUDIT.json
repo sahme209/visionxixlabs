@@ -1,0 +1,39 @@
+{
+  "scope": "cached installed source inspection only; no SDK/module execution, credentials or network",
+  "files": [
+    {
+      "path": "node_modules/@aws-sdk/core/dist-cjs/submodules/httpAuthSchemes/index.js",
+      "package": "@aws-sdk/core",
+      "version": "3.981.0",
+      "sha256": "2e8ec7aedeb1e4258bf6705f7268b4d3ee1d0281174b5679904f447b853d00c4"
+    },
+    {
+      "path": "node_modules/@aws-sdk/s3-request-presigner/dist-cjs/index.js",
+      "package": "@aws-sdk/s3-request-presigner",
+      "version": "3.1166.0",
+      "sha256": "f6ab90cfc9e6c1d49a9d8604ceda75b77ae1d497a08bdf5ca7ef8fc249ccadea"
+    },
+    {
+      "path": "node_modules/@smithy/signature-v4/dist-cjs/index.js",
+      "package": "@smithy/signature-v4",
+      "version": "5.7.5",
+      "sha256": "c61f737d9a139896bbe4b10308c0a294d38b9345e41f937e22b3626b2d7d487e"
+    },
+    {
+      "path": "node_modules/@aws-sdk/signature-v4-multi-region/dist-cjs/index.js",
+      "package": "@aws-sdk/signature-v4-multi-region",
+      "version": "3.996.52",
+      "sha256": "13e4f99866310f2bb966554b9cd52598b4701ded5e4f5056dfa65fb6eb71b5f1"
+    }
+  ],
+  "facts": [
+    "Core auth signer passes explicit signingDate derived from Date.now plus mutable clock offset by default; disabling correction alone still uses new Date.",
+    "Core config.signer supplies actual signer invoked by sign; a narrowly bound wrapper can override signingDate while preserving actual signing.",
+    "S3 getSignedUrl constructs its own presigner, forwarding options including signingDate; client signer replacement alone does not cover it.",
+    "SigV4 presigner defaults new Date only when signingDate is absent."
+  ],
+  "limitations": [
+    "Source inspection is not intercepted call-path or native qualification.",
+    "Credential cache/expiry, JWT/session/TLS source binding and actual final request date checks remain integration obligations."
+  ]
+}

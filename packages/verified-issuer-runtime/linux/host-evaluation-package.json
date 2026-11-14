@@ -1,0 +1,129 @@
+{
+  "format": 1,
+  "scope": "source-only-trusted-operational-L3-host-evaluation",
+  "productionEnabled": false,
+  "nativeBuilt": false,
+  "target": {
+    "ami": "ami-001cbfee94278a792",
+    "os": "ECS-optimized AL2023",
+    "architecture": "x86_64",
+    "compatibilityVerified": false
+  },
+  "components": {
+    "bin/axiom-host-evaluation": {
+      "sources": [
+        "clockbound-host-evaluation.patch",
+        "host_evaluation.rs",
+        "host_evaluation_main.rs",
+        "time_publication.c",
+        "time_publication.h"
+      ],
+      "recipe": [
+        "cargo",
+        "rustc",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--no-default-features",
+        "--features",
+        "axiom-host-evaluation",
+        "--package",
+        "clock-bound",
+        "--bin",
+        "axiom-host-evaluation",
+        "--release",
+        "--",
+        "-C",
+        "link-arg=<TARGET_BUILD>/time_publication.o",
+        "-C",
+        "link-arg=-Wl,--no-undefined",
+        "-C",
+        "link-arg=-lrt",
+        "-C",
+        "link-arg=-lc"
+      ],
+      "executed": false,
+      "compilePublisherObject": [
+        "<TARGET_CC>",
+        "--sysroot=<TARGET_SYSROOT>",
+        "-std=c11",
+        "-O2",
+        "-fPIC",
+        "-c",
+        "time_publication.c",
+        "-o",
+        "<TARGET_BUILD>/time_publication.o"
+      ],
+      "ordering": "Compile the actual target C publisher object first; pass its fixed absolute target-build path only to the final evaluation binary link. Target sysroot/toolchain and emitted ABI remain unqualified."
+    },
+    "bin/time_worker": {
+      "sources": [
+        "time_worker.c",
+        "time_worker_protocol.c",
+        "time_publication.c"
+      ],
+      "executed": false
+    },
+    "reader/host_reader.node": {
+      "sources": [
+        "time_host_evaluation_binding.c",
+        "time_parent_binding.c",
+        "time_worker_protocol.c",
+        "time_publication.c"
+      ],
+      "nodeApiVersion": 8,
+      "behaviorTestMacro": false,
+      "executed": false
+    },
+    "reader/host_reader.mjs": {
+      "source": "scripts/linux-compile/host_evaluation_reader.mjs"
+    },
+    "bin/host_reader_launcher": {
+      "source": "host_reader_launcher.c",
+      "profileSource": "scripts/linux-native-behavior/runtime_profile.h",
+      "executed": false
+    },
+    "bin/node": {
+      "version": "24.22.2",
+      "originAndTargetCompatibility": "REQUIRED-before-artifact-run"
+    },
+    "COMPATIBILITY.json": {
+      "requiredEvidence": [
+        "ELF interpreter",
+        "DT_NEEDED closure",
+        "GLIBC symbol versions",
+        "GLIBCXX symbol versions",
+        "Node/addon target ABI",
+        "exact target image libraries"
+      ],
+      "generated": false
+    },
+    "LICENSES.txt": {
+      "required": "complete upstream MIT/Apache and Node/dependency notices",
+      "generated": false
+    }
+  },
+  "bootstrapSource": "scripts/governance_host_evaluation_bootstrap.py",
+  "maximumPackageBytes": 1073741824,
+  "fixedPaths": {
+    "run": "/run/axiom-host-evaluation",
+    "generation": "generation-1",
+    "publicationGeneration": "host-evaluation-1",
+    "compatibility": [
+      "compat/v2",
+      "compat/v3"
+    ],
+    "packet": "/etc/axiom-host-evaluation/packet.json",
+    "package": "/opt/axiom-host-evaluation"
+  },
+  "requiredLaterAcceptance": [
+    "target-compatible native compile/link",
+    "complete library/license package",
+    "exact artifact delivery",
+    "root host/service/clock changes",
+    "reader UID/GID choice",
+    "native lifecycle/source behavior",
+    "full quote/owned setup and termination authority"
+  ]
+}

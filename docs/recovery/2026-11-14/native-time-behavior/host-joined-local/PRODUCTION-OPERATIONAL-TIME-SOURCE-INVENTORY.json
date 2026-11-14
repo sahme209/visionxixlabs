@@ -1,0 +1,1719 @@
+{
+  "scope": "Current platform TypeScript non-test literal time and DB-order discovery, source-only; not exhaustive transitive/provider/native coverage proof",
+  "pattern": "ExecutionTime(?:Source|Interval|Window|Check|Authorization)|assertExecutionWindow|authorizeExecutionWindow|prepareExecutionDispatch|consumeExecutionDispatch|assertPlatform(?:Principal|Participants)Time|readPlatformPrincipalTimeWindow|\\.earliest\\b|\\.latest\\b|tx\\.now\\(|Date\\.now\\(|currentDate|credentialNotAfter|trustedNow",
+  "fileCount": 53,
+  "matchingLineCount": 310,
+  "files": [
+    {
+      "path": "lib/governance/platform/actionStore.ts",
+      "sha256": "82c862efbdd35d1583e41d5f67cb44fdd2c5f5ff11acad1bf2ae5cf6c4abc65f",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from './principalTime';"
+        },
+        {
+          "line": 3,
+          "source": "import type {ExecutionTimeSource,ExecutionTimeCheck} from './executionTime';"
+        },
+        {
+          "line": 75,
+          "source": "export function createPlatformActionService(repo:PlatformRepository,authority:PlatformAuthority,timing?:{clock:ExecutionTimeSource;signal?:AbortSignal}){"
+        },
+        {
+          "line": 82,
+          "source": "async function timely(tx:PlatformTransaction,state:PlatformAction,phaseActor?:PlatformPrincipal,scheduled?:{effectId:string;source:ReturnType<typeof postingSourceSchema.parse>},nativeCheck?:ExecutionTimeCheck){"
+        },
+        {
+          "line": 83,
+          "source": "async function auditTime(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))fail();return now}"
+        },
+        {
+          "line": 125,
+          "source": "for(const person of people){const session=await readPlatformPrincipalTimeWindow(tx,person,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}"
+        },
+        {
+          "line": 127,
+          "source": "}else await assertPlatformParticipantsTime(tx,people,clock,restriction,signal);"
+        },
+        {
+          "line": 168,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();"
+        },
+        {
+          "line": 177,
+          "source": "const plan=await prepareTemplatePlatformPlan(selected,await tx.now()),state=createPlatformAction(plan,actor,await tx.now());"
+        },
+        {
+          "line": 196,
+          "source": "const current=await prepareTemplatePlatformPlan({operation:'create_bucket',accountId:effect.target.accountId,region:effect.target.region,expiresAt:state.plan.expiresAt},await tx.now());"
+        },
+        {
+          "line": 222,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();await authority.assertCurrent(tx,actor);"
+        },
+        {
+          "line": 246,
+          "source": "const prepared=await prepareDeploymentPlatformPlan(tx,selected),state=createPlatformAction(prepared.plan,actor,await tx.now());"
+        },
+        {
+          "line": 258,
+          "source": "const prepared=await prepareGrowthPlatformPlan(tx,{operation,draftId:effect.target.draftId,connectionId:effect.target.connectionId,expiresAt:state.plan.expiresAt,...(effect.kind!=='growth.post.delete'&&effect.target.imageUploadActionId?{imageUploadActionId:effect.target.imageUploadActionId}:{}),...(effect.kind==='growth.schedule.change'?{scheduledFor:effect.target.scheduledFor}:{})},await tx.now(),effect.id);"
+        },
+        {
+          "line": 286,
+          "source": "const prepared=await prepareGrowthPlatformPlan(tx,selected,await tx.now());"
+        },
+        {
+          "line": 287,
+          "source": "const state=createPlatformAction(prepared.plan,actor,await tx.now());"
+        },
+        {
+          "line": 296,
+          "source": "return repo.transaction(async tx=>{await tx.lock(id);actionIds.set(tx,id);await authority.assertCurrent(tx,actor);const state=createPlatformAction(plan,actor,await tx.now());"
+        },
+        {
+          "line": 336,
+          "source": "async beforeEffectCredential(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){"
+        },
+        {
+          "line": 346,
+          "source": "deployment=reserveDeploymentTarget(effect,binding.actionId,binding.index,state.plan.digest,state.plan.sourceDigest,await tx.now(),previous);"
+        },
+        {
+          "line": 354,
+          "source": "async assertEffectCredentialCurrent(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){"
+        },
+        {
+          "line": 364,
+          "source": "async beforeEffectSend(proof:object,rawEffect:PlatformEffect,principal:PlatformPrincipal,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){"
+        },
+        {
+          "line": 420,
+          "source": "const observedAt=await tx.now();"
+        },
+        {
+          "line": 430,
+          "source": "const next=final?finishPlatformAction(state,final,await tx.now()):state;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/currentAuthority.ts",
+      "sha256": "380f7caf41141315ba634697a4eeb0ef356ec99378c46059661c64de4ebb9196",
+      "matches": [
+        {
+          "line": 37,
+          "source": "const prepared=preparePlatformLinkedInDeletion(source,version,await tx.now(),effect.id);"
+        },
+        {
+          "line": 43,
+          "source": "const version=currentLinkedInVersion(),now=await tx.now(),prepared=effect.kind==='growth.post.publish'?preparePlatformLinkedInPost(source.draft,source.connection,version,now,effect.id,source.imageLineage,effect.target.imageUploadActionId):preparePlatformLinkedInSchedule(source.draft,source.connection,version,now,new Date(effect.target.scheduledFor),effect.id,source.imageLineage,effect.target.imageUploadActionId);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentNativeTransport.ts",
+      "sha256": "85e12e2b431cd103c32e7f7e511f3b028f658aa107f3c6f95d738fe95245adb5",
+      "matches": [
+        {
+          "line": 6,
+          "source": "import {prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization,type ExecutionTimeWindow} from './executionTime';"
+        },
+        {
+          "line": 11,
+          "source": "export interface DeploymentTiming{clock:ExecutionTimeSource;signal:AbortSignal}"
+        },
+        {
+          "line": 13,
+          "source": "send(effect:Effect,body:string,beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization):Promise<unknown>;"
+        },
+        {
+          "line": 39,
+          "source": "const transport=Object.freeze({clock,signal:original,async send(raw:Effect,body:string,beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization){"
+        },
+        {
+          "line": 44,
+          "source": "async function authorize(window:ExecutionTimeWindow,owner:ExecutionTimeAuthorization,post:()=>Promise<void>,binding:object,dispatchFacts:()=>Promise<void>){"
+        },
+        {
+          "line": 46,
+          "source": "try{const checkpoint=await prepareExecutionDispatch(clock,window,(check,last)=>{if(!check||!last)return fail();return owner(restriction=>{const pending=(async()=>{try{if(!active||started)return fail();started=true;await check(restriction);signal.throwIfAborted();await post();signal.throwIfAborted();if(!active)return fail();complete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending},()=>{const pending=(async()=>{try{if(!active||finalStarted||!complete)return fail();finalStarted=true;await last();if(!active)return fail();finalComplete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending})},signal,binding,dispatchFacts,post);if(!complete||!finalComplete||invalid)return fail();return checkpoint}finally{active=false}"
+        },
+        {
+          "line": 53,
+          "source": "await consumeExecutionDispatch(copyCheckpoint,copyBinding);signal.throwIfAborted();"
+        },
+        {
+          "line": 58,
+          "source": "await consumeExecutionDispatch(sendCheckpoint,sendBinding);signal.throwIfAborted();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentPreparation.ts",
+      "sha256": "3b859e5c37f56b7aa664f0230d61dab6930f9c35f32cde3d196110f9a22cc66f",
+      "matches": [
+        {
+          "line": 10,
+          "source": "const row=await tx.readDeploymentSource(selected.leadId),prepared=preparePlatformLeadDeployment(row,selected,team,await tx.now(),effectId);"
+        },
+        {
+          "line": 22,
+          "source": "const source=preparePlatformLeadDeploymentSource(await tx.readDeploymentSource(selected.leadId),selected,team,await tx.now(),effectId);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentRecoveryRequest.ts",
+      "sha256": "a40bbc24938805fe180c0e028e6015f2de25422859b749e06feb8ba0c1ec3d7f",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import type {ExecutionTimeSource} from './executionTime';"
+        },
+        {
+          "line": 8,
+          "source": "interface Ports {clock?:ExecutionTimeSource;repo:DeploymentRecoveryRepository;source:DeploymentRecoverySource;verifyDesktopToken(token:string):{sessionId:string};readAdminEmails():readonly string[]}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentRecoverySql.ts",
+      "sha256": "ec0f65e6b9b64db3091224d25c811149f26fea01b961b31358a46472091ff871",
+      "matches": [
+        {
+          "line": 29,
+          "source": "const prior=await tx.readDeploymentTarget(plan.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(plan.nativeKey,plan.requestReceiptId),now=await tx.now(),expected=validateDeploymentRecoveryEvidence(plan,prior,receipt,evidence,now);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/deploymentRecoveryStore.ts",
+      "sha256": "d90f43865a77a0e03ac5af0170b230a3ae507d0ca79a81da3f35071a95609293",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertPlatformParticipantsTime} from './principalTime';"
+        },
+        {
+          "line": 3,
+          "source": "import type {ExecutionTimeSource} from './executionTime';"
+        },
+        {
+          "line": 40,
+          "source": "export function createDeploymentRecoveryService(repo:DeploymentRecoveryRepository,authority:PlatformAuthority,source:DeploymentRecoverySource,timing?:{clock:ExecutionTimeSource;signal?:AbortSignal}){"
+        },
+        {
+          "line": 48,
+          "source": "async function database(){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(plan.expiresAt))return fail();return now}"
+        },
+        {
+          "line": 50,
+          "source": "await assertPlatformParticipantsTime(tx,[actor,state.requester,...(state.reviewer?[state.reviewer]:[])],clock,{notBefore:Math.max(state.createdAt,sourceTime.notBefore,evidence?.observedAt??0),expiresAt:Math.min(Date.parse(plan.expiresAt),sourceTime.expiresAt,evidence?.expiresAt??Number.MAX_SAFE_INTEGER)},signal);"
+        },
+        {
+          "line": 61,
+          "source": "await tx.lock(id);await authority.assertCurrent(tx,actor);const {state,plan}=await load(tx,id),observation=await tx.readDeploymentReleaseObservation(id),now=await tx.now();"
+        },
+        {
+          "line": 69,
+          "source": "await tx.lockDeploymentTarget(selection.nativeKey);const reservation=await tx.readDeploymentTarget(selection.nativeKey),receipt=await tx.readDeploymentRecoveryReceipt(selection.nativeKey,selection.requestReceiptId),plan=compileDeploymentRecoveryPlan({reservation,receipt,profileDigest:selection.profileDigest,expiresAt:selection.expiresAt}),state=createPlatformAction(compileDeploymentRecoveryPlatformPlan(plan),actor,await tx.now());"
+        },
+        {
+          "line": 92,
+          "source": "await tx.releaseDeploymentReservation(plan,evidence,nextTarget);await tx.writeEffect(id,0,'claimed','confirmed');const next=finishPlatformAction(state,'confirmed',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'confirmed',deploymentReleaseObservation:evidence});"
+        },
+        {
+          "line": 98,
+          "source": "try{await locked(id,async(tx,state)=>{if(state.status!=='claimed'||state.plan.digest!==claimed.state.plan.digest||await tx.readEffect(id,0)!=='claimed')return;await tx.writeEffect(id,0,'claimed','unknown');const next=finishPlatformAction(state,'unknown',await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:0,outcome:'unknown'})})}catch{/* Original uncertainty is preserved; never retry the native read. */}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/effectExecution.ts",
+      "sha256": "7c176cb68a9a9083edf0c4547fb195996b139a614d5cb176295aaca9149958bf",
+      "matches": [
+        {
+          "line": 4,
+          "source": "import type {ExecutionTimeCheck,ExecutionTimeAuthorization} from './executionTime';"
+        },
+        {
+          "line": 11,
+          "source": "beforeEffectSend(proof:object,effect:PlatformEffect,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<void>;"
+        },
+        {
+          "line": 12,
+          "source": "beforeEffectCredential?(proof:object,effect:PlatformEffect,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<void>;"
+        },
+        {
+          "line": 13,
+          "source": "assertEffectCredentialCurrent?(proof:object,effect:PlatformEffect,nativeCheck:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<void>;"
+        },
+        {
+          "line": 43,
+          "source": "export async function runPlatformEffect<T>(binding:object,rawEffect:PlatformEffect,prepareAndSend:(beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization,credentialCurrent:ExecutionTimeAuthorization)=>Promise<{outcome:'confirmed'|'refused'|'unknown';value:T;observation?:unknown}>):Promise<T>{"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/executionTime.ts",
+      "sha256": "58138a5c40ed5f247dbe6b931d9db80cbd8e33c869a4120d20d10daace07f6ef",
+      "matches": [
+        {
+          "line": 3,
+          "source": "export interface ExecutionTimeInterval {readonly earliest:number;readonly latest:number}"
+        },
+        {
+          "line": 7,
+          "source": "export type ExecutionTimeSource=(signal:AbortSignal)=>Promise<ExecutionTimeInterval>;"
+        },
+        {
+          "line": 8,
+          "source": "export interface ExecutionTimeWindow {readonly notBefore?:number;readonly expiresAt?:number}"
+        },
+        {
+          "line": 10,
+          "source": "export type ExecutionTimeCheck=(restriction?:ExecutionTimeWindow)=>Promise<void>;"
+        },
+        {
+          "line": 14,
+          "source": "export type ExecutionTimeAuthorization=(timeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>Promise<void>;"
+        },
+        {
+          "line": 21,
+          "source": "export async function assertExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,signal:AbortSignal):Promise<Readonly<ExecutionTimeInterval>>{"
+        },
+        {
+          "line": 27,
+          "source": "const earliest=raw.earliest,latest=raw.latest;"
+        },
+        {
+          "line": 37,
+          "source": "async function acknowledgedExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,authorize:ExecutionTimeAuthorization,signal:AbortSignal,requiredFinalFacts?:()=>Promise<void>):Promise<Readonly<ExecutionTimeWindow>>{"
+        },
+        {
+          "line": 40,
+          "source": "let acceptedWindow:Readonly<ExecutionTimeWindow>|undefined;"
+        },
+        {
+          "line": 41,
+          "source": "const check:ExecutionTimeCheck=async restriction=>{"
+        },
+        {
+          "line": 47,
+          "source": "await assertExecutionWindow(source,joined,signal);signal.throwIfAborted();if(!active)return fail();acceptedWindow=joined;completed=true}catch{invalid=true;return fail()}"
+        },
+        {
+          "line": 57,
+          "source": "export async function authorizeExecutionWindow(source:ExecutionTimeSource,window:ExecutionTimeWindow,authorize:ExecutionTimeAuthorization,signal:AbortSignal,requiredFinalFacts?:()=>Promise<void>):Promise<void>{"
+        },
+        {
+          "line": 63,
+          "source": "interface DispatchState{source:ExecutionTimeSource;window:Readonly<ExecutionTimeWindow>;signal:AbortSignal;binding:object;assertCurrent:()=>Promise<void>}"
+        },
+        {
+          "line": 69,
+          "source": "export async function prepareExecutionDispatch(source:ExecutionTimeSource,window:ExecutionTimeWindow,authorize:ExecutionTimeAuthorization,signal:AbortSignal,binding:object,assertDispatchCurrent:()=>Promise<void>,requiredFinalFacts?:()=>Promise<void>):Promise<ExecutionDispatchCheckpoint>{"
+        },
+        {
+          "line": 83,
+          "source": "export async function consumeExecutionDispatch(checkpoint:ExecutionDispatchCheckpoint,binding:object):Promise<void>{"
+        },
+        {
+          "line": 88,
+          "source": "await assertExecutionWindow(state.source,state.window,state.signal);state.signal.throwIfAborted();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/growthNativeTransport.ts",
+      "sha256": "63e12a53803d66a995aa3b233fe653f6ca5af5ba835431796535e4f7068fad3c",
+      "matches": [
+        {
+          "line": 11,
+          "source": "import {prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization} from './executionTime';"
+        },
+        {
+          "line": 18,
+          "source": "export interface GrowthTiming{clock:ExecutionTimeSource;signal:AbortSignal;assertActive():void}"
+        },
+        {
+          "line": 21,
+          "source": "send(effect:GrowthNativeEffect,request:GrowthNativeRequest,beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization,credentialCurrent:ExecutionTimeAuthorization,onDecryptFailure?:()=>void):Promise<Readonly<{kind:'published';urn:string;status:number}|{kind:'deleted'}>>;"
+        },
+        {
+          "line": 40,
+          "source": "const transport=Object.freeze({actionId,clock,signal:original,assertActive,async send(raw:GrowthNativeEffect,input:GrowthNativeRequest,beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization,credentialCurrent:ExecutionTimeAuthorization,onDecryptFailure?:()=>void){"
+        },
+        {
+          "line": 60,
+          "source": "async function authorize(owner:ExecutionTimeAuthorization,phase:GrowthDispatchPhase){"
+        },
+        {
+          "line": 64,
+          "source": "await facts();const checkpoint=await prepareExecutionDispatch(clock,{notBefore:profile.notBefore,expiresAt:profile.expiresAt},check=>{if(!check)return fail();return owner(restriction=>{const pending=(async()=>{try{if(!live||started)return fail();started=true;await check(restriction);await facts();if(!live)return fail();complete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending},()=>{const pending=(async()=>{try{if(!live||finalStarted||!complete)return fail();finalStarted=true;await facts();if(!live)return fail();finalComplete=true}catch{invalid=true;return fail()}})();void pending.catch(()=>{});return pending})},signal,binding,async()=>{active();await assertDispatchCurrent!(effect,profile,phase,signal);active()});"
+        },
+        {
+          "line": 68,
+          "source": "const readDispatch=await authorize(beforeCredential,'credential-read');active();await consumeExecutionDispatch(readDispatch.checkpoint,readDispatch.binding);active();"
+        },
+        {
+          "line": 71,
+          "source": "const ciphertext=stored.accessToken,decryptDispatch=await authorize(credentialCurrent,'credential-decrypt');active();await consumeExecutionDispatch(decryptDispatch.checkpoint,decryptDispatch.binding);active();"
+        },
+        {
+          "line": 74,
+          "source": "await authorize(credentialCurrent,'credential-decrypt');active();const sendDispatch=await authorize(beforeSend,effect.kind==='growth.post.publish'?'publish':'delete');active();await consumeExecutionDispatch(sendDispatch.checkpoint,sendDispatch.binding);active();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageArtifactService.ts",
+      "sha256": "dc4d99074e8147dab843aeee2e53f485dc5b66a5942e10b5a7fd4e4ac05ddc5f",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertPlatformParticipantsTime} from './principalTime';"
+        },
+        {
+          "line": 3,
+          "source": "import type {ExecutionTimeSource} from './executionTime';"
+        },
+        {
+          "line": 20,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 36,
+          "source": "async function connection(tx:PlatformTransaction,id:string,signal:AbortSignal){if(!tx.readImageConnection)return fail();const value=postingConnectionSchema.parse(await guard(signal,()=>tx.readImageConnection!(id))),now=await guard(signal,()=>tx.now()),author=value.organizationUrn||value.linkedinUrn,scopes=value.scopes.split(/[\\s,]+/);if(value.id!==id||value.status!=='connected'||value.expiresAt.getTime()<=now||!/^urn:li:(person|organization):[A-Za-z0-9_-]+$/.test(author)||!scopes.includes(value.organizationUrn?'w_organization_social':'w_member_social'))return fail();return {metadata:{connectionId:id,connectionRevision:linkedInConnectionRevision(value),author},expiresAt:value.expiresAt.getTime()}}"
+        },
+        {
+          "line": 40,
+          "source": "await assertPlatformParticipantsTime(tx,actors,clock,{expiresAt:Math.min(before.expiresAt,expiresAt??Number.MAX_SAFE_INTEGER)},signal);"
+        },
+        {
+          "line": 48,
+          "source": "await people(tx,actors,signal);const after=await connection(tx,a.connectionId,signal);if(hash(after.metadata)!==hash(c))return fail();if(limits.expiresAt!==undefined&&await guard(signal,()=>tx.now())>=limits.expiresAt)return fail();"
+        },
+        {
+          "line": 57,
+          "source": "async function load<T>(tx:PlatformTransaction,id:string,actor:PlatformPrincipal,signal:AbortSignal,use:(value:{state:ReturnType<typeof readPlatformAction>;binding:ReturnType<typeof imageBindingForParent>;bytes:Buffer;actors:PlatformPrincipal[]})=>Promise<T>,keepBytes=false){await people(tx,[actor],signal);const state=readPlatformAction(await guard(signal,()=>tx.read(id)));if(!['proposed','approved'].includes(state.status)||!tx.readImageBinding)return fail();const b=imageBindingForParent(await guard(signal,()=>tx.readImageBinding!(id)),state,id),actors=[actor,state.requester,...(state.reviewer?[state.reviewer]:[])];if(await guard(signal,()=>tx.now())>=Date.parse(b.expiresAt))return fail();const saved=await storage(tx).artifactMatches(b);return validatedArtifact(tx,b.artifact,saved.envelope,actors,signal,async bytes=>{const currentProfile=await profile(b.artifact,signal);if(hash(currentProfile)!==hash(b.profile))return fail();await current(tx,b.artifact,actors,signal,{expiresAt:Date.parse(b.expiresAt),profile:b.profile});if(await guard(signal,()=>tx.now())>=Date.parse(b.expiresAt))return fail();await people(tx,actors,signal);return use({state,binding:b,bytes,actors})},keepBytes,{expiresAt:Date.parse(b.expiresAt),profile:b.profile})}"
+        },
+        {
+          "line": 61,
+          "source": "const source=await timedConnection(tx,s.connectionId,[actor],signal),format=await inspect(bytes,s.mimeType,signal);if(bytesDigest(bytes)!==initialDigest)return fail();const a=imageArtifactMetadata.parse({artifactId:id,creatorUserId:actor.userId,...source,bytesDigest:initialDigest,byteCount:bytes.length,...format});await current(tx,a,[actor],signal);await withKey(a,signal,async key=>{await current(tx,a,[actor],signal,{key});const envelope=sealImageArtifact(key,a,bytes);await current(tx,a,[actor],signal,{key});await storage(tx).insertArtifact(a,envelope,await tx.now());await current(tx,a,[actor],signal,{key})});return {requestReference:s.requestReference,artifact:a,historical:false as const,authority:'artifact_metadata_only' as const}"
+        },
+        {
+          "line": 63,
+          "source": "async prepare(rawArtifactId:string,expiresAt:string,reference:string,rawActor:PlatformPrincipal){const actor=platformPrincipalSchema.parse(rawActor),artifact=imageArtifactMetadata.shape.artifactId.parse(rawArtifactId),id=actionId(reference,actor);z.string().datetime().parse(expiresAt);return run(signal=>repo.transaction(async tx=>{await tx.lock(id);await people(tx,[actor],signal);const old=await tx.read(id);if(old){const state=readPlatformAction(old);if(!tx.readImageBinding)return fail();const b=imageBindingForParent(await tx.readImageBinding(id),state,id);if(hash(b.requester)!==hash(actor)||b.artifact.artifactId!==artifact||b.expiresAt!==expiresAt)return fail();await people(tx,[actor],signal);return {actionId:id,historical:true as const,authority:'proposal_reference_only' as const}}const saved=await storage(tx).readArtifact(artifact);if(!saved||saved.metadata.creatorUserId!==actor.userId)return fail();return validatedArtifact(tx,saved.metadata,saved.envelope,[actor],signal,async()=>{const selected=await profile(saved.metadata,signal),b=prepareImageUploadBinding({artifact:saved.metadata,requester:actor,actionId:id,expiresAt,profile:selected},await tx.now()),state=createPlatformAction(b.plan,actor,await tx.now());await current(tx,b.artifact,[actor],signal,{expiresAt:Date.parse(expiresAt),profile:selected});await guard(signal,()=>resources!.assertUploadProfileCurrent!(selected,b.artifact,signal));await guard(signal,()=>tx.insert(id,state));await guard(signal,()=>tx.event({actionId:id,kind:'proposed',state,imageBinding:b}));await current(tx,b.artifact,[actor],signal,{expiresAt:Date.parse(expiresAt),profile:selected});await guard(signal,()=>resources!.assertUploadProfileCurrent!(selected,b.artifact,signal));if(await guard(signal,()=>tx.now())>=Date.parse(expiresAt))return fail();await current(tx,b.artifact,[actor],signal,{expiresAt:Date.parse(expiresAt),profile:selected});return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const}},false,{expiresAt:Date.parse(expiresAt)})}))},"
+        },
+        {
+          "line": 66,
+          "source": "async review(id:string,version:number,planDigest:string,rawActor:PlatformPrincipal){platformActionId.parse(id);const actor=platformPrincipalSchema.parse(rawActor);await run(signal=>repo.transaction(async tx=>{await tx.lock(id);await load(tx,id,actor,signal,async value=>{const {state,binding:b,actors}=value;if(state.status!=='proposed'||state.version!==version||state.plan.digest!==planDigest)return fail();const next=approvePlatformAction(state,{...actor,planDigest},await tx.now());await current(tx,b.artifact,actors,signal,{expiresAt:Date.parse(b.expiresAt),profile:b.profile});await guard(signal,()=>resources!.assertUploadProfileCurrent!(b.profile,b.artifact,signal));await guard(signal,()=>tx.replace(id,version,next));await guard(signal,()=>tx.event({actionId:id,kind:'approved',state:next}));await current(tx,b.artifact,[...actors,actor],signal,{expiresAt:Date.parse(b.expiresAt),profile:b.profile});await guard(signal,()=>resources!.assertUploadProfileCurrent!(b.profile,b.artifact,signal));if(await guard(signal,()=>tx.now())>=Date.parse(b.expiresAt))return fail();await current(tx,b.artifact,[...actors,actor],signal,{expiresAt:Date.parse(b.expiresAt),profile:b.profile})})}))},"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageExecutionStore.ts",
+      "sha256": "8ddc8d5f9353453870286510abf0a294ca515c5d6bbb20930d33d42c0cf7594b",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';"
+        },
+        {
+          "line": 3,
+          "source": "import {readPlatformPrincipalTimeWindow} from './principalTime';"
+        },
+        {
+          "line": 21,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 51,
+          "source": "async function time(tx:PlatformTransaction,state:State,c:Scope){const now=await c.within(()=>tx.now());if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();return now}"
+        },
+        {
+          "line": 68,
+          "source": "async function current(tx:PlatformTransaction,id:string,state:State,b:Readonly<ImageUploadBinding>,actor:PlatformPrincipal,c:Scope,check?:ExecutionTimeCheck){"
+        },
+        {
+          "line": 70,
+          "source": "const requester=await c.within(()=>readPlatformPrincipalTimeWindow(tx,state.requester,c.signal)),reviewer=await c.within(()=>readPlatformPrincipalTimeWindow(tx,state.reviewer!,c.signal));"
+        },
+        {
+          "line": 72,
+          "source": "if(check)await c.within(()=>check(window));else await c.within(()=>assertExecutionWindow(clock,window,c.signal));"
+        },
+        {
+          "line": 85,
+          "source": "const next=finishPlatformAction(state,'unknown',await c.within(()=>tx.now()));"
+        },
+        {
+          "line": 103,
+          "source": "async function fresh(check?:ExecutionTimeCheck){return locked(id,c,async(tx,state)=>{"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageNativeTransport.ts",
+      "sha256": "de37413cb179c59e1265bc2ac6f3e5c650d4ef94cf52389a56ebc914140f2ae5",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {authorizeExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeWindow} from './executionTime';"
+        },
+        {
+          "line": 17,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 21,
+          "source": "assertCurrent(binding:Readonly<ImageUploadBinding>,index:0|1,signal:AbortSignal,timeCheck?:ExecutionTimeCheck):Promise<void>;"
+        },
+        {
+          "line": 69,
+          "source": "async function current(extra?:ExecutionTimeWindow,phase?:ImageDispatchPhase){"
+        },
+        {
+          "line": 75,
+          "source": "const owner=async(check?:ExecutionTimeCheck)=>{if(!check)return fail();return p.assertCurrent(b,index,signal,async restriction=>{"
+        },
+        {
+          "line": 78,
+          "source": "const checkpoint=phaseBinding?await within(()=>prepareExecutionDispatch(clock!,window,owner,signal,phaseBinding,async()=>{if(!dispatchFacts)return fail();await within(()=>dispatchFacts(b,index,phase!,heldCredential,signal));if(p.version!==version)return fail()})):await within(()=>authorizeExecutionWindow(clock!,window,owner,signal));"
+        },
+        {
+          "line": 83,
+          "source": "credential=credentialSchema.parse(await within(async()=>{await consumeExecutionDispatch(readDispatch.checkpoint,readDispatch.binding);time();return p.readCredential(b,index,signal)}));"
+        },
+        {
+          "line": 90,
+          "source": "return within(async()=>{await consumeExecutionDispatch(dispatch.checkpoint,dispatch.binding);time();return fetch(url,{...init,headers:{...initial.headers,authorization:'Bearer '+credential,...(init.headers??{})},redirect:'error',cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer',signal})});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/imageWorkflowRequest.ts",
+      "sha256": "3e089f919cc8a5472de02ca4c598103fcdea2a9fe06fcacb7887aafacd6a0829",
+      "matches": [
+        {
+          "line": 48,
+          "source": "const grant=await tx.imageStorage.readGrant(),now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/nativeTime/linuxComposition.ts",
+      "sha256": "ca0d4783368f5a831986f7facb9a01032de3c80e6c16789ad1c2b96fdc9b70ca",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {createNativeExecutionTimeSource,type NativeTimeSourcePorts} from './source';"
+        },
+        {
+          "line": 23,
+          "source": "const q=ports.custodian,source=createNativeExecutionTimeSource(ports.time),custodian=createNativeCustodianPorts({clock:source,assertQualified:q.assertQualified.bind(q),assertSourceLeaseCurrent:q.assertSourceLeaseCurrent.bind(q),capture:q.capture.bind(q),assertCurrent:q.assertCurrent.bind(q),...(q.assertCurrentFacts?{assertCurrentFacts:q.assertCurrentFacts.bind(q)}:{})}),clock=custodian.clock,"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/nativeTime/source.ts",
+      "sha256": "aa77df502698c6b834ad5ec6bce199ddbc19ce50d41bf55b49c6efa74f31a73f",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import type {ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 36,
+          "source": "export function createNativeExecutionTimeSource(ports:NativeTimeSourcePorts):ExecutionTimeSource{"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianClosureObservation.ts",
+      "sha256": "e12367ff9c7e3ffb4f705d6121b1ebd97180620d329b3f20823266d736f41e24",
+      "matches": [
+        {
+          "line": 10,
+          "source": "export const custodianClosureEvidence=z.object({format:z.literal(1),purpose:z.literal('platform_custodian_native_lifetime_evidence_v1'),nativeKey:digest,issuerProfileDigest:digest,generation:z.number().int().positive(),barrierVersion:z.number().int().nonnegative(),controlDigest:digest,snapshotDigest:digest,fleetReceiptId:operationalEvidenceId,runtimeReceiptId:operationalEvidenceId,lifetimeReceiptId:operationalEvidenceId,timeReceiptId:operationalEvidenceId,lastPossibleIssueAt:clock,credentialNotAfter:clock,trustedNow:z.object({earliest:clock,latest:clock}).strict(),expiresAt:clock}).strict();"
+        },
+        {
+          "line": 16,
+          "source": "if(evidence.nativeKey!==barrier.nativeKey||evidence.issuerProfileDigest!==barrier.issuerProfileDigest||evidence.generation!==barrier.generation||evidence.barrierVersion!==barrier.version||evidence.controlDigest!==barrier.controlDigest||evidence.snapshotDigest!==snapshot.digest||evidence.lastPossibleIssueAt<barrier.updatedAt||evidence.credentialNotAfter<evidence.lastPossibleIssueAt||evidence.trustedNow.earliest<=evidence.credentialNotAfter||evidence.trustedNow.latest<evidence.trustedNow.earliest||evidence.expiresAt<=observedAt||evidence.expiresAt<=evidence.trustedNow.latest||observedAt<barrier.updatedAt)return fail();"
+        },
+        {
+          "line": 17,
+          "source": "for(const entry of snapshot.entries){if(entry.intent.createdAt>evidence.lastPossibleIssueAt)return fail();for(const lease of [entry.source,entry.credential]){if(lease.status==='issued'&&lease.expiresAt>evidence.credentialNotAfter||'requestedAt' in lease&&lease.requestedAt>observedAt||'observedAt' in lease&&lease.observedAt>observedAt)return fail()}}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianClosureStore.ts",
+      "sha256": "4b456a63549a108f6d6b40ac528ccb048acecef46c11348dbd8caa0707f24162",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {assertPlatformPrincipalTime} from '../principalTime';"
+        },
+        {
+          "line": 2,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 12,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 27,
+          "source": "const existing=await tx.readCustodianClosure(control.nativeKey),now=await tx.now();"
+        },
+        {
+          "line": 29,
+          "source": "if(!signal)return fail();signal.throwIfAborted();const readerWindow=await assertPlatformPrincipalTime(tx,reader,clock,signal);await authority.assertCurrent(tx,reader);signal.throwIfAborted();"
+        },
+        {
+          "line": 30,
+          "source": "const rawEvidence=await source.readEvidence(tx,snapshot),observation=compileCustodianClosureObservation(snapshot,rawEvidence,reader.userId,await tx.now());"
+        },
+        {
+          "line": 32,
+          "source": "await assertExecutionWindow(clock,{notBefore:Math.max(readerWindow.notBefore,observation.evidence.credentialNotAfter+1),expiresAt:Math.min(readerWindow.expiresAt,observation.evidence.expiresAt)},signal);"
+        },
+        {
+          "line": 37,
+          "source": "await assertExecutionWindow(clock,{notBefore:Math.max(readerWindow.notBefore,observation.evidence.credentialNotAfter+1),expiresAt:Math.min(readerWindow.expiresAt,observation.evidence.expiresAt)},signal);"
+        },
+        {
+          "line": 39,
+          "source": "const after=await tx.now();if(after<observation.observedAt||after>=observation.evidence.expiresAt||(await tx.readCustodianClosureSnapshot(control.nativeKey)).digest!==snapshot.digest)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianDrainSql.ts",
+      "sha256": "e2bf16d8469b7db47e8692077e0e6c1f6b4096e1f6957c6a214581918e67475c",
+      "matches": [
+        {
+          "line": 57,
+          "source": "const now=await tx.now();if(state.updatedAt>now||!same(transitionCustodianBarrier(prior,control,state.controlActionId,state.updatedAt),state))fail();"
+        },
+        {
+          "line": 72,
+          "source": "const state=readCustodianIntent(raw),key=issuer(state.nativeKey),tx=getTx();check(state.actionId);const parent=readPlatformAction(await tx.read(state.actionId)),barrier=await readBarrier(key),now=await tx.now();"
+        },
+        {
+          "line": 95,
+          "source": "const b=closure.snapshot.barrier,now=await tx.now();if(event.kind!=='custodian.closure_observed'||event.state.status!=='confirmed'||event.actionId!==b.controlActionId||event.state.plan.sourceDigest!==b.controlDigest||control||barrier||event.ecsManifest||event.settingsManifest||closure.observedAt>now||now>=closure.evidence.expiresAt||!same(await tx.read(event.actionId),event.state)||(await tx.readCustodianClosureSnapshot(b.nativeKey)).digest!==closure.snapshot.digest)fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianDrainStore.ts",
+      "sha256": "76e47d32ec1a74d2b1e2cffba97a59af130d0a90019c3832e6c40b9d1e3ab3ae",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {assertPlatformPrincipalTime} from '../principalTime';"
+        },
+        {
+          "line": 2,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 24,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 41,
+          "source": "const people=[await assertPlatformPrincipalTime(tx,actor,clock,signal),await assertPlatformPrincipalTime(tx,state.requester,clock,signal)];if(state.reviewer)people.push(await assertPlatformPrincipalTime(tx,state.reviewer,clock,signal));"
+        },
+        {
+          "line": 42,
+          "source": "await assertExecutionWindow(clock,{expiresAt:Math.min(Date.parse(control.expiresAt),closure?.evidence.expiresAt??Date.parse(control.expiresAt),...people.map(p=>p.expiresAt)),notBefore:Math.max(closure?closure.evidence.credentialNotAfter+1:0,...people.map(p=>p.notBefore))},signal);"
+        },
+        {
+          "line": 45,
+          "source": "const now=await tx.now();signal.throwIfAborted();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(control.expiresAt))fail();return now;"
+        },
+        {
+          "line": 55,
+          "source": "const reader=platformPrincipalSchema.parse(principal);if(!actionId.test(id)||!Number.isInteger(afterSequence)||afterSequence< -1||afterSequence>2147483647)return fail();return repo.transaction(async tx=>{await tx.lock(id);await authority.assertCurrent(tx,reader);const {state,control}=await load(tx,id);if(!tx.readCustodianClosureHistory)return fail();const page=await tx.readCustodianClosureHistory(id,afterSequence);if(!Array.isArray(page.observations)||page.observations.length>32||page.nextSequence!==null&&(!Number.isInteger(page.nextSequence)||page.nextSequence<=afterSequence||page.nextSequence>2147483647||page.observations.length!==32))return fail();const closures=page.observations.map(custodianClosureSummary),now=await tx.now();if(now<state.updatedAt)return fail();await authority.assertCurrent(tx,reader);return {actionId:id,planDigest:state.plan.digest,control,inspectedAt:now,version:state.version,status:state.status,attemptCount:state.attemptCount,requesterUserId:state.requester.userId,reviewerUserId:state.reviewer?.userId??null,expired:now>=Date.parse(control.expiresAt),closures,closurePage:{afterSequence,nextSequence:page.nextSequence},authority:'control_history_only' as const,sourceValidation:'not_checked' as const,executionAuthorized:false as const,providerExecution:false as const}});"
+        },
+        {
+          "line": 62,
+          "source": "await tx.lockCustodian(control.nativeKey);const state=createPlatformAction(plan,actor,await tx.now()),now=await current(tx,state,control,actor),prior=await predecessor(tx,control);transitionCustodianBarrier(prior,control,id,now);"
+        },
+        {
+          "line": 79,
+          "source": "await tx.writeEffect(id,0,'claimed','confirmed');const confirmed=finishPlatformAction(claimed,'confirmed',await tx.now());await tx.replace(id,claimed.version,confirmed);await tx.event({actionId:id,kind:'effect.observed',state:confirmed,effectIndex:0,outcome:'confirmed',custodianBarrier:nextBarrier});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/custodianIntentAdmission.ts",
+      "sha256": "9104447720b335ee9da53cac5c7ebec140a08812b956a24941e17688d305a218",
+      "matches": [
+        {
+          "line": 56,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<Math.max(intent.createdAt,state.updatedAt,barrier.updatedAt)||now>=Date.parse(manifest.expiresAt))return fail();"
+        },
+        {
+          "line": 66,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now<barrier.updatedAt||now>=Date.parse(manifest.expiresAt))return fail();"
+        },
+        {
+          "line": 78,
+          "source": "const after=await tx.now();if(after<now||after>=Date.parse(manifest.expiresAt)||state.sourceCredential?.status==='issued'&&after>=state.sourceCredential.expiresAt||state.credential.status==='issued'&&after>=state.credential.expiresAt)return fail();return intent;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/delegation.ts",
+      "sha256": "a57764488aefc330b3c544646fb953dfcb1b9e8d7f8ea4cc4883f7595ca89ad3",
+      "matches": [
+        {
+          "line": 3,
+          "source": "import {readPlatformPrincipalTimeWindow,assertPlatformPrincipalTime} from '../principalTime';"
+        },
+        {
+          "line": 5,
+          "source": "import type {ExecutionTimeCheck,ExecutionTimeAuthorization} from '../executionTime';"
+        },
+        {
+          "line": 35,
+          "source": "issue(manifest:OperationalDelegation['manifest'],beforeIssue:ExecutionTimeAuthorization,signal:AbortSignal,recordSource?:(metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>,beforeSourceRead?:ExecutionTimeAuthorization):Promise<unknown>;"
+        },
+        {
+          "line": 57,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))return fail();return {parent,now};"
+        },
+        {
+          "line": 67,
+          "source": "const before=await tx.now();if(before>=source.expiresAt)return fail();"
+        },
+        {
+          "line": 69,
+          "source": "const after=await tx.now();if(after<before||after>=source.expiresAt)return fail();"
+        },
+        {
+          "line": 73,
+          "source": "const state=await load(tx,key);if(state.version!==pending.version||state.credential.status!=='pending')return fail();const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();"
+        },
+        {
+          "line": 96,
+          "source": "await sourceCurrent(tx,state);const now=await tx.now();if(now>=held!.value.expiresAt||child&&await tx.readEffect(key,0)!=='claimed')return fail();return state;"
+        },
+        {
+          "line": 105,
+          "source": "const beforeSend=async(timeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>{if(used||typeof timeCheck!=='function'||typeof finalNativeFacts!=='function')return fail();used=true;abort.signal.throwIfAborted();await locked(held.actionId,async(tx,key)=>{let state=await sendCurrent(tx,key,true);if(intents){await intents.reserve(tx,key,'ecs.send');state=await sendCurrent(tx,key,true)}if(timeCheck){abort.signal.throwIfAborted();await timelyWorkload(tx,state,held.identity,'ecs',timeCheck,finalNativeFacts);abort.signal.throwIfAborted()}});abort.signal.throwIfAborted();authorized=true};"
+        },
+        {
+          "line": 110,
+          "source": "const state=await load(tx,key),parent=readPlatformAction(await tx.read(key));match(parent,state);if(parent.status!=='claimed'||await tx.readEffect(key,0)!=='claimed'||state.credential.status!=='issued'||state.credential.leaseRef!==held.value.leaseRef||!state.targetReservation)return fail();const now=await tx.now(),outcome=accepted?'confirmed' as const:'unknown' as const;"
+        },
+        {
+          "line": 126,
+          "source": "const beforeIssue=async(timeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>{if(used||typeof timeCheck!=='function'||typeof finalNativeFacts!=='function')return fail();used=true;abort.signal.throwIfAborted();await locked(pending.actionId,async(tx,key)=>{"
+        },
+        {
+          "line": 139,
+          "source": "const beforeSourceRead:ExecutionTimeAuthorization=async(timeCheck,finalFacts)=>{"
+        },
+        {
+          "line": 150,
+          "source": "await locked(pending.actionId,async(tx,key)=>{const state=await load(tx,key);if(!tx.writeOperationalSourceCredential||state.version!==pending.version||state.credential.status!=='pending'||state.sourceCredential?.status!=='pending'||metadata.profileDigest!==state.manifest.issuerProfileDigest)return fail();const now=await tx.now();if(now<state.updatedAt||metadata.expiresAt<=now)return fail();"
+        },
+        {
+          "line": 161,
+          "source": "const state=await load(tx,key);if(state.credential.status!=='issued'||state.credential.leaseRef!==value.leaseRef||state.credential.expiresAt!==value.expiresAt)return fail();await current(tx,state,'claimed');await targets.assertHeld(tx,{actionId:key,manifest:state.manifest},state.targetReservation);await identity.assertConsumedCurrent(tx,pending.identity,binding(state));await issuer.assertQualified(tx,state.manifest);await current(tx,state,'claimed');await sourceCurrent(tx,state);const now=await tx.now();if(now>=value.expiresAt)return fail();"
+        },
+        {
+          "line": 171,
+          "source": "async function readerCurrent(check?:ExecutionTimeCheck){"
+        },
+        {
+          "line": 173,
+          "source": "if(check){const window=await readPlatformPrincipalTimeWindow(tx,reader,signal!);await check(window)}else await assertPlatformPrincipalTime(tx,reader,clock,signal!);"
+        },
+        {
+          "line": 179,
+          "source": "await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)return fail();"
+        },
+        {
+          "line": 185,
+          "source": "finalParent=finishPlatformAction(parent,'confirmed',await tx.now());await tx.replace(key,parent.version,finalParent);await tx.event({actionId:key,kind:'workload.stable_observed',state:finalParent,operationalObserverUserId:reader.userId,operationalStabilityReceiptId:observed.lastReceiptId,operationalCommandReceiptDigest:result.receiptDigest});"
+        },
+        {
+          "line": 188,
+          "source": "const finalNow=await tx.now();if(!Number.isSafeInteger(finalNow)||finalNow<now||finalNow<finalParent.updatedAt)return fail();"
+        },
+        {
+          "line": 205,
+          "source": "if(result?.kind==='accepted'){if(!state.targetReservation||!tx.readOperationalFailureReceipt)return fail();await tx.lockOperationalTarget(state.targetReservation.nativeKey);const receipt=await tx.readOperationalFailureReceipt(key,state.targetReservation.generation);if(receipt)failure=readOperationalFailureHistory(key,parent,result,receipt,await tx.now())}"
+        },
+        {
+          "line": 206,
+          "source": "await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||result&&result.observedAt>now)return fail();await authority.assertCurrent(tx,actor);"
+        },
+        {
+          "line": 212,
+          "source": "const state=readOperationalDelegation({actionId:key,parentPlanDigest:parent.plan.digest,manifest,requester:parent.requester,reviewer:parent.reviewer,status:'delegated',version:0,attemptCount:0,executionPrincipal:null,targetReservation:null,credential:{status:'not_requested'},createdAt:await tx.now(),updatedAt:await tx.now()});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsDecisionTime.ts",
+      "sha256": "9069eeb9235700b9db9af5ff363833bb83695ca3a236477d03c037e045afbf63",
+      "matches": [
+        {
+          "line": 6,
+          "source": "import {assertPlatformParticipantsTime} from '../principalTime';"
+        },
+        {
+          "line": 7,
+          "source": "import type {ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 10,
+          "source": "export interface EcsDecisionTiming{clock:ExecutionTimeSource;signal?:AbortSignal;assertActive?:()=>void}"
+        },
+        {
+          "line": 28,
+          "source": "await assertPlatformParticipantsTime(tx,people,clock,{notBefore:Math.max(stamp.parse(notBefore),before.notBefore),expiresAt:Math.min(Date.parse(manifest.expiresAt),before.expiresAt)},signal);signal.throwIfAborted();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsExecution.ts",
+      "sha256": "b2ee9d9af1a4da0d4762c8ad8b2e28b9251e80e98ed9f1c785234946433eb526",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import type {ExecutionTimeAuthorization} from '../executionTime';"
+        },
+        {
+          "line": 13,
+          "source": "send(manifest:OperationalDelegation['manifest'],credentials:Readonly<{accessKeyId:string;secretAccessKey:string;sessionToken:string;expiresAt:number}>,beforeSend:ExecutionTimeAuthorization,signal:AbortSignal):Promise<unknown>;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsOutcomeSource.ts",
+      "sha256": "43cf68f7c576ff212529bf9ab6f61330aa0bb8d5840a6c4825bfd7dd6da98ff6",
+      "matches": [
+        {
+          "line": 6,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeAuthorization,type ExecutionTimeWindow} from '../executionTime';"
+        },
+        {
+          "line": 14,
+          "source": "clock?:ExecutionTimeSource;"
+        },
+        {
+          "line": 20,
+          "source": "describe(target:OperationalTarget,signal:AbortSignal,beforeRead:ExecutionTimeAuthorization):Promise<{response:unknown;evidence:object}>;"
+        },
+        {
+          "line": 37,
+          "source": "const now=await tx.now();active(scope,owner);if(!same(after,p.profile)||!same(accepted,p.accepted)||!Number.isSafeInteger(now)||now<p.target.updatedAt||now>=p.profile.expiresAt)return fail();return now;"
+        },
+        {
+          "line": 39,
+          "source": "async function current(tx:OperationalTargetTransaction,p:Proof,owner?:OperationalObservationAuthorization,nativeCheck?:ExecutionTimeCheck){"
+        },
+        {
+          "line": 44,
+          "source": "const check:ExecutionTimeCheck=restriction=>{"
+        },
+        {
+          "line": 47,
+          "source": "const extra:ExecutionTimeWindow=restriction??{},notBefore=extra.notBefore===undefined?bounds.notBefore:Math.max(bounds.notBefore,stamp.parse(extra.notBefore)),expiresAt=extra.expiresAt===undefined?bounds.expiresAt:Math.min(bounds.expiresAt,stamp.parse(extra.expiresAt));"
+        },
+        {
+          "line": 48,
+          "source": "if(nativeCheck)await nativeCheck({notBefore,expiresAt});else await assertExecutionWindow(clock!,{notBefore,expiresAt},scope);"
+        },
+        {
+          "line": 54,
+          "source": "await assertExecutionWindow(clock!,bounds,scope);active(scope);return exact(tx,p,scope);"
+        },
+        {
+          "line": 64,
+          "source": "const beforeRead:ExecutionTimeAuthorization=nativeCheck=>{"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsPreparation.ts",
+      "sha256": "6782328ec9887bd5111865c8126846bd5333ed1bea5b36e4cbadccf252d9b047",
+      "matches": [
+        {
+          "line": 30,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;"
+        },
+        {
+          "line": 52,
+          "source": "await source.assertCurrent(tx,manifest);await current(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now>=Date.parse(manifest.expiresAt))return fail();const parent=createPlatformAction(plan,actor,now);await qualify(tx,parent,manifest,actor);"
+        },
+        {
+          "line": 53,
+          "source": "await tx.insert(id,parent);await tx.event({actionId:id,kind:'proposed',state:parent,ecsManifest:manifest});await qualify(tx,parent,manifest,actor);const after=await tx.now();if(!Number.isSafeInteger(after)||after<now||after>=Date.parse(manifest.expiresAt))return fail();return Object.freeze({actionId:id,planDigest:plan.digest,historical:false,authority:'proposal_reference_only',executionAuthorized:false});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/ecsSdkTransport.ts",
+      "sha256": "22c44608e207881cfc0c9e5aeb0396e557d3996a9bae6205aafaa034f3cb6554",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization} from '../executionTime';"
+        },
+        {
+          "line": 16,
+          "source": "async function signedRequest(clock:ExecutionTimeSource,region:string,rawCredential:Credential,operation:'UpdateService'|'DescribeServices',input:unknown,beforeRequest:ExecutionTimeAuthorization,signal:AbortSignal,send:(client:ECSClient)=>Promise<unknown>,actionExpiresAt?:number,dispatchCurrent?:OperationalEcsDispatchCurrent){"
+        },
+        {
+          "line": 20,
+          "source": "await assertExecutionWindow(clock,{expiresAt:Math.min(credential.expiresAt,actionExpiresAt??credential.expiresAt)},signal);"
+        },
+        {
+          "line": 33,
+          "source": "const checkpoint=await prepareExecutionDispatch(clock,{expiresAt:Math.min(credential.expiresAt,actionExpiresAt??credential.expiresAt)},beforeRequest,signal,binding,facts,operation==='UpdateService'?facts:undefined);"
+        },
+        {
+          "line": 34,
+          "source": "await consumeExecutionDispatch(checkpoint,binding);signal.throwIfAborted();return bounded.handle(request,options);"
+        },
+        {
+          "line": 41,
+          "source": "export function createOperationalEcsSdkTransport(assertQualified:OperationalEcsTransport['assertQualified'],clock:ExecutionTimeSource,dispatchCurrent?:OperationalEcsDispatchCurrent):OperationalEcsTransport{"
+        },
+        {
+          "line": 42,
+          "source": "return Object.freeze({assertQualified,async send(rawManifest:Parameters<OperationalEcsTransport['send']>[0],credential:Credential,beforeSend:ExecutionTimeAuthorization,signal:AbortSignal){"
+        },
+        {
+          "line": 50,
+          "source": "export function createOperationalEcsSdkReader(clock:ExecutionTimeSource,dispatchCurrent?:OperationalEcsDispatchCurrent){return Object.freeze({async describe(rawTarget:unknown,credential:Credential,beforeRead:ExecutionTimeAuthorization,signal:AbortSignal){"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/githubBootstrap.ts",
+      "sha256": "cc6e3c7a79a0f351693c9aa846486c4ff6f33c1f8fe941e31b48ee23fbfa06fd",
+      "matches": [
+        {
+          "line": 21,
+          "source": "if(p.expiresAt<=Date.now()||origin.origin!==p.nativeOrigin||origin.protocol!=='https:'||origin.username||origin.password||origin.port||!origin.hostname.endsWith('.actions.githubusercontent.com')||p.nativeQueryKeys.includes('audience')||new Set(p.nativeQueryKeys).size!==p.nativeQueryKeys.length||endpoint(p.endpoint).origin!==endpoint(p.preflightEndpoint).origin||p.endpoint===p.preflightEndpoint)return fail();"
+        },
+        {
+          "line": 30,
+          "source": "if(p.expiresAt<=Date.now())return fail();"
+        },
+        {
+          "line": 41,
+          "source": "function current(profile:Readonly<OperationalRemoteHandoffProfile>,signal:AbortSignal){signal.throwIfAborted();const snapshotValues=snapshot();if(p.expiresAt<=Date.now()||sha256ContentHash(profile)!==sha256ContentHash(remote)||keys.some(k=>snapshotValues[k]!==held[k]))return fail()}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseRequest.ts",
+      "sha256": "842173be473d35e59e42902c67a586e8b577342c6bab63a157ec99fa687aa274",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import type {ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 8,
+          "source": "interface Ports{clock:ExecutionTimeSource;repo:ManualReleaseRepository;source:ManualReleaseSource;resultSupplier?:ManualReleaseResultSupplier;verifyDesktopToken(token:string):{sessionId:string};readAdminEmails():readonly string[]}"
+        },
+        {
+          "line": 15,
+          "source": "const sourceClock=ports.clock,clock:ExecutionTimeSource=async s=>{possessed();const value=await sourceClock(s);possessed();return value};"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseResult.ts",
+      "sha256": "f60fdd29bc3da07903c696040146510804e2d1a1da2b062c0392cbdd23355abe",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck,type ExecutionTimeWindow} from '../executionTime';"
+        },
+        {
+          "line": 21,
+          "source": "export interface ManualReleaseResultTiming{clock:ExecutionTimeSource;signal?:AbortSignal;authorize(view:ManualReleaseResultView,check:ExecutionTimeCheck,signal:AbortSignal):Promise<void>}"
+        },
+        {
+          "line": 33,
+          "source": "await authorizeExecutionWindow(clock,{},check=>{if(!check)return fail();return authorize(before,check,signal)},signal);signal.throwIfAborted();"
+        },
+        {
+          "line": 45,
+          "source": "const window:ExecutionTimeWindow={notBefore:Date.parse(observation.observedAt),expiresAt:Date.parse(observation.expiresAt)};"
+        },
+        {
+          "line": 46,
+          "source": "await authorizeExecutionWindow(clock,window,check=>{"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/manualReleaseStore.ts",
+      "sha256": "37390bfe5498f0f570f72560411cdc368c8f133c820834528bd74f035de8dbf2",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from '../principalTime';"
+        },
+        {
+          "line": 3,
+          "source": "import type {ExecutionTimeSource,ExecutionTimeCheck} from '../executionTime';"
+        },
+        {
+          "line": 43,
+          "source": "export function createManualReleaseStore(repo:ManualReleaseRepository,authority:ManualReleaseAuthority,source:ManualReleaseSource,timing?:{clock:ExecutionTimeSource;signal?:AbortSignal}){"
+        },
+        {
+          "line": 51,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))fail();return now;"
+        },
+        {
+          "line": 57,
+          "source": "await assertPlatformParticipantsTime(tx,actors,clock!,{notBefore:evidence.notBefore,expiresAt:Math.min(Date.parse(state.manifest.expiresAt),evidence.expiresAt)},scope);"
+        },
+        {
+          "line": 58,
+          "source": "const before=await sourceCurrent(tx,state);if(phaseActor)await authority.assertCurrent(tx,phaseActor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<before||now>=Date.parse(state.manifest.expiresAt))return fail();const after=evidenceWindow.parse(await source.readTimeWindow(tx,state.manifest,state.selection));scope.throwIfAborted();if(after.notBefore!==evidence.notBefore||after.expiresAt!==evidence.expiresAt)return fail();return now;"
+        },
+        {
+          "line": 67,
+          "source": "const now=await tx.now(),state=readManualReleaseRecord({id,selection,manifest,requester:actor,reviewer:null,status:'proposed',version:0,attemptCount:0,createdAt:now,updatedAt:now});"
+        },
+        {
+          "line": 74,
+          "source": "await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt)fail();await authority.assertCurrent(tx,actor);"
+        },
+        {
+          "line": 83,
+          "source": "async authorizeObservation(expected:{recordId:string;manifest:{digest:string};status:string;version:number;inspectedAt:number},principal:PlatformPrincipal,check:ExecutionTimeCheck,observationSignal:AbortSignal){"
+        },
+        {
+          "line": 87,
+          "source": "await authority.assertCurrent(tx,actor);const window=await readPlatformPrincipalTimeWindow(tx,actor,scope);await check(window);scope.throwIfAborted();await authority.assertCurrent(tx,actor);"
+        },
+        {
+          "line": 88,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now<expected.inspectedAt)return fail();await authority.assertCurrent(tx,actor);scope.throwIfAborted();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/nativeCustodianSupplier.ts",
+      "sha256": "eaf96c93b4e66a696404b0fda7e4a158517395a42f14f902c4e3c8b07f7c4237",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeAuthorization} from '../executionTime';"
+        },
+        {
+          "line": 44,
+          "source": "await assertExecutionWindow(clock,{expiresAt:expiresAt??capture.maximumExpiresAt},signal);"
+        },
+        {
+          "line": 48,
+          "source": "async readCustodianCredential(raw:Manifest,signal:AbortSignal,beforeRead?:ExecutionTimeAuthorization){try{"
+        },
+        {
+          "line": 57,
+          "source": "const checkpoint=await prepareExecutionDispatch(clock,{expiresAt:Math.min(capture.maximumExpiresAt,Date.parse(manifest.expiresAt))},beforeRead,signal,binding,facts,facts);"
+        },
+        {
+          "line": 58,
+          "source": "await consumeExecutionDispatch(checkpoint,binding);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/observationAuthorization.ts",
+      "sha256": "33c0f34e7603dc388bfd566302b76540576eca027f8801a22a264b9d82cc2a0c",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import type {ExecutionTimeAuthorization} from '../executionTime';"
+        },
+        {
+          "line": 6,
+          "source": "readonly authorize:ExecutionTimeAuthorization;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/operationalRequest.ts",
+      "sha256": "e700998f652598a67520f6698f0b61fa3226ae84eb77a136929dbf7b57293b32",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import type {ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 10,
+          "source": "clock?:ExecutionTimeSource;"
+        },
+        {
+          "line": 26,
+          "source": "const clock=ports.clock,guardedClock:ExecutionTimeSource=async signal=>{possessed();if(typeof clock!=='function')return fail();const result=await clock(signal);possessed();return result},timing={clock:guardedClock,signal:request.signal,assertActive:possessed};"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/privateStsIssuer.ts",
+      "sha256": "ef7648cdd74c5976966d26be5a96b63a929b570f5201530c4a00f04fece6217e",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization} from '../executionTime';"
+        },
+        {
+          "line": 11,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 17,
+          "source": "readCustodianCredential(manifest:Parameters<OperationalCredentialIssuer['issue']>[0],signal:AbortSignal,beforeRead?:ExecutionTimeAuthorization):Promise<CustodianCredential>;"
+        },
+        {
+          "line": 29,
+          "source": "export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPorts):OperationalCredentialIssuer{const clock=ports.clock,custodianFacts=ports.assertCustodianFactsCurrent?.bind(ports);return Object.freeze({assertQualified:ports.assertQualified,assertSourceCurrent:ports.assertSourceLeaseCurrent,async issue(rawManifest:Parameters<OperationalCredentialIssuer['issue']>[0],beforeIssue:ExecutionTimeAuthorization,signal:AbortSignal,recordSource?: (metadata:CustodianCredentialObservation)=>Promise<void>,beforeSource?:()=>Promise<void>,beforeSourceRead?:ExecutionTimeAuthorization){"
+        },
+        {
+          "line": 42,
+          "source": "await assertExecutionWindow(clock,{expiresAt:Math.min(source.expiresAt,Date.parse(manifest.expiresAt))},signal);"
+        },
+        {
+          "line": 70,
+          "source": "const checkpoint=await prepareExecutionDispatch(clock,{expiresAt:Math.min(source.expiresAt,Date.parse(manifest.expiresAt))},beforeIssue,signal,binding,facts,facts);"
+        },
+        {
+          "line": 71,
+          "source": "await consumeExecutionDispatch(checkpoint,binding);signal.throwIfAborted();return bounded.handle(request,options);"
+        },
+        {
+          "line": 77,
+          "source": "const now=await assertExecutionWindow(clock,{expiresAt:Math.min(expiresAt!,Date.parse(manifest.expiresAt))},signal);"
+        },
+        {
+          "line": 78,
+          "source": "if(!used||result.$metadata.httpStatusCode!==200||!result.$metadata.requestId||!credential||!credential.AccessKeyId||!credential.SecretAccessKey||!credential.SessionToken||expiresAt!-now.earliest>900000||result.AssumedRoleUser?.Arn!==`arn:aws:sts::${manifest.target.accountId}:assumed-role/${roleName}/${session}`||!result.AssumedRoleUser.AssumedRoleId?.endsWith(':'+session))return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/releasePreparation.ts",
+      "sha256": "7a645e2401e9558ed70a1bcbfbe3c2f6cf3181acf3b83aa8c483c705a3467068",
+      "matches": [
+        {
+          "line": 43,
+          "source": "const now=await tx.now(),end=Date.parse(selection.expiresAt);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/reservationStore.ts",
+      "sha256": "7cec0b08f4eb214012dbb7f51f31d65597c1d6d6c4d87a8a598c61397a436f48",
+      "matches": [
+        {
+          "line": 53,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<0||Date.parse(snapshot.observedAt)>now||Date.parse(snapshot.expiresAt)<=now||Date.parse(snapshot.observedAt)>=Date.parse(snapshot.expiresAt)||now>=Date.parse(m.expiresAt)||Date.parse(m.expiresAt)>Date.parse(snapshot.expiresAt))return fail();"
+        },
+        {
+          "line": 57,
+          "source": "const end=await tx.now();if(!Number.isSafeInteger(end)||end<now||end>=Date.parse(m.expiresAt)||end>=Date.parse(snapshot.expiresAt))return fail();return operationalTargetReference.parse({nativeKey:key,generation});"
+        },
+        {
+          "line": 62,
+          "source": "await source.assertSnapshotCurrent(tx,state.snapshotDigest,state.bindingDigest);const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.sourceExpiresAt)||now>=Date.parse(b.manifest.expiresAt))return fail();"
+        },
+        {
+          "line": 73,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<previous.updatedAt||Date.parse(outcome.observedAt)>now||Date.parse(outcome.observedAt)<previous.createdAt)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsArtifactRequest.ts",
+      "sha256": "681b98f0cffecee902985f3fb721d0e749a86b482fd8da6bd07db105e498e17b",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import type {ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 12,
+          "source": "clock?:ExecutionTimeSource;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsArtifactStore.ts",
+      "sha256": "62b5af6dd85979c28c5d1f4304f4bcfcc2b1418616b647ca5d416bd388bb395a",
+      "matches": [
+        {
+          "line": 47,
+          "source": "await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt)return fail();"
+        },
+        {
+          "line": 60,
+          "source": "await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reader);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();"
+        },
+        {
+          "line": 73,
+          "source": "const actual=readPlatformAction(await tx.read(id)),now=await tx.now();"
+        },
+        {
+          "line": 95,
+          "source": "await authority.assertCurrent(tx,actor);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;"
+        },
+        {
+          "line": 114,
+          "source": "await authority.assertCurrent(tx,parent.requester);await authority.assertCurrent(tx,reviewer);const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(parent.plan.expiresAt))return fail();return now;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsExecution.ts",
+      "sha256": "e145e3e4e9646197bc061e865428bb77133e59feb3a9e02522f9691ac05e7818",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import type {ExecutionTimeSource,ExecutionTimeAuthorization,ExecutionTimeCheck} from '../executionTime';"
+        },
+        {
+          "line": 21,
+          "source": "readonly clock?:ExecutionTimeSource;"
+        },
+        {
+          "line": 26,
+          "source": "send(binding:SettingsArtifactBinding,value:string,beforeSend:ExecutionTimeAuthorization,beforeCredential:ExecutionTimeAuthorization):Promise<unknown>;"
+        },
+        {
+          "line": 48,
+          "source": "const now=await tx.now();if(!Number.isSafeInteger(now)||now<parent.updatedAt||now>=Date.parse(binding.expiresAt))return fail();return {binding,record};"
+        },
+        {
+          "line": 50,
+          "source": "async function current(tx:SettingsArtifactTransaction,index:number,held:boolean,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>){"
+        },
+        {
+          "line": 54,
+          "source": "let nativeFinal:{check:ExecutionTimeCheck;finalFacts:()=>Promise<void>;consumed:boolean}|undefined;"
+        },
+        {
+          "line": 63,
+          "source": "const settingsResult=createSettingsResult(resultBinding,event.outcome,event.outcome==='confirmed'?confirmedSettingId:null,await tx.now());await tx.event({...event,settingsResult});"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsPreparation.ts",
+      "sha256": "99d3fce158782c1234ff5d7217e06499a24cf86d7bd78450ee40d909b4d420bb",
+      "matches": [
+        {
+          "line": 24,
+          "source": "const sourceCurrent=async()=>{await source.assertCurrent(tx,manifest);await authority.assertCurrent(tx,actor);const now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(manifest.expiresAt))return fail();return now}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsTime.ts",
+      "sha256": "5a74e258726f642ec1738f454006dfc9d6cd79c1ae96fced65f9b23e09abe7f2",
+      "matches": [
+        {
+          "line": 3,
+          "source": "import {assertPlatformParticipantsTime,readPlatformPrincipalTimeWindow} from '../principalTime';"
+        },
+        {
+          "line": 4,
+          "source": "import type {ExecutionTimeSource,ExecutionTimeCheck} from '../executionTime';"
+        },
+        {
+          "line": 15,
+          "source": "export interface SettingsTiming{clock:ExecutionTimeSource;signal?:AbortSignal}"
+        },
+        {
+          "line": 28,
+          "source": "return async<T>(tx:SettingsArtifactTransaction,people:readonly PlatformPrincipal[],rawContext:unknown,afterTime:()=>Promise<T>,nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>):Promise<T>=>{"
+        },
+        {
+          "line": 35,
+          "source": "if(nativeCheck!==undefined){if(typeof nativeCheck!=='function')return fail();for(const principal of principals){const session=await readPlatformPrincipalTimeWindow(tx,principal,signal);restriction.notBefore=Math.max(restriction.notBefore,session.notBefore);restriction.expiresAt=Math.min(restriction.expiresAt,session.expiresAt)}await nativeCheck(Object.freeze(restriction))}"
+        },
+        {
+          "line": 36,
+          "source": "else await assertPlatformParticipantsTime(tx,principals,clock,restriction,signal);signal.throwIfAborted();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/settingsVercelTransport.ts",
+      "sha256": "dca1a16c8d32a847979c2b0a28e35f1ad556930b16aabe51899eb18ca110e2d1",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization,type ExecutionTimeWindow} from '../executionTime';"
+        },
+        {
+          "line": 7,
+          "source": "clock?:ExecutionTimeSource;"
+        },
+        {
+          "line": 32,
+          "source": "return Object.freeze({clock,signal:parentSignal,async send(raw:SettingsArtifactBinding,value:string,beforeSend:ExecutionTimeAuthorization,beforeCredential?:ExecutionTimeAuthorization){"
+        },
+        {
+          "line": 36,
+          "source": "async function authorizeNative(window:ExecutionTimeWindow,owner:ExecutionTimeAuthorization,afterCheck:()=>Promise<void>,binding:object,dispatchFacts:()=>Promise<void>){"
+        },
+        {
+          "line": 39,
+          "source": "const checkpoint=await prepareExecutionDispatch(clock!,window,(check,last)=>{"
+        },
+        {
+          "line": 53,
+          "source": "await consumeExecutionDispatch(copyCheckpoint,copyBinding);signal.throwIfAborted();"
+        },
+        {
+          "line": 63,
+          "source": "await consumeExecutionDispatch(sendCheckpoint,sendBinding);signal.throwIfAborted();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/stsIssuer.ts",
+      "sha256": "cc2e3f2d1c88a833f94a11ce0b222f0c54c5a9f1c761ca5766fd182b030c46c9",
+      "matches": [
+        {
+          "line": 38,
+          "source": "const credential=result.Credentials,roleName=manifest.roleArn.split('/').at(-1),now=Date.now(),expiresAt=credential?.Expiration?.getTime();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/workloadIdentity.ts",
+      "sha256": "242894bf87279eef8fce515bbaa46a610301037d7bcbceb6841f1cd7e8e91405",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';"
+        },
+        {
+          "line": 48,
+          "source": "export function createOperationalWorkloadIdentity(source:OperationalWorkloadProfileSupplier,clock:ExecutionTimeSource,signal:AbortSignal){"
+        },
+        {
+          "line": 61,
+          "source": "await assertExecutionWindow(clock,{notBefore:verified.validFrom,expiresAt:Math.min(verified.expiresAt,Date.parse(binding.expiresAt))},signal);"
+        },
+        {
+          "line": 63,
+          "source": "const now=await tx.now();signal.throwIfAborted();if(!Number.isSafeInteger(now)||now<0||now>=verified.expiresAt||now>=Date.parse(binding.expiresAt))fail();"
+        },
+        {
+          "line": 69,
+          "source": "const binding=captureBinding(rawBinding),p=await profile(tx,binding),now=await tx.now();if(!Number.isSafeInteger(now)||now<0||now>=Date.parse(binding.expiresAt))return fail();"
+        },
+        {
+          "line": 70,
+          "source": "const {payload,protectedHeader}=await jwtVerify(rawToken,createLocalJWKSet({keys:p.value.keys}),{algorithms:['RS256'],issuer:p.value.issuer,audience:p.value.audience,currentDate:new Date(now),clockTolerance:0,requiredClaims:['iss','aud','sub','jti','iat','nbf','exp','repository','ref','sha','workflow_ref','workflow_sha','run_id','run_attempt','repository_id','repository_owner_id','repository_owner','repository_visibility','event_name','ref_type','runner_environment']});"
+        },
+        {
+          "line": 77,
+          "source": "const end=Math.min(claims.exp*1000,Date.parse(binding.expiresAt)),after=await tx.now();if(!Number.isSafeInteger(after)||after<now||after>=end)return fail();"
+        },
+        {
+          "line": 79,
+          "source": "await current(tx,verified,binding);const final=await tx.now();signal.throwIfAborted();if(final<after||final>=end)return fail();"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/workloadOwnerTime.ts",
+      "sha256": "ccb01ecb69ccfff04db648bd9f6819dccc6ff553d23f67a35d4ff9cc8467dc6d",
+      "matches": [
+        {
+          "line": 6,
+          "source": "import {readPlatformPrincipalTimeWindow} from '../principalTime';"
+        },
+        {
+          "line": 7,
+          "source": "import {assertExecutionWindow,type ExecutionTimeCheck} from '../executionTime';"
+        },
+        {
+          "line": 47,
+          "source": "return async(tx:Tx,rawState:OperationalDelegation,consumed:object,phase:'source'|'role'|'ecs',nativeCheck?:ExecutionTimeCheck,finalNativeFacts?:()=>Promise<void>)=>{"
+        },
+        {
+          "line": 63,
+          "source": "const now=await tx.now();active();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.manifest.expiresAt))return fail();"
+        },
+        {
+          "line": 70,
+          "source": "const requester=await readPlatformPrincipalTimeWindow(tx,state.requester,signal!),reviewer=await readPlatformPrincipalTimeWindow(tx,state.reviewer,signal!);active();"
+        },
+        {
+          "line": 75,
+          "source": "if(nativeCheck)await nativeCheck(before.window);else await assertExecutionWindow(clock,before.window,signal);"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/operations/workloadRunner.ts",
+      "sha256": "810feebe8e91d281f7716c1eba8122900fc3811f03039a62fe40c8e633bb12fb",
+      "matches": [
+        {
+          "line": 1,
+          "source": "import {assertPlatformPrincipalTime} from '../principalTime';"
+        },
+        {
+          "line": 23,
+          "source": "const authority:StoreArgs[1]={async assertCurrent(tx,principal){stopped();await ports.authority.assertCurrent(tx,principal);stopped();await assertPlatformPrincipalTime(tx,principal,internalSignal=>custodianClock.call(ports.custodian,AbortSignal.any([signal,internalSignal])),signal);stopped();await ports.authority.assertCurrent(tx,principal);stopped()}};"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/postImagePreviewService.ts",
+      "sha256": "bf9da52ed2d6e09384eae3822a427c90edb28191ab4b60dae4ece745f345a846",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertPlatformParticipantsTime} from './principalTime';"
+        },
+        {
+          "line": 38,
+          "source": "const now=await checked(()=>tx.now());if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();"
+        },
+        {
+          "line": 42,
+          "source": "if(await checked(()=>tx.now())>=Date.parse(state.plan.expiresAt))return fail();return prepared.preview.renderedPost;"
+        },
+        {
+          "line": 48,
+          "source": "await checked(()=>assertPlatformParticipantsTime(tx,actors,clock!,{expiresAt:Date.parse(state.plan.expiresAt)},signal));"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/principalTime.ts",
+      "sha256": "6e075a70eb00350cd90093af95758b69c2ac69802398b51702ed02046060cf32",
+      "matches": [
+        {
+          "line": 5,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource} from './executionTime';"
+        },
+        {
+          "line": 12,
+          "source": "export async function readPlatformPrincipalTimeWindow(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{"
+        },
+        {
+          "line": 22,
+          "source": "export async function assertPlatformPrincipalTime(tx:Pick<PlatformTransaction,'readPrincipal'>,raw:PlatformPrincipal,clock:ExecutionTimeSource,signal:AbortSignal):Promise<Readonly<{notBefore:number;expiresAt:number}>>{"
+        },
+        {
+          "line": 23,
+          "source": "try{const window=await readPlatformPrincipalTimeWindow(tx,raw,signal);await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window}catch{throw Error('platform_principal_time_unavailable')}"
+        },
+        {
+          "line": 29,
+          "source": "export async function assertPlatformParticipantsTime(tx:Pick<PlatformTransaction,'readPrincipal'>,actors:readonly PlatformPrincipal[],clock:ExecutionTimeSource,restriction:{readonly notBefore?:number;readonly expiresAt?:number},signal:AbortSignal){"
+        },
+        {
+          "line": 34,
+          "source": "for(const principal of principals){const row=await readPlatformPrincipalTimeWindow(tx,principal,signal);notBefore=Math.max(notBefore,row.notBefore);expiresAt=Math.min(expiresAt,row.expiresAt)}"
+        },
+        {
+          "line": 35,
+          "source": "const window=Object.freeze({notBefore,expiresAt});await assertExecutionWindow(clock,window,signal);signal.throwIfAborted();return window;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/requestComposition.ts",
+      "sha256": "43e21e4276b391de76f6f22b853ce9d776c24cbd9e396ad586b100c9a22e922d",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import type {ExecutionTimeCheck} from './executionTime';"
+        },
+        {
+          "line": 5,
+          "source": "import type {ExecutionTimeSource} from './executionTime';"
+        },
+        {
+          "line": 19,
+          "source": "clock?:ExecutionTimeSource;"
+        },
+        {
+          "line": 44,
+          "source": "const guardedClock:ExecutionTimeSource=async signal=>{assertPossession();if(typeof clock!=='function')return fail();const value=await clock(signal);assertPossession();return value};"
+        },
+        {
+          "line": 90,
+          "source": "async beforeEffectSend(proof:object,effect:PlatformEffect,check?:ExecutionTimeCheck,finalFacts?:()=>Promise<void>){assertPossession();await store.beforeEffectSend(proof,effect,principal,check,finalFacts)},"
+        },
+        {
+          "line": 91,
+          "source": "async beforeEffectCredential(proof:object,effect:PlatformEffect,check:ExecutionTimeCheck,finalFacts?:()=>Promise<void>){assertPossession();await store.beforeEffectCredential(proof,effect,principal,check,finalFacts)},"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templateExecutionStore.ts",
+      "sha256": "6cb2d090b64c4ab872fcde455b13cc52f6002ad35b965b1ad06e2b63dcf1ab8b",
+      "matches": [
+        {
+          "line": 2,
+          "source": "import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';"
+        },
+        {
+          "line": 3,
+          "source": "import {readPlatformPrincipalTimeWindow} from './principalTime';"
+        },
+        {
+          "line": 19,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 39,
+          "source": "async function joinedTime(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>,expiresAt=Date.parse(state.plan.expiresAt),check?:ExecutionTimeCheck){"
+        },
+        {
+          "line": 41,
+          "source": "const requester=await readPlatformPrincipalTimeWindow(tx,state.requester,active),reviewer=await readPlatformPrincipalTimeWindow(tx,state.reviewer,active);"
+        },
+        {
+          "line": 43,
+          "source": "if(check)await check(window);else await assertExecutionWindow(clock,window,active);active.throwIfAborted();await people(tx,state);"
+        },
+        {
+          "line": 49,
+          "source": "async function timely(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>,b:Readonly<TemplateExecutionBinding>){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();if(b.access&&resources){const native=resources.now();if(!Number.isSafeInteger(native)||Math.abs(native-now)>b.access.clockSkewMs)return fail()}return now}"
+        },
+        {
+          "line": 72,
+          "source": "async function externalCurrent(terminal=false,nativeGuard=false,timeCheck?:ExecutionTimeCheck){if(nativeGuard&&nativeFinished)return fail();await locked(id,async(tx,state)=>{if(terminal?state.status!=='confirmed':!['approved','claimed'].includes(state.status))return fail();await current(tx,id,state,b,actor)});if(nativeGuard&&nativeFinished)return fail();await checkKey(nativeGuard);await locked(id,async(tx,state)=>{if((terminal?state.status!=='confirmed':!['approved','claimed'].includes(state.status))||hash(state.requester)!==hash(actor)||hash(await binding(tx,id,state))!==hash(b))return fail();await people(tx,state);await timely(tx,state,b);await joinedTime(tx,state,Date.parse(b.approvalExpiresAt),timeCheck);await sourceCurrent(tx,id,state,b,actor);await checkKey(nativeGuard);await timely(tx,state,b);await people(tx,state)});if(nativeGuard&&nativeFinished)return fail()}"
+        },
+        {
+          "line": 90,
+          "source": "receipt=await locked(id,async(tx,state)=>{if(state.status!=='claimed'||await tx.readEffect(id,b.effectIndex)!=='claimed'||hash(await binding(tx,id,state))!==hash(b))return fail();const saved=await storage(tx).readResource(admitted!.nativeKey);if(!saved||hash(saved)!==hash(admitted))return fail();const observedAt=await tx.now();let detail:unknown=null;"
+        },
+        {
+          "line": 95,
+          "source": "await storage(tx).record(value,envelope);await tx.writeEffect(id,b.effectIndex,'claimed',outcome);const next=finishPlatformAction(state,outcome,await tx.now());await tx.replace(id,state.version,next);await tx.event({actionId:id,kind:'effect.observed',state:next,effectIndex:b.effectIndex,outcome,templateReceipt:value});return value;"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templateNativeTransport.ts",
+      "sha256": "565509f441628da540b33a336d4faae7bc4aa6872ad7cd2449b58261f55870a4",
+      "matches": [
+        {
+          "line": 3,
+          "source": "import {authorizeExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeCheck} from './executionTime';"
+        },
+        {
+          "line": 21,
+          "source": "assertCurrent(binding:Readonly<TemplateExecutionBinding>,timeCheck?:ExecutionTimeCheck):Promise<void>;"
+        },
+        {
+          "line": 22,
+          "source": "clock:ExecutionTimeSource;"
+        },
+        {
+          "line": 53,
+          "source": "const window={expiresAt:Math.min(Date.parse(b.approvalExpiresAt),currentKeys?.expiresAt??Number.MAX_SAFE_INTEGER,grantExpiresAt??Number.MAX_SAFE_INTEGER)},owner=async(check?:ExecutionTimeCheck)=>p.assertCurrent(b,check),binding=phase?Object.freeze({bindingDigest:b.bindingDigest,phase,request:requestBinding??null}):undefined;"
+        },
+        {
+          "line": 54,
+          "source": "const checkpoint=binding?await within(()=>prepareExecutionDispatch(clock!,window,owner,signal,binding,async()=>{if(!dispatchFacts)return fail();await dispatchFacts(b,phase!,signal,currentKeys);await heldCurrent();signal.throwIfAborted()})):await within(()=>authorizeExecutionWindow(clock!,window,owner,signal));await heldCurrent();time();return binding&&checkpoint?{checkpoint,binding}:undefined;"
+        },
+        {
+          "line": 56,
+          "source": "async function consume(dispatch:Awaited<ReturnType<typeof current>>){if(!dispatch)return fail();await consumeExecutionDispatch(dispatch.checkpoint,dispatch.binding);time()}"
+        }
+      ]
+    },
+    {
+      "path": "lib/governance/platform/templatePreparationStore.ts",
+      "sha256": "8f1390687f23b03b886e24699c64bff7ee171d1b8a0468a63ffb9716cd6c3e79",
+      "matches": [
+        {
+          "line": 19,
+          "source": "async function timely(tx:PlatformTransaction,state:ReturnType<typeof readPlatformAction>){const now=await tx.now();if(!Number.isSafeInteger(now)||now<state.updatedAt||now>=Date.parse(state.plan.expiresAt))return fail();return now}"
+        },
+        {
+          "line": 26,
+          "source": "const profile=templateExecutionProfile.parse(await profiles.read(selection));await profiles.assertQualified(profile,selection);const prepared=await prepareTemplateExecutionPlan(selection,await tx.now(),id,actor,profile),state=createPlatformAction(prepared.plan,actor,await tx.now());await authority.assertCurrent(tx,actor);await profiles.assertQualified(profile,selection);await timely(tx,state);await tx.insert(id,state);await tx.event({actionId:id,kind:'proposed',state,templateBinding:prepared.binding});await authority.assertCurrent(tx,actor);await profiles.assertQualified(profile,selection);await timely(tx,state);return {actionId:id,historical:false as const,authority:'proposal_reference_only' as const};"
+        }
+      ]
+    }
+  ],
+  "additionalSupplierAndImplicitCallerSources": [
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_parent_binding.c",
+      "sha256": "e09b71c4875b668896d5abf7c9e264b6582350ba38cc3aea189ca3252523fbc8",
+      "matches": [
+        {
+          "line": 259,
+          "source": "/* Unknown resources are quarantined, not closed while an owned child can use"
+        },
+        {
+          "line": 333,
+          "source": "napi_status axiom_time_parent_create_private(napi_env e,const struct axiom_time_parent_bootstrap *b,napi_value *out){"
+        }
+      ]
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_parent_binding.h",
+      "sha256": "713e789519b14dcec854b02068e1438e5b1ec830c6d43ae7a6026fac787283b3",
+      "matches": [
+        {
+          "line": 25,
+          "source": "napi_status axiom_time_parent_create_private(napi_env,"
+        }
+      ]
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_publication_adapter.rs",
+      "sha256": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+      "matches": [
+        {
+          "line": 18,
+          "source": "accepted_policy:Option<AcceptedPreciseTimePolicy>,"
+        },
+        {
+          "line": 23,
+          "source": "Self{directory,generation,publisher_uid,reader_gid,directory_device,directory_inode,accepted_policy:None}"
+        },
+        {
+          "line": 27,
+          "source": "NativeTimePublisher{_directory:self.directory,context,generation:CString::new(self.generation).unwrap_or_else(|_|fatal()),counter:0,initialized_unknown:false,delegate,oscillator_dispersion,accepted_policy:self.accepted_policy}"
+        },
+        {
+          "line": 63,
+          "source": "delegate:Box<dyn ShmWrite+Send+Sync>,oscillator_dispersion:f64,accepted_policy:Option<AcceptedPreciseTimePolicy>,"
+        },
+        {
+          "line": 68,
+          "source": "if !self.initialized_unknown&&status!=ClockStatus::Unknown{fatal()}"
+        },
+        {
+          "line": 70,
+          "source": "let status=match status {ClockStatus::Unknown=>\"unknown\",ClockStatus::Synchronized=>\"synchronized\",ClockStatus::FreeRunning=>\"free-running\",ClockStatus::Disrupted=>\"disrupted\"};"
+        },
+        {
+          "line": 80,
+          "source": "let status=if self.initialized_unknown&&value.clock_status()==ClockStatus::Disrupted{ClockStatus::Disrupted}else{ClockStatus::Unknown};"
+        },
+        {
+          "line": 83,
+          "source": "pub fn publish_precise_then_delegate(&mut self,origin:Option<&PreciseOrigin>,period:f64,error:f64,_compatibility_drift_ppb:u32,value:&ClockErrorBound,rtt_ns:i64){"
+        },
+        {
+          "line": 85,
+          "source": "// Unknown while preserving the original compatibility publication/delegate."
+        },
+        {
+          "line": 87,
+          "source": "let origin=origin?;let policy=self.accepted_policy.as_ref()?;"
+        }
+      ]
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c",
+      "sha256": "3c6dd52dd5dcdf2a3cbd0befa9109f1d9b7a252803d168edb6ef98234bc15571",
+      "matches": [
+        {
+          "line": 49,
+          "source": "if (axiom_time_parent_create_private(env, &bootstrap, &bridge) != napi_ok) {"
+        },
+        {
+          "line": 71,
+          "source": "NAPI_MODULE(NODE_GYP_MODULE_NAME, initialize)"
+        }
+      ]
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/host_evaluation.rs",
+      "sha256": "b219b61b9be809e7ee9b0178726b61a6912e8fb2e845a8043fb64fb7bc54f6db",
+      "matches": [
+        {
+          "line": 23,
+          "source": "pub async fn run_fixed() {"
+        }
+      ]
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch",
+      "sha256": "e73a134522e2e12d9d4ecd3d146814683fd6548dd95bb3e1f2a547c6493eb2eb",
+      "matches": [
+        {
+          "line": 83,
+          "source": "+                ClockStatus::Unknown,"
+        },
+        {
+          "line": 287,
+          "source": "+                    assert_eq!(self.ntp.socket_address(), SocketAddr::new(IpAddr::from(ADDRESS_V4), PORT));"
+        }
+      ]
+    },
+    {
+      "path": "lib/desktop/desktopToken.ts",
+      "sha256": "c9b585984a37960b768e53685b15539f8158e560a9a27351220b09d689174092",
+      "matches": [
+        {
+          "line": 6,
+          "source": "* no expiry of its own \u2014 the session record holds the TTL \u2014 so verifying"
+        }
+      ]
+    },
+    {
+      "path": "lib/desktop/privateDesktopToken.ts",
+      "sha256": "09e32fe5ff30d96da301d991de59f0eb9c2235d4b9c8a840fc6d8ecc5a8104ba",
+      "matches": []
+    },
+    {
+      "path": "lib/cloud/azure/guided/provider.ts",
+      "sha256": "0b81bc58e48c73141d4169076c83ffb9fbd9a7807d4767211e9b0c4a5cb19f5a",
+      "matches": [
+        {
+          "line": 4,
+          "source": "import {createLocalJWKSet,jwtVerify} from 'jose';"
+        },
+        {
+          "line": 16,
+          "source": "export async function verifyAzureGuidedIdToken(token:string,config:AzureGuidedConfiguration,signal:AbortSignal,fetchImpl:typeof fetch=fetch,nonce?:string,subject?:string){if(Buffer.byteLength(token)>32768)bad();const keys=await jsonFetch(`https://login.microsoftonline.com/${config.tenantId}/discovery/v2.0/keys`,{method:'GET'},signal,fetchImpl);if(!keys.ok||!Array.isArray(keys.body?.keys)||keys.body.keys.length>20)bad();const {payload}=await jwtVerify(token,createLocalJWKSet(keys.body),{issuer:`https://login.microsoftonline.com/${config.tenantId}/v2.0`,audience:config.clientId,algorithms:['RS256'],requiredClaims:['exp','iat','nbf','sub','tid'],clockTolerance:0});if(payload.tid!==config.tenantId||!payload.sub||nonce!==undefined&&payload.nonce!==nonce||subject!==undefined&&payload.sub!==subject)bad();signal.throwIfAborted();return payload}"
+        },
+        {
+          "line": 17,
+          "source": "export interface AzureGuidedTokens{accessToken:string;expiresAt:string;tenantId:string;subject:string;homeAccountId:string;cache:string;scopes:string[];configurationDigest:string}"
+        },
+        {
+          "line": 23,
+          "source": "const validate=async(r:AuthenticationResult|null,cache:string,signal:AbortSignal,nonce?:string,expected?:AzureGuidedTokens):Promise<AzureGuidedTokens>=>{if(!r?.accessToken||!r.idToken||!r.account||!r.expiresOn||r.expiresOn.getTime()<=Date.now()||Buffer.byteLength(cache)>65536)bad();assertAzureArmScopes(r!.scopes);const payload=await verifyAzureGuidedIdToken(r!.idToken,config,signal,fetchImpl,nonce,expected?.subject);if(r!.account!.tenantId!==config.tenantId||expected&&r!.account!.homeAccountId!==expected.homeAccountId)bad();signal.throwIfAborted();return{accessToken:r!.accessToken,expiresAt:r!.expiresOn!.toISOString(),tenantId:config.tenantId,subject:String(payload.sub),homeAccountId:r!.account!.homeAccountId,cache,scopes:r!.scopes,configurationDigest:config.digest}};"
+        }
+      ]
+    }
+  ],
+  "absentProposedNativeSources": [
+    "time_operational_binding.c/.h",
+    "time_operational_status.h",
+    "fixed time_operational_owner target"
+  ],
+  "transitiveCoverageLimit": "Installed JOSE/AWS SDK/presigner/TLS/MSAL defaults and actual selected identity/custody caller graph require the explicit design audit; this file is not that qualification proof. Additional native evaluation sources are current local work, not production issuers."
+}

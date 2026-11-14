@@ -1,3 +1,4 @@
+import {assertClosureEvidenceTime} from './closureTime';
 import {assertPlatformPrincipalTime} from '../principalTime';
 import {assertExecutionWindow,type ExecutionTimeSource} from '../executionTime';
 import 'server-only';
@@ -10,6 +11,8 @@ import {compileCustodianClosureObservation,readCustodianClosureObservation,type 
 export interface CustodianClosureRepository{transaction<T>(fn:(tx:CustodianClosureTransaction & {readCustodianClosure(nativeKey:string):Promise<unknown|null>})=>Promise<T>):Promise<T>}
 interface Source{
  clock:ExecutionTimeSource;
+ /** Original private time AND complete custody/fleet context, before fresh native read. */
+ assertReadAllowed?(tx:CustodianClosureTransaction,snapshot:CustodianClosureSnapshot):Promise<void>;
  /** Actual protected complete fleet/runtime/source+derived lifetime/time
   * receipts. No default supplier and never evidence supplied in request JSON. */
  readEvidence(tx:CustodianClosureTransaction,snapshot:CustodianClosureSnapshot):Promise<unknown>;
@@ -27,14 +30,15 @@ export function createCustodianClosureService(repo:CustodianClosureRepository,au
    const existing=await tx.readCustodianClosure(control.nativeKey),now=await tx.now();
    if(existing&&!refresh){const saved=readCustodianClosureObservation(existing);if(saved.snapshot.digest===snapshot.digest&&saved.evidence.expiresAt>now){await authority.assertCurrent(tx,reader);return {observation:saved,historical:true,sourceValidation:'historical_not_checked' as const,executionAuthorized:false as const}}}
    if(!signal)return fail();signal.throwIfAborted();const readerWindow=await assertPlatformPrincipalTime(tx,reader,clock,signal);await authority.assertCurrent(tx,reader);signal.throwIfAborted();
+   if(typeof source.assertReadAllowed!=='function')return fail();await source.assertReadAllowed(tx,snapshot);signal.throwIfAborted();await authority.assertCurrent(tx,reader);
    const rawEvidence=await source.readEvidence(tx,snapshot),observation=compileCustodianClosureObservation(snapshot,rawEvidence,reader.userId,await tx.now());
    await source.assertCurrent(tx,snapshot,observation.evidence);signal.throwIfAborted();await authority.assertCurrent(tx,reader);
-   await assertExecutionWindow(clock,{notBefore:Math.max(readerWindow.notBefore,observation.evidence.credentialNotAfter+1),expiresAt:Math.min(readerWindow.expiresAt,observation.evidence.expiresAt)},signal);
+   await assertClosureEvidenceTime(clock,observation.evidence,readerWindow,signal);
    await source.assertCurrent(tx,snapshot,observation.evidence);signal.throwIfAborted();await authority.assertCurrent(tx,reader);signal.throwIfAborted();
    if((await tx.readCustodianClosureSnapshot(control.nativeKey)).digest!==snapshot.digest)return fail();
    await tx.event({actionId:id,kind:'custodian.closure_observed',state:parent,custodianClosure:observation});
    await source.assertCurrent(tx,snapshot,observation.evidence);signal.throwIfAborted();await authority.assertCurrent(tx,reader);
-   await assertExecutionWindow(clock,{notBefore:Math.max(readerWindow.notBefore,observation.evidence.credentialNotAfter+1),expiresAt:Math.min(readerWindow.expiresAt,observation.evidence.expiresAt)},signal);
+   await assertClosureEvidenceTime(clock,observation.evidence,readerWindow,signal);
    await source.assertCurrent(tx,snapshot,observation.evidence);signal.throwIfAborted();await authority.assertCurrent(tx,reader);signal.throwIfAborted();
    const after=await tx.now();if(after<observation.observedAt||after>=observation.evidence.expiresAt||(await tx.readCustodianClosureSnapshot(control.nativeKey)).digest!==snapshot.digest)return fail();
    signal.throwIfAborted();return {observation,historical:false,sourceValidation:'checked_by_private_source' as const,executionAuthorized:false as const};

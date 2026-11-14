@@ -1,0 +1,29 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion
+
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts [ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts ]
+Error: Cannot find module './operationalSource' imported from /Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/lib/governance/platform/nativeTime/sdkOperationalSigning.ts
+ ❯ lib/governance/platform/nativeTime/sdkOperationalSigning.ts:4:1
+      2| import type {AwsSdkSigV4AuthResolvedConfig} from '@aws-sdk/core/httpAu…
+      3| import {assertExecutionWindow,type ExecutionTimeSource,type ExecutionT…
+      4| import {readOperationalTimeObservation} from './operationalSource';
+       | ^
+      5| const fail=():never=>{throw Error('operational_sdk_signing_unavailable…
+      6| const dateText=(date:Date)=>date.toISOString().replace(/[:-]|\.\d{3}/g…
+ ❯ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:6:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  14:19:35
+   Duration  110ms (worker 97%, environment 3%)
+

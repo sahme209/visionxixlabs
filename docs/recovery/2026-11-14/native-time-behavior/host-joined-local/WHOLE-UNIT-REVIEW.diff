@@ -1,0 +1,1157 @@
+diff --git a/packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch b/packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch
+new file mode 100644
+index 0000000..d53343a
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch
+@@ -0,0 +1,301 @@
++--- a/clock-bound/Cargo.toml
+++++ b/clock-bound/Cargo.toml
++@@ -83,6 +83,7 @@
++ wiremock = "0.6.5"
++ 
++ [features]
+++axiom-host-evaluation = ["daemon"]
++ daemon = [
++   "dep:clap",
++   "dep:serde",
++@@ -158,3 +159,9 @@
++   { source = "assets/clockbound.service", dest = "/usr/lib/systemd/system/clockbound.service", mode = "644" },
++   { source = "assets/configure_phc", dest = "/usr/sbin/configure_phc", mode = "755" },
++ ]
+++
+++# Nondefault fixed source-bound evaluation executable; never the stock entry.
+++[[bin]]
+++name = "axiom-host-evaluation"
+++path = "src/bin/axiom-host-evaluation.rs"
+++required-features = ["axiom-host-evaluation"]
++--- a/clock-bound/src/daemon.rs
+++++ b/clock-bound/src/daemon.rs
++@@ -2,6 +2,8 @@
++ 
++ #[cfg(feature = "daemon")]
++ mod time_publication_adapter;
+++#[cfg(feature = "axiom-host-evaluation")]
+++pub mod host_evaluation;
++ 
++ #[cfg(feature = "algorithm")]
++ pub mod algo_analysis;
++@@ -317,6 +319,105 @@
++             configured_sources,
++         }
++     }
+++    #[cfg(feature = "axiom-host-evaluation")]
+++    pub(crate) async fn construct_host_evaluation(
+++        cancellation_token: CancellationToken,
+++        axiom_publisher: time_publication_adapter::NativeTimePublisherContext,
+++    ) -> Self {
+++        let daemon_info = DaemonInfo {
+++            major_version: 2,
+++            minor_version: 200,
+++            startup_id: rng().next_u64(),
+++        };
+++
+++        let clock_state_cancellation_token = CancellationToken::new();
+++
+++        let selected_clock = Arc::new(SelectedClockSource::default());
+++
+++        // Initialize IO components.
+++        let (dns_message_tx, dns_message_rx) = mpsc::channel(DAEMON_MESSAGE_CAPACITY);
+++        let mut io_front_end =
+++            io::SourceIO::construct(selected_clock.clone(), daemon_info, dns_message_tx);
+++        let clock_disruption_receiver = io_front_end.clock_disruption_receiver();
+++
+++        let mut receiver_stream = ReceiverStream::default();
+++        // The daemon runs the algorithm with its production tunables and nothing else.
+++        let ff_sync_params = FfSyncParams::default();
+++        let mut clock_sync_algorithm = ClockSyncAlgorithm::builder()
+++            .selected_clock(selected_clock.clone())
+++            .selector(Selector::new(ff_sync_params.max_dispersion))
+++            .build();
+++
+++        let mut source_mutator = SourceMutator::new(
+++            &mut io_front_end,
+++            &mut clock_sync_algorithm,
+++            &mut receiver_stream,
+++        );
+++
+++        // Exact isolated evaluation: one managed ordinary NTP source only.
+++        // No autodetection, PHC, public pool, DNS pool or additive source config.
+++        source_mutator.set_amazon_time_sync(&ff_sync_params);
+++        // No VMClock device is opened; disruption support remains false.
+++
+++        // Initialize the Clock State component
+++        let (clock_state_tx, clock_state) = {
+++            let (tx, rx) = async_ring_buffer::create(1);
+++            let clock_state = ClockState::construct_host_evaluation(
+++                rx,
+++                clock_disruption_receiver.clone(),
+++                clock_state_cancellation_token.clone(),
+++                ClockStatus::Unknown,
+++                ff_sync_params.max_dispersion,
+++                axiom_publisher,
+++            );
+++            (tx, clock_state)
+++        };
+++        let task_tracker = TaskTracker::new();
+++        let clock_state_handle = ClockStateHandle {
+++            clock_state: Some(clock_state),
+++            tx: clock_state_tx,
+++            cancellation_token: clock_state_cancellation_token,
+++            task_tracker,
+++        };
+++
+++        Self {
+++            io_front_end,
+++            clock_sync_algorithm,
+++            ff_sync_params,
+++            receiver_stream,
+++            clock_disruption_receiver,
+++            cancellation_token,
+++            clock_state_handle,
+++            dns_message_rx,
+++            sources_snapshot_interval: tokio::time::interval(tokio::time::Duration::from_secs(1)),
+++            configured_sources: SourcesConfig::default(),
+++        }
+++    }
+++
+++    /// Same actual IO/algorithm/clock-state run path, with bounded source facts.
+++    #[cfg(feature = "axiom-host-evaluation")]
+++    pub(crate) async fn run_host_evaluation(mut self: Box<Self>) {
+++        self.clock_sync_algorithm.init_repro();
+++        self.io_front_end.spawn_host_evaluation_ntp_only();
+++        let mut clock_state = self.clock_state_handle.clock_state.take().expect("owned clock state");
+++        self.clock_state_handle.task_tracker.spawn(async move { clock_state.run().await; });
+++        self.clock_state_handle.task_tracker.close();
+++        let mut next_observation = tokio::time::Instant::now();
+++        loop {
+++            // Complete the real run_once, including cancellation cleanup. The
+++            // observer never races/drops that future at a timer boundary.
+++            if self.run_once().await == RunLoopControl::Exit { break; }
+++            if tokio::time::Instant::now() >= next_observation {
+++                let snapshot = self.sources_snapshot();
+++                assert_eq!(snapshot.sources.len(), 1, "one source required");
+++                let source = &snapshot.sources[0];
+++                assert!(matches!(&source.source_info, SourceInfo::AmazonTimeSync(..)));
+++                println!("{{\"format\":1,\"event\":\"ntp_observation\",\"requests\":{},\"responses\":{},\"strictTimeAuthority\":false,\"vmclockSupport\":false}}", source.requests, source.responses);
+++                next_observation = tokio::time::Instant::now() + tokio::time::Duration::from_secs(1);
+++            }
+++        }
+++    }
+++
++ 
++     /// Install the NTP sources from the configuration file into the daemon.
++     ///
++--- a/clock-bound/src/daemon/clock_state.rs
+++++ b/clock-bound/src/daemon/clock_state.rs
++@@ -189,6 +189,84 @@
++ 
++         let shm_writer_1 = ShmWriter::new(
++             Path::new(CLOCKBOUND_SHM_DEFAULT_PATH_V1),
+++            ClockErrorBoundLayoutVersion::V3,
+++            ClockErrorBoundLayoutVersion::V3,
+++        )
+++        .unwrap();
+++
+++        // The same oscillator bound the synchronization algorithm uses; always representable
+++        // (validated positive and far below 1e9 ppb).
+++        let max_drift_ppb = max_dispersion
+++            .to_ppb()
+++            .expect("max_dispersion is a valid ppb value");
+++
+++        let shm0 = Shm0::builder()
+++            .shm_writer(Shm0Writer::Axiom(axiom_publisher.wrap_v2(Box::new(shm_writer_0), max_dispersion.get())))
+++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
+++            .max_drift_ppb(max_drift_ppb)
+++            .disruption_marker(disruption_marker)
+++            .build();
+++        let shm1 = Shm1::builder()
+++            .shm_writer(Box::new(shm_writer_1))
+++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
+++            .max_drift_ppb(max_drift_ppb)
+++            .disruption_marker(disruption_marker)
+++            .build();
+++        #[cfg(not(feature = "test-side-by-side"))]
+++        let system_clock_discipliner = SystemClockDiscipliner::with_kernel_clock_adjuster();
+++        #[cfg(feature = "test-side-by-side")]
+++        let system_clock_discipliner = SystemClockDiscipliner::with_noop_clock_adjuster();
+++
+++        Self::new(
+++            shm0,
+++            shm1,
+++            system_clock_discipliner,
+++            clock_params_receiver,
+++            clock_disruption_receiver,
+++            cancellation_token,
+++            clock_status,
+++            vmclock_state,
+++        )
+++    }
+++
+++    #[cfg(feature = "axiom-host-evaluation")]
+++    pub(super) fn construct_host_evaluation(
+++        clock_params_receiver: Receiver<SyncParameters>,
+++        clock_disruption_receiver: watch::Receiver<ClockDisruptionEvent>,
+++        cancellation_token: CancellationToken,
+++        clock_status: ClockStatus,
+++        max_dispersion: Skew,
+++        axiom_publisher: super::time_publication_adapter::NativeTimePublisherContext,
+++    ) -> Self {
+++        let vmclock_params: Option<VMClockParams> = None;
+++        // Clock disruption support is enabled whenever a VMClock source exists (i.e. we expected
+++        // one on this platform), even if it failed to initialize.
+++        let clock_disruption_support_enabled = vmclock_params.is_some();
+++        let disruption_marker = vmclock_params
+++            .as_ref()
+++            .map_or(0, |params| params.disruption_marker);
+++        let vmclock_state = vmclock_params.map(|params| params.shared_state);
+++
+++        // Build two writers, each writing to a specific shared memory segment path.
+++        //
+++        // FIXME: given these path are const strings, would be worth looking into moving the
+++        // creation of these writers to the Shm0::new()/Shm1::new() methods.
+++        //
+++        for path in ["/run/axiom-host-evaluation/compat/v2", "/run/axiom-host-evaluation/compat/v3"] {
+++            match std::fs::symlink_metadata(path) {
+++                Err(error) if error.kind() == std::io::ErrorKind::NotFound => (),
+++                _ => panic!("preexisting or unknown compatibility resource"),
+++            }
+++        }
+++        let shm_writer_0 = ShmWriter::new(
+++            Path::new("/run/axiom-host-evaluation/compat/v2"),
+++            ClockErrorBoundLayoutVersion::V2,
+++            ClockErrorBoundLayoutVersion::V2,
+++        )
+++        .unwrap();
+++
+++        let shm_writer_1 = ShmWriter::new(
+++            Path::new("/run/axiom-host-evaluation/compat/v3"),
++             ClockErrorBoundLayoutVersion::V3,
++             ClockErrorBoundLayoutVersion::V3,
++         )
++--- a/clock-bound/src/daemon/io.rs
+++++ b/clock-bound/src/daemon/io.rs
++@@ -510,6 +510,22 @@
++     ///
++     /// This function will spawn all initialized io tasks. If a task is not initialized it will be
++     /// skipped. Spawning will occur in an arbitrary order.
+++    /// Fixed evaluation runner; stock spawn_all and routing fallback unchanged.
+++    #[cfg(feature = "axiom-host-evaluation")]
+++    pub(crate) fn spawn_host_evaluation_ntp_only(&mut self) {
+++        assert!(self.phc.is_none() && self.vmclock.is_none());
+++        assert!(self.partition_resolver.is_none() && self.ip_addr_sources.is_empty() && self.dns_pools.is_empty());
+++        self.task_tracker.reopen();
+++        let source = self.amazon_time_sync.as_mut().expect("fixed Amazon source");
+++        match source.state.transition_to_running() {
+++            SourceState::Initialized(mut amazon_time_sync) => {
+++                self.task_tracker.spawn(async move { amazon_time_sync.run_host_evaluation_ipv4().await });
+++            }
+++            SourceState::Running => panic!("evaluation source already running"),
+++        }
+++        self.task_tracker.close();
+++    }
+++
++     pub fn spawn_all(&mut self) {
++         self.task_tracker.reopen();
++         // Spawn Amazon Time Sync source
++--- a/clock-bound/src/daemon/io/amazon_time_sync.rs
+++++ b/clock-bound/src/daemon/io/amazon_time_sync.rs
++@@ -137,6 +137,49 @@
++         Ok(())
++     }
++ 
+++    #[cfg(feature = "axiom-host-evaluation")]
+++    pub(super) async fn run_host_evaluation_ipv4(&mut self) -> Result<(), NtpIoError> {
+++        debug!("Starting Amazon Time Sync sampling loop.");
+++        loop {
+++            let branches = self.ntp.select_branches();
+++            tokio::select! {
+++                biased; // priority order is disruption, commands, and ticks
+++                val = branches.clock_disruption_receiver.changed() => {
+++                    if let Err(e) = val {
+++                        error!(?e, "Clock disruption receiver dropped.");
+++                        break;
+++                    }
+++                    if self.ntp.handle_disruption() {
+++                        info!("Amazon Time Sync source transitioning from `Normal` mode to `Burst` mode.");
+++                    }
+++                }
+++                ctrl_req = branches.ctrl_receiver.recv() => {
+++                    match ctrl_req {
+++                        None => {
+++                            // this select can happen if `SourceIO` drops the ctrl_sender
+++                            break;
+++                        },
+++                        Some(ControlRequest::Shutdown) => {
+++                            debug!("Received shutdown signal. Exiting.");
+++                            break;
+++                        },
+++                    }
+++                }
+++                _ = branches.interval.tick() => {
+++                    // Source-bound ordinary IPv4 evaluation: never call the stock
+++                    // routing-failure stack switch or substitute another source.
+++                    assert_eq!(self.ntp.socket_address(), SocketAddr::new(IpAddr::from(ADDRESS_V4), PORT));
+++                    if let Ok(event) = self.ntp.sample().await {
+++                        self.ntp.send_event(&event).expect("owned NTP receiver");
+++                    }
+++                    self.ntp.handle_burst_expiry();
+++                }
+++            }
+++        }
+++        debug!("Amazon Time Sync runner exiting.");
+++        Ok(())
+++    }
+++
++     async fn handle_interval_tick(&mut self) {
++         let ntp_result = self.ntp.sample().await;
++         self.handle_ntp_sample_result(ntp_result);
+
+diff --git a/packages/verified-issuer-runtime/linux/host-evaluation-patched-sha256.json b/packages/verified-issuer-runtime/linux/host-evaluation-patched-sha256.json
+new file mode 100644
+index 0000000..09ba181
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/host-evaluation-patched-sha256.json
+@@ -0,0 +1,7 @@
++{
++  "clock-bound/Cargo.toml": "bb23790728dc812f7aedc82850c219e6091043fa9c66e798ef163547f372f316",
++  "clock-bound/src/daemon.rs": "574c6bf57304ccab3f4ca87237f062a294905eb24bd59a72610526a5e50c4a59",
++  "clock-bound/src/daemon/clock_state.rs": "04a4bf3a468d669739e51c0d978addaacd9645e59a7a5be5d6169c20b1681451",
++  "clock-bound/src/daemon/io.rs": "53af48d61634ae29e765142782dcac0557c05f73c821e66a5185f6b41f88ef4a",
++  "clock-bound/src/daemon/io/amazon_time_sync.rs": "fa90a12b97292ce156a4b0a0073f313265f32150f8b4efab68eae19f13fb90d4"
++}
+
+diff --git a/packages/verified-issuer-runtime/linux/host_evaluation.rs b/packages/verified-issuer-runtime/linux/host_evaluation.rs
+new file mode 100644
+index 0000000..498e9a4
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/host_evaluation.rs
+@@ -0,0 +1,61 @@
++//! Fixed isolated host evaluation. No accepted policy or credential supplier.
++use super::time_publication_adapter::NativeTimePublisherContext;
++use super::Daemon;
++use std::fs::{self, File};
++use std::os::fd::{AsRawFd, FromRawFd};
++use std::os::unix::fs::MetadataExt;
++use tokio::signal::unix::{signal, SignalKind};
++use tokio_util::sync::CancellationToken;
++
++fn refuse() -> ! {
++    eprintln!("{{\"format\":1,\"event\":\"producer_resource_refused\"}}");
++    std::process::exit(70)
++}
++fn owned_directory(path: &str, mode: u32) -> fs::Metadata {
++    let value = fs::symlink_metadata(path).unwrap_or_else(|_| refuse());
++    if !value.is_dir() || value.uid() != 0 || value.mode() & 0o7777 != mode {
++        refuse();
++    }
++    value
++}
++
++/// Called only by the separately built fixed evaluation binary; no CLI inputs.
++pub async fn run_fixed() {
++    if std::env::args_os().count() != 1 || unsafe { libc::getuid() } != 0 {
++        refuse();
++    }
++    let run = fs::symlink_metadata("/run").unwrap_or_else(|_| refuse());
++    if !run.is_dir() || run.uid() != 0 || run.mode() & 0o022 != 0 { refuse(); }
++    owned_directory("/run/axiom-host-evaluation", 0o750);
++    owned_directory("/run/axiom-host-evaluation/compat", 0o700);
++    let path = owned_directory("/run/axiom-host-evaluation/generation-1", 0o750);
++    if path.gid() == 0 { refuse(); }
++    // The fixed bootstrap alone passes this owned read-only directory as FD3.
++    let directory = unsafe { File::from_raw_fd(3) };
++    let value = directory.metadata().unwrap_or_else(|_| refuse());
++    let flags = unsafe { libc::fcntl(directory.as_raw_fd(), libc::F_GETFL) };
++    if flags < 0 || flags & libc::O_ACCMODE != libc::O_RDONLY
++        || value.dev() != path.dev() || value.ino() != path.ino() { refuse(); }
++    let context = NativeTimePublisherContext::from_protected_resource(
++        directory.into(), "host-evaluation-1".to_owned(), 0, path.gid(), path.dev(), path.ino(),
++    );
++    let cancellation = CancellationToken::new();
++    let mut terminate = signal(SignalKind::terminate()).unwrap_or_else(|_| refuse());
++    let daemon = Daemon::construct_host_evaluation(cancellation.clone(), context).await;
++    println!("{{\"format\":1,\"event\":\"producer_started\",\"strictTimeAuthority\":false,\"vmclockSupport\":false}}");
++    let mut task = tokio::spawn(Box::new(daemon).run_host_evaluation());
++    tokio::select! {
++        _ = terminate.recv() => (),
++        _ = tokio::time::sleep(tokio::time::Duration::from_secs(90)) => (),
++        result = &mut task => {
++            let _ = result;
++            eprintln!("{{\"format\":1,\"event\":\"producer_unexpected_exit\"}}");
++            std::process::exit(70);
++        }
++    }
++    cancellation.cancel();
++    match tokio::time::timeout(tokio::time::Duration::from_secs(5), task).await {
++        Ok(Ok(())) => println!("{{\"format\":1,\"event\":\"producer_stopped\"}}"),
++        _ => refuse(),
++    }
++}
+
+diff --git a/packages/verified-issuer-runtime/linux/host_evaluation_main.rs b/packages/verified-issuer-runtime/linux/host_evaluation_main.rs
+new file mode 100644
+index 0000000..b6bcbbb
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/host_evaluation_main.rs
+@@ -0,0 +1,5 @@
++//! Nondefault actual daemon entrypoint. No arbitrary command/configuration input.
++#[tokio::main(flavor = "multi_thread", worker_threads = 4)]
++async fn main() {
++    clock_bound::daemon::host_evaluation::run_fixed().await;
++}
+
+diff --git a/packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c b/packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c
+new file mode 100644
+index 0000000..0e90da6
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c
+@@ -0,0 +1,71 @@
++/* Evaluation-only actual producer reader. Never creates publication bytes. */
++#define _GNU_SOURCE
++#include "time_parent_binding.h"
++#include <sys/stat.h>
++#include <fcntl.h>
++#include <unistd.h>
++#include <string.h>
++
++static int opened;
++
++static napi_value refuse(napi_env env) {
++    napi_throw_error(env, NULL, "host_reader_unavailable");
++    return NULL;
++}
++
++static napi_value open_host(napi_env env, napi_callback_info info) {
++    size_t argc = 1;
++    napi_value argv[1];
++    if (napi_get_cb_info(env, info, &argc, argv, NULL, NULL) != napi_ok ||
++        argc != 0 || opened || getuid() == 0 || getgid() == 0) {
++        return refuse(env);
++    }
++    opened = 1;
++
++    int directory = open("/run/axiom-host-evaluation/generation-1",
++                         O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
++    int worker = open("/opt/axiom-host-evaluation/bin/time_worker",
++                      O_RDONLY | O_NOFOLLOW | O_CLOEXEC);
++    struct stat d, w;
++    unsigned char magic[4];
++    if (directory < 0 || worker < 0 || fstat(directory, &d) || fstat(worker, &w) ||
++        !S_ISDIR(d.st_mode) || d.st_uid != 0 || d.st_gid != getgid() ||
++        (d.st_mode & 07777) != 0750 || !S_ISREG(w.st_mode) || w.st_uid != 0 ||
++        (w.st_mode & 0022) || pread(worker, magic, 4, 0) != 4 ||
++        memcmp(magic, "\177ELF", 4)) {
++        goto bad;
++    }
++
++    struct axiom_time_parent_bootstrap bootstrap = {
++        .directory_fd = directory,
++        .worker_elf_fd = worker,
++        .publisher_uid = 0,
++        .reader_gid = (uint32_t)getgid(),
++        .directory_device = (uint64_t)d.st_dev,
++        .directory_inode = (uint64_t)d.st_ino,
++        .generation = "host-evaluation-1",
++    };
++    napi_value bridge;
++    if (axiom_time_parent_create_private(env, &bootstrap, &bridge) != napi_ok) {
++        goto bad;
++    }
++    int failed = 0;
++    if (close(directory)) failed = 1;
++    if (close(worker)) failed = 1;
++    return failed ? refuse(env) : bridge;
++
++bad:
++    if (directory >= 0) close(directory);
++    if (worker >= 0) close(worker);
++    return refuse(env);
++}
++
++static napi_value initialize(napi_env env, napi_value exports) {
++    napi_property_descriptor descriptor = {
++        "openHostEvaluation", NULL, open_host, NULL, NULL, NULL, napi_default, NULL
++    };
++    return napi_define_properties(env, exports, 1, &descriptor) == napi_ok
++        ? exports : NULL;
++}
++
++NAPI_MODULE(NODE_GYP_MODULE_NAME, initialize)
+
+diff --git a/packages/verified-issuer-runtime/linux/host_reader_launcher.c b/packages/verified-issuer-runtime/linux/host_reader_launcher.c
+new file mode 100644
+index 0000000..6d8278f
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/host_reader_launcher.c
+@@ -0,0 +1,52 @@
++/* Fixed non-root host reader ONLY; root-owned pipe outputs come from the fixed bootstrap.
++ * No source network or clock privilege; trusted evaluator, not hostile-code isolation. */
++#define _GNU_SOURCE
++#include "runtime_profile.h"
++#include <sys/stat.h>
++#include <unistd.h>
++#include <fcntl.h>
++#include <stdio.h>
++#include <string.h>
++#include <stdlib.h>
++static const char fixed_node[]="/opt/axiom-host-evaluation/bin/node";
++static const char fixed_harness[]="/opt/axiom-host-evaluation/reader/host_reader.mjs";
++static _Noreturn void fail(void){_exit(70);}
++static void validate_stdio(void){
++ struct stat null_file,input,output,error;
++ if(stat("/dev/null",&null_file)||fstat(0,&input)||fstat(1,&output)||fstat(2,&error))fail();
++ if(!S_ISCHR(input.st_mode)||input.st_dev!=null_file.st_dev||input.st_ino!=null_file.st_ino||input.st_rdev!=null_file.st_rdev)fail();
++ int in_flags=fcntl(0,F_GETFL),out_flags=fcntl(1,F_GETFL),err_flags=fcntl(2,F_GETFL);
++ if(in_flags<0||out_flags<0||err_flags<0||((in_flags&O_ACCMODE)!=O_RDONLY&&(in_flags&O_ACCMODE)!=O_RDWR)||(out_flags&O_ACCMODE)!=O_WRONLY||(err_flags&O_ACCMODE)!=O_WRONLY)fail();
++ if(output.st_uid!=0||error.st_uid!=0||!S_ISFIFO(output.st_mode)||!S_ISFIFO(error.st_mode)||(output.st_dev==error.st_dev&&output.st_ino==error.st_ino))fail();
++}
++static void describe(void){
++ printf("{\"format\":1,\"scope\":\"trusted-fixed-native-behavior-only\",\"target\":\"linux-x86_64\",\"arch\":%u,\"defaultAction\":\"allow-trusted-source\",\"defaultErrno\":%d,\"clone3Flags\":\"source-trusted-not-inspected\",\"deniedSyscalls\":[",(unsigned)AUDIT_ARCH_X86_64,EPERM);
++ int first=1;
++#define AXIOM_RUNTIME_NAME(name) do{printf("%s\"%s\"",first?"":",",#name);first=0;}while(0);
++ AXIOM_RUNTIME_DENIED_SYSCALLS(AXIOM_RUNTIME_NAME)
++#undef AXIOM_RUNTIME_NAME
++ printf("],\"instructions\":[");
++ const size_t count=sizeof(runtime_filter)/sizeof(runtime_filter[0]);
++ for(size_t i=0;i<count;i++)printf("%s{\"code\":%u,\"jt\":%u,\"jf\":%u,\"k\":%u}",i?",":"",(unsigned)runtime_filter[i].code,(unsigned)runtime_filter[i].jt,(unsigned)runtime_filter[i].jf,(unsigned)runtime_filter[i].k);
++ printf("]}\n");if(fflush(stdout)||ferror(stdout))fail();
++}
++int main(int argc,char **argv){
++ if(argc==2&&!strcmp(argv[1],"--describe")){describe();return 0;}
++ if(argc!=1)fail();
++ const size_t length=sizeof(fixed_harness)-1;const char suffix[]="/host_reader.mjs";
++ if(fixed_harness[0]!='/'||length>=PATH_MAX||length<sizeof(suffix)-1||strcmp(fixed_harness+length-(sizeof(suffix)-1),suffix))fail();
++ uid_t ruid,euid,suid;gid_t rgid,egid,sgid;
++ if(getresuid(&ruid,&euid,&suid)||getresgid(&rgid,&egid,&sgid)||ruid==0||rgid==0||ruid!=euid||ruid!=suid||rgid!=egid||rgid!=sgid)fail();
++ validate_stdio();
++ if(syscall(SYS_close_range,3U,~0U,0U)!=0)fail();
++ if(prctl(PR_SET_NO_NEW_PRIVS,1L,0L,0L,0L)!=0)fail();
++ if(prctl(PR_GET_NO_NEW_PRIVS,0L,0L,0L,0L)!=1)fail();
++ struct sock_fprog program={(unsigned short)(sizeof(runtime_filter)/sizeof(runtime_filter[0])),(struct sock_filter *)runtime_filter};
++ if(syscall(SYS_seccomp,SECCOMP_SET_MODE_FILTER,0U,&program)!=0)fail();
++ if(prctl(PR_GET_SECCOMP,0L,0L,0L,0L)!=SECCOMP_MODE_FILTER)fail();
++ char *const child_argv[]={(char *)fixed_node,(char *)fixed_harness,NULL};
++ /* No inherited credentials, loader injection, NODE_OPTIONS or discovery. */
++ char *const child_env[]={"PATH=/usr/bin:/bin","LANG=C.UTF-8","LC_ALL=C.UTF-8",NULL};
++ execve(fixed_node,child_argv,child_env);
++ fail();
++}
+
+diff --git a/packages/verified-issuer-runtime/linux/host-evaluation-package.json b/packages/verified-issuer-runtime/linux/host-evaluation-package.json
+new file mode 100644
+index 0000000..1a94a2b
+--- /dev/null
++++ b/packages/verified-issuer-runtime/linux/host-evaluation-package.json
+@@ -0,0 +1,104 @@
++{
++  "format": 1,
++  "scope": "source-only-trusted-operational-L3-host-evaluation",
++  "productionEnabled": false,
++  "nativeBuilt": false,
++  "target": {
++    "ami": "ami-001cbfee94278a792",
++    "os": "ECS-optimized AL2023",
++    "architecture": "x86_64",
++    "compatibilityVerified": false
++  },
++  "components": {
++    "bin/axiom-host-evaluation": {
++      "sources": [
++        "clockbound-host-evaluation.patch",
++        "host_evaluation.rs",
++        "host_evaluation_main.rs"
++      ],
++      "recipe": [
++        "cargo",
++        "build",
++        "--locked",
++        "--offline",
++        "--no-default-features",
++        "--features",
++        "axiom-host-evaluation",
++        "--package",
++        "clock-bound",
++        "--bin",
++        "axiom-host-evaluation",
++        "--release"
++      ],
++      "executed": false
++    },
++    "bin/time_worker": {
++      "sources": [
++        "time_worker.c",
++        "time_worker_protocol.c",
++        "time_publication.c"
++      ],
++      "executed": false
++    },
++    "reader/host_reader.node": {
++      "sources": [
++        "time_host_evaluation_binding.c",
++        "time_parent_binding.c",
++        "time_worker_protocol.c",
++        "time_publication.c"
++      ],
++      "nodeApiVersion": 8,
++      "behaviorTestMacro": false,
++      "executed": false
++    },
++    "reader/host_reader.mjs": {
++      "source": "scripts/linux-compile/host_evaluation_reader.mjs"
++    },
++    "bin/host_reader_launcher": {
++      "source": "host_reader_launcher.c",
++      "profileSource": "scripts/linux-native-behavior/runtime_profile.h",
++      "executed": false
++    },
++    "bin/node": {
++      "version": "24.22.2",
++      "originAndTargetCompatibility": "REQUIRED-before-artifact-run"
++    },
++    "COMPATIBILITY.json": {
++      "requiredEvidence": [
++        "ELF interpreter",
++        "DT_NEEDED closure",
++        "GLIBC symbol versions",
++        "GLIBCXX symbol versions",
++        "Node/addon target ABI",
++        "exact target image libraries"
++      ],
++      "generated": false
++    },
++    "LICENSES.txt": {
++      "required": "complete upstream MIT/Apache and Node/dependency notices",
++      "generated": false
++    }
++  },
++  "bootstrapSource": "scripts/governance_host_evaluation_bootstrap.py",
++  "maximumPackageBytes": 1073741824,
++  "fixedPaths": {
++    "run": "/run/axiom-host-evaluation",
++    "generation": "generation-1",
++    "publicationGeneration": "host-evaluation-1",
++    "compatibility": [
++      "compat/v2",
++      "compat/v3"
++    ],
++    "packet": "/etc/axiom-host-evaluation/packet.json",
++    "package": "/opt/axiom-host-evaluation"
++  },
++  "requiredLaterAcceptance": [
++    "target-compatible native compile/link",
++    "complete library/license package",
++    "exact artifact delivery",
++    "root host/service/clock changes",
++    "reader UID/GID choice",
++    "native lifecycle/source behavior",
++    "full quote/owned setup and termination authority"
++  ]
++}
+
+diff --git a/scripts/governance_host_evaluation_inputs.py b/scripts/governance_host_evaluation_inputs.py
+new file mode 100644
+index 0000000..716d7cd
+--- /dev/null
++++ b/scripts/governance_host_evaluation_inputs.py
+@@ -0,0 +1,29 @@
++"""Source-data materialization only; never imports or executes archive members."""
++from pathlib import Path
++import hashlib, json, tarfile
++from governance_linux_compile_inputs import apply_exact_patch, EXPECTED_SHA
++BASE='packages/verified-issuer-runtime/linux/'
++def base_files(repo):
++ repo=Path(repo)
++ raw=(repo/(BASE+'vendor/clock-bound-371058f8-source.tar.gz')).read_bytes()
++ if hashlib.sha256(raw).hexdigest()!='468fde829962d7c2a9fbb9cb981c07ccc2e44c34eed48d43dafce95bda2c2f02':raise ValueError('archive_changed')
++ import io
++ with tarfile.open(fileobj=io.BytesIO(raw),mode='r:gz') as archive:
++  files={m.name.split('/',1)[1]:archive.extractfile(m).read() for m in archive.getmembers() if m.isfile()}
++ expected_raw=(repo/(BASE+'vendor/EXPECTED-PATCHED-SHA256.json')).read_bytes()
++ if hashlib.sha256(expected_raw).hexdigest()!=EXPECTED_SHA:raise ValueError('historical_manifest_changed')
++ expected=json.loads(expected_raw)
++ for name,want in expected['inputSha256'].items():
++  if hashlib.sha256((repo/name).read_bytes()).hexdigest()!=want:raise ValueError('historical_input_changed')
++ result=apply_exact_patch(files,(repo/(BASE+'clockbound-precise-origin.patch')).read_bytes(),expected['patchedSha256'])
++ result['clock-bound/src/daemon/time_publication_adapter.rs']=(repo/(BASE+'time_publication_adapter.rs')).read_bytes()
++ return result
++
++def evaluation_files(repo):
++ repo=Path(repo)
++ files=base_files(repo)
++ expected=json.loads((repo/(BASE+'host-evaluation-patched-sha256.json')).read_text())
++ files=apply_exact_patch(files,(repo/(BASE+'clockbound-host-evaluation.patch')).read_bytes(),expected)
++ files['clock-bound/src/daemon/host_evaluation.rs']=(repo/(BASE+'host_evaluation.rs')).read_bytes()
++ files['clock-bound/src/bin/axiom-host-evaluation.rs']=(repo/(BASE+'host_evaluation_main.rs')).read_bytes()
++ return files
+
+diff --git a/scripts/governance_host_evaluation_bootstrap.py b/scripts/governance_host_evaluation_bootstrap.py
+new file mode 100644
+index 0000000..51b3137
+--- /dev/null
++++ b/scripts/governance_host_evaluation_bootstrap.py
+@@ -0,0 +1,281 @@
++"""Fixed NEW-disposable-host bootstrap SOURCE ONLY until exact run authorization.
++
++No import-time host action. This is neither a production policy issuer nor an
++installer. The separately approved packet must already be root-owned/installed.
++"""
++from pathlib import Path
++import hashlib,json,os,re,selectors,signal,stat,subprocess,time
++
++ROOT=Path('/run/axiom-host-evaluation')
++PACKAGE=Path('/opt/axiom-host-evaluation')
++PACKET=Path('/etc/axiom-host-evaluation/packet.json')
++SERVICES=('chronyd.service','ntpd.service','systemd-timesyncd.service','ecs.service')
++FIXED_FILES=frozenset(('bin/axiom-host-evaluation','bin/time_worker','bin/node','bin/host_reader_launcher','reader/host_reader.node','reader/host_reader.mjs','COMPATIBILITY.json','LICENSES.txt'))
++CATEGORIES=frozenset(('packet_refused','resource_refused','permission_refused','service_refused','source_unavailable','producer_exited','reader_refused','timeout','cleanup_unknown'))
++
++def need(value,reason):
++    if not value:raise ValueError(reason)
++
++def validate_packet(value):
++    need(type(value) is dict and set(value)=={'format','assurance','ami','readerUid','readerGid','files'},'packet_refused')
++    need(value['format']==1 and value['assurance']=='trusted-operational-host-evaluation-only' and value['ami']=='ami-001cbfee94278a792','packet_refused')
++    for name in ('readerUid','readerGid'):
++        need(type(value[name]) is int and 0<value[name]<=4294967295,'packet_refused')
++    files=value['files'];need(type(files) is dict and FIXED_FILES<=set(files) and len(files)<=256,'packet_refused')
++    total=0
++    for name,item in files.items():
++        need(name in FIXED_FILES or re.fullmatch(r'lib/[A-Za-z0-9_.+-]+',name) is not None,'packet_refused')
++        need(type(item) is dict and set(item)=={'sha256','bytes'} and type(item['bytes']) is int and 0<item['bytes']<=1024*1024*1024 and isinstance(item['sha256'],str) and re.fullmatch('[0-9a-f]{64}',item['sha256']),'packet_refused')
++        total+=item['bytes'];need(total<=1024*1024*1024,'packet_refused')
++    return value
++
++def validate_reader_result(value):
++    fields={'format','event','strictTimeAuthority','sourceGeneration','publication','disruptionMarker','device','inode','realtimeNs','p0Ns','p1Ns','p2Ns'}
++    need(type(value) is dict and set(value)==fields,'reader_refused')
++    need(value['format']==1 and value['event']=='reader_complete' and value['strictTimeAuthority'] is False and value['sourceGeneration']=='host-evaluation-1','reader_refused')
++    numbers={}
++    for name in ('publication','disruptionMarker','device','inode','realtimeNs','p0Ns','p1Ns','p2Ns'):
++        text=value[name]
++        need(type(text) is str and re.fullmatch(r'0|[1-9][0-9]{0,19}',text),'reader_refused')
++        numbers[name]=int(text)
++        maximum=9223372036854775807 if name.endswith('Ns') else 18446744073709551615
++        need(numbers[name]<=maximum,'reader_refused')
++    need(numbers['publication']>0 and numbers['p0Ns']<=numbers['p1Ns']<=numbers['p2Ns'],'reader_refused')
++    return value
++
++def evaluate(ops,packet):
++    """The actual single orchestration path; fake ops test ordering only."""
++    producer=None
++    result={'format':1,'event':'host_evaluation','observed':False,'strictTimeAuthority':False,'cleanupKnown':False}
++    try:
++        ops.validate(packet)
++        ops.reserve(packet)
++        ops.isolate_services()
++        producer=ops.start_producer()
++        ops.await_source(producer)
++        ops.assert_producer_running(producer)
++        observation=ops.read_once(packet)
++        need(observation.get('event')=='reader_complete' and observation.get('strictTimeAuthority') is False,'reader_refused')
++        result['rawObservation']=observation
++        ops.assert_producer_running(producer)
++        result['observed']=True
++    except BaseException as error:
++        reason=str(error) if isinstance(error,ValueError) else 'resource_refused'
++        result['reason']=reason if reason in CATEGORIES else 'resource_refused'
++    finally:
++        if producer is not None:
++            try:ops.stop_owned(producer);result['cleanupKnown']=True
++            except BaseException:
++                result['observed']=False;result['cleanupKnown']=False;result['reason']='cleanup_unknown'
++        close_local=getattr(ops,'close_local',None)
++        if close_local is not None:
++            try:close_local()
++            except BaseException:
++                result['observed']=False;result['cleanupKnown']=False;result['reason']='cleanup_unknown'
++    result['hostTerminationVerified']=False
++    return result
++
++class HostOps:
++    """Actual fixed host APIs. NEVER instantiated by local source/mock tests."""
++    def __init__(self):
++        self.packet=None;self.root_identity=None;self.directory_fd=-1
++        self.logs={};self.source_facts=[];self.reader_started=False
++
++    @staticmethod
++    def _no_acl(path):
++        need(not any(name in ('system.posix_acl_access','system.posix_acl_default','security.capability') for name in os.listxattr(path,follow_symlinks=False)),'permission_refused')
++
++    @classmethod
++    def _root_path(cls,path,directory=False):
++        value=os.lstat(path)
++        need((stat.S_ISDIR(value.st_mode) if directory else stat.S_ISREG(value.st_mode)) and value.st_uid==0 and not value.st_mode&0o6022,'permission_refused')
++        cls._no_acl(path)
++        return value
++
++    def validate(self,packet):
++        need(os.getuid()==0 and os.geteuid()==0,'permission_refused')
++        self.packet=validate_packet(packet)
++        for path in (Path('/opt'),PACKAGE,PACKAGE/'bin',PACKAGE/'reader'):
++            self._root_path(path,True)
++        for name,want in packet['files'].items():
++            path=PACKAGE/name
++            if name.startswith('lib/'):self._root_path(PACKAGE/'lib',True)
++            before=self._root_path(path)
++            descriptor=os.open(path,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
++            try:
++                actual=os.fstat(descriptor);need((actual.st_dev,actual.st_ino)==(before.st_dev,before.st_ino) and actual.st_size==want['bytes'],'resource_refused')
++                digest=hashlib.sha256()
++                while True:
++                    chunk=os.read(descriptor,65536)
++                    if not chunk:break
++                    digest.update(chunk)
++                after=os.fstat(descriptor)
++                need((after.st_dev,after.st_ino,after.st_size,after.st_mtime_ns)==(actual.st_dev,actual.st_ino,actual.st_size,actual.st_mtime_ns) and digest.hexdigest()==want['sha256'],'resource_refused')
++            finally:os.close(descriptor)
++        # This is a root-approved target-binding input, NOT a locally minted ABI
++        # proof. Actual ELF/GLIBC/GLIBCXX/Node evidence must exist before run.
++        compatibility=json.loads((PACKAGE/'COMPATIBILITY.json').read_text())
++        need(compatibility.get('targetAmi')==packet['ami'] and compatibility.get('architecture')=='x86_64' and compatibility.get('nodeVersion')=='24.22.2' and compatibility.get('evidenceKind')=='reviewed-target-elf-linkage','packet_refused')
++
++    def reserve(self,packet):
++        self._root_path(Path('/run'),True)
++        need(not os.path.lexists(ROOT),'resource_refused')
++        os.mkdir(ROOT,0o750);os.chown(ROOT,0,packet['readerGid']);os.chmod(ROOT,0o750)
++        for name,mode in [('generation-1',0o750),('compat',0o700),('logs',0o700)]:
++            path=ROOT/name;os.mkdir(path,mode);os.chown(path,0,packet['readerGid'] if name=='generation-1' else 0);os.chmod(path,mode);self._no_acl(path)
++        self._no_acl(ROOT)
++        self.root_identity=(ROOT.stat().st_dev,ROOT.stat().st_ino)
++        # Reserve FD3 before opening logs or spawning. Never remap over an
++        # unknown live descriptor; a noncanonical bootstrap environment refuses.
++        self.directory_fd=os.open(ROOT/'generation-1',os.O_RDONLY|os.O_DIRECTORY|os.O_NOFOLLOW|os.O_CLOEXEC)
++        need(self.directory_fd==3,'resource_refused')
++        for name in ('producer.stdout','producer.stderr','reader.stdout','reader.stderr'):
++            fd=os.open(ROOT/'logs'/name,os.O_WRONLY|os.O_CREAT|os.O_EXCL|os.O_NOFOLLOW|os.O_CLOEXEC,0o600)
++            self.logs[name]=os.fdopen(fd,'wb',buffering=0)
++
++    @staticmethod
++    def _capture_owned(process,seconds,limit,streams=None):
++        """Bound bytes and monotonic deadline WHILE reading owned pipes."""
++        selector=selectors.DefaultSelector();buffers=[bytearray(),bytearray()]
++        until=time.monotonic()+seconds
++        for index,pipe in enumerate((process.stdout,process.stderr)):
++            if pipe is not None and not pipe.closed:
++                os.set_blocking(pipe.fileno(),False)
++                selector.register(pipe,selectors.EVENT_READ,index)
++        try:
++            while selector.get_map():
++                remaining=until-time.monotonic()
++                need(remaining>0,'timeout')
++                for key,_ in selector.select(min(remaining,0.1)):
++                    try:chunk=os.read(key.fileobj.fileno(),4096)
++                    except BlockingIOError:continue
++                    if not chunk:
++                        selector.unregister(key.fileobj);key.fileobj.close();continue
++                    index=key.data
++                    need(len(buffers[index])+len(chunk)<=limit,'resource_refused')
++                    buffers[index].extend(chunk)
++                    if streams is not None:streams[index].write(chunk)
++            remaining=until-time.monotonic();need(remaining>0,'timeout')
++            try:code=process.wait(timeout=remaining)
++            except subprocess.TimeoutExpired:raise ValueError('timeout')
++            return bytes(buffers[0]),bytes(buffers[1]),code
++        finally:selector.close()
++
++    @classmethod
++    def _kill_owned_session(cls,process):
++        # This identifier originated ONLY from our Popen(start_new_session=True),
++        # never packet JSON. Its fixed children cannot create another session.
++        try:os.killpg(process.pid,signal.SIGKILL)
++        except ProcessLookupError:pass
++        cls._capture_owned(process,2,32768)
++        try:os.killpg(process.pid,0)
++        except ProcessLookupError:return
++        raise ValueError('cleanup_unknown')
++
++    def _service(self,argv,allowed=(0,)):
++        process=subprocess.Popen(['/usr/bin/systemctl',*argv],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True,start_new_session=True,env={'PATH':'/usr/bin:/bin','LANG':'C','LC_ALL':'C'})
++        try:out,err,code=self._capture_owned(process,5,4096)
++        except BaseException:
++            self._kill_owned_session(process)
++            raise ValueError('service_refused')
++        need(code in allowed,'service_refused')
++        return code
++
++    def isolate_services(self):
++        for service in SERVICES:
++            self._service(['mask','--runtime','--now',service])
++            self._service(['is-active',service],(3,4))
++        # The later host is disposable; do not unmask/restart a competing writer
++        # during evaluation cleanup. Its external owned termination is separate.
++
++    def start_producer(self):
++        need(self.directory_fd==3,'resource_refused')
++        return subprocess.Popen([str(PACKAGE/'bin/axiom-host-evaluation')],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,pass_fds=(3,),close_fds=True,start_new_session=True,env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8'})
++
++    def await_source(self,producer):
++        selector=selectors.DefaultSelector();buffers={'stdout':bytearray(),'stderr':bytearray()};size=0;seen_started=False
++        for name,pipe in [('stdout',producer.stdout),('stderr',producer.stderr)]:
++            os.set_blocking(pipe.fileno(),False);selector.register(pipe,selectors.EVENT_READ,name)
++        until=time.monotonic()+60
++        try:
++            while time.monotonic()<until:
++                need(producer.poll() is None,'producer_exited')
++                for key,_ in selector.select(0.1):
++                    chunk=os.read(key.fileobj.fileno(),4096)
++                    if not chunk:selector.unregister(key.fileobj);continue
++                    size+=len(chunk);need(size<=32768,'resource_refused');self.logs['producer.'+key.data].write(chunk);buffers[key.data].extend(chunk)
++                    if key.data=='stderr':continue
++                    while b'\n' in buffers['stdout']:
++                        line,_,tail=buffers['stdout'].partition(b'\n');buffers['stdout']=bytearray(tail)
++                        event=json.loads(line.decode('utf-8','strict'));need(type(event) is dict and event.get('format')==1,'resource_refused')
++                        if event.get('event')=='producer_started':
++                            need(event=={'format':1,'event':'producer_started','strictTimeAuthority':False,'vmclockSupport':False},'resource_refused');seen_started=True
++                        elif event.get('event')=='ntp_observation':
++                            need(set(event)=={'format','event','requests','responses','strictTimeAuthority','vmclockSupport'} and event['strictTimeAuthority'] is False and event['vmclockSupport'] is False,'resource_refused')
++                            need(all(type(event[n]) is int and 0<=event[n]<=18446744073709551615 for n in ('requests','responses')),'resource_refused')
++                            self.source_facts.append(event)
++                            if seen_started and event['responses']>0:return
++                        else:raise ValueError('resource_refused')
++            raise ValueError('source_unavailable')
++        finally:selector.close()
++
++    @staticmethod
++    def assert_producer_running(producer):
++        # This exact owned process, not a PID/config/JSON liveness assertion.
++        need(producer.poll() is None,'producer_exited')
++
++    def read_once(self,packet):
++        need(not self.reader_started,'resource_refused');self.reader_started=True
++        self.validate(packet)
++        reader=subprocess.Popen([str(PACKAGE/'bin/host_reader_launcher')],stdin=subprocess.DEVNULL,stdout=subprocess.PIPE,stderr=subprocess.PIPE,close_fds=True,start_new_session=True,user=packet['readerUid'],group=packet['readerGid'],extra_groups=(),env={'PATH':'/usr/bin:/bin','LANG':'C.UTF-8','LC_ALL':'C.UTF-8'})
++        try:
++            out,err,code=self._capture_owned(reader,5,8192,(self.logs['reader.stdout'],self.logs['reader.stderr']))
++        except BaseException:
++            self._kill_owned_session(reader)
++            raise ValueError('reader_refused')
++        # Even a failed trusted reader must not leave its owned worker group.
++        try:os.killpg(reader.pid,0)
++        except ProcessLookupError:pass
++        else:
++            self._kill_owned_session(reader)
++            raise ValueError('reader_refused')
++        need(code==0,'reader_refused')
++        result=json.loads(out.decode('utf-8','strict'))
++        return validate_reader_result(result)
++
++    def stop_owned(self,producer):
++        if producer.poll() is None:producer.terminate()
++        try:
++            out,err,code=self._capture_owned(producer,6,32768,(self.logs['producer.stdout'],self.logs['producer.stderr']))
++        except BaseException:
++            self._kill_owned_session(producer)
++            raise ValueError('cleanup_unknown')
++        need(code==0 and b'"event":"producer_stopped"' in out,'cleanup_unknown')
++        self.validate(self.packet)
++
++    def close_local(self):
++        """Close controller-owned descriptors on every path, never delete files."""
++        failed=False
++        if self.directory_fd>=0:
++            descriptor=self.directory_fd;self.directory_fd=-1
++            try:os.close(descriptor)
++            except OSError:failed=True
++        for stream in self.logs.values():
++            try:stream.close()
++            except OSError:failed=True
++        need(not failed,'cleanup_unknown')
++        # Services remain masked on this disposable host. External host resource
++        # termination/evidence export is NOT acknowledged by cleanupKnown here.
++
++
++def main():
++    # Root packet ownership is a required bootstrap input, not a claim of actual
++    # accepted producer policy. Never run this entry during local preparation.
++    HostOps._root_path(PACKET.parent,True);before=HostOps._root_path(PACKET)
++    need(stat.S_IMODE(before.st_mode)==0o400 and before.st_size<=256*1024,'packet_refused')
++    fd=os.open(PACKET,os.O_RDONLY|os.O_NOFOLLOW|os.O_CLOEXEC)
++    with os.fdopen(fd,'rb') as stream:packet=validate_packet(json.load(stream))
++    result=evaluate(HostOps(),packet);print(json.dumps(result,sort_keys=True))
++    return 0 if result['observed'] and result['cleanupKnown'] else 1
++
++if __name__=='__main__':raise SystemExit(main())
+
+diff --git a/scripts/linux-compile/host_evaluation_reader.mjs b/scripts/linux-compile/host_evaluation_reader.mjs
+new file mode 100644
+index 0000000..d5cc52b
+--- /dev/null
++++ b/scripts/linux-compile/host_evaluation_reader.mjs
+@@ -0,0 +1,30 @@
++// Actual private publication resource observation; no interval/policy authority.
++import {createRequire} from 'node:module';
++import assert from 'node:assert/strict';
++const require=createRequire(import.meta.url);
++let phase='initialize',held,worker,bridge;
++try{
++ assert.equal(process.versions.node,'24.22.2');
++ bridge=require('./host_reader.node').openHostEvaluation();
++ phase='hold';held=await bridge.hold();
++ const bytes=new Uint8Array(held.bytes);
++ assert.equal(held.sourceGeneration,'host-evaluation-1');
++ phase='current';await bridge.assertResourceCurrent(held);
++ phase='worker';worker=bridge.start(held);void worker.completed.catch(()=>{});
++ const capture=await worker.result;await worker.completed;await worker.terminate();
++ assert.equal(capture.identity,held);assert.deepEqual(capture.bytes,bytes);
++ assert.equal(capture.publication,held.publication);assert.equal(capture.disruptionMarker,held.disruptionMarker);
++ const before={r:capture.realtimeNs,p0:capture.p0Ns,p1:capture.p1Ns,p2:capture.p2Ns};
++ phase='observation';const final=await bridge.observeResourceCurrent(held,capture);
++ assert(before.p0<=before.p1&&before.p1<=before.p2&&before.p2<=final.p2);
++ assert.equal(capture.realtimeNs,before.r);assert.equal(capture.p0Ns,before.p0);assert.equal(capture.p1Ns,before.p1);
++ phase='release';await bridge.release(held);held=undefined;bridge.retire();
++ console.log(JSON.stringify({format:1,event:'reader_complete',strictTimeAuthority:false,sourceGeneration:'host-evaluation-1',publication:capture.publication.toString(),disruptionMarker:capture.disruptionMarker.toString(),device:capture.device.toString(),inode:capture.inode.toString(),realtimeNs:before.r.toString(),p0Ns:before.p0.toString(),p1Ns:before.p1.toString(),p2Ns:final.p2.toString()}));
++}catch{
++ let cleanupKnown=true;
++ try{if(worker){await worker.terminate();await worker.completed}}catch{cleanupKnown=false}
++ try{if(held)await bridge.release(held)}catch{cleanupKnown=false}
++ try{bridge?.retire()}catch{cleanupKnown=false}
++ console.log(JSON.stringify({format:1,event:'reader_refused',phase,cleanupKnown,strictTimeAuthority:false}));
++ process.exitCode=1;
++}
+
+diff --git a/scripts/tests/test_governance_host_evaluation.py b/scripts/tests/test_governance_host_evaluation.py
+new file mode 100644
+index 0000000..2e671b2
+--- /dev/null
++++ b/scripts/tests/test_governance_host_evaluation.py
+@@ -0,0 +1,42 @@
++"""Actual source-data and mocked orchestration only; no native calls or programs."""
++import importlib.util,os,sys,unittest
++from pathlib import Path
++ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'scripts'))
++import governance_host_evaluation_inputs as source
++class HostEvaluationSource(unittest.TestCase):
++ @classmethod
++ def setUpClass(cls):
++  cls.base=source.base_files(ROOT)
++  cls.files=cls.base if os.getenv('AXIOM_HOST_UPSTREAM_BASELINE')=='1' else source.evaluation_files(ROOT)
++ def text(self,path):return self.files[path].decode()
++ def test_actual_constructor_ntp_only(self):
++  s=self.text('clock-bound/src/daemon.rs');self.assertIn('async fn construct_host_evaluation',s)
++  body=s.split('async fn construct_host_evaluation',1)[1].split('/// Install the NTP sources',1)[0]
++  self.assertIn('set_amazon_time_sync',body)
++  for forbidden in ['Autodetect::detect','add_default_public_pool','set_phc','install_configured_sources']:self.assertNotIn(forbidden,body)
++ def test_owned_compatibility_not_global(self):
++  s=self.text('clock-bound/src/daemon/clock_state.rs');self.assertIn('fn construct_host_evaluation',s)
++  body=s.split('fn construct_host_evaluation',1)[1].split('pub async fn run',1)[0]
++  self.assertIn('/run/axiom-host-evaluation/compat/v2',body);self.assertIn('/run/axiom-host-evaluation/compat/v3',body)
++  self.assertNotIn('CLOCKBOUND_SHM_DEFAULT_PATH',body)
++ def test_stock_and_existing_private_constructor_preserved(self):
++  def body(s,name):
++   start=s.index(name);brace=s.index('{',start);depth=1;end=brace+1
++   while depth:depth+=(s[end]=='{')-(s[end]=='}');end+=1
++   return s[start:end]
++  for path,names in [('clock-bound/src/daemon.rs',['pub async fn construct(','pub async fn construct_axiom(']),('clock-bound/src/daemon/clock_state.rs',['pub fn construct(','pub fn construct_axiom(']),('clock-bound/src/daemon/io.rs',['pub fn spawn_all(']),('clock-bound/src/daemon/io/amazon_time_sync.rs',['pub fn construct(','pub async fn run('])]:
++   for name in names:self.assertEqual(body(self.base[path].decode(),name),body(self.text(path),name))
++ def test_fixed_entry_feature_not_default(self):
++  s=self.text('clock-bound/Cargo.toml');self.assertIn('axiom-host-evaluation = ["daemon"]',s);self.assertIn('name = "axiom-host-evaluation"',s)
++  self.assertEqual(self.base['clock-bound/src/bin/clockbound.rs'],self.files['clock-bound/src/bin/clockbound.rs'])
++ def test_run_once_cleanup_is_never_cancelled_by_observer(self):
++  s=self.text('clock-bound/src/daemon.rs').split('async fn run_host_evaluation',1)[1].split('/// Install the NTP sources',1)[0]
++  self.assertNotIn('tokio::select!',s);self.assertIn('self.run_once().await',s)
++ def test_transitive_amazon_runner_is_ipv4_pinned(self):
++  s=self.text('clock-bound/src/daemon/io/amazon_time_sync.rs');self.assertIn('run_host_evaluation_ipv4',s)
++  body=s.split('async fn run_host_evaluation_ipv4',1)[1].split('async fn handle_interval_tick',1)[0]
++  self.assertNotIn('swap_network_stack',body);self.assertNotIn('handle_ntp_sample_result(',body);self.assertIn('self.ntp.sample().await',body)
++  io=self.text('clock-bound/src/daemon/io.rs');self.assertIn('spawn_host_evaluation_ntp_only',io);self.assertIn('amazon_time_sync.run_host_evaluation_ipv4().await',io)
++  daemon=self.text('clock-bound/src/daemon.rs').split('async fn run_host_evaluation',1)[1].split('/// Install the NTP sources',1)[0]
++  self.assertIn('spawn_host_evaluation_ntp_only()',daemon);self.assertNotIn('spawn_all()',daemon)
++if __name__=='__main__':unittest.main()
+
+diff --git a/scripts/tests/test_governance_host_bootstrap.py b/scripts/tests/test_governance_host_bootstrap.py
+new file mode 100644
+index 0000000..b87836d
+--- /dev/null
++++ b/scripts/tests/test_governance_host_bootstrap.py
+@@ -0,0 +1,91 @@
++"""Pure/mocked controller and actual source contracts. No host/native execution."""
++import sys,unittest
++from pathlib import Path
++ROOT=Path(__file__).resolve().parents[2];sys.path.insert(0,str(ROOT/'scripts'))
++import governance_host_evaluation_bootstrap as boot
++class Fake:
++ def __init__(self,fail=None):self.calls=[];self.fail=fail
++ def call(self,name,*args):
++  self.calls.append(name)
++  if name==self.fail:raise ValueError('source_unavailable')
++  return {'event':'reader_complete','strictTimeAuthority':False}
++ def validate(self,p):self.call('validate',p)
++ def reserve(self,p):self.call('reserve',p)
++ def isolate_services(self):self.call('services')
++ def start_producer(self):return self.call('producer')
++ def await_source(self,p):return self.call('source',p)
++ def assert_producer_running(self,p):self.call('live',p)
++ def read_once(self,p):return self.call('reader',p)
++ def stop_owned(self,p):self.call('stop',p)
++class HostBootstrap(unittest.TestCase):
++ def test_actual_orchestration_source_before_reader_cleanup_last(self):
++  f=Fake();value=boot.evaluate(f,{})
++  self.assertEqual(f.calls,['validate','reserve','services','producer','source','live','reader','live','stop'])
++  self.assertTrue(value['observed']);self.assertFalse(value['strictTimeAuthority'])
++ def test_source_failure_never_reads_or_restarts_and_still_reaps(self):
++  f=Fake('source');value=boot.evaluate(f,{})
++  self.assertEqual(f.calls,['validate','reserve','services','producer','source','stop']);self.assertFalse(value['observed']);self.assertEqual(value['reason'],'source_unavailable')
++ def test_unknown_cleanup_never_success(self):
++  f=Fake('stop');value=boot.evaluate(f,{})
++  self.assertFalse(value['observed']);self.assertEqual(value['reason'],'cleanup_unknown')
++ def test_preownership_failure_never_kills(self):
++  f=Fake('producer');value=boot.evaluate(f,{})
++  self.assertNotIn('stop',f.calls);self.assertNotIn('reader',f.calls);self.assertFalse(value['observed'])
++ def test_actual_private_binding_and_harness_have_no_fixture_publication(self):
++  c=ROOT/'packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c';self.assertTrue(c.exists());s=c.read_text()
++  self.assertIn('axiom_time_parent_create_private',s);self.assertIn('host-evaluation-1',s)
++  self.assertNotIn('write(',s);self.assertNotIn('O_CREAT',s)
++  js=(ROOT/'scripts/linux-compile/host_evaluation_reader.mjs').read_text();self.assertIn('observeResourceCurrent',js);self.assertIn('completed.catch',js)
++ def test_fixed_bootstrap_and_reader_ownership(self):
++  s=(ROOT/'scripts/governance_host_evaluation_bootstrap.py').read_text()
++  for x in ['mask','chronyd.service','ntpd.service','systemd-timesyncd.service','ecs.service','start_new_session=True','extra_groups=()','O_EXCL','O_NOFOLLOW']:self.assertIn(x,s)
++  self.assertNotIn('shell=True',s);self.assertNotIn('dnf ',s);self.assertNotIn('time_behavior_fixture',s)
++ def test_package_total_budget(self):
++  row={'format':1,'assurance':'trusted-operational-host-evaluation-only','ami':'ami-001cbfee94278a792','readerUid':123,'readerGid':123,'files':{n:{'sha256':'a'*64,'bytes':200*1024*1024} for n in boot.FIXED_FILES}}
++  with self.assertRaises(ValueError):boot.validate_packet(row)
++ def test_io_is_bounded_during_capture(self):
++  s=(ROOT/'scripts/governance_host_evaluation_bootstrap.py').read_text()
++  self.assertIn('def _capture_owned',s);self.assertNotIn('.communicate(',s);self.assertNotIn('subprocess.run(',s)
++ def test_local_descriptors_close_after_preproducer_failure(self):
++  class F(Fake):
++   def close_local(self):self.calls.append('local_close')
++  f=F('services');boot.evaluate(f,{})
++  self.assertEqual(f.calls[-1],'local_close');self.assertNotIn('stop',f.calls)
++ def test_retired_during_read_refuses_but_retains_original_observation(self):
++  class F(Fake):
++   def assert_producer_running(self,p):
++    self.call('live',p)
++    if self.calls.count('live')==2:raise ValueError('producer_exited')
++  f=F();value=boot.evaluate(f,{})
++  self.assertFalse(value['observed']);self.assertEqual(value['reason'],'producer_exited');self.assertIn('rawObservation',value);self.assertTrue(value['cleanupKnown']);self.assertEqual(f.calls.count('reader'),1)
++ def test_actual_capture_loop_refuses_chunk_before_buffering_over_budget(self):
++  from unittest.mock import patch,MagicMock
++  mux=MagicMock();pipe=MagicMock();pipe.fileno.return_value=7
++  key=type('Key',(),{'fileobj':pipe,'data':0})()
++  process=MagicMock();process.stdout=pipe;process.stderr=None
++  mux.get_map.return_value={7:key};mux.select.return_value=[(key,1)]
++  with patch.object(boot.selectors,'DefaultSelector',return_value=mux),patch.object(boot.os,'set_blocking'),patch.object(boot.os,'read',return_value=b'12345'),patch.object(boot.time,'monotonic',return_value=0):
++   with self.assertRaisesRegex(ValueError,'resource_refused'):boot.HostOps._capture_owned(process,1,4)
++  process.wait.assert_not_called();mux.close.assert_called_once()
++ def test_actual_capture_deadline_refuses_before_read(self):
++  from unittest.mock import patch,MagicMock
++  mux=MagicMock();pipe=MagicMock();process=MagicMock();process.stdout=pipe;process.stderr=None
++  mux.get_map.return_value={7:object()}
++  with patch.object(boot.selectors,'DefaultSelector',return_value=mux),patch.object(boot.os,'set_blocking'),patch.object(boot.os,'read') as read,patch.object(boot.time,'monotonic',side_effect=[0,2]):
++   with self.assertRaisesRegex(ValueError,'timeout'):boot.HostOps._capture_owned(process,1,4)
++  read.assert_not_called();process.wait.assert_not_called()
++ def test_exact_raw_reader_output_domains(self):
++  record={'format':1,'event':'reader_complete','strictTimeAuthority':False,'sourceGeneration':'host-evaluation-1','publication':'1','disruptionMarker':'0','device':'1','inode':'2','realtimeNs':'5','p0Ns':'1','p1Ns':'2','p2Ns':'3'}
++  self.assertEqual(boot.validate_reader_result(record),record)
++  for key,value in [('publication','0'),('p2Ns','1'),('p1Ns','01'),('device','18446744073709551616'),('realtimeNs','9223372036854775808'),('strictTimeAuthority',True),('extra','field')]:
++   changed=dict(record);changed[key]=value
++   with self.subTest(key=key):
++    with self.assertRaises(ValueError):boot.validate_reader_result(changed)
++ def test_artifact_privilege_bits_refuse_before_native_attribute_read(self):
++  from unittest.mock import patch,MagicMock
++  import stat
++  value=type('Meta',(),{'st_mode':stat.S_IFREG|0o4755,'st_uid':0})()
++  with patch.object(boot.os,'lstat',return_value=value),patch.object(boot.HostOps,'_no_acl') as attributes:
++   with self.assertRaises(ValueError):boot.HostOps._root_path('/fixed/nonexistent-test')
++  attributes.assert_not_called()
++if __name__=='__main__':unittest.main()

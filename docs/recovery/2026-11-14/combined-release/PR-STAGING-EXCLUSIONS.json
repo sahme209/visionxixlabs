@@ -1,0 +1,13 @@
+{
+  "excludePrefixes": [
+    "work/"
+  ],
+  "excludeExact": [
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/INPUT-PACKET-FINAL.json",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/INPUT-PACKET.json",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/WEBSITE-OUTPUT-MANIFEST.json",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/DESKTOP-INPUT-PACKET-FINAL.json",
+    "docs/recovery/2026-11-14/calm-instrument-build-preparation/desktop-temp-correction/DESKTOP-INPUT-PACKET.json"
+  ],
+  "reason": "Owner source backup through one PR; private cache inventories/output manifests stay in verified local archive with public hash index. No source/dependency/lock omission."
+}

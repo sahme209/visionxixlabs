@@ -1,0 +1,13 @@
+....F.........
+======================================================================
+FAIL: test_artifact_privilege_bits_refuse_before_native_attribute_read (test_governance_host_bootstrap.HostBootstrap)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_host_bootstrap.py", line 89, in test_artifact_privilege_bits_refuse_before_native_attribute_read
+    with self.assertRaises(ValueError):boot.HostOps._root_path('/fixed/nonexistent-test')
+AssertionError: ValueError not raised
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.014s
+
+FAILED (failures=1)

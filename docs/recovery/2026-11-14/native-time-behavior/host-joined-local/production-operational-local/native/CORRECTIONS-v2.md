@@ -1,0 +1,10 @@
+# Native review correction batch v2
+
+Original manifest/review/logs are preserved. Two new static source-contract regressions failed against the reviewed source (13 total, two failures); both pass after the following narrow corrections. Command: `python3 -m unittest discover -s scripts/tests -p test_governance_operational_native.py`. Final result: **13 source checks PASS**. No native compiler/execution, clock/syscall experiment, host/provider/API, CI or spending occurred.
+
+- N1: native execute now rechecks the SAME original owned worker deadline after its final currentness work; actual N-API completion entry rereads monotonic time before constructing/resolving an authentic sample. Failure or equality/expiry rejects and retires via existing disposal/unpin cleanup. This adds finite checks; it does not eliminate arbitrary suspension after the last instruction.
+- N2: after startup's actual Unknown-to-Ready transition, the first Unknown/Disrupted/Withdrawn update latches administrative withdrawal BEFORE a bounded invalidation ACK, then stops the owner loop/owned processes. A later Ready cannot reaccept that generation. Startup Unknown-to-Ready and routine Ready publication remain unchanged. No new approval, retry or sample recapture is introduced.
+
+Interfaces and original fixed FD map are unchanged. The previously reviewed startup full expected-digest hashing followed by per-response held/named inode+size+mode+uid+mtime+ctime+ACL checks remains conditioned on the explicit trusted Linux/filesystem/root operating premise. No repeated unbounded full-package hashing is added inside the 500 ms observation; actual timing/performance is unverified.
+
+All original gaps remain: uncompiled native ABI/linkage/hash implementation, real installed output digests/dependency closure/host-service-suspend acceptance, production provider network profile, custody/fleet/provider/human/coverage and activation. The unchanged role-free filter still denies provider sockets. No production readiness claim follows from these static assertions.

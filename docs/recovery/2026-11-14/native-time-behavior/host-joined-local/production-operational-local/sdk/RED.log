@@ -1,0 +1,79 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+xxxxx·
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts > binds actual installed sts signing date and disables skew correction without a host-time fallback
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts > binds actual installed ecs signing date and disables skew correction without a host-time fallback
+AssertionError: expected '20261114T192011Z' to be '20240102T030405Z' // Object.is equality
+
+Expected: "20240102T030405Z"
+Received: "20261114T192011Z"
+
+ ❯ Object.handle lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:10:301
+
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/submodules/client/index.js:645:58
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/submodules/schema/index.js:19:32
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/index.js:118:26
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/submodules/retry/index.js:205:50
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js:137:26
+ ❯ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:10:1213
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts > binds actual installed s3 signing date and disables skew correction without a host-time fallback
+AssertionError: expected '20261114T192011Z' to be '20240102T030405Z' // Object.is equality
+
+Expected: "20240102T030405Z"
+Received: "20261114T192011Z"
+
+ ❯ Object.handle lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:10:301
+
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/submodules/client/index.js:645:58
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js:403:26
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/submodules/schema/index.js:19:32
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js:380:26
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@smithy/core/dist-cjs/submodules/retry/index.js:205:50
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js:62:28
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@aws-sdk/middleware-sdk-s3/dist-cjs/submodules/s3/index.js:89:20
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@aws-sdk/core/dist-cjs/submodules/client/index.js:137:26
+ ❯ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:10:1213
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts > gives the independent S3 presigner a fresh explicit signingDate and rejects substituted dates
+AssertionError: expected '20261114T192011Z' to be '20240102T030405Z' // Object.is equality
+
+Expected: "20240102T030405Z"
+Received: "20261114T192011Z"
+
+ ❯ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:11:611
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+ FAIL  lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts > refuses expiry equality or withdrawal before actual signing without dispatch
+AssertionError: expected 1 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 1
+
+ ❯ lib/governance/platform/nativeTime/__tests__/sdkOperationalSigning.test.ts:12:541
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed | 1 passed (6)
+   Start at  14:20:11
+   Duration  172ms (import 53%, transform 26%, tests 19%, worker 2%)
+

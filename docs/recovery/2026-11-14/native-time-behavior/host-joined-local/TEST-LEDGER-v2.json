@@ -1,0 +1,45 @@
+{
+  "scope": "source/pure/mocked only; no compiler/native/signal/host/API operations",
+  "tests": [
+    {
+      "file": "v2-red.log",
+      "sha256": "decb5709313e0a9cd161977421360fdf4231f86d6f33e2a151fed78e034f0069",
+      "summary": [
+        "Ran 7 tests in 0.018s",
+        "FAILED (failures=5, errors=2)"
+      ]
+    },
+    {
+      "file": "v2-cleanup-red.log",
+      "sha256": "daa1938a63d257c6400792b14e7e20291a1dadbbea6f063ded04ffdac944fd6a",
+      "summary": [
+        "Ran 9 tests in 0.018s",
+        "FAILED (failures=1)"
+      ]
+    },
+    {
+      "file": "v2-green.log",
+      "sha256": "542478c5e228cffe15731b293460e1c4bc97eab58d811a31f3775a96f09a3ee3",
+      "summary": [
+        "Ran 9 tests in 0.018s",
+        "OK"
+      ]
+    },
+    {
+      "file": "v2-source-green.log",
+      "sha256": "fcc79679fd61f1821d24f3ba295f934745f885f074c5b2c3ab08cb808510d5e9",
+      "summary": [
+        "Ran 6 tests in 0.037s",
+        "OK"
+      ]
+    },
+    {
+      "file": "v2-bootstrap-green.log",
+      "sha256": "bd39be70bbe6f872fa41f467482f6920c2f78894aaff1fd5efd2dbc13c45543d",
+      "summary": [
+        "Ran 14 tests in 0.019s",
+        "OK"
+      ]
+    }
+  ]
+}

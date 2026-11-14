@@ -1,0 +1,13 @@
+{
+  "verdict": "clear_for_finite_closed_compiler_source_addition",
+  "importantFindings": [],
+  "criticalFindings": [],
+  "reviewedSha256": {
+    "scripts/build-github-handoff-runtime.cjs": "787e5fe5bbd5b77ff030747f86571d2faf57ba126d02383f495763222b7e619a",
+    "lib/governance/platform/executionTimeView.ts": "5eb3e2254769084f162acdd55583b4c5f9b1f36efe109918a147cf0d40a5cf13",
+    "lib/governance/platform/viewContract.ts": "29c78d374da81dbbf6a198fccfc3ad1f644d8d17e4e42548becb19cabf98fd72"
+  },
+  "testsOrCompilerRunByReviewer": false,
+  "scope": "One exact source-list addition for pure historical assurance schema; closed graph/dynamic-import/external/source/tool guards preserved",
+  "qualificationRenewed": false
+}

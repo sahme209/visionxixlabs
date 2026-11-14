@@ -1,0 +1,23 @@
+{
+  "format": 1,
+  "scope": "host-evaluation-local-source-only",
+  "authorization": "call_f6dcdebf10844849a6653dafd5fd9805",
+  "nativeCompiled": false,
+  "nativeExecuted": false,
+  "hostConfigured": false,
+  "strictTimePolicyIssued": false,
+  "inputSha256": {
+    "packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch": "e73a134522e2e12d9d4ecd3d146814683fd6548dd95bb3e1f2a547c6493eb2eb",
+    "packages/verified-issuer-runtime/linux/host-evaluation-patched-sha256.json": "188b9c9a7d2aa2f66cb9b09e2a4e02e5d59a5695ce6a03b4b18732f3b54d0d00",
+    "packages/verified-issuer-runtime/linux/host_evaluation.rs": "b219b61b9be809e7ee9b0178726b61a6912e8fb2e845a8043fb64fb7bc54f6db",
+    "packages/verified-issuer-runtime/linux/host_evaluation_main.rs": "bde1c6bb82bf85d8b7d537f594d8cf04c9e83345fbd57cf6f285488e96bbaa7e",
+    "packages/verified-issuer-runtime/linux/time_host_evaluation_binding.c": "3c6dd52dd5dcdf2a3cbd0befa9109f1d9b7a252803d168edb6ef98234bc15571",
+    "packages/verified-issuer-runtime/linux/host_reader_launcher.c": "9c8df9f2cf6f26801b7702f46bdd2eb07eb4b018cc239847ec0104cd328d3c74",
+    "packages/verified-issuer-runtime/linux/host-evaluation-package.json": "fb325100acd068fceaab6b02d02ac425576cee3982ed1d6587948c388db16187",
+    "scripts/governance_host_evaluation_inputs.py": "6e013e95c027c2f2c45a277d3ebb60c0a24f4ddccd83833cab4804757941c741",
+    "scripts/governance_host_evaluation_bootstrap.py": "ae5e2d61831201cd928feb43f626d586793db43155e8fde7e73af9b0d008a60a",
+    "scripts/linux-compile/host_evaluation_reader.mjs": "0de4778ed72f219f6120b02be705a5eccc52de2356c11c196ba08f263a1ab42b",
+    "scripts/tests/test_governance_host_evaluation.py": "9c2cf8d938e6c78eea5b903851f38487d4e69169f47d5fa10721a0a1c02580ed",
+    "scripts/tests/test_governance_host_bootstrap.py": "33e981cead1b6a5adcef39d042e7bf23d9e8738af01afa22059a6db51b005bc3"
+  }
+}

@@ -1,0 +1,32 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+ ❯ lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts (18 tests | 2 failed) 62ms
+   × binds source-role response and immutable profile to the actual private issuer port 4ms
+   × joins actual private issuer without losing opaque supplier ownership before STS 51ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts > binds source-role response and immutable profile to the actual private issuer port
+TypeError: f.ports.readObservedProviderExpiry is not a function
+ ❯ lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts:20:266
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts > joins actual private issuer without losing opaque supplier ownership before STS
+TypeError: issuer.readObservedProviderExpiry is not a function
+ ❯ lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts:47:165
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 16 passed (18)
+   Start at  14:10:30
+   Duration  263ms (import 43%, tests 35%, transform 21%, worker 1%)
+
