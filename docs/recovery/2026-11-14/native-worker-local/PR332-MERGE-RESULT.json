@@ -1,0 +1,11 @@
+{
+  "pr": 332,
+  "head": "3e78789e6f4588744c8f5907fc85b54fcda67fb3",
+  "merged": true,
+  "mergeCommit": "f9dae18159d5927057812ebe71a0680a630cc98e",
+  "sevenOrdinaryChecks": "PASS",
+  "nativeCompile": "Previously accepted exact-input checkpoint; final proof-only head skips consumed workflow",
+  "runtimeLaunched": false,
+  "governanceEnabled": false,
+  "productionChanged": false
+}

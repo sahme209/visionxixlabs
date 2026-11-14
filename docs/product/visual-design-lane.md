@@ -199,3 +199,10 @@ Primary-agent browser verification observed working pause→Resume, Review→“
 
 
 **Subsequent owner refinement:** Prefer a cleaner, more restrained layout that leaves room for the page's content instead of letting the visual take all the space. Save a future original solar-system concept in which each planet represents an Axiom product; determine the actual product mapping and useful navigation/explanation during a later proposal. This is a future design direction only: no further preview changes or implementation now. Preserve hierarchy, readability, clean minimalism, accessibility and performance; Governance remains first and current priorities do not change.
+
+
+## November14 — owner-favored Backdrop live-space references (deferred)
+
+Owner supplied13 Backdrop screenshots and said “LOVE THESE LIVE IMAGES”: ASCII Black Hole/ASCII Gargantua, cinematic gold/white accretion rings, blue Event Horizon, dark sparse Space Particles and blue Stardust; the holographic Glitch Skull is an additional material/point-cloud reference, not an Axiom product symbol. Screenshots establish aesthetic preference only, not verified animation behavior, performance, licensing or asset rights.
+
+Evaluate an original, restrained Axiom interpretation after current Governance priorities: sparse particles for integrations/data flow, orbital paths for releases/environment promotion, and a precise luminous boundary for review/permission gates. Keep hierarchy, clean/minimal composition, calm power and readable content first; avoid literal destructive black-hole metaphors for customer data, generic decorative clutter or a skull on trust/security screens. ASCII may be an optional technical-detail treatment, not the whole-site reading surface. Preserve reduced-motion/static alternatives, bounded GPU/transfer budgets and mobile accessibility. Research/recommendations/local owner preview precede implementation; no downloads, paid assets, installs, website edits or deployment are authorized by this preference.

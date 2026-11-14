@@ -1,0 +1,14 @@
+{
+  "workflow": 43620849583,
+  "changedEntries": [
+    "",
+    "node_modules/@hono/node-server",
+    "node_modules/hono",
+    "node_modules/jose"
+  ],
+  "lockSha256": "39956a9cc5fb352be676e51055b7854e7d7b637993fd6a3c22b5d965a4d5db0b",
+  "allOtherEntriesUnchanged": true,
+  "desktopLockUnchanged": true,
+  "nextAwsStripeVitestVersionsUnchanged": true,
+  "noHandEditedLock": true
+}
