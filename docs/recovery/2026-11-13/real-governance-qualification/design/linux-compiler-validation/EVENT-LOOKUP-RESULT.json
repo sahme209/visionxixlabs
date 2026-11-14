@@ -1,0 +1,13 @@
+{
+  "approval": "call_ab75e067dc244dff920ea5e65150ba11",
+  "operation": "official source lookup",
+  "query": "site:github.com/octokit/webhooks \"synchronize.schema.json\"",
+  "result": "No indexed results",
+  "operationsUsed": 1,
+  "matchedReadPerformed": false,
+  "stopped": true,
+  "compilerAttemptUsed": false,
+  "codeOrWorkflowChanged": false,
+  "ciRetry": false,
+  "nextProposedScope": "Three deterministic public GitHub operations: repository metadata, recursive tree at its returned default branch, then exact matching schema blob. No guessed schema path/search retry."
+}

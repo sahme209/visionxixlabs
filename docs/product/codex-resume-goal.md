@@ -573,3 +573,7 @@ Owner call_7c9b872478ab4d69b368572e8cc7da5c is CONSUMED: exactly3primaryLinuxpag
 
 ### November13 — event-reference preparation stopped before implementation
 Owner call_6dc9f8a11b974095997307183698245f approved the conditional correction bundle. Its one event-reference read returned404 because the assistant selected an incorrect Octokit repository URL. No schema/contract was obtained; no code, native/filter/compiler, workflow/push/CI retry or spending occurred. The read allowance is consumed; the corrected compiler attempt remains UNUSED and all prior review/approval gates still hold. Do not guess/retry another URL. EVENT-REFERENCE-READ-RESULT.json preserves the exact failure; a narrow source-lookup/read amendment is required before continuing. PR331 remains unmerged with its original native-preflight failure, all7existingchecks green, production unchanged.
+
+
+### November13 — event-source search returned no indexed schema
+Approved lookup call_ab75e067dc244dff920ea5e65150ba11 returned no indexed result; stopped after1operation, no matched read or guessed-path retry. No implementation/workflow/push/native/compiler/CI change. Corrected compiler attempt remainsUNUSED. EVENT-LOOKUP-RESULT.json records this. Proposed narrow amendment:3deterministic officialGitHub metadata/tree/exact-matching-blob reads, avoiding path guesses; not yet authorized. PR331/master/live/production gates unchanged.
