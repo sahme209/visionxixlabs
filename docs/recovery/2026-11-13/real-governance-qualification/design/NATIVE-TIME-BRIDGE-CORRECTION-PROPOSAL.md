@@ -1,5 +1,10 @@
 # Connected native time bridge — design candidate; implementation not yet approved
 
+## Reviewed next mechanism — owner local-code decision pending
+
+IMMUTABLE-TIME-PUBLICATION-LOCAL-DESIGN.md recommends a cooperating trusted V2 producer publishing complete fresh files, with bounded descriptor-based consumption of those unmodified files. This is distinct from unsupported descriptor-copy of concurrently modified vendor SHM. It removes that copy/16-bit-counter dependency but adds explicit producer/format/fatal-failure/constructor/retention qualification. Three independent file-only reviews passed; IMMUTABLE-TIME-PUBLICATION-LOCAL-REVIEW.json binds the exact design. Local implementation requires new owner approval; no adoption, native action, resource, clock guarantee or enablement follows. Earlier candidates below remain historical evidence, not concurrent implementation instructions.
+
+
 ## Concrete problem
 The exact four-file audit establishes that the unmodified high-level ClockBound3.0.0-rc.0 result lacks the source/freshness metadata and demonstrated conservative arithmetic/deadline contract needed by Axiom. Installing it or merely rounding its output cannot resolve this. Owner accepted isolated prerelease evaluation DESIGN ONLY; a new reviewed implementation boundary is required before code.
 

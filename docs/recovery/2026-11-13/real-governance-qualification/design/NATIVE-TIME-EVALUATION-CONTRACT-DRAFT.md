@@ -1,5 +1,10 @@
 # Finite native-time evaluation contract — source-grounded design draft
 
+## Reviewed next mechanism — owner local-code decision pending
+
+IMMUTABLE-TIME-PUBLICATION-LOCAL-DESIGN.md recommends a cooperating trusted V2 producer publishing complete fresh files, with bounded descriptor-based consumption of those unmodified files. This is distinct from unsupported descriptor-copy of concurrently modified vendor SHM. It removes that copy/16-bit-counter dependency but adds explicit producer/format/fatal-failure/constructor/retention qualification. Three independent file-only reviews passed; IMMUTABLE-TIME-PUBLICATION-LOCAL-REVIEW.json binds the exact design. Local implementation requires new owner approval; no adoption, native action, resource, clock guarantee or enablement follows. Earlier candidates below remain historical evidence, not concurrent implementation instructions.
+
+
 This records the three parallel assessments after the completed four-file audit. It is DESIGN ONLY, not code, library adoption or real qualification. The authorization/physical-send boundary decision in AUTHORIZATION-LINEARIZATION-DECISION.md takes priority over implementing a new generic time port.
 
 ## Current structural-audit correction
