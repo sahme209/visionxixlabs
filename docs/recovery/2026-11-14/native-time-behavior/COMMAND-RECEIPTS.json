@@ -1,0 +1,324 @@
+{
+  "accepted": true,
+  "records": [
+    {
+      "phase": "source-head",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0016783330000009755,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 41
+      }
+    },
+    {
+      "phase": "compiler-launcher-headers-0",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.24206517600000055,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 8463
+      }
+    },
+    {
+      "phase": "compiler-launcher-compile",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 1.1123590730000004,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "compiler-fixture-headers-0",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.02456784299999981,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 7715
+      }
+    },
+    {
+      "phase": "compiler-fixture-compile",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.07894700099999952,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "compiler-profile-description",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0011228559999985066,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 11959
+      }
+    },
+    {
+      "phase": "compiler-isolation-fixture",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.013703637000002544,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 67
+      }
+    },
+    {
+      "phase": "worker-headers-0",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.011337785999998573,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 3288
+      }
+    },
+    {
+      "phase": "worker-headers-1",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.010681351000002337,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 2070
+      }
+    },
+    {
+      "phase": "worker-headers-2",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.01811843799999835,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 6322
+      }
+    },
+    {
+      "phase": "worker-compile",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.33646602800000025,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 2843,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "worker-elf",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.05892061700000184,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 979
+      }
+    },
+    {
+      "phase": "worker-symbols",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.6007622460000022,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 1687
+      }
+    },
+    {
+      "phase": "stall-headers-0",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.029071000000001845,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 1948
+      }
+    },
+    {
+      "phase": "stall-compile",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.04173453700000351,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "stall-elf",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.002201669000001516,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 979
+      }
+    },
+    {
+      "phase": "stall-symbols",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0398938479999984,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 798
+      }
+    },
+    {
+      "phase": "fixture-module-headers-0",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.01688423100000591,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 6358
+      }
+    },
+    {
+      "phase": "fixture-module-headers-1",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.022943150000003243,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 8308
+      }
+    },
+    {
+      "phase": "fixture-module-headers-2",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.010518668999999647,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 2070
+      }
+    },
+    {
+      "phase": "fixture-module-headers-3",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.01671711999999559,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 6322
+      }
+    },
+    {
+      "phase": "fixture-module-compile",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.6899486140000022,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 11033,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "fixture-module-elf",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.002227799000003472,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 958
+      }
+    },
+    {
+      "phase": "fixture-module-symbols",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.042386224999994226,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 2850
+      }
+    },
+    {
+      "phase": "module-unresolved-symbols",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.04004057399999539,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 3249
+      }
+    },
+    {
+      "phase": "runtime-launcher-headers-0",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0191270289999963,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 8005
+      }
+    },
+    {
+      "phase": "runtime-launcher-compile",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.10008451000000207,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "runtime-profile-description",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.00114439700000446,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 10632
+      }
+    },
+    {
+      "phase": "native-four-cases",
+      "status": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.037151332000000536,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 139
+      }
+    }
+  ]
+}
