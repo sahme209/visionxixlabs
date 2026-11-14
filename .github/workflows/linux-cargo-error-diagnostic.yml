@@ -1,0 +1,43 @@
+name: One approved Cargo-only error observation
+
+# One fixed transition; diagnostic evidence cannot replace full build acceptance.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'scripts/governance_cargo_error_diagnostic.py'
+      - 'scripts/tests/test_governance_cargo_error_workflow.py'
+      - 'scripts/tests/test_governance_cargo_error_diagnostic.py'
+      - '.github/workflows/linux-cargo-error-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  cargo-error:
+    name: Cargo-only error observation (no Governance runtime)
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.repository.private == false &&
+      github.event.action == 'synchronize' &&
+      github.event.number == 331 &&
+      github.event.pull_request.number == 331 &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-live-qualification-setup' &&
+      github.event.before == '47adbced23b378f4f4789a6bec8d836641785240' &&
+      github.event.after == github.event.pull_request.head.sha &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact observation head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One bounded Cargo-only observation
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_cargo_error_diagnostic.py --approved-ci-once

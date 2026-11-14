@@ -1,5 +1,10 @@
 # Axiom master action plan
 
+## Approved Cargo-only observation — November14, prepared
+
+Owner approved one conditional Cargo-only check. Exact source/packet44a5d9c1165e1a7994934ef3fdf63fbc1400a9c9251b731d7393125657392061 passes15pure/source checks and independent10-file final review. All5shared controller/supervisor/profile/launcher sources remain unchanged. ONE existingPR331 transition from remote47adbce is next, five-minute free standard runner, one15second Cargo child plus5cleanup, bounded16KiB strictUTF8/known-path-redacted JSON error. No Rust probe or full build repeat, profile widening, credential/provider/production action or spending. At this preparation checkpoint no new native invocation has occurred; prior attempts remain consumed. Receipt: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/CARGO-ERROR-PREPARED-RECEIPT.json`. Older pending statements below are historical; full compiler, real qualification and full master scope remain incomplete/unaccepted.
+
+
 ## Focused diagnostic completed — November14, source47adbce
 
 The approved ONE diagnostic run43592176140 completed: ordinary Rust spawn succeeds; no-op pre_exec refuses errno1; tiny Cargo exits101 with316stderr bytes/no output/unclassified cause; every owned child group stopped. All7existing exact-head CI checks PASS. Full compiler is correctly SKIPPED and remains UNACCEPTED, so PR331 staysOPEN/UNMERGED; Governance remains incomplete/disabled. This permission isCONSUMED. My classifier discarded the unrecognized Cargo message; a separately reviewed Cargo-only/path-redacted-error amendment is now PENDING, not authorized. No retry, profile change, full build or production action follows. Complete observation/checks/proposal: `docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/{RUST-SPAWN-RESULT.md,RUST-SPAWN-PR331-CHECKS.json,CARGO-ERROR-OBSERVATION-PROPOSAL.md}`. Active authoring checkout is the recovered non-Documents path stated below; original source/storage preserved.

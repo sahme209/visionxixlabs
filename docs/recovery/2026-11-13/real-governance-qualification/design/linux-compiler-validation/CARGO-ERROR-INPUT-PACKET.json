@@ -1,0 +1,15 @@
+{
+  "kind": "one-pr331-cargo-error-v1",
+  "files": {
+    ".github/workflows/linux-cargo-error-diagnostic.yml": "c46f58e22f375d2b637465a72b6583b5b6594d34a920f4edd02315d17d9a1cb1",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/RUST-SPAWN-OBSERVED-RESULT.json": "1ded861fe3a7f27a8ab313740c8a418d3ddf90d37e86286ba90b5fb68420522b",
+    "scripts/governance_cargo_error_diagnostic.py": "c3adcc88520cac8c852ea799e9e5c5671d9517a2a9aed2727983ffc2c7894017",
+    "scripts/governance_linux_compile.py": "201c4c75a8d41a422b940d05ae57b2d5695875343c24e3fc508b9ab3bf6e0afb",
+    "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
+    "scripts/governance_rust_spawn_diagnostic.py": "fb03466e0f732b52841e2d246b0779db5c2294861203a941a04a1d2f8baaec2e",
+    "scripts/linux-compile/compiler_profile.h": "a9037954185e1b7e5e87ace0050df6dd76df9f1ec9b64ca8ae78d874bf080beb",
+    "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
+    "scripts/tests/test_governance_cargo_error_diagnostic.py": "482398ab6aaf13e958e24cfe66d4efb76e6d4973e6e8199af4fc29449ee56c98",
+    "scripts/tests/test_governance_cargo_error_workflow.py": "2ea4547e6db3459fe79fd0bf1f8b47fb5ce1005a87f66f3e563dc40944cb85b0"
+  }
+}
