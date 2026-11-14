@@ -1,0 +1,37 @@
+name: One approved role-free native behavior checkpoint
+
+# One fresh opened PR on the exact reviewed branch; never sync or rerun.
+on:
+  pull_request:
+    types: [opened]
+    paths:
+      - 'scripts/governance_native_time_behavior.py'
+      - '.github/workflows/linux-native-time-behavior.yml'
+permissions:
+  contents: read
+jobs:
+  native-behavior:
+    name: Four synthetic native resource cases (no time authority)
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.repository.private == false &&
+      github.event.action == 'opened' &&
+      github.event.number > 0 &&
+      github.event.number == github.event.pull_request.number &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-native-time-behavior' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact reviewed PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One bounded role-free fixture run
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_native_time_behavior.py --approved-ci-once

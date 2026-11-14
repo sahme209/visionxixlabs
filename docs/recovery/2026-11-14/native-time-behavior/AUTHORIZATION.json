@@ -1,0 +1,22 @@
+{
+  "ownerReply": "Approve conditional native test batch",
+  "callId": "call_37037d62a37247b0ac88721ba25e9d42",
+  "proposal": "docs/recovery/2026-11-14/native-worker-local/NATIVE-BEHAVIOR-PROPOSAL.md",
+  "proposalSha256": "c49ff77af20ce99edb18dbc15f420262fd08776f0b131d8cbb15b4a665fa72c7",
+  "scope": "Preparation, independent source/profile/packet review, then ONE standard free Linux native behavior run",
+  "maxJobMinutes": 15,
+  "maxControllerSeconds": 300,
+  "maxNodeSeconds": 10,
+  "maxOwnedCleanupSeconds": 5,
+  "attemptConsumed": false,
+  "noRetries": true,
+  "trustedFixedSourceOnly": true,
+  "productionIsolationClaim": false,
+  "timeAuthority": false,
+  "credentials": false,
+  "cloudResources": false,
+  "database": false,
+  "deployment": false,
+  "governanceEnablement": false,
+  "spending": false
+}

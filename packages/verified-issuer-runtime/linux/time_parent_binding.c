@@ -34,6 +34,9 @@ struct parent {
  napi_env env;pthread_mutex_t lock;unsigned refs;
  int retired,active_hold,directory_fd,worker_fd;char generation[129];
  struct axiom_time_context context;
+#ifdef AXIOM_TIME_BEHAVIOR_TEST
+ struct axiom_time_test_observation *test_observation;
+#endif
 };
 struct held {
  struct parent *parent;unsigned refs,operation_refs;int release_requested,closed,close_unknown,started;
@@ -70,7 +73,15 @@ static void parent_unref(struct parent *p){
 }
 static void hold_close_locked(struct held *h){
  if(h->release_requested&&!h->operation_refs&&!h->closed){
-  h->closed=1;h->parent->active_hold=0;if(close(h->original_source_fd)){h->close_unknown=1;retire_locked(h->parent);}h->original_source_fd=-1;
+  h->closed=1;h->parent->active_hold=0;
+#ifdef AXIOM_TIME_BEHAVIOR_TEST
+  if(h->parent->test_observation){atomic_fetch_add(&h->parent->test_observation->close_attempts,1);atomic_store(&h->parent->test_observation->close_operation_refs,h->operation_refs);}
+#endif
+  int close_result=close(h->original_source_fd);
+  if(close_result){h->close_unknown=1;retire_locked(h->parent);}h->original_source_fd=-1;
+#ifdef AXIOM_TIME_BEHAVIOR_TEST
+  if(h->parent->test_observation){atomic_store(&h->parent->test_observation->close_result,close_result?1:0);atomic_store(&h->parent->test_observation->closed,h->closed);atomic_store(&h->parent->test_observation->close_unknown,h->close_unknown);}
+#endif
  }
 }
 static void hold_unref(struct held *h){
@@ -166,7 +177,11 @@ static napi_value release_cb(napi_env e,napi_callback_info i){return queue_opera
 static napi_value current_cb(napi_env e,napi_callback_info i){return queue_operation(e,i,CURRENT);}
 static napi_value observe_cb(napi_env e,napi_callback_info i){return queue_operation(e,i,OBSERVE);}
 static void signal_cancel(struct child *c){
- struct parent *p=c->hold->parent;pthread_mutex_lock(&p->lock);c->cancelled=1;uint64_t one=1;if(c->cancel_fd>=0)(void)write(c->cancel_fd,&one,sizeof(one));pthread_mutex_unlock(&p->lock);
+ struct parent *p=c->hold->parent;pthread_mutex_lock(&p->lock);
+#ifdef AXIOM_TIME_BEHAVIOR_TEST
+ if(!c->cancelled&&p->test_observation){uint64_t at;if(monotonic(&at))atomic_store(&p->test_observation->cancel_at,at);}
+#endif
+ c->cancelled=1;uint64_t one=1;if(c->cancel_fd>=0)(void)write(c->cancel_fd,&one,sizeof(one));pthread_mutex_unlock(&p->lock);
 }
 static void child_unref(struct child *c){
  struct parent *p=c->hold->parent;int done;pthread_mutex_lock(&p->lock);done=!--c->refs;pthread_mutex_unlock(&p->lock);
@@ -224,7 +239,11 @@ static void execute_child(napi_env e,void *data){
   }
   if(!c->reaped){siginfo_t info;memset(&info,0,sizeof(info));
    if(waitid(P_PIDFD,(id_t)c->pidfd,&info,WEXITED|WNOHANG)<0){if(errno==ECHILD)failed=1;break;}
-   if(info.si_pid){c->reaped=1;c->normal_exit=info.si_code==CLD_EXITED&&info.si_status==0;}
+   if(info.si_pid){c->reaped=1;c->normal_exit=info.si_code==CLD_EXITED&&info.si_status==0;
+#ifdef AXIOM_TIME_BEHAVIOR_TEST
+    if(p->test_observation){atomic_store(&p->test_observation->reap_code,(uint64_t)info.si_code);atomic_store(&p->test_observation->reap_status,(uint64_t)info.si_status);atomic_store(&p->test_observation->owned_reap,1);}
+#endif
+   }
   }
   if(c->reaped&&c->frame_eof)break;
   if(!deadline_poll(c,killed?cleanup_deadline:c->deadline)){failed=1;}
@@ -275,6 +294,9 @@ static napi_value start_cb(napi_env e,napi_callback_info info){
  memcpy(wire_context.generation,p->generation,strlen(p->generation)+1);wire_context.publisher_uid=p->context.publisher_uid;wire_context.reader_gid=p->context.reader_gid;wire_context.directory_device=p->context.directory_device;wire_context.directory_inode=p->context.directory_inode;
  if(axiom_worker_context_encode(&wire_context,c->bootstrap,sizeof(c->bootstrap),&c->bootstrap_length)!=0)goto before_queue_fail;
  uint64_t now;if(!c->bootstrap_length||!monotonic(&now))goto before_queue_fail;c->deadline=now+500000000;
+#ifdef AXIOM_TIME_BEHAVIOR_TEST
+ if(p->test_observation)atomic_store(&p->test_observation->deadline,c->deadline);
+#endif
  c->cancel_fd=eventfd(0,EFD_CLOEXEC|EFD_NONBLOCK);
  if(c->cancel_fd<0||pipe2(pipes,O_CLOEXEC)||pipe2(pipes+2,O_CLOEXEC))goto before_queue_fail;
  c->result_fd=pipes[0];c->bootstrap_fd=pipes[3];
@@ -316,6 +338,9 @@ napi_status axiom_time_parent_create_private(napi_env e,const struct axiom_time_
  if(flags<0||(flags&O_ACCMODE)!=O_RDONLY||fstat(b->worker_elf_fd,&st)||!S_ISREG(st.st_mode))return napi_invalid_arg;
  unsigned char magic[4];if(pread(b->worker_elf_fd,magic,4,0)!=4||memcmp(magic,"\177ELF",4))return napi_invalid_arg;
  struct parent *p=calloc(1,sizeof(*p));if(!p)return napi_generic_failure;
+ #ifdef AXIOM_TIME_BEHAVIOR_TEST
+ p->test_observation=b->test_observation;
+#endif
  p->env=e;p->refs=1;p->directory_fd=-1;p->worker_fd=-1;if(pthread_mutex_init(&p->lock,NULL)){free(p);return napi_generic_failure;}
  p->directory_fd=fcntl(b->directory_fd,F_DUPFD_CLOEXEC,8);p->worker_fd=fcntl(b->worker_elf_fd,F_DUPFD_CLOEXEC,8);
  if(p->directory_fd<0||p->worker_fd<0){parent_unref(p);return napi_generic_failure;}

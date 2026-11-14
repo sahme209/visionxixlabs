@@ -5,7 +5,7 @@ This is an unweighted count of closed final readiness areas, not a percentage of
 | Gate | Status | Evidence / next action |
 |---|---|---|
 | G1 — actual Linux compiler/artifact | CLOSED | PR331/maina36a8947 green daemon C/Rust artifact; PR332d9cd63ee worker ELF/private parent object compiler checkpoint PASS, all17 phases/cleanup and22pins reviewed. No target launch. |
-| G2 — real bounded worker and parent | PARTIAL | Actual source+compile and55mocked TS tests exist. Next is finite role-free native resource/process behavior. Genuine protected lifecycle/currentness and actual native qualification remain required. |
+| G2 — real bounded worker and parent | PARTIAL | Actual source/compile plus four real instrumented resource/process cases PASS in run43622733276 with29 phases/cleanup and exact27-input packet. This closes the role-free behavior substep. Genuine protected lifecycle/currentness and full native qualification remain required. |
 | G3 — accepted source/rate/lifetime policy and protected producer startup | OPEN | No accepted production policy mint; current producer stillUnknown without genuine authority. Protected bootstrap/startup and physical/source/lifecycle acceptance remain. |
 | G4 — Linux private application package and credential custody | OPEN | Private source graph exists; installed/resource-owned package, real custody/fleet/credential closure not qualified. |
 | G5 — usable genuine requester/reviewer/provider journey | OPEN | Isolated/simulated validation exists. Actual separate people through accepted clients and one authorized provider action/readback/cleanup remain. |
