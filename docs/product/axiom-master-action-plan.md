@@ -1,3 +1,11 @@
+## November14 — PR332 merged; dependency patch and real native test next
+
+PR332 merged normally as `f9dae18159d5927057812ebe71a0680a630cc98e` after all seven final ordinary checks passed, including Typecheck + Vitest. The separately approved actual worker/parent compile proof remains accepted; the final documentation head preserves all22 compiled inputs. No worker was launched by that checkpoint; full Governance remains INCOMPLETE/DISABLED.
+
+Owner requested resolution of PR318. Its conflicted/red Dependabot JOSE update must be recreated through the mandatory dependency-fix workflow, not merged red or hand-edited. Workflow43620849583 passed and generated `deps/audit-fix-43620849583`: JOSE6.2.16 plus automatic transitive Hono4.13.18/node-server2.1.8 patches; no other package changes. Source/lock/pin review is in `docs/recovery/2026-11-14/jose-patch/`. Exact-head required CI/normal merge remain gates; not deployed. The stale Dependabot PR is superseded only after the replacement is verified, never silently called merged.
+
+Owner call_37037d62a37247b0ac88721ba25e9d42 approved the reviewed conditional native-behavior batch: fixed synthetic capture/replacement/cancellation/foreign-handle cases, trusted fixed-source runtime with networking blocked, independent source/profile/packet review, then ONE free standard Linux run. Preparation is in progress; no runtime attempt has occurred. This is not hostile-code isolation, UTC/policy/custody qualification or enablement. Original credential/provider/database/production/human-approval gates remain unchanged. Do not rerun historical passing builds.
+
 # Axiom master action plan
 
 ## November14 — actual worker/parent compilation PASSED; runtime qualification still open
@@ -1940,3 +1948,10 @@ ActualcorrectedPR331/head12d5c45e run43558087222/job132335395517 passes trustedl
 
 ### November13 — direct-object correction prepared; fresh native decision required
 Sourceassessment foundour separateGNUar archive is unnecessary for the SAME fullC/Rustfinal-link target. Localcommandtests reproduce2FAIL/14PASS then16PASS; combined46pure/mocked/owned-file checksPASS. CoreRuststaticlib nowretainsplainexternuntilfinalwholeRust.a+explicit time_publication.o; same deadcode/no-undefined/4C+Rustsymbol/ELF/source checks stay. No profile/syscall/timeout widening. Nativefilter/fixture/producer/upstream21of24pins EXACTmatch realpassedpreflightpacket2; onlydriver/test/workflowchange. Independentcode+24filepacket3reviewCLEAR (SHA6c37456bc5c0b41796d0a19dd31753e65fc198c4071b91f0327b17b5c50a7fdf). Diagnostictraceproposal NOTSELECTED; no stracemanual/ptrace/newpublicread. GNUartimeoutcauseUNKNOWN; internalRustarchiving/nativeRustcompile/final link remainUNVERIFIED. NEWnativeapproval needed foronePR331syncfrom12d5 andsame45minfreejob; no push/run/merge/deploy yet for this repair. Prior2nativeattemptsconsumed/historypreserved. FullGovernance/master/live/owner/production gates remain. See DIRECT-OBJECT-EXECUTION-REVIEW.md.
+
+
+## November14 — owner-favored Backdrop live-space references (deferred)
+
+Owner supplied13 Backdrop screenshots and said “LOVE THESE LIVE IMAGES”: ASCII Black Hole/ASCII Gargantua, cinematic gold/white accretion rings, blue Event Horizon, dark sparse Space Particles and blue Stardust; the holographic Glitch Skull is an additional material/point-cloud reference, not an Axiom product symbol. Screenshots establish aesthetic preference only, not verified animation behavior, performance, licensing or asset rights.
+
+Evaluate an original, restrained Axiom interpretation after current Governance priorities: sparse particles for integrations/data flow, orbital paths for releases/environment promotion, and a precise luminous boundary for review/permission gates. Keep hierarchy, clean/minimal composition, calm power and readable content first; avoid literal destructive black-hole metaphors for customer data, generic decorative clutter or a skull on trust/security screens. ASCII may be an optional technical-detail treatment, not the whole-site reading surface. Preserve reduced-motion/static alternatives, bounded GPU/transfer budgets and mobile accessibility. Research/recommendations/local owner preview precede implementation; no downloads, paid assets, installs, website edits or deployment are authorized by this preference.

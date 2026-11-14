@@ -1,3 +1,11 @@
+## November14 — PR332 merged; dependency patch and real native test next
+
+PR332 merged normally as `f9dae18159d5927057812ebe71a0680a630cc98e` after all seven final ordinary checks passed, including Typecheck + Vitest. The separately approved actual worker/parent compile proof remains accepted; the final documentation head preserves all22 compiled inputs. No worker was launched by that checkpoint; full Governance remains INCOMPLETE/DISABLED.
+
+Owner requested resolution of PR318. Its conflicted/red Dependabot JOSE update must be recreated through the mandatory dependency-fix workflow, not merged red or hand-edited. Workflow43620849583 passed and generated `deps/audit-fix-43620849583`: JOSE6.2.16 plus automatic transitive Hono4.13.18/node-server2.1.8 patches; no other package changes. Source/lock/pin review is in `docs/recovery/2026-11-14/jose-patch/`. Exact-head required CI/normal merge remain gates; not deployed. The stale Dependabot PR is superseded only after the replacement is verified, never silently called merged.
+
+Owner call_37037d62a37247b0ac88721ba25e9d42 approved the reviewed conditional native-behavior batch: fixed synthetic capture/replacement/cancellation/foreign-handle cases, trusted fixed-source runtime with networking blocked, independent source/profile/packet review, then ONE free standard Linux run. Preparation is in progress; no runtime attempt has occurred. This is not hostile-code isolation, UTC/policy/custody qualification or enablement. Original credential/provider/database/production/human-approval gates remain unchanged. Do not rerun historical passing builds.
+
 # Axiom current execution board
 
 ## November14 — actual worker/parent compilation PASSED; runtime qualification still open
