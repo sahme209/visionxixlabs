@@ -1,0 +1,9 @@
+{
+  "limits": "No per-FD attestation, external-address capability, full-build fix, libc syscall mapping, native time/custody qualification, merge acceptance or activation established. Actual fixed fixtures must test candidate mapping; any unsupported/unknown stops without widening/retry. Prior failures and historical review retained.",
+  "priorReview": "BUILD-IPC-COMPATIBILITY-DESIGN-REVIEW.json",
+  "proposalSha256": "34950630da38c1e09eb89ea4289bf8a7e600472cceb7f6701afd1e0d3b9df50f",
+  "resolvedSafetyClarification": "Explicit paragraph forbids setsid in a new child or any valid group/session change; retained denials use actual captured program and safe invalid probes only where distinguishable. Kernel group-leader EPERM is not misrepresented as filter enforcement.",
+  "reviewKind": "Final independent complete proposal reread; design/source only. No code/native/test/compiler/child/network/external operation.",
+  "scope": "Exactly three build-only compatibility changes: FIONBIO; AF_UNIX exact SEQPACKET|CLOEXEC/protocol0 anonymous pair; candidate recvfrom len8/flags0/null-address/null-length. One shared45minute conditional fixtures then tiny Cargo then actual pinned full build/link, only after exact independent implementation/packet review and fresh owner authority.",
+  "verdict": "CLEAR"
+}

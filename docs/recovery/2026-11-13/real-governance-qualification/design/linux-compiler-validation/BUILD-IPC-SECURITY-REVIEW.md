@@ -1,0 +1,15 @@
+# Independent policy/design review — build-only local IPC compatibility
+
+Verdict: CLEAR for the explicit owner decision on this finite build-only boundary change and one conditional validation/build attempt. No profile/code/native/compiler/workflow/provider action or new external read was performed for this review.
+
+The observed captured-output panic and cached Linux Rust chain ground the FIONBIO selector need. The distinct pre_exec result grounds a separate local-channel compatibility question; the proposal correctly avoids asserting Cargo selected that path. Treating both known requirements in one reviewed profile/fixture/tiny/full sequence avoids blind one-syscall retries without granting unknown future requirements.
+
+The proposed local-channel predicates are meaningfully narrow: exact full-word AF_UNIX, SOCK_SEQPACKET|SOCK_CLOEXEC, protocol0; read length8/flags0/null source-address pointers; and no other socket creation, connection, send/ancillary receive, pidfd descriptor import or process-group/session escape. With original inherited-FD closure and the retained launch context, this permits communication only on newly created anonymous local endpoints, not choosing an external address. FIONBIO changes mode on an existing descriptor; it does not itself create a network endpoint or a privilege.
+
+These guarantees are correctly conditional on that original descriptor/launcher context. Classic BPF cannot attest that an arbitrary FD is a pipe or this particular pair, nor inspect the pointed-to ioctl integer. The proposal explicitly does not claim per-FD provenance, host-filesystem isolation or protection against same-user collusion. It remains a compiler restriction, never a production custodian/clock/customer profile.
+
+Preparation must independently inspect the actual full-word argument predicates/BPF offsets/jumps and bounded instruction program, then test real allowed/denied cases without an external destination. A superficial source-string test or successful anonymous transfer alone cannot prove wrong-family/type/protocol/flags/pointers are denied. Missing or unexpected kernel/libc behavior is a stop condition, not permission for another ABI/socket variant.
+
+The single45-minute standard public job with one shared deadline, original bounded group cleanup, exact PR331 before207cf145a15b87c07206027fc2e2f08511b3523a transition and preserved historical packets is finite. Fixtures must ALL pass before the unchanged tiny Cargo invocation; tiny acceptance and unchanged source/tool/cleanup evidence must precede the full frozen build. Only its explicit locked fetch uses networking. No full Governance executable runs, and a success does not replace remaining real runtime/time/custody/human/provider qualification or authorize production/merge bypass.
+
+No material design contradiction found. The all-socket-denied build policy is explicitly amended rather than silently reinterpreted; owner approval and exact source/packet review still precede implementation/execution as specified.

@@ -1,0 +1,66 @@
+{
+  "head": "207cf145a15b87c07206027fc2e2f08511b3523a",
+  "pr": 331,
+  "checks": [
+    {
+      "id": 132484212902,
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132484213060,
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132484213112,
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132484213157,
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132484213288,
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132485640642,
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132484212748,
+      "name": "isolated-website",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "cargoOnly": {
+    "run": 43607174394,
+    "job": 132484213088,
+    "diagnosticConclusion": "success",
+    "cargoExit": 101,
+    "compilerAccepted": false
+  },
+  "rustProbe": {
+    "run": 43607174304,
+    "conclusion": "skipped"
+  },
+  "fullCompiler": {
+    "run": 43607174246,
+    "conclusion": "skipped",
+    "accepted": false
+  },
+  "mergeAuthorized": false,
+  "productionChanged": false
+}
