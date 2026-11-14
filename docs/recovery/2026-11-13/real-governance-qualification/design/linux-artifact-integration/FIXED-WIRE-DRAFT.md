@@ -19,7 +19,7 @@ AXIOM_TIME_CAPTURE_V1\n
 END_CAPTURE\n
 ```
 
-The notation above describes raw LF-delimited bytes, not literal backslash-n text, extra blank lines or a JSON string. Numeric lines are canonical unsigned decimal without sign, spaces or leading zeros except0. Device/inode are uint64; native timestamps are nonnegative signed63-range; byte length is1..4096. The record is the existing exact12-line AXIOM_TIME_V1 codec and supplies its own generation, publication and marker. No native struct, padding, FD number, pointer or host-endian integer is transmitted.
+The notation above describes raw LF-delimited bytes, not literal backslash-n text, extra blank lines or a JSON string. Numeric lines are canonical unsigned decimal without sign, spaces or leading zeros except0. Device/inode are uint64; native timestamps are nonnegative signed63-range; byte length is1..4096. The record is the current exact12-line AXIOM_TIME_V2 / clockbound-precise-origin-v1 codec (V1 is historical decode only, never live admission) and supplies its own generation, publication and marker. No native struct, padding, FD number, pointer or host-endian integer is transmitted.
 
 Envelope limit:4608bytes total, independently of the4096-byte publication limit. Longest header is at most153bytes (22-byte version line, six at-most21-byte numeric lines, five-byte maximum length line); trailer is12bytes. Thus maximum bounded payload is4261bytes, below4608. Reject a second frame, extra byte, missing trailer/EOF, truncation, noncanonical integer, malformed record, signaled/nonzero exit or output overflow. The worker cannot return an ExecutionTimeSource result or assert time_authority=1.
 

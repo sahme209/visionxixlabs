@@ -1,14 +1,14 @@
 # Current Governance qualification critical path
 
-Source checkpoint:2a332931. This is the current finite work map, not a completed-Governance statement. Historical records stay intact.
+Runtime source checkpoint:f8bf76cb; compiler procedure is subsequent preparation, not native acceptance. This is the current finite work map, not a completed-Governance statement. Historical records stay intact.
 
 | Requirement | Current authoritative evidence | What is still missing |
 |---|---|---|
-| Original approval/one-attempt execution graph | Shared private graph in linuxComposition.ts and original native custodian/JWT/STS/ECS; current19460ordinary tests+strict types; historical230actualSQL/build only85749ff6 | Real native source/profile delivery and human/provider qualification; no refresh of old SQL/build claim |
-| Exact immutable producer/control integration | Pinned three-file patch, owned V2 context, mandatory startup/disruption/pre-correction invalidation; source/codec tests and independent review | Actual upstream build/link/private executable invocation; source-only patch is not running |
+| Original approval/one-attempt execution graph | Shared private graph in linuxComposition.ts and original native custodian/JWT/STS/ECS; current19478ordinary tests+strict types; historical230actualSQL/build only85749ff6 | Real native source/profile delivery and human/provider qualification; no refresh of old SQL/build claim |
+| Exact immutable producer/control integration | Current nineteen-file precise-origin patch, owned V2 context, mandatory startup/disruption/pre-correction invalidation; source/codec tests and independent review | Approved compile/link procedure is being frozen; actual build/link and private executable invocation remain unverified |
 | Native reader and protected parent | Existing raw C capture plus implemented TS supervisor; exact proposed4608-byte envelope/map | Actual fixed worker/addon/process ownership/reap/resource supplier and native ABI |
 | Valid conservative time authority | Conditional exact interval arithmetic; Unknown/Disrupted refused by real reader | Actual trustworthy bound epoch, projection/rate/lifetime and disruption/lifecycle supply; clock resolution alone is insufficient |
-| Complete immutable upstream inputs | Saved recursive413-entry/322-blob tree; one approved source archive now complete: all322blob hashes/permissions independently verified | Source-origin/main/Cargo assessments now complete; actual locked dependency/toolchain/artifact build and qualification still absent; no execution/adoption permission |
+| Complete immutable upstream source inputs | Saved recursive413-entry/322-blob tree; one approved source archive now complete: all322blob hashes/permissions independently verified | Source-origin/main/Cargo assessments now complete; actual locked dependency/toolchain/artifact build and qualification still absent; no execution/adoption permission |
 | Linux target/artifact | Mac artifact retained; separate Linux proposal/consumer trace reviewed | Exact Linux ABI/OS/runtime/tool inputs and concrete private launcher; no reuse of Mac attestation as Linux proof |
 | Real test resources/cost | Historical same-account Ohio network inventory; zero ECS clusters observed; role-free phase and later human/provider phases separated | Complete numeric quote, exact resource/IAM/network/retention/cleanup manifest and owner authorization before creation; no free-credit assumptions |
 | Real qualification | Existing ordinary/intercepted and isolated database evidence remains | Actual role-free native isolation/time/failure trials, credential custody, genuine independent people, one approved provider action/readback and liabilities/cleanup |
