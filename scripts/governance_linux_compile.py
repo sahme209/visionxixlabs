@@ -11,10 +11,10 @@ import time
 REPOSITORY = 'sahme209/visionxixlabs'
 BRANCH = 'codex/governance-live-qualification-setup'
 TARGET = 'x86_64-unknown-linux-gnu'
-PACKET = 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/INPUT-PACKET-2.json'
+PACKET = 'docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/INPUT-PACKET-3.json'
 PR_NUMBER=331
-BEFORE='ecfb83c98b809a6a6cbe0d80c0fd309ba9a99769'
-PACKET_KIND='one-sync-pr331-linux-compile-seccomp-v2'
+BEFORE='12d5c45e7883bc50e9142dfa1e38cc1602b77a43'
+PACKET_KIND='one-sync-pr331-linux-direct-object-v3'
 HEX = re.compile(r'[0-9a-f]{40}\Z')
 NATIVE = frozenset(['-lgcc_s','-lutil','-lrt','-lpthread','-lm','-ldl','-lc'])
 
@@ -117,17 +117,16 @@ def clean_environment(root, rustc, rustdoc):
             'CARGO_TERM_COLOR':'never','CARGO_INCREMENTAL':'0','LANG':'C.UTF-8','LC_ALL':'C.UTF-8',
             'GIT_CONFIG_NOSYSTEM':'1','GIT_CONFIG_GLOBAL':'/dev/null','GIT_TERMINAL_PROMPT':'0'}
 
-def core_command(cargo, native):
+def core_command(cargo):
     return [str(cargo),'rustc','--locked','--offline','--target',TARGET,'--package','clock-bound','--lib',
             '--no-default-features','--features','daemon','--crate-type','staticlib','--',
-            '-C','link-dead-code=yes','--print','native-static-libs','-L',f'native={native}','-l','static=axiom_time']
+            '-C','link-dead-code=yes','--print','native-static-libs']
 
 def link_command(cc, native, static, libraries):
-    # Rust staticlib may bundle its native dependency already. Do not force a
-    # second copy of the C object with whole-archive; normal archive resolution
-    # supplies it only if the staticlib has not bundled it.
+    # Keep the real C reference unresolved in the Rust staticlib, then resolve
+    # it here with the exact compiled object. No separate C archive is needed.
     return [str(cc),str(native/'link_only.c'),'-Wl,--no-undefined','-Wl,--whole-archive',str(static),
-            '-Wl,--no-whole-archive',str(native/'libaxiom_time.a'),*libraries,'-o',str(native/'link_only')]
+            '-Wl,--no-whole-archive',str(native/'time_publication.o'),*libraries,'-o',str(native/'link_only')]
 
 def verify_source(source, manifest):
     expected={name:(digest,length) for name,digest,length in manifest}
@@ -184,7 +183,7 @@ def main():
     deadline=time.monotonic()+2400
     phase='initialization';records=[]
     # Fixed absolute tools; no rustup install/update/alternate compiler.
-    tools={name:Path('/usr/bin')/name for name in ['cc','ar','nm','readelf','git','true']}
+    tools={name:Path('/usr/bin')/name for name in ['cc','nm','readelf','git','true']}
     for file in tools.values(): need(file.is_file(), 'missing_installed_tool')
     tools={name:path.resolve(strict=True) for name,path in tools.items()}
     frozen_files={}
@@ -274,9 +273,7 @@ def main():
         native=root/'native'
         run('c-object',[str(tools['cc']),'-std=c11','-O0','-Wall','-Wextra','-c',str(inputs['nativeC']),'-o',str(native/'time_publication.o')],isolated=True,timeout=30)
         add_frozen(frozen_files,native/'time_publication.o')
-        run('c-archive',[str(tools['ar']),'rcs',str(native/'libaxiom_time.a'),str(native/'time_publication.o')],isolated=True,timeout=10)
-        add_frozen(frozen_files,native/'libaxiom_time.a')
-        out,err=run('rust-staticlib',core_command(paths['cargo'],native),isolated=True,timeout=1500,cwd=source)
+        out,err=run('rust-staticlib',core_command(paths['cargo']),isolated=True,timeout=1500,cwd=source)
         libraries=native_libraries(out+'\n'+err)
         verify_packet(repo,frozen_packet);verify_source(source,inputs['manifest'])
         need((source/'Cargo.lock').read_bytes()==lock,'lock_changed')
@@ -294,7 +291,7 @@ def main():
         verify_symbols(symbols)
         elf,_=run('elf-header',[str(tools['readelf']),'-h',str(executable)],isolated=True,timeout=10)
         need('ELF64' in elf and 'Advanced Micro Devices X86-64' in elf,'wrong_link_target')
-        result['outputs']={str(p.relative_to(root)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in [static,native/'time_publication.o',native/'libaxiom_time.a',executable]}
+        result['outputs']={str(p.relative_to(root)):{'bytes':p.stat().st_size,'sha256':hashlib.sha256(p.read_bytes()).hexdigest()} for p in [static,native/'time_publication.o',executable]}
         verify_packet(repo,frozen_packet);verify_source(source,inputs['manifest'])
         result['accepted']=True
     except BaseException as error:

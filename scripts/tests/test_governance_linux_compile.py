@@ -12,7 +12,7 @@ class CompilerPlanTests(unittest.TestCase):
         spec.loader.exec_module(cls.m)
 
     def event(self):
-        return {'action':'synchronize','number':331,'before':'ecfb83c98b809a6a6cbe0d80c0fd309ba9a99769','after':'a'*40,'repository':{'full_name':'sahme209/visionxixlabs','private':False},'pull_request':{'number':331,'base':{'ref':'main','repo':{'full_name':'sahme209/visionxixlabs'}},'head':{'ref':'codex/governance-live-qualification-setup','sha':'a'*40,'repo':{'full_name':'sahme209/visionxixlabs'}}}}
+        return {'action':'synchronize','number':331,'before':'12d5c45e7883bc50e9142dfa1e38cc1602b77a43','after':'a'*40,'repository':{'full_name':'sahme209/visionxixlabs','private':False},'pull_request':{'number':331,'base':{'ref':'main','repo':{'full_name':'sahme209/visionxixlabs'}},'head':{'ref':'codex/governance-live-qualification-setup','sha':'a'*40,'repo':{'full_name':'sahme209/visionxixlabs'}}}}
 
     def test_exact_single_sync_transition_for_existing_pr331_only(self):
         event=self.event();self.assertEqual(self.m.validate_event(event,'pull_request','1'),'a'*40)
@@ -60,12 +60,12 @@ class CompilerPlanTests(unittest.TestCase):
         self.assertEqual(env['CARGO_NET_RETRY'],'0')
 
     def test_core_commands_are_real_daemon_staticlib(self):
-        cmd=self.m.core_command(Path('/tools/cargo'),Path('/owned/native'))
+        cmd=self.m.core_command(Path('/tools/cargo'))
         self.assertIn('staticlib',cmd)
         self.assertIn('--offline',cmd)
         self.assertIn('daemon',cmd)
         self.assertEqual(cmd[cmd.index('--package')+1],'clock-bound')
-        self.assertEqual(cmd[cmd.index('--')+1:],['-C','link-dead-code=yes','--print','native-static-libs','-L','native=/owned/native','-l','static=axiom_time'])
+        self.assertEqual(cmd[cmd.index('--')+1:],['-C','link-dead-code=yes','--print','native-static-libs'])
         self.assertNotIn('--all-features',cmd)
         self.assertNotIn('--workspace',cmd)
 
@@ -86,17 +86,18 @@ class CompilerPlanTests(unittest.TestCase):
             (root/'injected').unlink();(root/'Cargo.lock').write_bytes(b'changed')
             with self.assertRaises(ValueError): self.m.verify_source(root,inventory)
 
-    def test_c_link_does_not_force_duplicate_bundled_object(self):
+    def test_final_link_uses_actual_c_object_without_intermediate_archive(self):
         cmd=self.m.link_command(Path('/usr/bin/cc'),Path('/owned/native'),Path('/owned/libclock_bound.a'),['-lc'])
         end=cmd.index('-Wl,--no-whole-archive')
-        archive=cmd.index('/owned/native/libaxiom_time.a')
-        self.assertGreater(archive,end)
+        self.assertIn('/owned/native/time_publication.o',cmd)
+        self.assertGreater(cmd.index('/owned/native/time_publication.o'),end)
+        self.assertNotIn('/owned/native/libaxiom_time.a',cmd)
         self.assertNotIn('shell',cmd)
 
     def test_workflow_is_one_approved_public_linux_job(self):
         workflow=(MODULE.parents[1]/'.github/workflows/linux-time-compile.yml').read_text()
         self.assertIn('types: [synchronize]',workflow)
-        for required in ['github.event.number == 331','github.event.pull_request.number == 331',"github.event.pull_request.base.ref == 'main'","github.event.before == 'ecfb83c98b809a6a6cbe0d80c0fd309ba9a99769'",'github.event.after == github.event.pull_request.head.sha']:
+        for required in ['github.event.number == 331','github.event.pull_request.number == 331',"github.event.pull_request.base.ref == 'main'","github.event.before == '12d5c45e7883bc50e9142dfa1e38cc1602b77a43'",'github.event.after == github.event.pull_request.head.sha']:
             self.assertIn(required,workflow)
         self.assertIn('runs-on: ubuntu-24.04',workflow)
         self.assertIn('timeout-minutes: 45',workflow)
@@ -148,13 +149,13 @@ class CompilerPlanTests(unittest.TestCase):
             for index in range(8):
                 name=f'input-{index}';(root/name).write_bytes(b'old')
                 files[name]=hashlib.sha256(b'old').hexdigest()
-            packet=json.dumps({'kind':'one-sync-pr331-linux-compile-seccomp-v2','files':files}).encode()
+            packet=json.dumps({'kind':'one-sync-pr331-linux-direct-object-v3','files':files}).encode()
             (root/'packet.json').write_bytes(packet)
             with patch.object(self.m,'PACKET','packet.json'):
                 self.m.verify_packet(root,packet)
                 (root/'input-0').write_bytes(b'new')
                 files['input-0']=hashlib.sha256(b'new').hexdigest()
-                (root/'packet.json').write_text(json.dumps({'kind':'one-sync-pr331-linux-compile-seccomp-v2','files':files}))
+                (root/'packet.json').write_text(json.dumps({'kind':'one-sync-pr331-linux-direct-object-v3','files':files}))
                 with self.assertRaises(ValueError): self.m.verify_packet(root,packet)
 
 if __name__ == '__main__': unittest.main()

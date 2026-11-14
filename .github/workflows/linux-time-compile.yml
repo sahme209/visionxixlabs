@@ -24,7 +24,7 @@ jobs:
       github.event.pull_request.number == 331 &&
       github.event.pull_request.base.ref == 'main' &&
       github.event.pull_request.base.repo.full_name == github.repository &&
-      github.event.before == 'ecfb83c98b809a6a6cbe0d80c0fd309ba9a99769' &&
+      github.event.before == '12d5c45e7883bc50e9142dfa1e38cc1602b77a43' &&
       github.event.after == github.event.pull_request.head.sha &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.head.ref == 'codex/governance-live-qualification-setup' &&

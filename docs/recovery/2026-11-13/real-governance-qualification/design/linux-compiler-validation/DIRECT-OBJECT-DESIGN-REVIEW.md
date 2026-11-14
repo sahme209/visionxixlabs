@@ -1,0 +1,7 @@
+# Direct-object source-only design review
+
+No important source/build-semantics obstacle found. The actual Rust adapter uses a plain unsafe extern C declaration without a link attribute. A Rust staticlib may retain this unresolved C reference for the final system link; removing the explicit native search/static-library flags avoids searching or bundling our unnecessary C archive.
+
+Keep the whole Rust staticlib under --whole-archive, end that mode, then include the exact compiled time_publication.o explicitly followed by validated native-static-libs. The explicit object contributes all four C definitions, including the three not referenced by this Rust adapter. Retain link-dead-code, --no-undefined, the four C definitions and two actual Rust-path symbol checks, ELF target checks and all source/lock/input checks. This preserves the actual full selected Rust/C target rather than substituting a mock or standalone FFI harness.
+
+This removes only our separate GNU ar intermediate. It neither diagnoses the earlier ar timeout nor eliminates internal archive work Rust may do. Actual Rust compilation/linking remains unproved. The syscall filter, trusted fixture, native source, source pin, cleanup bounds and no-runtime-launch restriction are unchanged. No compiler, child, native security call, test, external read or network operation was performed by this reviewer. A fresh owner grant is required for one new native CI attempt; this review provides no execution permission.
