@@ -1,0 +1,42 @@
+name: One approved native worker compiler checkpoint
+
+# One compile/link-only checkpoint; no worker, addon or Governance runtime is launched.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'scripts/governance_native_worker_compile.py'
+      - 'scripts/tests/test_governance_native_worker_workflow.py'
+      - '.github/workflows/linux-native-worker-compile.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compile-link:
+    name: Compile native worker and parent binding (no runtime launch)
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.repository.private == false &&
+      github.event.action == 'synchronize' &&
+      github.event.number == 332 &&
+      github.event.pull_request.number == 332 &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-native-worker' &&
+      github.event.before == '048882304e05c4d77ab766f8f2b39db33e676251' &&
+      github.event.after == github.event.pull_request.head.sha &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Check out exact reviewed batch head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One bounded compile-only checkpoint
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_native_worker_compile.py --approved-ci-once
