@@ -3,6 +3,9 @@ import {z} from 'zod';
 import {sha256ContentHash} from '@/lib/tauri/contentHash';
 import {operationalEcsResultBody as body,operationalEcsResultSchema as schema} from './ecsResultContract';
 import type {OperationalDelegation} from './delegationContract';
+/** Explicit transport-owned, clock-free facts for this original fixed request.
+ * Not a transaction-bound qualifier or live/native qualification default. */
+export type OperationalEcsDispatchCurrent=(binding:Readonly<{operation:'UpdateService'|'DescribeServices';region:string;inputDigest:string;credentialExpiresAt:number}>,signal:AbortSignal)=>Promise<void>;
 export interface OperationalEcsTransport{
  assertQualified(tx:import('./delegationContract').OperationalDelegationTransaction,manifest:OperationalDelegation['manifest']):Promise<void>;
  /** Fixed private transport only. Must honor abort and call beforeSend directly

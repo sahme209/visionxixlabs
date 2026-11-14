@@ -19,10 +19,12 @@ export async function createTemplateWorkflowRequestComposition(request:RequestCo
  function possessed(){if(session()!==actor.sessionId)return fail()}
  async function guarded<T>(fn:()=>Promise<T>){possessed();const result=await fn();possessed();return result}
  const authority={async assertCurrent(tx:PlatformTransaction,p:PlatformPrincipal){await guarded(()=>assertCurrentPlatformPrincipal(tx,p,ports.readAdminEmails))}};
- const r=ports.resources,clock=r?.clock;
+ const r=ports.resources,clock=r?.clock,dispatch=r?.assertDispatchCurrent?.bind(r),credentialFacts=r?.assertCredentialCurrent?.bind(r);
  const profiles:TemplatePreparationProfiles|undefined=r?{read:s=>guarded(()=>r.profiles.read(s)),assertQualified:(p,s)=>guarded(()=>r.profiles.assertQualified(p,s))}:undefined;
  const resources:TemplateExecutionResources|undefined=r?{
   clock:signal=>guarded(()=>clock!.call(r,signal)),profiles:profiles!,assertQualified:b=>guarded(()=>r.assertQualified(b)),
+  ...(credentialFacts?{assertCredentialCurrent:(...args:Parameters<NonNullable<TemplateExecutionResources['assertCredentialCurrent']>>)=>guarded(()=>credentialFacts(...args))}:{}),
+  ...(dispatch?{assertDispatchCurrent:(...args:Parameters<NonNullable<TemplateExecutionResources['assertDispatchCurrent']>>)=>guarded(()=>dispatch(...args))}:{}),
   readCredential:b=>{possessed();const value=r.readCredential(b);possessed();return value},now:()=>{possessed();const value=r.now();possessed();return value},
   ...(r.readArtifactKey?{readArtifactKey:(b:Parameters<NonNullable<TemplateExecutionResources['readArtifactKey']>>[0])=>{possessed();const value=r.readArtifactKey!(b);possessed();return value}}:{}),
   ...(r.assertArtifactKeyCurrent?{assertArtifactKeyCurrent:(b:Parameters<NonNullable<TemplateExecutionResources['assertArtifactKeyCurrent']>>[0])=>guarded(()=>r.assertArtifactKeyCurrent!(b))}:{}),

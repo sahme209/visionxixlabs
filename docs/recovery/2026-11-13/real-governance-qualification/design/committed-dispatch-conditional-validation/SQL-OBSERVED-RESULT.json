@@ -1,0 +1,16 @@
+{
+  "approval": "call_177c57f4ed1545ecb973f7555794a6b0",
+  "sourceCommit": "85749ff6025a5db4b33bd5a7f8695cc48f57878c",
+  "fixture": "/private/tmp/axiom-platform-pg-wyhlnicp",
+  "passed": 230,
+  "failed": 0,
+  "skipped": 0,
+  "sourceFiles": 331,
+  "sourceHashesExact": true,
+  "ownServerStopped": true,
+  "exitCode": 0,
+  "receiptSha256": "f1fa13a2a2e2f063e0535d3a7be718f07b04988b0c3d67940a31b035db82faf3",
+  "resultSha256": "1df383be8da7c79cbace22253a528a93e8fcf38144f3095589ddb4c9b9ceaea8",
+  "authorityAndProviders": "synthetic/intercepted; actual isolated SQL/HMAC/stores/locks",
+  "productionChanged": false
+}

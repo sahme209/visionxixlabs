@@ -102,19 +102,19 @@ import {generateSiteFilesFromPlan} from '@/lib/scaffoldGenerator';
 import {deploySite,deploySiteFromPlan} from '@/lib/deploy/provider';
 // Explicit synthetic interval source for opt-in deployment SQL fixtures only.
 // This replaces no default supplier and is not actual native qualification.
-async function syntheticDeploymentRequest(request:{headers:Headers;signal?:AbortSignal},repo:PlatformRepository=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),onCredentialCopy:()=>void=()=>{}){
+async function syntheticDeploymentRequest(request:{headers:Headers;signal?:AbortSignal},repo:PlatformRepository=createPlatformSqlRepository(db as unknown as PlatformSqlDatabase),onCredentialCopy:()=>void=()=>{},executionClock?:import('../executionTime').ExecutionTimeSource){
  const start=Date.now()-60000,end=Date.now()+300000;
- return createPlatformRequestComposition(syntheticRequestContext(request,new AbortController().signal),{repo,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:async()=>{const now=Date.now();return {earliest:now,latest:now}},deploymentTransport:timing=>createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetch(url,init),assertQualified:async()=>{},readHeldCredential:async()=>{onCredentialCopy();return {token:'synthetic-provider-token',notBefore:start,expiresAt:end}},assertCredentialCurrent:async()=>{}})});
+ return createPlatformRequestComposition(syntheticRequestContext(request,new AbortController().signal),{repo,verifyDesktopToken,readAdminEmails:()=>['requester@example.test','reviewer@example.test'],clock:executionClock??(async()=>{const now=Date.now();return {earliest:now,latest:now}}),deploymentTransport:timing=>createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetch(url,init),assertQualified:async()=>{},readHeldCredential:async()=>{onCredentialCopy();return {token:'synthetic-provider-token',notBefore:start,expiresAt:end}},assertCredentialCurrent:async()=>{},assertDispatchCurrent:async()=>{}})});
 }
 async function syntheticDeploymentExecution(request:{headers:Headers},id:string,version:number){const service=await syntheticDeploymentRequest(request),binding=service.createDeploymentExecutionBinding(id);await service.claim(id,version);return binding}
-async function deploymentFixture(options:{projectName?:string;html?:string;executionRepo?:(base:PlatformRepository)=>PlatformRepository}={}){
+async function deploymentFixture(options:{projectName?:string;html?:string;executionRepo?:(base:PlatformRepository)=>PlatformRepository;executionClock?:import('../executionTime').ExecutionTimeSource}={}){
  await identityFixtures();vi.stubEnv('DESKTOP_SESSION_SIGNING_KEY','synthetic-platform-key-'.repeat(3));vi.stubEnv('ADMIN_EMAILS','requester@example.test,reviewer@example.test');vi.stubEnv('VERCEL_TOKEN','synthetic-provider-token');vi.stubEnv('VERCEL_TEAM_ID','team_fixture');
  const request={headers:new Headers({authorization:'Bearer '+mintDesktopToken(actor.sessionId)})},requester=await syntheticDeploymentRequest(request);
  const projectName=options.projectName??'fixture-'+randomUUID(),website={siteName:'fixture',fullPageHtml:options.html??'<h1>fixture</h1>'},prepared=preparePlatformVercelDeployment(generateSiteFilesFromPlan(website),{projectName,teamId:'team_fixture'});
  const raw={format:1,scope:'platform',sourceDigest:d,expiresAt:new Date(Date.now()+60000).toISOString(),effects:[prepared.effect]},compiled=compilePlatformPlan(raw),id=await requester.propose(raw);
  const independent=await syntheticDeploymentRequest({headers:new Headers({authorization:'Bearer '+mintDesktopToken(reviewer.sessionId)})});await independent.review(id,0,compiled.digest);
  let binding:object;
- if(options.executionRepo){const service=await syntheticDeploymentRequest(request,options.executionRepo(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase)));binding=service.createDeploymentExecutionBinding(id);await service.claim(id,1)}else binding=await syntheticDeploymentExecution(request,id,1);
+ if(options.executionRepo){const service=await syntheticDeploymentRequest(request,options.executionRepo(createPlatformSqlRepository(db as unknown as PlatformSqlDatabase)),()=>{},options.executionClock);binding=service.createDeploymentExecutionBinding(id);await service.claim(id,1)}else binding=await syntheticDeploymentExecution(request,id,1);
  return {website,projectName,prepared,id,requester,binding};
 }
 it.skipIf(!enabled)('joins possessed requester, SQL review/claims and actual deployment helper with synthetic time and HTTP',async()=>{
@@ -130,6 +130,29 @@ it.skipIf(!enabled)('default deployment transport loss retains unknown parent/ch
   const f=await deploymentFixture(),http=vi.fn(async()=>{throw Error('synthetic_lost_response')});vi.stubGlobal('fetch',http);
   for(let i=0;i<2;i++)await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();expect(http).toHaveBeenCalledTimes(1);
   const rows=await db.$queryRawUnsafe<Array<{stateJson:{status:string;attemptCount:number}}>>('SELECT "stateJson" FROM "PlatformGovernanceAction" WHERE id=$1',f.id);expect(rows[0].stateJson).toMatchObject({status:'unknown',attemptCount:1});
+ }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
+});
+
+
+it.skipIf(!enabled)('blocks an expired deployment after actual SQL send authorization committed and retains the original unknown hold',async()=>{
+ let expire=false,admissions=0;
+ const clock=async()=>{const now=expire?Number.MAX_SAFE_INTEGER:Date.now();return {earliest:now,latest:now}};
+ const wrap=(base:PlatformRepository):PlatformRepository=>({transaction:async fn=>{
+  let finalSend=false;
+  const result=await base.transaction(tx=>fn({...tx,assertDeploymentTargetAdmission:async key=>{
+   if(!tx.assertDeploymentTargetAdmission)throw Error('missing fixture admission');await tx.assertDeploymentTargetAdmission(key);if(++admissions===2)finalSend=true;
+  }}));
+  // This executes only AFTER the actual owning transaction acknowledged commit.
+  if(finalSend)expire=true;return result;
+ }});
+ try{
+  const f=await deploymentFixture({executionRepo:wrap,executionClock:clock}),http=vi.fn(async()=>new Response(JSON.stringify({id:'must-not-send',readyState:'BUILDING'}),{status:200}));vi.stubGlobal('fetch',http);
+  await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();
+  expect(admissions).toBe(2);expect(expire).toBe(true);expect(http).not.toHaveBeenCalled();
+  await expect(deploySiteFromPlan('vercel',f.website,{projectName:f.projectName,platformExecution:f.binding})).rejects.toThrow();expect(http).not.toHaveBeenCalled();
+  expect(await f.requester.inspect(f.id)).toMatchObject({status:'unknown',attemptCount:1});
+  const held=await db.$queryRawUnsafe<Array<{stateJson:unknown}>>('SELECT "stateJson" FROM "PlatformDeploymentTarget" WHERE "actionId"=$1',f.id);expect(held).toHaveLength(1);expect(held[0].stateJson).toMatchObject({phase:'held'});
+  const receipts=await db.$queryRawUnsafe<Array<{receiptJson:unknown}>>('SELECT "receiptJson" FROM "PlatformDeploymentRequestReceipt" WHERE "actionId"=$1',f.id);expect(receipts).toHaveLength(1);expect(receipts[0].receiptJson).toMatchObject({outcome:'unknown',providerDeploymentId:null});
  }finally{vi.unstubAllGlobals();vi.unstubAllEnvs()}
 });
 
@@ -751,7 +774,7 @@ type FixtureNativePorts=Parameters<typeof createSettingsVercelTransportActual>[0
 const settingsNativeRecipes=new WeakMap<object,FixtureNativePorts>();
 function createSettingsVercelTransport(ports:FixtureNativePorts){
  const start=Date.now()-60000,end=Date.now()+300000,read=ports.readCredential;
- const recipe={...ports,assertCredentialCurrent:ports.assertCredentialCurrent??(async()=>{}),readCredential:async(...args:Parameters<typeof read>)=>{const value=await read(...args);return typeof value==='string'?{token:value,notBefore:start,expiresAt:end}:value}};
+ const recipe={...ports,assertDispatchCurrent:ports.assertDispatchCurrent??(async()=>{}),assertCredentialCurrent:ports.assertCredentialCurrent??(async()=>{}),readCredential:async(...args:Parameters<typeof read>)=>{const value=await read(...args);return typeof value==='string'?{token:value,notBefore:start,expiresAt:end}:value}};
  const transport=createSettingsVercelTransportActual({...recipe,...settingsFixtureTiming()});settingsNativeRecipes.set(transport,recipe);return transport;
 }
 function settingsFixtureExecutionTransport(transport:FixtureTransport,timing:SettingsTiming):FixtureTransport{
@@ -811,7 +834,12 @@ it.skipIf(!enabled)('refuses a revoked native ECS profile at final send while pr
 import {NodeHttpHandler} from '@smithy/node-http-handler';
 import {IncomingMessage} from 'node:http';
 import {Socket} from 'node:net';
-import {createOperationalEcsSdkTransport,createOperationalEcsSdkReader} from '../operations/ecsSdkTransport';
+import {createOperationalEcsSdkTransport as createOperationalEcsSdkTransportActual,createOperationalEcsSdkReader as createOperationalEcsSdkReaderActual} from '../operations/ecsSdkTransport';
+// Explicit synthetic postcommit facts ONLY for opt-in intercepted SQL fixtures.
+// Actual factories retain missing-supplier refusal; these wrappers qualify no host.
+function createOperationalEcsSdkTransport(qualified:Parameters<typeof createOperationalEcsSdkTransportActual>[0],clock:Parameters<typeof createOperationalEcsSdkTransportActual>[1]){return createOperationalEcsSdkTransportActual(qualified,clock,async()=>{})}
+function createOperationalEcsSdkReader(clock:Parameters<typeof createOperationalEcsSdkReaderActual>[0]){return createOperationalEcsSdkReaderActual(clock,async()=>{})}
+
 it.skipIf(!enabled)('joins actual SQL/private issuance/current final gates to the installed ECS SDK with native network intercepted',async()=>{
  const native=vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async request=>{const input=JSON.parse(String(request.body));expect(request.hostname).toBe('ecs.us-east-2.amazonaws.com');expect(input.forceNewDeployment).toBe(true);expect(input.taskDefinition).toMatch(/:2$/);const body=new IncomingMessage(new Socket());body.push(Buffer.from(JSON.stringify({service:{clusterArn:input.cluster,serviceArn:input.service,taskDefinition:input.taskDefinition,status:'ACTIVE',deploymentController:{type:'ECS'},deployments:[{id:'ecs-svc/2',status:'PRIMARY',taskDefinition:input.taskDefinition}]}})));body.push(null);return {response:{statusCode:200,headers:{'x-amzn-requestid':'synthetic-sdk-request','content-type':'application/x-amz-json-1.1'},body}}});
  try{const f=await operationalFixture({syntheticIssuer:true,issuer:syntheticOperationalIssuer(),transport:createOperationalEcsSdkTransport(async()=>{},async()=>({earliest:Date.now(),latest:Date.now()+1}))});await f.store.delegate(f.id,1,f.plan.digest,actor);const claimed=await f.store.claim(f.id,0,await f.token('actual-sdk-synthetic-native')),pending=await f.store.beginCredential(claimed.proof),issued=await f.store.issueCredential(pending.proof);if(!issued.credentialHandle)throw Error('fixture');expect(await f.store.executeCredential(issued.credentialHandle)).toMatchObject({kind:'accepted',deploymentId:'ecs-svc/2',requestId:'synthetic-sdk-request',stable:false});expect(native).toHaveBeenCalledOnce();

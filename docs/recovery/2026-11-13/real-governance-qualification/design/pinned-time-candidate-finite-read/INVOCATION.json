@@ -1,0 +1,7 @@
+{
+  "approval": "call_0498d90f4747458da381dda70db77fd6",
+  "startedAt": "2026-11-13T22:41:17.330605+00:00",
+  "packetSha256": "7f36c3e4e4e9aaa57e56d6ab983ad9c910080bd6b1d4c1154045f048e09a3e46",
+  "authority": "ONE prepared reader instance; at most8requests and6blobs; any error/exhaustion stops entire pass, no restart/retry",
+  "execution": "Pinned Node interactive operator; fetched text is saved/analyzed only, never evaluated"
+}

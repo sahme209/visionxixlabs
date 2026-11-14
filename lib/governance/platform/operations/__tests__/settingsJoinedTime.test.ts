@@ -25,8 +25,8 @@ function fixture(){
  async function saved(){const p=await proposed();await store.save(p.id,0,actor,'synthetic private fixture');return p}
  async function executable(){const p=await saved();await store.review(p.id,0,p.digest,reviewer);await store.claim(p.id,1,p.digest,actor);readKey.mockClear();return p}
  function native(){
-  const credential=vi.fn(async()=>({token:'SYNTHETIC_TOKEN',notBefore:at-1000,expiresAt:at+30000})),qualified=vi.fn(async()=>{}),credentialCurrent=vi.fn(async()=>{}),fetch=vi.fn(async()=>new Response(JSON.stringify({created:{id:'new-id',key:'SYNTHETIC',target:['production'],type:'sensitive',visibility:'secret'},failed:[]}),{status:201})),ports={clock,signal:controller.signal,readCredential:credential,assertQualified:qualified,assertCredentialCurrent:credentialCurrent,fetch},transport=Reflect.apply(createSettingsVercelTransport,null,[ports]) as ReturnType<typeof createSettingsVercelTransport>;
-  return {credential,qualified,credentialCurrent,fetch,ports,transport};
+  const credential=vi.fn(async()=>({token:'SYNTHETIC_TOKEN',notBefore:at-1000,expiresAt:at+30000})),qualified=vi.fn(async()=>{}),credentialCurrent=vi.fn(async()=>{}),dispatchCurrent=vi.fn(async()=>{}),fetch=vi.fn(async()=>new Response(JSON.stringify({created:{id:'new-id',key:'SYNTHETIC',target:['production'],type:'sensitive',visibility:'secret'},failed:[]}),{status:201})),ports={clock,signal:controller.signal,readCredential:credential,assertQualified:qualified,assertCredentialCurrent:credentialCurrent,assertDispatchCurrent:dispatchCurrent,fetch},transport=Reflect.apply(createSettingsVercelTransport,null,[ports]) as ReturnType<typeof createSettingsVercelTransport>;
+  return {credential,qualified,credentialCurrent,dispatchCurrent,fetch,ports,transport};
  }
  function executor(transport:Parameters<typeof createSettingsExecutor>[3],config:import('../settingsTime').SettingsTiming=timing){return Reflect.apply(createSettingsExecutor,null,[repo,authority,source,transport,config]) as ReturnType<typeof createSettingsExecutor>}
  return {manifest,repo,authority,source,clock,depth:()=>depth,loseCommitAckOnce:()=>{loseCommitOnce=true},native,executor,executable,timing,controller,expiry,allowed,preparation,store,proposed,saved,parents:()=>parents,artifacts:()=>artifacts,events:()=>events,setNow:(v:number)=>{now=v}};
@@ -83,8 +83,8 @@ it('an omitted native time check cannot consume the send proof or reach the synt
  const transport={clock:f.clock,signal:f.controller.signal,send:async(_binding:unknown,_value:string,before:ExecutionTimeAuthorization)=>{await before();sends++;return {outcome:'confirmed',settingId:'must-not-send'}}};await expect(f.executor(transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(sends).toBe(0);expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
 });
 
-it('keeps every settings time read inside an original authorization owner, including credential acquisition',async()=>{
- const f=fixture(),p=await f.executable(),n=f.native();let outside=0;f.clock.mockImplementation(async()=>{if(f.depth()===0)outside++;return {earliest:at,latest:at+1}});await f.executor(n.transport).executeNext(p.id,actor,0);expect(n.fetch).toHaveBeenCalledTimes(1);expect(outside).toBe(0);
+it('keeps authorization time inside the owner and adds exactly two original-proof postcommit dispatch checks',async()=>{
+ const f=fixture(),p=await f.executable(),n=f.native();let outside=0;f.clock.mockImplementation(async()=>{if(f.depth()===0)outside++;return {earliest:at,latest:at+1}});await f.executor(n.transport).executeNext(p.id,actor,0);expect(n.fetch).toHaveBeenCalledTimes(1);expect(outside).toBe(2);
 });
 
 it('credential expiry/not-before refusal preserves the original unknown attempt without an HTTP write',async()=>{
@@ -141,4 +141,17 @@ it.each(['acquire','send'] as const)('native settings %s authority must survive 
  n.qualified.mockImplementation(async()=>{if(revoked)throw Error('native profile revoked at last source window');if(phase==='acquire'&&++q===2)arm=true});
  n.credentialCurrent.mockImplementation(async()=>{if(revoked)throw Error('native credential revoked');if(phase==='send'&&++c===2)arm=true});
  await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(n.fetch).not.toHaveBeenCalled();if(phase==='acquire')expect(n.credential).not.toHaveBeenCalled();else expect(n.credential).toHaveBeenCalledOnce();expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
+});
+
+it.each(['acquire','send'] as const)('postcommit settings %s expiry preserves the original reservation and never replays',async phase=>{
+ const f=fixture(),p=await f.executable(),n=f.native();let arm=false,q=0,c=0;const transaction=f.repo.transaction.bind(f.repo);
+ f.repo.transaction=async fn=>{const result=await transaction(fn);if(arm)f.clock.mockResolvedValue({earliest:at+60000,latest:at+60001});return result};
+ n.qualified.mockImplementation(async()=>{if(phase==='acquire'&&++q===2)arm=true});n.credentialCurrent.mockImplementation(async()=>{if(phase==='send'&&++c===2)arm=true});
+ await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(arm).toBe(true);expect(n.fetch).not.toHaveBeenCalled();if(phase==='acquire')expect(n.credential).not.toHaveBeenCalled();else expect(n.credential).toHaveBeenCalledOnce();expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});
+ await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(n.fetch).not.toHaveBeenCalled();if(phase==='acquire')expect(n.credential).not.toHaveBeenCalled();else expect(n.credential).toHaveBeenCalledOnce();
+});
+
+it.each(['acquire','send'] as const)('postcommit settings %s native refusal is outside authorization and retains unknown history',async phase=>{
+ const f=fixture(),p=await f.executable(),n=f.native();n.dispatchCurrent.mockImplementation(async(...args:unknown[])=>{expect(f.depth()).toBe(0);if(args[1]===(phase==='acquire'?'settings.credential.copy':'settings.request.create'))throw Error('sealed native generation revoked')});
+ await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(n.fetch).not.toHaveBeenCalled();if(phase==='acquire')expect(n.credential).not.toHaveBeenCalled();else expect(n.credential).toHaveBeenCalledOnce();expect(f.parents().get(p.id)).toMatchObject({status:'unknown',attemptCount:1});await expect(f.executor(n.transport).executeNext(p.id,actor,0)).rejects.toThrow();expect(n.fetch).not.toHaveBeenCalled();
 });

@@ -1,0 +1,100 @@
+{
+  "format": 1,
+  "observedAt": "2026-11-13T22:46:40.564871+00:00",
+  "approval": "call_0498d90f4747458da381dda70db77fd6",
+  "packetSha256": "7f36c3e4e4e9aaa57e56d6ab983ad9c910080bd6b1d4c1154045f048e09a3e46",
+  "requestsMade": 8,
+  "sourceFiles": 6,
+  "totalBodyBytes": 190813,
+  "remainingRequests": 0,
+  "authority": "EXHAUSTED; no more requests/restarts/retries authorized",
+  "readerInstance": "One actual reader instance in pinned Node session8191; local EOF-only startup ended before any reader/request, not an HTTP retry; completed instance exited normally",
+  "candidate": {
+    "commit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+    "tree": "6261c1659ff53ccec76cea26a3051fa680d9f676",
+    "version": "3.0.0-rc.0",
+    "licenseExpression": "MIT OR Apache-2.0",
+    "status": "Source-assessment candidate ONLY; not stable/support/adoption/qualification"
+  },
+  "reads": [
+    {
+      "request": 1,
+      "url": "https://api.github.com/repos/aws/clock-bound/git/commits/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+      "bytes": 2359,
+      "sha256": "4273d17120babc9357d89a2528e73fd0636217664a2ca4c1a4e703d6f12df065",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-1.txt"
+    },
+    {
+      "request": 2,
+      "url": "https://api.github.com/repos/aws/clock-bound/git/trees/6261c1659ff53ccec76cea26a3051fa680d9f676?recursive=1",
+      "bytes": 122621,
+      "sha256": "dc5518ce9b96bce6fa4a59e468287c02f970f843bc722ea26567ccc04b4f8b2c",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-2.txt"
+    },
+    {
+      "request": 3,
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/README.md",
+      "path": "README.md",
+      "bytes": 6988,
+      "sha256": "5f058a1d24a3e4c63cde4c8276b0cd6cd6af72df47e5a7adfdbce5ee6ed13c63",
+      "sha1": "e528e53439227bc3e32f438d4178a7957e103b8c",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-3.txt"
+    },
+    {
+      "request": 4,
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/Cargo.toml",
+      "path": "clock-bound/Cargo.toml",
+      "bytes": 4151,
+      "sha256": "4c3f57833dc42788634c9e6d823063c67580aec3c07ced6ad91cd5c8f14ff10c",
+      "sha1": "b730dc76fa926ffdf17e7fb9650f21e518a2e0b8",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-4.txt"
+    },
+    {
+      "request": 5,
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/Cargo.toml",
+      "path": "Cargo.toml",
+      "bytes": 1808,
+      "sha256": "092328c175d365db188f3b828cf4be0f9ac9b821c3a1ad5bd3ced8e4ba65063a",
+      "sha1": "930b69f9ad9f0fb748f2cfe5db4e9fd6c36b2c12",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-5.txt"
+    },
+    {
+      "request": 6,
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/src/client_impl.rs",
+      "path": "clock-bound/src/client_impl.rs",
+      "bytes": 40421,
+      "sha256": "45d57df6dc1b90a8064a87a2e6ccaf30a85200ceca12933b3beabecab14ec66f",
+      "sha1": "ff561afcd98676ff07dc288370cd90a9e35db833",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-6.txt"
+    },
+    {
+      "request": 7,
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/LICENSE.Apache-2.0",
+      "path": "clock-bound/LICENSE.Apache-2.0",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "sha1": "d645695673349e3947e8e5ae42332d0ac3164cd7",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-7.txt"
+    },
+    {
+      "request": 8,
+      "url": "https://raw.githubusercontent.com/aws/clock-bound/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777/clock-bound/LICENSE.MIT",
+      "path": "clock-bound/LICENSE.MIT",
+      "bytes": 1107,
+      "sha256": "04f8eb9dc1d7079de38b1dce5e9c9c2968e31b88e14301d58ea76562c418b1a2",
+      "sha1": "9a3be1574512302da08c885870e89fe68e7a42b2",
+      "savedBody": "docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-8.txt"
+    }
+  ],
+  "checks": "Exact commit\u2192nontruncated tree\u2192six positively enumerated regular text files; all Git blob SHA/byte lengths independently recomputed; bounded anonymous HTTP200; no retry/redirect",
+  "notVerified": [
+    "shm reader/snapshot time-growth implementation",
+    "vmclock mapping/seqlock/disruption internals",
+    "real OS/daemon/path protection and cancellation/valid-through-send bridge",
+    "stable release/supported production provenance",
+    "dependency/build/binary qualification and host budget",
+    "real credentials/fleet/human/provider/production acceptance"
+  ],
+  "effects": "Public text and local saved receipts only; no install/fetched-code execution/clock query/cloud account/credential/provider action/resources/deploy/enablement/spending",
+  "assessmentReview": "Independent saved-source/evidence review: no important factual or scope inconsistency; no native guarantees/adoption/enablement claimed; no new reads/tests/execution by reviewer."
+}

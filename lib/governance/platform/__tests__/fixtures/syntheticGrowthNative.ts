@@ -7,7 +7,7 @@ export function syntheticGrowthNative(timing:GrowthTiming,actionId:string,versio
  const expiry=Date.now()+60000;
  return createGrowthNativeTransport({...timing,actionId,
   async readProfile(effect){return {profileDigest:'a'.repeat(64),actionId,effectDigest:sha256ContentHash(effect),credentialVersion:typeof version==='string'?version:await version(effect),notBefore:0,expiresAt:expiry}},
-  async assertProfileCurrent(){},fetch:(url,init)=>fetch(url,init),
+  async assertDispatchCurrent(){},async assertProfileCurrent(){},fetch:(url,init)=>fetch(url,init),
  });
 }
 type Service=Parameters<typeof bindPlatformGrowthExecution>[0];

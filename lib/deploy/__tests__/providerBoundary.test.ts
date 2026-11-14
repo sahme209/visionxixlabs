@@ -13,7 +13,7 @@ const files = [{ path: "index.html", content: "<h1>test</h1>" }];
 const fetchMock = vi.fn();
 function grant(projectName='fixture',target?:'production'){
  const effect=preparePlatformVercelDeployment(files,{projectName,target,teamId:'team_fixture'}).effect;
- const now=Date.now(),timing={clock:async()=>({earliest:Date.now(),latest:Date.now()}),signal:new AbortController().signal},transport=createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetchMock(url,init),assertQualified:async()=>{},readHeldCredential:async()=>({token:'SYNTHETIC_HELD_TOKEN',notBefore:now-60000,expiresAt:now+60000}),assertCredentialCurrent:async()=>{}});
+ const now=Date.now(),timing={clock:async()=>({earliest:Date.now(),latest:Date.now()}),signal:new AbortController().signal},transport=createDeploymentNativeTransport({...timing,fetch:(url,init)=>fetchMock(url,init),assertQualified:async()=>{},readHeldCredential:async()=>({token:'SYNTHETIC_HELD_TOKEN',notBefore:now-60000,expiresAt:now+60000}),assertCredentialCurrent:async()=>{},assertDispatchCurrent:async()=>{}});
  return {binding:bindPlatformDeploymentExecution({claimNextEffect:async()=>({effect,proof:{}}),beforeEffectCredential:async(_proof,_effect,check,finalFacts)=>{await check();if(!finalFacts)throw Error('missing final facts');await finalFacts()},beforeEffectSend:async(_proof,_effect,check,finalFacts)=>{if(!check||!finalFacts)throw Error('missing native owner callbacks');await check();await finalFacts()},observeEffect:async()=>{},beforeEffectResult:async()=>{}},'fixture-action',transport,timing)};
 }
 function response(value:unknown){return new Response(JSON.stringify(value),{status:200})}

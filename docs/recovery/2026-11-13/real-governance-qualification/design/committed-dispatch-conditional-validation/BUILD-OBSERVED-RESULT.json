@@ -1,0 +1,15 @@
+{
+  "approval": "call_177c57f4ed1545ecb973f7555794a6b0",
+  "sourceCommit": "85749ff6025a5db4b33bd5a7f8695cc48f57878c",
+  "stage": "/private/tmp/axiom-joined-current-build-17ugzn6_",
+  "exitCode": 0,
+  "sourceFiles": 13568,
+  "sourceHashesExact": true,
+  "staticPages": 304,
+  "networkDenied": true,
+  "databaseUrlSupplied": false,
+  "nativeIssuerLaunched": false,
+  "buildLogSha256": "3160dcb9a84a4062339404d0f898333caed3db229a4c193c32ae7dcb660372a4",
+  "warnings": "three retained preexisting dynamic-import expression warnings; not suppressed",
+  "productionChanged": false
+}

@@ -1,0 +1,160 @@
+[package]
+name = "clock-bound"
+description = "A crate to provide error bounded timestamp intervals."
+license = "MIT OR Apache-2.0"
+readme = "../README.md"
+
+authors.workspace = true
+categories.workspace = true
+edition = "2024"
+exclude.workspace = true
+keywords.workspace = true
+publish = true
+repository.workspace = true
+version.workspace = true
+
+[dependencies]
+bon = { version = "3.8.0" }
+byteorder = "1"
+bytes = { version = "1", optional = true }
+chrono = { version = "0.4", optional = true }
+clap = { version = "4.5.50", features = ["derive"], optional = true }
+errno = { version = "0.3.0", default-features = false }
+libc = { version = "0.2", default-features = false, features = [
+  "extra_traits",
+] }
+md5 = { version = "0.8.0", optional = true }
+nix = { version = "0.26" }
+nom = { version = "8", optional = true }
+serde = { version = "1.0", features = ["derive"], optional = true }
+serde_json = { version = "1.0.145", features = [
+  "preserve_order",
+  "raw_value",      # the structured log layer passes each record's values through unparsed
+], optional = true }
+thiserror = { version = "2.0", optional = true }
+toml = { version = "1.1", default-features = false, features = [
+  "parse",
+  "serde",
+  "std",
+], optional = true }
+tokio = { version = "1.47.1", features = [
+  "fs",
+  "io-util",
+  "net",
+  "macros",
+  "rt",
+  "rt-multi-thread",
+  "signal",
+  "sync",
+  "time",
+], optional = true }
+tokio-util = { version = "0.7.17", features = ["rt"], optional = true }
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = [
+  "std",
+  "fmt",
+  "json",
+  "registry",
+], optional = true }
+futures = { version = "0.3", optional = true }
+rand = { version = "0.9.2", optional = true }
+
+[dev-dependencies]
+approx = "0.5"
+bytes = "1"
+hex-literal = "0.4"
+indoc = "2"
+mockall = "0.13.1"
+mockall_double = "0.3.1"
+rstest = "0.26"
+tempfile = "3.13"
+tokio = { version = "1.47.1", features = [
+  "fs",
+  "io-util",
+  "net",
+  "macros",
+  "rt",
+  "rt-multi-thread",
+  "sync",
+  "time",
+  "test-util",
+] }
+tracing-test = "0.2.5"
+wiremock = "0.6.5"
+
+[features]
+daemon = [
+  "dep:clap",
+  "dep:serde",
+  "dep:tokio",
+  "dep:tokio-util",
+  "dep:chrono",
+  "dep:bytes",
+  "dep:nom",
+  "dep:thiserror",
+  "dep:toml",
+  "dep:futures",
+  "dep:md5",
+  "dep:rand",
+  "dep:serde_json",
+  "tracing-subscriber",
+  "nix/feature",
+  "nix/ioctl",
+  "nix/time",
+] # Expose function methods necessary to build the clockbound daemon
+# Not part of the stable public API.
+
+env-filter = [
+  "tracing-subscriber/env-filter",
+] # Enable granular logging control via env variables
+# Not enabled by default due to code size
+
+test-utils = [] # Exposes shm writing utilities for testing workflows.
+# Not part of the stable public API.
+
+algorithm = [
+  "dep:chrono",
+  "dep:serde",
+  "dep:thiserror",
+  "dep:serde_json",
+  "dep:md5",
+  "tracing-subscriber/env-filter",
+] # clock sync algorithm for replay and analysis tooling (e.g. ff-tester): compiles
+# the algorithm without daemon I/O or clock adjustment, and enables emission of
+# internal algorithm calculations (algo_analysis module) for analysis
+
+test-side-by-side = [
+] # run without changing system clock. And compare against system clock
+
+time-string-parse = ["dep:nom"]
+
+[[bin]]
+name = "clockbound"
+required-features = ["daemon"]
+
+[[bin]]
+name = "cbctl"
+path = "src/bin/cbctl/main.rs"
+required-features = ["daemon"]
+
+# Duplicate profile config from the workspace root
+# https://github.com/rust-lang/cargo/issues/8264
+#
+# Duplicating to ensure release config is expected when
+# publishing to crates.io.
+#
+# Ensure changes are kept in lockstep
+[profile.release]
+panic = "abort"   # Not just binary size, but desired behavior of clockbound bin
+strip = true
+lto = "fat"
+codegen-units = 1
+
+[package.metadata.generate-rpm]
+name = "clockbound"
+assets = [
+  { source = "target/release/clockbound", dest = "/usr/bin/clockbound", mode = "755" },
+  { source = "target/release/cbctl", dest = "/usr/bin/cbctl", mode = "755" },
+  { source = "assets/clockbound.service", dest = "/usr/lib/systemd/system/clockbound.service", mode = "644" },
+  { source = "assets/configure_phc", dest = "/usr/sbin/configure_phc", mode = "755" },
+]

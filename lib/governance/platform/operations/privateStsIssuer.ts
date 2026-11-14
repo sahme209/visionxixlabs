@@ -1,5 +1,5 @@
 import type {CustodianCredentialObservation} from './custodianCredentialContract';
-import {assertExecutionWindow,authorizeExecutionWindow,type ExecutionTimeSource,type ExecutionTimeAuthorization} from '../executionTime';
+import {assertExecutionWindow,prepareExecutionDispatch,consumeExecutionDispatch,type ExecutionTimeSource,type ExecutionTimeAuthorization} from '../executionTime';
 import 'server-only';
 import {randomUUID} from 'node:crypto';
 import {STSClient,AssumeRoleCommand} from '@aws-sdk/client-sts';
@@ -55,11 +55,20 @@ export function createPrivateOperationalStsIssuer(ports:PrivateOperationalStsPor
    if(used||signal.aborted||request.protocol!=='https:'||request.hostname!==endpoint.hostname||request.port!==undefined&&request.port!==443||request.method!=='POST'||request.path!=='/'||Object.keys(request.query??{}).length||typeof request.headers.authorization!=='string'||!request.headers.authorization.startsWith('AWS4-HMAC-SHA256 Credential='+source.accessKeyId+'/')||!request.headers.authorization.includes('/'+manifest.target.region+'/sts/aws4_request')||request.headers['x-amz-security-token']!==source.sessionToken)return fail();used=true;
    const bytes=typeof request.body==='string'?Buffer.from(request.body,'utf8'):request.body instanceof Uint8Array?Buffer.from(request.body):null;if(!bytes||bytes.length>32768)return fail();
    const fields=new URLSearchParams(new TextDecoder('utf-8',{fatal:true}).decode(bytes));if(Array.from(fields).length!==expected.size||Array.from(expected).some(([key,value])=>fields.getAll(key).length!==1||fields.get(key)!==value))return fail();
-   await assertSource();await authorizeExecutionWindow(clock,{expiresAt:Math.min(source.expiresAt,Date.parse(manifest.expiresAt))},beforeIssue,signal,async()=>{
-    if(typeof custodianFacts!=='function')return fail();
+   await assertSource();const binding=Object.freeze({phase:'role.acquire',manifestDigest:manifest.digest,sourceLease:source.leaseRef,profileDigest:source.profileDigest,roleArn:manifest.roleArn,session});
+   const authorization=request.headers.authorization;
+   const requestCurrent=()=>{
+    const body=typeof request.body==='string'?Buffer.from(request.body,'utf8'):request.body instanceof Uint8Array?Buffer.from(request.body):null;
+    if(request.protocol!=='https:'||request.hostname!==endpoint.hostname||request.port!==undefined&&request.port!==443||request.method!=='POST'||request.path!=='/'||Object.keys(request.query??{}).length||request.headers.authorization!==authorization||request.headers['x-amz-security-token']!==source.sessionToken||!body||body.length>32768)return fail();
+    const current=new URLSearchParams(new TextDecoder('utf-8',{fatal:true}).decode(body));if(Array.from(current).length!==expected.size||Array.from(expected).some(([key,value])=>current.getAll(key).length!==1||current.get(key)!==value))return fail();
+   };
+   const facts=async()=>{
+    requestCurrent();if(typeof custodianFacts!=='function')return fail();
     const unchanged=()=>Object.keys(source).every(key=>supplied[key as keyof typeof source]===source[key as keyof typeof source]);
-    if(!unchanged())return fail();await custodianFacts(manifest,supplied,signal);signal.throwIfAborted();if(!unchanged())return fail();
-   });signal.throwIfAborted();return bounded.handle(request,options);
+    if(!unchanged())return fail();await custodianFacts(manifest,supplied,signal);signal.throwIfAborted();if(!unchanged())return fail();requestCurrent();
+   };
+   const checkpoint=await prepareExecutionDispatch(clock,{expiresAt:Math.min(source.expiresAt,Date.parse(manifest.expiresAt))},beforeIssue,signal,binding,facts,facts);
+   await consumeExecutionDispatch(checkpoint,binding);signal.throwIfAborted();return bounded.handle(request,options);
   }};
   client=new STSClient({region:manifest.target.region,endpoint:endpoint.href,ignoreConfiguredEndpointUrls:true,useFipsEndpoint:false,useDualstackEndpoint:false,maxAttempts:1,credentials:{accessKeyId:source.accessKeyId,secretAccessKey:source.secretAccessKey,sessionToken:source.sessionToken},requestHandler:handler});
   const result=await client.send(new AssumeRoleCommand({RoleArn:manifest.roleArn,RoleSessionName:session,DurationSeconds:900,Policy:policy}),{abortSignal:signal});signal.throwIfAborted();

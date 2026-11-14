@@ -8,7 +8,7 @@ const image='urn:li:image:Example_123',address='https://www.linkedin.com/dms-upl
 function fixture(){
  const bytes=Buffer.from('synthetic transport bytes'),now=Date.now(),owner='urn:li:organization:123';
  const binding=prepareImageUploadBinding({artifact:{artifactId:'platform_image_artifact_11111111-1111-4111-8111-111111111111',creatorUserId:'requester',connectionId:'connection',connectionRevision:'a'.repeat(64),author:owner,bytesDigest:createHash('sha256').update(bytes).digest('hex'),byteCount:bytes.length,mimeType:'image/png',width:1,height:1,formatProfileDigest:'b'.repeat(64)},requester:{userId:'requester',sessionId:'session'},actionId:'platform_action_22222222-2222-4222-8222-222222222222',expiresAt:new Date(now+60_000).toISOString(),profile:{profileId:'synthetic-profile',profileDigest:'c'.repeat(64),destinationOrigin:'https://www.linkedin.com'}},now);
- const order:string[]=[],p:ImageNativePorts={version:'202607',clock:async()=>({earliest:Date.now(),latest:Date.now()+1}),now:()=>Date.now(),assertQualified:vi.fn(async()=>{}),assertCurrent:vi.fn(async(_b,_i,_signal,check?:ExecutionTimeCheck)=>{await check?.()}),assertObservationAllowed:vi.fn(async()=>{}),admit:vi.fn(async(_b,i)=>{order.push('commit-'+i)}),readCredential:vi.fn(async()=>{order.push('credential');return 'SYNTHETIC_NOT_REAL'}),assertCredentialCurrent:vi.fn(async()=>{})};
+ const order:string[]=[],p:ImageNativePorts={assertDispatchCurrent:vi.fn(async()=>{}),version:'202607',clock:async()=>({earliest:Date.now(),latest:Date.now()+1}),now:()=>Date.now(),assertQualified:vi.fn(async()=>{}),assertCurrent:vi.fn(async(_b,_i,_signal,check?:ExecutionTimeCheck)=>{await check?.()}),assertObservationAllowed:vi.fn(async()=>{}),admit:vi.fn(async(_b,i)=>{order.push('commit-'+i)}),readCredential:vi.fn(async()=>{order.push('credential');return 'SYNTHETIC_NOT_REAL'}),assertCredentialCurrent:vi.fn(async()=>{})};
  const context=imageUploadGrantContext(binding,{providerImageReference:image,issuedAt:now,expiresAt:now+30_000});
  return {bytes,now,owner,binding,context,p,order};
 }
@@ -85,4 +85,18 @@ it.each(['expiry','not-before'])('uses the PUT grant interval %s before admissio
 it('cannot return a new initializer proof at the returned grant expiry under a still-current action',async()=>{
  const f=fixture();let received=false;f.p.clock=async()=>({earliest:f.now,latest:received?f.now+30000:f.now+1});const fetch=vi.spyOn(globalThis,'fetch').mockImplementation(async()=>{received=true;return Response.json({value:{image,uploadUrl:address,uploadUrlExpiresAt:f.now+30000}})});
  const t=createImageNativeTransport(f.p);await expect(t.initialize(f.binding)).rejects.toThrow();expect(fetch).toHaveBeenCalledTimes(1);await expect(t.initialize(f.binding)).rejects.toThrow();expect(fetch).toHaveBeenCalledTimes(1);
+});
+
+it.each(['credential-read','initialize','put','readiness'] as const)('postcommit private interval expiry before image %s prevents that next effect',async phase=>{
+ const f=fixture();let calls=0,expired=false;f.p.clock=async()=>({earliest:f.now,latest:expired?f.now+1000:f.now+1});
+ vi.mocked(f.p.assertCurrent).mockImplementation(async(_b,_i,_s,check)=>{await check?.({expiresAt:f.now+1000});if(++calls===(phase==='credential-read'?3:phase==='initialize'||phase==='put'?5:7))expired=true});
+ const http=vi.spyOn(globalThis,'fetch').mockImplementation(async(_u,i)=>i?.method==='PUT'?new Response(null,{status:201}):i?.method==='GET'?Response.json({id:image,owner:f.owner,status:'AVAILABLE'}):Response.json({value:{image,uploadUrl:address,uploadUrlExpiresAt:f.now+30000}}));
+ const t=createImageNativeTransport(f.p);await expect(phase==='put'||phase==='readiness'?t.put(f.binding,f.context,address,f.bytes):t.initialize(f.binding)).rejects.toThrow();
+ if(phase==='credential-read')expect(f.p.readCredential).not.toHaveBeenCalled();expect(http.mock.calls.map(c=>c[1]?.method)).toEqual(phase==='readiness'?['PUT']:[]);
+});
+
+it.each(['credential-read','initialize','put','readiness'] as const)('native-only image dispatch revocation at %s stops the fixed phase',async phase=>{
+ const f=fixture();f.p.assertDispatchCurrent=async(_b,_i,p)=>{if(p===phase)throw Error('original runtime revoked')};
+ const http=vi.spyOn(globalThis,'fetch').mockImplementation(async(_u,i)=>i?.method==='PUT'?new Response(null,{status:201}):i?.method==='GET'?Response.json({id:image,owner:f.owner,status:'AVAILABLE'}):Response.json({value:{image,uploadUrl:address,uploadUrlExpiresAt:f.now+30000}}));
+ const t=createImageNativeTransport(f.p);await expect(phase==='put'||phase==='readiness'?t.put(f.binding,f.context,address,f.bytes):t.initialize(f.binding)).rejects.toThrow();if(phase==='credential-read')expect(f.p.readCredential).not.toHaveBeenCalled();expect(http.mock.calls.map(c=>c[1]?.method)).toEqual(phase==='readiness'?['PUT']:[]);await expect(phase==='put'||phase==='readiness'?t.put(f.binding,f.context,address,f.bytes):t.initialize(f.binding)).rejects.toThrow();expect(http.mock.calls.length).toBe(phase==='readiness'?1:0);
 });

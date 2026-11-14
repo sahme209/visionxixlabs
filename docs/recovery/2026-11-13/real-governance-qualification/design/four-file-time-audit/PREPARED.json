@@ -1,0 +1,12 @@
+{
+  "approval": "call_102bfd0bf1fc41b88b7264ff38beeebe",
+  "scope": "one conditional four-file public-source pass; no retry, code adoption or native execution",
+  "files": {
+    "docs/recovery/2026-11-13/real-governance-qualification/design/four-file-time-audit/reader.cjs": "10aa489f4a83f92aacce46b3c3042db537442f8215057d02bf96b9c49cbd6218",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/four-file-time-audit/reader.test.cjs": "5d11ec0796c9b16980607de132516b97a9748c5c5ffaa0a76d7e28a79e579f32",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/FOUR-FILE-TIME-AUDIT-REVIEW.md": "3c9496708933f7ac10ac04021e861777fb08f5818ed657f000573c4c38f927ed",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/four-file-time-audit/run-once.cjs": "7261ba17b4ba973ed77066cd3038eabd773c0ab8480aeee3d9f1ab98b7158d3d"
+  },
+  "mockedTests": 4,
+  "requestsPerformed": 0
+}

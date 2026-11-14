@@ -1,0 +1,111 @@
+{
+  "scope": "LOCAL source/ordinary intercepted tests only; not native/provider/full Governance acceptance",
+  "ownerApproval": "call_89f041fe45684b9595c09952d8f6fd6c",
+  "rootTypes": "PASS",
+  "ordinary": {
+    "passed": 19332,
+    "failed": 0,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "passedFiles": 1765,
+    "skippedFiles": 106
+  },
+  "initialPreserved": {
+    "ordinaryPassed": 19314,
+    "ordinaryFailed": 18,
+    "failedFiles": [
+      "lib/deploy/__tests__/platformDeployment.test.ts",
+      "lib/deploy/__tests__/providerBoundary.test.ts"
+    ],
+    "types": "one synthetic mock HeaderBag inference error"
+  },
+  "corrections": "Two explicit synthetic fixture ports; one mock return-type annotation; no product guard or assertion weakened.",
+  "focused": {
+    "shared": 34,
+    "awsLatestDistinct": 84,
+    "deploymentSettings": 113,
+    "growthImageTemplate": 123,
+    "legacyDeploymentFixtures": 48,
+    "countsMayOverlap": true
+  },
+  "reviews": {
+    "shared": "PASS spec+quality",
+    "aws": "PASS spec+quality",
+    "deploymentSettings": "PASS spec+quality",
+    "growthImageTemplate": "PASS spec+quality",
+    "wholeUnit": "PASS no important finding",
+    "sql230Definition": "PASS definition only, NOT RUN"
+  },
+  "actualSqlCurrentSource": "NOT RUN;230 exact opt-in definitions expected, previous grants consumed",
+  "productionBuildCurrentSource": "NOT RUN; previous grants consumed",
+  "productionChanged": false,
+  "governanceEnabled": false,
+  "sourceHashes": {
+    "lib/cloud/aws/__tests__/platformTemplateHosting.test.ts": "983b00de30eae029443a5e8da1c00b896f3c0a757ded69da69323f0cb6a9abcf",
+    "lib/demo/demoScenarios.ts": "c7de0b64cecfdc39d4f7738c6d8183dc8300e66bd531f320076fa642f0418643",
+    "lib/deploy/__tests__/platformDeployment.test.ts": "aaca3d52c44c08e401b3b6e5c1911c7992cceb6ab948bfd62252124b645602b8",
+    "lib/deploy/__tests__/providerBoundary.test.ts": "f2f6e43bcd03331a37f74badcd9dbfb3b9ca79c7bdf79841c7a467f4db70fda7",
+    "lib/governance/platform/__tests__/deploymentJoinedTime.test.ts": "e9ed789dc7f386d65152b5f14fa0651581b91e13fef2c4d193d6a7d5f6d34eea",
+    "lib/governance/platform/__tests__/deploymentNativeTransport.test.ts": "ef35919ba583af865a63609ec40f34e716c214c613c65f1d6e96aacb637bdec4",
+    "lib/governance/platform/__tests__/executionTime.test.ts": "ec903309ea72478d14a72163aef12249c48393cb70c18c6bdb3ff57e3328eaf8",
+    "lib/governance/platform/__tests__/fixtures/syntheticGrowthNative.ts": "9a5e941eea322e2a65ecb21c242a2767b2f188e4e6464e5eb981bce2d4c5a829",
+    "lib/governance/platform/__tests__/growthNativeTransport.test.ts": "79275e7ff8e977503f2541f52e50828e9722f6e72d6a6b795a7fbcfadd132549",
+    "lib/governance/platform/__tests__/imageJoinedTime.test.ts": "6084d9c73e71b74f6132dc60e9684ce6d692276583f3efed85b6d365b2368bd0",
+    "lib/governance/platform/__tests__/imageNativeTransport.test.ts": "363f533b3864f0e5a44e7fd1bf8d594ebb604be1a94bf412d8e953e1725f4312",
+    "lib/governance/platform/__tests__/imageStorage.pg.test.ts": "71d8235ba9fc132cd6f03708d65c7d00917e984f78977a0c2ebe7382285a5f23",
+    "lib/governance/platform/__tests__/sqlRepository.pg.test.ts": "e4010716e0ecfcc3ffb480a530d3f8c90546820a449c3f5e0525face68d544ec",
+    "lib/governance/platform/__tests__/templateFinalSendTime.test.ts": "9e37ab2e537bfa66eaca6be256b0dcf3d7a98607fc7054d83ffc28e10bb332de",
+    "lib/governance/platform/__tests__/templateJoinedTime.test.ts": "c144e4128d0be0e75f107fca7e00db548ad8cf0358fe81cec27c9f3dd95903f6",
+    "lib/governance/platform/__tests__/templateNativeTransport.test.ts": "79a82b3b7b5b23ad09e62fb68707eb4edcf27f88fa4295671e827a87f5e0a268",
+    "lib/governance/platform/__tests__/templateStorage.pg.test.ts": "4a48d8476ea9719113b537374679a9e1ddb64932638bc48b0bec86c4bb2d1887",
+    "lib/governance/platform/deploymentNativeTransport.ts": "85e12e2b431cd103c32e7f7e511f3b028f658aa107f3c6f95d738fe95245adb5",
+    "lib/governance/platform/executionTime.ts": "58138a5c40ed5f247dbe6b931d9db80cbd8e33c869a4120d20d10daace07f6ef",
+    "lib/governance/platform/growthNativeTransport.ts": "63e12a53803d66a995aa3b233fe653f6ca5af5ba835431796535e4f7068fad3c",
+    "lib/governance/platform/imageExecutionStore.ts": "8ddc8d5f9353453870286510abf0a294ca515c5d6bbb20930d33d42c0cf7594b",
+    "lib/governance/platform/imageNativeTransport.ts": "de37413cb179c59e1265bc2ac6f3e5c650d4ef94cf52389a56ebc914140f2ae5",
+    "lib/governance/platform/imageWorkflowRequest.ts": "3e089f919cc8a5472de02ca4c598103fcdea2a9fe06fcacb7887aafacd6a0829",
+    "lib/governance/platform/operations/__tests__/ecsOutcomeSource.test.ts": "a83ee94ca9215d9ea722454b05925636c95fea95df11e53c1cd4f90a441bca5d",
+    "lib/governance/platform/operations/__tests__/ecsSdkTransport.test.ts": "0e345419d682da7d63b629e959774fd1b69c512ad8aeb7b2f4b8b7cd84b0e77c",
+    "lib/governance/platform/operations/__tests__/nativeCustodianSupplier.test.ts": "3a14ed24b0c23a42c605867c39f7e10a15a3d133fa8ae75a5c11a30a5a1483ce",
+    "lib/governance/platform/operations/__tests__/privateStsIssuer.test.ts": "031e85eb4b29a04e28684bc35ee188e810dae6aa374b04c526052c32993a5005",
+    "lib/governance/platform/operations/__tests__/settingsJoinedTime.test.ts": "d97544ec93ac57b5652d6d92af8f486b7fcb89232228134b0bd5764af72848a8",
+    "lib/governance/platform/operations/__tests__/settingsVercelTransport.test.ts": "f46907099b9460d082486b0c44016cec097503528e530527526cbbe6896cad79",
+    "lib/governance/platform/operations/__tests__/workloadJoinedExecution.test.ts": "f45b783b56f609ac4f597bceacb3b59e2d89c2e89792c96a28215389016afe3a",
+    "lib/governance/platform/operations/ecsExecution.ts": "b2ee9d9af1a4da0d4762c8ad8b2e28b9251e80e98ed9f1c785234946433eb526",
+    "lib/governance/platform/operations/ecsSdkTransport.ts": "22c44608e207881cfc0c9e5aeb0396e557d3996a9bae6205aafaa034f3cb6554",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "eaf96c93b4e66a696404b0fda7e4a158517395a42f14f902c4e3c8b07f7c4237",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "ef7648cdd74c5976966d26be5a96b63a929b570f5201530c4a00f04fece6217e",
+    "lib/governance/platform/operations/settingsVercelTransport.ts": "dca1a16c8d32a847979c2b0a28e35f1ad556930b16aabe51899eb18ca110e2d1",
+    "lib/governance/platform/templateExecutionStore.ts": "6cb2d090b64c4ab872fcde455b13cc52f6002ad35b965b1ad06e2b63dcf1ab8b",
+    "lib/governance/platform/templateNativeTransport.ts": "565509f441628da540b33a336d4faae7bc4aa6872ad7cd2449b58261f55870a4",
+    "lib/governance/platform/templateWorkflowRequest.ts": "896b6dfc4399de7d86d3a037b529799f516a0c7b8b1fe8605d2bc8929a454cca",
+    "scripts/run-platform-governance-postgres.py": "58cb7b03f0e6a4c13cc993977fc4cbcafc84142e0376aa01e755ddda805b9174"
+  },
+  "logs": {
+    "types": {
+      "path": "/private/tmp/axiom-committed-dispatch-types-final.log",
+      "sha256": "3fe8f1d4c885a796efc179822f03d514fb82bfaf636e5d7fdfa27dc0a0fdfa63"
+    },
+    "ordinary": {
+      "path": "/private/tmp/axiom-committed-dispatch-full-final.log",
+      "sha256": "9c20e11c951c6982e08ac183c3d874ede20e15daba7745819571e7c1505e21b7"
+    },
+    "initialTypes": {
+      "path": "/private/tmp/axiom-committed-dispatch-types.log",
+      "sha256": "9140369d65007d38242851d615e4dca0d0cef9236f8b0159706b58e61247af36"
+    },
+    "initialOrdinary": {
+      "path": "/private/tmp/axiom-committed-dispatch-full.log",
+      "sha256": "e1735dbbe0db24cb1f59df672cb22fb7d1d3711b74801ec6a32ddaa82dd0ca43"
+    }
+  },
+  "remaining": [
+    "settings key-read/decrypt custody composition",
+    "image artifact/grant key/decrypt custody",
+    "template artifact/key/decrypt/output delivery custody",
+    "qualified native time/runtime/custody/fleet source",
+    "genuine humans and provider trials/closure",
+    "production compatibility and explicit activation/deployment",
+    "all other master requirements"
+  ]
+}

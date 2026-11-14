@@ -64,7 +64,7 @@ import {IncomingMessage} from 'node:http';
 import {Socket} from 'node:net';
 import {createOperationalEcsSdkReader} from '../ecsSdkTransport';
 it('joins the actual installed SDK read gate to the original owner with one shared private clock and intercepted HTTP',async()=>{
- const f=fixture(),reader=createOperationalEcsSdkReader(f.clock),native=vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async request=>{
+ const f=fixture(),reader=createOperationalEcsSdkReader(f.clock,async()=>{}),native=vi.spyOn(NodeHttpHandler.prototype,'handle').mockImplementation(async request=>{
   expect(request.hostname).toBe('ecs.us-east-2.amazonaws.com');expect(request.headers['x-amz-target']).toBe('AmazonEC2ContainerServiceV20141113.DescribeServices');expect(JSON.parse(String(request.body))).toEqual({cluster:target.clusterArn,services:[target.serviceArn]});
   const body=new IncomingMessage(new Socket());body.push(Buffer.from(JSON.stringify({failures:[],services:[{clusterArn:target.clusterArn,serviceArn:target.serviceArn,taskDefinition:target.taskDefinitionArn,status:'ACTIVE',deploymentController:{type:'ECS'},desiredCount:1,runningCount:1,pendingCount:0,deployments:[{id:'ecs-svc/2',status:'PRIMARY',taskDefinition:target.taskDefinitionArn,rolloutState:'COMPLETED'}]}]})));body.push(null);return {response:{statusCode:200,headers:{'content-type':'application/x-amz-json-1.1','x-amzn-requestid':'synthetic-exact-read'},body}};
  });

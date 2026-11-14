@@ -31,10 +31,11 @@ export async function createImageWorkflowRequestComposition(request:RequestConte
   ...(r.readUploadProfile?{readUploadProfile:(a:Parameters<NonNullable<ImageArtifactResources['readUploadProfile']>>[0],s:AbortSignal)=>guarded(()=>r.readUploadProfile!(a,s))}:{}),
   ...(r.assertUploadProfileCurrent?{assertUploadProfileCurrent:(p:unknown,a:Parameters<NonNullable<ImageArtifactResources['assertUploadProfileCurrent']>>[1],s:AbortSignal)=>guarded(()=>r.assertUploadProfileCurrent!(p,a,s))}:{}),
  }}
- const resources=ports.resources?protect(ports.resources,artifactClock!):undefined,e=ports.executionResources,clock=executionClock;
+ const resources=ports.resources?protect(ports.resources,artifactClock!):undefined,e=ports.executionResources,clock=executionClock,dispatch=e?.assertDispatchCurrent?.bind(e);
  const executionResources:ImageExecutionResources|undefined=e?{
   ...protect(e,clock!),clock:s=>readClock(e,clock!,s),get version(){possessed();return e.version},now:()=>{possessed();return e.now()},
   assertNativeQualified:(b,v,s)=>guarded(()=>e.assertNativeQualified(b,v,s)),assertObservationAllowed:(b,v,s)=>guarded(()=>e.assertObservationAllowed(b,v,s)),
+  ...(dispatch?{assertDispatchCurrent:(...args:Parameters<NonNullable<ImageExecutionResources['assertDispatchCurrent']>>)=>guarded(()=>dispatch(...args))}:{}),
   readCredential:(b,i,s)=>guarded(()=>e.readCredential(b,i,s)),assertCredentialCurrent:(b,k,s)=>guarded(()=>e.assertCredentialCurrent(b,k,s)),
   readGrantKey:(b,s)=>guarded(()=>e.readGrantKey(b,s)),assertGrantKeyCurrent:(b,k,s)=>guarded(()=>e.assertGrantKeyCurrent(b,k,s)),
  }:undefined;
