@@ -1,0 +1,32 @@
+{
+  "approval": "call_bc9f31d56e6e4fa59e52921188c127c9",
+  "sourceCommit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "url": "https://codeload.github.com/aws/clock-bound/tar.gz/371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "output": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/work/pinned-clock-bound-371058f8-archive-inspection-1",
+  "treeFile": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-2.txt",
+  "reader": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py",
+  "bindings": {
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/test_reader.py": "40e98f738a1fa556a0a7b048a71adca06f405caa0cc0b959f5dc3755a89c8e30",
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/pinned-time-candidate-finite-read/PUBLIC-READ-2.txt": "dc5518ce9b96bce6fa4a59e468287c02f970f843bc722ea26567ccc04b4f8b2c",
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/PINNED-SOURCE-ARCHIVE-PROPOSAL.md": "27204cb5c773bec39489b1e022d431760c3c895e7635321f68bdb68ac9b06c76",
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/ARCHIVE-SCOPE-REVIEW.md": "2c40d433da8eb8dfe739d0336681c27826d5a74315162b7465168f94a3f0948e"
+  },
+  "limits": {
+    "requests": 1,
+    "redirects": 0,
+    "retries": 0,
+    "networkSeconds": 30,
+    "cleanupSeconds": 5,
+    "compressedBytes": 8388608,
+    "expandedBytes": 16777216,
+    "archiveEntries": 1024,
+    "pathBytes": 512
+  },
+  "validation": {
+    "syntheticTests": 22,
+    "log": "work/linux-archive-reader-green.log"
+  },
+  "pax": "only first global pinned commit comment; no metadata overrides",
+  "downloadedSourceExecution": false
+}

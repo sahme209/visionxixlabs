@@ -1,0 +1,47 @@
+{
+  "approval": "call_7c9b872478ab4d69b368572e8cc7da5c",
+  "scope": "three primary documentation pages and design preparation only",
+  "uniquePagesRead": 3,
+  "pageOpenOperations": 5,
+  "additionalUniquePages": 0,
+  "consumed": true,
+  "sources": [
+    {
+      "url": "https://docs.kernel.org/userspace-api/seccomp_filter.html",
+      "title": "Linux kernel: Seccomp BPF",
+      "sections": [
+        "Usage",
+        "Return values",
+        "Pitfalls",
+        "What it is not"
+      ],
+      "observed": true
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/seccomp.2.html",
+      "title": "Linux man-pages: seccomp(2)",
+      "sections": [
+        "SECCOMP_SET_MODE_FILTER",
+        "Filters",
+        "Return value",
+        "Errors",
+        "Caveats"
+      ],
+      "observed": true
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/PR_SET_NO_NEW_PRIVS.2const.html",
+      "title": "Linux man-pages: PR_SET_NO_NEW_PRIVS",
+      "sections": [
+        "Description",
+        "Return value"
+      ],
+      "observed": true
+    }
+  ],
+  "codeChanges": false,
+  "nativeCompilerOrFilterExecution": false,
+  "ciRetry": false,
+  "productionChange": false,
+  "spending": false
+}

@@ -1,0 +1,16 @@
+{
+  "head": "7b341565f527299eeef172d54baa506f7da07671",
+  "nativeRun": 43612814611,
+  "nativeJob": 132501347725,
+  "nativeConclusion": "success",
+  "ordinaryChecks": "all seven success",
+  "testRun": 43612814621,
+  "requiredJob": 132502614154,
+  "websiteRun": 43612814815,
+  "websiteJob": 132501348385,
+  "acceptedCompilerArtifact": true,
+  "runtimeLaunched": false,
+  "governanceEnabled": false,
+  "productionChanged": false,
+  "approvalConsumed": true
+}

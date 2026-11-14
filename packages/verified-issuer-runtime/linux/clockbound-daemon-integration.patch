@@ -1,0 +1,264 @@
+--- a/clock-bound/src/daemon.rs
++++ b/clock-bound/src/daemon.rs
+@@ -1,4 +1,7 @@
+ //! Clock Synchronization Daemon
++
++#[cfg(feature = "daemon")]
++mod time_publication_adapter;
+ 
+ #[cfg(feature = "algorithm")]
+ pub mod algo_analysis;
+@@ -217,6 +220,104 @@
+         }
+     }
+ 
++    /// Qualified private construction requires the owned publisher context.
++    pub async fn construct_axiom(
++        configured_sources: SourcesConfig,
++        cancellation_token: CancellationToken,
++        axiom_publisher: time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        let daemon_info = DaemonInfo {
++            major_version: 2,
++            minor_version: 200,
++            startup_id: rng().next_u64(),
++        };
++
++        let clock_state_cancellation_token = CancellationToken::new();
++
++        let selected_clock = Arc::new(SelectedClockSource::default());
++
++        // Initialize IO components.
++        let (dns_message_tx, dns_message_rx) = mpsc::channel(DAEMON_MESSAGE_CAPACITY);
++        let mut io_front_end =
++            io::SourceIO::construct(selected_clock.clone(), daemon_info, dns_message_tx);
++        let clock_disruption_receiver = io_front_end.clock_disruption_receiver();
++
++        let mut receiver_stream = ReceiverStream::default();
++        // The daemon runs the algorithm with its production tunables and nothing else.
++        let ff_sync_params = FfSyncParams::default();
++        let mut clock_sync_algorithm = ClockSyncAlgorithm::builder()
++            .selected_clock(selected_clock.clone())
++            .selector(Selector::new(ff_sync_params.max_dispersion))
++            .build();
++
++        let mut source_mutator = SourceMutator::new(
++            &mut io_front_end,
++            &mut clock_sync_algorithm,
++            &mut receiver_stream,
++        );
++
++        // Platform auto-detection: determine which sources to install.
++        let autodetect_result = match Autodetect::detect() {
++            Ok(result) => result,
++            Err(e) => {
++                warn!(
++                    ?e,
++                    "Platform auto-detection failed; defaulting to non-Amazon."
++                );
++                Autodetect::Other
++            }
++        };
++
++        // Install Amazon-conditional sources.
++        source_mutator
++            .init_from_autodetect_results(&autodetect_result, &ff_sync_params)
++            .await;
++
++        // Install the default public pool (may be added later at runtime via `DnsMessage::AddPool`)
++        source_mutator.add_default_public_pool(&autodetect_result);
++
++        // Install sources from the configuration file.
++        Self::install_configured_sources(&mut source_mutator, &configured_sources, &ff_sync_params);
++
++        // Read VMClock params (the source may have been created by init_amazon_sources above).
++        let vmclock_params = io_front_end.vmclock_params();
++
++        // Initialize the Clock State component
++        let (clock_state_tx, clock_state) = {
++            let (tx, rx) = async_ring_buffer::create(1);
++            let clock_state = ClockState::construct_axiom(
++                rx,
++                clock_disruption_receiver.clone(),
++                clock_state_cancellation_token.clone(),
++                vmclock_params,
++                ClockStatus::Unknown,
++                ff_sync_params.max_dispersion,
++                axiom_publisher,
++            );
++            (tx, clock_state)
++        };
++        let task_tracker = TaskTracker::new();
++        let clock_state_handle = ClockStateHandle {
++            clock_state: Some(clock_state),
++            tx: clock_state_tx,
++            cancellation_token: clock_state_cancellation_token,
++            task_tracker,
++        };
++
++        Self {
++            io_front_end,
++            clock_sync_algorithm,
++            ff_sync_params,
++            receiver_stream,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_state_handle,
++            dns_message_rx,
++            sources_snapshot_interval: sources_snapshot_interval(),
++            configured_sources,
++        }
++    }
++
+     /// Install the NTP sources from the configuration file into the daemon.
+     ///
+     /// Each configured source maps onto a `SourceMutator` action:
+--- a/clock-bound/src/daemon/clock_state.rs
++++ b/clock-bound/src/daemon/clock_state.rs
+@@ -129,6 +129,78 @@
+ 
+         let shm0 = Shm0::builder()
+             .shm_writer(Box::new(shm_writer_0))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        let shm1 = Shm1::builder()
++            .shm_writer(Box::new(shm_writer_1))
++            .clock_disruption_support_enabled(clock_disruption_support_enabled)
++            .max_drift_ppb(max_drift_ppb)
++            .disruption_marker(disruption_marker)
++            .build();
++        #[cfg(not(feature = "test-side-by-side"))]
++        let system_clock_discipliner = SystemClockDiscipliner::with_kernel_clock_adjuster();
++        #[cfg(feature = "test-side-by-side")]
++        let system_clock_discipliner = SystemClockDiscipliner::with_noop_clock_adjuster();
++
++        Self::new(
++            shm0,
++            shm1,
++            system_clock_discipliner,
++            clock_params_receiver,
++            clock_disruption_receiver,
++            cancellation_token,
++            clock_status,
++            vmclock_state,
++        )
++    }
++
++    /// Qualified private construction requires the owned publisher context.
++    pub fn construct_axiom(
++        clock_params_receiver: Receiver<SyncParameters>,
++        clock_disruption_receiver: watch::Receiver<ClockDisruptionEvent>,
++        cancellation_token: CancellationToken,
++        vmclock_params: Option<VMClockParams>,
++        clock_status: ClockStatus,
++        max_dispersion: Skew,
++        axiom_publisher: super::time_publication_adapter::NativeTimePublisherContext,
++    ) -> Self {
++        // Clock disruption support is enabled whenever a VMClock source exists (i.e. we expected
++        // one on this platform), even if it failed to initialize.
++        let clock_disruption_support_enabled = vmclock_params.is_some();
++        let disruption_marker = vmclock_params
++            .as_ref()
++            .map_or(0, |params| params.disruption_marker);
++        let vmclock_state = vmclock_params.map(|params| params.shared_state);
++
++        // Build two writers, each writing to a specific shared memory segment path.
++        //
++        // FIXME: given these path are const strings, would be worth looking into moving the
++        // creation of these writers to the Shm0::new()/Shm1::new() methods.
++        //
++        let shm_writer_0 = ShmWriter::new(
++            Path::new(CLOCKBOUND_SHM_DEFAULT_PATH_V0),
++            ClockErrorBoundLayoutVersion::V2,
++            ClockErrorBoundLayoutVersion::V2,
++        )
++        .unwrap();
++
++        let shm_writer_1 = ShmWriter::new(
++            Path::new(CLOCKBOUND_SHM_DEFAULT_PATH_V1),
++            ClockErrorBoundLayoutVersion::V3,
++            ClockErrorBoundLayoutVersion::V3,
++        )
++        .unwrap();
++
++        // The same oscillator bound the synchronization algorithm uses; always representable
++        // (validated positive and far below 1e9 ppb).
++        let max_drift_ppb = max_dispersion
++            .to_ppb()
++            .expect("max_dispersion is a valid ppb value");
++
++        let shm0 = Shm0::builder()
++            .shm_writer(Box::new(axiom_publisher.wrap_v2(Box::new(shm_writer_0))))
+             .clock_disruption_support_enabled(clock_disruption_support_enabled)
+             .max_drift_ppb(max_drift_ppb)
+             .disruption_marker(disruption_marker)
+@@ -276,6 +348,8 @@
+ 
+         if let Some(sp) = &self.sync_parameters {
+             let parameters = &sp.clock_parameters;
++            // Synchronous publication ACK precedes every actual correction.
++            self.shm0.invalidate_unknown();
+             match self
+                 .system_clock_discipliner
+                 .handle_clock_parameters(parameters)
+@@ -344,10 +418,11 @@
+ 
+         let val = clock_disruption_receiver.borrow_and_update().clone();
+         if let Some(disruption_marker) = val.disruption_marker {
++            // Invalidate even before the first sync or on repeated disruptions.
++            shm0.invalidate_disruption(disruption_marker);
+             // Update the clock status on the shared memory segments.
+             if let Some(sp) = sync_parameters {
+                 shm1.handle_disruption(&sp.clock_parameters, disruption_marker);
+-                shm0.handle_disruption(&sp.clock_parameters, disruption_marker);
+             }
+ 
+             *sync_parameters = None;
+--- a/clock-bound/src/daemon/clock_state/shm_writer/shm0.rs
++++ b/clock-bound/src/daemon/clock_state/shm_writer/shm0.rs
+@@ -42,17 +42,32 @@
+         info!(
+             "Initializing SHM segment to status `ClockStatus::Unknown` and zeroing other fields."
+         );
+-        let clock_parameters = ClockParameters {
+-            tsc_count: TscCount::new(0),
+-            time: Instant::new(0),
+-            clock_error_bound: Duration::new(0),
+-            period: Period::from_seconds(0.0),
+-            period_max_error: Period::from_seconds(0.0),
+-            as_of_monotonic: Instant::new(0),
+-        };
+-        if let Some(ceb) = self.create_shm_snapshot(&clock_parameters, ClockStatus::Unknown) {
+-            self.shm_writer.write(&ceb);
+-        }
++        self.invalidate_unknown();
++    }
++
++    // Deliberately unusable sentinel, not a measured time bound. Unknown and
++    // Disrupted records are rejected before interval arithmetic. No clock read,
++    // skew conversion or optional snapshot builder can skip this write.
++    fn invalidate(&mut self, status: ClockStatus) {
++        let ceb = ClockErrorBoundGeneric::builder()
++            .as_of(TimeSpec::new(0, 0))
++            .void_after(TimeSpec::new(0, 1))
++            .bound_nsec(0)
++            .disruption_marker(self.disruption_marker)
++            .max_drift_ppb(0)
++            .clock_status(status)
++            .clock_disruption_support_enabled(self.clock_disruption_support_enabled)
++            .build(ClockErrorBoundLayoutVersion::V2);
++        self.shm_writer.write(&ceb);
++    }
++
++    pub fn invalidate_unknown(&mut self) {
++        self.invalidate(ClockStatus::Unknown);
++    }
++
++    pub fn invalidate_disruption(&mut self, marker: u64) {
++        self.disruption_marker = marker;
++        self.invalidate(ClockStatus::Disrupted);
+     }
+ 
+     /// Handles `ClockParameters` for SHM0 (`ClockErrorBoundV2`)

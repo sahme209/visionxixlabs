@@ -1,0 +1,173 @@
+{
+  "cargoCategory": "cargo-error-unclassified",
+  "compilerAccepted": false,
+  "diagnosticCompleted": true,
+  "filterProgramSha256": "c6fb0bf97c09adbd27e0002b1c7dfcf4b79ae16522dc749096e440a340d9c556",
+  "governanceEnabled": false,
+  "governanceRuntimeLaunched": false,
+  "head": "47adbced23b378f4f4789a6bec8d836641785240",
+  "packetSha256": "38d27aa4c1a7c186b097778317fec008225b046f40ad8bc300288477bb3797f4",
+  "probe": {
+    "ordinary": {
+      "category": "exit-ok"
+    },
+    "preexec": {
+      "category": "spawn-error",
+      "errno": 1
+    }
+  },
+  "records": [
+    {
+      "phase": "locate-rustc",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.006018584999999632,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 74
+      }
+    },
+    {
+      "phase": "locate-cargo",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.004577998999998556,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 74
+      }
+    },
+    {
+      "phase": "source-head",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0017575880000002542,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 41
+      }
+    },
+    {
+      "phase": "rust-version",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.08871457800000115,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 196
+      }
+    },
+    {
+      "phase": "cargo-version",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.007599974999997983,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 36
+      }
+    },
+    {
+      "phase": "rust-sysroot",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.029503902999998388,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 64
+      }
+    },
+    {
+      "phase": "launcher-headers",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.2000535379999988,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "launcher-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.10921719799999963,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "filter-description",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.000960228000000285,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 10255
+      }
+    },
+    {
+      "phase": "probe-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.6815825650000029,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "phase": "probe-once",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.006999894999999867,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 39
+      }
+    },
+    {
+      "phase": "cargo-once",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.018677074999999377,
+        "returncode": 101,
+        "status": "exit_nonzero",
+        "stderr_bytes": 316,
+        "stdout_bytes": 0
+      }
+    }
+  ],
+  "standardLibrarySha256": {
+    "core": "b346ce2305e13b1a5ec9ab6e093028caee38227c540cdaf78d7b253f59ae5913",
+    "std": "ea104615e69d068c8a12c749135c7138b3ec28c7275ae163f91169a03561f75b"
+  },
+  "tinyCrateCompiled": false,
+  "tinyOutputSha256": [],
+  "toolSha256": {
+    "cargo": "a670e02cfa39ac2e53f77a2d911ca1fc9e2c479b0603ec956625be1daf24e3af",
+    "cc": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26",
+    "git": "08ca4d2ee4d8915e86f1faaa52603752507c57af1d16d451dec9992bc9b6d801",
+    "rustc": "b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853",
+    "true": "8a63c98320173f79e263115e10cefc170155e47d1fd4b5a70e4429d2699cae28"
+  },
+  "toolchain": {
+    "cargoCommit": "5f94df478",
+    "cargoRelease": "1.99.1",
+    "rustcCommit": "58cf8f9c35b355199727627d07ae34a4e2846d67",
+    "rustcRelease": "1.99.1",
+    "target": "x86_64-unknown-linux-gnu"
+  }
+}

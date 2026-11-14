@@ -1,0 +1,46 @@
+{
+  "approval": "call_8276874c931341ffb5b6c91135aaab8c",
+  "scope": "local source and ordinary isolated tests only",
+  "files": {
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "057272303779166385ec4a0da7ef074330c1d1110599f080e212d0f27aef6f48",
+    "packages/verified-issuer-runtime/linux/clockbound-daemon-integration.patch": "a46fec91d7f3484161107880532b38022cdbe2e55e65f9c40c98f26fb9c84741",
+    "packages/verified-issuer-runtime/linux/clockbound-daemon-integration-apply-proof.json": "852b176750d0b965d482c3f18199bd8df9883641eeb827977406611496ed744e",
+    "packages/verified-issuer-runtime/linux/README.md": "6692eae57ce3b0296a0ad66c835e6de6dac595a08c8d3e7966b20d2915dfd21e",
+    "lib/governance/platform/nativeTime/__tests__/daemonIntegration.test.ts": "8bbf55fec285e8e8f41f999bd0dcb6b53ea74bde30b2d0ae056dc5d3a00bead6",
+    "lib/demo/demoScenarios.ts": "14cb0f913db0c4b77861c572afedcee87b2a69942caf39144675a30204671124"
+  },
+  "validation": {
+    "upstreamRed": {
+      "failed": 3,
+      "skipped": 7,
+      "log": "work/native-time-daemon-integration-upstream-red.log"
+    },
+    "finalFocused": {
+      "passed": 25,
+      "files": 2,
+      "log": "/private/tmp/axiom-daemon-integration-final.log"
+    },
+    "fullOrdinary": {
+      "passed": 19460,
+      "expectedFailure": 1,
+      "skipped": 1144,
+      "log": "/private/tmp/axiom-daemon-integration-ordinary.log"
+    },
+    "strictRootTypes": {
+      "exitCode": 0,
+      "log": "/private/tmp/axiom-daemon-integration-types-acceptance.log"
+    }
+  },
+  "review": {
+    "source": "three_family_final_review: no important findings",
+    "revisedTestsAndLimits": "three_family_final_review: no important findings"
+  },
+  "limits": [
+    "patch applies only in-memory to exact saved upstream source",
+    "8 static source-contract tests plus 2 real codec/interval sentinel tests; no simulated loop proof",
+    "no native compilation/linking/execution/clock/filesystem qualification",
+    "no actual SQL/build/provider/resources/credentials/deployment/enablement/spend",
+    "stock constructor preserved and unqualified; private main/resource/source supplier still unavailable"
+  ],
+  "history": "Pre-RED draft and earlier test/type failures retained; final patch revised after meaningful untouched-upstream RED. No claim all initial drafts were test-first."
+}

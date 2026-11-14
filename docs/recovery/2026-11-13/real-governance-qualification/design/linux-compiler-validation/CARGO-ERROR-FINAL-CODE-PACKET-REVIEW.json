@@ -1,0 +1,35 @@
+{
+  "actualFileSha256": {
+    ".github/workflows/linux-cargo-error-diagnostic.yml": "c46f58e22f375d2b637465a72b6583b5b6594d34a920f4edd02315d17d9a1cb1",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/RUST-SPAWN-OBSERVED-RESULT.json": "1ded861fe3a7f27a8ab313740c8a418d3ddf90d37e86286ba90b5fb68420522b",
+    "scripts/governance_cargo_error_diagnostic.py": "c3adcc88520cac8c852ea799e9e5c5671d9517a2a9aed2727983ffc2c7894017",
+    "scripts/governance_linux_compile.py": "201c4c75a8d41a422b940d05ae57b2d5695875343c24e3fc508b9ab3bf6e0afb",
+    "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
+    "scripts/governance_rust_spawn_diagnostic.py": "fb03466e0f732b52841e2d246b0779db5c2294861203a941a04a1d2f8baaec2e",
+    "scripts/linux-compile/compiler_profile.h": "a9037954185e1b7e5e87ace0050df6dd76df9f1ec9b64ca8ae78d874bf080beb",
+    "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
+    "scripts/tests/test_governance_cargo_error_diagnostic.py": "482398ab6aaf13e958e24cfe66d4efb76e6d4973e6e8199af4fc29449ee56c98",
+    "scripts/tests/test_governance_cargo_error_workflow.py": "2ea4547e6db3459fe79fd0bf1f8b47fb5ce1005a87f66f3e563dc40944cb85b0"
+  },
+  "driverSourceSha256": "c3adcc88520cac8c852ea799e9e5c5671d9517a2a9aed2727983ffc2c7894017",
+  "exactRequiredSetVerified": true,
+  "limits": [
+    "Source/file-only review: no tests, native/compiler/children, CI, external reads or network performed.",
+    "Remote public/open/head47 observation supplied by parent, not accessed by reviewer.",
+    "No Rust probe repeat, upstream/fetch/full build, filter widening, credential/provider operation, Governance launch or qualification/activation claim.",
+    "Fresh observed stderr may identify a cause; current saved Cargo result remains honestly unclassified and consumed."
+  ],
+  "packetSha256": "44a5d9c1165e1a7994934ef3fdf63fbc1400a9c9251b731d7393125657392061",
+  "review": "Read complete frozen driver/workflow/reused supervisor and pure tests. Exact pins precede inert imports. Actual saved tool/version/std/core/filter identity comparisons, no ancestor configuration, one offline/locked no-dependency Cargo15+5, strict16KiB raw stderr bound/count/UTF8/cleanup/currentness, exact known-path redaction, JSON escaping, and finally wipe on source uncertainty preserve approved finite scope. No important finding.",
+  "savedObservationHead": "47adbced23b378f4f4789a6bec8d836641785240",
+  "savedObservationSha256": "1ded861fe3a7f27a8ab313740c8a418d3ddf90d37e86286ba90b5fb68420522b",
+  "unchangedSharedSources": [
+    "scripts/governance_linux_compile.py",
+    "scripts/governance_linux_compile_supervisor.py",
+    "scripts/governance_rust_spawn_diagnostic.py",
+    "scripts/linux-compile/compiler_profile.h",
+    "scripts/linux-compile/network_launcher.c"
+  ],
+  "verdict": "CLEAR",
+  "verifiedFileCount": 10
+}

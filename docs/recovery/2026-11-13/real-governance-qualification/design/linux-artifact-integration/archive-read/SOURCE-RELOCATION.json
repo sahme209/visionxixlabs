@@ -1,0 +1,10 @@
+{
+  "oldSourcePath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/work/pinned-clock-bound-371058f8-archive-inspection-1/source",
+  "currentSourcePath": "/private/tmp/axiom-pinned-clockbound-source-371058f8-inspection-1",
+  "reason": "Keep third-party source outside Axiom TypeScript compilation scope; no compiler config change",
+  "operation": "move only, no source byte/mode change",
+  "verifiedBlobs": 322,
+  "sourceBytes": 3751845,
+  "originalNetworkAttemptAndResultPreserved": true,
+  "downloadedCodeExecutionOrNativeCompilation": false
+}

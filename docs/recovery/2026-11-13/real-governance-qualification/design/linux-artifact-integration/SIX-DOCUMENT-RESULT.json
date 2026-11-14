@@ -1,0 +1,36 @@
+{
+  "approval": "call_60d6a48e488b4e8884698a674b955165",
+  "distinctApprovedPages": 6,
+  "distinctObservedPages": 6,
+  "consumed": true,
+  "sources": [
+    {
+      "url": "https://man7.org/linux/man-pages/man3/clock_gettime.3.html",
+      "title": "Clock resolution and clock semantics"
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/pidfd_open.2.html",
+      "title": "Owned process handles"
+    },
+    {
+      "url": "https://man7.org/linux/man-pages/man2/wait.2.html",
+      "title": "Definitive child completion"
+    },
+    {
+      "url": "https://aws.amazon.com/ecr/pricing/",
+      "title": "Image storage and transfer dimensions"
+    },
+    {
+      "url": "https://aws.amazon.com/cloudwatch/pricing/",
+      "title": "Monitoring/log fee dimensions"
+    },
+    {
+      "url": "https://aws.amazon.com/ec2/pricing/on-demand/",
+      "title": "Compute and traffic billing"
+    }
+  ],
+  "mechanism": "web documentation tool; no custom collector",
+  "newAccountNativeResourceOrSpendingActions": false,
+  "fullQuoteReady": false,
+  "qualifiedClockPremisesEstablished": false
+}

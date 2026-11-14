@@ -1,0 +1,156 @@
+{
+  "format": "axiom.linux-compiler-final-packet-review/1",
+  "verdict": "CLEAR",
+  "approval": "call_9a8b934ad6414d8d806bfbe78463f38a",
+  "packetSha256": "609fa24a2a9737d25707b88adc91eb173e5b5596d5a3ff25271787724f41cf2e",
+  "boundFileCount": 18,
+  "boundFiles": [
+    {
+      "path": ".github/workflows/linux-time-compile.yml",
+      "bytes": 1235,
+      "sha256": "f2f48cd164f47973fffd4b8fcf677cbe42113494b245e4b9945b9dcd003da17e",
+      "match": true
+    },
+    {
+      "path": "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py",
+      "bytes": 8750,
+      "sha256": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch",
+      "bytes": 38006,
+      "sha256": "ce791c7fb9757d6d00ba754161364926dd422cce366c7813b5b0dc87f0906ab1",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_publication.c",
+      "bytes": 8237,
+      "sha256": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_publication.h",
+      "bytes": 1495,
+      "sha256": "04997b0be3d56b6e0399e2e6a3a01236eb9995b2ffb3e8acbccccf1e1dda79c6",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/time_publication_adapter.rs",
+      "bytes": 6639,
+      "sha256": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/vendor/EXPECTED-PATCHED-SHA256.json",
+      "bytes": 3175,
+      "sha256": "1b6cc9ea0ae9d1a7e2a6dd4eb0e26da5487d451c6b2b99a2ed2fcf0f54a56cff",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/vendor/LICENSE.Apache-2.0",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/vendor/LICENSE.MIT",
+      "bytes": 1107,
+      "sha256": "04f8eb9dc1d7079de38b1dce5e9c9c2968e31b88e14301d58ea76562c418b1a2",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/vendor/README.md",
+      "bytes": 987,
+      "sha256": "95dd70479d77143fc86a34f0b30b596db7eb6edb1a3834b0612e8000aad85d23",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/vendor/UPSTREAM-TREE.json",
+      "bytes": 122621,
+      "sha256": "dc5518ce9b96bce6fa4a59e468287c02f970f843bc722ea26567ccc04b4f8b2c",
+      "match": true
+    },
+    {
+      "path": "packages/verified-issuer-runtime/linux/vendor/clock-bound-371058f8-source.tar.gz",
+      "bytes": 1555132,
+      "sha256": "468fde829962d7c2a9fbb9cb981c07ccc2e44c34eed48d43dafce95bda2c2f02",
+      "match": true
+    },
+    {
+      "path": "scripts/governance_linux_compile.py",
+      "bytes": 13766,
+      "sha256": "f790a4ee0028f1443a40cb36431d0c07189010c1bf9170a53443282624358bc9",
+      "match": true
+    },
+    {
+      "path": "scripts/governance_linux_compile_inputs.py",
+      "bytes": 8556,
+      "sha256": "2e6ae367bc3480681fa1c7c11ff28943f0cfe7a3cbc756f3163be4b264ae17da",
+      "match": true
+    },
+    {
+      "path": "scripts/governance_linux_compile_supervisor.py",
+      "bytes": 7527,
+      "sha256": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
+      "match": true
+    },
+    {
+      "path": "scripts/tests/test_governance_linux_compile.py",
+      "bytes": 7526,
+      "sha256": "e833a8e3bafe0f940909605fe0c26678ea5e6d892802f14f1437b20a7aedcbc9",
+      "match": true
+    },
+    {
+      "path": "scripts/tests/test_governance_linux_compile_inputs.py",
+      "bytes": 6201,
+      "sha256": "0b4ed62dc74a8ea37f5533fa430f29cc3a79bb87530d8926e50982e39cbad98c",
+      "match": true
+    },
+    {
+      "path": "scripts/tests/test_governance_linux_compile_supervisor.py",
+      "bytes": 10689,
+      "sha256": "24b956056848cc04aaa7b418ae355a6a5b0f50dc51be091ebc75732fd07d9e13",
+      "match": true
+    }
+  ],
+  "reviewMethod": "ordinary file reads and cryptographic hashing only; no imported reviewed/fetched code, compiler, command child, network or CI",
+  "commandsScope": {
+    "runtimeSource": "f8bf76cbb0f75a413a1f875b28bf63f908dfd710",
+    "standardRunner": "ubuntu-24.04",
+    "repository": "sahme209/visionxixlabs",
+    "repositoryMustRemainPublic": true,
+    "event": "pull_request opened",
+    "branch": "codex/governance-live-qualification-setup",
+    "attempt": "1",
+    "maxJobMinutes": 45,
+    "dependencyAcquisition": "fixed existing Cargo.lock crates.io graph; no git/alternate sources; no retry",
+    "existingSourceArchiveReused": true,
+    "sourceAcquisitionRequestCount": 0,
+    "installedToolchainOnly": true,
+    "namespacePreflightBeforeRegistry": true,
+    "subsequentCompileMetadataLinkNetworkDenied": true,
+    "actualCoreDaemonFeature": true,
+    "excludedRootFeatures": [
+      "algorithm",
+      "test-side-by-side",
+      "test-utils",
+      "env-filter",
+      "time-string-parse"
+    ],
+    "forceActualRustStaticlibAndCLink": true,
+    "outputsExecuted": false,
+    "newCacheOrArtifactUpload": false,
+    "deployOrProviderAction": false
+  },
+  "resolvedFindings": [
+    "Original INPUT-PACKET bytes captured once and required at every subsequent packet verification."
+  ],
+  "acceptanceLimits": [
+    "No actual native compiler/namespace/registry/CI run occurred during review.",
+    "Source/ABI-symbol compilation is not runtime/time/credential/custody/host or Governance qualification.",
+    "Actual installed compiler and unprivileged namespace support remain unknown until the one authorized job.",
+    "Actual retained Rust path and C symbols must appear in final link; no stub-only/cfg-disabled substitution."
+  ],
+  "priorEvidence": "Root reports42prepared mocked checks pass; reviewer did not rerun them."
+}

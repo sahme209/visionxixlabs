@@ -1,0 +1,12 @@
+{
+  "scope": "file-only design review; no native qualification",
+  "designSha256": "4d9557d46f38eed6834373ed33b8da477a815258944ada256bd15ca5903a43f6",
+  "reviews": {
+    "handoff_design_review": "CLEAR: fatal publication/currentness/constructor/retention boundaries",
+    "bootstrap_design_check": "CLEAR: descriptor ownership, trusted-producer limit and conditional arithmetic",
+    "three_family_final_review": "CLEAR: producer-change cost, actual single-source graph, native gates"
+  },
+  "implementationApproved": false,
+  "sourceReads": 0,
+  "nativeActions": 0
+}

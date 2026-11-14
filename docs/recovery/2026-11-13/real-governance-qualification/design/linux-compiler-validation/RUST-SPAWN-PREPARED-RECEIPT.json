@@ -1,0 +1,18 @@
+{
+  "ownerApproval": "Approve one conditional focused diagnostic",
+  "scope": "conditional preparation, independent review and one fixed focused CI diagnostic",
+  "packetSha256": "38d27aa4c1a7c186b097778317fec008225b046f40ad8bc300288477bb3797f4",
+  "status": "prepared_not_yet_run",
+  "localValidation": {
+    "newPureMockOrSourceChecks": 22,
+    "passed": 22,
+    "failed": 0,
+    "nativeExecuted": false,
+    "logSha256": "24a63c6503c5e070adbb89751be5e57ceab526e2a28cf85012eb48835c26bab5"
+  },
+  "unchangedProfile": true,
+  "fullCompilerRetryAuthorized": false,
+  "nativeRuntimeAuthorized": false,
+  "deploymentAuthorized": false,
+  "spendingAuthorized": false
+}

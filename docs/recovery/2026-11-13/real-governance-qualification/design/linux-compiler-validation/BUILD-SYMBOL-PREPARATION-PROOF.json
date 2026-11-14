@@ -1,0 +1,14 @@
+{
+  "oldControllerHead": "7c35aec14a424caab5c4a52cb0d163a5583ad0fa",
+  "strictSymbolFunctionSha256": "d296034cdd0603424d07a2898635ca849f143567cb1384978164dfca473399bc",
+  "strictGateByteIdentical": true,
+  "onlyChangedPriorInputs": [
+    ".github/workflows/linux-build-ipc-compile.yml",
+    "scripts/governance_build_ipc_compile.py",
+    "scripts/tests/test_governance_build_ipc_compile.py",
+    "scripts/tests/test_governance_build_ipc_workflow.py"
+  ],
+  "newPacketSha256": "3ecb86f637d86aa8610e9544895b7a6cbe073a8319c77d6994bb73fc8aa0014c",
+  "nativeAttemptAuthorized": false,
+  "focusedPureTestsPassed": 39
+}

@@ -1,0 +1,68 @@
+{
+  "pr": 331,
+  "head": "12d5c45e7883bc50e9142dfa1e38cc1602b77a43",
+  "checks": [
+    {
+      "id": 132335395734,
+      "runId": 43558087255,
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132335395849,
+      "runId": 43558087255,
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132335395864,
+      "runId": 43558087255,
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132335395896,
+      "runId": 43558087255,
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132335395924,
+      "runId": 43558087255,
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132336392162,
+      "runId": 43558087255,
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 132335395953,
+      "runId": 43558087241,
+      "name": "isolated-website",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "compiler": {
+    "runId": 43558087222,
+    "jobId": 132335395517,
+    "conclusion": "failure",
+    "phase": "c-archive",
+    "status": "timeout",
+    "cleanupConfirmed": true
+  },
+  "mergeAllowed": false,
+  "reason": "All seven existing checks pass; new compiler attempt failed and must not be bypassed.",
+  "approvalConsumed": "call_6dc9f8a11b974095997307183698245f",
+  "governanceEnabled": false,
+  "productionChanged": false
+}

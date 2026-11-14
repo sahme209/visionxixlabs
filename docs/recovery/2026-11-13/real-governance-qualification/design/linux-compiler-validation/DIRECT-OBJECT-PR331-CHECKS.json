@@ -1,0 +1,50 @@
+{
+  "head": "010444b751e6ded03a01a99e772bf925280d3dcf",
+  "pr": 331,
+  "observedFrom": "GitHub workflow-job results in this turn",
+  "checks": [
+    {
+      "name": "Type check",
+      "job": 132342651269,
+      "conclusion": "success"
+    },
+    {
+      "name": "Build and offline checks",
+      "job": 132342651430,
+      "conclusion": "success"
+    },
+    {
+      "name": "Vitest (1/3)",
+      "job": 132342651536,
+      "conclusion": "success"
+    },
+    {
+      "name": "Vitest (2/3)",
+      "job": 132342651505,
+      "conclusion": "success"
+    },
+    {
+      "name": "Vitest (3/3)",
+      "job": 132342651512,
+      "conclusion": "success"
+    },
+    {
+      "name": "Typecheck + Vitest",
+      "job": 132344063761,
+      "conclusion": "success"
+    },
+    {
+      "name": "isolated-website",
+      "job": 132342651113,
+      "conclusion": "success"
+    },
+    {
+      "name": "One approved Linux compiler checkpoint",
+      "run": 43560429085,
+      "job": 132342651106,
+      "conclusion": "failure"
+    }
+  ],
+  "mergeAuthorized": false,
+  "productionChanged": false
+}

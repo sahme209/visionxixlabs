@@ -1,0 +1,18 @@
+{
+  "authority": "Prepared local correction only. One fresh native/build grant is still required; consumed earlier grants are not reused.",
+  "currentSourceSha256": {
+    ".github/workflows/linux-build-ipc-compile.yml": "5474e8b770a243f5152833e2ff1cee71a7a6ee9a3870aac074e9f84e7c93f3fe",
+    "scripts/governance_build_ipc_compile.py": "a5bc2919218fb973a364b14e793339948719a27df66218f8e26be0ea4860f8fd",
+    "scripts/tests/test_governance_build_ipc_compile.py": "85fb7e5dbe63b1f832cb9dafa61f36353716861975984a403637d21f628223af",
+    "scripts/tests/test_governance_build_ipc_workflow.py": "25e47d225a1ab1fb86a908b9c2f64c57dd7211f01c0e22c948275eeea43bc494"
+  },
+  "limits": "No actual symbol rows or native acceptance established by this source review. Frozen packet still requires independent current-hash verification.",
+  "proposalSha256": "92505e37cbe8bf025235f2912a6969f0f4a8bf32e72e749285324e4a4e7c1e3c",
+  "resolvedFinding": "Bulk2MiB receipt omission cannot discard primary evidence: candidate limits count JSON-encoded wire bytes; render_symbol_receipt always emits a separate bounded1MiB primary receipt excluding bulk package/header metadata. Wire overflow is explicit evidenceComplete=false/accepted=false; main refuses acceptance when primary evidence is incomplete.",
+  "reviewKind": "Independent source-only final review; no tests/native/compiler/children/CI/network/external operation.",
+  "reviewedBehavior": "Same artifact output hashes/ELF header/raw+demangled nm rows and stdout count/hash, then source/lock/frozen checks, precede unchanged strict gate. Raw nm is additional read-only invocation, not a relaxed matcher. Candidate row/count overflow refuses. Final frozen mismatch invalidates acceptance/source flags. Transition7c and observed-input identity207 remain separate.",
+  "strictVerifierByteIdenticalToHead": true,
+  "strictVerifierSourceSha256": "d296034cdd0603424d07a2898635ca849f143567cb1384978164dfca473399bc",
+  "unchangedScope": "Profile, native producer/patch/archive/dependencies/compiler options/targets/link flags and fixture\u2192tiny\u2192full gating unchanged. No normalization, forced legacy mangling, closure substitute, symbol waiver, runtime launch or historical acceptance.",
+  "verdict": "CLEAR"
+}

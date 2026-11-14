@@ -1,0 +1,29 @@
+{
+  "approval": "call_44015c479d3344ed8f09d2fcadb4ecd3",
+  "scope": "conditional one pass, exactly five immutable public source files; stop whole pass on first failure",
+  "files": {
+    "docs/recovery/2026-11-13/real-governance-qualification/design/five-file-structural-audit/reader.cjs": "fe91582db41e50c7f0710005cb64544cbd247f324811b1556d6bf97714186ff4",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/five-file-structural-audit/reader.test.cjs": "78a20b67613c0b8a081738afa2a58b2167fbf708f08fefd8dcee48a9e24c6d5d",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/five-file-structural-audit/run-once.cjs": "05533b181c38ba2504b04d6cca89317803a9f50ea07354d42422557953142a6e",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/PINNED-TIME-STRUCTURAL-FIVE-READ-PROPOSAL.md": "976c4474178b0976ca8af5bb64f0d877273566a7f6dcfde1b5ac747bbbf1bd22"
+  },
+  "tests": {
+    "mockedReader": {
+      "passed": 4,
+      "failed": 0,
+      "networkCalls": 0
+    }
+  },
+  "limits": {
+    "requests": 5,
+    "secondsPerRequest": 10,
+    "bytesPerResponse": 262144,
+    "perChildSupervisorSeconds": 15,
+    "retries": 0,
+    "redirects": 0,
+    "auth": false,
+    "proxy": false
+  },
+  "actualReads": 0,
+  "qualifiedNativeSource": false
+}

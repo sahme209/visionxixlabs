@@ -1,0 +1,119 @@
+{
+  "accepted": true,
+  "demangledSymbolEvidence": {
+    "candidateCount": 16,
+    "candidateRows": [
+      "000000000021d8c0 t <core::option::Option<clock_bound::daemon::io::vmclock::VMClockParams>>::map::<alloc::sync::Arc<std::sync::poison::mutex::Mutex<clock_bound::daemon::io::vmclock::State>>, <clock_bound::daemon::clock_state::ClockState>::construct_axiom::{closure#1}>",
+      "000000000021f310 t <core::option::Option<&clock_bound::daemon::io::vmclock::VMClockParams>>::map_or::<u64, <clock_bound::daemon::clock_state::ClockState>::construct_axiom::{closure#0}>",
+      "0000000000201240 t <clock_bound::daemon::Daemon>::construct_axiom::{closure#0}::{closure#0}",
+      "0000000000202540 T <clock_bound::daemon::Daemon>::construct_axiom::{closure#0}",
+      "000000000014fd80 t <clock_bound::daemon::clock_state::ClockState>::construct_axiom::{closure#0}",
+      "000000000014fd90 t <clock_bound::daemon::clock_state::ClockState>::construct_axiom::{closure#1}",
+      "00000000001e6a40 t <clock_bound::daemon::time_publication_adapter::NativeTimePublisher>::publish_precise_then_delegate::{closure#0}",
+      "000000000020a440 T <clock_bound::daemon::Daemon>::construct_axiom",
+      "000000000015b620 t <clock_bound::daemon::clock_state::ClockState>::construct_axiom",
+      "00000000001ef630 t <clock_bound::daemon::time_publication_adapter::NativeTimePublisher>::publish_precise_then_delegate",
+      "00000000009a24a0 D <clock_bound::daemon::Daemon>::construct_axiom::{closure#0}::__CALLSITE",
+      "0000000000952ef8 D <clock_bound::daemon::Daemon>::construct_axiom::{closure#0}::__CALLSITE::META",
+      "0000000000751103 T axiom_time_capture_current",
+      "0000000000751211 T axiom_time_capture_release",
+      "0000000000750d32 T axiom_time_capture_v2",
+      "00000000007507a9 T axiom_time_publish_or_die"
+    ],
+    "complete": true,
+    "stdoutBytes": 6719910,
+    "stdoutSha256": "790b37936696ccc42a864db56cee4cdaf4042984264efbb7a784aeca72cf887f"
+  },
+  "elfHeader": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Position-Independent Executable file)\n  Machine:                           Advanced Micro Devices X86-64\n  Version:                           0x1\n  Entry point address:               0xa3760\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          57935112 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         14\n  Size of section headers:           64 (bytes)\n  Number of section headers:         43\n  Section header string table index: 42\n",
+  "evidenceComplete": true,
+  "evidenceKind": "same-artifact-symbol-observation-v1",
+  "filterProgramSha256": "4b7492a3f59fbd00473cc8cada1348aa3e6dbd90e771ac8ec77f55387a6fb1c1",
+  "finalFrozenInputsMatched": true,
+  "finalSourceChecksPassed": true,
+  "head": "7b341565f527299eeef172d54baa506f7da07671",
+  "inputsReceiptSha256": "ee6cb37eca64ce1e2857eef32a03ece54d0631722200fe2977bd93e1536d3c93",
+  "outputs": {
+    "native/link_only": {
+      "bytes": 57937864,
+      "sha256": "450ce45a47284b944bdaed95efaa7eee3046c5802295d610ede459b7712ebc10"
+    },
+    "native/time_publication.o": {
+      "bytes": 11312,
+      "sha256": "457dd9a1a4d4200f7094c5a0a7db1701308fdc6d62e2d11710918762fa521aa6"
+    },
+    "target/x86_64-unknown-linux-gnu/debug/libclock_bound.a": {
+      "bytes": 138945356,
+      "sha256": "c0fef8c5c0adfc3883c5462cbdb17cf7546c14657de8baba7ac1b47b56d05077"
+    }
+  },
+  "packetSha256": "79d6b84306e6f8731ba588ec1861d19fe62e03ea1b4b72424d9c6524f05b6232",
+  "rawSymbolEvidence": {
+    "candidateCount": 16,
+    "candidateRows": [
+      "000000000021d8c0 t _RINvMNtCskADBYZwJmSU_4core6optionINtB3_6OptionNtNtNtNtCs2gjoHvujPN_11clock_bound6daemon2io7vmclock13VMClockParamsE3mapINtNtCsgFX3jaOk65H_5alloc4sync3ArcINtNtNtNtCs8ZKwes1zzDd_3std4sync6poison5mutex5MutexNtBK_5StateEENCNvMNtBO_11clock_stateNtB3x_10ClockState15construct_axioms_0EBQ_",
+      "000000000021f310 t _RINvMNtCskADBYZwJmSU_4core6optionINtB3_6OptionRNtNtNtNtCs2gjoHvujPN_11clock_bound6daemon2io7vmclock13VMClockParamsE6map_oryNCNvMNtBP_11clock_stateNtB22_10ClockState15construct_axiom0EBR_",
+      "0000000000201240 t _RNCNCNvMNtCs2gjoHvujPN_11clock_bound6daemonNtB6_6Daemon15construct_axiom00B8_",
+      "0000000000202540 T _RNCNvMNtCs2gjoHvujPN_11clock_bound6daemonNtB4_6Daemon15construct_axiom0B6_",
+      "000000000014fd80 t _RNCNvMNtNtCs2gjoHvujPN_11clock_bound6daemon11clock_stateNtB4_10ClockState15construct_axiom0B8_",
+      "000000000014fd90 t _RNCNvMNtNtCs2gjoHvujPN_11clock_bound6daemon11clock_stateNtB4_10ClockState15construct_axioms_0B8_",
+      "00000000001e6a40 t _RNCNvMs_NtNtCs2gjoHvujPN_11clock_bound6daemon24time_publication_adapterNtB6_19NativeTimePublisher29publish_precise_then_delegate0Ba_",
+      "000000000020a440 T _RNvMNtCs2gjoHvujPN_11clock_bound6daemonNtB2_6Daemon15construct_axiom",
+      "000000000015b620 t _RNvMNtNtCs2gjoHvujPN_11clock_bound6daemon11clock_stateNtB2_10ClockState15construct_axiom",
+      "00000000001ef630 t _RNvMs_NtNtCs2gjoHvujPN_11clock_bound6daemon24time_publication_adapterNtB4_19NativeTimePublisher29publish_precise_then_delegate",
+      "00000000009a24a0 D _RNvNCNvMNtCs2gjoHvujPN_11clock_bound6daemonNtB6_6Daemon15construct_axiom010___CALLSITE",
+      "0000000000952ef8 D _RNvNvNCNvMNtCs2gjoHvujPN_11clock_bound6daemonNtB8_6Daemon15construct_axiom010___CALLSITE4META",
+      "0000000000751103 T axiom_time_capture_current",
+      "0000000000751211 T axiom_time_capture_release",
+      "0000000000750d32 T axiom_time_capture_v2",
+      "00000000007507a9 T axiom_time_publish_or_die"
+    ],
+    "complete": true,
+    "stdoutBytes": 7956663,
+    "stdoutSha256": "1f91a3b07e3ccf9d188f41b266b7a6ab470b80fb7d271b614dc5950c7ee61d08"
+  },
+  "standardLibrarySha256": {
+    "core": "b346ce2305e13b1a5ec9ab6e093028caee38227c540cdaf78d7b253f59ae5913",
+    "std": "ea104615e69d068c8a12c749135c7138b3ec28c7275ae163f91169a03561f75b"
+  },
+  "toolchain": {
+    "cargoCommit": "5f94df478",
+    "cargoRelease": "1.99.1",
+    "rustcCommit": "58cf8f9c35b355199727627d07ae34a4e2846d67",
+    "rustcRelease": "1.99.1",
+    "target": "x86_64-unknown-linux-gnu"
+  },
+  "tools": {
+    "cargo": {
+      "path": "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+      "sha256": "a670e02cfa39ac2e53f77a2d911ca1fc9e2c479b0603ec956625be1daf24e3af"
+    },
+    "cc": {
+      "path": "/usr/bin/x86_64-linux-gnu-gcc-13",
+      "sha256": "1b99826121ae6682a634e5efe09bd3e3df58ce58e0b28f849114ab5b89139c26"
+    },
+    "git": {
+      "path": "/usr/bin/git",
+      "sha256": "08ca4d2ee4d8915e86f1faaa52603752507c57af1d16d451dec9992bc9b6d801"
+    },
+    "nm": {
+      "path": "/usr/bin/x86_64-linux-gnu-nm",
+      "sha256": "3708df3d7ce16e2c1dcdcd722784ae382d4d582276a71ab7bbe2d542f5621202"
+    },
+    "readelf": {
+      "path": "/usr/bin/x86_64-linux-gnu-readelf",
+      "sha256": "64c58e15274bbbb5153f31078e455e9e77ee5f51489e709bba5bb788ce9df2b0"
+    },
+    "rustc": {
+      "path": "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustc",
+      "sha256": "b53b780f77f952062f8ca8a3b70aef2390b1e45ad91939be94afdc9543026853"
+    },
+    "rustdoc": {
+      "path": "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/rustdoc",
+      "sha256": "832e53ca262db3d3fcaca659dc6e71f0f5a924a48adc580ee4278acac75f3e80"
+    },
+    "true": {
+      "path": "/usr/bin/true",
+      "sha256": "8a63c98320173f79e263115e10cefc170155e47d1fd4b5a70e4429d2699cae28"
+    }
+  }
+}

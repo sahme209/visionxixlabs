@@ -1,0 +1,15 @@
+{
+  "conditionsAlreadyInProposal": [
+    "Actual candidate libc recv kernel-entry mapping/read behavior is proved by the fixed future fixtures, not assumed from cached Rust source.",
+    "One shared45minute conditional job: trusted fixtures once then tiny Cargo once then full pinned build/link only on prior complete success; fixed output/cleanup limits, same sources/identities, no retries or unknown compatibility widening.",
+    "Negative native probes must remain harmless if a filter is broken; source review must check concrete fixed fixture targets and process-group semantics before invocation.",
+    "BPF selector permission does not attest descriptor type or pointer contents; closed inherited FD context and no descriptor-import/connection operations are essential.",
+    "Explicit owner decision required for this change to earlier all-socket-denied build boundary and one new native/build attempt."
+  ],
+  "evidence": "Actual saved207cf14 stderr identifies process.rs2488 wait_with_output read_output unwrap EPERM. Cached matching-release source first sets FileDesc pipe nonblocking via FIONBIO, omitted by current selector. Earlier preexec probe separately establishes fallback refusal; its AF_UNIX SEQPACKET|CLOEXEC pair and Socket::read/libc::recv eight-byte error handshake are distinct from this output-collection failure.",
+  "limits": "No full-build fix, exact Cargo fallback use, libc syscall mapping, native protection/time/custody/provider qualification, runtime enablement or merge acceptance is established by this review. Prior failures/history remain unchanged.",
+  "proposalSha256": "d84536be317e93db73d82eca571e58146806f11d9cd7fd4df606ace95cdb0e8d",
+  "reviewKind": "independent source/design-only; no implementation, tests, compiler/native/children, external read or network",
+  "scope": "Exactly FIONBIO selector, AF_UNIX exact SOCK_SEQPACKET|SOCK_CLOEXEC protocol0 pair, and candidate recvfrom length8/flags0/null-address/null-address-length. No general sockets, external-address calls, message/ancillary descriptor passing, pidfd, group/session escape or profile fallback.",
+  "verdict": "CLEAR"
+}

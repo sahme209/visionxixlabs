@@ -1,0 +1,18 @@
+{
+  "source": "https://aws.amazon.com/ec2/pricing/on-demand/",
+  "scope": "same approved public pricing page; rendered regional table, no account/console access",
+  "region": "US East (Ohio) us-east-2",
+  "inboundInternetUsdPerGB": "0.00",
+  "outboundInternetFirst10TBUsdPerGB": "0.09",
+  "outboundInternetNext40TBUsdPerGB": "0.085",
+  "outboundInternetNext100TBUsdPerGB": "0.07",
+  "outboundInternetAbove150TBUsdPerGB": "0.05",
+  "freeAllowanceAssumed": false,
+  "screenshot": "work/ohio-ec2-transfer-pricing.jpg",
+  "limitations": [
+    "public planning rate, not account bill or full trial quote",
+    "no new seventh source page or authenticated account read",
+    "compute/image/disk/lifetime/retention/taxes/cleanup quantities still need concrete packet",
+    "browser dropdown only changes public table view, not account settings"
+  ]
+}

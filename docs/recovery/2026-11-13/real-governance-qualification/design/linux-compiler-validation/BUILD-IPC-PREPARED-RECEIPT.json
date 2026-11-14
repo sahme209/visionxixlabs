@@ -1,0 +1,19 @@
+{
+  "ownerApproval": "Approve one conditional compatibility batch",
+  "status": "prepared_not_yet_run",
+  "packetSha256": "787b94d5800d58bf5de73e1f715a5a89437db4b73bae3b66769e2f608e044630",
+  "localChecks": {
+    "newPureSourceAndFilterData": 35,
+    "legacySourceRegression": 7,
+    "failed": 0,
+    "native": false
+  },
+  "nativeJobMinutes": 45,
+  "controllerSeconds": 2400,
+  "noRetry": true,
+  "fullCompileOnlyAfterFixturesAndTinyPass": true,
+  "runtimeLaunch": false,
+  "deploy": false,
+  "governanceEnablement": false,
+  "spending": false
+}

@@ -1,0 +1,83 @@
+{
+  "approval": "call_e7c2c3a622a1491f8a32158859a96c66",
+  "scope": "approved local source and ordinary tests only",
+  "reviewedSourceHashes": {
+    "lib/governance/platform/nativeTime/interval.ts": "a63c8082fe671641f38c592d6623321ab05b536fbc2a1dad5390483734c71ab7",
+    "lib/governance/platform/nativeTime/linuxComposition.ts": "ca0d4783368f5a831986f7facb9a01032de3c80e6c16789ad1c2b96fdc9b70ca",
+    "lib/governance/platform/nativeTime/publisher.ts": "56a92b15d52f6ff184a9ed55049def7d49cd8c0fa01923543288804102dedecf",
+    "lib/governance/platform/nativeTime/record.ts": "6d32149818045c3ddb1c2320b447112e03053617f2181f0f9eda061d0d80cbbe",
+    "lib/governance/platform/nativeTime/source.ts": "aa77df502698c6b834ad5ec6bce199ddbc19ce50d41bf55b49c6efa74f31a73f",
+    "lib/governance/platform/nativeTime/__tests__/daemonIntegration.test.ts": "f6f71bb059f45c5e3631dec8def1f28750d61918ab24e51bd806690d77af3b9a",
+    "lib/governance/platform/nativeTime/__tests__/interval.test.ts": "8a1c5ab31782c58f21e3ef172f478de1afef61cb1645337f580586595980e52a",
+    "lib/governance/platform/nativeTime/__tests__/linuxComposition.test.ts": "a95269fe895687e2a047a081535e67bea8df5d174dcf889fd1b3d0591ab4d1ee",
+    "lib/governance/platform/nativeTime/__tests__/preciseOriginIntegration.test.ts": "ba7423445db8b4ea0a847f48d7837d62ce82e42c4a4577a1bc3ed63a61b6c393",
+    "lib/governance/platform/nativeTime/__tests__/preciseRecord.test.ts": "122302abf2fd3f54a89ace6bd50f12ca418bbd586a1d11c2b62b08f5f2cbbe1e",
+    "lib/governance/platform/nativeTime/__tests__/publisher.test.ts": "eb59e42d1231687a21a836bb9241ff783984b14f92813f67d3d109cb59d3a5de",
+    "lib/governance/platform/nativeTime/__tests__/record.test.ts": "ac74e71041a7814777a22714303f56b0e0ff705246af1ded1b27e72d5ea54142",
+    "lib/governance/platform/nativeTime/__tests__/source.test.ts": "39282bb4e0d3db6d81e4596bc8d536a94e5324d7de95e3dc180683d18e11bc75",
+    "lib/governance/platform/executionTime.ts": "58138a5c40ed5f247dbe6b931d9db80cbd8e33c869a4120d20d10daace07f6ef",
+    "lib/governance/platform/operations/nativeCustodianSupplier.ts": "eaf96c93b4e66a696404b0fda7e4a158517395a42f14f902c4e3c8b07f7c4237",
+    "lib/governance/platform/operations/privateStsIssuer.ts": "ef7648cdd74c5976966d26be5a96b63a929b570f5201530c4a00f04fece6217e",
+    "lib/governance/platform/operations/workloadRunner.ts": "810feebe8e91d281f7716c1eba8122900fc3811f03039a62fe40c8e633bb12fb",
+    "lib/governance/platform/operations/workloadOwnerTime.ts": "ccb01ecb69ccfff04db648bd9f6819dccc6ff553d23f67a35d4ff9cc8467dc6d",
+    "lib/governance/platform/operations/ecsSdkTransport.ts": "22c44608e207881cfc0c9e5aeb0396e557d3996a9bae6205aafaa034f3cb6554",
+    "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch": "ce791c7fb9757d6d00ba754161364926dd422cce366c7813b5b0dc87f0906ab1",
+    "packages/verified-issuer-runtime/linux/time_publication.c": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+    "packages/verified-issuer-runtime/linux/time_publication.h": "04997b0be3d56b6e0399e2e6a3a01236eb9995b2ffb3e8acbccccf1e1dda79c6",
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+    "lib/governance/platform/nativeTime/README.md": "d393baa0775e2afbb4677d087511253faef1fe33c377063b46ac3327227b9fdd",
+    "packages/verified-issuer-runtime/linux/README.md": "47c8d788bab2750ce8de4ad1e19376dc5aba5d8e642cb35e98c14c3f5df66aab",
+    "lib/demo/demoScenarios.ts": "567982e5da0fb753d27d1468c853b1c1fdfbac5eb9bdddb7d8d416674162cc04",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/precise-origin-local/UPSTREAM-MANIFEST.json": "905249c3f1cae23b8d84a844779bb7054142d989a39900ba701a47a1ef014473"
+  },
+  "nativePatch": "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch",
+  "patchBase": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777, exact original source; do not stack historical patch",
+  "validation": {
+    "actualUpstreamSourceRed": {
+      "failed": 6,
+      "passed": 1,
+      "log": "work/precise-origin-actual-upstream-red.log"
+    },
+    "sourceKindRed": {
+      "failed": 1,
+      "passed": 12,
+      "log": "work/precise-origin-source-kind-red.log"
+    },
+    "sourceIntegration": {
+      "passed": 13,
+      "log": "/private/tmp/axiom-precise-source-kind-green.log"
+    },
+    "strictTypes": {
+      "exitCode": 0,
+      "log": "/private/tmp/axiom-precise-origin-types-final.log"
+    },
+    "fullOrdinary": {
+      "passed": 19478,
+      "expectedFailure": 1,
+      "skipped": 1144,
+      "log": "/private/tmp/axiom-precise-origin-ordinary-final.log"
+    },
+    "demoWordingAfterRuntimeSuite": {
+      "passed": 15,
+      "log": "/private/tmp/axiom-precise-origin-demo-final.log"
+    }
+  },
+  "independentFinalReview": "FINAL-REVIEW.md, no important remaining finding in local unit",
+  "limits": [
+    "Native Rust/C arithmetic and upstream patch UNCOMPILED/UNLINKED/UNEXECUTED",
+    "No production mint for accepted native policy; missing policy emits Unknown",
+    "No actual native profile, kernel/rate/lifetime/model/source-bound qualification or worker/parent/IPC/bootstrap supplier",
+    "No actual SQL, coherent production build, provider/credential/resource/IAM/install/deploy/enablement/spending",
+    "Historical source/SQL/build checkpoints are not renewed by these ordinary tests"
+  ],
+  "placementCorrection": {
+    "originalTypecheck": "/private/tmp/axiom-precise-origin-types.log",
+    "cause": "downloaded vendor website TSX was inside broad worktree compilation globs",
+    "fix": "moved only verified source to /private/tmp/axiom-pinned-clockbound-source-371058f8-inspection-1; all322hashes/modes reverified; no compiler config change",
+    "receipt": "../linux-artifact-integration/archive-read/SOURCE-RELOCATION.json"
+  },
+  "textIntegrity": {
+    "runtimeAndOwnDocsWhitespace": "pass scoped diff --check",
+    "artifactWhitespace": "ordinary diff reports blank context lines in unified patch and one original upstream trailing-space line; exact source/blob and patch-hunk bytes retained, no global suppression or pin change"
+  }
+}

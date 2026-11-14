@@ -1,0 +1,44 @@
+name: One approved Rust spawn diagnostic
+
+# One fixed diagnostic transition. This cannot replace full compiler acceptance.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'scripts/governance_rust_spawn_diagnostic.py'
+      - 'scripts/linux-compile/rust_spawn_fixture.rs'
+      - 'scripts/tests/test_governance_rust_spawn_workflow.py'
+      - 'scripts/tests/test_governance_rust_spawn_diagnostic.py'
+      - '.github/workflows/linux-rust-spawn-diagnostic.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  rust-spawn:
+    name: Rust spawn diagnostic (no Governance runtime)
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.repository.private == false &&
+      github.event.action == 'synchronize' &&
+      github.event.number == 331 &&
+      github.event.pull_request.number == 331 &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-live-qualification-setup' &&
+      github.event.before == '010444b751e6ded03a01a99e772bf925280d3dcf' &&
+      github.event.after == github.event.pull_request.head.sha &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - name: Check out exact diagnostic head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One fixed bounded spawn comparison
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_rust_spawn_diagnostic.py --approved-ci-once

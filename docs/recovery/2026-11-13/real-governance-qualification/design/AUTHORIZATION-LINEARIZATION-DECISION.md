@@ -1,4 +1,10 @@
-# Original authorization and dispatch — owner boundary decision required
+# Original authorization and dispatch — accepted boundary
+
+## Current decision and implementation status
+
+Owner call_89f041fe45684b9595c09952d8f6fd6c accepted the recommended original-commit boundary and conditional local work. The reviewed implementation merged in PR330/ece70e38; strict types, 19,332 ordinary tests, 230 isolated database cases and the offline build passed. See COMMITTED-DISPATCH-LOCAL-RECEIPT.json, committed-dispatch-conditional-validation/RESULT.md and ../pr330-merged/MAIN-RESULT.json. This is local/source acceptance, not native qualification or production enablement. All original deadlines, one-use history, real custody/time/source/fleet/human/provider gates and the explicit provider scheduling limitation remain. The proposal below is preserved as the historical basis; its requests for that same decision are consumed, not pending.
+
+## Historical decision proposal
 
 ## Why the previous completion condition cannot be supplied by another clock library
 Actual ECS execution authorizes/commits the original transaction, then invokes the fixed bounded handler (`lib/governance/platform/operations/ecsSdkTransport.ts`). The process can pause after the last time check or commit and before physical network send. The same concern applies to source acquisition, STS and other native dispatch phases. `lib/governance/platform/executionTime.ts` explicitly leaves native validity through dispatch unproven.

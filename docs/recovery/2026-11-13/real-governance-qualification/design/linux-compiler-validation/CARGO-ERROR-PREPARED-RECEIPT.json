@@ -1,0 +1,16 @@
+{
+  "ownerApproval": "Approve one conditional Cargo-only check",
+  "status": "prepared_not_yet_run",
+  "packetSha256": "44a5d9c1165e1a7994934ef3fdf63fbc1400a9c9251b731d7393125657392061",
+  "localPureOrSourceChecks": 15,
+  "checksPassed": 15,
+  "nativeRunLocally": false,
+  "testLogSha256": "432e764160c5b06b41e1864e05386aaf72bcdcdfe2465d19c35fe57144567754",
+  "oneCargoAttemptSeconds": 15,
+  "ownedCleanupSeconds": 5,
+  "jobMinutes": 5,
+  "profileUnchanged": true,
+  "fullBuildAuthorized": false,
+  "deployAuthorized": false,
+  "spendingAuthorized": false
+}

@@ -1,0 +1,16 @@
+{
+  "scope": "cached-source-only trace, not native syscall tracing",
+  "cachedRelease": "1.99.1",
+  "actualRustcCommit": "58cf8f9c35b355199727627d07ae34a4e2846d67",
+  "actualStderrSha256": "58c0a2b14aa369e0b415ad6f7f334a709845e70d06815311d7abe8f600420528",
+  "sourceHashes": {
+    "process.rs": "60b9f8098002b5388531f67e305637ce22b05b8b7e9388c2a93ddca542645f3b",
+    "sys/process/unix/common.rs": "44b7650a8fba666cd49bcf6af7e34c28a53bb0a49c2c6730f9516989db703bbd",
+    "sys/process/unix/unix.rs": "1c0f874f1835e5befa6e8bdd65450903f475248b525d3b7b5e1ce861311a21d0",
+    "sys/pipe/unix.rs": "58768a98842b356a37aaf8b0d61b52ffdf66d325f090f70f8eb60b8a4ca919d7",
+    "sys/fd/unix.rs": "7ae90a0b33ebe207a7025ea0637ea4b9be1ac15631079bb2ef1079a9c3d0142d",
+    "sys/net/connection/socket/unix.rs": "c9997415bf1c89a9deb3d6f12840abfd58dc91b6e43c8a16095fc34dd216072c"
+  },
+  "networkProfileChanged": false,
+  "newNativeAttemptMade": false
+}

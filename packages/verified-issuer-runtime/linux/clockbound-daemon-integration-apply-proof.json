@@ -1,0 +1,26 @@
+{
+  "pinnedRevision": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "method": "exact saved old hunk context reconstructed; ordinary text only, no native compiler/runtime",
+  "historicalDraft": "clockbound-daemon-integration.pre-red-draft.patch",
+  "redEvidence": "work/native-time-daemon-integration-upstream-red.log",
+  "files": [
+    {
+      "path": "clock-bound/src/daemon.rs",
+      "savedSha256": "bd45a24d82a516c7bbf33fdc75daee38ec1985a3042e1a86cc4c203934d648b5",
+      "patchedSha256": "b7d81c766ccc6da89e05cd78bfc6562539f86ea9de4543d4a664250e759b330c",
+      "exactContextApply": true
+    },
+    {
+      "path": "clock-bound/src/daemon/clock_state.rs",
+      "savedSha256": "d8c955afabeab7b0eae3e1b915dce76763d6d7ee7de0d9350e6df511aa258abc",
+      "patchedSha256": "bbe462f6e7af6c848ad4808b673dbf0028ece001b4950ae37675d4f40d90afcb",
+      "exactContextApply": true
+    },
+    {
+      "path": "clock-bound/src/daemon/clock_state/shm_writer/shm0.rs",
+      "savedSha256": "99dd4fe0b9ab154383df0355563d9e77f4b8357619306f96506488cecfd7e2cd",
+      "patchedSha256": "3e71a21ec5171f92f82e4a9221d6b194bf448ea01cccb265d67e5a235553244b",
+      "exactContextApply": true
+    }
+  ]
+}

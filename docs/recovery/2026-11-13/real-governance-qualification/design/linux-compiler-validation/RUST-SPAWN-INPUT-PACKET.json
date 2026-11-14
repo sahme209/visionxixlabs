@@ -1,0 +1,15 @@
+{
+  "kind": "one-pr331-rust-spawn-diagnostic-v1",
+  "files": {
+    ".github/workflows/linux-rust-spawn-diagnostic.yml": "d54a75ec6c65438d376419608238e9637ea769ac6e0a2edf1bad73322dbacd8e",
+    "scripts/governance_linux_compile.py": "201c4c75a8d41a422b940d05ae57b2d5695875343c24e3fc508b9ab3bf6e0afb",
+    "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
+    "scripts/governance_rust_spawn_diagnostic.py": "fb03466e0f732b52841e2d246b0779db5c2294861203a941a04a1d2f8baaec2e",
+    "scripts/linux-compile/compiler_profile.h": "a9037954185e1b7e5e87ace0050df6dd76df9f1ec9b64ca8ae78d874bf080beb",
+    "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
+    "scripts/linux-compile/rust_spawn_fixture.rs": "8c56dd9d6cb4c1c41e61b09375126780fe47abab3fe3080297dcfa7bf2bc2ac7",
+    "scripts/tests/test_governance_rust_spawn_diagnostic.py": "f0f455946e13f26eb0f4a78d3c0b04854d9096a13a1601eeb74045b39d66a120",
+    "scripts/tests/test_governance_rust_spawn_fixture.py": "a550f5d22b4a680802e5f5933c5663bf272e13de113cf73e6b09248adb725485",
+    "scripts/tests/test_governance_rust_spawn_workflow.py": "42d723c3ed3689cdbfdca0f3a5165bc5995736961c762f300aec0d34b607e09a"
+  }
+}

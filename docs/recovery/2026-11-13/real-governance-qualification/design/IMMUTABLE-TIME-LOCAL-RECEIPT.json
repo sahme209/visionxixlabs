@@ -1,0 +1,65 @@
+{
+  "date": "2026-11-13",
+  "approval": "call_b89fcae7bf464e1a850e93d59ab1de5c",
+  "scope": "local source +ordinary pure/mocked tests only",
+  "checks": {
+    "focusedNativeTime": 118,
+    "demoContracts": 15,
+    "total": 133,
+    "failed": 0,
+    "strictRootTypes": "PASS"
+  },
+  "logs": {
+    "checks": "/private/tmp/axiom-immutable-time-acceptance.log",
+    "types": "/private/tmp/axiom-immutable-time-types-acceptance.log"
+  },
+  "reviews": {
+    "handoff_design_review": "CLEAR across source/arithmetic/composition/native adapters",
+    "bootstrap_design_check": "CLEAR after worker completion/ownership correction",
+    "three_family_final_review": "CLEAR other-author codec/publisher/arithmetic/native source"
+  },
+  "redEvidence": [
+    "missing modules before implementation",
+    "reused stage identity",
+    "first non-Unknown publication",
+    "publication buffer mutation during qualification",
+    "worker completed rejection while result pending",
+    "mutable completion/termination handle cleanup substitution",
+    "ES2017 BigInt literal type incompatibility and one invalid-input fixture type"
+  ],
+  "corrections": "No assertion weakening, compiler target/config change, suppressed errors or native qualification fallback. BigInt arithmetic uses equivalent constructor syntax. Original failures retained under work and /private/tmp logs.",
+  "nativeCompilation": false,
+  "nativeExecution": false,
+  "nativeFilesystemOrClockTests": false,
+  "actualSql": false,
+  "actualProviderCalls": false,
+  "productionActivation": false,
+  "deployment": false,
+  "spending": false,
+  "publicSourceReads": 0,
+  "hashes": {
+    "lib/governance/platform/nativeTime/README.md": "6d5ddfcd963e55d3e72f4d28a648d4f7e72ca0e93eaaae2613c34a0e4fe7ef31",
+    "lib/governance/platform/nativeTime/__tests__/interval.test.ts": "d97e3ef0eaffc86f4700f0ae472ffc0a21a293c51ed10213faefb9e2302c4828",
+    "lib/governance/platform/nativeTime/__tests__/linuxComposition.test.ts": "dcfc4a69f03ee1b8659fbbad3e6e4fb95e68a13948d702e6da21f05636dd9a0d",
+    "lib/governance/platform/nativeTime/__tests__/publisher.test.ts": "daae6ba3735a7386dd810ba044206678cf3511db5c1544fb687286e4f255ff7c",
+    "lib/governance/platform/nativeTime/__tests__/record.test.ts": "8b7cc9a5a19bf9f4b1a86fa5add980e45ffb650fc9869297a332b13391344cff",
+    "lib/governance/platform/nativeTime/__tests__/source.test.ts": "a31ea8f7c131b5709524fd86c0f0e214597775f2046636cb2d23d6f075ca5a0a",
+    "lib/governance/platform/nativeTime/interval.ts": "033eaec646507b93525efb201ae62eda2f072947bfcab5b684da02924e533161",
+    "lib/governance/platform/nativeTime/linuxComposition.ts": "ca0d4783368f5a831986f7facb9a01032de3c80e6c16789ad1c2b96fdc9b70ca",
+    "lib/governance/platform/nativeTime/publisher.ts": "4e7b495187774b0a1459143c2261dd13b788b54c9bcefb8ca7b66bc3c7f2447f",
+    "lib/governance/platform/nativeTime/record.ts": "af087268f685d56a7651f2d0dc2b55b02ea131b92713615b09696af6f9721ee6",
+    "lib/governance/platform/nativeTime/source.ts": "6ff598e179ff72f5fd36bc2f32dc10c1a251a2e45c594af1cf96caaddf0e324d",
+    "packages/verified-issuer-runtime/linux/README.md": "5e373aa90236ddb03bfdcb3a7f189eea9c03c91370d2fbda05e5e6a1cd2cd999",
+    "packages/verified-issuer-runtime/linux/time_publication.c": "389ada99acdba0ad0ba7172c82bea5be970816d7cce96e57373be94a93a6f3e4",
+    "packages/verified-issuer-runtime/linux/time_publication.h": "7769bb92912387d101af879266be4e5babdf64ddc3041fae0ee19f8eeecba28c",
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "30723a96653324726376882bb67fc214fa76d5cd639134f8e5bfccc366295fd9",
+    "lib/demo/demoScenarios.ts": "ac1d69336f5732db6994a0acbadea05dbf8c6bfdde601e4de23553863f95f2a1"
+  },
+  "remaining": [
+    "actual daemon constructor/clock-adjustment and fixed publisher hook integration",
+    "real native artifact/ABI/launcher/profile/resource delivery and lifecycle/disruption qualification",
+    "conservative upstream clock/rate/input/current-use qualification",
+    "real filesystem/persistence/crash/isolation/cleanup acceptance",
+    "complete resource/cost approval, genuine human/provider trials, production compatibility and full master gates"
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "format": 1,
+  "pinnedRevision": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "patchedSha256": {
+    "clock-bound/src/daemon.rs": "b7d81c766ccc6da89e05cd78bfc6562539f86ea9de4543d4a664250e759b330c",
+    "clock-bound/src/daemon/clock_parameters.rs": "a80b84e64c57576db6e913dfccfc8e4fc4bc214d8c2e5af1a0ea6c2bda041763",
+    "clock-bound/src/daemon/clock_state.rs": "d677d5d7904b57608c46b4b3d51f7b8554105beb52b74d73690110c56df972b2",
+    "clock-bound/src/daemon/clock_state/shm_writer.rs": "ad5fc7ff4102261735fff7e637feaa2cb00a1e25b03c023f075cba1855e55f04",
+    "clock-bound/src/daemon/clock_state/shm_writer/shm0.rs": "d2327f937279b1d3de3088422d3ba4625510de57ec2a375490482d6bb7929f2f",
+    "clock-bound/src/daemon/clock_state/system_clock_discipliner.rs": "b24aab9c5bc175e469a0b5c10ed8d24818e67cedc602f2d010e0392cfcd378b0",
+    "clock-bound/src/daemon/clock_state/system_clock_discipliner/state_machine.rs": "8819766415dd0d4f82bd0eb8786926485efede363f391b4d17f3e37adc1ee2d3",
+    "clock-bound/src/daemon/clock_sync_algorithm.rs": "cb0eabd5c8080c1ffb9d095b6444fc35d7e42c6ccb3aa4ac92b9885b869c3b3f",
+    "clock-bound/src/daemon/clock_sync_algorithm/ff/ntp.rs": "61455fe4faf3fcfce8579edd0699515d8e89e9a1de0ea7a0ee5e4ebf96480764",
+    "clock-bound/src/daemon/clock_sync_algorithm/ff/phc.rs": "60bc9018ae437c161853dfee1632c9cf9223b3aab5bc33b6f903f4a141f8323f",
+    "clock-bound/src/daemon/clock_sync_algorithm/selector.rs": "6be7c016c9b37bd6790c52d21680a3930a90b76024e1f5263f120d13818c9695",
+    "clock-bound/src/daemon/event/ntp.rs": "3dd4e541cf172283701e5aa4c3a31c6c9763d64a6f0a1f16b7c640b718efc41c",
+    "clock-bound/src/daemon/event/phc.rs": "ec991085122f902cd6cf856a9227564f69f38fcbdbed0f575517cf9d6cadec92",
+    "clock-bound/src/daemon/io/ntp.rs": "9d37c923926ee784086b3c848e26c17ff4e4f978fa384b2f8d7b0d86e5fe14d5",
+    "clock-bound/src/daemon/io/phc.rs": "08dc642de1971f3c6ee9c936deec16ad38e390c091ce4796919f3893635eba5b",
+    "clock-bound/src/daemon/logging/ffevents.rs": "dbd016e99a937786ce10f53f124aff3690886073a66789dce8eb066e5ae43fde",
+    "clock-bound/src/daemon/logging/ffevents/types.rs": "23bdeda049157e9868001705e72200303f9935f9e8384e9b1131dc521bfd619b",
+    "clock-bound/src/daemon/logging/synchronization.rs": "13d556a5596babae44749afbda994a6f58f019be305b3a197b6cc6f6d9a0e641",
+    "clock-bound/src/daemon/time/clocks.rs": "6ee3967a970795f408caea104cc0994fa1c428aa57c0dfcd2f5cca1767803422"
+  },
+  "inputSha256": {
+    "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch": "ce791c7fb9757d6d00ba754161364926dd422cce366c7813b5b0dc87f0906ab1",
+    "packages/verified-issuer-runtime/linux/time_publication_adapter.rs": "903c2b33c8bec5969c4b3fd6040f8c5a965f70b91d02c0e2f6e50198e6eb7156",
+    "packages/verified-issuer-runtime/linux/time_publication.c": "bf3fdd4b9fed5c5670f1965b291c8ecdec3846f0df0a0ec66db3511f1a8936d9",
+    "packages/verified-issuer-runtime/linux/time_publication.h": "04997b0be3d56b6e0399e2e6a3a01236eb9995b2ffb3e8acbccccf1e1dda79c6",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1"
+  }
+}

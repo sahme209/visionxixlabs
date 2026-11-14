@@ -1,0 +1,31 @@
+{
+  "approval": "call_bc9f31d56e6e4fa59e52921188c127c9",
+  "sourceCommit": "371058f8f6a1786d4a4ab3eed9f5f2f16eea7777",
+  "sourceTree": "6261c1659ff53ccec76cea26a3051fa680d9f676",
+  "archive": {
+    "archiveSha256": "d2ede954fe4631785c9457ddc100fdfa1c3252a47410432e250317f24402494f",
+    "complete": true,
+    "compressedBytes": 1562745,
+    "files": 322,
+    "requestConsumed": true,
+    "sourceBytes": 3751845
+  },
+  "verifiedInventory": "322/322 Git blob SHA1 and sizes match; 3,751,845 bytes; files0600/directories0700; no links/extras/missing",
+  "independentReview": "three_family_final_review: clear fixed packet before request and clear saved inventory after request",
+  "localTests": {
+    "methods": 22,
+    "source": "test_reader.py",
+    "log": "work/linux-archive-reader-green.log"
+  },
+  "limits": "one public archive request consumed; no downloaded code executed/imported/built; no dependency install/account/resources/credentials/native actions/deploy/enable/spend",
+  "bindings": {
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/test_reader.py": "40e98f738a1fa556a0a7b048a71adca06f405caa0cc0b959f5dc3755a89c8e30",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/PREPARED.json": "fbfa6b430a138045303ba8ffcd63d6313f9f3aaff1d477d21b6872c0f9dbd598",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/SOURCE-ORIGIN-ASSESSMENT.md": "cdeab1a1affff5220de1ad0b6c433febad28c44b198c06063d77048b77b6dec2",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/COMPLETE-BUILD-INPUT-ASSESSMENT.md": "bff78bcb1929845aebc431ebfd6f6d58d716ddadb282fe9d6d19dc716ece7a03",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/FINAL-SOURCE-INVENTORY-REVIEW.md": "f7a9ca0b23c6a342fc0bfdb927781123f4e9b2e8f687b59b05e0180923a2055f",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/PRECISE-ORIGIN-CORRECTION-DESIGN.md": "cb1afe29cb79ce17446fb7d81a56c2dc209612f5b5dc24c2465997850087882b",
+    "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/PRECISE-ORIGIN-DESIGN-REVIEW.md": "a7f9cff28fb5861c24be134c2a6daba26b3456c01f1ec41d24bb4a91b4e986a4"
+  }
+}

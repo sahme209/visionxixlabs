@@ -1,0 +1,43 @@
+name: One approved Linux compiler checkpoint
+
+# One owner-approved diagnostic attempt. Deliberately not permanent regression
+# coverage: a changed runtime cannot inherit this result or silently rerun it.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'packages/verified-issuer-runtime/linux/**'
+      - 'scripts/governance_linux_compile*.py'
+      - 'scripts/linux-compile/**'
+      - '.github/workflows/linux-time-compile.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  compile-link:
+    name: Linux time compile and link (no runtime)
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.action == 'synchronize' &&
+      github.event.number == 331 &&
+      github.event.pull_request.number == 331 &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.before == '12d5c45e7883bc50e9142dfa1e38cc1602b77a43' &&
+      github.event.after == github.event.pull_request.head.sha &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-live-qualification-setup' &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact reviewed PR head
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One fixed compile and nonrunning link
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_linux_compile.py --approved-ci-once
