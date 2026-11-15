@@ -1,0 +1,13 @@
+{
+  "pr": 336,
+  "sourceHead": "ceed3abf927a1d377bc9a5b1037766764697cb4b",
+  "jobId": 132774465545,
+  "outcome": "failed",
+  "captureFailure": "website_dom_timeout",
+  "preImagePhase": "homepage_playback",
+  "tourPresent": true,
+  "playPresent": false,
+  "sourceUnchanged": true,
+  "cleanup": "owned_groups_empty",
+  "interpretation": "Old runtime fixture required removed playback controls; failure is retained, not relabelled as pass."
+}

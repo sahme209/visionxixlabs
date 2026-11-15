@@ -45,7 +45,7 @@ const DOCS: ReadonlyArray<{ section: string; links: DocLink[] }> = [
 export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDestination) => void }) {
   return (
     <ViewShell>
-      <div>
+      <div className="desktop-view-heading">
         <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">workspace · documentation</p>
         <h1 className="text-2xl font-bold tracking-tight">Documentation</h1>
         <p className="text-sm text-zinc-500 mt-1 max-w-2xl leading-relaxed">
@@ -65,7 +65,7 @@ export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDes
               <Card className="h-full p-4">
                 <h3 className="text-sm font-semibold text-white">{stage.title}</h3>
                 <p className="mt-2 text-xs leading-6 text-zinc-400">{stage.detail}</p>
-                <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-orange-200 hover:bg-white/5 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-orange-300">{stage.cta}</button>
+                <button type="button" data-help-id={`documentation.journey.${stage.id}`} onClick={() => onNavigate(stage.destination)} className="mt-3 rounded-md border border-white/15 px-3 py-2 text-xs text-zinc-200 hover:bg-white/5 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-300">{stage.cta}</button>
               </Card>
             </li>
           ))}
@@ -86,9 +86,9 @@ export function DocsView({ onNavigate }: { onNavigate: (view: GovernedJourneyDes
                   data-help-id={`documentation.web.${link.id}`}
                   className="block group"
                 >
-                  <Card className="p-3 hover:border-violet-500/30 transition-colors">
-                    <p className="text-[13px] font-semibold text-white group-hover:text-violet-200 transition-colors">
-                      {link.title} <span aria-hidden className="text-zinc-600 group-hover:text-violet-300">↗</span>
+                  <Card className="p-3 hover:border-white/30 transition-colors">
+                    <p className="text-[13px] font-semibold text-white group-hover:text-zinc-200 transition-colors">
+                      {link.title} <span aria-hidden className="text-zinc-400 group-hover:text-zinc-300">↗</span>
                     </p>
                     <p className="text-[11px] text-zinc-500 mt-0.5">{link.body}</p>
                   </Card>

@@ -15,17 +15,18 @@ const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = 
 };
 
 export function TopBar({ activeView, identity, onOpenCommands, onToggleSplit, splitActive = false, welcome = false }: { activeView: View; identity: VerifiedDesktopIdentity; onOpenCommands?: () => void; onToggleSplit?: () => void; splitActive?: boolean; welcome?: boolean }) {
-  const meta = welcome ? {title: "Axiom", subtitle: "Build, operate and deliver"} : splitActive ? {title: "Engineering workspace", subtitle: "Code, research and plan with your Agent"} : VIEW_TITLES[activeView] ?? { title: "Deployment workspace", subtitle: "Unavailable surfaces are not part of customer navigation" };
+  const meta = welcome ? {title: "Home", subtitle: "Build, operate and deliver"} : splitActive ? {title: "Engineering workspace", subtitle: "Code, research and plan with your Agent"} : VIEW_TITLES[activeView] ?? { title: "Deployment workspace", subtitle: "Unavailable surfaces are not part of customer navigation" };
   const workspace = identity.organizationId;
   const accessActive = identity.access.allowed;
   const accessDetails=useDismissibleDetails(),accessMenu=accessDetails.ref;
   useEffect(()=>{if(accessMenu.current)accessMenu.current.open=false},[activeView,workspace,welcome,splitActive]);
 
   return (
-    <header className="workspace-topbar h-[68px] flex items-center justify-between gap-3 px-5 border-b border-white/[0.07] bg-[#111214] drag">
-      <div className="flex min-w-0 flex-col">
-        <h2 className="text-[14px] font-semibold tracking-tight text-white leading-tight">{meta.title}</h2>
-        <span className="workspace-topbar-description mt-0.5 truncate text-xs text-zinc-400">{meta.subtitle}</span>
+    <header className="workspace-topbar h-[60px] flex items-center justify-between gap-3 px-5 border-b border-white/[0.07] bg-axiom-bg drag">
+      <div className="workspace-heading-location flex min-w-0 items-center gap-3" title={meta.subtitle}>
+        <span className="workspace-location-label" aria-hidden="true">Workspace /</span>
+        <h2 className="text-[14px] font-medium tracking-tight text-white leading-tight">{meta.title}</h2>
+        <span className="workspace-topbar-description sr-only">{meta.subtitle}</span>
       </div>
       <div className="workspace-header-actions no-drag flex shrink-0 items-center gap-2">
       {onToggleSplit && <button type="button" aria-pressed={splitActive} onClick={onToggleSplit} className="workspace-header-button" title="Switch between focused chat and the editor workspace">{splitActive ? "Single pane" : "Editor & Agent"}</button>}

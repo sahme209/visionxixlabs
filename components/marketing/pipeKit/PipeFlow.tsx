@@ -26,7 +26,6 @@ const num = (i: number) => String(i + 1).padStart(2, "0");
 export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly PipeFlowStage[]; label: string; defaultStage?: number }) {
   const id = useId();
   const [selected, setSelected] = useState(defaultStage);
-  const [paused, setPaused] = useState(false);
   const stage = stages[selected];
 
   return (
@@ -34,10 +33,9 @@ export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly
       <div>
         <div className="mb-3 flex items-center justify-between gap-3">
           <p className="font-mono text-xs tracking-[0.08em] text-zinc-500">Choose a stage</p>
-          <button type="button" onClick={() => setPaused((p) => !p)} aria-pressed={paused}
-            className="rounded-full border border-white/10 px-3 py-1 text-xs text-zinc-300 hover:text-white">{paused ? "Play" : "Pause"} flow</button>
+
         </div>
-        <ol aria-label={label} className={paused ? styles.paused : undefined}>
+        <ol aria-label={label}>
           {stages.map((s, i) => {
             const on = i === selected;
             return (
@@ -69,7 +67,7 @@ export function PipeFlow({ stages, label, defaultStage = 0 }: { stages: readonly
         <p className="mt-1 text-[15px] leading-7 text-zinc-300">{stage.summary}</p>
         </div>
         <div className="relative grid gap-2 sm:grid-cols-3 sm:gap-4">
-          <span aria-hidden="true" className={`hidden sm:block ${styles.tube} ${paused ? styles.paused : ""}`}>
+          <span aria-hidden="true" className={`hidden sm:block ${styles.tube}`}>
             {[0, 1, 2].map((k) => <span key={k} className={styles.bit} style={{ animationDelay: `${-k * 1.2}s` }} />)}
           </span>
           {stage.parts.map((p) => (

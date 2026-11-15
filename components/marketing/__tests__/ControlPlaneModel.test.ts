@@ -27,9 +27,8 @@ it("opens the chosen stage in the detail panel", () => {
   expect(detail.textContent).toMatch(/plan \+ settled credit/);
 });
 
-it("lets visitors pause the flow", () => {
+it("offers direct stage selection without media controls", () => {
   render(createElement(ControlPlaneModel));
-  const pause = screen.getByRole("button", { name: "Pause flow" });
-  fireEvent.click(pause);
-  expect(screen.getByRole("button", { name: "Play flow" }).getAttribute("aria-pressed")).toBe("true");
+  expect(screen.queryByRole("button", { name: /^(Pause|Play) flow$/ })).toBeNull();
+  expect(within(screen.getByRole("list", { name: "Control-plane layers" })).getAllByRole("button")).toHaveLength(5);
 });

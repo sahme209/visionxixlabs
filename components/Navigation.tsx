@@ -168,7 +168,7 @@ export function Navigation() {
   return (
     <nav
       aria-label="Primary navigation"
-      className={`site-navigation fixed inset-x-0 top-0 ${mobileMenuOpen ? "z-10000" : "z-50"} transition-[background-color,border-color] duration-300 ${
+      className={`site-navigation ${pathname === "/" && !scrolled && !mobileMenuOpen ? "site-navigation--home" : ""} fixed inset-x-0 top-0 ${mobileMenuOpen ? "z-10000" : "z-50"} transition-[background-color,border-color] duration-300 ${
         scrolled
           ? "border-b border-white/9 bg-[#090a08]/88"
           : "border-b border-transparent bg-[#090a08]/62"
@@ -190,14 +190,13 @@ export function Navigation() {
         >
           Skip to content
         </button>
-        <Link ref={homeLinkRef} href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="Vision XIX Labs home">
-          <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" priority />
-          <span>Vision XIX Labs</span>
+        <Link ref={homeLinkRef} href="/" onClick={closeMenu} className="flex items-center gap-2.5 text-sm font-semibold tracking-[-0.02em] text-zinc-100" aria-label="vxix home">
+          <Image src="/brand/vxix-wordmark.svg" alt="vxix" width={119} height={30} className="object-contain" priority />
         </Link>
 
         <div className="hidden items-center gap-7 xl:flex">
           {primaryLinks.map((item) => (
-            <Link key={item.href} href={item.href} onClick={closeMenu} className="text-sm text-zinc-400 transition-colors hover:text-white">
+            <Link key={item.href} href={item.href} onClick={closeMenu} aria-current={pathname === item.href || pathname?.startsWith(item.href + "/") ? "page" : undefined} className="text-sm text-zinc-400 transition-colors hover:text-white">
               {item.label}
             </Link>
           ))}

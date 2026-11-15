@@ -7,10 +7,10 @@ function source(path: string): string {
 
 describe("desktop homepage presentation contract", () => {
   it("uses a direct, stable headline without character-level animation", () => {
-    const page = source("app/page.tsx");
+    const page = source("components/marketing/AxiomPublicHero.tsx");
 
-    expect(page).toContain("Engineering work.");
-    expect(page).toContain("With you in control.");
+    expect(page).toContain("Deploy with clarity.");
+    expect(page).toContain("Connected through clear review and recorded evidence.");
     expect(page).not.toContain("SplitText");
     expect(page).not.toContain('splitBy="char"');
   });

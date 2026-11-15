@@ -13,6 +13,7 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { SectionRail } from "@/components/motion/SectionRail";
+import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
   title: "Engineering Handbook — VisionXIXLabs",
@@ -90,57 +91,42 @@ const SECTIONS: readonly Section[] = [
 
 export default function HandbookPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
-      </div>
-
+    <div className="axiom-canvas min-h-screen bg-[#0a0908] text-zinc-100">
       <Navigation />
 
       <SectionRail items={SECTIONS.map((s) => ({ id: `hb-${s.num}`, label: s.topic, num: s.num }))} />
 
-      <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
-        <p className="mono-label inline-flex items-center gap-3 mb-6">
-          <span className="text-brand-coral/90 tabular-nums">HB</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Engineering handbook
-        </p>
-
-        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.02] mb-8 tracking-[-0.045em]">
-          How we{" "}
-          <span className="relative inline-block">
-            build it.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </h1>
-
-        <p className="text-[17px] text-zinc-400 max-w-2xl leading-relaxed mb-16">
+      <main className="public-reading-marketing-page">
+        <PageHero
+          eyebrow="Engineering handbook"
+          title="How we"
+          muted="build it."
+          lead={<>
           Seven practices a small team uses to ship serious AI-operations software.
           Not theory &mdash; what&apos;s in source control, what we&apos;ll defend in
           a PR review, what we&apos;ve learned to do (sometimes the hard way).
-        </p>
+        </>}
+        />
 
         <div className="space-y-20">
           {SECTIONS.map((s) => (
             <article key={s.num} id={`hb-${s.num}`} className="relative scroll-mt-24">
-              <div className="hairline-soft mb-10" />
+              <div className="mb-10 h-px bg-white/[0.08]" />
               <p className="mono-label mb-5 inline-flex items-center gap-3">
-                <span className="text-brand-coral/90 tabular-nums text-[11px]">{s.num}</span>
-                <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
+                <span className="text-zinc-400 tabular-nums text-[11px]">{s.num}</span>
+                <span className="h-px w-6 bg-white/10" />
                 <span className="text-zinc-500">{s.topic}</span>
               </p>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white leading-[1.06] tracking-[-0.035em] mb-5">
+              <h2 className="font-display text-3xl sm:text-4xl font-medium text-white leading-[1.06] tracking-[-0.035em] mb-5">
                 {s.title}
               </h2>
               <p className="text-[16px] text-zinc-300 leading-[1.78] mb-6">{s.body}</p>
               {s.bullets && s.bullets.length > 0 && (
-                <ul className="surface-glass rounded-xl p-5 space-y-2.5">
+                <ul className="rounded-xl border border-white/[0.08] bg-[#171615] p-5 space-y-2.5">
                   {s.bullets.map((b) => (
                     <li key={b} className="flex items-start gap-3 text-[13.5px] text-zinc-300 leading-relaxed">
-                      <span className="text-brand-coral/70 mt-1 shrink-0">·</span>
-                      <span dangerouslySetInnerHTML={{ __html: b.replace(/`([^`]+)`/g, '<code class="font-mono text-brand-coral/90 bg-white/4 px-1.5 py-0.5 rounded-sm text-[12.5px]">$1</code>') }} />
+                      <span className="text-zinc-500 mt-1 shrink-0">·</span>
+                      <span dangerouslySetInnerHTML={{ __html: b.replace(/`([^`]+)`/g, '<code class="font-mono text-zinc-400 bg-white/4 px-1.5 py-0.5 rounded-sm text-[12.5px]">$1</code>') }} />
                     </li>
                   ))}
                 </ul>
@@ -154,15 +140,15 @@ export default function HandbookPage() {
             <p className="mono-label mb-2">Companion pieces</p>
             <p className="font-display text-xl font-semibold text-white mb-3 leading-tight">More of the same posture.</p>
             <ul className="space-y-1.5 text-[13.5px] text-zinc-300">
-              <li><Link href="/manifesto" className="hover:text-brand-coral transition-colors">/manifesto &mdash; what we believe →</Link></li>
-              <li><Link href="/principles" className="hover:text-brand-coral transition-colors">/principles &mdash; how we make visual decisions →</Link></li>
-              <li><Link href="/team" className="hover:text-brand-coral transition-colors">/team &mdash; how we work →</Link></li>
+              <li><Link href="/manifesto" className="hover:text-white transition-colors">/manifesto &mdash; what we believe →</Link></li>
+              <li><Link href="/principles" className="hover:text-white transition-colors">/principles &mdash; how we make visual decisions →</Link></li>
+              <li><Link href="/team" className="hover:text-white transition-colors">/team &mdash; how we work →</Link></li>
             </ul>
           </div>
           <div className="flex flex-col items-start sm:items-end justify-end gap-3">
             <Link
               href="/docs"
-              className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight"
+              className="inline-flex border border-white/15 bg-white/[0.02] hover:bg-white/[0.05] items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight"
             >
               Read the product docs
               <ArrowRightIcon className="h-3.5 w-3.5" />
@@ -171,7 +157,7 @@ export default function HandbookPage() {
               href="https://github.com/sahme209/axiom-releases"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[12px] text-zinc-500 hover:text-brand-coral transition-colors font-mono"
+              className="text-[12px] text-zinc-500 hover:text-white transition-colors font-mono"
             >
               github.com/sahme209/axiom-releases →
             </Link>

@@ -732,7 +732,7 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
     }
   }
 
-  return <div className="local-editor-workspace flex min-h-0 flex-1 flex-col bg-[#111214]">
+  return <div className="local-editor-workspace flex min-h-0 flex-1 flex-col bg-axiom-bg">
     <div aria-label="Active local editor repository" className="local-scope-strip">
       <span className="local-scope-label">Local</span>
       <span className="min-w-0 flex-1 truncate" title={selectedRepository ?? undefined}>{selectedRepository ? selectedRepository.split("/").pop() : "Choose a local repository"}</span>
@@ -740,7 +740,7 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
       {status && <button type="button" onClick={() => setFileNavigation("changes")} className="shrink-0 text-xs text-zinc-400 hover:text-zinc-200" aria-label={`View ${status.changedFiles.length} changed files`}>{status.changedFiles.length} changed</button>}
     </div>
     <details open={sourceExpanded || (!compact && !selectedRepository)} onToggle={event => { if (compact || selectedRepository) setSourceExpanded(event.currentTarget.open); }} className="shrink-0 border-b border-white/[0.07]">
-      <summary className="cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-violet-300">Clone or refresh repositories</summary>
+      <summary className="cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-300">Clone or refresh repositories</summary>
     <div className="flex flex-wrap items-center gap-2 px-4 py-3">
       <div className="w-72 min-w-0">
         <label htmlFor="clone-source" className="mb-1 block text-[11px] text-zinc-400">Clone source · GitHub</label>
@@ -755,22 +755,22 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
             setCloneRepository(event.target.value);
             try { window.localStorage.setItem("axiom.workspace.repository.v1", event.target.value); } catch { /* Keep the selected repository in memory. */ }
           }
-        }} aria-label="Connected GitHub repository" className="w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-violet-400/50">
+        }} aria-label="Connected GitHub repository" className="w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-zinc-300/60">
           {remoteRepositories.length === 0 && <option value="">No connected repositories</option>}
           {remoteRepositories.map((repository) => <option key={repository.id} value={repository.fullName}>{repository.fullName} · {repository.visibility}</option>)}
           <option value="__manual__">Enter another authorized repository…</option>
         </select>
-        {manualCloneRepository && <input autoFocus value={cloneRepository} onChange={(event) => setCloneRepository(event.target.value)} placeholder="owner/repository" aria-label="Repository owner and name" className="mt-2 w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden placeholder:text-zinc-600 focus:border-violet-400/50" />}
+        {manualCloneRepository && <input autoFocus value={cloneRepository} onChange={(event) => setCloneRepository(event.target.value)} placeholder="owner/repository" aria-label="Repository owner and name" className="mt-2 w-full rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-200 outline-hidden placeholder:text-zinc-400 focus:border-zinc-300/60" />}
       </div>
       <button type="button" onClick={() => void refreshCatalog()} className="btn-secondary">Refresh connected repositories</button>
-      <input value={parentPath} onChange={(event) => setParentPath(event.target.value)} aria-label="Local repositories folder" className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 outline-hidden focus:border-violet-400/50" />
+      <input value={parentPath} onChange={(event) => setParentPath(event.target.value)} aria-label="Local repositories folder" className="min-w-0 flex-1 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs text-zinc-400 outline-hidden focus:border-zinc-300/60" />
       <button type="button" disabled={Boolean(busy) || !cloneRepository.trim().includes("/") || (!manualCloneRepository && !remoteRepositories.some(repository => repository.fullName === cloneRepository))} onClick={() => void clone()} className="btn-primary disabled:opacity-40">{busy === "clone" ? "Cloning…" : "Clone"}</button>
       <button type="button" disabled={Boolean(busy) || !parentPath} onClick={() => void refreshList(parentPath)} className="btn-secondary disabled:opacity-40">Refresh</button>
     </div>
     </details>
     {repositoryCatalogError && !compact && <div role="status" className="border-b border-white/8 px-4 py-2 text-xs text-zinc-300">GitHub access is unavailable. Existing local files remain usable. Review Settings → Integrations before cloning or syncing.</div>}
     {repositoryCatalogTruncated && !repositoryCatalogError && <div className="border-b border-white/6 bg-white/2 px-4 py-2 text-xs text-zinc-500">Showing the first 100 repositories authorized for the GitHub App. You can still enter another authorized owner/repository directly.</div>}
-    {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && (!(appliedEdit.current?.request === editRequest && appliedEdit.current.paths.has(editRequest.edit.path)) || Boolean(editRequest.edits?.length)) && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-violet-300/20 p-4 text-xs text-zinc-300">
+    {editRequest && editRequest.context === desktopClient.config && editRequest.workspace === workspace && (!(appliedEdit.current?.request === editRequest && appliedEdit.current.paths.has(editRequest.edit.path)) || Boolean(editRequest.edits?.length)) && <section aria-label="Agent local draft review" className="max-h-96 shrink-0 overflow-auto border-b border-white/20 p-4 text-xs text-zinc-300">
       <p>Proposal {editRequest.edit.proposalId}: {editRequest.edit.repositoryFullName} · {editRequest.edit.branch} · {editRequest.edits?.length ? `${editRequest.edits.length} files` : editRequest.edit.path}</p>
       <p className="my-2 text-zinc-400">Open the matching file to load this into a clean editor buffer. No file is saved, GitHub proposal approved, or check run by this action.</p>
       {editRequest.edits?.length ? <div className="space-y-2">
@@ -786,8 +786,8 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
     </section>}
     {(error || notice) && <div role={error ? "alert" : "status"} className={`border-b px-4 py-2 text-xs ${error ? "border-rose-500/20 bg-rose-500/5 text-rose-300" : "border-emerald-500/20 bg-emerald-500/5 text-emerald-300"}`}>{error ?? notice}</div>}
     {selectedRepository && <div className="flex flex-wrap items-center gap-2 border-b border-white/6 bg-white/1.5 px-4 py-2">
-      <span className="mr-1 text-[10px] font-mono uppercase tracking-wider text-zinc-600">Verify changes</span>
-      {checks.length === 0 ? <span className="text-xs text-zinc-600">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/8 bg-white/3 px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
+      <span className="mr-1 text-[10px] font-mono uppercase tracking-wider text-zinc-400">Verify changes</span>
+      {checks.length === 0 ? <span className="text-xs text-zinc-400">No supported checks detected.</span> : checks.map((check) => <button key={check.id} type="button" disabled={Boolean(busy)} onClick={() => verify(check)} title={`${check.description} Runs: ${check.command}`} className="rounded-md border border-white/8 bg-white/3 px-2.5 py-1.5 text-xs text-zinc-300 hover:bg-white/[0.07] disabled:opacity-40">{busy === `verify:${check.id}` ? `Running ${check.label}…` : check.label}</button>)}
       {cancelAvailable && busy?.startsWith("verify:") && <button type="button" onClick={cancelVerification} className="btn-secondary">Stop check (direct child only)</button>}
       {verificationResult && <button type="button" onClick={() => setShowVerification((current) => !current)} className={`ml-auto rounded-md px-2.5 py-1.5 text-xs ${verificationStale ? "bg-amber-500/10 text-amber-200" : verificationResult.success ? "bg-emerald-500/10 text-emerald-300" : "bg-rose-500/10 text-rose-300"}`}>{verificationStale ? "Previous check result (stale)" : verificationResult.success ? "Last check passed" : "Last check failed"} · {showVerification ? "hide output" : "show output"}</button>}
     </div>}
@@ -802,10 +802,10 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
       </div>}
     </div>}
     <div className="repository-files-layout flex min-h-0 flex-1">
-      <aside className={`flex ${compact ? "w-44" : "w-56"} shrink-0 flex-col border-r border-white/[0.07] bg-[#111315]`}>
+      <aside className={`flex ${compact ? "w-44" : "w-56"} shrink-0 flex-col border-r border-white/[0.07] bg-axiom-bg-elev`}>
         <div className="border-b border-white/6 px-3 py-2 text-[10px] font-mono uppercase tracking-wider text-zinc-500">Local repositories</div>
         <div className="max-h-40 overflow-y-auto border-b border-white/6 p-2">
-          {repositories.length === 0 && <p className="px-2 py-3 text-xs text-zinc-600">Clone a connected GitHub repository to begin.</p>}
+          {repositories.length === 0 && <p className="px-2 py-3 text-xs text-zinc-400">Clone a connected GitHub repository to begin.</p>}
           {repositories.map((repository) => <button key={repository} type="button" onClick={() => chooseRepository(repository)} className={`mb-1 w-full truncate rounded-sm px-2 py-2 text-left text-xs ${selectedRepository === repository ? "bg-white/10 text-white" : "text-zinc-400 hover:bg-white/5"}`} title={repository}>{repository.split("/").pop()}</button>)}
         </div>
         {selectedRepository && <RepositoryWorktrees key={selectedRepository} repositoryPath={selectedRepository} disabled={Boolean(busy) || !active} onOpen={chooseRepository} />}
@@ -814,8 +814,8 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
             <button data-help-id="repositories.editor.files" type="button" aria-pressed={fileNavigation === "files"} onClick={() => setFileNavigation("files")} className={`flex-1 rounded-sm px-2 py-1.5 text-xs ${fileNavigation === "files" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Files</button>
             <button data-help-id="repositories.editor.changes" type="button" aria-pressed={fileNavigation === "changes"} onClick={() => setFileNavigation("changes")} className={`flex-1 rounded-sm px-2 py-1.5 text-xs ${fileNavigation === "changes" ? "bg-white/10 text-zinc-100" : "text-zinc-500"}`}>Changes</button>
           </div>
-          <input data-help-id="repositories.editor.filter-files" value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="w-full rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-hidden focus:border-violet-400/50" />
-          <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-zinc-600">
+          <input data-help-id="repositories.editor.filter-files" value={filter} onChange={(event) => setFilter(event.target.value)} placeholder="Filter files" className="w-full rounded-md border border-white/10 bg-black/20 px-2.5 py-2 text-xs outline-hidden focus:border-zinc-300/60" />
+          <div className="mt-2 flex items-center justify-between px-1 text-[10px] text-zinc-400">
             <span>{fileNavigation === "changes" ? `${visibleChanges.length} recorded changes` : `${visibleFiles.length} files`}</span>
             <button data-help-id="repositories.editor.file-filter-mode" type="button" disabled={fileNavigation === "changes"} onClick={() => setShowAllFiles((current) => !current)} className="rounded-sm px-1.5 py-1 text-zinc-400 hover:bg-white/5 hover:text-zinc-200">{showAllFiles ? "Source files" : "All files"}</button>
           </div>
@@ -826,9 +826,9 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
             <p className="px-2 py-2 text-[10px] leading-4 text-zinc-500">Recorded Git status. Open an available file to inspect its current contents. Deleted or unavailable files cannot be opened.</p>
             {!status && <p role="status" className="px-2 py-2 text-xs text-zinc-500">Repository status is not verified.</p>}
             {status && visibleChanges.length === 0 && <p role="status" className="px-2 py-2 text-xs text-zinc-500">{filter.trim() ? "No matching changed files." : "No recorded Git changes."}</p>}
-            {visibleChanges.map(change => <button data-help-id="repositories.editor.changed-file-row" key={change.path} type="button" aria-label={`${change.status} ${change.path}`} disabled={Boolean(busy) || !files.includes(change.path)} onClick={() => selectFile(change.path)} title={`${change.status} ${change.path}${!files.includes(change.path) ? " · unavailable in the current file list" : ""}`} className={`flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left font-mono text-[11px] disabled:opacity-40 ${selectedFile === change.path ? "bg-violet-500/15 text-violet-100" : "text-zinc-400 hover:bg-white/4"}`}><span className="w-5 shrink-0 text-amber-300">{change.status}</span><span className="truncate">{change.path}</span></button>)}
+            {visibleChanges.map(change => <button data-help-id="repositories.editor.changed-file-row" key={change.path} type="button" aria-label={`${change.status} ${change.path}`} disabled={Boolean(busy) || !files.includes(change.path)} onClick={() => selectFile(change.path)} title={`${change.status} ${change.path}${!files.includes(change.path) ? " · unavailable in the current file list" : ""}`} className={`flex w-full items-center gap-2 rounded-sm px-2 py-1.5 text-left font-mono text-[11px] disabled:opacity-40 ${selectedFile === change.path ? "bg-white/10 text-zinc-100" : "text-zinc-400 hover:bg-white/4"}`}><span className="w-5 shrink-0 text-amber-300">{change.status}</span><span className="truncate">{change.path}</span></button>)}
           </>}
-          {fileNavigation === "files" && visibleFiles.map((file) => <button data-help-id="repositories.editor.file-row" key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded-sm px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-violet-500/15 text-violet-100" : "text-zinc-500 hover:bg-white/4 hover:text-zinc-300"}`} title={file}>{file}</button>)}
+          {fileNavigation === "files" && visibleFiles.map((file) => <button data-help-id="repositories.editor.file-row" key={file} type="button" onClick={() => selectFile(file)} className={`block w-full truncate rounded-sm px-2 py-1.5 text-left font-mono text-[11px] ${selectedFile === file ? "bg-white/10 text-zinc-100" : "text-zinc-500 hover:bg-white/4 hover:text-zinc-300"}`} title={file}>{file}</button>)}
         </div>
       </aside>
       <section className="flex min-w-0 flex-1 flex-col">
@@ -874,9 +874,9 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
             <button data-help-id="repositories.editor.close-search" type="button" aria-label="Close file search" onClick={() => { setSearchOpen(false); editorRef.current?.focus(); }} className="btn-secondary">Close</button>
           </div>}
           {isProjectMetadata(selectedFile) && <div role="status" className="border-b border-white/8 bg-white/2.5 px-4 py-2 text-xs text-zinc-400">This is generated project metadata. Edit it only when you understand the project format; source files are safer for normal changes.</div>}
-          <textarea data-help-id="repositories.editor.buffer" ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-[#0b0c0e] p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-hidden selection:bg-violet-500/30" />
-          <details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className="shrink-0 border-t border-white/[0.07] bg-[#111315]">
-            <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-violet-300" : "hidden"}>Commit & publish{prUrl ? " · PR available" : ""}</summary>
+          <textarea data-help-id="repositories.editor.buffer" ref={editorRef} value={content} onSelect={event => setSelectionLength(event.currentTarget.selectionEnd - event.currentTarget.selectionStart)} onChange={(event) => editContent(event.target.value)} onKeyDown={editorKeyDown} spellCheck={false} aria-label={`Editing ${selectedFile}`} className="min-h-0 flex-1 resize-none bg-axiom-bg p-4 font-mono text-[13px] leading-6 text-zinc-200 outline-hidden selection:bg-white/20" />
+          <details open={!compact || publishExpanded} onToggle={event => { if (compact) setPublishExpanded(event.currentTarget.open); }} className="shrink-0 border-t border-white/[0.07] bg-axiom-bg-elev">
+            <summary className={compact ? "cursor-pointer px-4 py-2 text-xs text-zinc-400 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-300" : "hidden"}>Commit & publish{prUrl ? " · PR available" : ""}</summary>
           <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-2 p-3">
             <input value={commitMessage} onChange={(event) => setCommitMessage(event.target.value)} aria-label="Commit message for this file" placeholder="Commit message for this file" className="min-w-0 rounded-md border border-white/10 bg-black/25 px-3 py-2 text-xs outline-hidden" />
             <button type="button" disabled={Boolean(busy) || !commitMessage.trim() || onDefaultBranch} title={onDefaultBranch ? "Create a branch before committing." : undefined} onClick={() => void commit()} className="btn-primary disabled:opacity-40">{busy === "commit" ? "Committing…" : "Commit file"}</button>
@@ -885,11 +885,11 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
             {prUrl ? <ExternalLink href={prUrl} className="text-xs text-emerald-300 hover:text-white">Open PR ↗</ExternalLink> : <button type="button" disabled={Boolean(busy) || !prTitle.trim() || !prBase.trim() || !status || status.branch === prBase.trim() || status.changedFiles.length > 0 || content !== savedContent} onClick={reviewPullRequest} className="btn-secondary disabled:opacity-40" title={status && status.changedFiles.length > 0 ? "Commit all working-tree changes before publishing a pull request." : undefined}>{busy === "pr" ? "Publishing…" : "Publish & open PR"}</button>}
           </div>
           </details>
-        </> : <div className="flex flex-1 items-center justify-center text-sm text-zinc-600">Choose a UTF-8 text file to edit.</div>}
+        </> : <div className="flex flex-1 items-center justify-center text-sm text-zinc-400">Choose a UTF-8 text file to edit.</div>}
       </section>
     </div>
     {confirmation && <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/65 p-6 backdrop-blur-xs" role="presentation" onMouseDown={() => setConfirmation(null)}>
-      <div role="alertdialog" aria-modal="true" aria-labelledby="repository-confirmation-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-xl border border-white/10 bg-[#181a1d] p-5 shadow-2xl">
+      <div role="alertdialog" aria-modal="true" aria-labelledby="repository-confirmation-title" onMouseDown={(event) => event.stopPropagation()} className="w-full max-w-md rounded-xl border border-white/10 bg-axiom-surface p-5 shadow-2xl">
         <h2 id="repository-confirmation-title" className="text-base font-semibold text-white">{confirmation.title}</h2>
         <p className="mt-2 text-sm leading-6 text-zinc-400">{confirmation.description}</p>
         {confirmation.preview && <pre aria-label={confirmation.previewLabel ?? "Check output excerpt to prepare"} className="mt-3 max-h-48 overflow-auto whitespace-pre-wrap wrap-break-word text-xs text-zinc-300">{confirmation.preview}</pre>}

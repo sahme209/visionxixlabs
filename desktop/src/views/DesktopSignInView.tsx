@@ -103,14 +103,10 @@ export function DesktopSignInView({
   }
 
   return (
-    <main className="h-screen w-screen bg-[#0a0a0b] text-white flex items-center justify-center px-6 relative overflow-hidden">
-      <div className="pointer-events-none absolute inset-0" aria-hidden>
-        <div className="absolute top-[-10%] left-1/2 -translate-x-1/2 w-[720px] h-[720px] rounded-full bg-violet-500/8 blur-[160px]" />
-        <div className="absolute bottom-[-15%] right-[-10%] w-[480px] h-[480px] rounded-full bg-fuchsia-500/5 blur-[140px]" />
-      </div>
-      <div className="relative w-full max-w-[420px] text-center">
-        <img src="/axiom-logo.png" alt="" className="mx-auto mb-8 h-14 w-14 shrink-0 object-contain" />
-        <p className="text-[11px] font-medium uppercase tracking-[0.16em] text-zinc-500">Axiom Agent</p>
+    <main className="desktop-entry h-screen w-full bg-axiom-bg text-white flex flex-col px-6 py-10 relative overflow-y-auto">
+      <div className="desktop-entry-panel relative m-auto w-full max-w-[420px] shrink-0 text-center">
+        <img src="/brand/vxix-wordmark.svg" alt="vxix" className="mx-auto mb-8 h-14 w-14 shrink-0 object-contain" />
+        <p className="sr-only">Axiom Agent</p>
         <h1 className="mt-3 text-[28px] font-medium leading-[1.15] tracking-[-0.03em]">Deployment control, from request to closure.</h1>
         <p className="mx-auto mt-3 max-w-sm text-[14px] leading-6 text-zinc-500">
           Sign in through your system browser, then return here automatically. Your workspace access is verified before operational data loads.
@@ -138,17 +134,17 @@ export function DesktopSignInView({
             Cancel
           </button>
         )}
-        <p className="mt-5 text-xs leading-5 text-zinc-600">Both options open visionxixlabs.com in your default browser. Axiom never embeds your identity-provider password.</p>
+        <p className="mt-5 text-xs leading-5 text-zinc-400">Both options open visionxixlabs.com in your default browser. Axiom never embeds your identity-provider password.</p>
         <details className="group mt-6 rounded-xl border border-white/6 bg-white/1.5 p-4 text-left transition-colors open:border-white/9 open:bg-white/2.5">
           <summary className="cursor-pointer text-xs font-medium text-zinc-500 transition-colors group-hover:text-zinc-300">Enterprise recovery sign-in</summary>
-          <p className="mt-3 text-xs leading-5 text-zinc-600">For administrator-issued recovery access only. The workspace must still have an active approved pilot or commercial entitlement.</p>
+          <p className="mt-3 text-xs leading-5 text-zinc-400">For administrator-issued recovery access only. The workspace must still have an active approved pilot or commercial entitlement.</p>
           <label htmlFor="workspace-key" className="mt-3 block text-xs font-medium text-zinc-300">Workspace API key</label>
-          <input id="workspace-key" type="password" autoComplete="off" spellCheck={false} value={apiKey} onChange={(event) => { setApiKey(event.target.value); setError(null); }} onKeyDown={(event) => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Enter" && apiKey.trim() && !checkingKey && state === "idle") void signInWithKey(); }} placeholder="vxlk_live_…" className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-mono text-white outline-hidden placeholder:text-zinc-700 transition-colors focus:border-violet-500/60 focus:ring-2 focus:ring-violet-500/15" />
+          <input id="workspace-key" type="password" autoComplete="off" spellCheck={false} value={apiKey} onChange={(event) => { setApiKey(event.target.value); setError(null); }} onKeyDown={(event) => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Enter" && apiKey.trim() && !checkingKey && state === "idle") void signInWithKey(); }} placeholder="vxlk_live_…" className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-3 text-sm font-mono text-white outline-hidden placeholder:text-zinc-400 transition-colors focus:border-zinc-300/60 focus:ring-2 focus:ring-zinc-300/20" />
           <button type="button" onClick={() => void signInWithKey()} disabled={!apiKey.trim() || checkingKey || state !== "idle"} className="mt-3 w-full rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm font-semibold text-zinc-100 transition-colors hover:bg-white/9 disabled:cursor-not-allowed disabled:opacity-50">
             {checkingKey ? "Verifying workspace…" : "Use administrator key"}
           </button>
         </details>
-        <p className="mt-6 text-xs leading-5 text-zinc-700">
+        <p className="mt-6 text-xs leading-5 text-zinc-400">
           Product demonstrations use the isolated website sandbox. This installed workspace never substitutes sample records for service data.
         </p>
       </div>

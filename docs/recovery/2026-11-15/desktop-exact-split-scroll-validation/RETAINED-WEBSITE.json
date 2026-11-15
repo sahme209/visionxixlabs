@@ -1,0 +1,20 @@
+{
+  "receiptSha256": "5994b68257bee04548f7be5a6ad6e284c8a8e5e8355eb3144c55335c8e19f5f7",
+  "packetSha256": "d32a314053f72cf048dc0fb264b5e7d683f6f539afeab258c2e829f25a5f8a4d",
+  "sourceDelta": {
+    "added": [
+      "docs/recovery/2026-11-15/desktop-exact-split-scroll-validation/SOURCE-MARKUP.json",
+      "docs/recovery/2026-11-15/desktop-exact-split-scroll-validation/desktop-study.cjs",
+      "docs/recovery/2026-11-15/desktop-exact-split-scroll-validation/test-desktop-study.cjs"
+    ],
+    "removed": [],
+    "changed": [
+      "CLAUDE.md",
+      "CODEX_HANDOFF.md",
+      "desktop/src/styles.css",
+      "docs/product/codex-resume-goal.md"
+    ]
+  },
+  "policy": "Strict original accepted regular-file bytes/modes and membership; only new bounded APP_PAGE preview cache/ancestor membership may differ in old stage, then original members only reconstructed into exclusive new output; new cache never accepted or copied",
+  "websiteRebuild": false
+}

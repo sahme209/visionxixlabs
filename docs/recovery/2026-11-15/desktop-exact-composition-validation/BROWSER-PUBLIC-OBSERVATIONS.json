@@ -1,0 +1,650 @@
+[
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Deploy with clarity."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Agent | Governed cloud operations",
+    "url": "http://127.0.0.1:5401/",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Deployment decisions.Clear from the start."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Agent product | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/product",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Find the right connection for the job."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Agent | Governed cloud operations",
+    "url": "http://127.0.0.1:5401/integrations",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Know the boundary.Verify the workflow."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Security and governance | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/security",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Find your next step."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Documentation — Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/docs",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Explore the workflow. Know what is simulated."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Agent | Governed cloud operations",
+    "url": "http://127.0.0.1:5401/demo",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Free to explore.Prepay only for the AI you use."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Get started with Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/plans",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Work whereengineering happens."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Download Axiom Agent | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/download",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Independent engineering.Shared responsibility."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Founding Supporters | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/support",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Help when self-service isn't enough."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Agent support | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/contact",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Privacy Policy"
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Privacy Policy | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/privacy",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Terms of Service"
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Terms of Service | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/terms",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Partial degradation"
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Status — Axiom Agent | Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/status",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Compare the evidence.Choose for your workflow."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Compare workflow evidence — Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/compare",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Deployment capabilities.With human control."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Capabilities — governed deployment operations | Axiom Agent | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/capabilities",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "The safety contractis the product."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Trust — Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/trust",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Ten agents.One human gate."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "How Axiom works — the 10-agent council | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/how-it-works",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Guidance for the releaseyou can explain."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom Agent resources | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/resources",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Powerful controls.No hidden claims."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Enterprise readiness — Axiom Agent | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/enterprise-readiness",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Field notes fromproduction."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Insights | Cloud & AI Engineering | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/insights",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Product and engineeringnotes from Axiom."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Blog | Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/blog",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "How webuild it."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Engineering Handbook — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/handbook",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Seven thingswe believe."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Manifesto — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/manifesto",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "How we makevisual decisions."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Design Principles — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/principles",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "A small teamshipping carefully."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Team — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/team",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Describe Axiomaccurately."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Press and brand — Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/press",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 1274,
+    "h1": [
+      "Complexity belongs in the capability.Not in the interface."
+    ],
+    "hasBrand": true,
+    "height": 900,
+    "title": "Axiom design system — Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/design",
+    "width": 1280
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Deploy with clarity."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Agent | Governed cloud operations",
+    "url": "http://127.0.0.1:5401/",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Deployment decisions.Clear from the start."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Agent product | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/product",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Find the right connection for the job."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Agent | Governed cloud operations",
+    "url": "http://127.0.0.1:5401/integrations",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Know the boundary.Verify the workflow."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Security and governance | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/security",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Find your next step."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Documentation — Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/docs",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Explore the workflow. Know what is simulated."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Agent | Governed cloud operations",
+    "url": "http://127.0.0.1:5401/demo",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Free to explore.Prepay only for the AI you use."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Get started with Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/plans",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Work whereengineering happens."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Download Axiom Agent | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/download",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Independent engineering.Shared responsibility."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Founding Supporters | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/support",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Help when self-service isn't enough."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Agent support | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/contact",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Privacy Policy"
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Privacy Policy | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/privacy",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Terms of Service"
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Terms of Service | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/terms",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Partial degradation"
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Status — Axiom Agent | Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/status",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Compare the evidence.Choose for your workflow."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Compare workflow evidence — Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/compare",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Deployment capabilities.With human control."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Capabilities — governed deployment operations | Axiom Agent | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/capabilities",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "The safety contractis the product."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Trust — Axiom | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/trust",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Ten agents.One human gate."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "How Axiom works — the 10-agent council | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/how-it-works",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Guidance for the releaseyou can explain."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom Agent resources | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/resources",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Powerful controls.No hidden claims."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Enterprise readiness — Axiom Agent | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/enterprise-readiness",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Field notes fromproduction."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Insights | Cloud & AI Engineering | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/insights",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Product and engineeringnotes from Axiom."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Blog | Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/blog",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "How webuild it."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Engineering Handbook — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/handbook",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Seven thingswe believe."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Manifesto — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/manifesto",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "How we makevisual decisions."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Design Principles — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/principles",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "A small teamshipping carefully."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Team — VisionXIXLabs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/team",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Describe Axiomaccurately."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Press and brand — Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/press",
+    "width": 390
+  },
+  {
+    "brandReady": true,
+    "documentWidth": 384,
+    "h1": [
+      "Complexity belongs in the capability.Not in the interface."
+    ],
+    "hasBrand": true,
+    "height": 844,
+    "title": "Axiom design system — Vision XIX Labs | Vision XIX Labs",
+    "url": "http://127.0.0.1:5401/design",
+    "width": 390
+  }
+]

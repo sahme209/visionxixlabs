@@ -9,6 +9,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Navigation } from "@/components/Navigation";
+import { PageHero } from "@/components/marketing/PageHero";
 import { Footer } from "@/components/Footer";
 import { getAllPosts, listCategories } from "@/lib/blog/posts";
 
@@ -24,9 +25,9 @@ function fmtDate(iso: string): string {
 
 const CAT_TONE: Record<string, string> = {
   "Product Updates":    "text-zinc-300",
-  "Engineering":        "text-orange-300",
+  "Engineering":        "text-zinc-300",
   "Industry Insights":  "text-zinc-400",
-  "Trust & Security":   "text-orange-200",
+  "Trust & Security":   "text-zinc-300",
 };
 
 export default function BlogIndex() {
@@ -36,84 +37,67 @@ export default function BlogIndex() {
   const categories = listCategories();
 
   return (
-    <div className="min-h-screen bg-brand-ink text-white relative overflow-hidden">
-      {/* One restrained brand accent keeps the editorial surface calm. */}
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 h-[520px] w-[820px] -translate-x-1/2 rounded-full bg-orange-500/6 blur-[160px]" />
-      </div>
-
+    <div className="axiom-canvas min-h-screen text-white relative">
       <Navigation />
 
-      <main className="relative z-10 max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 pt-32 pb-24">
-        {/* Editorial header */}
-        <header className="mb-16">
-          <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
-            <span className="text-brand-coral/90 tabular-nums">B1</span>
-            <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-            Blog
-          </p>
-          <h1 className="text-5xl md:text-6xl font-bold tracking-[-0.045em] leading-[1.05] mb-4">
-            Product and engineering
-            <br />
-            <span className="text-zinc-400">notes from Axiom.</span>
-          </h1>
-          <p className="text-base md:text-lg text-zinc-400 max-w-2xl leading-relaxed">
-            Product updates, engineering essays, and trust + security notes from the team building Axiom Agent.
-          </p>
-        </header>
+      <main className="relative mx-auto max-w-[1240px] px-5 pb-24 pt-32 sm:px-10">
+        <PageHero
+          eyebrow="Blog"
+          title="Product and engineering"
+          muted="notes from Axiom."
+          lead="Product updates, engineering essays, and trust + security notes from the team building Axiom Agent."
+        />
+        <div className="h-12 sm:h-16" aria-hidden="true" />
 
         {/* Featured */}
         <section className="mb-20">
           <Link
             href={`/blog/${featured.slug}`}
-            className="group block relative rounded-3xl border border-white/[0.07] bg-linear-to-br from-brand-ink-card via-[#171717] to-brand-ink p-8 md:p-12 overflow-hidden hover:border-orange-500/30 transition-all"
+            className="group block relative rounded-xl border border-white/[0.07] bg-[var(--public-surface)] p-8 md:p-12 overflow-hidden hover:border-white/20 transition-all"
           >
-            <div className="absolute -top-24 -right-24 w-72 h-72 rounded-full bg-orange-500/15 blur-[100px] pointer-events-none" />
-            <div className="absolute -bottom-32 -left-32 w-72 h-72 rounded-full bg-amber-500/10 blur-[120px] pointer-events-none" />
 
             <div className="relative grid lg:grid-cols-12 gap-8 items-center">
               <div className="lg:col-span-7">
-                <div className="flex items-center gap-3 mb-4 text-[11px] font-mono uppercase tracking-[0.18em]">
+                <div className="flex flex-wrap items-center gap-3 mb-4 text-xs font-mono uppercase tracking-[0.18em]">
                   <span className={CAT_TONE[featured.category] ?? "text-zinc-400"}>{featured.category}</span>
                   <span className="text-zinc-700">·</span>
-                  <span className="text-zinc-500">{fmtDate(featured.publishedAt)}</span>
+                  <span className="text-zinc-400">{fmtDate(featured.publishedAt)}</span>
                   <span className="text-zinc-700">·</span>
-                  <span className="text-zinc-500">{featured.readMinutes} min read</span>
+                  <span className="text-zinc-400">{featured.readMinutes} min read</span>
                 </div>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-4 group-hover:text-orange-100 transition-colors">
+                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-4 group-hover:text-white transition-colors">
                   {featured.title}
                 </h2>
                 <p className="text-base text-zinc-400 leading-relaxed mb-6 max-w-2xl">
                   {featured.excerpt}
                 </p>
-                <div className="inline-flex items-center gap-2 text-sm font-semibold text-orange-300 group-hover:text-white transition-colors">
+                <div className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-300 group-hover:text-white transition-colors">
                   Read more →
                 </div>
               </div>
 
               <div className="lg:col-span-5">
-                <div className="rounded-2xl border border-white/8 bg-axiom-bg-elev/60 p-6 relative overflow-hidden">
-                  <div className="absolute -top-12 -right-12 w-32 h-32 rounded-full bg-orange-500/20 blur-2xl pointer-events-none" />
+                <div className="rounded-xl border border-white/8 bg-axiom-bg-elev/60 p-6 relative overflow-hidden">
                   <div className="relative">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
+                      <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">
                         {featured.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
                       </div>
                       <div>
                         <p className="text-sm font-semibold text-white">{featured.author.name}</p>
-                        <p className="text-[11px] text-zinc-500">{featured.author.role}</p>
+                        <p className="text-xs text-zinc-400">{featured.author.role}</p>
                       </div>
                     </div>
-                    <div className="space-y-1.5 text-[11px] font-mono text-zinc-500">
-                      <div className="flex items-center justify-between">
+                    <div className="space-y-1.5 text-xs font-mono text-zinc-400">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span>slug</span>
-                        <span className="text-zinc-300">{featured.slug}</span>
+                        <span className="min-w-0 break-words text-zinc-300">{featured.slug}</span>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span>category</span>
                         <span className={CAT_TONE[featured.category]}>{featured.category}</span>
                       </div>
-                      <div className="flex items-center justify-between">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
                         <span>published</span>
                         <span className="text-zinc-300">{fmtDate(featured.publishedAt)}</span>
                       </div>
@@ -128,7 +112,7 @@ export default function BlogIndex() {
         {/* Category tabs */}
         <section className="mb-10">
           <div className="flex items-center gap-2 flex-wrap">
-            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-orange-500/15 border border-orange-500/30 text-orange-200 text-xs font-semibold">All posts</span>
+            <span className="inline-flex items-center px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-zinc-300 text-xs font-semibold">All posts</span>
             {categories.map((cat) => (
               <span key={cat} className="inline-flex items-center px-3 py-1.5 rounded-full border border-white/6 bg-white/2 text-zinc-400 text-xs font-medium">
                 {cat}
@@ -143,27 +127,27 @@ export default function BlogIndex() {
             <Link
               key={post.slug}
               href={`/blog/${post.slug}`}
-              className="group block rounded-2xl border border-white/6 bg-white/1.5 p-6 hover:border-orange-500/30 hover:bg-white/2.5 transition-all"
+              className="group block rounded-xl border border-white/6 bg-white/1.5 p-6 hover:border-white/20 hover:bg-white/2.5 transition-all"
             >
-              <div className="flex items-center gap-3 mb-3 text-[10px] font-mono uppercase tracking-[0.18em]">
+              <div className="flex flex-wrap items-center gap-3 mb-3 text-xs font-mono uppercase tracking-[0.18em]">
                 <span className={CAT_TONE[post.category] ?? "text-zinc-400"}>{post.category}</span>
                 <span className="text-zinc-700">·</span>
-                <span className="text-zinc-500">{fmtDate(post.publishedAt)}</span>
+                <span className="text-zinc-400">{fmtDate(post.publishedAt)}</span>
               </div>
-              <h3 className="text-xl font-bold tracking-[-0.03em] leading-snug mb-3 group-hover:text-orange-100 transition-colors">
+              <h3 className="text-xl font-bold tracking-[-0.03em] leading-snug mb-3 group-hover:text-white transition-colors">
                 {post.title}
               </h3>
-              <p className="text-sm text-zinc-500 leading-relaxed mb-4 line-clamp-3">
+              <p className="text-sm text-zinc-400 leading-relaxed mb-4 line-clamp-3">
                 {post.excerpt}
               </p>
-              <div className="flex items-center justify-between text-[11px]">
+              <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-linear-to-br from-orange-500/40 to-amber-500/40 flex items-center justify-center text-[9px] font-bold text-white">
+                  <div className="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-[11px] font-bold text-white">
                     {post.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
                   </div>
                   <span className="text-zinc-400">{post.author.name}</span>
                 </div>
-                <span className="text-zinc-500 font-mono">{post.readMinutes} min</span>
+                <span className="text-zinc-400 font-mono">{post.readMinutes} min</span>
               </div>
             </Link>
           ))}

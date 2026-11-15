@@ -1,0 +1,26 @@
+{
+  "finding": "Short split editor: keyboard focus scrolls document and leaves blank space",
+  "viewport": {
+    "width": 1024,
+    "height": 600
+  },
+  "before": {
+    "docHeight": 935,
+    "windowHeight": 600,
+    "focusWindowScrollY": 246,
+    "panesScroll": 602
+  },
+  "diagnosticOnly": {
+    "preservedInlineDisplay": true,
+    "position": "relative",
+    "docHeight": 600,
+    "focusWindowScrollY": 0,
+    "panesScroll": 602
+  },
+  "sourceChanged": false,
+  "diagnosticOverrideClearedByNavigation": true,
+  "selectionMistakes": [
+    "Recovery label Verify recovery token did not exist; actual Workspace API key focused and visible with mainScroll442.",
+    "Escape dispatched to nonfocusable dialog failed; actual focused Close navigation menu button Escape succeeded and restored opener."
+  ]
+}

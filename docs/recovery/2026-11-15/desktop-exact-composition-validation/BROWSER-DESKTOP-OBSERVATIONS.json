@@ -1,0 +1,934 @@
+[
+  {
+    "brandFilter": "none",
+    "buttons": [
+      {
+        "height": 44,
+        "text": "Open Agent ↗"
+      }
+    ],
+    "heading": "Your next move,\nin focus.",
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "scrollWidth": 1280,
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=dark",
+    "width": 1280
+  },
+  {
+    "brandFilter": "brightness(0)",
+    "buttons": [
+      {
+        "height": 44,
+        "text": "Open Agent ↗"
+      }
+    ],
+    "heading": "Your next move,\nin focus.",
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "scrollWidth": 1280,
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in-recovery?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Workspace access required"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/access-required?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Home",
+      "Your next move,in focus.",
+      "Start with what matters."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Agent"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Engineering workspace"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/split-editor?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Axiom Bot",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/bot?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Releases",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/releases?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Repositories",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Batches",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/batches?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Apps & skills",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/apps?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Documentation",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/docs?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet.",
+      "Observe one window"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1258,
+      "width": 1258
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/settings?theme=dark",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in-recovery?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Workspace access required"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1280,
+      "width": 1280
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/access-required?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Home",
+      "Your next move,in focus.",
+      "Start with what matters."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Agent"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Engineering workspace"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/split-editor?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Axiom Bot",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/bot?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Releases",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/releases?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Repositories",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Batches",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/batches?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Apps & skills",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/apps?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Documentation",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1048,
+      "width": 1048
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/docs?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1280,
+    "documentWidth": 1280,
+    "headings": [
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet.",
+      "Observe one window"
+    ],
+    "height": 900,
+    "main": {
+      "scrollWidth": 1258,
+      "width": 1258
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/settings?theme=light",
+    "width": 1280
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1016,
+      "width": 1016
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1016,
+      "width": 1016
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in-recovery?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Workspace access required"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1016,
+      "width": 1016
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/access-required?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Home",
+      "Your next move,in focus.",
+      "Start with what matters."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Agent"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1016,
+    "documentWidth": 1016,
+    "headings": [
+      "Engineering workspace"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 784,
+      "width": 784
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/split-editor?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Axiom Bot",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/bot?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Releases",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/releases?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Repositories",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Batches",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/batches?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Apps & skills",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/apps?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Documentation",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/docs?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet.",
+      "Observe one window"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1002,
+      "width": 1002
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/settings?theme=dark",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1016,
+      "width": 1016
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Deployment control, from request to closure."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1016,
+      "width": 1016
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/sign-in-recovery?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Workspace access required"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1016,
+      "width": 1016
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/access-required?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Home",
+      "Your next move,in focus.",
+      "Start with what matters."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Agent"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1016,
+    "documentWidth": 1016,
+    "headings": [
+      "Engineering workspace"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 784,
+      "width": 784
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/split-editor?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Axiom Bot",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/bot?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Releases",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/releases?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Repositories",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Batches",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/batches?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Apps & skills",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/apps?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Documentation",
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet."
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 792,
+      "width": 792
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/docs?theme=light",
+    "width": 1024
+  },
+  {
+    "bodyWidth": 1024,
+    "documentWidth": 1024,
+    "headings": [
+      "Tasks",
+      "New task",
+      "What can I take off your plate?",
+      "No task outputs yet.",
+      "Observe one window"
+    ],
+    "height": 600,
+    "main": {
+      "scrollWidth": 1002,
+      "width": 1002
+    },
+    "unloadedImages": [],
+    "url": "http://127.0.0.1:5401/__desktop-study/settings?theme=light",
+    "width": 1024
+  }
+]

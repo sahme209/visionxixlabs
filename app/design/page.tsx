@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
 import { Navigation } from "@/components/Navigation";
+import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
   title: "Axiom design system — Vision XIX Labs",
@@ -10,10 +11,11 @@ export const metadata: Metadata = {
 };
 
 const colors = [
-  ["Canvas", "#141414"],
-  ["Surface", "#1A1A1A"],
-  ["Text", "#EFEFEC"],
-  ["Axiom orange", "#F54E00"],
+  ["Canvas", "#0A0908"],
+  ["Surface", "#171615"],
+  ["Text", "#FFFFFF"],
+  ["Secondary text", "#BFBDB6"],
+  ["Muted text", "#858585"],
 ] as const;
 
 const principles = [
@@ -25,35 +27,33 @@ const principles = [
 
 export default function DesignPage() {
   return (
-    <div className="min-h-screen bg-brand-ink text-[#efefec]">
+    <div className="axiom-canvas min-h-screen bg-[#0a0908] text-zinc-100">
       <Navigation />
       <main>
-        <section className="mx-auto max-w-[1200px] px-5 pb-20 pt-28 sm:px-8 lg:pb-28 lg:pt-36">
-          <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">Design system</p>
-          <h1 className="mt-6 max-w-5xl text-5xl font-medium leading-[0.98] tracking-[-0.055em] sm:text-7xl">
-            Complexity belongs in the capability.
-            <span className="block text-zinc-500">Not in the interface.</span>
-          </h1>
-          <p className="mt-7 max-w-2xl text-base leading-7 text-zinc-400">
-            Axiom uses a quiet neutral system, one intentional accent, direct
-            language, and motion only when it explains a state change.
-          </p>
+        <section className="mx-auto max-w-[1240px] px-5 pb-16 pt-28 sm:px-8 lg:pt-36">
+          <PageHero
+            eyebrow="Design system"
+            title="Complexity belongs in the capability."
+            muted="Not in the interface."
+            lead={<>Axiom uses a quiet neutral system, clear contrast, direct
+              language, and motion only when it explains a state change.</>}
+          />
         </section>
 
-        <section className="border-y border-white/8 bg-[#181818]">
-          <div className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
+        <section className="border-y border-white/8 bg-[#171615]">
+          <div className="mx-auto max-w-[1240px] px-5 py-20 sm:px-8 lg:py-24">
             <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
               <div>
                 <p className="font-mono text-xs text-zinc-600">01</p>
                 <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Color</h2>
                 <p className="mt-3 text-sm leading-6 text-zinc-500">
-                  Near-black structure, near-white type, and orange for the one
-                  thing that needs attention.
+                  Near-black structure, white primary type, and warm neutral
+                  supporting text. Original artwork keeps its own colors.
                 </p>
               </div>
               <div className="grid gap-px overflow-hidden rounded-2xl border border-white/8 bg-white/8 sm:grid-cols-2">
                 {colors.map(([name, hex]) => (
-                  <div key={name} className="bg-brand-ink p-5">
+                  <div key={name} className="bg-[#0a0908] p-5">
                     <div className="h-24 rounded-xl border border-white/10" style={{ backgroundColor: hex }} />
                     <div className="mt-4 flex items-center justify-between gap-4 text-sm">
                       <span>{name}</span>
@@ -66,7 +66,7 @@ export default function DesignPage() {
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
+        <section className="mx-auto max-w-[1240px] px-5 py-20 sm:px-8 lg:py-24">
           <div className="grid gap-12 lg:grid-cols-[0.65fr_1.35fr]">
             <div>
               <p className="font-mono text-xs text-zinc-600">02</p>
@@ -88,8 +88,8 @@ export default function DesignPage() {
           </div>
         </section>
 
-        <section className="border-y border-white/8 bg-[#181818]">
-          <div className="mx-auto max-w-[1200px] px-5 py-20 sm:px-8 lg:py-24">
+        <section className="border-y border-white/8 bg-[#171615]">
+          <div className="mx-auto max-w-[1240px] px-5 py-20 sm:px-8 lg:py-24">
             <p className="font-mono text-xs text-zinc-600">03</p>
             <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em]">Interaction rules</h2>
             <div className="mt-10 divide-y divide-white/8 border-y border-white/8">
@@ -103,9 +103,9 @@ export default function DesignPage() {
           </div>
         </section>
 
-        <section className="mx-auto flex max-w-[1200px] flex-col gap-7 px-5 py-20 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:py-28">
+        <section className="mx-auto flex max-w-[1240px] flex-col gap-7 px-5 py-20 sm:px-8 lg:flex-row lg:items-end lg:justify-between lg:py-28">
           <div>
-            <p className="text-xs font-medium uppercase tracking-[0.18em] text-[#ff783d]">See it applied</p>
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-zinc-400">See it applied</p>
             <h2 className="mt-4 max-w-2xl text-4xl font-medium tracking-[-0.045em] sm:text-5xl">
               Watch the workflow explain itself.
             </h2>

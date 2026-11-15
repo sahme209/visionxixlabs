@@ -9,7 +9,7 @@ const CHECKS = [
 ] as const;
 const OUTCOMES = ["Context for the Agent", "A reviewed pull request", "A governed deployment", "Evidence you can verify"];
 
-/** Short labels keep tool names readable in narrow cards; the full status is in the catalog below. */
+/** Short labels keep tool names readable in narrow cards; the full status is in the catalog. */
 const SHORT: Record<string, string> = { "implementation review": "in review", "configuration required": "setup needed" };
 const shortStatus = (s: string) => SHORT[s] ?? s;
 const statusTone = (s: string) => (s === "available" ? "text-emerald-300/90" : s === "planned" ? "text-zinc-600" : "text-amber-200/80");
@@ -17,9 +17,9 @@ const statusTone = (s: string) => (s === "available" ? "text-emerald-300/90" : s
 /** Integrations page: tools → Axiom checks → outcomes. Calm 2D, real logos, real statuses. */
 export function IntegrationsHubFlow() {
   return (
-    <section aria-labelledby="hub-flow" className="rounded-2xl border border-white/[0.07] bg-white/1.5 p-5 sm:p-7">
+    <section aria-labelledby="hub-flow" className="public-integrations-map rounded-2xl border border-white/[0.07] bg-white/1.5 p-5 sm:p-7">
       <h2 id="hub-flow" className="text-xl font-medium tracking-tight text-zinc-100">How your tools connect through Axiom</h2>
-      <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">Tools on the left, Axiom&apos;s checks in the middle, outcomes on the right. Statuses are the real ones from the catalog below.</p>
+      <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">Tools on the left, Axiom&apos;s checks in the middle, outcomes on the right. Statuses are the real ones from the catalog.</p>
       <div className="mt-7 grid items-stretch gap-4 lg:grid-cols-[minmax(0,5fr)_auto_minmax(0,4fr)_auto_minmax(0,3fr)]">
         <ol aria-label="Tools" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
           {GROUPS.map((g) => (

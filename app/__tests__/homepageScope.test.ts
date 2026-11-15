@@ -41,7 +41,9 @@ describe("homepage scope", () => {
   it("preserves acquisition destinations and makes the tour boundary explicit", () => {
     render(createElement(Home));
     for (const [name, href] of [["Explore Axiom", "/product"], ["Explore the scripted tour", "/demo"], ["Download Axiom Agent", "/download"], ["Meet the Founding Supporters program", "/support"]]) {
-      expect(screen.getByRole("link", { name }).getAttribute("href")).toBe(href);
+      const links = screen.getAllByRole("link", { name });
+      expect(links.length).toBeGreaterThan(0);
+      for (const link of links) expect(link.getAttribute("href")).toBe(href);
     }
   });
 });

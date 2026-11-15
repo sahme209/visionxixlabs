@@ -14,6 +14,7 @@
 
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { PageHero } from "@/components/marketing/PageHero";
 import { useMemo, useState } from "react";
 
 interface Capability {
@@ -155,43 +156,9 @@ export function CapabilitiesClient() {
   );
 
   return (
-    <div className="relative isolate overflow-hidden">
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-20 bg-cover bg-center opacity-20" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
-      <div aria-hidden className="pointer-events-none fixed inset-0 -z-10 bg-[linear-gradient(180deg,rgba(11,12,11,0.8),rgba(11,12,11,0.94)_42%,#0c0d0c)]" />
-
-      {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-10 pt-24 pb-10">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mono-label inline-flex items-center gap-3"
-        >
-          <span className="text-orange-200 tabular-nums">AX</span>
-          <span className="h-px w-6 bg-linear-to-r from-orange-200/60 to-transparent" />
-          Axiom Agent · deployment capabilities
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mt-5 max-w-4xl text-4xl font-medium leading-[1.02] tracking-[-0.045em] md:text-5xl"
-        >
-          Deployment capabilities, {" "}
-          <span className="relative inline-block">
-            with human control.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-orange-200/80 to-transparent" />
-          </span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
-        >
-          A focused inventory of the release-governance logic behind Axiom: assess a change,
-          prepare evidence, require human approval, and verify the result. A listed capability
-          proves application logic exists; it does not by itself claim a live integration or automated deployment.
-        </motion.p>
+    <div className="public-detail-page public-capabilities-page">
+      <section className="public-detail-header">
+        <PageHero eyebrow="Axiom Agent · deployment capabilities" title="Deployment capabilities." muted="With human control." lead="A focused inventory of the release-governance logic behind Axiom: assess a change, prepare evidence, require human approval, and verify the result. A listed capability proves application logic exists; it does not by itself claim a live integration or automated deployment." />
       </section>
 
       <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
@@ -239,8 +206,9 @@ export function CapabilitiesClient() {
               key={f.id}
               type="button"
               onClick={() => setFilter(f.id)}
+              aria-pressed={filter === f.id}
               className={[
-                "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
+                "min-h-11 rounded-lg px-3.5 py-2 text-[13px] font-medium transition border",
                 filter === f.id
                   ? "bg-orange-300/12 border-orange-300/30 text-orange-100"
                   : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
@@ -305,7 +273,7 @@ export function CapabilitiesClient() {
         <div className="mt-6 flex items-center justify-center gap-2">
           <Link
             href="/download"
-            className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
+            className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-[12.5px] font-medium text-zinc-950 hover:bg-zinc-200 transition"
           >
             See current releases
           </Link>

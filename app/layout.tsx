@@ -1,6 +1,7 @@
 import {AXIOM_FAVICON_URL,AXIOM_APP_ICON_URL,AXIOM_APPLE_ICON_URL} from '@/lib/brandAssets';
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import "./orbit-public.css";
 import "../styles/axiom-theme.css";
 import "../styles/local-fonts.css";
 import { OrganizationJsonLd, WebSiteJsonLd } from "@/components/JsonLd";

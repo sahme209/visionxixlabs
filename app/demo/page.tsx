@@ -30,7 +30,7 @@ const workflowGuides = [
 
 export default function DemoLanding() {
   return (
-    <div className="min-h-screen bg-[#101010] text-zinc-100">
+    <div className="axiom-canvas public-demo-page min-h-screen text-zinc-100">
       <Navigation />
       <main>
         <section className="mx-auto max-w-[1280px] px-5 pb-6 pt-24 sm:px-8 lg:px-10 lg:pt-28">
@@ -53,10 +53,10 @@ export default function DemoLanding() {
 
         <CinematicAxiomDemo />
 
-        <section className="mx-auto max-w-[1280px] px-5 py-12 sm:px-8 lg:px-10 lg:py-16">
-          <div className="grid gap-8 border-t border-white/8 pt-8 lg:grid-cols-[0.7fr_1.3fr]">
+        <section className="public-demo-guides">
+          <div className="public-demo-guide-panel">
             <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-orange-400">Guides behind the stories</p>
+              <p className="public-feature-eyebrow">Guides behind the stories</p>
               <h2 className="mt-4 text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl">Check the real workflow and its limits.</h2>
               <p className="mt-4 max-w-md text-sm leading-6 text-zinc-400">These guides cover behavior by version and operation. A scripted scene is not evidence of a released feature, provider confirmation or complete Governance coverage.</p>
             </div>

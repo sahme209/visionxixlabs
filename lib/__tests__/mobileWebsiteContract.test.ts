@@ -9,17 +9,17 @@ describe("mobile website contract", () => {
   it("uses one responsive homepage with phone-first spacing and actions", () => {
     const page = source("app/page.tsx");
 
-    expect(page).toContain("Engineering work.");
-    expect(page).toContain("With you in control.");
-    expect(page).toContain("flex flex-col gap-3 sm:flex-row");
+    expect(page).toContain("<AxiomPublicHero />");
+    expect(source("components/marketing/AxiomPublicHero.tsx")).toContain("Deploy with clarity.");
+    expect(source("app/orbit-public.css")).toContain(".public-home-actions { display:flex; flex-wrap:wrap;");
     expect(page).toContain('<CinematicAxiomDemo variant="hero" />');
     expect(source("components/marketing/CinematicAxiomDemo.tsx")).toContain("lg:grid-cols-[230px_minmax(0,1fr)]");
   });
 
-  it("keeps primary mobile actions large and full width", () => {
-    const page = source("app/page.tsx");
+  it("keeps primary mobile actions touch-sized and preserves acquisition links", () => {
+    const page = source("components/marketing/AxiomPublicHero.tsx");
 
-    expect(page).toContain("min-h-12 items-center justify-center");
+    expect(source("app/orbit-public.css")).toContain(".public-home-actions :is(a) { min-height:44px;");
     expect(page).toContain("Download Axiom Agent");
     expect(page).toContain("Explore the scripted tour");
   });

@@ -11,6 +11,7 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, type FormEvent } from "react";
+import { PageHero } from "@/components/marketing/PageHero";
 
 type Topic = "product" | "download" | "security" | "support" | "press";
 
@@ -95,39 +96,18 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
   }
 
   return (
-    <div className="relative">
+    <div className="public-contact-page">
       {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pt-24 pb-8">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mono-label inline-flex items-center gap-3"
-        >
-          <span className="text-[#ff783d] tabular-nums">Support</span>
-          <span className="h-px w-6 bg-[#f54e00]/60" />
-          A recovery path when you need it
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="font-display mt-5 text-4xl md:text-5xl font-bold leading-[1.04]"
-        >
-          Help when self-service isn&apos;t enough.
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
-        >
+      <section className="public-contact-header">
+        <PageHero eyebrow="Support · A recovery path when you need it" title="Help when self-service isn't enough." lead={<>
           Documentation and in-product recovery should solve supported workflows first. For a genuine product, account, download, or security issue, send it here or email{" "}
-          <a href="mailto:support@visionxixlabs.com" className="text-orange-300 hover:text-orange-200 underline underline-offset-4">support@visionxixlabs.com</a>.
-        </motion.p>
+          <a href="mailto:support@visionxixlabs.com" className="text-zinc-200 hover:text-white underline underline-offset-4">support@visionxixlabs.com</a>.
+        </>} />
       </section>
 
       {/* ===== FORM ===== */}
-      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 pb-16">
+      <section className="public-contact-body" aria-label="Contact support">
+        <div className="min-w-0">
         <AnimatePresence mode="wait">
           {state.kind === "ok" ? (
             <motion.div
@@ -137,7 +117,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-6"
+              className="public-contact-result rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-6"
             >
               <p className="text-[12px] font-mono uppercase tracking-widest text-emerald-300">
                 request recorded
@@ -152,7 +132,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               <div className="mt-5 flex flex-wrap items-center gap-2">
                 <Link
                   href="/product"
-                  className="inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-4 py-2 text-[12.5px] font-medium text-white hover:bg-[#ff641f] transition"
+                  className="public-contact-primary"
                 >
                   Review capabilities
                 </Link>
@@ -171,7 +151,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
               onSubmit={handleSubmit}
-              className="rounded-2xl border border-white/6 bg-white/2 p-6 md:p-8 space-y-6"
+              className="public-contact-form space-y-6"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Field label="Name" htmlFor="name">
@@ -200,18 +180,19 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                 </Field>
               </div>
 
-              <div>
-                <p className="text-[11px] font-mono uppercase tracking-widest text-zinc-500 mb-2">
+              <fieldset className="public-contact-topics">
+                <legend className="text-xs text-zinc-400 mb-3">
                   What&apos;s the reason?
-                </p>
+                </legend>
                 <div className="flex flex-wrap gap-2">
                   {TOPICS.map((t) => (
                     <button
                       key={t.id}
                       type="button"
                       onClick={() => update("topic", t.id)}
+                      aria-pressed={form.topic === t.id}
                       className={[
-                        "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
+                        "min-h-11 rounded-lg px-3.5 py-2 text-[13px] font-medium transition border",
                         form.topic === t.id
                           ? "bg-zinc-500/15 border-zinc-500/40 text-zinc-200"
                           : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
@@ -224,7 +205,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                 <p className="mt-2 text-[12px] text-zinc-500">
                   {TOPICS.find((t) => t.id === form.topic)?.hint}
                 </p>
-              </div>
+              </fieldset>
 
               <Field label="What went wrong?" htmlFor="message">
                 <textarea
@@ -254,7 +235,7 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
                 <button
                   type="submit"
                   disabled={state.kind === "submitting"}
-                  className="inline-flex items-center gap-2 rounded-full bg-[#f54e00] px-5 py-2.5 text-[13px] font-medium text-white hover:bg-[#ff641f] transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="public-contact-primary disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                   {state.kind === "submitting" ? "Sending…" : "Send →"}
                 </button>
@@ -265,10 +246,22 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
             </motion.form>
           )}
         </AnimatePresence>
+        </div>
+        <aside className="public-contact-help" aria-labelledby="contact-context">
+          <p className="public-feature-eyebrow">A useful starting point</p>
+          <h2 id="contact-context">Keep the context.<br /><span>Leave out secrets.</span></h2>
+          <p>Include your app version, the step you reached, and the error or behavior you saw.</p>
+          <p>Never include a password, token, or cloud secret.</p>
+          <div className="public-contact-guide-links">
+            <Link href="/docs">Browse the documentation <span aria-hidden="true">↗</span></Link>
+            <Link href="/download">Check installation help <span aria-hidden="true">↗</span></Link>
+            <Link href="/docs/security-model">Read the security model <span aria-hidden="true">↗</span></Link>
+          </div>
+        </aside>
       </section>
 
       <style>{`
-        .form-input {
+        .public-contact-page .form-input {
           width: 100%;
           border-radius: 12px;
           border: 1px solid rgba(255,255,255,0.08);
@@ -279,9 +272,9 @@ export function ContactClient({ intent, prefill }: { intent?: ContactIntent; pre
           outline: none;
           transition: border-color 0.15s, background 0.15s;
         }
-        .form-input::placeholder { color: rgba(161,161,170,0.6); }
-        .form-input:focus {
-          border-color: rgba(245,78,0,0.6);
+        .public-contact-page .form-input::placeholder { color: rgb(133,133,133); }
+        .public-contact-page .form-input:focus {
+          border-color: rgba(191,189,182,0.65);
           background: rgba(255,255,255,0.04);
         }
       `}</style>

@@ -31,9 +31,9 @@ function fmtDate(iso: string): string {
 
 const CAT_TONE: Record<string, string> = {
   "Product Updates":    "text-zinc-300",
-  "Engineering":        "text-orange-300",
+  "Engineering":        "text-zinc-300",
   "Industry Insights":  "text-zinc-400",
-  "Trust & Security":   "text-orange-200",
+  "Trust & Security":   "text-zinc-300",
 };
 
 export default async function BlogPostPage({ params }: Params) {
@@ -44,59 +44,54 @@ export default async function BlogPostPage({ params }: Params) {
   const others = getAllPosts().filter((p) => p.slug !== post.slug).slice(0, 3);
 
   return (
-    <div className="min-h-screen bg-brand-ink text-white relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-0 left-1/2 h-[460px] w-[760px] -translate-x-1/2 rounded-full bg-orange-500/6 blur-[150px]" />
-      </div>
-
+    <div className="axiom-canvas min-h-screen text-white relative">
       <Navigation />
 
-      <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-20">
+      <main className="relative mx-auto max-w-[1240px] px-5 pt-32 pb-20 sm:px-10">
         {/* Back link */}
-        <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] font-mono text-zinc-500 hover:text-brand-coral transition-colors mb-10">
+        <Link href="/blog" className="inline-flex items-center gap-1.5 text-[12px] font-mono text-zinc-400 hover:text-white transition-colors mb-10">
           ← Back to blog
         </Link>
 
-        {/* Header — Axiom numbered eyebrow + coral underline */}
-        <header className="mb-12">
-          <div className="flex items-center gap-3 mb-5 text-[11px] font-mono uppercase tracking-[0.18em]">
+        {/* Article header */}
+        <header className="mx-auto mb-12 max-w-[70ch]">
+          <div className="flex flex-wrap items-center gap-3 mb-5 text-xs font-mono uppercase tracking-[0.18em]">
             <span className={CAT_TONE[post.category] ?? "text-zinc-400"}>{post.category}</span>
             <span className="text-zinc-700">·</span>
-            <span className="text-zinc-500">{fmtDate(post.publishedAt)}</span>
+            <span className="text-zinc-400">{fmtDate(post.publishedAt)}</span>
             <span className="text-zinc-700">·</span>
-            <span className="text-zinc-500">{post.readMinutes} min read</span>
+            <span className="text-zinc-400">{post.readMinutes} min read</span>
           </div>
-          <h1 className="relative text-4xl md:text-5xl font-bold tracking-[-0.04em] leading-[1.05] mb-6 pl-5">
-            <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-linear-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
+          <h1 className="text-[clamp(2.5rem,4.2vw,3.5rem)] font-normal tracking-[-0.045em] leading-[1.05] mb-6 [overflow-wrap:anywhere]">
             {post.title}
           </h1>
           <p className="text-lg text-zinc-400 leading-relaxed mb-8">
             {post.excerpt}
           </p>
           <div className="flex items-center gap-3 pb-8 border-b border-white/6">
-            <div className="w-10 h-10 rounded-full bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-sm font-bold">
+            <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-sm font-bold">
               {post.author.name.split(" ").map((s) => s[0]).join("").slice(0, 2)}
             </div>
             <div>
               <p className="text-sm font-semibold text-white">{post.author.name}</p>
-              <p className="text-xs text-zinc-500">{post.author.role}</p>
+              <p className="text-xs text-zinc-400">{post.author.role}</p>
             </div>
           </div>
         </header>
 
         {/* Body */}
-        <article className="article-body max-w-none">
+        <article className="article-body mx-auto max-w-[70ch] [overflow-wrap:anywhere]">
           {post.body.map((block, i) => {
             if (block.startsWith("## ")) {
               return (
-                <h2 key={i} className="text-2xl font-bold tracking-tight text-white mt-12 mb-4">
+                <h2 key={i} className="text-2xl font-medium tracking-tight text-white mt-12 mb-4">
                   {block.replace(/^##\s+/, "")}
                 </h2>
               );
             }
             if (block.startsWith("### ")) {
               return (
-                <h3 key={i} className="text-lg font-bold tracking-tight text-white mt-8 mb-3">
+                <h3 key={i} className="text-lg font-medium tracking-tight text-white mt-8 mb-3">
                   {block.replace(/^###\s+/, "")}
                 </h3>
               );
@@ -108,7 +103,7 @@ export default async function BlogPostPage({ params }: Params) {
                     return <strong key={j} className="text-white font-semibold">{seg.slice(2, -2)}</strong>;
                   }
                   if (seg.startsWith("`") && seg.endsWith("`")) {
-                    return <code key={j} className="px-1.5 py-0.5 rounded-sm bg-white/6 text-orange-300 text-[13px] font-mono">{seg.slice(1, -1)}</code>;
+                    return <code key={j} className="px-1.5 py-0.5 rounded-sm bg-white/6 text-zinc-300 text-[13px] font-mono">{seg.slice(1, -1)}</code>;
                   }
                   return <span key={j}>{seg}</span>;
                 })}
@@ -118,16 +113,14 @@ export default async function BlogPostPage({ params }: Params) {
         </article>
 
         {/* Product CTA */}
-        <section className="surface-frost mt-16 rounded-2xl p-8 text-center">
+        <section className="mx-auto mt-16 max-w-[70ch] rounded-xl border border-white/8 bg-[var(--public-surface)] p-6 text-center sm:p-10">
           <p className="mono-label inline-flex items-center gap-3 mb-4">
-            <span className="text-brand-coral/90 tabular-nums">AX</span>
-            <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
+            <span className="text-zinc-400 tabular-nums">AX</span>
             Try Axiom
           </p>
-          <h3 className="font-display text-2xl md:text-3xl font-bold mb-3 leading-[1.04]">
+          <h3 className="text-2xl md:text-3xl font-medium mb-3 leading-[1.04]">
             <span className="relative inline-block">
               See the governed desktop workflow.
-              <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
             </span>
           </h3>
           <p className="text-sm text-zinc-400 max-w-xl mx-auto mb-6">
@@ -135,10 +128,10 @@ export default async function BlogPostPage({ params }: Params) {
             desktop release. Live actions remain approval-gated.
           </p>
           <div className="inline-flex gap-3 flex-wrap justify-center">
-            <Link href="/demo" className="btn-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-semibold tracking-tight">
+            <Link href="/demo" className="public-feature-action">
               Explore web demo
             </Link>
-            <Link href="/download" className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-sm font-medium tracking-tight">
+            <Link href="/download" className="inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/15 px-5 py-3 text-sm font-medium tracking-tight hover:bg-white/5">
               Download desktop
             </Link>
           </div>
@@ -148,8 +141,7 @@ export default async function BlogPostPage({ params }: Params) {
         {others.length > 0 && (
           <section className="mt-20">
             <p className="mono-label inline-flex items-center gap-3 mb-6">
-              <span className="text-brand-coral/90 tabular-nums">→</span>
-              <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
+              <span className="text-zinc-400 tabular-nums">→</span>
               Keep reading
             </p>
             <div className="grid sm:grid-cols-3 gap-3">
@@ -157,14 +149,14 @@ export default async function BlogPostPage({ params }: Params) {
                 <Link
                   key={p.slug}
                   href={`/blog/${p.slug}`}
-                  className="group surface-glass block rounded-xl p-5 hover:border-brand-coral/25 transition-all"
+                  className="group block rounded-xl border border-white/8 bg-[var(--public-surface)] p-5 hover:border-white/20 transition-colors"
                 >
-                  <div className="flex items-center gap-2 mb-2 text-[9px] font-mono uppercase tracking-[0.18em]">
+                  <div className="flex flex-wrap items-center gap-2 mb-2 text-xs font-mono uppercase tracking-[0.18em]">
                     <span className={CAT_TONE[p.category]}>{p.category}</span>
                     <span className="text-zinc-700">·</span>
-                    <span className="text-zinc-500">{p.readMinutes} min</span>
+                    <span className="text-zinc-400">{p.readMinutes} min</span>
                   </div>
-                  <p className="text-sm font-semibold text-white leading-snug group-hover:text-orange-100 transition-colors">
+                  <p className="text-sm font-semibold text-white leading-snug group-hover:text-white transition-colors">
                     {p.title}
                   </p>
                 </Link>

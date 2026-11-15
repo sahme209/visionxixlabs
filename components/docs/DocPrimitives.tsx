@@ -110,7 +110,7 @@ export function DocHeader({
   number?: string;
 }) {
   return (
-    <header className="relative mb-12">
+    <header className="public-doc-header relative mb-12">
       {kicker && (
         <p className="mb-4 inline-flex items-center gap-3 text-[11px] font-medium uppercase tracking-[0.18em] text-zinc-400">
           <span className="tabular-nums text-zinc-400">{number ?? "—"}</span>

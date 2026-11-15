@@ -1,3 +1,5 @@
+> **Superseded November 15, 2026:** the mounted local presentation now uses direct scenario/stage/story selection with no player controls or automatic story clock. This document and its original bindings are historical. See [the current internal guide](website-manual-illustration-controls-2026-11-15.md) and its source manifest. Nothing here grants customer publication or runtime authority.
+
 # Website scripted tour controls
 
 INTERNAL DRAFT — source-only, unpublished, customer eligible: false. Editorial, authentic media, browser/assistive-technology, native, release and shipped-version acceptance: false. Owner: B4 documentation workstream; no editorial approver assigned. Last source inspection: 2026-11-03, repository HEAD `bd802078c58e59058209c3296470c1c827383ee7`. Whole-file hashes and inclusive source anchors are in [source bindings](../../recovery/2026-11-03/website-scripted-tour-guide/source-bindings.json).

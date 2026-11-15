@@ -12,7 +12,7 @@
  */
 
 import { motion, useReducedMotion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { PageHero } from "@/components/marketing/PageHero";
 
 interface AgentNode {
   id: string;
@@ -73,65 +73,25 @@ function nodeById(id: string): AgentNode | undefined {
 
 export function HowItWorksClient() {
   const reduce = useReducedMotion();
-  const [activeStep, setActiveStep] = useState<number>(reduce ? REVEAL_SEQUENCE.length - 1 : 0);
+  const activeStep = REVEAL_SEQUENCE.length;
 
-  useEffect(() => {
-    if (reduce) return;
-    const id = setInterval(() => {
-      setActiveStep((s) => (s + 1) % (REVEAL_SEQUENCE.length + 2));
-    }, 1400);
-    return () => clearInterval(id);
-  }, [reduce]);
-
-  const liveAgentId = REVEAL_SEQUENCE[Math.min(activeStep, REVEAL_SEQUENCE.length - 1)];
+  const displayStep = reduce ? REVEAL_SEQUENCE.length : activeStep;
+  const liveAgentId = REVEAL_SEQUENCE[Math.min(displayStep, REVEAL_SEQUENCE.length - 1)];
 
   return (
-    <div className="relative">
-      {/* Restrained Axiom atmosphere */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
-        <div className="ambient-drift absolute top-[20%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
-      </div>
-
-      {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mono-label inline-flex items-center gap-3"
-        >
-          <span className="text-brand-coral/90 tabular-nums">HW</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          How Axiom works
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"
-        >
-          Ten agents.{" "}
-          <span className="relative inline-block">
-            One human gate.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[16px] text-zinc-400 leading-relaxed"
-        >
-          Every action moves through a typed agent chain. Each agent has a single
-          job. The council weighs them. The operator approves. The auditor stamps
-          a sha-256 rationale row. Nothing ships without you.
-        </motion.p>
+    <div className="public-detail-page public-how-it-works-page">
+      <section className="public-detail-header">
+        <PageHero eyebrow="Axiom · Control architecture" title="Ten agents." muted="One human gate." lead="Inspect the typed agent chain: each agent has a single job, the council weighs its outputs, the operator reviews the proposal, and the auditor records a SHA-256 rationale row." note="Conceptual communication diagram, not live deployment activity. Complete Governance coverage and activation remain incomplete." />
       </section>
 
       {/* ===== AGENT DIAGRAM ===== */}
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-8">
-        <div className="rounded-3xl border border-white/6 bg-white/2 p-4 md:p-8 overflow-hidden">
-          <div className="aspect-video relative">
+        <div className="public-agent-diagram rounded-3xl border border-white/6 bg-white/2 p-4 md:p-8 overflow-hidden">
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <p className="text-xs text-zinc-400">Illustrated architecture · no actions performed</p>
+
+          </div>
+          <div className="public-agent-diagram-canvas aspect-video relative">
             <svg
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
@@ -144,7 +104,7 @@ export function HowItWorksClient() {
                 const a = nodeById(e.from);
                 const b = nodeById(e.to);
                 if (!a || !b) return null;
-                const activeIdx = Math.min(activeStep, REVEAL_SEQUENCE.length - 1);
+                const activeIdx = Math.min(displayStep, REVEAL_SEQUENCE.length - 1);
                 const lit = NODE_INDEX[e.from] <= activeIdx && NODE_INDEX[e.to] <= activeIdx;
                 return (
                   <motion.line
@@ -155,28 +115,18 @@ export function HowItWorksClient() {
                     strokeLinecap="round"
                     initial={false}
                     animate={{ opacity: lit ? 1 : 0.35 }}
-                    transition={{ duration: 0.4 }}
+                    transition={{ duration: reduce ? 0 : 0.4 }}
                   />
                 );
               })}
 
               {/* Active pulse on the current node */}
-              {nodeById(liveAgentId) && (
-                <motion.circle
-                  cx={nodeById(liveAgentId)!.x}
-                  cy={nodeById(liveAgentId)!.y}
-                  r={3}
-                  fill="rgba(245,78,0,0.35)"
-                  initial={false}
-                  animate={{ r: [3, 6, 3], opacity: [0.6, 0, 0.6] }}
-                  transition={{ duration: 1.4, repeat: Infinity, ease: "easeOut" }}
-                />
-              )}
+
             </svg>
 
             {/* Nodes — absolutely positioned for crisp text */}
             {NODES.map((n) => {
-              const activeIdx = Math.min(activeStep, REVEAL_SEQUENCE.length - 1);
+              const activeIdx = Math.min(displayStep, REVEAL_SEQUENCE.length - 1);
               const lit = NODE_INDEX[n.id] <= activeIdx;
               return (
                 <motion.div
@@ -184,9 +134,9 @@ export function HowItWorksClient() {
                   initial={false}
                   animate={{
                     opacity: lit ? 1 : 0.35,
-                    scale: n.id === liveAgentId ? 1.05 : 1,
+                    scale: reduce ? 1 : n.id === liveAgentId ? 1.05 : 1,
                   }}
-                  transition={{ duration: 0.35 }}
+                  transition={{ duration: reduce ? 0 : 0.35 }}
                   style={{ left: `${n.x}%`, top: `${n.y}%` }}
                   className="absolute -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/8 bg-brand-ink-card px-3 py-1.5 shadow-[0_0_20px_rgba(0,0,0,0.4)]"
                 >
@@ -197,9 +147,9 @@ export function HowItWorksClient() {
             })}
 
             {/* Operator gate overlay — the human approval moment */}
-            {activeStep >= REVEAL_SEQUENCE.length && (
+            {displayStep >= REVEAL_SEQUENCE.length && (
               <motion.div
-                initial={{ opacity: 0, y: -4 }}
+                initial={reduce ? false : { opacity: 0, y: -4 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute top-2 right-2 rounded-full border border-emerald-500/40 bg-emerald-500/10 px-3 py-1 text-[10px] font-mono uppercase tracking-widest text-emerald-300"
               >
@@ -209,14 +159,15 @@ export function HowItWorksClient() {
           </div>
 
           {/* Steps legend */}
-          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-2">
+          <div className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-2" role="list" aria-label="Agent responsibilities">
             {NODES.map((n) => {
-              const lit = NODE_INDEX[n.id] <= Math.min(activeStep, REVEAL_SEQUENCE.length - 1);
+              const lit = NODE_INDEX[n.id] <= Math.min(displayStep, REVEAL_SEQUENCE.length - 1);
               return (
                 <div
                   key={n.id}
+                  role="listitem"
                   className={[
-                    "flex items-center gap-3 px-3 py-2 rounded-lg transition",
+                    "public-agent-legend-row flex items-center gap-3 px-3 py-2 rounded-lg transition",
                     n.id === liveAgentId
                       ? "bg-zinc-500/10 border border-zinc-500/30"
                       : lit
@@ -224,9 +175,9 @@ export function HowItWorksClient() {
                       : "bg-white/1 border border-white/4 opacity-50",
                   ].join(" ")}
                 >
-                  <span className="text-[12px] font-semibold w-32 truncate">{n.label}</span>
+                  <span className="text-[12px] font-semibold w-32 shrink-0">{n.label}</span>
                   <span className="text-[11px] text-zinc-400 flex-1">{n.role}</span>
-                  <span className="text-[10px] font-mono text-zinc-300 hidden sm:inline">{n.emits}</span>
+                  <span className="text-[10px] font-mono text-zinc-300">{n.emits}</span>
                 </div>
               );
             })}
@@ -253,10 +204,10 @@ export function HowItWorksClient() {
           ].map((c) => (
             <motion.div
               key={c.title}
-              initial={{ opacity: 0, y: 16 }}
+              initial={reduce ? false : { opacity: 0, y: 16 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, amount: 0.3 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: reduce ? 0 : 0.6 }}
               className="surface-glass rounded-2xl p-5 hover:border-brand-coral/25 transition-all"
             >
               <p className="text-[13px] font-semibold text-white">{c.title}</p>

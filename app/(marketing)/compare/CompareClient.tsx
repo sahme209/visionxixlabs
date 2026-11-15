@@ -1,254 +1,92 @@
 "use client";
 
-/**
- * /compare — head-to-head coverage matrix.
- *
- * Three tabs reflecting the three buyer alternatives an operator
- * actually weighs: hire the team, glue point AI tools, or stitch
- * a SaaS stack. Each row is a capability and each column is a
- * verdict from a closed union: full | partial | none. Verdicts
- * stay opinionated but defensible — if a row would need
- * hand-waving, leave it off the page.
- */
-
-import { motion } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import {useState} from "react";
+import {PageHero} from "@/components/marketing/PageHero";
 
-type Verdict = "full" | "partial" | "none";
-
-interface Row {
-  capability: string;
-  axiom: Verdict;
-  rival: Verdict;
-  note?: string;
-}
-
-interface CompareTab {
-  id: "team" | "ai_tools" | "saas_stack";
-  label: string;
-  rivalLabel: string;
-  tagline: string;
-  rows: readonly Row[];
-}
-
-const TABS: readonly CompareTab[] = [
+type EvidenceRow = readonly [question:string,axiom:string,alternative:string];
+const OPTIONS = [
   {
-    id: "team",
-    label: "vs hiring the team",
-    rivalLabel: "26-person team",
-    tagline:
-      "Hiring the equivalent disciplines yourself, fully loaded with benefits and equity.",
-    rows: [
-      { capability: "Annual fully-loaded cost",          axiom: "full", rival: "none",    note: "An illustrative ~$2.96M/year for the team. Axiom is free to explore; prepaid AI credits are the only paid part." },
-      { capability: "Time to first proposal",            axiom: "full", rival: "none",    note: "Hours after wiring credentials vs. months of hiring + ramp." },
-      { capability: "Attrition risk on critical paths",  axiom: "full", rival: "none" },
-      { capability: "24/7 coverage across surfaces",     axiom: "full", rival: "partial" },
-      { capability: "Domain depth (security, FinOps…)",  axiom: "full", rival: "full",    note: "Humans win on edge cases; Axiom wins on consistency + 100% recall." },
-      { capability: "Provenance + sha-256 audit rows",   axiom: "full", rival: "partial" },
-      { capability: "Approval-only-no-execution gate",   axiom: "full", rival: "partial", note: "Humans approve their own work without a forcing function." },
-      { capability: "Onboarding cost for net-new hires", axiom: "full", rival: "none" },
-    ],
+    id:"team",label:"A team",alternative:"Your team",lead:"Compare responsibilities and evidence for the work you actually need done.",
+    rows:[
+      ["Cost","Check the current plan, model rates and actual usage. Purchases may be unavailable.","Use your own hiring, compensation, tooling and operating costs."],
+      ["Time to a useful proposal","Measure setup and review time on a representative repository.","Measure onboarding and delivery time for the same bounded task."],
+      ["Continuity","Inspect retained records, authorship and recovery when someone leaves.","Inspect your team's documentation, handoffs and ownership coverage."],
+      ["Availability","Verify the supported workflow, service dependencies and failure behavior.","Check staffing, on-call commitments and escalation arrangements."],
+      ["Domain depth","Test a specific problem with a qualified reviewer. AI output still needs review.","Assess the relevant expertise and who handles unusual cases."],
+      ["Provenance","Inspect the actual audit records and their integrity limits for your version.","Inspect the records retained by your team's process and tools."],
+      ["Independent approval","Verify the exact action, reviewer separation and currently supported gate. Full Governance is incomplete.","Verify the approval policy and how your team enforces separation."],
+      ["Onboarding","Follow the setup guide and check required connections and permissions.","Check training, access provisioning and documentation effort."],
+    ] satisfies readonly EvidenceRow[],
   },
   {
-    id: "ai_tools",
-    label: "vs point AI tools",
-    rivalLabel: "Cursor / Cline / Copilot",
-    tagline:
-      "Editor-resident copilots that pair with a developer. Axiom is an operator surface that pairs with your whole company.",
-    rows: [
-      { capability: "Writes + reviews production code",       axiom: "full", rival: "full" },
-      { capability: "Reads cloud telemetry directly",         axiom: "full", rival: "none" },
-      { capability: "Forms hypotheses about prod incidents",  axiom: "full", rival: "none" },
-      { capability: "Constrained change simulation (not a production rehearsal)", axiom: "partial", rival: "none", note: "Axiom models a proposed change for review; it does not claim an isolated production-equivalent environment." },
-      { capability: "Council voting · ⅔ consensus default",   axiom: "full", rival: "none" },
-      { capability: "Approval packets across surfaces",       axiom: "full", rival: "none" },
-      { capability: "Closed-union verdicts (no any-types)",   axiom: "full", rival: "partial" },
-      { capability: "Durable rationale + replayable audit",   axiom: "full", rival: "none" },
-      { capability: "Pairs cleanly inside an IDE",            axiom: "partial", rival: "full",  note: "Axiom is a cockpit, not a code editor. Use both." },
-    ],
+    id:"ai_tools",label:"AI tools",alternative:"Your chosen AI tool",lead:"Compare the same tool version, permissions, repository and task. Capabilities vary with configuration.",
+    rows:[
+      ["Code changes","Check editing, saving and publishing support in your installed version.","Check the editor, review and publishing workflow you would use."],
+      ["Cloud evidence","Verify supported connector operations and the scope of their access.","Verify available connectors and the permissions each operation needs."],
+      ["Incident analysis","Check evidence freshness, cited sources and uncertainty in the response.","Check the same evidence and uncertainty on the same incident."],
+      ["Change previews","A configuration or simulation preview does not prove a production-equivalent rehearsal.","Establish what the preview actually runs and what remains untested."],
+      ["Decision rules","Inspect the configured decision rules; a model vote is not a human approval.","Inspect the chosen tool's decision and approval boundaries."],
+      ["Approval context","Inspect the proposed action, target, reviewer and expiry in the supported workflow.","Check what the approver sees and which exact effect is authorized."],
+      ["Validation","Check runtime validation as well as types. Compilation is not universal execution admission.","Check validation at the actual tool and execution boundaries."],
+      ["Recorded outcomes","Inspect retained decisions and results. A record does not make an action safe to replay.","Check persistence, outcome verification and handling of uncertain results."],
+      ["IDE integration","Check the cooperative agent gateway and its scopes; it is not an execution sandbox.","Check the native editor experience and external tool boundaries."],
+    ] satisfies readonly EvidenceRow[],
   },
   {
-    id: "saas_stack",
-    label: "vs SaaS stack",
-    rivalLabel: "Datadog + PagerDuty + Snyk + Vanta + Linear + …",
-    tagline:
-      "Six to ten point tools, each with its own bill, glue scripts, and dashboard. Axiom replaces the seams.",
-    rows: [
-      { capability: "Single bill, single contract",            axiom: "full", rival: "none" },
-      { capability: "Unified blast-radius classifier",         axiom: "full", rival: "none" },
-      { capability: "Cross-tool causal timeline",              axiom: "full", rival: "partial" },
-      { capability: "Control-mapping assistance (not certification)", axiom: "partial", rival: "partial", note: "Availability and evidence coverage vary by configured workflow." },
-      { capability: "Approval-gated change guidance",          axiom: "full", rival: "partial", note: "Axiom records governed planning and evidence; production execution remains outside the current product boundary." },
-      { capability: "Council + approval gate across surfaces", axiom: "full", rival: "none" },
-      { capability: "AI-routed free-tier provider fallback",   axiom: "full", rival: "none" },
-      { capability: "Best-in-class APM dashboards",            axiom: "partial", rival: "full",  note: "Datadog dashboards are still gorgeous. Axiom focuses on the verdict, not the dashboard." },
-    ],
+    id:"saas_stack",label:"A SaaS stack",alternative:"Your configured stack",lead:"Compare integration work and verified workflow behavior. A shared interface does not replace every specialist tool.",
+    rows:[
+      ["Total cost","Use the current Axiom rates and the costs of any connected services.","Use actual vendor quotes, usage charges and integration maintenance."],
+      ["Change scope","Inspect classification and policy support for the exact operation.","Inspect each tool's scope, policy and handoff responsibilities."],
+      ["Timeline","Check which records are correlated and whether timestamps and sources are current.","Check how your stack correlates the same source events."],
+      ["Compliance assistance","Control mapping is not certification; verify current evidence coverage.","Verify the controls and evidence actually supplied by each service."],
+      ["Execution and recovery","A proposal or accepted dispatch does not verify execution, health or recovery.","Verify those outcomes through your own configured deployment workflow."],
+      ["Approval boundaries","Inspect current roles, reviewer separation and exact action limits.","Inspect cross-tool roles, approval policy and bypass paths."],
+      ["Model availability","Check enabled providers, rate limits and credits. Do not assume a free fallback.","Check provider availability, model selection and billing limits."],
+      ["Observability","Verify the evidence surfaced by Axiom and retain specialist tools where needed.","Evaluate your required telemetry, dashboards, alerting and retention."],
+    ] satisfies readonly EvidenceRow[],
   },
-];
-
-const VERDICT_STYLE: Record<Verdict, { icon: string; tone: string; label: string }> = {
-  full:    { icon: "✓", tone: "text-emerald-300 bg-emerald-500/10 border-emerald-500/30", label: "covered" },
-  partial: { icon: "~", tone: "text-zinc-300  bg-white/10  border-white/30",  label: "partial" },
-  none:    { icon: "·", tone: "text-zinc-500   bg-white/2 border-white/10",       label: "missing" },
-};
+] as const;
 
 export function CompareClient() {
-  const [tab, setTab] = useState<CompareTab["id"]>("team");
-  const active = TABS.find((t) => t.id === tab) ?? TABS[0];
-
-  return (
-    <div className="relative">
-      {/* Restrained Axiom atmosphere */}
-      <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-        <div className="ambient-drift absolute -top-1/4 left-1/3 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
-        <div className="ambient-drift absolute top-[15%] right-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
+  const [selected,setSelected]=useState<string>(OPTIONS[0].id);
+  const active=OPTIONS.find(option=>option.id===selected)??OPTIONS[0];
+  return <div className="public-detail-page public-compare-page">
+    <section className="public-detail-header">
+      <PageHero eyebrow="Axiom · Evaluation" title="Compare the evidence." muted="Choose for your workflow."
+        lead="Use concrete questions to evaluate Axiom alongside a team, an AI tool or your current stack."
+        note="This is an evaluation checklist, not a measured benchmark or a claim of feature parity. Verify the current version and your configured permissions." />
+    </section>
+    <section className="pb-12">
+      <div role="group" aria-label="Choose an alternative" className="flex flex-wrap gap-2">
+        {OPTIONS.map(option=><button key={option.id} type="button" aria-pressed={option.id===selected} onClick={()=>setSelected(option.id)}
+          className="min-h-11 rounded-lg border border-white/10 px-4 py-2 text-sm text-zinc-300 hover:bg-white/5">{option.label}</button>)}
       </div>
-
-      {/* ===== HERO ===== */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pt-24 pb-8">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mono-label inline-flex items-center gap-3"
-        >
-          <span className="text-brand-coral/90 tabular-nums">CM</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Buyer-honest comparison
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"
-        >
-          Compare —{" "}
-          <span className="relative inline-block">
-            three alternatives, side by side.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-[88%] rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[15px] text-zinc-400 leading-relaxed"
-        >
-          Every row below is a capability a buyer asks about within the first
-          thirty minutes. Where the alternative wins, we say so — Axiom is a
-          cockpit, not a religion.
-        </motion.p>
-      </section>
-
-      {/* ===== TABS ===== */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pb-6">
-        <div className="flex flex-wrap gap-2">
-          {TABS.map((t) => (
-            <button
-              key={t.id}
-              type="button"
-              onClick={() => setTab(t.id)}
-              className={[
-                "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition border",
-                tab === t.id
-                  ? "bg-orange-500/15 border-orange-500/40 text-orange-200"
-                  : "bg-white/2 border-white/6 text-zinc-400 hover:text-white hover:bg-white/5",
-              ].join(" ")}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-        <p className="mt-4 text-[13px] text-zinc-500 max-w-2xl leading-relaxed">{active.tagline}</p>
-      </section>
-
-      {/* ===== MATRIX ===== */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pb-12">
-        <motion.div
-          key={active.id}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="surface-glass overflow-hidden rounded-2xl"
-        >
-          {/* header */}
-          <div className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] border-b border-white/6 bg-white/2 px-4 py-3 text-[11px] font-mono uppercase tracking-widest text-zinc-400">
-            <span>Capability</span>
-            <span className="text-center text-zinc-300">Axiom</span>
-            <span className="text-center text-zinc-300">{active.rivalLabel}</span>
-          </div>
-          {/* rows */}
-          {active.rows.map((row, i) => (
-            <motion.div
-              key={row.capability}
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.25, delay: Math.min(i * 0.025, 0.2) }}
-              className="grid grid-cols-[1fr_110px_110px] md:grid-cols-[1fr_140px_140px] items-start gap-3 border-b border-white/4 px-4 py-3 last:border-b-0 hover:bg-white/2 transition"
-            >
-              <div>
-                <p className="text-[13.5px] text-white">{row.capability}</p>
-                {row.note ? (
-                  <p className="mt-1 text-[11.5px] text-zinc-500 leading-snug">{row.note}</p>
-                ) : null}
-              </div>
-              <Cell verdict={row.axiom} />
-              <Cell verdict={row.rival} />
-            </motion.div>
-          ))}
-        </motion.div>
-      </section>
-
-      {/* ===== LEGEND ===== */}
-      <section className="relative z-10 mx-auto max-w-5xl px-6 md:px-10 pb-12">
-        <div className="flex flex-wrap gap-3 text-[11px] text-zinc-400">
-          {(Object.keys(VERDICT_STYLE) as Verdict[]).map((v) => (
-            <span key={v} className={["inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1", VERDICT_STYLE[v].tone].join(" ")}>
-              <span className="font-mono">{VERDICT_STYLE[v].icon}</span>
-              <span className="font-mono uppercase tracking-widest text-[10px]">{VERDICT_STYLE[v].label}</span>
-            </span>
-          ))}
-        </div>
-      </section>
-
-      {/* ===== CLOSER ===== */}
-      <section className="relative z-10 mx-auto max-w-3xl px-6 md:px-10 py-16 text-center">
-        <h3 className="text-xl md:text-2xl font-semibold tracking-tight">
-          Comparing on dashboards alone misses the point.
-        </h3>
-        <p className="mt-3 text-zinc-400 text-[14px]">
-          Compare the exact released workflow, connector configuration, authorization,
-          persistence, and recovery behavior—not a generic feature count.
-        </p>
-        <div className="mt-6 flex items-center justify-center gap-2">
-          <Link
-            href="/plans"
-            className="inline-flex items-center gap-2 rounded-full bg-zinc-500 px-4 py-2 text-[12.5px] font-medium text-white shadow-[0_0_20px_rgba(245,78,0,0.45)] hover:bg-zinc-400 transition"
-          >
-            See plans
-          </Link>
-          <Link
-            href="/faq"
-            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/3 px-4 py-2 text-[12.5px] font-medium text-zinc-200 hover:bg-white/[0.07] transition"
-          >
-            Read the FAQ
-          </Link>
-        </div>
-      </section>
-    </div>
-  );
-}
-
-function Cell({ verdict }: { verdict: Verdict }) {
-  const style = VERDICT_STYLE[verdict];
-  return (
-    <div className="flex justify-center">
-      <span
-        title={style.label}
-        className={["inline-flex h-7 w-7 items-center justify-center rounded-full border text-[13px] font-mono", style.tone].join(" ")}
-      >
-        {style.icon}
-      </span>
-    </div>
-  );
+      <p className="my-6 max-w-2xl text-sm leading-6 text-zinc-400">{active.lead}</p>
+      <p id="comparison-scroll-hint" className="mb-3 text-xs leading-5 text-zinc-400">Scroll horizontally to compare all columns. With the table focused, use Left and Right, or Home and End.</p>
+      <div role="region" aria-label="Evaluation checklist" aria-describedby="comparison-scroll-hint" tabIndex={0}
+        onKeyDown={event=>{
+          if(event.target!==event.currentTarget || event.altKey || event.ctrlKey || event.metaKey || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode===229) return;
+          const frame=event.currentTarget;
+          const max=Math.max(0,frame.scrollWidth-frame.clientWidth);
+          if(!max) return;
+          const next=event.key==="ArrowLeft" ? frame.scrollLeft-80 : event.key==="ArrowRight" ? frame.scrollLeft+80 : event.key==="Home" ? 0 : event.key==="End" ? max : null;
+          if(next===null) return;
+          event.preventDefault();
+          frame.scrollLeft=Math.max(0,Math.min(max,next));
+        }}
+        className="public-comparison-frame rounded-xl border border-white/10 bg-[#171615]">
+        <table className="public-evaluation-table w-full text-left">
+          <caption className="sr-only">Questions for Axiom and {active.alternative}</caption>
+          <thead><tr><th scope="col">Evaluate</th><th scope="col">Axiom evidence to inspect</th><th scope="col">{active.alternative}</th></tr></thead>
+          <tbody>{active.rows.map(([question,axiom,alternative])=><tr key={question}><th scope="row">{question}</th><td>{axiom}</td><td>{alternative}</td></tr>)}</tbody>
+        </table>
+      </div>
+    </section>
+    <section className="pb-20">
+      <h2 className="text-2xl">Try one representative workflow.</h2>
+      <p className="mt-4 max-w-2xl text-sm leading-6 text-zinc-400">Compare the exact released workflow, connector configuration, authorization, persistence and recovery behavior. Use the same task and evidence for each option.</p>
+      <div className="mt-6 flex flex-wrap gap-6"><Link href="/plans" className="orbit-primary">See plans</Link><Link href="/faq" className="orbit-secondary">Read the FAQ</Link></div>
+    </section>
+  </div>;
 }

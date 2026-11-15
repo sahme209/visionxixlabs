@@ -6,16 +6,15 @@ import { Footer } from "../../components/Footer";
 
 export default function TermsOfServicePage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      <div className="absolute inset-0 bg-dots opacity-10 pointer-events-none" aria-hidden />
+    <div className="axiom-canvas public-reading-page min-h-screen text-white relative overflow-hidden">
       <div className="absolute -top-40 left-0 w-96 h-96 rounded-full bg-amber-600/5 blur-[120px] pointer-events-none" aria-hidden />
       <Navigation />
 
       <main className="max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-16">
-        <div className="rounded-2xl border border-white/6 bg-white/2 backdrop-blur-sm p-8 md:p-12">
+        <div className="public-reading-content">
           {/* Header */}
-          <div className="text-center mb-12">
-            <DocumentTextIcon className="h-14 w-14 text-orange-400 mx-auto mb-4" />
+          <div className="public-reading-heading mb-12">
+            <DocumentTextIcon className="h-8 w-8 text-slate-400 mb-5" />
             <h1 className="text-4xl md:text-5xl font-bold mb-4">
               Terms of Service
             </h1>

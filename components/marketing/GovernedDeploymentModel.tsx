@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState } from "react";
+import { useId, useState } from "react";
 import {
   FLOW_SCENARIOS,
   FLOW_STATIONS,
@@ -11,8 +11,6 @@ import {
   type FlowScenarioId,
   type FlowStationState,
 } from "@/lib/marketing/governedFlowModel";
-import type { GovernedSceneHandle } from "./governedScene/createGovernedScene";
-import { forced3d, prefersReducedMotion, supportsWebGL } from "./webglSupport";
 
 const STATE_TEXT: Record<FlowStationState, string> = {
   passed: "Passed", current: "In progress", pending: "Waiting", blocked: "Blocked", warning: "Needs attention", unreached: "Not reached",
@@ -28,63 +26,13 @@ export function GovernedDeploymentModel() {
   const id = useId();
   const [scenarioId, setScenarioId] = useState<FlowScenarioId>("approved");
   const scenario = flowScenario(scenarioId);
-  const [reached, setReached] = useState(scenario.stop);
   const [selected, setSelected] = useState(3);
-  const [playing, setPlaying] = useState(true);
-  const [mode, setMode] = useState<"pending" | "3d" | "2d">("pending");
-  const [reducedMotion, setReducedMotion] = useState(false);
-  const frameRef = useRef<HTMLDivElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const sceneRef = useRef<GovernedSceneHandle | null>(null);
+  const choose = (index: number) => setSelected(index);
 
-  useEffect(() => {
-    setReducedMotion(prefersReducedMotion());
-    const force = forced3d();
-    if ((!force && !supportsWebGL()) || typeof IntersectionObserver === "undefined") { setMode("2d"); return; }
-    let cancelled = false;
-    const frame = frameRef.current;
-    if (!frame) return;
-    const load = new IntersectionObserver((entries) => {
-      if (!entries.some((e) => e.isIntersecting)) return;
-      load.disconnect();
-      import("./governedScene/createGovernedScene")
-        .then(({ createGovernedScene }) => {
-          if (cancelled || !canvasRef.current) return;
-          sceneRef.current = createGovernedScene(canvasRef.current, {
-            reducedMotion: prefersReducedMotion(),
-            frameGuard: !force,
-            onReached: (k) => setReached(k),
-            onSelect: (i) => { flyOnSelect.current = true; setSelected(i); },
-            onTooSlow: () => { sceneRef.current?.dispose(); sceneRef.current = null; setMode("2d"); },
-          });
-          setMode("3d");
-        })
-        .catch(() => { if (!cancelled) setMode("2d"); });
-    }, { rootMargin: "300px" });
-    load.observe(frame);
-    const visibility = new IntersectionObserver((entries) => sceneRef.current?.setVisible(entries.some((e) => e.isIntersecting)));
-    visibility.observe(frame);
-    return () => {
-      cancelled = true; load.disconnect(); visibility.disconnect();
-      sceneRef.current?.dispose(); sceneRef.current = null;
-    };
-  }, []);
-
-  useEffect(() => {
-    if (sceneRef.current) sceneRef.current.setScenario(scenario);
-    else setReached(scenario.stop);
-  }, [scenario, mode]);
-  useEffect(() => { sceneRef.current?.setPlaying(playing); }, [playing, mode]);
-  // Fly the camera only after the visitor picks a stage; until then the scene keeps its overview.
-  const flyOnSelect = useRef(false);
-  const choose = (index: number) => { flyOnSelect.current = true; setSelected(index); };
-  useEffect(() => { sceneRef.current?.select(selected, flyOnSelect.current); }, [selected, mode]);
-
-  const shown = Math.max(0, reached);
+  const shown = scenario.stop;
   const gauges = flowGauges(scenario, shown);
   const log = flowAuditLog(scenario, shown);
   const station = FLOW_STATIONS[selected];
-  const canAnimate = mode === "3d" && !reducedMotion;
 
   const stateDot: Record<FlowStationState, string> = {
     passed: "bg-emerald-300", current: "bg-white", pending: "bg-sky-300/70", blocked: "bg-rose-400", warning: "bg-amber-300", unreached: "bg-zinc-700",
@@ -100,31 +48,20 @@ export function GovernedDeploymentModel() {
         </p>
       </div>
 
-      <div className="mt-12 overflow-hidden rounded-2xl border border-white/8 bg-[#03050a] shadow-[0_40px_120px_-40px_rgba(111,195,255,0.18)]">
+      <div className="mt-12 overflow-hidden rounded-2xl border border-white/8 bg-[#0a0908]">
         <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/8 px-4 py-4 sm:px-5">
-          <div role="group" aria-label="Scenario" className="flex flex-wrap gap-1 rounded-full border border-white/10 bg-black/50 p-1 backdrop-blur-sm">
+          <div role="group" aria-label="Scenario" className="flex flex-wrap gap-2">
             {FLOW_SCENARIOS.map((s) => (
               <button key={s.id} type="button" aria-pressed={s.id === scenarioId} onClick={() => setScenarioId(s.id)}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors sm:text-sm ${s.id === scenarioId ? "bg-white text-zinc-950" : "text-zinc-300 hover:text-white"}`}>
+                className={`min-h-11 rounded-lg px-3.5 py-2 text-xs font-medium transition-colors sm:text-sm ${s.id === scenarioId ? "bg-white text-zinc-950" : "text-zinc-300 hover:text-white"}`}>
                 {s.label}
               </button>
             ))}
           </div>
-          <div className="flex gap-1">
-            {canAnimate && (
-              <button type="button" onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pause model" : "Play model"}
-                className="rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-zinc-200 backdrop-blur-sm hover:text-white sm:text-sm">{playing ? "Pause" : "Play"}</button>
-            )}
-            {mode === "3d" && (
-              <button type="button" onClick={() => sceneRef.current?.overview()} className="rounded-full border border-white/10 bg-black/50 px-3 py-1.5 text-xs text-zinc-200 backdrop-blur-sm hover:text-white sm:text-sm">Overview</button>
-            )}
-          </div>
         </div>
 
-        <div ref={frameRef} className={mode === "3d" ? "relative h-[420px] sm:h-[560px]" : "relative h-auto"}>
-          <canvas ref={canvasRef} aria-hidden="true" className={`h-full w-full ${mode === "3d" ? "block cursor-grab" : "hidden"}`} />
-          {mode !== "3d" && (
-            <ol aria-label="Stages in this scenario" className="grid grid-cols-1 gap-3 px-4 py-8 sm:grid-cols-2 sm:px-5 lg:grid-cols-4">
+        <div>
+          <ol aria-label="Stages in this scenario" className="grid grid-cols-1 gap-3 px-4 py-8 sm:grid-cols-2 sm:px-5 lg:grid-cols-4">
               {FLOW_STATIONS.map((s, i) => {
                 const state = flowStationState(scenario, i, shown);
                 return (
@@ -135,7 +72,6 @@ export function GovernedDeploymentModel() {
                 );
               })}
             </ol>
-          )}
         </div>
 
         <div className="space-y-4 border-t border-white/8 px-4 py-4 sm:px-5">
@@ -169,7 +105,7 @@ export function GovernedDeploymentModel() {
       </dl>
 
       <div className="mt-3 grid gap-3 lg:grid-cols-[3fr_2fr]">
-        <section id={`${id}-inspector`} aria-label={station.name} className="overflow-hidden rounded-xl border border-white/8 bg-[#07090d]">
+        <section id={`${id}-inspector`} aria-label={station.name} className="overflow-hidden rounded-xl border border-white/8 bg-[#0a0908]">
           <div className="flex items-center justify-between gap-3 border-b border-white/6 px-5 py-3">
             <h3 className="text-sm font-medium text-white"><span className="font-mono text-zinc-500">{String(selected + 1).padStart(2, "0")}</span> {station.name}</h3>
             <span className="truncate font-mono text-[11px] text-zinc-500">{station.systems}</span>
@@ -196,7 +132,7 @@ export function GovernedDeploymentModel() {
             </div>
           </div>
         </section>
-        <section aria-label="Audit stream" className="overflow-hidden rounded-xl border border-white/8 bg-[#07090d]">
+        <section aria-label="Audit stream" className="overflow-hidden rounded-xl border border-white/8 bg-[#0a0908]">
           <div className="flex items-center justify-between border-b border-white/6 px-5 py-3">
             <h3 className="text-sm font-medium text-white">Audit stream</h3>
             <span className="font-mono text-[11px] text-zinc-500">sample · illustrative ids</span>

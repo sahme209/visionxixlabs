@@ -7,7 +7,7 @@ import pointerObservation from './fixtures/ownedWebsitePointerObservation.cjs';
 import transport from './fixtures/ownedWebsiteSession.cjs';
 import managedNodePath from './fixtures/ownedWebsiteManagedNodePath.cjs';
 function pointerForControl(label) {
-  const controls = label === 'Essential only' ? document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')?.querySelectorAll('button') ?? [] : document.querySelectorAll('#product-tour button, #product-tour a');
+  const controls = label === 'Essential only' ? document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')?.querySelectorAll('button') ?? [] : label === 'Inspect deployment scenarios and stages' ? document.querySelectorAll('#deployment-model > summary') : label === 'Unknown outcome' ? document.querySelectorAll('#deployment-model button') : document.querySelectorAll('#product-tour button, #product-tour a');
   const element = [...controls].find(el => (el.getAttribute('aria-label') ?? el.textContent.trim()) === label);
   if (!element || element.disabled) throw Error('missing_control');
   const measurement = label === 'Read approval workflow' ? Object.getOwnPropertyDescriptor(window, '__axiomPointerMeasure') : null;
@@ -52,11 +52,12 @@ function readDocumentationClickProbe() {
   return descriptor && Object.hasOwn(descriptor, 'value') ? descriptor.value : null;
 }
 function controlToken(label) {
-  return ({ 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control' })[label] ?? 'unclassified';
+  return ({ 'Inspect deployment scenarios and stages': 'product_disclosure', 'Unknown outcome': 'product_unknown', 'Code & review': 'workspace_story', 'Step 1: Choose the working context.': 'context_step', 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control' })[label] ?? 'unclassified';
 }
-function isHomepagePlaybackReady() {
-  const play = document.querySelector('[aria-label="Play story"]');
-  return document.readyState === 'complete' && play instanceof HTMLButtonElement && play.disabled === false;
+function isHomepageManualReady() {
+  const tour = document.querySelector('#product-tour');
+  const step = document.querySelector('#product-tour [aria-label="Story steps"] button');
+  return document.readyState === 'complete' && Boolean(tour) && step instanceof HTMLButtonElement && step.disabled === false && step.getAttribute('aria-current') === 'step';
 }
 function readNextBootstrapMarkers() {
   try {
@@ -212,7 +213,7 @@ try {
   /** @param {string} [preImagePhase] */
   async function waitFor(fn, argument, timeout = 45000, preImagePhase = undefined, onPoll = undefined, observeDocumentation = false) {
     const deadline = Date.now() + timeout;
-    if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
+    if (preImagePhase !== undefined) assert.ok(['homepage_document', 'homepage_manual', 'homepage_playback'].includes(preImagePhase), 'website_dom_diagnostic_phase');
     /** @type {{phase: string, lastDomSnapshot: ReturnType<typeof sanitizePreImageDomSnapshot>, nextMarkers?: ReturnType<typeof sanitizeNextBootstrapMarkers>, scriptCounts?: ReturnType<typeof sanitizeScriptCounts>, predicateExceptionClass?: string} | null} */
     const diagnostic = preImagePhase === undefined ? null : { phase: preImagePhase, lastDomSnapshot: null };
     if (diagnostic) preImageWait = diagnostic;
@@ -229,7 +230,7 @@ try {
   }
   async function viewport(width, reduced = false) { await send('Emulation.setDeviceMetricsOverride', { width, height: 1000, deviceScaleFactor: 1, mobile: width === 360 }); await send('Emulation.setEmulatedMedia', { features: [{ name: 'prefers-reduced-motion', value: reduced ? 'reduce' : 'no-preference' }] }); }
   /** @param {string} [preImagePhase] */
-  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : '#product-tour')), path, 45000, preImagePhase); }
+  async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : path === '/product' ? '#deployment-model' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     currentInteraction = controlToken(label);
     const point = label === 'Read approval workflow'
@@ -239,7 +240,7 @@ try {
     lastInteraction = currentInteraction;
   }
   async function frame(name, selector = '#product-tour') {
-    currentInteraction = ['home-desktop', 'agent-review-desktop', 'terraform-held-desktop', 'product-mobile', 'product-reduced-motion-mobile', 'approval-documentation'].includes(name) ? name : 'unclassified';
+    currentInteraction = ['home-desktop', 'agent-review-desktop', 'terraform-held-desktop', 'product-mobile', 'home-story-reduced-motion-mobile', 'approval-documentation'].includes(name) ? name : 'unclassified';
     assert.ok(images.length < 8); await evaluate(selector => document.querySelector(selector).scrollIntoView({ block: 'start', behavior: 'instant' }), selector); await sleep(150);
     const box = await evaluate(selector => { const r = document.querySelector(selector).getBoundingClientRect(); return { x: r.x + scrollX, y: r.y + scrollY, width: r.width, height: Math.min(r.height, 2400), scale: 1 }; }, selector);
     assert.ok(box.width <= 1440 && box.height <= 2400 && box.width > 0 && box.height > 0, 'website_framebuffer_bound');
@@ -249,41 +250,83 @@ try {
     const path = join(directory, 'screenshots', `${name}.png`); writeFileSync(path, bytes, { mode: 0o600 }); images.push({ path, width: box.width, height: box.height });
     lastInteraction = currentInteraction;
   }
-  const state = () => evaluate(() => ({ title: document.querySelector('#product-tour h2').textContent, code: document.querySelector('#product-tour pre')?.innerText ?? '' }));
+  const state = () => evaluate(() => ({ title: document.querySelector('#product-tour h2').textContent, code: document.querySelector('#product-tour pre')?.innerText ?? '', step: document.querySelector('#product-tour [aria-current="step"]')?.getAttribute('aria-label') ?? null }));
   await send('Page.enable'); await send('Runtime.enable'); await send('Log.enable'); await send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   await viewport(1440); await navigate('/', 'homepage_document');
-  await waitFor(isHomepagePlaybackReady, undefined, 45000, 'homepage_playback');
+  await waitFor(isHomepageManualReady, undefined, 45000, 'homepage_manual');
   currentInteraction = 'essential_consent_control';
   await waitFor(() => Boolean(document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]')));
   await click('Essential only');
   await waitFor(() => !document.querySelector('[role="dialog"][aria-labelledby="privacy-consent-title"]'));
   evidence.push('essential_consent_selected');
-  homeCapturePhase = 'playback_ready_after_essential_consent'; await frame('home-desktop');
-  await click('Step 2: Make a small, reviewable edit.'); await click('Play story'); await sleep(700); await click('Pause story');
-  currentInteraction = 'play_pause_check'; const paused = await state(); await sleep(700); assert.deepEqual(await state(), paused); evidence.push('play_pause_preserves_typed_output');
-  await click('Play story'); currentInteraction = 'offscreen_check'; await evaluate(() => scrollTo({ top: document.body.scrollHeight, left: 0, behavior: 'instant' })); await sleep(200); const offscreen = await state(); await sleep(5700); assert.deepEqual(await state(), offscreen); evidence.push('offscreen_timer_stopped');
-  await evaluate(() => document.querySelector('#product-tour').scrollIntoView({ behavior: 'instant' })); await sleep(150); await click('Pause story');
-  await click('Step 3: Review the bounded check.'); await click('Simulate approval'); currentInteraction = 'sample_approval_check'; assert.ok(await evaluate(() => document.querySelector('#product-tour').innerText.includes('Sample decision recorded')));
-  await click('Reject sample'); assert.ok(await evaluate(() => document.querySelector('#product-tour').innerText.includes('Sample rejected'))); evidence.push('sample_approve_reject');
+  homeCapturePhase = 'manual_steps_ready_after_essential_consent'; await frame('home-desktop');
+  currentInteraction = 'manual_controls_check';
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => /^(?:Play|Pause|Replay) story$|^(?:Next|Previous) step$/.test(button.getAttribute('aria-label') ?? button.textContent.trim()))), false);
+  evidence.push('player_controls_absent');
+  await click('Step 2: Make a small, reviewable edit.');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Make a small, reviewable edit.');
+  currentInteraction = 'manual_step_check';
+  const selected = await state();
+  assert.equal(selected.step, 'Step 2: Make a small, reviewable edit.');
+  assert.ok(selected.code.includes('timeoutMs = 8_000') && selected.code.includes('maxAttempts: 3'));
+  evidence.push('direct_step_state');
+  await sleep(700); assert.deepEqual(await state(), selected); evidence.push('manual_idle_state_retained');
+  currentInteraction = 'offscreen_check'; await evaluate(() => scrollTo({ top: document.body.scrollHeight, left: 0, behavior: 'instant' }));
+  await sleep(200); const offscreen = await state(); await sleep(5700); assert.deepEqual(await state(), offscreen); evidence.push('manual_offscreen_state_retained');
+  await click('Step 3: Review the bounded check.'); await click('Simulate approval');
+  currentInteraction = 'sample_approval_check'; await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample decision recorded'));
+  await click('Reject sample'); await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample rejected')); evidence.push('sample_approve_reject');
+  await click('Step 2: Make a small, reviewable edit.'); await click('Step 3: Review the bounded check.');
+  assert.equal(await evaluate(() => /Sample decision recorded|Sample rejected/.test(document.querySelector('#product-tour').innerText)), false); evidence.push('step_clears_sample_decision');
+  await click('Simulate approval');
   currentInteraction = 'branch_keyboard'; const oldBranch = await evaluate(() => { const select = [...document.querySelectorAll('#product-tour select')][1]; select.focus(); return select.value; });
   for (const type of ['keyDown', 'keyUp']) await send('Input.dispatchKeyEvent', { type, key: 'ArrowDown', code: 'ArrowDown', windowsVirtualKeyCode: 40 });
   for (const type of ['keyDown', 'keyUp']) await send('Input.dispatchKeyEvent', { type, key: 'Enter', code: 'Enter', windowsVirtualKeyCode: 13 });
   await waitFor(old => [...document.querySelectorAll('#product-tour select')][1].value !== old, oldBranch, 2000);
-  assert.equal((await state()).title, 'Choose the working context.'); evidence.push('native_branch_selector_resets_story');
-  await click('Replay story'); await sleep(250); await click('Pause story'); assert.equal((await state()).title, 'Choose the working context.'); evidence.push('replay');
-  await click('Step 2: Make a small, reviewable edit.'); await click('Play story');
+  assert.equal((await state()).title, 'Choose the working context.');
+  assert.equal(await evaluate(() => /Sample decision recorded|Sample rejected/.test(document.querySelector('#product-tour').innerText)), false);
+  const changedBranch = await evaluate(() => [...document.querySelectorAll('#product-tour select')][1].value);
+  evidence.push('native_branch_selector_resets_story', 'context_clears_sample_decision');
+  await click('Step 3: Review the bounded check.'); await click('Simulate approval'); await click('Code & review');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Choose the working context.');
+  assert.equal(await evaluate(() => /Sample decision recorded|Sample rejected/.test(document.querySelector('#product-tour').innerText)), false);
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour select')][1].value), changedBranch); evidence.push('current_story_resets_step_and_decision');
+  await click('Step 2: Make a small, reviewable edit.');
   currentInteraction = 'hidden_document_check'; const background = await send('Target.createTarget', { url: 'about:blank' });
   try {
     await send('Target.activateTarget', { targetId: background.targetId }); await waitFor(() => document.hidden, undefined, 2000);
-    const hidden = await state(); await sleep(5700); assert.deepEqual(await state(), hidden); evidence.push('hidden_document_timer_stopped');
+    const hidden = await state(); await sleep(5700); assert.deepEqual(await state(), hidden); evidence.push('manual_hidden_state_retained');
   } finally { await send('Target.closeTarget', { targetId: background.targetId }); await send('Page.bringToFront'); }
-  await click('Pause story');
-  await click('Agent & approval'); await click('Step 3: Decide on the exact action.'); await frame('agent-review-desktop');
-  await click('Terraform & cloud'); await click('Step 3: Keep the release on hold.'); currentInteraction = 'terraform_guard_check'; assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => /apply|Simulate approval/i.test(button.textContent))), false); await frame('terraform-held-desktop'); evidence.push('terraform_apply_absent');
-  await viewport(360); await navigate('/product'); await click('Step 2: Make a small, reviewable edit.');
-  currentInteraction = 'mobile_overflow_check'; assert.ok(await evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'website_mobile_overflow'); await frame('product-mobile'); evidence.push('mobile_360_no_horizontal_overflow');
-  await click('Next step'); currentInteraction = 'keyboard_previous_check'; await send('Input.dispatchKeyEvent', { type: 'keyDown', key: 'ArrowLeft', code: 'ArrowLeft' }); await send('Input.dispatchKeyEvent', { type: 'keyUp', key: 'ArrowLeft', code: 'ArrowLeft' }); assert.equal((await state()).title, 'Make a small, reviewable edit.'); evidence.push('keyboard_previous');
-  await viewport(360, true); await navigate('/product'); await waitFor(() => document.querySelector('[aria-label="Play story"]').disabled); await click('Next step'); await frame('product-reduced-motion-mobile'); evidence.push('reduced_motion_static_manual_step');
+  await click('Agent & approval');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Attach context to the request.');
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour select')][1].value), changedBranch); evidence.push('story_retains_context');
+  await click('Step 3: Decide on the exact action.'); await click('Simulate approval'); await frame('agent-review-desktop');
+  await click('Terraform & cloud');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Start with a configuration preview.');
+  assert.equal(await evaluate(() => /Sample decision recorded|Sample rejected/.test(document.querySelector('#product-tour').innerText)), false); evidence.push('story_clears_sample_decision');
+  await click('Step 3: Keep the release on hold.'); currentInteraction = 'terraform_guard_check'; assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => /apply|Simulate approval/i.test(button.textContent))), false); await frame('terraform-held-desktop'); evidence.push('terraform_apply_absent');
+  await viewport(360); await navigate('/'); await waitFor(isHomepageManualReady, undefined, 45000, 'homepage_manual');
+  await click('Step 2: Make a small, reviewable edit.'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Make a small, reviewable edit.');
+  currentInteraction = 'mobile_overflow_check'; assert.ok(await evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'website_mobile_overflow'); evidence.push('mobile_360_no_horizontal_overflow');
+  await click('Step 3: Review the bounded check.'); currentInteraction = 'keyboard_manual_check';
+  await evaluate(() => document.querySelector('#product-tour [aria-label="Story steps"] [aria-current="step"]').focus());
+  async function storyKey(key) { for (const type of ['keyDown', 'keyUp']) await send('Input.dispatchKeyEvent', { type, key, code: key }); }
+  await storyKey('ArrowLeft'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Make a small, reviewable edit.');
+  await storyKey('Home'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Choose the working context.');
+  await storyKey('Home'); assert.equal((await state()).title, 'Choose the working context.');
+  await storyKey('End'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Review before publishing.');
+  await storyKey('End'); await storyKey('ArrowRight'); assert.equal((await state()).title, 'Review before publishing.');
+  await storyKey('ArrowLeft'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Read the check output.');
+  await storyKey('ArrowRight'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Review before publishing.'); evidence.push('keyboard_manual_step_bounds');
+  await navigate('/product'); await click('Inspect deployment scenarios and stages');
+  await waitFor(() => document.querySelector('#deployment-model').open === true);
+  await click('Unknown outcome');
+  await waitFor(() => [...document.querySelectorAll('#deployment-model button')].some(button => button.textContent.trim() === 'Unknown outcome' && button.getAttribute('aria-pressed') === 'true'));
+  currentInteraction = 'product_disclosure_check'; assert.ok(await evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'website_mobile_overflow');
+  await frame('product-mobile', '#deployment-model'); evidence.push('product_disclosure_and_scenario');
+  await viewport(360, true); await navigate('/'); await waitFor(isHomepageManualReady, undefined, 45000, 'homepage_manual');
+  await click('Step 2: Make a small, reviewable edit.'); await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Make a small, reviewable edit.');
+  const reduced = await state(); await sleep(700); assert.deepEqual(await state(), reduced); await frame('home-story-reduced-motion-mobile'); evidence.push('reduced_motion_static_manual_step');
   await viewport(1440);
   documentationTiming = { startedMs: driverElapsedMs(), clickCompletedMs: null, preWaitCompletedMs: null, lastPollMs: null, pollCount: 0, observedMs: null };
   await evaluate(installDocumentationClickProbe);

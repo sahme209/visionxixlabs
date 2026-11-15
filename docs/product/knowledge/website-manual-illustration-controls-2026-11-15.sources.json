@@ -1,0 +1,79 @@
+{
+  "status": "INTERNAL SOURCE GUIDE",
+  "customerEligible": false,
+  "retrievalEligible": false,
+  "publicationApproved": false,
+  "humanEditorialOwner": null,
+  "baseHead": "93302541e4d02ff06f5daedb3a19fdd993ac005f",
+  "sourceKind": "Uncommitted local source; baseHead is ancestry only",
+  "scope": "Current static hero, manual model/story controls and native-scroll depth; old orbital scenes and player hooks are unmounted historical work; evaluation checklist keyboard control",
+  "renderedAcceptance": false,
+  "runtimeHelpBindingInstalled": false,
+  "sources": [
+    {
+      "path": "app/page.tsx",
+      "sha256": "7a726d6a93b4830dee3eebc1af56872c641ad665f801b5961031bbf9b6141de0"
+    },
+    {
+      "path": "app/demo/page.tsx",
+      "sha256": "72e8933e9922f53a3b16eb09c56bdeba561901fa6506d9f9006ec342c8dcc621"
+    },
+    {
+      "path": "components/marketing/GovernedDeploymentModel.tsx",
+      "sha256": "83d928e32a3e71cd2d8d0e27c59019005320cd68c61c67de8581899dfedf5761"
+    },
+    {
+      "path": "lib/marketing/governedFlowModel.ts",
+      "sha256": "5335ef7aeee6b779b5883996d8d245bc9f159d6c5f0ac15afa68da9e9dba3926"
+    },
+    {
+      "path": "components/marketing/CinematicAxiomDemo.tsx",
+      "sha256": "1c275425c66494ab95b8b4453f3e37a641e5bd8159bddc6ddf327d3a29450818"
+    },
+    {
+      "path": "components/marketing/workflowStories.ts",
+      "sha256": "5e4c06b85a8f8bdd90448dca294bb7d8c0f280a874877d9b5b29006886e472d0"
+    },
+    {
+      "path": "components/marketing/WorkflowStoryScene.tsx",
+      "sha256": "3d5982844001cce87c070663f5dbbfbfcdc21c1a724056fa9d80242c084142fc"
+    },
+    {
+      "path": "components/marketing/PublicFeatureSection.tsx",
+      "sha256": "40d976448f456e31218833c7eee3d1db2d1490ef36156d8530256bd677fe82ae"
+    },
+    {
+      "path": "components/marketing/pipeKit/PipeFlow.tsx",
+      "sha256": "1607f84902b9b2717c473eb1f7be57c1493c75d71c1d05a8ffa6ba217a9c891a"
+    },
+    {
+      "path": "docs/product/knowledge/website-manual-illustration-controls-2026-11-15.md",
+      "sha256": "85934fd6f141036959277b42f950b603ffdb457344c16cdc5c16dc430f8ab17a"
+    },
+    {
+      "path": "app/orbit-public.css",
+      "sha256": "ddcb5d2e3a12ad652d930714ed150353234ca3544c414346c59fafe3366fd2d7"
+    },
+    {
+      "path": "components/marketing/AxiomPublicHero.tsx",
+      "sha256": "7020640b21796645d55fc5a951b2e448a77a5a61b859fd74d00f3350f6fadeb2"
+    },
+    {
+      "path": "components/marketing/DesktopPreviewFrame.tsx",
+      "sha256": "6b2f7abd7b4fe54bd183cfa2528ad6e9062d0511b15378fb1cba89f575a6c7ac"
+    },
+    {
+      "path": "components/Navigation.tsx",
+      "sha256": "d9edf8d0ce351e91a289069294d249eae6cf4eba65ba322794f560efbcdeb91b"
+    },
+    {
+      "path": "app/product/page.tsx",
+      "sha256": "28a9f6cdc48ac72f530b6f321a0fece8639b9741c25f806a830a029c909347ad"
+    },
+    {
+      "path": "app/(marketing)/compare/CompareClient.tsx",
+      "sha256": "6e18bbfdb6d579f187f9cbddbbd2ffe1701e93b138bf457a204fb9ee440023be"
+    }
+  ],
+  "localSourceNote": "Current branded frontend has finite compiled/browser evidence; website pointer/menu/disclosure/fallback checks pass. Separate compiled desktop short-split correction passes. Full rendered/editorial/native/master acceptance remains open."
+}

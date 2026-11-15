@@ -87,13 +87,10 @@ export function DesktopAccessRequiredView({
   }
 
   return (
-    <main className="h-screen w-screen bg-axiom-bg text-white flex items-center justify-center px-6 relative overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none" aria-hidden>
-        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[680px] h-[680px] rounded-full bg-white/8 blur-[150px]" />
-      </div>
-      <div className="relative w-full max-w-lg rounded-2xl border border-white/8 bg-zinc-950/85 p-8 shadow-2xl">
+    <main className="desktop-entry h-screen w-full bg-axiom-bg text-white flex flex-col px-6 py-10 relative overflow-y-auto">
+      <div className="desktop-entry-panel relative m-auto w-full max-w-lg shrink-0 rounded-2xl border border-white/8 bg-axiom-surface p-8 shadow-2xl">
         <div className="flex items-start gap-4">
-          <img src="/axiom-logo.png" alt="" className="h-10 w-10 shrink-0 object-contain" />
+          <img src="/brand/vxix-mark.svg" alt="vxix" className="h-10 w-10 shrink-0 object-contain" />
           <div>
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-emerald-300">Identity verified</p>
             <h1 className="mt-1 text-2xl font-bold">{identity.access.title}</h1>
@@ -114,15 +111,15 @@ export function DesktopAccessRequiredView({
             Request pilot access
           </button>
         )}
-        <button type="button" onClick={() => void checkAgain()} disabled={checking || signingOut} className="mt-3 w-full rounded-full bg-violet-600 px-5 py-3 text-sm font-semibold hover:bg-violet-500 disabled:opacity-60">
+        <button type="button" onClick={() => void checkAgain()} disabled={checking || signingOut} className="mt-3 w-full rounded-full border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold hover:bg-white/10 disabled:opacity-60">
           {checking ? "Checking access…" : "Check access again"}
         </button>
         <div className="mt-4 flex items-center justify-center gap-4 text-xs">
-          <button type="button" onClick={() => void open(`${WEB_BASE}${identity.access.pricingPath}`)} className="text-violet-300 hover:text-violet-200">Review access model</button>
+          <button type="button" onClick={() => void open(`${WEB_BASE}${identity.access.pricingPath}`)} className="text-zinc-300 hover:text-zinc-200">Review access model</button>
           <span className="text-zinc-700">•</span>
           <button type="button" disabled={signingOut} onClick={() => void signOut()} className="text-zinc-400 hover:text-white">Use another account</button>
         </div>
-        <p className="mt-6 text-center text-xs leading-5 text-zinc-600">Creating an account verifies identity only. Deployment operations require a separately provisioned approved pilot or commercial workspace entitlement.</p>
+        <p className="mt-6 text-center text-xs leading-5 text-zinc-400">Creating an account verifies identity only. Deployment operations require a separately provisioned approved pilot or commercial workspace entitlement.</p>
       </div>
     </main>
   );

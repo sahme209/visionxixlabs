@@ -165,12 +165,12 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
   return (
     <div className="settings-workbench relative flex min-h-0 flex-1 bg-axiom-bg">
       <div className="grid min-h-0 flex-1 grid-cols-[200px_minmax(0,1fr)] lg:grid-cols-[240px_minmax(0,1fr)]">
-        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/6 bg-[#18191b] px-3 pb-5 pt-8">
+        <nav aria-label="Settings sections" className="min-h-0 overflow-y-auto border-r border-white/6 bg-axiom-surface px-3 pb-5 pt-8">
           {onClose && <button data-help-id="settings.workspace.back-to-workspace" type="button" onClick={onClose} className="mb-6 flex items-center gap-2 rounded-md px-3 py-2 text-[13px] text-zinc-400 hover:bg-white/4 hover:text-white"><ArrowLeft aria-hidden className="h-4 w-4" />Back to workspace</button>}
           <h1 className="sr-only">Settings</h1>
           <label className="mb-4 flex items-center gap-2 rounded-lg border border-white/8 bg-white/2.5 px-2.5 py-2 text-zinc-500">
             <Search aria-hidden className="h-3.5 w-3.5 shrink-0" />
-            <input data-help-id="settings.workspace.section-search" type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-hidden placeholder:text-zinc-600" />
+            <input data-help-id="settings.workspace.section-search" type="search" aria-label="Search settings" placeholder="Search settings" value={search} onChange={event => setSearch(event.target.value)} className="min-w-0 w-full bg-transparent text-xs text-zinc-200 outline-hidden placeholder:text-zinc-400" />
           </label>
           {search.trim() && !sections.some(section => `${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())) && <p role="status" className="px-3 py-2 text-xs text-zinc-500">No matching settings.</p>}
           {sectionGroups.map(group => {const visible=sections.filter(section=>section.group===group&&(!search.trim()||`${section.label} ${sectionKeywords[section.id]}`.toLowerCase().includes(search.trim().toLowerCase())));return visible.length>0&&<div key={group} role="group" aria-label={group} className="mb-4"><p className="mb-1 px-3 text-[10px] font-medium uppercase tracking-wider text-zinc-500">{group}</p>{visible.map(({ id, label, icon: Icon }) => (
@@ -189,7 +189,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
             </button>
           ))}</div>})}
           <div className="mt-6 border-t border-white/6 pl-3 pt-5">
-            <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-600">Signed in workspace</p>
+            <p className="text-[10px] uppercase tracking-[0.16em] text-zinc-400">Signed in workspace</p>
             <p className="mt-2 truncate text-xs text-zinc-400" title={identity.organizationId}>{identity.organizationId}</p>
             <p className="mt-1 text-[11px] text-emerald-300">Service verified</p>
           </div>
@@ -219,7 +219,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
 
       {showSignOut && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" role="dialog" aria-modal="true" aria-labelledby="sign-out-title">
-          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-[#18191b] p-5 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl border border-white/10 bg-axiom-surface p-5 shadow-2xl">
             <h2 id="sign-out-title" className="text-lg font-semibold">Log out?</h2>
             <p className="mt-2 text-sm leading-6 text-zinc-400">You’ll be logged out of Axiom Agent on this device. Externally running workflows are not canceled.</p>
             <div className="mt-6 flex justify-end gap-3">
@@ -241,7 +241,7 @@ function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits
       <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in Axiom Control." action={<WebButton href="/control/governance" label="Open governance" />} />
       {import.meta.env.DEV && <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button data-help-id="settings.workspace.governance-evidence-preview" type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />}
       {import.meta.env.DEV && <ActionRow title="Execution limits preview" detail="Review or propose limits for an exact saved baseline. Limits do not enable Governance enforcement or provider actions." action={<button data-help-id="governance.execution-limits.entry" type="button" className="btn-secondary" onClick={onOpenExecutionLimits}>Review execution limits preview</button>} />}
-      <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-600">Service verified</span>} />
+      <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-400">Service verified</span>} />
     </Group>
     <Group label="Notifications">
       <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button data-help-id="settings.workspace.notification-test" type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
@@ -369,7 +369,7 @@ function PlanSection({ identity }: { identity: VerifiedDesktopIdentity }) {
         <>
           <div className="flex items-start justify-between gap-5"><div><p className="text-sm text-zinc-200">Manage billing securely</p><p className="mt-1 max-w-xl text-xs leading-5 text-zinc-500">A short-lived portal session opens in Stripe. Card data is never collected by this app.</p></div><button data-help-id="settings.workspace.billing-portal-legacy" type="button" disabled={opening||(identity.role!=="owner"&&identity.role!=="admin")} onClick={() => void openBillingPortal()} className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-black disabled:opacity-50">{opening ? "Opening…" : "Open billing"}</button></div>
           {error && <p role="alert" className="mt-4 text-xs text-red-300">{error}</p>}
-          <p className="mt-4 border-t border-white/6 pt-4 text-[11px] leading-5 text-zinc-600">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
+          <p className="mt-4 border-t border-white/6 pt-4 text-[11px] leading-5 text-zinc-400">A return from Checkout does not grant access by itself. Verified subscription state remains authoritative.</p>
         </>
       )}
     </div>
@@ -385,7 +385,7 @@ function UsageSummaryCard({usage,error}:{usage:DesktopUsageSummary|null;error:st
     <div className="mt-6">
       <p className="mb-2 text-xs text-zinc-500">AI usage this month{usage ? ` (${usage.periodMonth})` : ""}</p>
       {error && <p role="alert" className="text-xs text-red-300">{error}</p>}
-      {!usage && !error && <p className="text-xs text-zinc-600">Loading…</p>}
+      {!usage && !error && <p className="text-xs text-zinc-400">Loading…</p>}
       {allowance&&<div className="mb-4 grid gap-4 sm:grid-cols-2">
         <SummaryCard label="AI allowance remaining" value={allowance.available?money(allowance.includedRemainingCents):"Unavailable"} detail={allowance.available?`${money(allowance.poolCents)} current account allowance · ${money(allowance.heldCents)} held for unresolved requests`:"No zero balance is inferred when the credit service is unavailable"}/>
         <SummaryCard label="Applied paid top-ups" value={allowance.available?money(allowance.addOnCents):"Unavailable"} detail="Only verified paid records increase available credits"/>
@@ -689,9 +689,9 @@ function ModelsSection() {
     <div className="mt-6 overflow-hidden rounded-xl border border-white/[0.07] bg-white/2">
       <div className="border-b border-white/6 p-4">
         <label htmlFor="model-search" className="sr-only">Search models</label>
-        <input data-help-id="settings.workspace.model-search" id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-hidden placeholder:text-zinc-600 focus:border-white/25" />
+        <input data-help-id="settings.workspace.model-search" id="model-search" maxLength={200} value={query} onChange={(event) => { setQuery(event.target.value); setCatalogPage(0); }} placeholder="Add or search model" className="w-full rounded-lg border border-white/10 bg-black/30 px-3 py-2.5 text-sm text-zinc-100 outline-hidden placeholder:text-zinc-400 focus:border-white/25" />
         <div className="mt-3 flex gap-2" role="group" aria-label="Model catalog filters">{[false, true].map(approved => <button data-help-id="settings.workspace.model-filter" key={String(approved)} type="button" aria-pressed={approvedOnly === approved} onClick={() => { setApprovedOnly(approved); setCatalogPage(0); }} className={`rounded-md px-2.5 py-1.5 text-[11px] ${approvedOnly === approved ? "bg-white/10 text-zinc-200" : "text-zinc-500 hover:text-zinc-300"}`}>{approved ? "Approved models" : "All models"}</button>)}</div>
-        <p className="mt-2 text-[11px] text-zinc-600">{installationMode === "offline" ? "The deployment operator manages the local server and token cap. Choose one accepted model; missing or expired verification blocks calls. No cloud fallback." : "Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model."}</p>
+        <p className="mt-2 text-[11px] text-zinc-400">{installationMode === "offline" ? "The deployment operator manages the local server and token cap. Choose one accepted model; missing or expired verification blocks calls. No cloud fallback." : "Gateway supports up to 32 approved models. Agent chat starts with the workspace default; choose another approved model in the composer. Search a model name or catalog ID, including Grok. Other providers retain one active model."}</p>
       </div>
       {installationMode === "offline" && policy?.enabled && <div className="flex justify-end border-b border-white/6 px-4 py-3"><button type="button" disabled={Boolean(savingModel)} onClick={() => void saveModelPolicy({enabled:false,allowedProviders:[],modelSelections:{},fallbackOrder:[]}, "customer_hosted:disable")} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Disable workspace AI</button></div>}
       {providers !== null && loadError === null && unavailableApprovalCount > 0 && <div className="flex items-center justify-between gap-3 border-b border-white/6 p-4 text-xs text-zinc-400"><p>{unavailableApprovalCount} approved Gateway model{unavailableApprovalCount === 1 ? " is" : "s are"} unavailable in the current catalog.</p><button data-help-id="settings.workspace.model-remove-unavailable" type="button" disabled={Boolean(savingModel)} onClick={() => void removeUnavailable()} className="shrink-0 text-zinc-200 underline underline-offset-2 disabled:opacity-45">Remove unavailable approvals</button></div>}
@@ -703,7 +703,7 @@ function ModelsSection() {
         const gatewayDefault = model.provider === "vercel_gateway" && policy?.enabled && policy.modelSelections.vercel_gateway === model.id;
         const key = `${model.provider}:${model.id}`;
         return <div key={key} className="flex items-center justify-between gap-4 border-b border-white/5.5 px-4 py-3.5 last:border-b-0">
-          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}{gatewayDefault && <span className="ml-2 text-[10px] text-orange-300">Workspace default</span>}</p><p className="mt-0.5 text-[11px] text-zinc-600">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.provider === "customer_hosted" ? "Operator-reviewed limits" : model.managed ? "Service-managed legacy route" : model.tier}</p></div>
+          <div className="min-w-0"><p className="text-sm text-zinc-200">{model.label}{gatewayDefault && <span className="ml-2 text-[10px] text-zinc-300">Workspace default</span>}</p><p className="mt-0.5 text-[11px] text-zinc-400">{PROVIDER_LABELS[model.provider] ?? model.provider} · {model.provider === "customer_hosted" ? "Operator-reviewed limits" : model.managed ? "Service-managed legacy route" : model.tier}</p></div>
           <div className="flex shrink-0 items-center gap-3">
             {model.provider === "vercel_gateway" && model.available && enabled && !gatewayDefault && <button data-help-id="settings.workspace.model-make-default" type="button" aria-label={`Make ${model.label} workspace default`} disabled={Boolean(savingModel)} onClick={() => void makeDefault(model.id)} className="text-xs text-zinc-300 underline underline-offset-2 disabled:opacity-45">Make default</button>}
           <button data-help-id="settings.workspace.model-approval-toggle" type="button" role="switch" aria-checked={enabled} aria-label={model.available || model.managed ? `${enabled ? "Disable" : "Enable"} ${model.label}` : `Remove unavailable approval ${model.id}`} disabled={!policy || Boolean(savingModel) || model.provider === "vercel_gateway" && !isConcreteGatewayModelId(model.id) && !enabled} onClick={() => void toggleModel(model.provider, model.id)} className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-45 ${enabled ? "bg-emerald-500" : "bg-zinc-700"}`}>
@@ -720,7 +720,7 @@ function ModelsSection() {
         </div>
       </div>}
     </div>
-    <p className="mt-4 text-[11px] leading-5 text-zinc-600">Removing the Gateway default promotes the first remaining approval; removing its last approval disables Gateway. Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
+    <p className="mt-4 text-[11px] leading-5 text-zinc-400">Removing the Gateway default promotes the first remaining approval; removing its last approval disables Gateway. Credentials remain server-managed and never reach this device. Write actions remain approval-gated regardless of model choice.</p>
   </div>;
 }
 
@@ -1968,7 +1968,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
           ? `${health.status.replaceAll("_", " ")} · ${health.summary.healthy} healthy · ${health.summary.degraded} needs attention · ${health.summary.preview} not yet live.`
           : "Checking the read-only health of connected-system foundations."}
       </p>
-      <p className="mt-2 text-[11px] text-zinc-600">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
+      <p className="mt-2 text-[11px] text-zinc-400">This is integration health only. Production release observation remains unavailable until an observability connection is verified.</p>
     </Disclosure>
     <div className="mt-5 flex flex-wrap items-center gap-3">
       <WebButton href="/account/integrations" label="Manage connections" />
@@ -1986,12 +1986,12 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
 type PreferenceSectionProps = { prefs: DesktopPreferences | null; onSave: (prefs: DesktopPreferences) => Promise<void> };
 type Option = { value: string; label: string };
 
-function SectionHeading({ title, detail }: { title: string; detail: string }) { return <div className="mb-6"><h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p></div>; }
+function SectionHeading({ title, detail }: { title: string; detail: string }) { return <div className="settings-section-heading mb-6"><h2 className="text-lg font-semibold tracking-tight text-white">{title}</h2><p className="mt-1.5 max-w-2xl text-sm leading-6 text-zinc-500">{detail}</p></div>; }
 function Group({ label, children }: { label: string; children: ReactNode }) { return <section className="mb-6"><p className="mb-2 text-xs text-zinc-500">{label}</p><div className="overflow-hidden rounded-lg border border-white/5 bg-white/1.5">{children}</div></section>; }
 function InfoRow({ label, value, mono = false }: { label: string; value: string; mono?: boolean }) { return <div className="flex items-start justify-between gap-8 border-b border-white/4.5 px-4 py-3.5 last:border-b-0"><span className="text-sm text-zinc-400">{label}</span><span className={`max-w-[65%] break-all text-right text-sm text-zinc-200 ${mono ? "font-mono text-xs" : ""}`}>{value}</span></div>; }
 function ActionRow({ title, detail, action }: { title: string; detail: string; action: ReactNode }) { return <div className="flex items-center gap-4 border-b border-white/4.5 px-4 py-3.5 last:border-b-0"><div className="min-w-0 flex-1"><p className="text-sm text-zinc-200">{title}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div>{action}</div>; }
 function ToggleRow({ title, detail, enabled, disabled, onToggle, action }: { title: string; detail: string; enabled: boolean; disabled: boolean; onToggle: () => void; action?: ReactNode }) { return <ActionRow title={title} detail={detail} action={<div className="flex items-center gap-3">{action}<button data-help-id="settings.workspace.preference-toggle" type="button" role="switch" aria-checked={enabled} aria-label={title} disabled={disabled} onClick={onToggle} className={`relative h-6 w-11 shrink-0 rounded-full transition ${enabled ? "bg-emerald-600" : "bg-zinc-700"} disabled:opacity-50`}><span className={`absolute left-1 top-1 h-4 w-4 rounded-full bg-white transition-transform ${enabled ? "translate-x-5" : "translate-x-0"}`} /></button></div>} />; }
-function SelectRow({ title, detail, value, disabled, options, onChange }: { title: string; detail: string; value: string; disabled: boolean; options: Option[]; onChange: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<select data-help-id="settings.workspace.preference-select" aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="rounded-lg border border-white/10 bg-[#17181a] px-3 py-2 text-xs text-zinc-200 outline-hidden disabled:opacity-50">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>} />; }
+function SelectRow({ title, detail, value, disabled, options, onChange }: { title: string; detail: string; value: string; disabled: boolean; options: Option[]; onChange: (value: string) => void }) { return <ActionRow title={title} detail={detail} action={<select data-help-id="settings.workspace.preference-select" aria-label={title} value={value} disabled={disabled} onChange={(event) => onChange(event.target.value)} className="rounded-lg border border-white/10 bg-axiom-surface px-3 py-2 text-xs text-zinc-200 outline-hidden disabled:opacity-50">{options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}</select>} />; }
 function LockedRow({ title, detail }: { title: string; detail: string }) { return <ActionRow title={title} detail={detail} action={<span className="inline-flex items-center gap-1 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2 py-1 text-[10px] text-emerald-300"><LockKeyhole className="h-3 w-3" />Always on</span>} />; }
 function Notice({ title, detail }: { title: string; detail: string }) { return <div className="mb-6 rounded-lg border border-white/15 bg-white/4 p-4"><p className="text-sm font-medium text-zinc-100">{title}</p><p className="mt-2 text-xs leading-5 text-zinc-400">{detail}</p></div>; }
 function SummaryCard({ label, value, detail }: { label: string; value: string; detail: string }) { return <div className="rounded-lg border border-white/5 bg-white/1.5 p-4"><p className="text-xs text-zinc-500">{label}</p><p className="mt-2 text-2xl font-semibold capitalize">{value}</p><p className="mt-2 text-sm text-zinc-500">{detail}</p></div>; }
@@ -2003,6 +2003,6 @@ function IntegrationRow({ name, group, detail, state, action, tone }: { name: st
     : connected ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-200" : "border-white/20 bg-white/10 text-zinc-200";
   const provider = ({GitHub:"github",Slack:"slack","Microsoft Teams":"teams",Linear:"linear"} as Record<string,CatalogProvider>)[name];
   const cloudGroup=name==="AWS, Azure & Google Cloud";
-  return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/5 bg-white/1.5 px-4 py-3"><span className={`flex h-8 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-black/20 text-zinc-300 ${cloudGroup?"px-2":"w-8"}`}>{cloudGroup?<ProviderLogoGroup providers={["aws","azure","gcp"]}/>:provider?<ProviderLogo provider={provider}/>:<Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-600">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
+  return <div className="flex flex-wrap items-center gap-3 rounded-lg border border-white/5 bg-white/1.5 px-4 py-3"><span className={`flex h-8 shrink-0 items-center justify-center rounded-lg border border-white/5 bg-black/20 text-zinc-300 ${cloudGroup?"px-2":"w-8"}`}>{cloudGroup?<ProviderLogoGroup providers={["aws","azure","gcp"]}/>:provider?<ProviderLogo provider={provider}/>:<Link2 className="h-4 w-4" />}</span><div className="min-w-[140px] flex-1"><p className="text-[10px] uppercase tracking-[0.14em] text-zinc-400">{group}</p><p className="mt-0.5 text-sm text-zinc-200">{name}</p><p className="mt-1 text-xs leading-5 text-zinc-500">{detail}</p></div><div className="flex flex-wrap items-center gap-2"><span className={`rounded-full border px-2 py-1 text-[10px] ${stateClass}`}>{state}</span>{action}</div></div>;
 }
 function WebButton({ href, label, standalone = false }: { href: string; label: string; standalone?: boolean }) { return <button data-help-id="settings.workspace.browser-handoff" type="button" onClick={() => void open(`${WEB_BASE}${href}`)} className={`${standalone ? "mt-1" : ""} inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6`}>{label}<ChevronRight className="h-3.5 w-3.5" /></button>; }
