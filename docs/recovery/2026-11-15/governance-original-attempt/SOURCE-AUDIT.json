@@ -1,0 +1,18 @@
+{
+  "scope": "actual current source audit; no native/controller/provider execution",
+  "sourceCommit": "aa5e828",
+  "hostBootstrapSha256": "a526438fb7db965bb3ef6971dfed3e44e4d2f3dbedaf80764af30ac7e27bfa36",
+  "operationalOwnerSha256": "5232e94c0ce215ad5b0a9d23cbf3bffb3d681ef08b19ae3fdbd2e26bd1d5c707",
+  "existingEvaluationReserve": {
+    "path": "/run/axiom-host-evaluation",
+    "functionLine": 155,
+    "fsyncInReserve": false,
+    "hostTerminationVerified": false
+  },
+  "operationalMarker": "/run/axiom-operational-time/accepted",
+  "gap": "neither guest-local marker is an external durable consume-before-start gate",
+  "newAuthorityImplemented": false,
+  "newAuthorityApproved": false,
+  "nativeOrProviderExecuted": false,
+  "governanceEnabled": false
+}

@@ -1,3 +1,11 @@
+## November15 current source status after aa5e828
+
+The installed JavaScript main seam and its closed one-file compilation are complete locally (0d27398). The immutable semantic-policy/original-owner split is now approved and implemented locally (aa5e828); the old host-late compiled-profile sequencing in rows7/9 below is historical. The fixed profile path now holds the closed semantic policy, whose digest the owner pins; boot/directory/generation are once-captured by that original owner. The existing daemon/binding AXIOM_ACCEPT_V1 wire remains unchanged. Historical build/host receipts do not qualify this newer source.
+
+Actual next package dependencies remain: exact target toolchain/runtime/header/library/license provenance; native owner/status/daemon/addon compilation and ABI/runtime checks; final immutable package/compatibility/delivery; actual external original-attempt durability/supervision and bounded cleanup/cost; genuine host/custody/fleet/people/provider/security acceptance. Empty expected hashes remain refusing. No new target/native run, controller grant, public artifact, account/resource/deployment/spending or enablement.
+
+Current source audit identifies two separate guest-local volatile reservations and no external durable controller. The proposed external-attempt private local primitive is at ../governance-original-attempt/DESIGN.md with an actual source/hash/AST audit; it changes controller/storage trust and is NOT approved or implemented. It neither selects a real controller nor supplies authentic grant/provider receipt/watchdog. Do not reinterpret its future local tests as those missing prerequisites. Private production diagnostic remains a separate unanswered decision. Full goal ACTIVE; Governance INCOMPLETE/DISABLED.
+
 # Next protected operational package unit
 
 November 15, 2026. **Local preparation only. Governance remains INCOMPLETE/DISABLED.** No product edit, executable wrapper, build/native invocation, account/public/provider/database read, installation, resource action, spending or permission request is included. Website/desktop release remains the current owner priority; this is the next coherent Governance unit afterward.
