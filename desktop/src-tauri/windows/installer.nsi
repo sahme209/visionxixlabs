@@ -199,6 +199,49 @@ Page custom PageReinstall PageLeaveReinstall
 ; our ${PRODUCTNAME} and ${MANUFACTURER} but wasn't installed by our WiX installer,
 ; however, this should be fine since the user will have to confirm the uninstallation
 ; and they can chose to abort it if doesn't make sense.
+
+; V19 rename: use only Tauri's existing target check and shortcut macros.
+; No foreign shortcut is overwritten, retargeted or removed.
+!macro V19RequireAbsentOrOwnedShortcut path
+  ${If} ${FileExists} "${path}"
+    !insertmacro IsShortcutTarget "${path}" "$INSTDIR\${MAINBINARYNAME}.exe"
+    Pop $0
+    ${If} $0 != 1
+      SetErrorLevel 2
+      Abort "V19 shortcut ownership could not be verified."
+    ${EndIf}
+  ${EndIf}
+!macroend
+
+!macro V19MigrateOwnedLegacyShortcut legacy current
+  !insertmacro V19RequireAbsentOrOwnedShortcut "${legacy}"
+  !insertmacro V19RequireAbsentOrOwnedShortcut "${current}"
+  ${If} ${FileExists} "${legacy}"
+    ; A present destination is never overwritten, including an owned duplicate.
+    ${If} ${FileExists} "${current}"
+      SetErrorLevel 2
+      Abort "V19 shortcut destination already exists."
+    ${EndIf}
+    ClearErrors
+    Rename "${legacy}" "${current}"
+    ${If} ${Errors}
+      SetErrorLevel 2
+      Abort "V19 shortcut migration was not confirmed."
+    ${EndIf}
+    !insertmacro SetLnkAppUserModelId "${current}"
+    StrCpy $R0 1
+  ${EndIf}
+!macroend
+
+!macro V19RemoveOwnedLegacyShortcut path
+  !insertmacro IsShortcutTarget "${path}" "$INSTDIR\${MAINBINARYNAME}.exe"
+  Pop $0
+  ${If} $0 = 1
+    !insertmacro UnpinShortcut "${path}"
+    Delete "${path}"
+  ${EndIf}
+!macroend
+
 Function FindWixInstall
   StrCpy $R6 ""
   StrCpy $0 0
@@ -873,6 +916,8 @@ Section Uninstall
 
     ; Remove start menu shortcut
     !insertmacro MUI_STARTMENU_GETFOLDER Application $AppStartMenuFolder
+    !insertmacro V19RemoveOwnedLegacyShortcut "$SMPROGRAMS\$AppStartMenuFolder\${LEGACYPRODUCTNAME}.lnk"
+    !insertmacro V19RemoveOwnedLegacyShortcut "$SMPROGRAMS\${LEGACYPRODUCTNAME}.lnk"
     !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     Pop $0
     ${If} $0 = 1
@@ -888,6 +933,7 @@ Section Uninstall
     ${EndIf}
 
     ; Remove desktop shortcuts
+    !insertmacro V19RemoveOwnedLegacyShortcut "$DESKTOP\${LEGACYPRODUCTNAME}.lnk"
     !insertmacro IsShortcutTarget "$DESKTOP\${PRODUCTNAME}.lnk" "$INSTDIR\${MAINBINARYNAME}.exe"
     Pop $0
     ${If} $0 = 1
@@ -963,6 +1009,8 @@ Function CreateOrUpdateStartMenuShortcut
   ; We used to use product name as MAINBINARYNAME
   ; migrate old shortcuts to target the new MAINBINARYNAME
   StrCpy $R0 0
+  !insertmacro V19MigrateOwnedLegacyShortcut "$SMPROGRAMS\$AppStartMenuFolder\${LEGACYPRODUCTNAME}.lnk" "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk"
+  !insertmacro V19MigrateOwnedLegacyShortcut "$SMPROGRAMS\${LEGACYPRODUCTNAME}.lnk" "$SMPROGRAMS\${PRODUCTNAME}.lnk"
 
   !insertmacro IsShortcutTarget "$SMPROGRAMS\$AppStartMenuFolder\${PRODUCTNAME}.lnk" "$INSTDIR\$OldMainBinaryName"
   Pop $0
@@ -1002,6 +1050,11 @@ Function CreateOrUpdateStartMenuShortcut
 FunctionEnd
 
 Function CreateOrUpdateDesktopShortcut
+  StrCpy $R0 0
+  !insertmacro V19MigrateOwnedLegacyShortcut "$DESKTOP\${LEGACYPRODUCTNAME}.lnk" "$DESKTOP\${PRODUCTNAME}.lnk"
+  ${If} $R0 = 1
+    Return
+  ${EndIf}
   ; We used to use product name as MAINBINARYNAME
   ; migrate old shortcuts to target the new MAINBINARYNAME
   !insertmacro IsShortcutTarget "$DESKTOP\${PRODUCTNAME}.lnk" "$INSTDIR\$OldMainBinaryName"

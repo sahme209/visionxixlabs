@@ -1,0 +1,17 @@
+{
+  "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.21/Axiom.Agent_0.1.21_x64-setup.exe",
+  "bytes": 4023071,
+  "sha256": "0d80407c333229d54c9cd3d0f205b99e1944f0622f4da556b02a299eaad893f3",
+  "peMachine": "0x14c",
+  "artifactRole": "NSIS-installer-stub",
+  "executed": false,
+  "doesNotProvePayloadArchitecture": true,
+  "pinnedBundlerSource": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle/windows/nsis/mod.rs",
+    "sha256": "ce129133be31063c51ee3649f69f600b9397f6af1e24075dec3b0d54ae637a2c",
+    "requiredStubs": [
+      "Stubs/lzma-x86-unicode",
+      "Stubs/lzma_solid-x86-unicode"
+    ]
+  }
+}

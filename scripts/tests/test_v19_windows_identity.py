@@ -24,7 +24,13 @@ class WindowsIdentity(unittest.TestCase):
   self.assertIn('Name "${PRODUCTNAME}"',self.template);self.assertIn('VIAddVersionKey "ProductName" "${PRODUCTNAME}"',self.template)
  def test_only_registry_identity_and_previous_wix_match_differ_from_pinned_upstream(self):
   self.assertEqual(self.template.count(LEGACY_KEY_LINE),1);self.assertEqual(self.template.count(NEW_MATCH),1)
-  restored=self.template.replace(LEGACY_KEY_LINE,'').replace('Uninstall\\${LEGACYPRODUCTNAME}','Uninstall\\${PRODUCTNAME}').replace('"${MANUKEY}\\${LEGACYPRODUCTNAME}"','"${MANUKEY}\\${PRODUCTNAME}"').replace(NEW_MATCH,OLD_MATCH)
+  migration=self.template[self.template.index('\n; V19 rename:'):self.template.index('Function FindWixInstall')]
+  base=self.template.replace(migration,'')
+  base=base.replace('Function CreateOrUpdateDesktopShortcut\n  StrCpy $R0 0\n','Function CreateOrUpdateDesktopShortcut\n')
+  base=re.sub(r'^    !insertmacro V19RemoveOwnedLegacyShortcut .*\n','',base,flags=re.M)
+  base=re.sub(r'^  !insertmacro V19MigrateOwnedLegacyShortcut .*\n','',base,flags=re.M)
+  base=base.replace('Function CreateOrUpdateDesktopShortcut\n  ${If} $R0 = 1\n    Return\n  ${EndIf}\n','Function CreateOrUpdateDesktopShortcut\n')
+  restored=base.replace(LEGACY_KEY_LINE,'').replace('Uninstall\\${LEGACYPRODUCTNAME}','Uninstall\\${PRODUCTNAME}').replace('"${MANUKEY}\\${LEGACYPRODUCTNAME}"','"${MANUKEY}\\${PRODUCTNAME}"').replace(NEW_MATCH,OLD_MATCH)
   self.assertEqual(hashlib.sha256(restored.encode()).hexdigest(),UPSTREAM_SHA)
  def test_legacy_nsis_keys_preserve_path_and_uninstall_for_every_arch_without_publisher_change(self):
   values={'PRODUCTNAME':'V19','LEGACYPRODUCTNAME':'Axiom Agent','MANUFACTURER':'visionxixlabs'}
