@@ -1,0 +1,180 @@
+{
+  "source": "81c1b8097da36e319d3f6b710206629c1f5b004b",
+  "sourceBinding": {
+    "externalHumanApprovalProof": false,
+    "manifestSha256": "e5d891d3ed18110f814b7ee0c38317223e8cbba1ef10aab0b0908a33a5436f0a",
+    "sha": "81c1b8097da36e319d3f6b710206629c1f5b004b",
+    "sourceAuthority": "ordinary-owner-PR-CI"
+  },
+  "version": "0.1.23",
+  "failureClass": "RuntimeError",
+  "failureCode": "command_failed",
+  "ownedProcessCleanupConfirmed": true,
+  "keyringCleanupConfirmed": true,
+  "installations": [],
+  "upgradeAcceptance": "NOT_RUN",
+  "published": false,
+  "signingPerformed": false,
+  "syntheticVaultArtifactSelection": {
+    "candidateCount": 1,
+    "candidates": [
+      {
+        "executable": "D:\\a\\_temp\\axiom-installed-b5c79a394dfa49d4b11ed457d7644ea4\\vault-target\\debug\\build\\axiom-desktop/699d732d416d6eba\\out\\windows_keyring_acceptance-699d732d416d6eba.exe",
+        "insideOwnedRoot": true,
+        "manifestPath": "D:\\a\\visionxixlabs\\visionxixlabs\\desktop\\src-tauri\\Cargo.toml",
+        "profileTest": true,
+        "sourcePath": "D:\\a\\visionxixlabs\\visionxixlabs\\desktop\\src-tauri\\tests\\windows_keyring_acceptance.rs",
+        "targetKinds": [
+          "test"
+        ],
+        "targetName": "windows_keyring_acceptance"
+      }
+    ],
+    "expectedOwnedRoot": "D:\\a\\_temp\\axiom-installed-b5c79a394dfa49d4b11ed457d7644ea4\\vault-target"
+  },
+  "builtPayloadSha256": "2549c78ccdac36dd6ee975e13cb9572ed76cf5704f3eed33864342e0d9c7b95a",
+  "run": 43763501319,
+  "job": 132965090074,
+  "logSha256": "dd7b5597eb0dae7b1c9b17b9eaa94c3570415b90e54163eb5ef2f27b0a61b647",
+  "phases": [
+    {
+      "label": "source-head",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "source-inventory-0",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-node",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-cargo",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-rustc",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-pwsh",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-git",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-npm",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "tool-msiexec",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "desktop-dependencies",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "source-inventory-1",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "frontend",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "vault-build",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "source-inventory-2",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "vault-preflight",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "vault-roundtrip",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "unsigned-bundle",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "source-inventory-3",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "metadata-msi",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "metadata-nsis",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "legacy-fixed-acquisition",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "legacy-metadata-msi",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "legacy-metadata-nsis",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "all-installs-pristine",
+      "exitCode": 1,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "vault-final-cleanup",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    }
+  ],
+  "failureDiagnostic": {
+    "stderr": {
+      "bytes": 125,
+      "prefixTruncated": false,
+      "sha256": "95e7b7e97f6fa366e38b6d4f2196828f8137c2e9f040a1227e8c17ba58924794",
+      "text": "windows_upgrade_snapshot.ps1: Exception calling \"GetFullPath\" with \"1\" argument(s): \"The path is empty. (Parameter 'path')\"\r\n"
+    },
+    "stdout": {
+      "bytes": 0,
+      "prefixTruncated": false,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "text": ""
+    }
+  }
+}

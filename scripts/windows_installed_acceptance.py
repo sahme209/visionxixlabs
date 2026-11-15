@@ -232,9 +232,11 @@ def installers(bundle):
 
 
 def child_environment(inherited, extra=None):
-    names = ["PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "PROGRAMFILES", "PROGRAMFILES(X86)", "HOME", "CARGO_HOME", "RUSTUP_HOME", "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE", "COMSPEC", "PATHEXT"]
+    names = ["PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "RUNNER_TEMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "PROGRAMFILES", "PROGRAMFILES(X86)", "HOME", "CARGO_HOME", "RUSTUP_HOME", "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE", "COMSPEC", "PATHEXT"]
     inherited = {name.upper(): value for name, value in inherited.items()}
     env = {name: inherited[name] for name in names if name in inherited}
+    if "RUNNER_TEMP" in env:
+        env["RUNNER_TEMP"] = windows_path_identity(env["RUNNER_TEMP"])
     env.update({"CI": "1", "NO_COLOR": "1", "PYTHONDONTWRITEBYTECODE": "1"})
     if extra:
         need(set(extra) <= {"AXIOM_WINDOWS_ACCEPTANCE_KEY", "AXIOM_WINDOWS_ACCEPTANCE_STAGE"}, "extra_environment_refused")
@@ -521,9 +523,32 @@ def require_webview_runtime(registry=None):
             'runtimeInstallationPermitted': False, 'webviewRenderingVerified': False}
 
 
+def validated_runner_temp(value):
+    # Independently bind the actual local runner directory before creating an
+    # owner root or forwarding this nonsecret field to fixed helper children.
+    identity = windows_path_identity(value)
+    path = Path(value)
+    need(path.is_dir() and not path.is_symlink(), 'runner_temp_not_regular_directory')
+    actual = path.resolve(strict=True)
+    need(windows_path_identity(str(actual)) == identity, 'runner_temp_resolved_identity_changed')
+    return Path(identity)
+
+
+def snapshot_helper_preflight(runner, tools, base):
+    from windows_upgrade_acceptance import absent_before_owned_cycle
+    directory = base / 'snapshot-preflight'
+    directory.mkdir(exist_ok=False)
+    need(not any(directory.iterdir()), 'snapshot_preflight_directory_not_empty')
+    state = upgrade_snapshot(runner, tools, base, [directory], [], 'helper-snapshot-preflight')
+    absent_before_owned_cycle(state)
+    need(not any(directory.iterdir()), 'snapshot_preflight_directory_changed')
+    return {'readOnly':True, 'ownedEmptyDirectoryMatched':True, 'knownProductGuidsIncluded':False}
+
+
 def main():
     binding = authority()
     need(os.environ.get("ImageOS") == "win22", "standard_windows_2022_required")
+    runner_temp = validated_runner_temp(os.environ.get("RUNNER_TEMP"))
     tools, tool_evidence = runtime_tools()
     cache = Path(os.environ['LOCALAPPDATA']) / 'tauri'
     need(not cache.exists(), 'existing_vendor_cache_refused')
@@ -534,7 +559,7 @@ def main():
             for leaf in ["com.visionxixlabs.axiom", "Axiom Agent", "V19"]:
                 need(not (Path(os.environ[name]) / leaf).exists(), "existing_axiom_state_refused")
     need(not protocol_state(), "existing_axiom_protocol_refused")
-    base = Path(os.environ["RUNNER_TEMP"]) / ("axiom-installed-" + uuid.uuid4().hex)
+    base = runner_temp / ("axiom-installed-" + uuid.uuid4().hex)
     need(" " not in str(base), "nsis_fixed_argument_path_requires_no_spaces")
     base.mkdir(exist_ok=False)
     output = base / "evidence"; output.mkdir()
@@ -560,6 +585,7 @@ def main():
         need(json.loads((configuration / 'tauri.conf.json').read_text()).get('productName') == 'V19', 'product_name_changed')
         need(json.loads((configuration / 'tauri.conf.json').read_text()).get('bundle', {}).get('windows', {}).get('wix', {}).get('upgradeCode') == LEGACY_MSI_UPGRADE_CODE, 'legacy_upgrade_identity_changed')
         receipt['webviewRuntimePreflight'] = require_webview_runtime()
+        receipt['snapshotHelperPreflight'] = snapshot_helper_preflight(runner, tools, base)
         for name in ["node.exe", "cargo.exe", "rustc.exe", "pwsh.exe", "git.exe"]:
             args = [tools[name], "--version"] if name != "pwsh.exe" else [tools[name], "-NoProfile", "-NonInteractive", "-Command", "$PSVersionTable.PSVersion.ToString()"]
             version = runner.run("tool-" + name.split(".")[0], args, ROOT, 15)

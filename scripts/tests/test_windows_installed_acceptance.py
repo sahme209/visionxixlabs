@@ -49,6 +49,47 @@ class WindowsAcceptancePreparation(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "extra_environment_refused"):
             candidate.child_environment({}, {"GITHUB_TOKEN": "synthetic"})
 
+    def test_required_powershell_environment_is_forwarded_only_as_validated_nonsecret_fields(self):
+        import re
+        script_root=SOURCE.parent
+        uses=set()
+        for path in script_root.glob('windows*.ps1'):uses.update(re.findall(r'\$env:([A-Za-z_][A-Za-z0-9_]*)',path.read_text()))
+        uses.update(re.findall(r'\$env:([A-Za-z_][A-Za-z0-9_]*)',SOURCE.read_text()))
+        env=candidate.child_environment({'SYSTEMROOT':r'C:\Windows','RUNNER_TEMP':r'D:\a\_temp','GITHUB_TOKEN':'synthetic-not-forwarded'})
+        self.assertEqual(uses,{'RUNNER_TEMP','SYSTEMROOT'});self.assertTrue(uses<=set(env));self.assertEqual(env['RUNNER_TEMP'],r'd:\a\_temp')
+        self.assertNotIn('GITHUB_TOKEN',env)
+        for value in ['',r'D:relative',r'\\server\share',r'D:\a\_temp\..\outside']:
+            with self.assertRaises(RuntimeError):candidate.child_environment({'RUNNER_TEMP':value})
+
+    def test_runner_temp_requires_actual_directory_without_link_or_resolved_escape(self):
+        class FakePath:
+            directory=True;linked=False;resolved=r'D:\a\_temp'
+            def __init__(self,value):self.value=value
+            def __str__(self):return self.value
+            def is_dir(self):return self.directory
+            def is_symlink(self):return self.linked
+            def resolve(self,strict=False):return FakePath(self.resolved)
+        with patch.object(candidate,'Path',FakePath):
+            self.assertEqual(str(candidate.validated_runner_temp(r'D:\a\_temp')),r'd:\a\_temp')
+            for field,value in [('directory',False),('linked',True),('resolved',r'E:\foreign')]:
+                with patch.object(FakePath,field,value),self.assertRaises(RuntimeError):candidate.validated_runner_temp(r'D:\a\_temp')
+
+    def test_read_only_snapshot_preflight_uses_fresh_owned_empty_folder_before_expensive_phases(self):
+        import sys
+        sys.path.insert(0,str(SOURCE.parent))
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);calls=[]
+            def snapshot(runner,tools,base,directories,codes,label):
+                calls.append((base,directories,codes,label));self.assertTrue(directories[0].is_dir());self.assertEqual(list(directories[0].iterdir()),[])
+                return {'products':[],'shortcuts':[],'protocolCommands':[],'ownedPayloads':[]}
+            with patch.object(candidate,'upgrade_snapshot',side_effect=snapshot):
+                proof=candidate.snapshot_helper_preflight(object(),{},root)
+            self.assertTrue(proof['readOnly']);self.assertEqual(calls[0][2],[]);self.assertEqual(calls[0][3],'helper-snapshot-preflight')
+        source=SOURCE.read_text();main=source[source.index('def main():'):source.index('def upgrade_snapshot(')]
+        self.assertLess(main.index('snapshot_helper_preflight('),main.index('"desktop-dependencies"'))
+        self.assertLess(main.index('snapshot_helper_preflight('),main.index('"vault-build"'))
+        self.assertIn("'all-installs-pristine'",main)
+
     def test_only_fixed_synthetic_vault_fields_can_be_added(self):
         extra = {"AXIOM_WINDOWS_ACCEPTANCE_KEY": "owned-roundtrip-1-2", "AXIOM_WINDOWS_ACCEPTANCE_STAGE": "cleanup"}
         env = candidate.child_environment({}, extra)
