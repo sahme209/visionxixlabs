@@ -67,7 +67,7 @@ export async function POST(req: NextRequest) {
   });
 
   const resend = new Resend(apiKey);
-  const from = process.env.RESEND_FROM || "Axiom <onboarding@resend.dev>";
+  const from = process.env.RESEND_FROM || "V19 <onboarding@resend.dev>";
   const { data, error } = await resend.emails.send({
     from,
     to: lead.email,

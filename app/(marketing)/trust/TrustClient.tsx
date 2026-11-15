@@ -50,7 +50,7 @@ export function TrustClient() {
   return (
     <div className="public-detail-page public-trust-page">
       <section className="public-detail-header">
-        <PageHero eyebrow="Axiom · Trust and safety" title="The safety contract" muted="is the product." lead="These are implemented product controls and explicit limitations—not certification badges. Each control still depends on configuration, permissions, and verification of the exact workflow being used." />
+        <PageHero eyebrow="V19 · Trust and safety" title="The safety contract" muted="is the product." lead="These are implemented product controls and explicit limitations—not certification badges. Each control still depends on configuration, permissions, and verification of the exact workflow being used." />
       </section>
 
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-12">

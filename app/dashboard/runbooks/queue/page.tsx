@@ -131,7 +131,7 @@ export default function RunbookQueuePage() {
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           Every runbook promoted from /dashboard/runbooks lands here. Approve or reject — the decision is durably
-          recorded but Axiom does not apply the change. The IaC pipeline owns execution.
+          recorded but V19 does not apply the change. The IaC pipeline owns execution.
         </p>
 
         {report && (

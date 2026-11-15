@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           code: "desktop_update_required",
-          error: "This Axiom Agent version needs a security update. Download the latest signed installer, then start sign-in again.",
+          error: "This V19 version needs a security update. Download the latest signed installer, then start sign-in again.",
         },
         { status: 426 },
       );

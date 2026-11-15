@@ -136,7 +136,7 @@ fn main() {
             // Cmd+W. The app stays alive in the menubar so the ambient
             // poller can keep firing approval notifications without the
             // window visible. Quit is still reachable from the tray menu
-            // ("Quit"), the App menu ("Quit Axiom Agent" — Cmd+Q), or
+            // ("Quit"), the App menu ("Quit V19" — Cmd+Q), or
             // the OS Force Quit panel.
             if let Some(main_window) = app.get_webview_window("main") {
                 let handle_for_close = main_window.clone();
@@ -152,7 +152,7 @@ fn main() {
             Ok(())
         })
         .build(tauri::generate_context!())
-        .expect("error while building axiom agent");
+        .expect("error while building V19");
 
     // Closing the main window intentionally keeps the Agent alive in the
     // menubar. On macOS, clicking the Dock icon must make that hidden window

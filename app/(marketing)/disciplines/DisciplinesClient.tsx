@@ -143,7 +143,7 @@ export function DisciplinesClient() {
           <span className="font-semibold text-white">
             ${(totalAnnual / 1_000_000).toFixed(1)}M
           </span>{" "}
-          per year, fully loaded. Axiom doesn&apos;t replace that team. It coordinates
+          per year, fully loaded. V19 doesn&apos;t replace that team. It coordinates
           the supported repository and deployment work in one governed queue,
           with human approval required before writes run.
         </motion.p>

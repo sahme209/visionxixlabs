@@ -18,7 +18,7 @@ it('explains deployment decisions and puts the conceptual workflow before the sc
  expect(within(first).getAllByRole('list',{name:'Conceptual workflow'})).toHaveLength(1);
  const demoHeading=screen.getByRole('heading',{name:'Scripted interactive preview'});
  expect(workflow.compareDocumentPosition(demoHeading)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
- expect(within(first).getByRole('link',{name:'Download Axiom Agent'}).getAttribute('href')).toBe('/download');
+ expect(within(first).getByRole('link',{name:'Download V19'}).getAttribute('href')).toBe('/download');
  expect(within(first).getByRole('link',{name:'Read the workflow guide'}).getAttribute('href')).toBe('/docs/approval-workflow');
 });
 it('keeps conceptual scope and incomplete Governance visible beside the first workflow',()=>{

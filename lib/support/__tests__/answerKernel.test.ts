@@ -61,3 +61,30 @@ describe("Ask Axiom answers", () => {
     expect(tokenize("Prices and deploys")).toEqual(["pricing", "deployment"]);
   });
 });
+
+// Preserve the historical evaluation questions above; test the new display
+// name separately so a rename cannot hide a legacy retrieval regression.
+describe("V19 display name and legacy support compatibility", () => {
+  it.each(["What is V19?", "What is Axiom?", "What is Axiom Agent?", "WHAT IS V19?"])("routes %s to the same overview", question => {
+    const answer = ask(question);
+    expect(answer.status).toBe("answered");
+    expect(answer.sources[0]?.href).toBe("/docs/faq");
+    expect(answer.answer).toBe(knowledgeEntries().find(entry => entry.id === "faq-0-0")?.body);
+  });
+  it.each(["Can BRAND govern Cursor or Claude Code?", "What permissions does BRAND need?"])("normalizes current and legacy brands for %s", question => {
+    expect(ask(question.replace("BRAND", "V19"))).toEqual(ask(question.replace("BRAND", "Axiom")));
+    expect(tokenize("V19")).toEqual(tokenize("Axiom Agent"));
+  });
+  it("retains stable version format, IDs and public-only retrieval eligibility", () => {
+    expect(KNOWLEDGE_VERSION).toBe("ask-axiom-kb-2026-11-15");
+    for (const entry of knowledgeEntries()) {
+      expect(entry.href).toMatch(/^\/(?:docs(?:\/|#|$)|product#|integrations$|plans$|contact$|security$|trust$)/);
+      expect(entry.href).not.toContain("/recovery/");
+      expect(entry.href).not.toContain("/knowledge/");
+      expect(entry.title).not.toMatch(/\bAxiom(?: Agent)?\b/);
+      // Existing actual installer filenames remain truthful technical instructions.
+      expect(entry.body).not.toMatch(/\bAxiom(?: Agent)?\b(?!\.Agent[_-])/);
+    }
+    expect(ask("here is my V19 key vxlk_live_abcdef1234567890").guard).toBe("secret_pasted");
+  });
+});

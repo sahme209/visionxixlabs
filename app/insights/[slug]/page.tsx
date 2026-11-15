@@ -89,7 +89,7 @@ export default async function InsightArticlePage({ params }: Props) {
 
           <section className="mx-auto max-w-[70ch] rounded-xl border border-white/8 bg-[var(--public-surface)] p-6 text-center sm:p-10">
             <h2 className="text-lg font-medium text-white mb-2 tracking-[-0.04em]">
-              See Axiom Agent in context
+              See V19 in context
             </h2>
             <p className="text-zinc-400 text-sm mb-4">
               Explore the scripted governed workflow, then download the current
@@ -99,7 +99,7 @@ export default async function InsightArticlePage({ params }: Props) {
               href="/download"
               className="public-feature-action"
             >
-              Download Axiom Agent
+              Download V19
               <ArrowRightIcon className="ml-2 h-4 w-4" aria-hidden="true" />
             </Link>
           </section>

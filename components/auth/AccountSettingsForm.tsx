@@ -31,7 +31,7 @@ export function AccountSettingsForm({ initialDisplayName, email }: { initialDisp
       <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-base font-medium text-zinc-100">Profile</h2>
-          <p className="mt-1 text-xs leading-5 text-zinc-400">This name appears in your Axiom workspace. Your sign-in email and workspace access remain protected.</p>
+          <p className="mt-1 text-xs leading-5 text-zinc-400">This name appears in your V19 workspace. Your sign-in email and workspace access remain protected.</p>
         </div>
         <span className="rounded-full border border-emerald-400/20 bg-emerald-400/6 px-2.5 py-1 text-[10px] uppercase tracking-[0.14em] text-emerald-200">Verified account</span>
       </div>

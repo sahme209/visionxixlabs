@@ -50,7 +50,7 @@ export function AxiomAIVision() {
         </h3>
       </div>
       <p className="text-sm text-zinc-400 mb-6">
-        Axiom is evolving from analysis to automation. Connect your environment via APIs and let AI do more—recommendations today, approved execution tomorrow.
+        V19 is evolving from analysis to automation. Connect your environment via APIs and let AI do more—recommendations today, approved execution tomorrow.
       </p>
       <div className="space-y-4 mb-6">
         {capabilities.map((item) => (
@@ -76,7 +76,7 @@ export function AxiomAIVision() {
         ))}
       </div>
       <Link
-        href="/contact?subject=Axiom+AI+Autopilot+%26+API+Access"
+        href="/contact?subject=V19+AI+Autopilot+%26+API+Access"
         className="inline-flex items-center gap-2 rounded-xl bg-orange-600 hover:bg-orange-700 text-white px-4 py-2 text-sm font-semibold transition-colors"
       >
         <SparklesIcon className="h-4 w-4" />

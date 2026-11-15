@@ -105,8 +105,8 @@ export function DesktopSignInView({
   return (
     <main className="desktop-entry h-screen w-full bg-axiom-bg text-white flex flex-col px-6 py-10 relative overflow-y-auto">
       <div className="desktop-entry-panel relative m-auto w-full max-w-[420px] shrink-0 text-center">
-        <img src="/brand/vxix-wordmark.svg" alt="vxix" className="mx-auto mb-8 h-14 w-14 shrink-0 object-contain" />
-        <p className="sr-only">Axiom Agent</p>
+        <img src="/brand/v19-wordmark.svg" alt="V19" className="mb-8 h-10 w-[128px] shrink-0 object-contain" />
+        <p className="sr-only">V19</p>
         <h1 className="mt-3 text-[28px] font-medium leading-[1.15] tracking-[-0.03em]">Deployment control, from request to closure.</h1>
         <p className="mx-auto mt-3 max-w-sm text-[14px] leading-6 text-zinc-500">
           Sign in through your system browser, then return here automatically. Your workspace access is verified before operational data loads.
@@ -134,7 +134,7 @@ export function DesktopSignInView({
             Cancel
           </button>
         )}
-        <p className="mt-5 text-xs leading-5 text-zinc-400">Both options open visionxixlabs.com in your default browser. Axiom never embeds your identity-provider password.</p>
+        <p className="mt-5 text-xs leading-5 text-zinc-400">Both options open visionxixlabs.com in your default browser. V19 never embeds your identity-provider password.</p>
         <details className="group mt-6 rounded-xl border border-white/6 bg-white/1.5 p-4 text-left transition-colors open:border-white/9 open:bg-white/2.5">
           <summary className="cursor-pointer text-xs font-medium text-zinc-500 transition-colors group-hover:text-zinc-300">Enterprise recovery sign-in</summary>
           <p className="mt-3 text-xs leading-5 text-zinc-400">For administrator-issued recovery access only. The workspace must still have an active approved pilot or commercial entitlement.</p>

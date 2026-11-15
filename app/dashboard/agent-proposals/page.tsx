@@ -106,7 +106,7 @@ export default function AgentProposalsPage() {
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           Every recipe / template / charter improvement an agent suggests lands here for human review. Approval
-          is durably recorded but never applied by Axiom — the IaC pipeline ships approved changes through
+          is durably recorded but never applied by V19 — the IaC pipeline ships approved changes through
           real change control.
         </p>
 

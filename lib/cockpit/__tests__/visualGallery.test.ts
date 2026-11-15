@@ -67,7 +67,7 @@ it("renders the real cockpit pages in one frame with honest fixture state",async
  for(const page of pages){
   fixture.path=page.path;
   render(createElement(CockpitShell,{email:"member@example.test",workspace:"Example workspace",roles:["owner"]},await page.page()));
-  expect(screen.getByRole("navigation",{name:"Axiom cockpit"})).toBeTruthy();
+  expect(screen.getByRole("navigation",{name:"V19 cockpit"})).toBeTruthy();
   expect(screen.getByRole("heading",{name:page.heading})).toBeTruthy();
   if(page.name==="ai-agents")await waitFor(()=>expect(screen.getByText("Approved model routing")).toBeTruthy());
   if(page.name==="audit")await screen.findByText("Example workstation");

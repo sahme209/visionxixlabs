@@ -55,8 +55,8 @@ function saveMessages(msgs: Message[]) {
 }
 
 const SUGGESTIONS = [
-  "Can Axiom govern Cursor or Claude Code?",
-  "What happens before Axiom can deploy to production?",
+  "Can V19 govern Cursor or Claude Code?",
+  "What happens before V19 can deploy to production?",
   "How does AI pricing work?",
   "Are credentials stored?",
 ];
@@ -176,21 +176,21 @@ export default function AIChatWidget() {
     <>
       <button
         onClick={() => setOpen(true)}
-        aria-label="Open Axiom Assistant"
+        aria-label="Open V19 Assistant"
         className="fixed bottom-6 right-6 z-9998 hidden min-h-11 items-center gap-2.5 rounded-full border border-white/8 bg-[#171717]/90 px-3.5 py-2 text-zinc-200 shadow-[0_14px_40px_-20px_rgba(0,0,0,0.9)] backdrop-blur-xl transition-all hover:border-white/16 hover:bg-brand-ink-card hover:text-white focus:outline-hidden focus:ring-2 focus:ring-brand-coral/50 md:flex"
       >
         <div className="relative flex h-7 w-7 items-center justify-center rounded-full border border-white/[0.07] bg-white/[0.035]">
           <ChatBubbleLeftRightIcon className="h-3.5 w-3.5 text-zinc-300" />
           <span className="absolute -right-0.5 -top-0.5 h-1.5 w-1.5 rounded-full bg-emerald-300 ring-2 ring-[#171717]" />
         </div>
-        <span className="pr-1 text-[12px] font-medium tracking-[-0.01em]">Ask Axiom</span>
+        <span className="pr-1 text-[12px] font-medium tracking-[-0.01em]">Ask V19</span>
       </button>
 
       {open && (
         <div
           className="fixed right-6 left-auto w-[420px] z-9999 hidden md:flex flex-col overflow-hidden rounded-2xl glass-dark shadow-xl bottom-6 max-h-[calc(100vh-8rem)]"
           role="dialog"
-          aria-label="Ask Axiom support chat"
+          aria-label="Ask V19 support chat"
         >
           <div className="flex items-center justify-between border-b border-white/6 bg-zinc-600 px-4 py-3">
             <div className="flex items-center gap-2">
@@ -198,7 +198,7 @@ export default function AIChatWidget() {
                 <SparklesIcon className="h-5 w-5 text-white" />
               </div>
               <div>
-                <h2 className="text-sm font-semibold text-white">Axiom Assistant</h2>
+                <h2 className="text-sm font-semibold text-white">V19 Assistant</h2>
                 <p className="text-xs text-white/90">Ask about cloud operations</p>
               </div>
             </div>
@@ -220,8 +220,8 @@ export default function AIChatWidget() {
                 <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/2 border border-white/6">
                   <ChatBubbleLeftRightIcon className="h-6 w-6 text-zinc-600" />
                 </div>
-                <p className="text-sm font-medium text-white">Ask Axiom</p>
-                <p className="mt-1 text-xs text-zinc-400">Answers from Axiom&apos;s public docs, with sources. Never share passwords or keys here.</p>
+                <p className="text-sm font-medium text-white">Ask V19</p>
+                <p className="mt-1 text-xs text-zinc-400">Answers from V19&apos;s public docs, with sources. Never share passwords or keys here.</p>
                 <div className="mt-4 flex flex-wrap justify-center gap-2">
                   {SUGGESTIONS.slice(0, 4).map((s) => (
                     <button
@@ -250,7 +250,7 @@ export default function AIChatWidget() {
                     >
                       {m.role === "assistant" && (
                         <div className="mb-1 flex items-center justify-between gap-2">
-                          <span className="text-[10px] font-medium text-slate-500">{m.mode === "ai" ? "Ask Axiom · AI answer from the cited docs" : "Ask Axiom · from the docs"}</span>
+                          <span className="text-[10px] font-medium text-slate-500">{m.mode === "ai" ? "Ask V19 · AI answer from the cited docs" : "Ask V19 · from the docs"}</span>
                           <button
                             onClick={() => copyResponse(m.content)}
                             aria-label="Copy"
@@ -325,7 +325,7 @@ export default function AIChatWidget() {
               href="/product"
               className="mt-2 block text-center text-[10px] text-slate-500 hover:text-zinc-600"
             >
-              Learn about Axiom Agent
+              Learn about V19
             </Link>
           </div>
         </div>

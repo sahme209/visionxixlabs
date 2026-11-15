@@ -60,7 +60,7 @@ export async function POST(req: Request): Promise<NextResponse> {
           blastRadius: bundle.candidate.riskLevel === "critical" ? "broad" : bundle.candidate.riskLevel === "high" ? "moderate" : "contained",
         },
         notes: [
-          "Preview only — Axiom does not sign or transmit this handoff from this endpoint.",
+          "Preview only — V19 does not sign or transmit this handoff from this endpoint.",
           "Signed issuance is unavailable until server-owned artifact and approval provenance can be verified.",
           "Local apply remains blocked until governance + signed binaries land.",
         ],

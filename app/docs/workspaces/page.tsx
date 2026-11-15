@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
-export const metadata: Metadata = { title: "Workspaces — Axiom Documentation", description: "Choose your active browser workspace using current accepted membership.", alternates: { canonical: "/docs/workspaces" } };
+export const metadata: Metadata = { title: "Workspaces — V19 Documentation", description: "Choose your active browser workspace using current accepted membership.", alternates: { canonical: "/docs/workspaces" } };
 export default function WorkspacesGuide() {
  return <>
   <DocHeader kicker="Workspace · Context" title="Choose the workspace before you act." summary="The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions." />

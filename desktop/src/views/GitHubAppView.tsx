@@ -82,7 +82,7 @@ export function GitHubAppView() {
           {data.installUrl ? (
             <div className="glass-card p-4 border border-violet-500/20">
               <p className="text-sm font-semibold text-violet-100 mb-2">
-                {data.installed ? "Re-install or extend repository selection" : "Install Axiom on your GitHub org"}
+                {data.installed ? "Re-install or extend repository selection" : "Install V19 on your GitHub org"}
               </p>
               <a
                 href={data.installUrl}

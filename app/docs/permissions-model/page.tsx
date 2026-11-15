@@ -4,8 +4,8 @@ import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
 import { PERMISSIONS_FLOW_STAGES } from "@/lib/marketing/permissionsFlowModel";
 
 export const metadata: Metadata = {
-  title: "Permissions model — Axiom Documentation",
-  description: "Workspace, GitHub, AI provider, approval, and AWS ECS permission boundaries in Axiom.",
+  title: "Permissions model — V19 Documentation",
+  description: "Workspace, GitHub, AI provider, approval, and AWS ECS permission boundaries in V19.",
 };
 
 export default function PermissionsModelPage() {
@@ -14,7 +14,7 @@ export default function PermissionsModelPage() {
       <DocHeader
         kicker="Trust · Permissions"
         title="Each capability has its own authority boundary."
-        summary="Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. Axiom does not treat one successful connection as authority for everything else."
+        summary="Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. V19 does not treat one successful connection as authority for everything else."
       />
 
       <Callout title="Preview workflow reference">
@@ -44,7 +44,7 @@ export default function PermissionsModelPage() {
       </DocSection>
 
       <DocSection id="aws" title="AWS ECS authority" kicker="04">
-        <p>Axiom dispatches the tenant workflow; GitHub Actions OIDC assumes the environment&apos;s configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.</p>
+        <p>V19 dispatches the tenant workflow; GitHub Actions OIDC assumes the environment&apos;s configured AWS role. AWS permissions therefore remain constrained by both the GitHub trust subject and the role policy.</p>
       </DocSection>
 
       <DocSection id="trust" title="Trust questions">
@@ -52,7 +52,7 @@ export default function PermissionsModelPage() {
           { question: "Does sign-in grant GitHub write?", answer: "No. GitHub installation, repository scope, role checks, and approval are separate." },
           { question: "Can the model approve itself?", answer: "No. The model may recommend a decision; an authorized independent human reviewer must record approval." },
           { question: "Is AI on by default?", answer: "No. Workspace provider policy is opt-in and fails closed." },
-          { question: "Does Axiom store an AWS access key?", answer: "Not for the released ECS path. The tenant workflow uses OIDC." },
+          { question: "Does V19 store an AWS access key?", answer: "Not for the released ECS path. The tenant workflow uses OIDC." },
           { question: "Can risk be lowered by context?", answer: "No. Context can only escalate a tool's baseline risk." },
           { question: "Are identity providers active after configuration?", answer: "No. They remain pending until a real identity flow is implemented and verified." },
         ]} />

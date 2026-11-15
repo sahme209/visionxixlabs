@@ -114,7 +114,7 @@ function MockBrowserChrome({ route }: { route?: string }) {
         <span className="w-2.5 h-2.5 rounded-full bg-zinc-700" />
       </div>
       <div className="flex-1 mx-3 px-3 py-1 rounded-md bg-black/40 text-[11px] font-mono text-zinc-500 truncate">
-        Axiom Agent · sample workspace{route ? ` · ${route.replace("/dashboard/", "")}` : ""}
+        V19 · sample workspace{route ? ` · ${route.replace("/dashboard/", "")}` : ""}
       </div>
     </div>
   );
@@ -176,7 +176,7 @@ function MockDashboardFrame({ route, children }: { route?: string; children: Rea
       <div className="flex items-center justify-between border-b border-white/5 px-4 py-2 bg-white/1.5">
         <div className="flex items-center gap-2">
           <span className="w-5 h-5 rounded-sm bg-linear-to-br from-orange-500 to-amber-500 flex items-center justify-center text-[10px] font-bold text-white">A</span>
-          <span className="text-[12px] font-semibold text-white tracking-tight">Axiom</span>
+          <span className="text-[12px] font-semibold text-white tracking-tight">V19</span>
           <span className="text-[10px] font-mono text-zinc-500 hidden sm:inline">· ws_acme_prod</span>
         </div>
         <div className="flex items-center gap-3">
@@ -251,7 +251,7 @@ function MockDesktopFrame({ route: _route, children }: { route?: string; childre
           <span className="w-2.5 h-2.5 rounded-full bg-emerald-500/70" />
         </div>
         <div className="flex-1 text-center text-[11px] font-mono text-zinc-400 truncate">
-          Axiom Agent
+          V19
         </div>
         {/* Tray-badge hint at the right edge */}
         <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-sm bg-white/15 text-zinc-300 border border-white/30">⌘ 3 awaiting</span>

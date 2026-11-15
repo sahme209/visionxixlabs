@@ -10,7 +10,7 @@ it('keeps workspace, resources and bottom destinations separate without losing r
  const go=vi.fn();render(createElement(Sidebar,{activeView:'agent',onNavigate:go}));
  const workspace=screen.getByRole('button',{name:'Workspace'});const resources=screen.getByRole('button',{name:'Resources'});
  const panel=(b:HTMLElement)=>document.getElementById(b.getAttribute('aria-controls')!)!;
- expect(within(panel(workspace)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Agent','Axiom Bot','Releases']);
+ expect(within(panel(workspace)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Agent','V19 Bot','Releases']);
  expect(within(panel(resources)).getAllByRole('button').map(x=>x.textContent)).toEqual(['Repositories','Batches','Apps & skills']);
  const utility=screen.getByRole('navigation',{name:'Workspace utilities'});
  expect(within(utility).getAllByRole('button').map(x=>x.textContent)).toEqual(['Documentation','Settings']);

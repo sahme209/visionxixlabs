@@ -66,7 +66,7 @@ export function RoiCalculatorClient() {
         ROI calculator · pick the roles you would hire
       </p>
       <h3 className="mt-3 text-2xl md:text-3xl font-bold tracking-tight">
-        How much does your team cost <span className="text-emerald-300">without</span> Axiom?
+        How much does your team cost <span className="text-emerald-300">without</span> V19?
       </h3>
 
       <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-2">
@@ -98,22 +98,22 @@ export function RoiCalculatorClient() {
           <p className="mt-2 text-3xl font-bold tabular-nums">{usd(total)}</p>
         </div>
         <div className="surface-glass rounded-2xl p-5">
-          <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">Axiom annual (illustrative)</p>
+          <p className="text-[10px] font-mono uppercase tracking-widest text-zinc-500">V19 annual (illustrative)</p>
           <p className="mt-2 text-3xl font-bold tabular-nums">{usd(AXIOM_ANNUAL_USD)}</p>
         </div>
         <div className="rounded-2xl border border-emerald-500/30 bg-emerald-500/6 p-5">
           <p className="text-[10px] font-mono uppercase tracking-widest text-emerald-300">Annual savings</p>
           <p className="mt-2 text-3xl font-bold tabular-nums text-emerald-200">{usd(savings)}</p>
           <p className="mt-1 text-[11px] font-mono text-emerald-300/80">
-            {multiplier > 0 ? `${multiplier.toFixed(1)}× of Axiom annual` : ""}
+            {multiplier > 0 ? `${multiplier.toFixed(1)}× of V19 annual` : ""}
           </p>
         </div>
       </div>
 
       <p className="mt-6 text-[12px] text-zinc-500 leading-relaxed">
-        Salary numbers are US-market loaded annual estimates (base + benefits + tooling). The Axiom
+        Salary numbers are US-market loaded annual estimates (base + benefits + tooling). The V19
         figure shown is illustrative — your actual contract is per workspace + tier. Approval-only-
-        no-execution: Axiom never applies changes; the human review queue is what scales.
+        no-execution: V19 never applies changes; the human review queue is what scales.
       </p>
     </motion.div>
   );

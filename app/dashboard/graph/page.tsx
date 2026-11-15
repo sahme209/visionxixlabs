@@ -161,10 +161,10 @@ export default function OperatingGraphPage() {
               )}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mt-3 mb-3">
-              How Axiom <span className="text-gradient">connects.</span>
+              How V19 <span className="text-gradient">connects.</span>
             </h1>
             <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-              Every operational object Axiom tracks, and the canonical relationships between them. <span className="text-zinc-500">A pure projection of /api/axiom-os/state — no mutation, no fabrication.</span>
+              Every operational object V19 tracks, and the canonical relationships between them. <span className="text-zinc-500">A pure projection of /api/axiom-os/state — no mutation, no fabrication.</span>
             </p>
           </div>
 

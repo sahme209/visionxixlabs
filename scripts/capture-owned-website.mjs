@@ -249,9 +249,9 @@ try {
   async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : path === '/product' ? '#deployment-model' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     currentInteraction = controlToken(label);
-    const point = ['Read approval workflow', 'Prepare sample change →', 'Review project check →', 'Inspect sample check output →', 'Review branch publication →', 'Review proposed action →', 'Inspect outcome evidence →'].includes(label)
-      ? await settleControlPointer(() => evaluate(pointerForControl, label), point => send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }), () => evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))))
-      : await evaluate(pointerForControl, label);
+    // Every control can move after the preceding React decision/step update.
+    // Settle before the single trusted click, including approval and rejection.
+    const point = await settleControlPointer(() => evaluate(pointerForControl, label), point => send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }), () => evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))));
     await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
     lastInteraction = currentInteraction;
   }

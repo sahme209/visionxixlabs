@@ -80,7 +80,7 @@ describe("/api/control/ai-governance", () => {
   it("requires owner or admin authority", async () => {
     mocks.isAdminOrOwner.mockReturnValue(false);
     const { PATCH } = await import("../route");
-    const response = await PATCH(request({ section: "agent_identity", displayName: "Axiom", enabled: true, allowedTools: ["list_environments"] }));
+    const response = await PATCH(request({ section: "agent_identity", displayName: "V19", enabled: true, allowedTools: ["list_environments"] }));
     expect(response.status).toBe(403);
     expect(mocks.saveIdentity).not.toHaveBeenCalled();
   });
@@ -104,12 +104,12 @@ describe("/api/control/ai-governance", () => {
   });
   it.each(["P2021","P2022"])("returns bounded503 for an identity save with %s",async code=>{
     mocks.saveIdentity.mockRejectedValueOnce({code,message:"private schema detail"});
-    const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();
+    const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"V19",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();
     expect(response.status).toBe(503);expect(body.error).toBe("agent_identity_migration_pending");expect(JSON.stringify(body)).not.toContain("private schema");expect(mocks.recordAudit).not.toHaveBeenCalled();
   });
   it("does not report identity-save success when its audit cannot be recorded",async()=>{
     mocks.recordAudit.mockRejectedValueOnce(Error("private audit failure"));
-    const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();
+    const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"V19",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();
     expect(response.status).toBe(503);expect(body.error).toBe("policy_audit_unconfirmed");expect(JSON.stringify(body)).not.toContain("private audit");expect(mocks.saveIdentity).toHaveBeenCalledOnce();
   });
 
@@ -117,7 +117,7 @@ describe("/api/control/ai-governance", () => {
     mocks.readIdentity.mockRejectedValueOnce(Error("private connection diagnostic"));const { GET }=await import("../route");const response=await GET();const body=await response.json();expect(body.data.agentIdentityState).toBe("unavailable");expect(JSON.stringify(body)).not.toContain("private connection");
   });
   it("keeps unknown identity write failures generic and does not invoke error-code coercion",async()=>{
-    const toString=vi.fn(()=>"P2021");mocks.saveIdentity.mockRejectedValueOnce({code:{toString},message:"private connection diagnostic"});const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"Axiom",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();expect(response.status).toBe(503);expect(body.error).toBe("agent_identity_unavailable");expect(JSON.stringify(body)).not.toContain("private connection");expect(toString).not.toHaveBeenCalled();expect(mocks.recordAudit).not.toHaveBeenCalled();
+    const toString=vi.fn(()=>"P2021");mocks.saveIdentity.mockRejectedValueOnce({code:{toString},message:"private connection diagnostic"});const { PATCH }=await import("../route");const response=await PATCH(request({section:"agent_identity",displayName:"V19",enabled:true,allowedTools:["list_environments"]}));const body=await response.json();expect(response.status).toBe(503);expect(body.error).toBe("agent_identity_unavailable");expect(JSON.stringify(body)).not.toContain("private connection");expect(toString).not.toHaveBeenCalled();expect(mocks.recordAudit).not.toHaveBeenCalled();
   });
 
   it.each([

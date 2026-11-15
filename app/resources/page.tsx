@@ -5,15 +5,15 @@ import { Navigation } from "@/components/Navigation";
 import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
-  title: "Axiom Agent resources",
+  title: "V19 resources",
   description: "Practical guidance for a governed deployment workflow, desktop installation, and security boundaries.",
 };
 
 const GUIDES = [
-  { eyebrow: "Start here", title: "A calm first release", detail: "How to install Axiom Agent, sign in, and keep a deployment request complete before review.", href: "/docs/getting-started" },
+  { eyebrow: "Start here", title: "A calm first release", detail: "How to install V19, sign in, and keep a deployment request complete before review.", href: "/docs/getting-started" },
   { eyebrow: "Workflow", title: "Release operations", detail: "A clear model for readiness, human approval, validation, recovery, and auditable closure.", href: "/docs/releaseops" },
   { eyebrow: "Trust", title: "Security boundaries", detail: "What is scoped per tenant, what is read-only, and why a connection is not treated as live before validation.", href: "/docs/security-model" },
-  { eyebrow: "Desktop", title: "Install Axiom Agent", detail: "Platform installation guidance for the operational workspace.", href: "/docs/desktop-install" },
+  { eyebrow: "Desktop", title: "Install V19", detail: "Platform installation guidance for the operational workspace.", href: "/docs/desktop-install" },
 ];
 
 export default function ResourcesPage() {
@@ -22,7 +22,7 @@ export default function ResourcesPage() {
       <Navigation />
       <main className="mx-auto max-w-[1240px] px-5 pb-20 pt-32 sm:px-10 lg:pb-28">
         <PageHero
-          eyebrow="Axiom Agent resources"
+          eyebrow="V19 resources"
           title="Guidance for the release"
           muted="you can explain."
           lead="Practical notes for running a governed deployment workflow. The guides describe what is available now and keep planned connections clearly separate from verified ones."

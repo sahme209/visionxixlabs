@@ -2,11 +2,11 @@ import type {Metadata} from 'next';
 import Link from 'next/link';
 import {Callout,DocFooterNav,DocHeader,DocSection} from '@/components/docs/DocPrimitives';
 
-export const metadata:Metadata={title:'Product surfaces — Axiom Documentation',description:'Choose the right Axiom desktop workspace or public guide, and distinguish browsing, review, execution and help.',alternates:{canonical:'/docs/surfaces'}};
+export const metadata:Metadata={title:'Product surfaces — V19 Documentation',description:'Choose the right V19 desktop workspace or public guide, and distinguish browsing, review, execution and help.',alternates:{canonical:'/docs/surfaces'}};
 
 const DESTINATIONS=[
  {name:'Agent',purpose:'Work with code, local files and research through the Agent conversation.',next:'Inspect the proposed tool and its scope. For a change, follow the exact review and execution controls available in your version.'},
- {name:'Axiom Bot',purpose:'Describe an outcome, keep a saved task, request an AI response or open reviewed app actions.',next:'Check which task owns the response or action. Saving a task or receiving an AI response does not authorize a provider action.'},
+ {name:'V19 Bot',purpose:'Describe an outcome, keep a saved task, request an AI response or open reviewed app actions.',next:'Check which task owns the response or action. Saving a task or receiving an AI response does not authorize a provider action.'},
  {name:'Releases',purpose:'Find release requests, their plans, exact action reviews and available outcome evidence.',next:'Start with the request’s next required step. The authorized requester and independent reviewer have different responsibilities; a dispatch acknowledgment is not application-health evidence.'},
  {name:'Repositories',purpose:'Select and inspect repository context and use the available local or connected repository controls.',next:'Check the repository, branch and file before editing or proposing a write. Viewing code does not grant commit, push or merge authority.'},
  {name:'Batches',purpose:'Inspect supported Airflow workflows, runs and their available automation controls.',next:'Check the configured connection and source run first. The Batches label does not imply that other orchestration services are connected or supported.'},

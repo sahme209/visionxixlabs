@@ -5,9 +5,9 @@ import { Navigation } from "@/components/Navigation";
 import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
-  title: "Axiom design system — Vision XIX Labs",
+  title: "V19 design system — Vision XIX Labs",
   description:
-    "The restrained visual and interaction rules behind the Axiom website and desktop experience.",
+    "The restrained visual and interaction rules behind the V19 website and desktop experience.",
 };
 
 const colors = [
@@ -35,7 +35,7 @@ export default function DesignPage() {
             eyebrow="Design system"
             title="Complexity belongs in the capability."
             muted="Not in the interface."
-            lead={<>Axiom uses a quiet neutral system, clear contrast, direct
+            lead={<>V19 uses a quiet neutral system, clear contrast, direct
               language, and motion only when it explains a state change.</>}
           />
         </section>

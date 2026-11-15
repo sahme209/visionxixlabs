@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
       throw new AxiomError({ code: "billing.portal.disabled", category: "precondition", userMessage: "Self-service billing is not active yet." });
     }
     if (!isSameOriginRequest(req)) {
-      throw new AxiomError({ code: "billing.origin.invalid", category: "authorization", userMessage: "This billing request did not come from the Axiom application." });
+      throw new AxiomError({ code: "billing.origin.invalid", category: "authorization", userMessage: "This billing request did not come from the V19 application." });
     }
     const ctx = await currentContext();
     if (!ctx.isAuthenticated || !ctx.organizationId || !ctx.email) {

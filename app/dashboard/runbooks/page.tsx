@@ -137,7 +137,7 @@ export default function RunbooksPage() {
       <PageIntro
         kicker={`Automation · runbooks${report ? ` · ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
         title={<>AGI proposes. <span className="text-zinc-500">Humans approve.</span></>}
-        description="For every high/critical CloudTrail event, Axiom auto-drafts a typed runbook with a reversal action and a hardening policy. Nothing executes — operators review and push to Approval Packets."
+        description="For every high/critical CloudTrail event, V19 auto-drafts a typed runbook with a reversal action and a hardening policy. Nothing executes — operators review and push to Approval Packets."
         helps="See drafted remediation runbooks, the events that triggered them, and the reversal/hardening steps proposed."
         connectFirst="AWS connector with CloudTrail access. Azure + GCP equivalents land as those connectors mature."
         engineers={["Incident Engineer", "Security Engineer", "Cloud Engineer"]}

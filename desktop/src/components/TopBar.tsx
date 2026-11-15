@@ -4,7 +4,7 @@ import type { View } from "../App";
 import type { VerifiedDesktopIdentity } from "../lib/desktopClient";
 
 const VIEW_TITLES: Partial<Record<View, { title: string; subtitle: string }>> = {
-  "axiom-bot": { title: "Axiom Bot", subtitle: "Saved tasks, AI responses and reviewed app actions" },
+  "axiom-bot": { title: "V19 Bot", subtitle: "Saved tasks, AI responses and reviewed app actions" },
   agent: { title: "Agent", subtitle: "Work with code, local files and research" },
   "deployment-requests": { title: "Releases", subtitle: "Scope, evidence and approvals for delivery" },
   "airflow-automation": { title: "Batches", subtitle: "Monitor Airflow workflows and review batch operations" },

@@ -18,7 +18,7 @@ export class WorkspaceViewBoundary extends Component<WorkspaceViewBoundaryProps,
   }
 
   componentDidCatch(error: Error, info: ErrorInfo): void {
-    console.error("Axiom desktop view failed", error.message, info.componentStack);
+    console.error("V19 desktop view failed", error.message, info.componentStack);
   }
 
   private retry = (): void => {

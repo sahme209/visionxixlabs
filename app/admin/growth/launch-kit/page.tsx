@@ -61,7 +61,7 @@ const FIRST_TWEETS: ReadonlyArray<{ idx: string; category: string; body: string 
     idx: "02",
     category: "Product",
     body:
-      "Axiom scans your cloud, reasons about what to fix, generates an execution plan, and asks for approval.\n\n" +
+      "V19 scans your cloud, reasons about what to fix, generates an execution plan, and asks for approval.\n\n" +
       "It does NOT auto-deploy. It does NOT auto-rollback. It does NOT phone home asking for more access than the IAM role you set up on day one.\n\n" +
       "AI that respects your production. visionxixlabs.com",
   },
@@ -82,7 +82,7 @@ const FIRST_TWEETS: ReadonlyArray<{ idx: string; category: string; body: string 
       "· Provisioned IOPS on dev databases\n" +
       "· Hot S3 storage on never-read logs\n" +
       "· EIPs holding addresses for nothing\n\n" +
-      "Axiom finds them in 60 seconds. Asks before fixing.",
+      "V19 finds them in 60 seconds. Asks before fixing.",
   },
   {
     idx: "05",
@@ -136,7 +136,7 @@ const FIRST_TWEETS: ReadonlyArray<{ idx: string; category: string; body: string 
     category: "Product education",
     body:
       "Blast radius is the most important number in your deployment pipeline.\n\n" +
-      "Axiom caps it. Default: 5 resources per approved plan. Production accounts: 1.\n\n" +
+      "V19 caps it. Default: 5 resources per approved plan. Production accounts: 1.\n\n" +
       "We'd rather ship a smaller fix today than a larger one we can't reverse tomorrow.",
   },
   {
@@ -190,9 +190,9 @@ Hashicorp use. Not OSI-approved. Reuse is by permission, not by default.
 `;
 
 const README_MD =
-  `# Axiom — Releases
+  `# V19 — Releases
 
-Source archive for the **Axiom** AI cloud-operations agent built by
+Source archive for the **V19** AI cloud-operations agent built by
 [Vision XIX Labs](https://visionxixlabs.com).
 
 This repository is published **for transparency**, not as an open
@@ -201,7 +201,7 @@ with this code.
 
 ## What this repo is
 
-Axiom is the AI agent that scans your cloud, reasons about what to
+V19 is the AI agent that scans your cloud, reasons about what to
 fix, drafts execution plans with verified rollback, and asks for
 human approval before applying any change. It runs on AWS, Azure, and
 GCP through assume-role / RBAC / service-account connectors.
@@ -265,7 +265,7 @@ export default function LaunchKitPage() {
           Launch kit · internal
         </p>
         <h1 className="text-3xl md:text-4xl font-bold text-white tracking-[-0.04em] mb-3">
-          Copy-paste this into X.com + the Axiom repo.
+          Copy-paste this into X.com + the V19 repo.
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-3xl leading-relaxed">
           Everything you need to set up the brand externally. I can&apos;t sign
@@ -330,7 +330,7 @@ export default function LaunchKitPage() {
             sahme209/axiom-releases · repo files
           </p>
           <p className="text-[13px] text-zinc-300 leading-relaxed">
-            Two files to add at the root of the Axiom repo. <strong>Source-available license</strong> — people
+            Two files to add at the root of the V19 repo. <strong>Source-available license</strong> — people
             can read the code but cannot fork/redistribute without permission.
             Repo is already public ({" "}
             <a href="https://github.com/sahme209/axiom-releases" target="_blank" rel="noopener noreferrer" className="text-brand-coral hover:underline">

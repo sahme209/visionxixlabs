@@ -12,8 +12,8 @@ import {
 } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-    title: "Getting started — Axiom Documentation",
-    description: "Download, install, authenticate, and configure Axiom Agent for your first guided workflow.",
+    title: "Getting started — V19 Documentation",
+    description: "Download, install, authenticate, and configure V19 for your first guided workflow.",
 };
 
 export default function GettingStartedPage() {
@@ -21,7 +21,7 @@ export default function GettingStartedPage() {
         <>
             <DocHeader
                 kicker="Start here"
-                title="Getting started with Axiom Agent."
+                title="Getting started with V19 Agent."
                 summary="Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs."
             />
 
@@ -33,7 +33,7 @@ export default function GettingStartedPage() {
                 <ul className="list-disc list-inside space-y-1.5 text-zinc-400">
                     <li>A supported macOS, Windows, or Linux system listed on the <Link href="/download">download page</Link></li>
                     <li>Permission to install software on the workstation</li>
-                    <li>HTTPS access to the configured Axiom API and any integrations you enable</li>
+                    <li>HTTPS access to the configured V19 API and any integrations you enable</li>
                     <li>An organization identity and connector accounts supplied by your administrator</li>
                 </ul>
             </DocSection>
@@ -41,7 +41,7 @@ export default function GettingStartedPage() {
             <DocSection id="install" title="Step 1 — Download and install" kicker="01">
                 <Step number={1} title="Choose a manifest-backed installer">
                     <p>
-                        Open <Link href="/download">Download Axiom Agent</Link>. An operating-system button is enabled only when the current public release contains a matching installer. Select the architecture that matches your device.
+                        Open <Link href="/download">Download V19</Link>. An operating-system button is enabled only when the current public release contains a matching installer. Select the architecture that matches your device.
                     </p>
                 </Step>
                 <Step number={2} title="Check release and signing information">
@@ -57,14 +57,14 @@ export default function GettingStartedPage() {
             </DocSection>
 
             <DocSection id="authenticate" title="Step 2 — Authenticate the desktop" kicker="02">
-                <Step number={1} title="Start browser sign-in from Axiom Agent">
+                <Step number={1} title="Start browser sign-in from V19">
                     <p>
                         The app opens a short-lived pairing flow in your browser. Sign in with the organization identity your administrator configured, review the request, and approve it.
                     </p>
                 </Step>
                 <Step number={2} title="Return to the installed application">
                     <p>
-                        Axiom Agent polls the pairing status and receives a scoped desktop session after approval. A failed, expired, or rejected request remains visible and must not be reported as connected.
+                        V19 polls the pairing status and receives a scoped desktop session after approval. A failed, expired, or rejected request remains visible and must not be reported as connected.
                     </p>
                 </Step>
             </DocSection>
@@ -112,7 +112,7 @@ export default function GettingStartedPage() {
             <DocSection id="trust" title="Trust questions for first launch" kicker="05 · Verify before use">
                 <TrustGrid
                     items={[
-                        { question: "Where does the product run?", answer: "Operational product screens run in the installed Axiom Agent application. The public site distributes and documents it." },
+                        { question: "Where does the product run?", answer: "Operational product screens run in the installed V19 application. The public site distributes and documents it." },
                         { question: "Why did a browser open?", answer: "The browser is used to authenticate and approve a scoped desktop pairing request. It is not the production application." },
                         { question: "What happens without credentials?", answer: "The relevant connector remains disconnected or unavailable. It must not silently return a mock success." },
                         { question: "Can the sandbox touch production?", answer: "No. The website sandbox uses labeled fictional sample data and cannot execute production operations." },

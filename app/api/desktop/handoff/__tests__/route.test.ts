@@ -75,7 +75,7 @@ describe("existing read-only handoff alternatives", () => {
     expect(response.status).toBe(200);
     const body = await response.json();
     expect(body).toMatchObject({ ok: true, data: { preview: { allowedOperation: "review_only" } } });
-    expect(body.data.preview.notes).toContain("Preview only — Axiom does not sign or transmit this handoff from this endpoint.");
+    expect(body.data.preview.notes).toContain("Preview only — V19 does not sign or transmit this handoff from this endpoint.");
     expect(mocks.sign).not.toHaveBeenCalled();
   });
 });

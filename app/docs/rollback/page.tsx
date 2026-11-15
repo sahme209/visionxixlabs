@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "AWS ECS rollback — Axiom Documentation",
-  description: "The verified rollback boundary in Axiom's tenant-owned AWS ECS deployment workflow.",
+  title: "AWS ECS rollback — V19 Documentation",
+  description: "The verified rollback boundary in V19's tenant-owned AWS ECS deployment workflow.",
 };
 
 export default function RollbackPage() {
@@ -12,7 +12,7 @@ export default function RollbackPage() {
       <DocHeader
         kicker="Delivery · Recovery"
         title="Rollback is specific to the execution path."
-        summary="The released automatic rollback applies to the AWS ECS workflow. Axiom does not claim a universal rollback engine for every provider or resource type."
+        summary="The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type."
       />
 
       <Callout variant="safe" title="Verified ECS behavior">

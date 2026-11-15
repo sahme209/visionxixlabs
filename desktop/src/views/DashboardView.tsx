@@ -135,7 +135,7 @@ export function DashboardView({ onNavigate }: { onNavigate?: (v: View) => void }
 }
 
 // ---------------------------------------------------------------------------
-// Preview-mode banner — Axiom-grade cinematic call-to-connect
+// Preview-mode banner — V19-grade cinematic call-to-connect
 // ---------------------------------------------------------------------------
 
 // ---------------------------------------------------------------------------

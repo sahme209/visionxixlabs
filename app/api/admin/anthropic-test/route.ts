@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const response = await manager.generateText("Reply with exactly: Axiom online.", {
+    const response = await manager.generateText("Reply with exactly: V19 online.", {
       only: "vercel_gateway", maxTokens: 50, temperature: 0, correlationId: "admin-gateway-health",
     });
 

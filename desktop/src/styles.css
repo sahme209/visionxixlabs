@@ -678,7 +678,7 @@ html[data-theme="light"] [data-catalog-provider="github"] { filter: brightness(0
 @media(max-width:760px) { .workspace-header-button { padding:7px; font-size:11px; } .workspace-header-actions { gap:4px; } }
 
 /* Warm paper light mode: transparent marks retain their shape on pale surfaces. */
-html[data-theme="light"] img[src="/axiom-logo.png"] { filter:brightness(0); opacity:0.86; }
+html[data-theme="light"] img[src="/brand/v19-mark.svg"] { filter:brightness(0); opacity:0.86; }
 html[data-theme="light"] ::-webkit-scrollbar-thumb { background:#c9c3b6; }
 html[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background:#ada593; }
 
@@ -770,5 +770,5 @@ input[type="search"]::-webkit-search-cancel-button { cursor:pointer; }
 @media(max-width:900px) { .desktop-main-panel .agent-composer { padding:14px; } .desktop-entry { padding:20px; } .desktop-entry-panel { padding:28px; } }
 @media(max-height:600px) { .desktop-entry { padding-block:20px; } .desktop-entry-panel { margin-block:0; } }
 
-html[data-theme="light"] img[src="/brand/vxix-wordmark.svg"],
-html[data-theme="light"] img[src="/brand/vxix-mark.svg"] { filter:brightness(0); opacity:.92; }
+html[data-theme="light"] img[src="/brand/v19-wordmark.svg"],
+html[data-theme="light"] img[src="/brand/v19-mark.svg"] { filter:brightness(0); opacity:.92; }

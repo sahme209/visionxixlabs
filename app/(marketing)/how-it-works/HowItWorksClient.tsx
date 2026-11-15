@@ -81,7 +81,7 @@ export function HowItWorksClient() {
   return (
     <div className="public-detail-page public-how-it-works-page">
       <section className="public-detail-header">
-        <PageHero eyebrow="Axiom · Control architecture" title="Ten agents." muted="One human gate." lead="Inspect the typed agent chain: each agent has a single job, the council weighs its outputs, the operator reviews the proposal, and the auditor records a SHA-256 rationale row." note="Conceptual communication diagram, not live deployment activity. Complete Governance coverage and activation remain incomplete." />
+        <PageHero eyebrow="V19 · Control architecture" title="Ten agents." muted="One human gate." lead="Inspect the typed agent chain: each agent has a single job, the council weighs its outputs, the operator reviews the proposal, and the auditor records a SHA-256 rationale row." note="Conceptual communication diagram, not live deployment activity. Complete Governance coverage and activation remain incomplete." />
       </section>
 
       {/* ===== AGENT DIAGRAM ===== */}

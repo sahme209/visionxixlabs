@@ -16,7 +16,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
     requireWorkspaceAdmin: true,
   });
   if (!principal || principal.credentialKind !== "desktop_session") {
-    return NextResponse.json({ ok: false, error: "desktop_session_required", message: "Sign in to Axiom Agent again to manage billing." }, { status: 401 });
+    return NextResponse.json({ ok: false, error: "desktop_session_required", message: "Sign in to V19 again to manage billing." }, { status: 401 });
   }
 
   const plan = await readBillingPlan(principal.organizationId);

@@ -173,7 +173,7 @@ export default async function CapabilitiesPage() {
           Action surface
         </h1>
         <p className="text-[14px] text-zinc-400 leading-relaxed max-w-2xl">
-          One honest catalog of every concrete action Axiom can take in your workspace today.
+          One honest catalog of every concrete action V19 can take in your workspace today.
           Each row is sourced from <code className="text-zinc-300 font-mono text-[12.5px]">lib/actions/actionRegistry.ts</code> and
           cross-checked against the platform validation matrix.
           No marketing claims, no aspirational language — if it says <span className="text-emerald-300 font-mono">live</span>,
@@ -246,7 +246,7 @@ export default async function CapabilitiesPage() {
         <p className="text-[11.5px] text-zinc-500 mt-3 leading-relaxed max-w-2xl">
           {counts.unsafe} actions can mutate cloud state. Every one is currently <span className="text-rose-300 font-mono">blocked</span> at the
           TypeScript level until approval signatures, sandbox credential testing, and rollback attachment ship together.
-          This is intentional — Axiom never executes unsafely.
+          This is intentional — V19 never executes unsafely.
         </p>
       </section>
 

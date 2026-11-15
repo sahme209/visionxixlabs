@@ -137,7 +137,7 @@ function SignUpForm() {
             We sent a verification link to {verificationEmail}. Open it to verify your email address before signing in.
           </p>
           <p className="text-sm text-zinc-400">
-            After verification, return here to continue pairing. If the desktop request expires, return to Axiom Agent and choose Log in again.
+            After verification, return here to continue pairing. If the desktop request expires, return to V19 and choose Log in again.
           </p>
           <Link href={`/auth/signin?callbackUrl=${encodeURIComponent(redirect)}`} className="inline-block rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950">
             Continue to sign in
@@ -285,7 +285,7 @@ function SignUpForm() {
             <p className="mt-4 text-xs text-zinc-600 text-center">
               An approved pilot or commercial workspace entitlement is provisioned separately before deployment operations unlock.
             </p>
-            {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-zinc-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to Axiom Agent and choose Log in again.</p>}
+            {!desktopChallenge && <p role="alert" className="mt-3 text-xs text-zinc-300 text-center">This sign-up link is not attached to a valid desktop pairing request. Return to V19 and choose Log in again.</p>}
           </div>
       </div>
     </div>

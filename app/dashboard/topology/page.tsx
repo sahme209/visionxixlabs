@@ -40,7 +40,7 @@ export default function TopologyPage() {
             Cloud <span className="text-gradient">Topology.</span>
           </h1>
           <p className="text-dim-paragraph text-base max-w-2xl leading-relaxed">
-            Live map of every provider, region, and resource Axiom is operating. <span className="dim-1">Click an overlay to see operational risk, cost concentration, or active scan activity overlaid on your infrastructure.</span>
+            Live map of every provider, region, and resource V19 is operating. <span className="dim-1">Click an overlay to see operational risk, cost concentration, or active scan activity overlaid on your infrastructure.</span>
           </p>
         </div>
       </Reveal>

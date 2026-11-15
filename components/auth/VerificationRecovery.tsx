@@ -47,7 +47,7 @@ export function VerificationRecovery({ initialEmail = "", callbackUrl, showSuppo
       </form>
       {message && <p role="status" className="text-zinc-300">{message}</p>}
       {error && <p role="alert" className="text-zinc-200">{error}</p>}
-      <p className="text-xs text-zinc-500">A new link replaces previous unused links. If desktop pairing expires, return to Axiom Agent and choose Log in again.</p>
+      <p className="text-xs text-zinc-500">A new link replaces previous unused links. If desktop pairing expires, return to V19 and choose Log in again.</p>
       {showSupportLink && <Link href="/contact" className="inline-flex min-h-11 items-center text-zinc-300 underline underline-offset-4">Contact support</Link>}
     </section>
   );

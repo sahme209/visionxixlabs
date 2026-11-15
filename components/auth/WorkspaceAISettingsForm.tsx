@@ -115,7 +115,7 @@ export function WorkspaceAISettingsForm() {
       {state === "unavailable" && <p className="mt-6 text-sm leading-6 text-zinc-500">AI policy is available to workspace owners after at least one provider is enabled by the service.</p>}
       {state !== "loading" && state !== "migration_pending" && state !== "unavailable" && (
         <div className="mt-6">
-          {availableProviders.length === 0 ? <p className="text-sm leading-6 text-zinc-500">No live AI provider is enabled for this workspace yet. Axiom will not offer a simulated or unconfigured provider as a choice.</p> : (
+          {availableProviders.length === 0 ? <p className="text-sm leading-6 text-zinc-500">No live AI provider is enabled for this workspace yet. V19 will not offer a simulated or unconfigured provider as a choice.</p> : (
             <>
               <fieldset className="rounded-xl border border-white/[0.07] p-3">
                 <legend className="px-1 text-xs font-medium text-zinc-300">Workspace AI access</legend>

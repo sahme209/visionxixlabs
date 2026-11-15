@@ -75,7 +75,7 @@ export function EnterpriseTrustSignals() {
               </span>
             </h2>
             <p className="text-zinc-400 max-w-lg mx-auto leading-relaxed">
-              Axiom separates observation, proposal, approval, and execution so teams can move quickly without hiding who authorized a change.
+              V19 separates observation, proposal, approval, and execution so teams can move quickly without hiding who authorized a change.
             </p>
           </div>
         </AnimateOnScroll>

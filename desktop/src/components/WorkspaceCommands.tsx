@@ -7,7 +7,7 @@ const COMMANDS: Array<{view: CustomerView; label: string; keywords: string}> = [
   {view: "airflow-automation", label: "Open Batches", keywords: "airflow automation batch dags workflows"},
   {view: "plugins-skills", label: "Open Apps & skills", keywords: "apps plugins skills connectors integrations outlook capabilities customization MCP"},
   {view: "docs", label: "Open documentation", keywords: "help guidance"},
-  {view: "axiom-bot", label: "Open Axiom Bot", keywords: "task draft automation"},
+  {view: "axiom-bot", label: "Open V19 Bot", keywords: "task draft automation"},
   {view: "settings", label: "Open settings", keywords: "preferences appearance account billing models permissions"},
 ];
 const DESCRIPTIONS:Record<CustomerView,string>={

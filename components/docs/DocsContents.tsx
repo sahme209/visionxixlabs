@@ -65,7 +65,7 @@ export function DocsContents() {
         className={`${open ? "block" : "hidden"} mt-4 max-h-[60vh] overflow-y-auto rounded-xl border border-white/6 p-3 lg:mt-0 lg:block lg:max-h-none lg:overflow-visible lg:rounded-none lg:border-0 lg:p-0`}>
         <div className="mb-6 border-b border-white/4 pb-4">
           <p className="mb-1 text-[10px] font-semibold uppercase tracking-widest text-orange-400">Documentation</p>
-          <p className="text-sm text-zinc-300">Self-serve guides for the Axiom platform.</p>
+          <p className="text-sm text-zinc-300">Self-serve guides for the V19 platform.</p>
         </div>
         <DocsSidebar />
       </div>

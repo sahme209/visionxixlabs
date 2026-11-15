@@ -100,7 +100,7 @@ export async function signInWithBrowser(intent: DesktopAuthIntent, onWaiting: ()
     origin, "/api/desktop/pair/start",
     {
       deviceFingerprint: fingerprint,
-      deviceLabel: `${navigator.platform || "Desktop"} · Axiom Agent`,
+      deviceLabel: `${navigator.platform || "Desktop"} · V19`,
       platform: await platform(),
       desktopVersion: DESKTOP_VERSION,
       intent,

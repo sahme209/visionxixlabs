@@ -313,8 +313,8 @@ export default function TrustCenterPage() {
           </div>
           <ul className="grid sm:grid-cols-2 gap-3 text-xs text-zinc-300">
             {[
-              ["Is Axiom read-only by default?",        "Yes — every connector ships with a read-only auth model. Writes are opt-in and listed in the connector permission summary."],
-              ["What access does Axiom need?",          "Per-provider in the connector permission table above. AWS: read-only IAM role with External ID. GitHub: minimal repo scopes via an installed app."],
+              ["Is V19 read-only by default?",        "Yes — every connector ships with a read-only auth model. Writes are opt-in and listed in the connector permission summary."],
+              ["What access does V19 need?",          "Per-provider in the connector permission table above. AWS: read-only IAM role with External ID. GitHub: minimal repo scopes via an installed app."],
               ["Can access be revoked?",                "Yes — every connector has a self-serve revoke path. Credentials are cleared from the vault immediately."],
               ["Are actions approved?",                 "High-risk actions are gated by the policy engine + approval center. The decision is server-side, not UI."],
               ["Are actions audited?",                  "Yes — every sensitive action emits a typed AuditRecord with correlation id, actor, outcome, and redacted detail."],

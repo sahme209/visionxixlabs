@@ -371,7 +371,7 @@ fn write_existing_repository_file(root: &Path, relative_path: &str, content: &st
     let parent = candidate.parent().ok_or_else(|| "Repository file needs a parent folder.".to_string())?;
     let canonical_parent = fs::canonicalize(parent).map_err(|_| "The file's parent folder must already exist.".to_string())?;
     if !canonical_parent.starts_with(root) { return Err("Repository file must stay inside the working tree.".to_string()); }
-    let metadata = fs::symlink_metadata(&candidate).map_err(|_| "File changed or was removed outside Axiom. Reopen it to review before saving.".to_string())?;
+    let metadata = fs::symlink_metadata(&candidate).map_err(|_| "File changed or was removed outside V19. Reopen it to review before saving.".to_string())?;
     if metadata.file_type().is_symlink() { return Err("Symbolic links cannot be edited.".to_string()); }
     let canonical_file = fs::canonicalize(&candidate).map_err(|_| "Repository file was not found.".to_string())?;
     if !canonical_file.starts_with(root) || !metadata.is_file() { return Err("Repository file must stay inside the working tree.".to_string()); }
@@ -381,7 +381,7 @@ fn write_existing_repository_file(root: &Path, relative_path: &str, content: &st
         .take(MAX_TEXT_FILE_BYTES + 1).read_to_end(&mut bytes).map_err(|_| "Repository file could not be checked before saving.".to_string())?;
     if bytes.len() as u64 > MAX_TEXT_FILE_BYTES { return Err("Files larger than 1 MB cannot be saved.".to_string()); }
     let current = String::from_utf8(bytes).map_err(|_| "Only UTF-8 text files can be edited.".to_string())?;
-    if current != expected_content { return Err("File changed outside Axiom. Reopen it to review before saving.".to_string()); }
+    if current != expected_content { return Err("File changed outside V19. Reopen it to review before saving.".to_string()); }
     fs::write(candidate, content).map_err(|error| format!("Could not save file: {error}"))
 }
 

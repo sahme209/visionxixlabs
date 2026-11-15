@@ -6,7 +6,7 @@ import { Navigation } from "@/components/Navigation";
 import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
-  title: "Enterprise readiness — Axiom Agent",
+  title: "Enterprise readiness — V19",
   description:
     "Implementation scope, evidence to inspect, and the customer workflows still awaiting verification.",
 };
@@ -39,7 +39,7 @@ export default function EnterpriseReadinessPage() {
             muted="No hidden claims."
             lead="Separate implemented source from configuration and verified customer workflows. Inspect the evidence for your installed version, permissions and exact operation."
             actions={<>
-              <Link href="/download" className="public-feature-action">Download Axiom</Link>
+              <Link href="/download" className="public-feature-action">Download V19</Link>
               <Link href="/docs/permissions-model" className="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/12 px-5 text-sm font-medium text-zinc-200 hover:bg-white/5">Review the permission model</Link>
             </>}
           />

@@ -8,7 +8,7 @@ import {ConnectedActionsPanel} from '../../../desktop/src/components/ConnectedAc
 afterEach(cleanup);
 it('an independent reviewer sees review controls without issue-authoring fields or manager-only discovery',async()=>{
  const action={id:'connected_action_'+'a'.repeat(64),intent:{kind:'linear_issue_update',provider:'linear',teamId:'team',issueId:'issue',title:'Exact issue update',description:'Reviewed description',expiresAt:'2099-01-01T00:00:00Z'},intentDigest:'b'.repeat(64),state:'requested',version:0,attemptCount:0,canApprove:true,canExecute:false,canCancel:false,canRecover:false};
- m.get.mockResolvedValue({ok:true,data:{provider:'linear',enabled:true,canRequest:false,canApprove:true,actions:[action],truncated:false,targets:{workspaceName:'Axiom',observedAt:'2030-01-01T00:00:00Z',selectedTeamId:'team',teams:[{id:'team',name:'Engineering'}],channels:[],states:[],issues:[],hasMore:false,canCreate:true,canUpdate:true}}});m.mutate.mockResolvedValue({ok:false,error:'Synthetic refusal'});
+ m.get.mockResolvedValue({ok:true,data:{provider:'linear',enabled:true,canRequest:false,canApprove:true,actions:[action],truncated:false,targets:{workspaceName:'V19',observedAt:'2030-01-01T00:00:00Z',selectedTeamId:'team',teams:[{id:'team',name:'Engineering'}],channels:[],states:[],issues:[],hasMore:false,canCreate:true,canUpdate:true}}});m.mutate.mockResolvedValue({ok:false,error:'Synthetic refusal'});
  render(createElement(ConnectedActionsPanel,{provider:'linear',canManage:false,onClose:()=>{}}));
  const approve=await screen.findByText('Approve exact action');
  expect(screen.queryByText('Load authorized targets')).toBeNull();expect(screen.queryByText('Save exact action for review')).toBeNull();expect(screen.queryByRole('combobox')).toBeNull();

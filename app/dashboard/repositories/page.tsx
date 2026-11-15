@@ -203,7 +203,7 @@ function syncFailureMessage(error: unknown, hint: unknown): string {
     case "github_app_connection_required":
       return "Connect the approved GitHub App from Integrations before syncing repository evidence.";
     case "github_read_validation_required":
-      return "Open Axiom Agent and complete its read-only GitHub validation before syncing evidence.";
+      return "Open V19 and complete its read-only GitHub validation before syncing evidence.";
     case "github_read_validation_unavailable":
       return "GitHub validation is unavailable right now. No repository evidence was changed.";
     default:

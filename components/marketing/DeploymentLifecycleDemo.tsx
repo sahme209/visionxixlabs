@@ -17,7 +17,7 @@ const STAGES = [
     id: "intent",
     label: "Intent",
     title: "Start with the change the team is trying to make.",
-    detail: "Axiom keeps the outcome, affected scope, change window, and owner in one governed request instead of spreading context across tools.",
+    detail: "V19 keeps the outcome, affected scope, change window, and owner in one governed request instead of spreading context across tools.",
     status: "Revision 4 recorded",
     icon: ClipboardDocumentCheckIcon,
   },
@@ -25,7 +25,7 @@ const STAGES = [
     id: "readiness",
     label: "Readiness",
     title: "Make missing evidence visible before review.",
-    detail: "Development, production, validation, and recovery signals remain facts to check—not assumptions Axiom makes on the operator's behalf.",
+    detail: "Development, production, validation, and recovery signals remain facts to check—not assumptions V19 makes on the operator's behalf.",
     status: "Signals need review",
     icon: SparklesIcon,
   },
@@ -41,7 +41,7 @@ const STAGES = [
     id: "risk",
     label: "Risk",
     title: "Show the risk and recovery path in the decision.",
-    detail: "Axiom surfaces affected scope and recorded rollback context so an approver can assess the consequence of proceeding—not just the happy path.",
+    detail: "V19 surfaces affected scope and recorded rollback context so an approver can assess the consequence of proceeding—not just the happy path.",
     status: "Risk review required",
     icon: ExclamationTriangleIcon,
   },
@@ -57,7 +57,7 @@ const STAGES = [
     id: "execution",
     label: "Execution",
     title: "The approved playbook guides the release.",
-    detail: "Axiom records the operational handoff and keeps the documented recovery path close to the action.",
+    detail: "V19 records the operational handoff and keeps the documented recovery path close to the action.",
     status: "Guided, not autonomous",
     icon: PlayCircleIcon,
   },
@@ -73,7 +73,7 @@ const STAGES = [
     id: "evidence",
     label: "Evidence",
     title: "Keep the facts that supported the decision.",
-    detail: "Axiom preserves the relevant approval, validation notes, and recovery context so the release can be understood after the moment has passed.",
+    detail: "V19 preserves the relevant approval, validation notes, and recovery context so the release can be understood after the moment has passed.",
     status: "Evidence requested",
     icon: ArchiveBoxIcon,
   },
@@ -114,7 +114,7 @@ export function DeploymentLifecycleDemo() {
     <div className="relative overflow-hidden rounded-xl border border-white/9 bg-[#0f100f] shadow-2xl shadow-black/40">
       <div aria-hidden className="pointer-events-none absolute -inset-12 opacity-70 blur-3xl" style={{ background: "radial-gradient(50% 58% at 66% 18%, rgba(245, 78, 0,.24), transparent 72%), radial-gradient(40% 42% at 18% 88%, rgba(6,182,212,.12), transparent 72%)" }} />
       <div className="relative flex h-10 items-center justify-between border-b border-white/6 px-4 text-[11px] text-zinc-500">
-        <span>Axiom Agent · release workspace</span>
+        <span>V19 · release workspace</span>
         <span>Illustrative flow · no live action</span>
       </div>
       <div className="relative grid min-h-[480px] lg:grid-cols-[238px_minmax(0,1fr)_260px]">

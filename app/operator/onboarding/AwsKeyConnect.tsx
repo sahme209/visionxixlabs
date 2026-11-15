@@ -425,7 +425,7 @@ export function AwsKeyConnect({
           One click in AWS Console, one click back.
         </h2>
         <p className="mt-3 text-[14.5px] text-zinc-400 leading-relaxed max-w-xl">
-          We open AWS with a read-only role pre-configured for this session. No JSON, no ARN paste, no access keys — Axiom assumes the role only when it&apos;s scanning, for one hour at a time.
+          We open AWS with a read-only role pre-configured for this session. No JSON, no ARN paste, no access keys — V19 assumes the role only when it&apos;s scanning, for one hour at a time.
         </p>
 
         <div className="mt-9">

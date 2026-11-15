@@ -160,7 +160,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
     setRefreshing(false);
     setAccounts(authoritativeAccounts.current);
     setSuspendedAccounts(previous => previous.filter(id => id !== account.id));
-    setNotice("Axiom connection disconnected. AWS roles, trust policies and existing STS sessions were not revoked. Reconnect requires a fresh verified enrollment.");
+    setNotice("V19 connection disconnected. AWS roles, trust policies and existing STS sessions were not revoked. Reconnect requires a fresh verified enrollment.");
   }
 
   function settleDisconnect(accountId: string, expectedVersion: number) {
@@ -187,7 +187,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       {accounts === null ? <p className="mt-1 text-xs text-zinc-500">{refreshing ? "Checking verified accounts…" : "Account state unavailable. Retry when the service is ready."}</p>
         : accounts.length === 0 ? <p className="mt-1 text-xs text-zinc-500">No verified AWS account records were returned.</p>
           : <ul className="mt-2 space-y-2">{accounts.map(account => <li key={account.id} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300">
-            <span className="font-mono">{account.accountId}</span> · {suspendedAccounts.includes(account.id) ? "Connection state requires refresh" : account.connected ? "Role identity verified" : "Disconnected from Axiom"}
+            <span className="font-mono">{account.accountId}</span> · {suspendedAccounts.includes(account.id) ? "Connection state requires refresh" : account.connected ? "Role identity verified" : "Disconnected from V19"}
             <p className="mt-1 text-zinc-500">Regions: {account.regions.length ? account.regions.join(", ") : "Not recorded"} · {account.connected ? "Inventory not checked" : "Inventory unavailable"}</p>
             {account.lastValidatedAt && <p className="mt-1 text-zinc-500">Last service validation: {account.lastValidatedAt}</p>}
             {account.revokedAt && <p className="mt-1 text-zinc-500">Disconnected at: {account.revokedAt}. History and account allowance are retained.</p>}
@@ -204,7 +204,7 @@ function AwsEnrollmentWorkspace({ identity }: { identity: VerifiedDesktopIdentit
       <label className="block text-xs text-zinc-400">AWS region<input value={input.region} onChange={event => updateInput("region", event.target.value)} autoComplete="off" className={inputClass} /></label>
       <button type="button" disabled={phase !== "idle"} onClick={() => void startEnrollment()} className={buttonClass}>{phase === "starting" ? "Preparing challenge…" : "Prepare read-only enrollment"}</button>
       {challenge && <div className="rounded-lg border border-white/10 p-3">
-        <p className="text-xs leading-5 text-zinc-400">Give this external ID only to the authorized operator configuring the already-approved role trust. Use the reviewed Axiom caller principal from your operator setup instructions. Changing AWS trust requires separate authorization; this screen does not perform or authorize that change.</p>
+        <p className="text-xs leading-5 text-zinc-400">Give this external ID only to the authorized operator configuring the already-approved role trust. Use the reviewed V19 caller principal from your operator setup instructions. Changing AWS trust requires separate authorization; this screen does not perform or authorize that change.</p>
         <label className="mt-3 block text-xs text-zinc-400">Enrollment external ID<input readOnly value={challenge.externalId} className={inputClass} /></label>
         <p className="mt-2 text-xs text-zinc-500">Expires: {challenge.expiresAt}. {expired ? "Expired; prepare a new challenge." : "No connection is established until service verification succeeds."}</p>
         <label className="mt-3 flex items-start gap-2 text-xs leading-5 text-zinc-400"><input type="checkbox" checked={trustConfirmed} onChange={event => setTrustConfirmed(event.target.checked)} />An authorized operator has separately configured this existing role for the expected read-only access.</label>
@@ -301,12 +301,12 @@ function AwsDisconnectControls({ account, suspended, onStarted, onSettled, onDis
   }
 
   return <div className="mt-2">
-    {!confirming ? <button type="button" disabled={suspended} onClick={() => setConfirming(true)} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6 disabled:opacity-50">Disconnect from Axiom</button>
+    {!confirming ? <button type="button" disabled={suspended} onClick={() => setConfirming(true)} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6 disabled:opacity-50">Disconnect from V19</button>
       : <div role="alertdialog" aria-labelledby={`aws-disconnect-${account.id}`} className="rounded-lg border border-white/15 p-3">
-        <h4 id={`aws-disconnect-${account.id}`} className="text-xs font-semibold text-zinc-200">Disconnect AWS account {account.accountId} from Axiom?</h4>
-        <p className="mt-2 text-xs leading-5 text-zinc-400">This removes Axiom’s saved connection configuration and stops new reads through this connection. It does not delete or modify AWS roles or trust policies, revoke existing STS sessions, stop deployments, or delete history. Previously issued STS sessions may remain valid for up to 15 minutes. The retained account still counts toward your workspace allowance.</p>
+        <h4 id={`aws-disconnect-${account.id}`} className="text-xs font-semibold text-zinc-200">Disconnect AWS account {account.accountId} from V19?</h4>
+        <p className="mt-2 text-xs leading-5 text-zinc-400">This removes V19’s saved connection configuration and stops new reads through this connection. It does not delete or modify AWS roles or trust policies, revoke existing STS sessions, stop deployments, or delete history. Previously issued STS sessions may remain valid for up to 15 minutes. The retained account still counts toward your workspace allowance.</p>
         <div className="mt-3 flex gap-2">
-          <button type="button" disabled={busy || suspended} onClick={() => void disconnect()} className="rounded-lg border border-red-400/25 px-3 py-2 text-xs text-red-200 disabled:opacity-50">{busy ? "Disconnecting Axiom access…" : "Disconnect Axiom access"}</button>
+          <button type="button" disabled={busy || suspended} onClick={() => void disconnect()} className="rounded-lg border border-red-400/25 px-3 py-2 text-xs text-red-200 disabled:opacity-50">{busy ? "Disconnecting V19 access…" : "Disconnect V19 access"}</button>
           {!busy && <button type="button" onClick={() => { setConfirming(false); setError(null); }} className="rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300">{suspended ? "Close confirmation" : "Keep connection"}</button>}
         </div>
         {busy && <p className="mt-2 text-xs text-zinc-500">Leaving this screen does not cancel a server operation already started. Refresh account state when you return.</p>}

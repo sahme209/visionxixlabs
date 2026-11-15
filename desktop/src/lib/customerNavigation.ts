@@ -5,7 +5,7 @@ export const CUSTOMER_NAVIGATION = [
     label: "Workspace",
     items: [
       { id: "agent", label: "Agent", title: "Work with code, local files and research" },
-      { id: "axiom-bot", label: "Axiom Bot", title: "Saved tasks, AI responses and reviewed app actions" },
+      { id: "axiom-bot", label: "V19 Bot", title: "Saved tasks, AI responses and reviewed app actions" },
       { id: "deployment-requests", label: "Releases", title: "Plan releases and review their exact actions and evidence" },
     ],
   },

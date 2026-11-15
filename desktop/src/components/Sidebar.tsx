@@ -64,12 +64,12 @@ export function Sidebar({ activeView, onNavigate, onOpenWelcome, homeVisible = f
   return (
     <aside className={`${compact ? "w-16 shrink-0" : "w-[200px]"} desktop-navigation flex flex-col`} data-tauri-drag-region>
       <div className={`h-[60px] flex items-center ${compact ? "px-3" : "px-5"} `} data-tauri-drag-region>
-        <button type="button" aria-label="vxix home" title={`Axiom Agent v${DESKTOP_VERSION}`} aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-400">
-          <img src={compact ? "/brand/vxix-mark.svg" : "/brand/vxix-wordmark.svg"} alt="vxix" className={compact ? "h-7 w-7 shrink-0 object-contain" : "h-8 w-[128px] shrink-0 object-contain"} />
+        <button type="button" aria-label="V19 home" title={`V19 v${DESKTOP_VERSION}`} aria-current={homeVisible ? "page" : undefined} onClick={onOpenWelcome} className="no-drag flex items-center gap-2.5 rounded-md text-left focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-400">
+          <img src={compact ? "/brand/v19-mark.svg" : "/brand/v19-wordmark.svg"} alt="V19" className={compact ? "h-7 w-7 shrink-0 object-contain" : "h-8 w-[42px] shrink-0 object-contain"} />
         </button>
       </div>
 
-      <nav aria-label="Axiom workspace" className={`flex-1 ${compact ? "px-2" : "px-3"} py-5 space-y-5 overflow-y-auto no-drag`}>
+      <nav aria-label="V19 workspace" className={`flex-1 ${compact ? "px-2" : "px-3"} py-5 space-y-5 overflow-y-auto no-drag`}>
         {CUSTOMER_NAV_GROUPS.filter(group => group.kind !== "utility").map((group) => {
           const isOpen = compact || openGroups[group.kind] !== false;
           const panelId = `sidebar-group-${group.kind}`;

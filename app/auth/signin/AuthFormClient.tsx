@@ -83,7 +83,7 @@ function SignInForm() {
     if (enabledProviders && !enabledProviders[provider]) {
       setError(
         `${providerLabel(provider)} sign-in is not available for this workspace yet. ` +
-        "Use email sign-in or contact the Axiom team for access."
+        "Use email sign-in or contact the V19 team for access."
       );
       return;
     }
@@ -114,7 +114,7 @@ function SignInForm() {
           <Image src="/brand/vxix-mark.svg" alt="vxix" width={24} height={24} priority />
         </Link>
         <div className="mb-[30px] text-center text-[20px] font-medium leading-6 tracking-[-0.02em]">
-          <h1 className="leading-6">Welcome to Axiom</h1>
+          <h1 className="leading-6">Welcome to V19</h1>
           <p className="leading-6 text-zinc-400">Your engineering agent</p>
         </div>
 
@@ -242,7 +242,7 @@ function SignInForm() {
               </Link>
             ) : (
               <Link href="/download" className="font-medium text-zinc-200 hover:text-white">
-                Set up through Axiom Agent
+                Set up through V19
               </Link>
             )}
           </p>

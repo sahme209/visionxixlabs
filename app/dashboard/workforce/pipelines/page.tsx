@@ -28,7 +28,7 @@ import { PIPELINE_REGISTRY, type PipelineCategory } from "@/lib/workforce/pipeli
 import { StartPipelineButton } from "@/components/workforce/StartPipelineButton";
 
 export const metadata: Metadata = {
-  title: "Pipelines · Axiom",
+  title: "Pipelines · V19",
   description: "Multi-stage workflows with gates between stages — one click to ship.",
 };
 

@@ -9,7 +9,7 @@ import SecurityPage from '../page';
 afterEach(()=>{cleanup();vi.unstubAllGlobals()});
 it('mounts a semantic source-scoped Bot response flow on the real Security page',()=>{
  render(createElement(SecurityPage));
- const figure=screen.getByRole('figure',{name:'Axiom Bot prompt and response flow'});
+ const figure=screen.getByRole('figure',{name:'V19 Bot prompt and response flow'});
  const stages=within(figure).getByRole('list',{name:'Bot response stages'});
  expect(within(stages).getAllByRole('listitem')).toHaveLength(4);
  for(const title of ['Unsent local draft','Saved workspace draft','Explicit AI request','Recorded outcome'])expect(within(stages).getByRole('heading',{name:title})).toBeTruthy();
@@ -18,7 +18,7 @@ it('mounts a semantic source-scoped Bot response flow on the real Security page'
 });
 it('explains save, exact prompt data and uncertain results without suggesting automatic tool use',()=>{
  render(createElement(SecurityPage));
- const figure=screen.getByRole('figure',{name:'Axiom Bot prompt and response flow'});
+ const figure=screen.getByRole('figure',{name:'V19 Bot prompt and response flow'});
  expect(within(figure).getByText(/Send first saves new or changed text/)).toBeTruthy();
  expect(within(figure).getByText(/title, instruction and context/)).toBeTruthy();
  expect(within(figure).getByText(/fixed instructions and a response-format schema/)).toBeTruthy();
@@ -33,7 +33,7 @@ it('explains save, exact prompt data and uncertain results without suggesting au
 it('retains visible provider/privacy limits and exposes no action or network behavior',()=>{
  const fetch=vi.fn();vi.stubGlobal('fetch',fetch);
  render(createElement(SecurityPage));
- const figure=screen.getByRole('figure',{name:'Axiom Bot prompt and response flow'});
+ const figure=screen.getByRole('figure',{name:'V19 Bot prompt and response flow'});
  expect(within(figure).getByText(/not a complete egress inventory/)).toBeTruthy();
  expect(screen.getByText(/no guarantee about provider retention or model training/)).toBeTruthy();
  expect(screen.getByText(/Redaction utilities on selected paths are not proof/)).toBeTruthy();

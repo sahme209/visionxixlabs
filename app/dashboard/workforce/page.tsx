@@ -41,7 +41,7 @@ import { prisma } from "@/lib/db";
 import { readDailyDigest } from "@/lib/workforce/domains/dailyDigest";
 
 export const metadata: Metadata = {
-  title: "AI Workforce · Axiom",
+  title: "AI Workforce · V19",
   description: "Every engineer the platform ships — role, department, required tools, approval rules, and missing setup pieces.",
 };
 

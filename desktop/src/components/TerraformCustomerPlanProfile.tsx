@@ -54,7 +54,7 @@ export function TerraformCustomerPlanProfile({requestId,requestVersion,onEvidenc
  function change(name:keyof Fields,value:string){onEvidenceInvalidated();setRunId("");setFields(f=>({...f,[name]:value}));}
  return <section aria-label="Customer Terraform review profile" className="mt-5 border-t border-white/10 pt-4">
   <h4 className="font-semibold text-white">Customer CI plan evidence</h4>
-  <p className="mt-2">A separately authorized protected customer CI job creates the saved plan from reviewed canonical JSON configuration. Axiom imports exact signed plan evidence; it does not start CI or Terraform here.</p>
+  <p className="mt-2">A separately authorized protected customer CI job creates the saved plan from reviewed canonical JSON configuration. V19 imports exact signed plan evidence; it does not start CI or Terraform here.</p>
   <button type="button" className="btn-secondary mt-3 disabled:opacity-50" disabled={current.busy} onClick={()=>void load()}>{current.busy?"Reviewing customer evidence…":"Read customer plan profile"}</button>
   {current.error&&<p role="alert" className="mt-3 text-rose-300">{current.error}</p>}{current.notice&&<p role="status" className="mt-3">{current.notice}</p>}
   {view&&<>

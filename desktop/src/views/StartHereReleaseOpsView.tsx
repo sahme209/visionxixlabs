@@ -21,7 +21,7 @@ export function StartHereReleaseOpsView({ onNavigate }: { onNavigate?: (v: View)
       <div className="glass-card p-4">
         <h2 className="text-sm font-semibold text-white mb-3">The 4-step path</h2>
         <ol className="space-y-3">
-          <Step num={1} title="Install the Axiom GitHub App" body="One click. The App's org-wide webhook delivery means no URL paste-in." view="github-app" onNavigate={onNavigate} cta="Open install page" />
+          <Step num={1} title="Install the V19 GitHub App" body="One click. The App's org-wide webhook delivery means no URL paste-in." view="github-app" onNavigate={onNavigate} cta="Open install page" />
           <Step num={2} title="Register your first application" body="Applications are the governance unit. Releases attach to an application." view="applications" onNavigate={onNavigate} cta="Register an application" />
           <Step num={3} title="Push to any tracked repo (auto-onboard)" body="After install, the first webhook for a repo auto-creates the Repository row." view="repositories" onNavigate={onNavigate} cta="Open repositories" />
           <Step num={4} title="Cut your first release" body="Pin a tag + commit + planned-window. Releases start in draft, advance through draft → ready → deploying → deployed." view="releases" onNavigate={onNavigate} cta="Create a release" />

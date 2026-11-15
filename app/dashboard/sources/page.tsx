@@ -146,10 +146,10 @@ export default function SourcesPage() {
               )}
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mt-3 mb-3">
-              Where Axiom <span className="text-gradient">reads from.</span>
+              Where V19 <span className="text-gradient">reads from.</span>
             </h1>
             <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-              Every cloud + repo source Axiom is currently connected to — with honest mode labels, missing requirements, and the safe next action per source. <span className="text-zinc-500">No mutations. Read-only by default.</span>
+              Every cloud + repo source V19 is currently connected to — with honest mode labels, missing requirements, and the safe next action per source. <span className="text-zinc-500">No mutations. Read-only by default.</span>
             </p>
           </div>
 

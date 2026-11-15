@@ -97,7 +97,7 @@ const CATEGORIES: { title: string; eyebrow: string; ids: string[] }[] = [
   },
   {
     title: "Sources & connectors",
-    eyebrow: "// what Axiom reads",
+    eyebrow: "// what V19 reads",
     ids: ["cloud_connectors", "releaseops_connectors"],
   },
   {
@@ -202,10 +202,10 @@ export default function SurfacesPage() {
               </span>
             </div>
             <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mt-3 mb-3">
-              Axiom <span className="text-gradient">product surfaces.</span>
+              V19 <span className="text-gradient">product surfaces.</span>
             </h1>
             <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-              Every surface Axiom ships, grouped by operator meaning. Each card is real platform state — status, source mode, evidence, limitations, blockers, and safeNextAction come from canonical builders. <span className="text-zinc-500">No demo data.</span>
+              Every surface V19 ships, grouped by operator meaning. Each card is real platform state — status, source mode, evidence, limitations, blockers, and safeNextAction come from canonical builders. <span className="text-zinc-500">No demo data.</span>
             </p>
           </div>
 

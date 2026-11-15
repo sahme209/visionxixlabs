@@ -279,7 +279,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
               // /dashboard/* is desktop-app territory in the browser; show where it lives instead of a link that bounces.
               <div className="rounded-xl border border-white/6 bg-white/1.5 p-3">
                 <p className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.18em] mb-1">in the desktop app</p>
-                <p className="text-[12px] text-zinc-400">This step happens in Axiom Agent. <Link href="/download" className="text-orange-200/90 underline underline-offset-2">Download</Link></p>
+                <p className="text-[12px] text-zinc-400">This step happens in V19 Agent. <Link href="/download" className="text-orange-200/90 underline underline-offset-2">Download</Link></p>
               </div>
             ) : (
               <Link
@@ -383,7 +383,7 @@ export function DemoScenarioClient({ scenario }: { scenario: DemoScenario }) {
             ← Back to all scenarios
           </Link>
           <Link href="/download" className="text-[12px] text-zinc-400 hover:text-zinc-200 underline-offset-2 hover:underline">
-            Download Axiom Agent →
+            Download V19 →
           </Link>
         </div>
       </section>

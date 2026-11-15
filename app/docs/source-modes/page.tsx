@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, Step } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Source modes — Axiom Documentation",
-  description: "Distinguish local repository files, connected GitHub evidence and preview data before using Axiom.",
+  title: "Source modes — V19 Documentation",
+  description: "Distinguish local repository files, connected GitHub evidence and preview data before using V19.",
 };
 
 export default function SourceModesPage() {
@@ -18,7 +18,7 @@ export default function SourceModesPage() {
       </Callout>
 
       <DocSection id="local-files" title="Local files on your computer" kicker="01 · Inspect a checkout">
-        <p>In Repositories, the Local strip identifies the selected checkout and its branch. Open Clone or refresh repositories to inspect the source controls. The Local repositories folder lists the local checkouts Axiom can discover there; choose the intended repository before opening a file.</p>
+        <p>In Repositories, the Local strip identifies the selected checkout and its branch. Open Clone or refresh repositories to inspect the source controls. The Local repositories folder lists the local checkouts V19 can discover there; choose the intended repository before opening a file.</p>
         <p>The editor can contain unsaved changes. A local selection is not a verified GitHub snapshot, and a saved folder selection is navigation metadata, not permission to access a different repository or execute a command.</p>
         <Step number={1} title="Confirm the local target">
           <p>Check the folder, checkout, branch and changed-file count. Use Refresh after changing the folder. If the expected checkout is missing, inspect the folder rather than assuming the selected remote repository is already cloned.</p>

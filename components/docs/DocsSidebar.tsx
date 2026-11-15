@@ -87,7 +87,7 @@ export const DOC_SECTIONS: DocSection[] = [
       { href: "/docs/trust-tools", label: "Trust tools", icon: BookOpenIcon },
       { href: "/docs/api-keys", label: "API keys", icon: BookOpenIcon },
       { href: "/docs/batch-providers", label: "Batch providers", icon: BookOpenIcon },
-      { href: "/docs/ask-axiom", label: "Ask Axiom", icon: BookOpenIcon },
+      { href: "/docs/ask-axiom", label: "Ask V19", icon: BookOpenIcon },
       { href: "/docs/plugins", label: "Apps and skills", icon: PuzzlePieceIcon },
       { href: "/docs/mcp-tools", label: "MCP documentation tools", icon: BookOpenIcon },
     ],

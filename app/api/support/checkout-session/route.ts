@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
           currency: "usd",
           unit_amount: input.amountCents,
           product_data: {
-            name: "Axiom Founding Supporter",
+            name: "V19 Founding Supporter",
             description: "One-time digital supporter purchase, including a Founding Supporter badge and development updates when opted in.",
           },
         },

@@ -54,7 +54,7 @@ export function HomepageMediaShowcase({ fallback }: HomepageMediaShowcaseProps) 
           playsInline
           controls
           poster={hasScreenshot ? DESKTOP_SCREENSHOT : undefined}
-          aria-label="Axiom Agent homepage walkthrough recording"
+          aria-label="V19 homepage walkthrough recording"
         >
           <source src={VIDEO} type="video/webm" />
           {hasCaptions ? <track kind="captions" src={CAPTIONS} srcLang="en" label="English" default /> : null}
@@ -63,7 +63,7 @@ export function HomepageMediaShowcase({ fallback }: HomepageMediaShowcaseProps) 
         // eslint-disable-next-line @next/next/no-img-element -- static
         // public asset captured by scripts/capture-homepage-media.mjs,
         // not a remote/optimizable image.
-        <img src={DESKTOP_SCREENSHOT} alt="Axiom Agent homepage, captured from the live site" className="w-full" />
+        <img src={DESKTOP_SCREENSHOT} alt="V19 homepage, captured from the live site" className="w-full" />
       )}
     </div>
   );

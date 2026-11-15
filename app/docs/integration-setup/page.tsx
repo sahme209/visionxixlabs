@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Callout, CodeBlock, DocFeedback, DocFooterNav, DocHeader, DocSection, Step } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Release integration setup — Axiom Documentation",
-  description: "Securely activate GitHub, Slack, Microsoft Teams, and Linear for the Axiom desktop application.",
+  title: "Release integration setup — V19 Documentation",
+  description: "Securely activate GitHub, Slack, Microsoft Teams, and Linear for the V19 desktop application.",
 };
 
 const ORIGIN = "https://visionxixlabs.com";
@@ -14,11 +14,11 @@ export default function IntegrationSetupPage() {
       <DocHeader
         kicker="Connections"
         title="Operator integration configuration"
-        summary="Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app."
+        summary="V19 opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app."
       />
 
       <Callout variant="safe" title="Two separate responsibilities">
-        The <strong>service operator</strong> registers the OAuth application, exact callback URL, and server-side secret once. A <strong>workspace owner or admin</strong> then clicks Connect, reviews the provider consent screen, selects the intended workspace, and returns to Axiom for live validation.
+        The <strong>service operator</strong> registers the OAuth application, exact callback URL, and server-side secret once. A <strong>workspace owner or admin</strong> then clicks Connect, reviews the provider consent screen, selects the intended workspace, and returns to V19 for live validation.
       </Callout>
 
       <Callout>
@@ -26,11 +26,11 @@ export default function IntegrationSetupPage() {
       </Callout>
       <DocSection id="shared" title="Before connecting a provider" kicker="Service operator checklist">
         <ol className="list-decimal list-inside space-y-2 text-sm text-zinc-300">
-          <li>Set the production Axiom origin as <code>NEXTAUTH_URL</code>; callback construction fails closed when the origin is not trusted.</li>
+          <li>Set the production V19 origin as <code>NEXTAUTH_URL</code>; callback construction fails closed when the origin is not trusted.</li>
           <li>Register the exact HTTPS callback shown below. Wildcard callback domains are not supported.</li>
           <li>Store client secrets only in the hosting platform&apos;s encrypted secret manager—never in <code>NEXT_PUBLIC_*</code>, the desktop app, logs, or Git.</li>
           <li>Redeploy the service after adding credentials, then use Apps &amp; skills or Settings → Integrations to start consent.</li>
-          <li>Run the harmless validation step. Axiom does not label a connection active from consent alone.</li>
+          <li>Run the harmless validation step. V19 does not label a connection active from consent alone.</li>
         </ol>
       </DocSection>
 
@@ -39,10 +39,10 @@ export default function IntegrationSetupPage() {
           <CodeBlock language="text">{`${ORIGIN}/api/integrations/github/install-callback`}</CodeBlock>
         </Step>
         <Step number={2} title="Configure the server-side GitHub App">
-          <p>Set the App slug, App ID, installation-token signing key, and webhook secret using the deployment secret manager. Grant only the repository permissions required by the enabled Axiom workflows.</p>
+          <p>Set the App slug, App ID, installation-token signing key, and webhook secret using the deployment secret manager. Grant only the repository permissions required by the enabled V19 workflows.</p>
         </Step>
         <Step number={3} title="Install on selected repositories">
-          <p>A workspace admin reviews GitHub&apos;s installation screen and selects repositories. Axiom records the installation, then verifies scoped read access before showing it as validated.</p>
+          <p>A workspace admin reviews GitHub&apos;s installation screen and selects repositories. V19 records the installation, then verifies scoped read access before showing it as validated.</p>
         </Step>
       </DocSection>
 
@@ -89,12 +89,12 @@ LINEAR_CLIENT_SECRET=<secret manager reference>`}</CodeBlock>
       <DocSection id="states" title="Understand connection states">
         <div className="space-y-3 text-sm text-zinc-300">
           <p><strong>Setup required:</strong> the service is missing an OAuth registration, trusted callback origin, or production secret. A workspace user cannot fix this in the desktop app.</p>
-          <p><strong>Awaiting validation:</strong> provider consent returned successfully, but Axiom has not yet completed a live server-side check.</p>
+          <p><strong>Awaiting validation:</strong> provider consent returned successfully, but V19 has not yet completed a live server-side check.</p>
           <p><strong>Active / validated read-only:</strong> the scoped provider token or GitHub installation passed live validation.</p>
           <p><strong>Needs attention / validation overdue:</strong> validation failed or is stale. Revalidate before relying on the connection for release evidence.</p>
         </div>
         <Callout variant="warning">
-          Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the Axiom audit trail before reconnecting.
+          Never paste a client secret into Agent chat or a repository file. If a secret was exposed, revoke it at the provider, rotate it in the secret manager, and review the V19 audit trail before reconnecting.
         </Callout>
       </DocSection>
 

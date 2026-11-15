@@ -2,7 +2,7 @@ import { ProviderDrilldown } from "@/components/dashboard/ProviderDrilldown";
 import { JourneyTimeline } from "@/components/dashboard/JourneyTimeline";
 import { RunAwsScanPanel } from "@/components/dashboard/RunAwsScanPanel";
 
-export const metadata = { title: "AWS · Axiom" };
+export const metadata = { title: "AWS · V19" };
 
 export default function AwsPage() {
   return (

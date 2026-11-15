@@ -1,5 +1,5 @@
 /**
- * Ask Axiom answer kernel (B5 / C2). Pure and deterministic.
+ * Ask V19 answer kernel (B5 / C2). Pure and deterministic.
  *
  * Retrieval over the public knowledge base with BM25 scoring, light stemming
  * and a small synonym map. Answers are extracted from reviewed sources and
@@ -11,6 +11,7 @@ import type { KnowledgeEntry } from "./knowledgeBase";
 
 const STOP = new Set("a an and are as at be but by can do does for from how i if in is it me my of on or our so that the this to was we what when where which who why will with you your much many any some someone there until get say says tell about".split(" "));
 const SYNONYMS: Record<string, string> = {
+  v19: "axiom", // Current display name and legacy queries share one retrieval term.
   price: "pricing", cost: "pricing", costs: "pricing", pay: "pricing", paid: "pricing", charge: "pricing", billing: "pricing", credit: "credits",
   install: "download", installer: "download", setup: "download", mac: "macos", windows: "windows", linux: "linux",
   revoke: "revoke", disconnect: "revoke", remove: "revoke",
@@ -23,7 +24,7 @@ const SYNONYMS: Record<string, string> = {
 };
 
 export function tokenize(text: string): string[] {
-  return text.toLowerCase().replace(/\bset\s+up\b/g, "setup").replace(/\broll(ing|ed)?\s+back\b/g, "rollback").replace(/\bsign(ing|ed)?\s+in\b/g, "signin").replace(/\blog(ging|ged)?\s+in\b/g, "signin").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
+  return text.toLowerCase().replace(/\baxiom\s+agent\b/g, "axiom").replace(/\bset\s+up\b/g, "setup").replace(/\broll(ing|ed)?\s+back\b/g, "rollback").replace(/\bsign(ing|ed)?\s+in\b/g, "signin").replace(/\blog(ging|ged)?\s+in\b/g, "signin").replace(/[^a-z0-9\s]/g, " ").split(/\s+/).filter((t) => t.length > 1 && !STOP.has(t))
     .map((t) => SYNONYMS[t] ?? t)
     .map((t) => (t.length > 4 && t.endsWith("ing") ? t.slice(0, -3) : t.length > 3 && t.endsWith("s") && !t.endsWith("ss") ? t.slice(0, -1) : t))
     .map((t) => SYNONYMS[t] ?? t);
@@ -65,12 +66,12 @@ export interface Answer {
 
 const GUARD_TEXT: Record<NonNullable<GuardResult>["kind"], string> = {
   secret_pasted: "That message looks like it contains a password, key or token. Don't share secrets in chat. If it's real, rotate it now. I didn't store it, and I won't use it.",
-  workspace_specific: "I can't see your workspace from the public site. Sign in to Axiom (or open the desktop app) to see your own deployments, approvals, credits and audit history.",
-  action_request: "I can't take actions from the public site. Changes in Axiom go through the signed-in app, where they are proposed, checked and approved by an authorized person.",
+  workspace_specific: "I can't see your workspace from the public site. Sign in to V19 (or open the desktop app) to see your own deployments, approvals, credits and audit history.",
+  action_request: "I can't take actions from the public site. Changes in V19 go through the signed-in app, where they are proposed, checked and approved by an authorized person.",
 };
 const GUARD_SOURCES: Record<NonNullable<GuardResult>["kind"], { title: string; href: string }> = {
   secret_pasted: { title: "Security", href: "/security" },
-  workspace_specific: { title: "Download Axiom Agent", href: "/download" },
+  workspace_specific: { title: "Download V19", href: "/download" },
   action_request: { title: "Approval workflow", href: "/docs/approval-workflow" },
 };
 
@@ -92,13 +93,13 @@ export function answerQuestion(index: AnswerIndex, question: string, opts: { k1?
       matched += idf;
       score += idf * ((tf * (k1 + 1)) / (tf + k1 * (1 - b + (b * d.length) / index.avgLength)));
     }
-    // Prefer entries whose title is mostly about the question ("What is Axiom Agent?" over "What permissions does Axiom need?").
+    // Prefer entries whose title is mostly about the question ("What is V19?" over "What permissions does V19 need?").
     const titleHits = d.titleTerms.filter((t) => terms.includes(t)).length;
     if (titleHits > 0) score *= 1 + titleHits / d.titleTerms.length;
     // Coverage weighted by rarity: a common word ("support", "setup") counts less than a specific one ("prefect").
     return { d, score, coverage: matched / queryIdf };
   }).filter((s) => s.score > 0).sort((a, b2) => b2.score - a.score || (a.d.entry.id < b2.d.entry.id ? -1 : 1));
-  if (scored.length === 0) return { status: "suggestions", answer: "I couldn't find that in the Axiom docs. Try different words, browse the documentation, or contact us.", sources: [{ title: "Documentation", href: "/docs", kind: "guide" }, { title: "Contact", href: "/contact", kind: "fact" }], confidence: 0 };
+  if (scored.length === 0) return { status: "suggestions", answer: "I couldn't find that in the V19 docs. Try different words, browse the documentation, or contact us.", sources: [{ title: "Documentation", href: "/docs", kind: "guide" }, { title: "Contact", href: "/contact", kind: "fact" }], confidence: 0 };
   const top = scored[0];
   // Near-ties from the same page (a guide and its own sections) agree, so they must not lower confidence.
   const page = (h: string) => h.split("#")[0];

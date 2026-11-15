@@ -9,7 +9,7 @@ import { motionConfig, prefersReducedMotionQuery } from "@/lib/motion/tokens";
 const TESTIMONIALS = [
   {
     quote:
-      "Axiom found cost savings we'd been missing for months and generated the Terraform to fix it. The approval workflow gave us confidence to actually apply it.",
+      "V19 found cost savings we'd been missing for months and generated the Terraform to fix it. The approval workflow gave us confidence to actually apply it.",
     author: "Head of Infrastructure",
     company: "SaaS",
     color: "orange" as const,
@@ -109,7 +109,7 @@ export function TestimonialsCarousel() {
           </h2>
         </div>
         <p className="text-center text-zinc-400 mb-12 max-w-2xl mx-auto">
-          Engineers who let Axiom operate their cloud with confidence.
+          Engineers who let V19 operate their cloud with confidence.
         </p>
 
         <div

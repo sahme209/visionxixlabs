@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
- title: "Audit evidence — Axiom Documentation",
+ title: "Audit evidence — V19 Documentation",
  description: "Read saved decisions, attempts and outcome evidence without confusing approval with external success.",
  alternates: { canonical: "/docs/audit-logs" },
 };

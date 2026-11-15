@@ -31,7 +31,7 @@ describe("integration logos are honest", () => {
   it("the Integrations flow shows every tool with its real status, Axiom checks and outcomes", () => {
     render(createElement(IntegrationsHubFlow));
     expect(screen.getByRole("list", { name: "Tools" })).toBeTruthy();
-    expect(screen.getByRole("list", { name: "Axiom checks" }).textContent).toMatch(/Policy and approval/);
+    expect(screen.getByRole("list", { name: "V19 checks" }).textContent).toMatch(/Policy and approval/);
     expect(screen.getByRole("list", { name: "Outcomes" }).textContent).toMatch(/governed deployment/);
     expect(screen.getAllByText("planned").length).toBeGreaterThan(0);
     expect(screen.getByText(/do not imply endorsement/)).toBeTruthy();

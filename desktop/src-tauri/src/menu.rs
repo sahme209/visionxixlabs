@@ -21,7 +21,7 @@ use tauri::{
 
 pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
     let about_meta = AboutMetadata {
-        name: Some("Axiom Agent".into()),
+        name: Some("V19".into()),
         version: Some(env!("CARGO_PKG_VERSION").into()),
         copyright: Some("© 2026 Vision XIX Labs".into()),
         website: Some("https://visionxixlabs.com".into()),
@@ -31,10 +31,10 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
 
     // App menu (macOS only) — name comes from CFBundleName but the items
     // need to be defined here.
-    let app_submenu = SubmenuBuilder::new(app, "Axiom Agent")
+    let app_submenu = SubmenuBuilder::new(app, "V19")
         .item(&PredefinedMenuItem::about(
             app,
-            Some("About Axiom Agent"),
+            Some("About V19"),
             Some(about_meta.clone()),
         )?)
         .separator()
@@ -52,7 +52,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
         .item(&PredefinedMenuItem::hide_others(app, None)?)
         .item(&PredefinedMenuItem::show_all(app, None)?)
         .separator()
-        .item(&PredefinedMenuItem::quit(app, Some("Quit Axiom Agent"))?)
+        .item(&PredefinedMenuItem::quit(app, Some("Quit V19"))?)
         .build()?;
 
     // File menu — "Close window" wraps Cmd+W; on macOS the OS standard.
@@ -82,7 +82,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<Menu<R>> {
             true,
             Some("CmdOrCtrl+1"),
         )?)
-        .item(&MenuItem::with_id(app, "menu_view_bot", "Axiom Bot", true, Some("CmdOrCtrl+5"))?)
+        .item(&MenuItem::with_id(app, "menu_view_bot", "V19 Bot", true, Some("CmdOrCtrl+5"))?)
         .item(&MenuItem::with_id(
             app,
             "menu_view_deployment_requests",

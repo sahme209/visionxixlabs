@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
- title: "Governance approvals — Axiom Documentation",
+ title: "Governance approvals — V19 Documentation",
  description: "Review and decide pending Agent actions on Control → Governance.",
  alternates: { canonical: "/docs/governance-approvals" },
 };
@@ -24,7 +24,7 @@ export default function GovernanceApprovalsDocsPage() {
   </DocSection>
   <DocSection id="scope" kicker="05" title="Workspace and platform approvals are different">
    <p>This inbox is for your workspace's Agent proposals. Release, ticket and connected-app reviews belong to their own exact workflows; a decision in one does not authorize an action in another.</p>
-   <p>A workspace owner or reviewer is not automatically an Axiom platform administrator. Axiom's own deployment and issuer controls require separate platform authority. The prepared platform-control workflow remains local development work, not a control available from this inbox or proof of complete Governance enforcement.</p>
+   <p>A workspace owner or reviewer is not automatically an V19 platform administrator. V19's own deployment and issuer controls require separate platform authority. The prepared platform-control workflow remains local development work, not a control available from this inbox or proof of complete Governance enforcement.</p>
   </DocSection>
   <DocSection id="outcomes" kicker="06" title="Read the result before trying again">
    <p>Approval means a decision was recorded; it does not prove an action ran or succeeded. When execution is separate, the original requester must use the exact approved action and the service checks current permissions again.</p>

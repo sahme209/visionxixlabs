@@ -24,9 +24,9 @@ const STAGES = [
 /** Source-scoped explanation only: no connection checks, AI calls or actions. */
 export function BotAiDataFlow() {
   return (
-    <figure aria-label="Axiom Bot prompt and response flow" className="mt-7 overflow-hidden rounded-2xl border border-white/12 bg-white/2">
+    <figure aria-label="V19 Bot prompt and response flow" className="mt-7 overflow-hidden rounded-2xl border border-white/12 bg-white/2">
       <figcaption className="border-b border-white/10 px-5 py-5 sm:px-6">
-        <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-orange-300/90">One specific path · Axiom Bot AI response</p>
+        <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-orange-300/90">One specific path · V19 Bot AI response</p>
         <h3 className="mt-2 text-xl font-medium tracking-tight text-zinc-100">Know what crosses each boundary.</h3>
         <p className="mt-2 max-w-3xl text-xs leading-6 text-zinc-400">Source-inspected illustration of the local preview, not a recording or connection inspection. Availability depends on the installed version and enabled service.</p>
       </figcaption>

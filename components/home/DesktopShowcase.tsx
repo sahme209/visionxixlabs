@@ -16,7 +16,7 @@ export function DesktopShowcase() {
       <div className="mx-auto max-w-[1400px]">
         <div className="grid items-end gap-8 border-t border-white/8 pt-10 lg:grid-cols-[0.72fr_1.28fr]">
           <div>
-            <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">Axiom Desktop</p>
+            <p className="text-[11px] uppercase tracking-[0.18em] text-zinc-500">V19 Desktop</p>
             <h2 className="mt-4 max-w-xl text-[clamp(2.4rem,4vw,4.5rem)] font-medium leading-[0.98] tracking-[-0.045em] text-white">
               The operational record stays with the work.
             </h2>
@@ -45,7 +45,7 @@ export function DesktopShowcase() {
               <span className="h-2.5 w-2.5 rounded-full bg-white/12" />
               <span className="h-2.5 w-2.5 rounded-full bg-white/12" />
             </div>
-            <p className="flex-1 text-center text-[11px] text-zinc-500">Axiom Agent · illustrative workspace</p>
+            <p className="flex-1 text-center text-[11px] text-zinc-500">V19 · illustrative workspace</p>
           </div>
 
           <div className="grid min-h-[520px] lg:grid-cols-[250px_minmax(0,1fr)]">
@@ -53,7 +53,7 @@ export function DesktopShowcase() {
               <div className="flex items-center gap-2.5 border-b border-white/6 pb-4">
                 <span className="flex h-8 w-8 items-center justify-center rounded-lg border border-white/10 bg-white/4 text-sm font-semibold">A</span>
                 <div>
-                  <p className="text-sm font-semibold text-white">Axiom Agent</p>
+                  <p className="text-sm font-semibold text-white">V19</p>
                   <p className="text-[10px] text-zinc-500">Desktop workspace</p>
                 </div>
               </div>

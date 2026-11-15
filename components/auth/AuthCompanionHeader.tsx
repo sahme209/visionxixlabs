@@ -90,7 +90,7 @@ export function AuthCompanionHeader({ email }: { email: string | null }) {
         <Link href="/auth/success" className="group inline-flex items-center gap-2.5 px-2 py-1.5 text-zinc-100">
           <span className="grid h-6 w-6 place-items-center rounded-md border border-orange-300/25 bg-orange-300/8 text-[10px] font-semibold text-orange-200">A</span>
           <span>
-            <span className="block text-sm font-semibold tracking-tight">Axiom</span>
+            <span className="block text-sm font-semibold tracking-tight">V19</span>
             <span className="block text-[9px] uppercase tracking-[0.16em] text-zinc-500">Web companion</span>
           </span>
         </Link>

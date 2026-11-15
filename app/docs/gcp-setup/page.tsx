@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-    title: "GCP setup — Axiom Documentation",
+    title: "GCP setup — V19 Documentation",
     description: "Current GCP preview availability, required configuration, and the work needed before live inventory or execution can be enabled.",
 };
 
@@ -13,7 +13,7 @@ export default function GcpSetupPage() {
             <DocHeader
                 kicker="Connect a cloud · GCP · Preview"
                 title="GCP setup."
-                summary="Axiom currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release."
+                summary="V19 currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release."
             />
 
             <Callout variant="warning" title="Preview is not a live connector">
@@ -48,7 +48,7 @@ export default function GcpSetupPage() {
                     <li>Run a connector test and require actual Google Cloud API responses before reporting connected.</li>
                 </ol>
                 <p>
-                    Download Axiom Agent from <Link href="/download">the release page</Link>. Do not provision credentials solely for preview output unless your administrator has supplied an approved evaluation plan.
+                    Download V19 from <Link href="/download">the release page</Link>. Do not provision credentials solely for preview output unless your administrator has supplied an approved evaluation plan.
                 </p>
             </DocSection>
 
@@ -57,7 +57,7 @@ export default function GcpSetupPage() {
                     items={[
                         { question: "Is GCP live today?", answer: "Not in the verified release. The current path is configuration validation plus preview-derived analysis." },
                         { question: "Does preview data come from my project?", answer: "No. Preview output must remain labeled and cannot be treated as live provider evidence." },
-                        { question: "Can Axiom change GCP resources?", answer: "No verified GCP execution adapter is enabled." },
+                        { question: "Can V19 change GCP resources?", answer: "No verified GCP execution adapter is enabled." },
                         { question: "What should a missing credential show?", answer: "Disconnected or unavailable, never a synthetic success." },
                         { question: "When can the status change?", answer: "After live inventory and action paths are implemented, permission-reviewed, integration-tested, and recorded in the release availability matrix." },
                         { question: "Where do I verify release status?", answer: "Use the download page, release notes, and in-app capability status for the installed version." },

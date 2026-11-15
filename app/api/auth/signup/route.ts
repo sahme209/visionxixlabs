@@ -31,7 +31,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Email and password required" }, { status: 400 });
     }
     if (typeof desktopChallenge !== "string" || !desktopChallenge.trim()) {
-      return NextResponse.json({ error: "Start account creation from the installed Axiom Agent application." }, { status: 400 });
+      return NextResponse.json({ error: "Start account creation from the installed V19 application." }, { status: 400 });
     }
     if (acceptedTerms !== true) {
       return NextResponse.json({ error: "Accept the Terms and Privacy Policy to create an account." }, { status: 400 });
@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
     }
     const pairing = await prisma.desktopPairingChallengeRecord.findUnique({ where: { id: desktopChallenge.trim() } });
     if (!pairing || pairing.status !== "pending" || pairing.consumedAt || pairing.expiresAt.getTime() <= Date.now()) {
-      return NextResponse.json({ error: "This desktop sign-up request expired. Return to Axiom Agent and start again." }, { status: 400 });
+      return NextResponse.json({ error: "This desktop sign-up request expired. Return to V19 and start again." }, { status: 400 });
     }
     const existing = await prisma.user.findUnique({ where: { email: normalizedEmail } });
     if (existing) {

@@ -6,16 +6,16 @@ import { currentContext } from "@/lib/auth/currentContext";
 export const dynamic = "force-dynamic";
 
 const GITHUB_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
-  installation_recorded: { tone: "emerald", title: "GitHub installation recorded", detail: "Axiom Agent will perform the first scoped, read-only validation before this installation contributes release evidence." },
-  approval_requested: { tone: "amber", title: "GitHub approval requested", detail: "Your organization administrator must approve the requested installation before Axiom can record it." },
+  installation_recorded: { tone: "emerald", title: "GitHub installation recorded", detail: "V19 will perform the first scoped, read-only validation before this installation contributes release evidence." },
+  approval_requested: { tone: "amber", title: "GitHub approval requested", detail: "Your organization administrator must approve the requested installation before V19 can record it." },
   missing_installation: { tone: "rose", title: "GitHub did not return an installation", detail: "No connection was recorded. You can restart the setup from Integrations when ready." },
   invalid_state: { tone: "rose", title: "GitHub setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
-  error: { tone: "rose", title: "GitHub setup could not be recorded", detail: "No connection was recorded. Try again from Integrations or contact the Axiom team." },
+  error: { tone: "rose", title: "GitHub setup could not be recorded", detail: "No connection was recorded. Try again from Integrations or contact the V19 team." },
 };
 
 /** Fixed display-only outcomes; no callback URL/code or automatic recovery action. */
 function callbackRecoveryNotices(name:string):Record<string,{tone:'amber';title:string;detail:string}>{return{
-  authorization_required:{tone:'amber',title:`${name} setup needs workspace authorization`,detail:'Sign in to Axiom with the same account and workspace that started setup, then review connection status in the app. Do not reuse this callback link.'},
+  authorization_required:{tone:'amber',title:`${name} setup needs workspace authorization`,detail:'Sign in to V19 with the same account and workspace that started setup, then review connection status in the app. Do not reuse this callback link.'},
   exchange_outcome_unknown:{tone:'amber',title:`${name} provider exchange could not be confirmed`,detail:'The provider may have accepted the authorization code. Return to the app and reload connection status before starting another setup. Do not reload or reuse this callback link.'},
   record_outcome_unknown:{tone:'amber',title:`${name} connection save could not be confirmed`,detail:'Consent may already be saved. Return to the app and reload connection status before taking another action. Do not repeat this callback.'},
   connection_changed:{tone:'amber',title:`${name} connection changed during setup`,detail:'The saved connection no longer matches this setup. Return to the app and reload connection status. This result does not establish active provider access.'},
@@ -23,7 +23,7 @@ function callbackRecoveryNotices(name:string):Record<string,{tone:'amber';title:
 
 const SLACK_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
   ...callbackRecoveryNotices("Slack"),
-  consent_recorded: { tone: "emerald", title: "Slack consent recorded", detail: "Axiom will not show Slack as active until it completes a live server-side validation." },
+  consent_recorded: { tone: "emerald", title: "Slack consent recorded", detail: "V19 will not show Slack as active until it completes a live server-side validation." },
   declined: { tone: "amber", title: "Slack setup was cancelled", detail: "No connection or provider access was recorded." },
   invalid_state: { tone: "rose", title: "Slack setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
   unavailable: { tone: "rose", title: "Slack setup is unavailable", detail: "No connection was recorded because this workspace is not configured for Slack yet." },
@@ -34,18 +34,18 @@ const SLACK_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title:
 
 const TEAMS_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
   ...callbackRecoveryNotices("Microsoft"),
-  consent_recorded: { tone: "emerald", title: "Microsoft consent recorded", detail: "Axiom will not show Teams as active until it completes a live server-side validation." },
+  consent_recorded: { tone: "emerald", title: "Microsoft consent recorded", detail: "V19 will not show Teams as active until it completes a live server-side validation." },
   declined: { tone: "amber", title: "Microsoft setup was cancelled", detail: "No connection or provider access was recorded." },
   invalid_state: { tone: "rose", title: "Microsoft setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations instead of reusing a previous link." },
   unavailable: { tone: "rose", title: "Teams setup is unavailable", detail: "No connection was recorded because this workspace is not configured for Teams yet." },
   exchange_failed: { tone: "rose", title: "Microsoft setup could not be completed", detail: "No connection was recorded. You can try again from Integrations." },
-  scope_insufficient: { tone: "amber", title: "Microsoft access needs review", detail: "Axiom could not verify the required access from the provider response. No connection was recorded. Review the existing Microsoft permissions before starting a new setup from Integrations." },
+  scope_insufficient: { tone: "amber", title: "Microsoft access needs review", detail: "V19 could not verify the required access from the provider response. No connection was recorded. Review the existing Microsoft permissions before starting a new setup from Integrations." },
   record_failed: { tone: "rose", title: "Teams consent could not be recorded", detail: "The saved outcome could not be confirmed. Return to the app and reload connection status before starting another setup." },
 };
 
 const LINEAR_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
   ...callbackRecoveryNotices("Linear"),
-  consent_recorded: { tone: "emerald", title: "Linear consent recorded", detail: "Axiom will not show Linear as active until it completes a live server-side identity validation." },
+  consent_recorded: { tone: "emerald", title: "Linear consent recorded", detail: "V19 will not show Linear as active until it completes a live server-side identity validation." },
   declined: { tone: "amber", title: "Linear setup was cancelled", detail: "No connection or provider access was recorded." },
   invalid_state: { tone: "rose", title: "Linear setup link is no longer valid", detail: "No connection was recorded. Start a new setup from Integrations." },
   unavailable: { tone: "rose", title: "Linear setup is unavailable", detail: "The approved Linear OAuth application is not configured for this workspace yet." },
@@ -55,7 +55,7 @@ const LINEAR_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title
 };
 
 const JIRA_NOTICES: Record<string, { tone: "emerald" | "amber" | "rose"; title: string; detail: string }> = {
-  consent_recorded: { tone: "emerald", title: "Jira consent recorded", detail: "Axiom will not show Jira as active until it completes a live server-side validation." },
+  consent_recorded: { tone: "emerald", title: "Jira consent recorded", detail: "V19 will not show Jira as active until it completes a live server-side validation." },
   declined: { tone: "amber", title: "Jira setup was cancelled", detail: "No new connection was recorded." },
   exchange_failed: { tone: "rose", title: "Jira setup could not be completed", detail: "No new connection was recorded. Try again from Integrations." },
   record_failed: { tone: "rose", title: "Jira consent could not be recorded", detail: "Try again from Integrations or review your existing connection." },
@@ -89,11 +89,11 @@ export default async function AuthSuccessPage({ searchParams }: { searchParams: 
 
         <section className="grid gap-5 py-10 lg:grid-cols-[minmax(0,1.45fr)_minmax(18rem,0.72fr)] lg:py-14">
           <div className="rounded-3xl border border-white/9 bg-white/[0.035] p-6 shadow-[0_24px_100px_rgba(0,0,0,0.18)] sm:p-9">
-            <p className="text-[10px] uppercase tracking-[0.22em] text-orange-300">Axiom Control</p>
+            <p className="text-[10px] uppercase tracking-[0.22em] text-orange-300">V19 Control</p>
             <h1 className="mt-4 max-w-xl text-3xl font-semibold tracking-[-0.045em] sm:text-4xl">A clear home for your release workspace.</h1>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">Review account context, connection posture, and guidance here. The installed Axiom Agent remains the focused environment for governed release records, approvals, and operations.</p>
+            <p className="mt-5 max-w-xl text-sm leading-7 text-zinc-400 sm:text-base">Review account context, connection posture, and guidance here. The installed V19 remains the focused environment for governed release records, approvals, and operations.</p>
             <div className="mt-8 flex flex-wrap gap-3">
-              <Link href="/control/desktop" className="inline-flex min-h-11 items-center rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white">Download Axiom Agent</Link>
+              <Link href="/control/desktop" className="inline-flex min-h-11 items-center rounded-xl bg-zinc-100 px-4 text-sm font-semibold text-zinc-950 transition hover:bg-white">Download V19</Link>
               <Link href="/account/integrations" className="inline-flex min-h-11 items-center rounded-xl border border-white/10 px-4 text-sm font-medium text-zinc-200 transition hover:bg-white/6">Review connections</Link>
             </div>
           </div>

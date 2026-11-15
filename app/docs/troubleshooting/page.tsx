@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Callout, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Troubleshooting — Axiom Documentation",
-  description: "Find installation, connection, review, and safe help guidance for Axiom.",
+  title: "Troubleshooting — V19 Documentation",
+  description: "Find installation, connection, review, and safe help guidance for V19.",
 };
 
 export default function TroubleshootingPage() {

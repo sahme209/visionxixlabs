@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
- title: "Usage and billing — Axiom Documentation",
+ title: "Usage and billing — V19 Documentation",
  description: "Read AI usage, allowances, credit records and invoices on Control → Usage & billing.",
  alternates: { canonical: "/docs/usage-billing" },
 };

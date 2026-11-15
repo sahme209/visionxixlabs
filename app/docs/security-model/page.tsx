@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Security model — Axiom Documentation",
-  description: "Current Axiom authentication, connector, tenant, secret, audit, and assurance controls and limitations.",
+  title: "Security model — V19 Documentation",
+  description: "Current V19 authentication, connector, tenant, secret, audit, and assurance controls and limitations.",
 };
 
 export default function SecurityModelPage() {
@@ -11,7 +11,7 @@ export default function SecurityModelPage() {
     <>
       <DocHeader
         kicker="Trust & security"
-        title="The current Axiom security model."
+        title="The current V19 security model."
         summary="Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations."
       />
 

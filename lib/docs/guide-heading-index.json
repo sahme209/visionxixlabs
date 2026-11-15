@@ -1,12 +1,12 @@
 {
   "format": "axiom.public-guide-headings/1",
   "scope": "Literal summaries and headings only; no body, private knowledge or answers",
-  "navigationSha256": "1cdd29a6945da5d13431b8f4b2344aa7d52928b764f7a37c9597f6c2bab2f0fa",
+  "navigationSha256": "02bee779033f84f521fa6ed6018e50b7e2c85b7f1ec8b35c5776413dbec869eb",
   "guides": [
     {
       "href": "/docs",
       "source": "app/docs/page.tsx",
-      "sourceSha256": "4fe539ff890359b7ebbea800488baa716025513f9d1f6e4760eacae6d5cfacd3",
+      "sourceSha256": "06522bc6081ea71332dc26ce1f70492afd271c54c4a7e014b678b01c5af147bd",
       "fields": [
         "Find your next step.",
         "Set up, follow a task, check a control or investigate an outcome. Pick the guide for the work in front of you.",
@@ -17,7 +17,7 @@
     {
       "href": "/docs/quickstart-checklist",
       "source": "app/docs/quickstart-checklist/page.tsx",
-      "sourceSha256": "74d366b7934a45042c632c8a6e2b149bda706d574c202c55f330677fd7fd7637",
+      "sourceSha256": "c70571b79fed9fa3e37fe70a408037d2141e984978baad907dfc7b10c3f78414",
       "fields": [
         "Install, configure, and verify your first workflow.",
         "Seven concrete steps for the downloadable application. Timing depends on your operating system, identity provider, connector permissions, and deployment scope.",
@@ -27,9 +27,9 @@
     {
       "href": "/docs/getting-started",
       "source": "app/docs/getting-started/page.tsx",
-      "sourceSha256": "288ad8235de434e67b3ebc812368b9f0de79544a50443f8b1199e65f908475e4",
+      "sourceSha256": "e0116f9c0aa5ceebc803dcb9c074ed0b40613acbcfd02474d1242604b2ed78b1",
       "fields": [
-        "Getting started with Axiom Agent.",
+        "Getting started with V19 Agent.",
         "Download the desktop application, verify the installer, complete browser-assisted desktop authentication, and configure only the integrations your workflow needs.",
         "Desktop workflows and the web companion",
         "Prerequisites",
@@ -44,7 +44,7 @@
     {
       "href": "/docs/source-modes",
       "source": "app/docs/source-modes/page.tsx",
-      "sourceSha256": "4ace33d62c5497da55c7220c87158d512ca5101a2d3eac2b68560a8858bdf456",
+      "sourceSha256": "f9fe8a34e351494b0e0761846d5f27f17e08a833ce099c6ced6afacfff19f452",
       "fields": [
         "Know which source you are using.",
         "A file on your computer, a connected GitHub repository and a recorded result are different sources. Check the source and target before asking for an explanation or preparing a change.",
@@ -59,7 +59,7 @@
     {
       "href": "/docs/surfaces",
       "source": "app/docs/surfaces/page.tsx",
-      "sourceSha256": "772980b9987837e3e692cf1590f9e26bb90bb620166763ca0ff7cec24188967f",
+      "sourceSha256": "9a9260ad33c9f8b8a19404d8003cfedffdd6aa3acef45f042f68026262818d74",
       "fields": [
         "Find the right place to work.",
         "Use the desktop for operational work and the website for public guidance. Start from the task you need to complete, then check its access and next decision.",
@@ -73,14 +73,14 @@
     {
       "href": "/docs/aws-setup",
       "source": "app/docs/aws-setup/page.tsx",
-      "sourceSha256": "2f66d52a605a7b76c69161c3cf224ab3f6c9d682d7983a2f6d8c65118a5e69be",
+      "sourceSha256": "54c1f8688d8657bbec87fc98e073e00ea1a462f2c54259102f02cb63c6e230ef",
       "fields": [
         "Deploy through your workflow and your AWS role.",
-        "Axiom dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment.",
-        "No AWS access key in Axiom",
+        "V19 dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment.",
+        "No AWS access key in V19",
         "Prepare the repository",
         "Create the OIDC trust boundary",
-        "Map an Axiom environment",
+        "Map an V19 environment",
         "Validate before production",
         "Trust questions"
       ]
@@ -88,10 +88,10 @@
     {
       "href": "/docs/azure-setup",
       "source": "app/docs/azure-setup/page.tsx",
-      "sourceSha256": "d4a8689b8a1b8b5e307d38e2ba36ecdfbe5bbd898ec62646cdadc13d14fb4a01",
+      "sourceSha256": "eb43682ffaa601f8de736f64fe97296e49a5ede51b1966d7a81dfb21b5afc8c6",
       "fields": [
         "Azure setup.",
-        "Axiom currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release.",
+        "V19 currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release.",
         "Preview is not a live connector",
         "Desktop source candidate",
         "What is available",
@@ -103,10 +103,10 @@
     {
       "href": "/docs/gcp-setup",
       "source": "app/docs/gcp-setup/page.tsx",
-      "sourceSha256": "1dae5a8612f68e84fc52f05cad33e5b2ddd49610e653455c71596bc6f7702cba",
+      "sourceSha256": "15b6e674d382d4eab133f9924405a35335da607e8b1ce45650bb32c1cb201c14",
       "fields": [
         "GCP setup.",
-        "Axiom currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release.",
+        "V19 currently provides GCP configuration validation and preview-derived analysis. Live Google Cloud inventory and write execution are not enabled by the verified release.",
         "Preview is not a live connector",
         "What is available",
         "What is not verified",
@@ -117,7 +117,7 @@
     {
       "href": "/docs/approval-workflow",
       "source": "app/docs/approval-workflow/page.tsx",
-      "sourceSha256": "88bf962be6d83d3e42378895d97912d90194987a51a102b0c770a0ca4ff9931a",
+      "sourceSha256": "43d4091fc1f3bd48fbe82c72576f7aef9f1163c0b63da93bf109fd727386c659",
       "fields": [
         "A write starts as a proposal.",
         "For registered Agent tools, low-risk context can be inspected inline; medium- and high-risk changes become proposals that require explicit human approval.",
@@ -133,7 +133,7 @@
     {
       "href": "/docs/execution-plans",
       "source": "app/docs/execution-plans/page.tsx",
-      "sourceSha256": "d0d535a326e6bcada1fc7ab0ef14e000fa908abcf9920e4392a28ce488c8115a",
+      "sourceSha256": "6b50b4335e48a2a32d21dadbe127b48bf2ac20039f9d36b7c2215d51d18b416f",
       "fields": [
         "Understand a saved plan.",
         "A plan records intended work. Review, current access, execution and outcome evidence are separate steps.",
@@ -148,10 +148,10 @@
     {
       "href": "/docs/rollback",
       "source": "app/docs/rollback/page.tsx",
-      "sourceSha256": "cb1d2c827871cbedd2608f329029f43e7b001397f376dd2373d55df2b10b3140",
+      "sourceSha256": "d742abf6cbe402cee6ba3ffd3622dc9cfe702b277e9616360717290335ecf681",
       "fields": [
         "Rollback is specific to the execution path.",
-        "The released automatic rollback applies to the AWS ECS workflow. Axiom does not claim a universal rollback engine for every provider or resource type.",
+        "The released automatic rollback applies to the AWS ECS workflow. V19 does not claim a universal rollback engine for every provider or resource type.",
         "Verified ECS behavior",
         "The recovery sequence",
         "Limits",
@@ -161,10 +161,10 @@
     {
       "href": "/docs/releaseops",
       "source": "app/docs/releaseops/page.tsx",
-      "sourceSha256": "f168c5780208ef784ba8a0df4d8fd041c2b47f78f3c0eaf865edb07a019b3a38",
+      "sourceSha256": "0f0e900d790b02009fa2d173232de983fe89f7e6368af10637bf1cb05d55d2c1",
       "fields": [
         "ReleaseOps overview.",
-        "ReleaseOps is the deployment-governance workflow inside Axiom Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
+        "ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems.",
         "Coordinate existing tools; do not impersonate them",
         "The deployment lifecycle",
         "What users manage",
@@ -175,10 +175,10 @@
     {
       "href": "/docs/releaseops/connectors",
       "source": "app/docs/releaseops/connectors/page.tsx",
-      "sourceSha256": "194762416b29a1cbd69eeae7ecf1ac3811500c2adb8287179a7918baa1c45ca9",
+      "sourceSha256": "abe5fbdbd655b30578488b9edfd8d46f6238bbee0cb111e4ff49ff50c6e172a9",
       "fields": [
         "Integration boundaries.",
-        "What Axiom can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
+        "What V19 can currently connect, what each connection is allowed to see, and the checks required before it is treated as active.",
         "The model: consent is not proof",
         "Revocation and revalidation",
         "Trust questions"
@@ -187,10 +187,10 @@
     {
       "href": "/docs/releaseops/readiness",
       "source": "app/docs/releaseops/readiness/page.tsx",
-      "sourceSha256": "0b89e36febce4e45cc0294f51ae228087beb29e243c07f26fc9f353e520b6f47",
+      "sourceSha256": "8b479cf2e35c2a54a482eb96564122de9259587b494c7f9bac1c7474ff0a5288",
       "fields": [
         "Deployment readiness.",
-        "Axiom Agent assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
+        "V19 assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments.",
         "A score is not evidence by itself",
         "Readiness dimensions",
         "Required signal states",
@@ -201,10 +201,10 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "481e76363d33c16d4b82a46ddd2530b5f75ee15f390d3e9e5b4b9eb7b84cadbe",
+      "sourceSha256": "cc77fc4057a0ed917abba807db46102e6f40fa22a62e473f6eada5df403cafdf",
       "fields": [
         "Install the desktop app.",
-        "The website explains and distributes Axiom Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
+        "The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",
         "Use the live release manifest",
         "What the current desktop build delivers",
         "System requirements",
@@ -218,10 +218,10 @@
     {
       "href": "/docs/integration-setup",
       "source": "app/docs/integration-setup/page.tsx",
-      "sourceSha256": "b364a3f9083510cde6d15003facc7ef9abe45e04c7028826475824e4f80ee206",
+      "sourceSha256": "90baaf24ff3e823a8edd0b0f82191f9d11038a301642a4dbd3a2ee46d00cdc63",
       "fields": [
         "Operator integration configuration",
-        "Axiom opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",
+        "V19 opens provider consent with one click, but the service operator must register each OAuth application first. Provider secrets remain in the production secret manager and are never entered into the desktop app.",
         "Two separate responsibilities",
         "Before connecting a provider",
         "GitHub App",
@@ -234,9 +234,9 @@
     {
       "href": "/docs/security-model",
       "source": "app/docs/security-model/page.tsx",
-      "sourceSha256": "032cd6060c8550d0d0d3b6a50dfb4545ca262e5594ad50e091a1197bbbed7dd7",
+      "sourceSha256": "a354b3de646a9b9073967d543c5a33ee4e2aaa79c66e59c85390b8f40a2f29c8",
       "fields": [
-        "The current Axiom security model.",
+        "The current V19 security model.",
         "Implemented product controls are described separately from configuration requirements, unverified deployment behavior, independent certification, and customer obligations.",
         "Current release boundary",
         "Desktop authentication",
@@ -251,10 +251,10 @@
     {
       "href": "/docs/permissions-model",
       "source": "app/docs/permissions-model/page.tsx",
-      "sourceSha256": "b203d46f0271edd6a1e109186eac1a211dc598d1f8ae88f122c8558929aaf8fc",
+      "sourceSha256": "ee09e92a8598481c6128bb07f5a6b3f5b441a382f610ec59118579e17ba24d93",
       "fields": [
         "Each capability has its own authority boundary.",
-        "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. Axiom does not treat one successful connection as authority for everything else.",
+        "Signing in, reading a repository, proposing a write, approving it, and deploying are separate permissions. V19 does not treat one successful connection as authority for everything else.",
         "Preview workflow reference",
         "Fail closed",
         "Workspace roles",
@@ -267,10 +267,10 @@
     {
       "href": "/docs/oauth-setup",
       "source": "app/docs/oauth-setup/page.tsx",
-      "sourceSha256": "338e9cf0dc75867862e599095404a9c03d1fa0e07c26e479f64725c953687820",
+      "sourceSha256": "e09136ee445e56f8156da7027eea6cb8f3a87b7a00b661c7ebc5beb852a4d7cf",
       "fields": [
         "Enable Google + GitHub sign-in",
-        "Axiom uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically.",
+        "V19 uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically.",
         "Overview",
         "1. Base NextAuth env",
         "2. Google sign-in",
@@ -282,10 +282,10 @@
     {
       "href": "/docs/agent-gateway",
       "source": "app/docs/agent-gateway/page.tsx",
-      "sourceSha256": "3c23da889436ad84149146e5ff9ac6c18d620e4a5cd08cebb9cfb732506b5c91",
+      "sourceSha256": "d08aee72a644ebb4fd739241a488418b174d11e495cab96aa7f4d056c3346231",
       "fields": [
         "Govern any AI agent.",
-        "Agents ask Axiom before a consequential action. A person approves the exact change, and the outcome is recorded.",
+        "Agents ask V19 before a consequential action. A person approves the exact change, and the outcome is recorded.",
         "Cooperative control point",
         "Connect an agent",
         "How requests are decided",
@@ -296,7 +296,7 @@
     {
       "href": "/docs/offline-ai",
       "source": "app/docs/offline-ai/page.tsx",
-      "sourceSha256": "987616c73070d508e2e01f7bc57f1062d43d68cc6e483c4ed77e04e6a531c413",
+      "sourceSha256": "643f0da380d2a89b25d3de54e0c4aa2bdb7381a2aeb92640fb09a8f2ed4bf9e7",
       "fields": [
         "Keep model calls inside your private environment.",
         "Offline customer-hosted AI uses an operator-configured model and a workspace token budget. It is a separate path, with no automatic cloud fallback.",
@@ -312,7 +312,7 @@
     {
       "href": "/docs/trust-tools",
       "source": "app/docs/trust-tools/page.tsx",
-      "sourceSha256": "e22251b2b612c4c91d737cb14b01ba4e8e6a6bcdd0ea10515e7a547ca93b42ec",
+      "sourceSha256": "fd63a21ea1342455ea83bfa1f33fd616c82ff0e3b8572bb605c7646fa2a9e847",
       "fields": [
         "Prove, replay, preview.",
         "Three read-only tools on Control → Trust tools. Each states its limits.",
@@ -325,7 +325,7 @@
     {
       "href": "/docs/api-keys",
       "source": "app/docs/api-keys/page.tsx",
-      "sourceSha256": "4bd68441f5af2e763136a316757403a5b63ee9b1ecbfae9471999fa268361b44",
+      "sourceSha256": "82f90e13c9d560d987fae6b1fb9c798a379ead7dd9dea28fa030732bac11ebb1",
       "fields": [
         "Create a scoped, expiring key.",
         "Owners and admins manage keys on Control → API keys. Keys are limited to governance and read scopes.",
@@ -338,7 +338,7 @@
     {
       "href": "/docs/batch-providers",
       "source": "app/docs/batch-providers/page.tsx",
-      "sourceSha256": "0a99c5707a233a9a1f7a49e5860304be91d66b60c85741bc0ff779041ad4577e",
+      "sourceSha256": "9d248fb21a780be84f7df1ec3e5dd1c7b90d5760a01ca5f62753afa7deeec92c",
       "fields": [
         "Prefect, Dagster and Argo, read-only.",
         "Connect a batch orchestrator so the Agent can explain flows, jobs and runs. It cannot start, retry or cancel anything.",
@@ -351,10 +351,10 @@
     {
       "href": "/docs/ask-axiom",
       "source": "app/docs/ask-axiom/page.tsx",
-      "sourceSha256": "8141156c7266f92c1f07fb4a082d58ec13b0800b4c320a8d29e6f3c648ab42f3",
+      "sourceSha256": "605e6e5733b4f048d80e931c3c4be155225813b9def2e7bdf2b87e82955a5e2b",
       "fields": [
-        "Ask Axiom.",
-        "The support chat answers from Axiom's public docs with sources, and can help with your own workspace when you are signed in.",
+        "Ask V19.",
+        "The support chat answers from V19's public docs with sources, and can help with your own workspace when you are signed in.",
         "Never share secrets",
         "Answers from the docs",
         "Fuller AI answers",
@@ -365,7 +365,7 @@
     {
       "href": "/docs/plugins",
       "source": "app/docs/plugins/page.tsx",
-      "sourceSha256": "ecfddc90e36abee506aad360669bd6961265d314f452e0d46a9871c8f70d033a",
+      "sourceSha256": "1f986018cb99bb86c00aa1681d924f6b073746decc0750f13b2915077b289b6e",
       "fields": [
         "Find a workflow. Add guidance deliberately.",
         "Control → Apps & skills separates built-in Apps, optional Skills and Developer tools (MCP). A catalog entry does not mean provider access is ready.",
@@ -378,7 +378,7 @@
     {
       "href": "/docs/mcp-tools",
       "source": "app/docs/mcp-tools/page.tsx",
-      "sourceSha256": "683a645784bb2729661e6f6607e5ac366655bf2b14c3603cede9c4862e5f2f75",
+      "sourceSha256": "13e8cad4c86e3d7b9bedeef8aaebfef2aed731d914e9847866e9f3db2fd27f3b",
       "fields": [
         "Search official documentation, within a fixed boundary.",
         "Control → MCP tools offers Microsoft Learn documentation search. It does not inspect your Azure account or connect arbitrary MCP servers.",
@@ -391,7 +391,7 @@
     {
       "href": "/docs/workspaces",
       "source": "app/docs/workspaces/page.tsx",
-      "sourceSha256": "1a1d4495fb6502bf85218729f1edb1da50c261e30cefa020706dff9ab0503ec1",
+      "sourceSha256": "c8b36f96bba60f2aebcb6ee92ad83f328de86eb40a0d45c140d800a705298083",
       "fields": [
         "Choose the workspace before you act.",
         "The sidebar identifies the active workspace and your roles. Choosing a workspace selects existing access; it never creates membership or grants permissions.",
@@ -404,7 +404,7 @@
     {
       "href": "/docs/members",
       "source": "app/docs/members/page.tsx",
-      "sourceSha256": "10f88570bc7e328a5c5b34793a62ca4a3a681f4b1e05368fbdf1285b6d5b29fb",
+      "sourceSha256": "ead4e96a17bef821059fec5c0762050133f4b629fff6313eca5116a9a99a42be",
       "fields": [
         "Invite people and manage roles.",
         "Owners and admins manage members on Control → Members. Every change is recorded in the audit log.",
@@ -418,7 +418,7 @@
     {
       "href": "/docs/governance-approvals",
       "source": "app/docs/governance-approvals/page.tsx",
-      "sourceSha256": "e5d931d4ff404c830099d60853d8a00dcec29a8d8b7a080a6b6e87b6abab2b4f",
+      "sourceSha256": "e327666998890b232e1b47dc0cd0b0e265c4cbd4b2a24cd7efcbedebe6d731f6",
       "fields": [
         "Decide pending Agent actions.",
         "Control → Governance lists Agent actions waiting for a decision, your workspace's roles and each environment's approval policy.",
@@ -435,7 +435,7 @@
     {
       "href": "/docs/usage-billing",
       "source": "app/docs/usage-billing/page.tsx",
-      "sourceSha256": "ccdf9fc51dfeaf6cf1967c508e86f121ace621db354d9626f8feae82a968020b",
+      "sourceSha256": "fa4b50c002a681a2985ca9055f474dd117028b5803270c6d6788c08d0ea202c7",
       "fields": [
         "See what you used and what it cost.",
         "Control → Usage & billing has three tabs: Overview, Usage and Invoices. Missing records are shown as unavailable, never estimated.",
@@ -448,7 +448,7 @@
     {
       "href": "/docs/settings",
       "source": "app/docs/settings/page.tsx",
-      "sourceSha256": "c8c7f4b46721f6cfa96add1703acdcb4ed58e45442b1fdf464fb4e0dbe13bc9e",
+      "sourceSha256": "3d63c6c9dc55fb7a3e468ba7a6fde40c21d22947b9fec3f1918cf9889c4543dc",
       "fields": [
         "Keep your profile and devices under control.",
         "Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct.",
@@ -462,7 +462,7 @@
     {
       "href": "/docs/troubleshooting",
       "source": "app/docs/troubleshooting/page.tsx",
-      "sourceSha256": "4f172f5df13c45e9fd75c5624eb2660cf82b2707c7220bae973c31d387f69af0",
+      "sourceSha256": "ffe466d8fb93f90026f59d6f983538fb752978802ad9a1177ddcc3bf6229ca3a",
       "fields": [
         "Troubleshooting",
         "Start with the visible problem. Installation, connection readiness, approval, and execution are separate checks.",
@@ -477,7 +477,7 @@
     {
       "href": "/docs/audit-logs",
       "source": "app/docs/audit-logs/page.tsx",
-      "sourceSha256": "df5d89bf9cf53d2432e0cc68215232f046149cfd2d3e9bafc503d6f1bc905945",
+      "sourceSha256": "d23d4d5b765121f532b6e6c27f5cc9c4c442c090ec59a6be39e7372d4624d6b4",
       "fields": [
         "Read the evidence, not just the status.",
         "A saved decision, an attempted action and an observed external result answer different questions.",
@@ -492,7 +492,7 @@
     {
       "href": "/docs/faq",
       "source": "app/docs/faq/page.tsx",
-      "sourceSha256": "ee01db61222292d0f316625197fed95cb7d08d7d3f2763ae796c0e8c06f69f21",
+      "sourceSha256": "aaf14731bedc9fc6d336f088d26ab1a35f42a6ee78b360c85ece6d1dc0acb4da",
       "fields": [
         "Frequently asked questions.",
         "The questions we see most often, grouped by topic. If something isn't answered here, the troubleshooting guide or product documentation usually has the answer.",
@@ -502,10 +502,10 @@
     {
       "href": "/docs/glossary",
       "source": "app/docs/glossary/page.tsx",
-      "sourceSha256": "0a4c8b83de73e10736c3724aa42dab73bf0cdf03a7a94f89a7623f36f8e0f865",
+      "sourceSha256": "d6a1602f3a1231b9d8442c6016c7bb0d77ccd97e1dda4fc59fa67c46af8270fe",
       "fields": [
         "Glossary.",
-        "Definitions for vocabulary used across the Axiom platform — operational, AI, cloud, and ReleaseOps terms."
+        "Definitions for vocabulary used across the V19 platform — operational, AI, cloud, and ReleaseOps terms."
       ]
     }
   ]

@@ -1,5 +1,5 @@
 /**
- * Ask Axiom support knowledge base (B5 / C2). Versioned, public, reviewed.
+ * Ask V19 support knowledge base (B5 / C2). Versioned, public, reviewed.
  *
  * Built from three public sources only:
  *   1. the public FAQ (lib/support/faqData.ts, the same text /docs/faq renders),
@@ -14,7 +14,7 @@ import headingIndex from "@/lib/docs/guide-heading-index.json";
 import docsCorpus from "./docsCorpus.json";
 import { FAQ_GROUPS } from "./faqData";
 
-export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-13";
+export const KNOWLEDGE_VERSION = "ask-axiom-kb-2026-11-15";
 
 
 export interface KnowledgeEntry {
@@ -30,37 +30,37 @@ export interface KnowledgeEntry {
 }
 
 const FACTS: readonly KnowledgeEntry[] = [
-  { id: "fact-agent-gateway", kind: "fact", topic: "Agents", href: "/product#govern-any-agent", title: "Can Axiom govern Cursor, Claude Code or other AI agents?",
-    body: "Yes. Add Axiom as an MCP server (/api/v1/mcp) with an API key that has governance scopes. Before a consequential action the agent asks Axiom; deploys, merges, infrastructure, migrations and secrets wait for a workspace admin who did not create the key; production secret reads and deletes are refused. Agents report their own actions, so this is a cooperative control point, not a sandbox.",
+  { id: "fact-agent-gateway", kind: "fact", topic: "Agents", href: "/product#govern-any-agent", title: "Can V19 govern Cursor, Claude Code or other AI agents?",
+    body: "Yes. Add V19 as an MCP server (/api/v1/mcp) with an API key that has governance scopes. Before a consequential action the agent asks V19; deploys, merges, infrastructure, migrations and secrets wait for a workspace admin who did not create the key; production secret reads and deletes are refused. Agents report their own actions, so this is a cooperative control point, not a sandbox.",
     keywords: ["mcp", "cursor", "claude", "codex", "copilot", "agent", "agents", "gateway", "govern", "approval"] },
   { id: "fact-ci-gate", kind: "fact", topic: "Agents", href: "/docs/approval-workflow", title: "How do I gate a CI deploy on an approval?",
     body: "Use the vxl CLI: `vxl ask deploy --target owner/repo --env production --summary \"Ship v2\" --wait 1800 && ./deploy.sh`. It exits 0 only when policy allows the action or a person approves it, and exits 1 when it is denied, rejected or still waiting at the timeout. The vxl ask check is cooperative: it does not deploy or change GitHub or AWS permissions. The workflow's own deploy.sh runs only if that check succeeds.",
     keywords: ["ci", "pipeline", "github actions", "deploy", "cli", "vxl", "gate"] },
   { id: "fact-trust-tools", kind: "fact", topic: "Security", href: "/security", title: "Can I prove the audit log was not edited?",
-    body: "Owners and admins can seal the audit log on Trust tools. Each seal fingerprints a window of events and links to the previous seal; verifying shows any edited, deleted or inserted event or a broken link. This is tamper evidence, not prevention, so keep the latest fingerprint outside Axiom.",
+    body: "Owners and admins can seal the audit log on Trust tools. Each seal fingerprints a window of events and links to the previous seal; verifying shows any edited, deleted or inserted event or a broken link. This is tamper evidence, not prevention, so keep the latest fingerprint outside V19.",
     keywords: ["audit", "tamper", "seal", "integrity", "evidence", "compliance", "soc2"] },
   { id: "fact-policy-replay", kind: "fact", topic: "Governance", href: "/docs/approval-workflow", title: "Can I test an approval rule before turning it on?",
     body: "Yes. Policy replay on Trust tools runs a draft rule over the last 30 days of real actions with the same rule engine production uses, and shows what would have been blocked or auto-approved. Nothing is enabled by a replay.",
     keywords: ["policy", "rule", "replay", "simulate", "what if", "dry run"] },
   { id: "fact-prepaid-ai", kind: "fact", topic: "Pricing", href: "/plans", title: "How does AI pricing work?",
-    body: "Axiom is free to explore. AI usage is the only paid part and is prepaid: you see the estimated cost before each action, a hold is placed, and you pay only the final price, never more than you prepaid. Credit purchases are not open yet.",
+    body: "V19 is free to explore. AI usage is the only paid part and is prepaid: you see the estimated cost before each action, a hold is placed, and you pay only the final price, never more than you prepaid. Credit purchases are not open yet.",
     keywords: ["price", "pricing", "cost", "credits", "billing", "pay", "money", "plan", "plans", "free"] },
   { id: "fact-support-contact", kind: "fact", topic: "Support", href: "/contact", title: "How do I reach a person?",
     body: "Use the contact page for questions about downloads, accounts, integrations or security. Signed-in customers can open account help from their workspace. Never paste passwords, API keys or tokens into chat or email.",
     keywords: ["contact", "human", "person", "email", "help", "support", "talk"] },
   { id: "fact-model-training", kind: "fact", topic: "Security", href: "/security", title: "Is my data used to train AI models?",
-    body: "Axiom sends context to an AI provider only when you make an explicit AI request in a workspace that has turned AI on. The site makes no guarantee about the provider's retention or model training; check the selected provider's policy before sharing context.",
+    body: "V19 sends context to an AI provider only when you make an explicit AI request in a workspace that has turned AI on. The site makes no guarantee about the provider's retention or model training; check the selected provider's policy before sharing context.",
     keywords: ["train", "training", "model", "data", "privacy", "retention", "provider", "openai", "anthropic"] },
-  { id: "fact-batches", kind: "fact", topic: "Integrations", href: "/integrations", title: "Does Axiom work with Prefect, Dagster or Argo Workflows?",
+  { id: "fact-batches", kind: "fact", topic: "Integrations", href: "/integrations", title: "Does V19 work with Prefect, Dagster or Argo Workflows?",
     body: "Read-only connections exist for Prefect, Dagster and Argo Workflows: the Agent can inspect flows, jobs and runs but cannot start, retry or cancel them. Live acceptance with real accounts is still pending. Airflow is the existing batch provider.",
     keywords: ["prefect", "dagster", "argo", "batch", "batches", "airflow", "workflow", "orchestration"] },
 ];
 
 /** Extra search words for FAQ entries that overview questions should reach. Keyed by the exact question. */
 const FAQ_KEYWORDS: Readonly<Record<string, readonly string[]>> = {
-  "What is Axiom Agent?": ["axiom", "axiom", "overview", "about", "product", "explain"],
+  "What is V19?": ["axiom", "v19", "overview", "about", "product", "explain"],
   "Is there a desktop app?": ["desktop", "app", "mac", "windows", "linux"],
-  "How is Axiom priced?": ["pricing", "credits"],
+  "How is V19 priced?": ["pricing", "credits"],
 };
 
 function faqEntries(): KnowledgeEntry[] {

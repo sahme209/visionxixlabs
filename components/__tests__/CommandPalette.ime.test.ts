@@ -14,11 +14,11 @@ function open(){
 const composition=[{name:'native composition',isComposing:true,keyCode:0},{name:'legacy IME229',isComposing:false,keyCode:229}];
 for(const variant of composition){
  it.each(['Enter','Escape','ArrowDown','ArrowUp'])('preserves '+variant.name+' %s for the input method',key=>{
-  const input=open();fireEvent.change(input,{target:{value:'Axiom capabilities'}});input.focus();
+  const input=open();fireEvent.change(input,{target:{value:'V19 capabilities'}});input.focus();
   const event=new KeyboardEvent('keydown',{key,...variant,bubbles:true,cancelable:true});
   fireEvent(input,event);
   expect(screen.queryByRole('dialog',{name:'Command palette'})).not.toBeNull();
-  expect(input.value).toBe('Axiom capabilities');
+  expect(input.value).toBe('V19 capabilities');
   expect(document.activeElement).toBe(input);
   expect(event.defaultPrevented).toBe(false);
   expect(state.push).not.toHaveBeenCalled();

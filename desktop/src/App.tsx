@@ -240,8 +240,8 @@ function BootScreen({ status }: { status: string }) {
   return (
     <div className="h-screen w-screen flex items-center justify-center bg-axiom-bg text-white relative overflow-hidden">
       <div className="relative z-10 flex flex-col items-center">
-        <img src="/axiom-logo.png" alt="" className="h-10 w-10 shrink-0 object-contain" />
-        <p className="mt-6 text-base font-semibold tracking-tight text-white">Axiom Agent</p>
+        <img src="/brand/v19-mark.svg" alt="" className="h-10 w-10 shrink-0 object-contain" />
+        <p className="mt-6 text-base font-semibold tracking-tight text-white">V19</p>
         <p className="mt-2 text-[10px] font-mono text-zinc-500 tracking-[0.22em] uppercase">{status}</p>
         <div className="mt-6 w-48 h-[2px] bg-zinc-800/70 rounded-full overflow-hidden">
           <div className="h-full w-1/3 bg-zinc-200 animate-[boot-bar_1s_ease-in-out_infinite]" />

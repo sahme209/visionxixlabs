@@ -54,7 +54,7 @@ export function MobileHome() {
             Your request becomes the playbook.
           </h1>
           <p className="mt-6 text-[17px] leading-7 text-zinc-300">
-            Axiom turns deployment intake into a governed runbook your team can
+            V19 turns deployment intake into a governed runbook your team can
             approve, execute, validate, and close with evidence.
           </p>
 

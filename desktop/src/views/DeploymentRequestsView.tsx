@@ -693,7 +693,7 @@ export function DeploymentRequestsView() {
               ) : closingRequestId === request.id ? (
                 <div className="mt-3 rounded-lg border border-white/20 bg-white/5 p-3">
                   <p className="text-xs font-medium text-zinc-100">Record external outcome</p>
-                  <p className="mt-1 text-xs leading-5 text-zinc-500">Attach the external validation or change reference. This closes only the Axiom record; it cannot deploy, merge, or approve anything.</p>
+                  <p className="mt-1 text-xs leading-5 text-zinc-500">Attach the external validation or change reference. This closes only the V19 record; it cannot deploy, merge, or approve anything.</p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     <input data-help-id="releases.workspace.closure-reference" value={closureEvidenceId} onChange={(event) => setClosureEvidenceId(event.target.value)} placeholder="Validation or change reference" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />
                     <input data-help-id="releases.workspace.closure-summary" value={closureSummary} onChange={(event) => setClosureSummary(event.target.value)} placeholder="Recorded outcome summary" className="rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-xs text-white" />

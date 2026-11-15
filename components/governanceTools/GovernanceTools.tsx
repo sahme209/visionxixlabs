@@ -44,7 +44,7 @@ function AuditPanel({ organizationId, canSeal }: { organizationId: string; canSe
     setBusy(true);
     const r = await call("/api/audit/seal", { method: "POST", body: JSON.stringify({ organizationId }) });
     const s = r.sealed as Json | null;
-    setOut(r.ok ? (s ? `Sealed ${s.eventCount} events as seal #${s.sequence}. Keep this fingerprint somewhere outside Axiom: ${s.sealHash}` : "Nothing new to seal.") : `Could not seal (${r.error}).`);
+    setOut(r.ok ? (s ? `Sealed ${s.eventCount} events as seal #${s.sequence}. Keep this fingerprint somewhere outside V19: ${s.sealHash}` : "Nothing new to seal.") : `Could not seal (${r.error}).`);
     setBusy(false);
   }
   async function checkAnchor(file: File | undefined) {
@@ -72,7 +72,7 @@ function AuditPanel({ organizationId, canSeal }: { organizationId: string; canSe
         </label>
       </div>
       {out && <p role="status" className="mt-3 wrap-break-word text-sm text-zinc-300">{out}</p>}
-      <p className="mt-3 text-xs text-zinc-500">Evidence, not prevention. Keep the anchor file somewhere Axiom cannot write (a ticket, a vault, an email to auditors). Checking it later shows whether the chain up to it was rewritten. It contains no event content.</p>
+      <p className="mt-3 text-xs text-zinc-500">Evidence, not prevention. Keep the anchor file somewhere V19 cannot write (a ticket, a vault, an email to auditors). Checking it later shows whether the chain up to it was rewritten. It contains no event content.</p>
     </Panel>
   );
 }
@@ -82,7 +82,7 @@ const ANCHOR_MESSAGES: Record<string, (r: Json) => string> = {
   hash_mismatch: (r) => `Seal #${r.sequence} no longer matches this anchor. The chain was rewritten after the anchor was saved.`,
   seal_missing: (r) => `Seal #${r.sequence} is missing from the chain. The chain was rewritten or truncated after the anchor was saved.`,
   other_workspace: () => "This anchor belongs to a different workspace.",
-  invalid_anchor: (r) => (r.reason === "digest" ? "This anchor file was edited, so it cannot be trusted." : r.reason === "schema" ? "This is not an Axiom audit anchor this version understands." : "This is not a valid Axiom audit anchor."),
+  invalid_anchor: (r) => (r.reason === "digest" ? "This anchor file was edited, so it cannot be trusted." : r.reason === "schema" ? "This is not an V19 audit anchor this version understands." : "This is not a valid V19 audit anchor."),
 };
 
 function ReplayPanel({ organizationId }: { organizationId: string }) {

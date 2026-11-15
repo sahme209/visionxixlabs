@@ -24,7 +24,7 @@ export function AirflowConsole(){
    const body=await response.json();
    if(!response.ok || body?.ok!==true || !body.data || typeof body.data!=='object')throw Error('unverified');
    return current.signal.aborted ? null:body.data as T;
-  }catch{if(!current.signal.aborted)setError('Airflow information could not be verified. Refresh or check workspace access and the connection in Axiom Agent.');return null;}
+  }catch{if(!current.signal.aborted)setError('Airflow information could not be verified. Refresh or check workspace access and the connection in V19 Agent.');return null;}
   finally{if(controller.current===current)setBusy(false);}
  },[]);
  const refresh=useCallback(async()=>{

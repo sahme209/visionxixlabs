@@ -22,7 +22,7 @@ export function ApprovalDecisionButtons({ proposalId, disabledReason, approveDis
       const validStatus = decision === "reject" ? body?.status === "rejected" : body?.status === "approved" || body?.status === "executed" || body?.status === "failed";
       if (!response.ok || body?.ok !== true || !validStatus) throw new Error(body?.error ?? "decision_unconfirmed");
       if (body.status === "approved") {
-        setOutcome({status:"approved",message:"Approved — waiting for requester execution. This decision did not run the action. The original requester must execute separately in Axiom."});
+        setOutcome({status:"approved",message:"Approved — waiting for requester execution. This decision did not run the action. The original requester must execute separately in V19."});
       } else if (body.status === "failed") {
         setOutcome({ status: "failed", message: body.errorMessage === "action_outcome_unknown"
           ? "Action approved; provider outcome is unconfirmed. Review the provider result and audit before taking further action."

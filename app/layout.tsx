@@ -26,11 +26,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: "Axiom Agent | Governed cloud operations",
+    default: "V19 | Governed cloud operations",
     template: "%s | Vision XIX Labs",
   },
   description:
-    "Download Axiom Agent for governed cloud operations, including deployment intake, approvals, guided execution, validation evidence, audit history, and reusable runbooks.",
+    "Download V19 for governed cloud operations, including deployment intake, approvals, guided execution, validation evidence, audit history, and reusable runbooks.",
   keywords: [...primaryKeywords, ...secondaryKeywords],
   authors: [{ name: "Vision XIX Labs LLC", url: SITE_URL }],
   creator: "Vision XIX Labs",
@@ -53,15 +53,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: SITE_URL,
     siteName: "Vision XIX Labs",
-    title: "Axiom Agent | Governed cloud operations",
+    title: "V19 | Governed cloud operations",
     description:
       "A downloadable application for deployment intake, approvals, guided execution, validation evidence, audit history, and reusable runbooks.",
     images: [{ url: defaultOgImage, width: 512, height: 512, alt: "Vision XIX Labs" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Axiom Agent | Governed cloud operations",
-    description: "Download Axiom Agent for deployment intake, approvals, guided execution, evidence, audit history, and reusable runbooks.",
+    title: "V19 | Governed cloud operations",
+    description: "Download V19 for deployment intake, approvals, guided execution, evidence, audit history, and reusable runbooks.",
   },
   alternates: { canonical: SITE_URL },
   category: "technology",

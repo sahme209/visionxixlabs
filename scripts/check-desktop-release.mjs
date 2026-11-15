@@ -24,8 +24,8 @@ const errors = desktopVersionAlignmentErrors({
 if (desktopPackage.name !== "axiom-desktop") {
   errors.push(`unexpected desktop package name: ${desktopPackage.name}`);
 }
-if (tauriConfig.productName !== "Axiom Agent") {
-  errors.push(`customer-facing product name must remain "Axiom Agent", found: ${tauriConfig.productName}`);
+if (tauriConfig.productName !== "V19") {
+  errors.push(`customer-facing product name must remain "V19", found: ${tauriConfig.productName}`);
 }
 if (tauriConfig.identifier !== "com.visionxixlabs.axiom") {
   errors.push(`unexpected desktop bundle identifier: ${tauriConfig.identifier}`);
@@ -79,7 +79,7 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log(`Desktop release alignment passed: Axiom Agent v${desktopPackage.version}`);
+console.log(`Desktop release alignment passed: V19 v${desktopPackage.version}`);
 
 function readJson(relativePath) {
   return JSON.parse(readText(relativePath));

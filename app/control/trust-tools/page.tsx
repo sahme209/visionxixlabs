@@ -9,7 +9,7 @@ import { authorizedForOrganization } from "@/lib/axiom/workspaceAuthority";
 import { ModuleIntro } from "@/components/portal/ModuleIntro";
 import { GovernanceTools } from "@/components/governanceTools/GovernanceTools";
 
-export const metadata: Metadata = { title: "Trust tools · Axiom" };
+export const metadata: Metadata = { title: "Trust tools · V19" };
 export const dynamic = "force-dynamic";
 
 export default async function TrustToolsPage() {
@@ -23,7 +23,7 @@ export default async function TrustToolsPage() {
       <ModuleIntro
         title="Trust tools"
         explanation="Prove the audit log is untouched, test a rule against real history before enabling it, and see what a change touches before approving it."
-        helpsYouDo={["Verify the audit log has not been edited", "Download an anchor to keep outside Axiom, and check it later", "Replay a draft rule over the last 30 days", "Preview a change's blast radius and rollback"]}
+        helpsYouDo={["Verify the audit log has not been edited", "Download an anchor to keep outside V19, and check it later", "Replay a draft rule over the last 30 days", "Preview a change's blast radius and rollback"]}
         connectFirst={["Audit activity in this workspace", "Approval history for replay (cloud actions)"]}
         aiEngineers={[]}
         approval={{ severity: "read_only", note: "Verify, anchors, replay and preview are read-only. Sealing is limited to owners and admins and only adds a seal; it never changes events. Nothing here enables a policy." }}
