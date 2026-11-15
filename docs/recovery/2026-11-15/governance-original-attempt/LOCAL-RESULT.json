@@ -1,0 +1,87 @@
+{
+  "ownerApproval": "call_2c7bb968dac945c2a9cc247918d42b38",
+  "scope": "private local file/claim source and isolated synthetic fixtures only",
+  "sourceHashes": {
+    "scripts/governance_original_attempt.py": "3bee1bd4b8cbf2e44cc3ab6c6f21fd6b04fb028280606603b5888ae719fc480f",
+    "scripts/tests/test_governance_original_attempt.py": "f34f4ebbde3f77ff360d2f1e635456005935b34200a156844d9d0f8bb4b91a2d",
+    "lib/governance/platform/nativeTime/__tests__/originalAttemptGate.test.ts": "3f456be2b7938ff864b79cbfb14306dd78dfa9f008934e4644aebca62407e8fe"
+  },
+  "logs": {
+    "RED.log": {
+      "bytes": 16858,
+      "sha256": "a2149a7cd71313a14d350b5adf21688331b8bb57a7268bc1098f905ae3385011"
+    },
+    "FIRST-GREEN.log": {
+      "bytes": 128,
+      "sha256": "a845184b1ee38769e3a3ce6ba63a1195adcce071389ab343352c078bca01ed21"
+    },
+    "REUSED-FD-RED.log": {
+      "bytes": 705,
+      "sha256": "099251002fa2061afce81c8ab83c02c8973820580302336e29a36d0845b963d4"
+    },
+    "FINAL-GREEN.log": {
+      "bytes": 131,
+      "sha256": "08c843e025ddf134520174cf9cb6e6c5e6cf572795b5b888824d5d41b3b7821a"
+    },
+    "REVIEW-FINDINGS-RED.log": {
+      "bytes": 3105,
+      "sha256": "fc5426775eab7f2f828e4966e7573c7941d5d77e8ca15d981c1e3ace5ec486a5"
+    },
+    "REVIEW-FINDINGS-GREEN.log": {
+      "bytes": 137,
+      "sha256": "0843a7f7353f2f6381e75d8c2b6372437c74546c4efa5cc2367fd09cf037dcc0"
+    },
+    "ORDINARY-INTEGRATION.log": {
+      "bytes": 609,
+      "sha256": "651cf2f684116015ea304887da4159fc63211b111d90e599916da4995e7caa97"
+    },
+    "ROOT-TYPES.log": {
+      "bytes": 331,
+      "sha256": "96370e7b935f769c70329152440c14d301c0edff8fe8d994df82ada8fb35e381"
+    },
+    "FULL-SUITE.log": {
+      "bytes": 129647,
+      "sha256": "051e558995347012f473e02f5b1b6c8f425d81f0262a2c25daf19b0343ff179e"
+    },
+    "FINAL-ORDINARY-INTEGRATION.log": {
+      "bytes": 609,
+      "sha256": "834a0166dda37d32ab000e6f09712f314a31160d3af7a26cfa04f9af30ede5a0"
+    },
+    "FINAL-ROOT-TYPES.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "FINAL-FULL-SUITE.log": {
+      "bytes": 129647,
+      "sha256": "aa903a4c9778eeba6ebe446f24967862718d1d212e846e74b3ed800e4c8d3f01"
+    }
+  },
+  "actualLocalFileAndClaimTests": 38,
+  "finalOrdinarySuite": {
+    "passed": 19619,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "passedFiles": 1796,
+    "skippedFiles": 106
+  },
+  "finalRootTypes": "pass",
+  "independentReview": {
+    "reviewer": "original_attempt_code_review",
+    "importantFindings": [
+      "deadline/cancellation during final read",
+      "foreign equality-spoof registry lookup"
+    ],
+    "failingRegressions": 5,
+    "fixedByRoot": true,
+    "subsequentClearClaimed": false
+  },
+  "runtimeAuthenticBindingSupplierAvailable": false,
+  "aclEvidenceInPositiveLocalTests": "mocked; default runtime refuses when API unavailable",
+  "productionOwnerStart": "always unavailable",
+  "nativeExecuted": false,
+  "realJournalConsumed": false,
+  "controllerOrHostQualified": false,
+  "providerOrCredentialAccess": false,
+  "deploymentOrSpending": false,
+  "governanceEnabled": false
+}

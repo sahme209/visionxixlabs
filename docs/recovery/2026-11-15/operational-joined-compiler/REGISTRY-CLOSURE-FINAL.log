@@ -1,0 +1,17 @@
+.................E.
+======================================================================
+ERROR: test_selected_registry_archive_matches_its_named_locked_checksum (__main__.RegistryClosure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 143, in test_selected_registry_archive_matches_its_named_locked_checksum
+    self.assertEqual(m.freeze_registry_sources({'packages':[package]},lock,root,freeze,source)[0]['archiveSha256'],digest)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 243, in freeze_registry_sources
+    manifest=Path(package['manifest_path']);need(manifest.is_absolute() and manifest.is_relative_to(registry) and not manifest.is_symlink(),'registry_manifest_unavailable')
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 14, in need
+    if not ok:raise ValueError(reason)
+ValueError: registry_manifest_unavailable
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.118s
+
+FAILED (errors=1)

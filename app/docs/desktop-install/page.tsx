@@ -95,6 +95,9 @@ sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
       </DocSection>
 
       <DocSection id="updates" title="Updates and release notes" kicker="06">
+        <p>A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer.</p>
+        <p>In releases that include <strong>About this app</strong>, open <strong>Settings → General</strong> and check <strong>Installed version</strong>. This value comes from the installed app. <strong>Unavailable</strong> means it could not be read, not that a newer version is installed. Older releases may not have this section.</p>
+        <p><strong>Review releases</strong> opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer&apos;s verification details.</p>
         <p>Automatic update delivery is not configured in the current Tauri bundle. Check the <Link href="/download">download page</Link> for a newer verified tag and install it manually. Review the public <a href="https://github.com/sahme209/axiom-releases/releases" target="_blank" rel="noopener noreferrer">Axiom Agent release notes</a> before upgrading.</p>
       </DocSection>
 

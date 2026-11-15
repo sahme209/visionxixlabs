@@ -1,0 +1,34 @@
+{
+  "scope": "local source and mocked actual entrypoint only",
+  "files": [
+    {
+      "path": "lib/governance/platform/nativeTime/installedOperationalMain.ts",
+      "sha256": "aa3971d2f1077ce325f7fb2a32ce302b60427e5b02dd43a99176d255af26c142"
+    },
+    {
+      "path": "lib/governance/platform/nativeTime/__tests__/installedOperationalMain.test.ts",
+      "sha256": "321040331a67a4125243ddfefdcb7fbbe232bab0b46b6f50ad1eac13a82d5619"
+    }
+  ],
+  "red": "missing installed entrypoint: four new tests failed; initial runner invocation inadvertently included additional ordinary tests (773 passed/174 skipped), not native execution",
+  "green": "23 tests/3 files PASS; after ES2017-compatible test bigint correction 5 entrypoint tests PASS",
+  "types": "initial test bigint literals refused under ES2017; corrected BigInt constructors; final root native TypeScript check exit0",
+  "qualified": false,
+  "governanceEnabled": false,
+  "nativeRun": false,
+  "administrativeExitAccepted": false,
+  "guardFollowup": {
+    "entrypointTests": "11 PASS",
+    "strictRootTypes": "PASS / exit0",
+    "additionalCases": [
+      "wrong path",
+      "missing path",
+      "extra args",
+      "wrong Node version; all before addon load",
+      "stdout callback absent: unsettled99ms, exits receipt wait at100ms/no retry",
+      "asynchronous callback error/redaction/no cleanup claim"
+    ],
+    "initialTestTimingCorrection": "one new deadline test initially used vi.waitFor, which itself advanced fake clock; synchronized directly on write start instead; product source unchanged",
+    "nativeExecution": false
+  }
+}

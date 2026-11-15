@@ -24,6 +24,19 @@ static int name(struct cursor*c,char*out,size_t cap,int digest){
  for(size_t i=0;out[i];i++){char b=out[i];if(digest?!(b>='0'&&b<='9')&&!(b>='a'&&b<='f'):!((b>='a'&&b<='z')||(b>='A'&&b<='Z')||(b>='0'&&b<='9')||b=='_'||b=='-'))return -1;}return 0;
 }
 static int end(struct cursor*c){return literal(c,"END")||c->n?-1:0;}
+int axiom_operational_policy_decode(const unsigned char*b,size_t n,struct axiom_operational_policy*p){
+ if(!b||!p||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};memset(p,0,sizeof *p);
+ return literal(&c,"AXIOM_OPERATIONAL_POLICY_V1")||literal(&c,"aws-linux-operational-v1")||literal(&c,"aws-time-sync-ntp")||number(&c,&p->revision)||!p->revision||p->revision>9007199254740991ULL||number(&c,&p->reader_uid)||!p->reader_uid||p->reader_uid>=UINT32_MAX||number(&c,&p->reader_gid)||!p->reader_gid||p->reader_gid>=UINT32_MAX||end(&c)?-1:0;
+}
+int axiom_operational_accept_derive(const struct axiom_operational_policy*p,const char*digest,const char*boot,uint64_t device,uint64_t inode,const unsigned char*nonce,size_t nonce_length,struct axiom_operational_acceptance*a){
+ if(!p||!digest||!boot||!nonce||!a||nonce_length!=32||!p->revision||p->revision>9007199254740991ULL||!p->reader_uid||p->reader_uid>=UINT32_MAX||!p->reader_gid||p->reader_gid>=UINT32_MAX||strnlen(digest,65)!=64||strlen(digest)!=64||strnlen(boot,129)>128||!boot[0]||!inode)return -1;
+ for(size_t i=0;i<64;i++)if(!((digest[i]>='0'&&digest[i]<='9')||(digest[i]>='a'&&digest[i]<='f')))return -1;
+ unsigned char nonzero=0;for(size_t i=0;i<32;i++)nonzero|=nonce[i];if(!nonzero)return -1;
+ memset(a,0,sizeof *a);memcpy(a->profile,digest,65);memcpy(a->boot,boot,strlen(boot)+1);a->revision=p->revision;a->reader_gid=p->reader_gid;a->directory_device=device;a->directory_inode=inode;a->publisher_uid=0;
+ memcpy(a->host,"host_",5);memcpy(a->source_generation,"source_",7);const char hex[]="0123456789abcdef";
+ for(size_t i=0;i<32;i++){a->host[5+2*i]=a->source_generation[7+2*i]=hex[nonce[i]>>4];a->host[6+2*i]=a->source_generation[8+2*i]=hex[nonce[i]&15];}
+ unsigned char encoded[AXIOM_OPERATIONAL_WIRE_MAX];size_t length;return axiom_operational_accept_encode(a,encoded,&length);
+}
 int axiom_operational_accept_decode(const unsigned char*b,size_t n,struct axiom_operational_acceptance*a){
  if(!b||!a||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};memset(a,0,sizeof *a);
  return literal(&c,"AXIOM_ACCEPT_V1")||name(&c,a->profile,sizeof a->profile,1)||number(&c,&a->revision)||!a->revision||name(&c,a->host,sizeof a->host,0)||name(&c,a->source_generation,sizeof a->source_generation,0)||name(&c,a->boot,sizeof a->boot,0)||number(&c,&a->directory_device)||number(&c,&a->directory_inode)||number(&c,&a->publisher_uid)||number(&c,&a->reader_gid)||a->publisher_uid!=0||!a->reader_gid||a->reader_gid>UINT32_MAX||end(&c)?-1:0;

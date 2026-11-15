@@ -54,6 +54,18 @@ function readDocumentationClickProbe() {
 function controlToken(label) {
   return ({ 'Inspect deployment scenarios and stages': 'product_disclosure', 'Unknown outcome': 'product_unknown', 'Code & review': 'workspace_story', 'Step 1: Choose the working context.': 'context_step', 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control' })[label] ?? 'unclassified';
 }
+// Manual workflow selection is distinct from the finite decorative typed prefix.
+function readWorkflowStoryState() {
+  const pre = document.querySelector('#product-tour pre');
+  return { title: document.querySelector('#product-tour h2').textContent, code: pre?.querySelector('.sr-only')?.textContent ?? pre?.textContent ?? '', step: document.querySelector('#product-tour [aria-current="step"]')?.getAttribute('aria-label') ?? null };
+}
+function readWorkflowPaintState() {
+  const pre = document.querySelector('#product-tour pre');
+  const source = pre?.querySelector('.sr-only');
+  const visible = pre?.querySelector('[aria-hidden="true"]');
+  if (!source || !visible) return null;
+  return { source: source.textContent, shown: [...visible.childNodes].filter(node => node.nodeType === 3).map(node => node.textContent).join('') };
+}
 function isHomepageManualReady() {
   const tour = document.querySelector('#product-tour');
   const step = document.querySelector('#product-tour [aria-label="Story steps"] button');
@@ -250,7 +262,8 @@ try {
     const path = join(directory, 'screenshots', `${name}.png`); writeFileSync(path, bytes, { mode: 0o600 }); images.push({ path, width: box.width, height: box.height });
     lastInteraction = currentInteraction;
   }
-  const state = () => evaluate(() => ({ title: document.querySelector('#product-tour h2').textContent, code: document.querySelector('#product-tour pre')?.innerText ?? '', step: document.querySelector('#product-tour [aria-current="step"]')?.getAttribute('aria-label') ?? null }));
+  const state = () => evaluate(readWorkflowStoryState);
+  const paint = () => evaluate(readWorkflowPaintState);
   await send('Page.enable'); await send('Runtime.enable'); await send('Log.enable'); await send('Fetch.enable', { patterns: [{ urlPattern: '*', requestStage: 'Request' }] });
   await viewport(1440); await navigate('/', 'homepage_document');
   await waitFor(isHomepageManualReady, undefined, 45000, 'homepage_manual');
@@ -272,7 +285,7 @@ try {
   evidence.push('direct_step_state');
   await sleep(700); assert.deepEqual(await state(), selected); evidence.push('manual_idle_state_retained');
   currentInteraction = 'offscreen_check'; await evaluate(() => scrollTo({ top: document.body.scrollHeight, left: 0, behavior: 'instant' }));
-  await sleep(200); const offscreen = await state(); await sleep(5700); assert.deepEqual(await state(), offscreen); evidence.push('manual_offscreen_state_retained');
+  await sleep(200); const offscreen = await state(); const offscreenPaint = await paint(); assert.ok(offscreenPaint, 'website_story_paint_missing'); await sleep(5700); assert.deepEqual(await state(), offscreen); assert.deepEqual(await paint(), offscreenPaint); evidence.push('manual_offscreen_state_retained');
   await click('Step 3: Review the bounded check.'); await click('Simulate approval');
   currentInteraction = 'sample_approval_check'; await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample decision recorded'));
   await click('Reject sample'); await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample rejected')); evidence.push('sample_approve_reject');
@@ -295,7 +308,7 @@ try {
   currentInteraction = 'hidden_document_check'; const background = await send('Target.createTarget', { url: 'about:blank' });
   try {
     await send('Target.activateTarget', { targetId: background.targetId }); await waitFor(() => document.hidden, undefined, 2000);
-    const hidden = await state(); await sleep(5700); assert.deepEqual(await state(), hidden); evidence.push('manual_hidden_state_retained');
+    const hidden = await state(); const hiddenPaint = await paint(); assert.ok(hiddenPaint, 'website_story_paint_missing'); await sleep(5700); assert.deepEqual(await state(), hidden); assert.deepEqual(await paint(), hiddenPaint); evidence.push('manual_hidden_state_retained');
   } finally { await send('Target.closeTarget', { targetId: background.targetId }); await send('Page.bringToFront'); }
   await click('Agent & approval');
   await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Attach context to the request.');

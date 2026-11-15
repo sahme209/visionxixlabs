@@ -1,0 +1,38 @@
+name: One approved joined operational compiler test
+
+# One owner-approved exact PR transition; no resulting Governance output runs.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'scripts/governance_operational_compile.py'
+      - '.github/workflows/linux-operational-compile.yml'
+permissions:
+  contents: read
+jobs:
+  compile-only:
+    if: >-
+      github.repository == 'sahme209/visionxixlabs' &&
+      github.event.repository.private == false &&
+      github.event.action == 'synchronize' &&
+      github.event.number == 337 &&
+      github.event.pull_request.number == 337 &&
+      github.event.pull_request.base.ref == 'main' &&
+      github.event.pull_request.base.repo.full_name == github.repository &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref == 'codex/governance-operational-package' &&
+      github.event.before == '35b88cba5aae932aa53f9aa08bc87810a1ce0697' &&
+      github.event.after == github.event.pull_request.head.sha &&
+      github.run_attempt == 1
+    runs-on: ubuntu-24.04
+    timeout-minutes: 42
+    steps:
+      - name: Check out exact reviewed head without credentials
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One fixed owner-approved compiler batch
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_operational_compile.py --approved-ci-once

@@ -1,0 +1,9 @@
+# Installed-version finite rendered checkpoint
+
+Reviewed the actual mounted-App Settings markup captured by the existing no-write/synthetic-identity fixture, with the exact CSS from the existing successful frontend build. Capture settled to synthetic version7.8.9; Checking… was absent. This does not report the actual installed version. No rebuild, desktop JavaScript, native/credential/provider invocation, installed-app launch, installer or deployment.
+
+Observed both themes at1024×600 and1280×900. Review releases remained keyboard-focusable and entirely visible; version visible; document size equaled viewport and window scrollY stayed0 while the inner Settings surface scrolled. At1024×600 the version y397.05/h16 and review button y461.05/h34; at1280×900 version y697.05/h16 and review y761.05/h34. The existing compact desktop34px action matches adjacent controls; this is not a44px mobile target qualification. Screenshots retained in this directory. Initial geometry read during scrolling was transient and contradicted the later screenshot; no false settled failure or broad PASS is inferred from it.
+
+The fixed static-only loopback server permitted GET/HEAD on one Settings document and exact local CSS/image assets, denied forms/connections/scripts by CSP, and auto-bounded its lifetime. Source fixture links remained inert. No real release-page click was attempted in the static study; actual component click tests remain separate. Four JPGs retain the synthetic/static banner.
+
+After finite review, owned tab closed and viewport override reset. The original owned Node process73869 was identified exactly and stopped; its session reported owned_static_server_closed and exit0. No preview remains. This is a layout/keyboard-focus checkpoint only, not installed/native/cross-platform/full-control/performance/assistive-technology acceptance.

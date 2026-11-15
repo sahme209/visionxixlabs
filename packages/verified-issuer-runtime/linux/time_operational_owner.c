@@ -9,6 +9,7 @@
 #include <sys/wait.h>
 #include <sys/syscall.h>
 #include <sys/prctl.h>
+#include <sys/random.h>
 #include <fcntl.h>
 #include <dirent.h>
 #include <grp.h>
@@ -130,6 +131,11 @@ static int services_stopped(void){
 }
 static int alive(int pidfd){struct pollfd p={pidfd,POLLIN,0};return poll(&p,1,0)==0;}
 static int same_boot_suspend(const char*boot,const char*suspend){char a[129],b[64];return read_scalar("/proc/sys/kernel/random/boot_id",a,sizeof a)||read_scalar("/sys/power/suspend_stats/success",b,sizeof b)||strcmp(a,boot)||strcmp(b,suspend)?-1:0;}
+/* Compare held capture against its original metadata, not merely the current
+ * held/named pair. Changes during nonce/capture must refuse before launch. */
+static int captured_directory_current(int directory,const struct stat*original){
+ struct stat s;return fstat(directory,&s)||s.st_dev!=original->st_dev||s.st_ino!=original->st_ino||s.st_mode!=original->st_mode||s.st_uid!=original->st_uid||s.st_gid!=original->st_gid||s.st_ctim.tv_sec!=original->st_ctim.tv_sec||s.st_ctim.tv_nsec!=original->st_ctim.tv_nsec||s.st_mtim.tv_sec!=original->st_mtim.tv_sec||s.st_mtim.tv_nsec!=original->st_mtim.tv_nsec||unchanged(directory_path,directory)||!no_acl(directory)?-1:0;
+}
 static int all_current(int daemon_pidfd,int policy,int daemon,int node,int directory,const char*boot,const char*suspend,const struct axiom_operational_acceptance*a){
  struct stat s;return withdrawing||frozen_current()||!alive(daemon_pidfd)||services_stopped()||same_boot_suspend(boot,suspend)||unchanged(policy_path,policy)||unchanged(daemon_path,daemon)||unchanged(node_path,node)||unchanged(directory_path,directory)||fstat(directory,&s)||s.st_dev!=a->directory_device||s.st_ino!=a->directory_inode||s.st_uid!=0||(s.st_mode&07777)!=0750||s.st_gid!=a->reader_gid||!no_acl(directory)?-1:0;
 }
@@ -147,18 +153,25 @@ int main(int argc,char**argv){
  struct sigaction action={0};action.sa_handler=withdraw;sigemptyset(&action.sa_mask);if(sigaction(SIGTERM,&action,NULL)||sigaction(SIGINT,&action,NULL)||sigaction(SIGHUP,&action,NULL))return 70;
  int policy=-1,daemon=-1,node=-1,directory=-1,accepted=-1,dpidfd=-1,npidfd=-1;pid_t dpid=-1,npid=-1;int result=70;
  int request[2]={-1,-1},reply[2]={-1,-1},updates[2]={-1,-1},ack[2]={-1,-1};
- struct stat ps;if(protected_ancestors(directory_path))goto done;
+ if(protected_ancestors(directory_path))goto done;
  for(size_t i=0;i<sizeof frozen/sizeof frozen[0];i++){frozen[i].fd=protected_file(frozen[i].path,&frozen[i].original);if(frozen[i].fd<0||hash_fd(frozen[i].fd,frozen[i].digest))goto done;}
- policy=protected_file(policy_path,&ps);daemon=protected_file(daemon_path,NULL);node=protected_file(node_path,NULL);directory=open(directory_path,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
- unsigned char bytes[4097];struct axiom_operational_acceptance a;ssize_t n=policy>=0?pread(policy,bytes,sizeof bytes,0):-1;
- if(n<1||n>4096||axiom_operational_accept_decode(bytes,(size_t)n,&a)||daemon<0||node<0||directory<0)goto done;
+ /* Policy is read from the SAME original FD whose digest was checked above.
+  * New packages bind that immutable semantic policy, never a host-late profile. */
+ policy=frozen[0].fd;if(frozen[0].original.st_size<1||frozen[0].original.st_size>4096)goto done;daemon=protected_file(daemon_path,NULL);node=protected_file(node_path,NULL);directory=open(directory_path,O_RDONLY|O_DIRECTORY|O_NOFOLLOW|O_CLOEXEC);
+ unsigned char bytes[4097];struct axiom_operational_acceptance a;struct axiom_operational_policy semantic;ssize_t n=policy>=0?pread(policy,bytes,sizeof bytes,0):-1;
+ if(n<1||n>4096||n!=frozen[0].original.st_size||axiom_operational_policy_decode(bytes,(size_t)n,&semantic)||daemon<0||node<0||directory<0)goto done;
  uid_fd=protected_file("/etc/axiom-operational-time/reader-uid",&uid_stat);if(uid_fd<0)goto done;
- char boot[129],suspend[64],uid_text[32];if(read_scalar("/proc/sys/kernel/random/boot_id",boot,sizeof boot)||strcmp(boot,a.boot)||read_scalar("/sys/power/suspend_stats/success",suspend,sizeof suspend)||read_scalar("/etc/axiom-operational-time/reader-uid",uid_text,sizeof uid_text)||services_stopped())goto done;
- memcpy(accepted_uid,uid_text,strlen(uid_text)+1);
- uint64_t uid=0;for(size_t i=0;uid_text[i];i++){if(uid_text[i]<'0'||uid_text[i]>'9'||uid>(UINT32_MAX-(unsigned)(uid_text[i]-'0'))/10)goto done;uid=uid*10+(unsigned)(uid_text[i]-'0');}if(!uid)goto done;
- struct stat ds;if(fstat(directory,&ds)||ds.st_dev!=a.directory_device||ds.st_ino!=a.directory_inode||ds.st_uid!=0||ds.st_gid!=a.reader_gid||(ds.st_mode&07777)!=0750||!no_acl(directory))goto done;
+ char boot[129],suspend[64],uid_text[32];if(read_scalar("/proc/sys/kernel/random/boot_id",boot,sizeof boot)||read_scalar("/sys/power/suspend_stats/success",suspend,sizeof suspend)||read_scalar("/etc/axiom-operational-time/reader-uid",uid_text,sizeof uid_text)||services_stopped())goto done;
+ uint64_t uid=0;for(size_t i=0;uid_text[i];i++){if(uid_text[i]<'0'||uid_text[i]>'9'||uid>(UINT32_MAX-(unsigned)(uid_text[i]-'0'))/10)goto done;uid=uid*10+(unsigned)(uid_text[i]-'0');}if(uid!=semantic.reader_uid)goto done;
+ int uid_length=snprintf(accepted_uid,sizeof accepted_uid,"%llu",(unsigned long long)semantic.reader_uid);if(uid_length<1||(size_t)uid_length>=sizeof accepted_uid||strcmp(uid_text,accepted_uid))goto done;
+ struct stat ds;if(fstat(directory,&ds)||ds.st_uid!=0||ds.st_gid!=semantic.reader_gid||(ds.st_mode&07777)!=0750||!no_acl(directory)||frozen_current()||unchanged(directory_path,directory)||same_boot_suspend(boot,suspend)||withdrawing)goto done;
+ /* One nonblocking call, no retry on EINTR/EAGAIN/short/error/zero entropy.
+  * The volatile accepted marker is NOT durable cross-boot attempt consumption. */
+ unsigned char nonce[32];if(getrandom(nonce,sizeof nonce,GRND_NONBLOCK)!=(ssize_t)sizeof nonce)goto done;
+ if(axiom_operational_accept_derive(&semantic,AXIOM_OPERATIONAL_PROFILE_SHA256,boot,(uint64_t)ds.st_dev,(uint64_t)ds.st_ino,nonce,sizeof nonce,&a)||frozen_current()||captured_directory_current(directory,&ds)||unchanged(directory_path,directory)||same_boot_suspend(boot,suspend)||services_stopped()||withdrawing)goto done;
+ size_t accept_length;if(axiom_operational_accept_encode(&a,bytes,&accept_length))goto done;
  accepted=open("/run/axiom-operational-time/accepted",O_RDWR|O_CREAT|O_EXCL|O_NOFOLLOW|O_CLOEXEC,0600);if(accepted<0)goto done;
- if(write(accepted,bytes,(size_t)n)!=n||fsync(accepted)||fchmod(accepted,0440)||close(accepted))goto done;accepted=-1;
+ if(write(accepted,bytes,accept_length)!=(ssize_t)accept_length||fsync(accepted)||fchmod(accepted,0440)||close(accepted))goto done;accepted=-1;
  accepted=open("/run/axiom-operational-time/accepted",O_RDONLY|O_NOFOLLOW|O_CLOEXEC);if(accepted<0||pipe2(request,O_CLOEXEC|O_NONBLOCK)||pipe2(reply,O_CLOEXEC|O_NONBLOCK)||pipe2(updates,O_CLOEXEC|O_NONBLOCK)||pipe2(ack,O_CLOEXEC|O_NONBLOCK))goto done;
  int directory_copy=duplicate(directory),accept_copy=duplicate(accepted),update_copy=duplicate(updates[1]),ack_copy=duplicate(ack[0]),daemon_copy=duplicate(daemon);
  if(directory_copy<0||accept_copy<0||update_copy<0||ack_copy<0||daemon_copy<0)goto done;
@@ -186,7 +199,9 @@ int main(int argc,char**argv){
   if(remap(node_directory,3)<0||remap(node_worker,4)<0||remap(accept_node,8)<0||remap(check_copy,9)<0||remap(reply_copy,10)<0||remap(node_copy,7)<0||syscall(SYS_close_range,11u,UINT_MAX,0u)<0)_exit(70);
   for(int fd=5;fd<=6;fd++)close(fd);
   if(prctl(PR_SET_KEEPCAPS,0,0,0,0)||prctl(PR_CAP_AMBIENT,PR_CAP_AMBIENT_CLEAR_ALL,0,0,0))_exit(70);
-  if(setgroups(0,NULL)||setresgid((gid_t)a.reader_gid,(gid_t)a.reader_gid,(gid_t)a.reader_gid)||setresuid((uid_t)uid,(uid_t)uid,(uid_t)uid)||prctl(PR_SET_NO_NEW_PRIVS,1,0,0,0))_exit(70);
+  if(setgroups(0,NULL)||setresgid((gid_t)a.reader_gid,(gid_t)a.reader_gid,(gid_t)a.reader_gid)||setresuid((uid_t)uid,(uid_t)uid,(uid_t)uid))_exit(70);
+  uid_t ruid,euid,suid;gid_t rgid,egid,sgid;
+  if(getresuid(&ruid,&euid,&suid)||getresgid(&rgid,&egid,&sgid)||ruid!=(uid_t)uid||euid!=(uid_t)uid||suid!=(uid_t)uid||rgid!=(gid_t)a.reader_gid||egid!=(gid_t)a.reader_gid||sgid!=(gid_t)a.reader_gid||prctl(PR_SET_NO_NEW_PRIVS,1,0,0,0))_exit(70);
   struct sock_fprog program={(unsigned short)(sizeof runtime_filter/sizeof runtime_filter[0]),runtime_filter};if(prctl(PR_SET_SECCOMP,SECCOMP_MODE_FILTER,&program))_exit(70);
   char*const av[]={"node","/opt/axiom-operational-time/private/main.mjs",NULL};char*const env[]={"PATH=/usr/bin:/bin",NULL};fexecve(7,av,env);_exit(70);
  }
@@ -209,5 +224,5 @@ int main(int argc,char**argv){
   }
   if(fds[1].revents){struct axiom_operational_status q,answer;if(axiom_operational_read_frame(request[0],bytes,&length,deadline)||axiom_operational_check_decode(bytes,length,&q)||sequence==UINT64_MAX||q.sequence!=sequence+1||q.revision!=actual.revision||q.publication!=actual.publication||q.marker!=actual.marker||strcmp(q.profile,actual.profile)||strcmp(q.host,actual.host)||strcmp(q.source_generation,actual.source_generation)||actual.state!=AXIOM_OP_READY||all_current(dpidfd,policy,daemon,node,directory,boot,suspend,&a))break;sequence=q.sequence;answer=actual;answer.sequence=sequence;if(axiom_operational_status_encode(&answer,bytes,&length)||axiom_operational_write_frame(reply[1],bytes,length,deadline))break;}
  }
- done:withdrawing=1;stop_owned(npidfd,npid);stop_owned(dpidfd,dpid);if(npidfd>=0)close(npidfd);if(dpidfd>=0)close(dpidfd);for(size_t i=0;i<sizeof frozen/sizeof frozen[0];i++)if(frozen[i].fd>=0)close(frozen[i].fd);if(uid_fd>=0)close(uid_fd);int all[]={policy,daemon,node,directory,accepted,request[0],request[1],reply[0],reply[1],updates[0],updates[1],ack[0],ack[1]};for(size_t i=0;i<sizeof all/sizeof all[0];i++)if(all[i]>=0)close(all[i]);return result;
+ done:withdrawing=1;stop_owned(npidfd,npid);stop_owned(dpidfd,dpid);if(npidfd>=0)close(npidfd);if(dpidfd>=0)close(dpidfd);for(size_t i=0;i<sizeof frozen/sizeof frozen[0];i++)if(frozen[i].fd>=0)close(frozen[i].fd);if(uid_fd>=0)close(uid_fd);int all[]={daemon,node,directory,accepted,request[0],request[1],reply[0],reply[1],updates[0],updates[1],ack[0],ack[1]};for(size_t i=0;i<sizeof all/sizeof all[0];i++)if(all[i]>=0)close(all[i]);return result;
 }

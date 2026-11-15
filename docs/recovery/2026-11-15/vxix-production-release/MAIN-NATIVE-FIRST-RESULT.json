@@ -1,0 +1,14 @@
+{
+  "sourceSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "run": 43704338838,
+  "firstResult": {
+    "passed": 95,
+    "failed": 1,
+    "ignored": 1,
+    "test": "http::stream_wire_tests::real_wire_bounds_total_bytes_and_each_ipc_chunk",
+    "site": "src/http_stream_wire_tests.rs:228:47",
+    "reason": "full permitted stream deadline: Elapsed(())"
+  },
+  "continuation": "one failed-job-only rerun, same source and test limits",
+  "deploymentCreated": false
+}

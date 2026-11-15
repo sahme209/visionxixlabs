@@ -1,0 +1,14 @@
+{
+  "url": "https://github.com/sahme209/visionxixlabs/pull/337",
+  "number": 337,
+  "draft": true,
+  "state": "open",
+  "head": "b4237fdfccaf6316660ce5c6459d0c525082ba3b",
+  "base": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "branch": "codex/governance-operational-package",
+  "repository": "sahme209/visionxixlabs",
+  "public": true,
+  "unrelatedHeldOpenPR": 318,
+  "newNativeRun": false,
+  "deployed": false
+}

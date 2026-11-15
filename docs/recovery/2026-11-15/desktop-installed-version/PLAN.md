@@ -1,0 +1,10 @@
+# Installed desktop version and update clarity
+
+Authorized independent A1/A4/B4 source work while the production private-read and Governance authority decisions remain pending. Do not change either pending contract, credentials, flags, installation or production.
+
+1. Add a read-only About group to Settings → General using existing rows/styles. Read the installed native version through the existing core IPC surface (`plugin:app|version`, matching the installed Tauri SDK's getVersion implementation). Existing `core:default` capability already supplies the read; no new permission/package. Never fall back to the repository/package candidate or a website version.
+2. Show checking, a bounded native-reported version, or unavailable without raw errors. Ignore late completion after leaving General. Offer only an explicit existing-style fixed `/download` browser handoff; no automatic browser opening, updater, download, package execution or preference write. Include version/update keywords in Settings search.
+3. Add actual Settings regressions first: a version different from source candidate, unavailable/invalid metadata, late response across navigation, version search and explicit release-link click. Keep existing preference/session/write restrictions. Update public install/update guidance, the internal source inventory and internal walkthrough. Preserve historical Settings binding packets instead of blind re-pinning.
+4. Regenerate public heading index/support corpus with existing tools, run source/guide/desktop tests and strict types. Prepare an isolated frontend compilation if source checks pass; it is not an app restart, native package/signing/install or rendered acceptance. Record outcomes and independently review the source before any coherent future publication batch.
+
+The prior visual release and one staged Vercel build remain exact to their original sources. These newer local changes are not in that build or any installed app. Full native version/upgrade acceptance remains open.

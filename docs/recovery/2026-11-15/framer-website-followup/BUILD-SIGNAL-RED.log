@@ -1,0 +1,21 @@
+EE
+======================================================================
+ERROR: test_cancellation_reaches_owner_and_restores_handlers (__main__.CompileSignals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/docs/recovery/2026-11-15/framer-website-followup/test_compile_website.py", line 15, in test_cancellation_reaches_owner_and_restores_handlers
+    result=module.run_owned(owner,[],Path('/tmp'),{},Path('/tmp/not-used'))
+AttributeError: module 'framer_compile' has no attribute 'run_owned'
+
+======================================================================
+ERROR: test_exception_restores_all_handlers (__main__.CompileSignals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/docs/recovery/2026-11-15/framer-website-followup/test_compile_website.py", line 21, in test_exception_restores_all_handlers
+    with self.assertRaises(RuntimeError):module.run_owned(owner,[],Path('/tmp'),{},Path('/tmp/not-used'))
+AttributeError: module 'framer_compile' has no attribute 'run_owned'
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.001s
+
+FAILED (errors=2)

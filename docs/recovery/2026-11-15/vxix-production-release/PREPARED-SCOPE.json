@@ -1,0 +1,22 @@
+{
+  "scope": "Preparation only; no deployment or setting mutation",
+  "sourceSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "sourceDirectory": "/private/tmp/axiom-vxix-production-source-xmjk1pnv",
+  "projectName": "visionxixlabs",
+  "projectId": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+  "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm",
+  "nodeVersion": "24.x",
+  "framework": "nextjs",
+  "target": "production",
+  "skipDomain": true,
+  "deploymentCount": 1,
+  "force": false,
+  "newProject": false,
+  "noNewSetting": true,
+  "sourceClean": true,
+  "productFilesExact": 97,
+  "prismaDiffEmpty": true,
+  "requiredMainGreenBeforeExecute": true,
+  "nativeInstallerPublished": false,
+  "credentialValuesReadPrintedStored": false
+}

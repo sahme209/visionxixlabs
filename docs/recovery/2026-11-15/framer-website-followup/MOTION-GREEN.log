@@ -1,0 +1,35 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+·········x·············
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > keeps reduced-motion and unsupported observers fully static and readable
+AssertionError: expected 5 to be +0 // Object.is equality
+
+- Expected
++ Received
+
+- 0
++ 5
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:42:145
+     40| });
+     41| it('keeps reduced-motion and unsupported observers fully static and re…
+     42|  reduced=true;render(createElement(AxiomPublicHero));expect(board().ge…
+       |                                                                                                                                                 ^
+     43|  cleanup();reduced=false;vi.stubGlobal('IntersectionObserver',undefine…
+     44|  expect(board().getAttribute('data-preview-progress')).toBe('1');expec…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed | 2 passed (3)
+      Tests  1 failed | 22 passed (23)
+   Start at  07:56:15
+   Duration  598ms (environment 38%, import 31%, tests 23%, transform 7%)
+

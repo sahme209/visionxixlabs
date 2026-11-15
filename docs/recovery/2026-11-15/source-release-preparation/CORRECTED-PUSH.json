@@ -1,0 +1,19 @@
+{
+  "PR": 337,
+  "head": "b693178ea7485b3a976a100da06ca75b8fa995e6",
+  "before": "b4237fdfccaf6316660ce5c6459d0c525082ba3b",
+  "sourceCorrection": "test driver separates workflow state from typed paint; no product/native policy change",
+  "finalLocalOrdinaryPassed": 19669,
+  "expectedFailure": 1,
+  "skipped": 1144,
+  "rootTypes": "pass",
+  "nativePacketSha256": "b38c77fc4046ad06d93ef0d4e750c396e73a2a1e39571b89e068094f744cb909",
+  "nativePacketInputsUnchanged": true,
+  "nativeWorkflow": "closed/skipped",
+  "nativeDecision": "unanswered",
+  "nativeRun": false,
+  "deployed": false,
+  "TestRun": 43726276198,
+  "DesktopRun": 43726276187,
+  "WebsiteRun": 43726276310
+}

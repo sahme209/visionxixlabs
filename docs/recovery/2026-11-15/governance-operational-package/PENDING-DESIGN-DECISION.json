@@ -1,0 +1,19 @@
+{
+  "scope": "local policy/acceptance contract implementation and simulated tests only",
+  "decisionRequested": true,
+  "approvalReceived": true,
+  "recommended": "immutable compiled policy hash plus once-only trusted-root-captured runtime acceptance",
+  "securityAuthorityChanges": true,
+  "codeImplemented": true,
+  "reviewClarificationsAddressed": [
+    "local collision marker is not durable cross-reboot attempt consumption",
+    "exact one getrandom32 GRND_NONBLOCK call and domain-separated labels; no entropy wait or retry",
+    "exact UID relies on original trusted owner post-drop checks; binding independently checks nonzero UID and exact GID"
+  ],
+  "externalDurableAttemptControllerImplemented": false,
+  "nativeExecutionAuthorized": false,
+  "resourcesOrSpendingAuthorized": false,
+  "governanceEnabled": false,
+  "approvalQuestionItemId": "call_ec97375ab4774ada843d22f242fcb95a",
+  "validation": "local source assertions and explicitly synthetic scenarios only; no C/native execution"
+}

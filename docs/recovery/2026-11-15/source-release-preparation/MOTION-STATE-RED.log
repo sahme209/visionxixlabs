@@ -1,0 +1,60 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+xxx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  lib/__tests__/ownedWebsiteMotionState.test.ts > does not mistake finite typed painting for a manual workflow state change
+AssertionError: expected { …(3) } to deeply equal { …(3) }
+
+- Expected
++ Received
+
+  {
+    "code": "const timeoutMs = 8_000;
+- maxAttempts: 3const timeoutMs▍",
++ maxAttempts: 3const timeoutMs = 8_000;
++ maxAttempts: 3▍",
+    "step": "Step 2: Make a small, reviewable edit.",
+    "title": "Make a small, reviewable edit.",
+  }
+
+ ❯ lib/__tests__/ownedWebsiteMotionState.test.ts:16:83
+     14| }
+     15| it('does not mistake finite typed painting for a manual workflow state…
+     16|  const f=fixture();const before=await f.read();f.advance();expect(awai…
+       |                                                                                   ^
+     17| });
+     18| it('still detects a real selected-step or source change',async()=>{
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  lib/__tests__/ownedWebsiteMotionState.test.ts > still detects a real selected-step or source change
+AssertionError: expected 'changed sourceconst timeoutMs▍' to be 'changed source' // Object.is equality
+
+Expected: "changed source"
+Received: "changed sourceconst timeoutMs▍"
+
+ ❯ lib/__tests__/ownedWebsiteMotionState.test.ts:19:180
+
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  lib/__tests__/ownedWebsiteMotionState.test.ts > observes the displayed prefix separately so offscreen and hidden painting can be checked
+ReferenceError: readWorkflowPaintState is not defined
+ ❯ Object.paint lib/__tests__/ownedWebsiteMotionState.test.ts:13:103
+
+ ❯ lib/__tests__/ownedWebsiteMotionState.test.ts:22:35
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  3 failed (3)
+   Start at  09:43:59
+   Duration  73ms (transform 46%, tests 24%, import 21%, worker 9%)
+

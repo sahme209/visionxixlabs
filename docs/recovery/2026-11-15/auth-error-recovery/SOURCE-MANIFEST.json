@@ -1,0 +1,14 @@
+{
+  "scope": "local source; finite compiled HTTP/browser evidence only",
+  "sources": {
+    "lib/auth.ts": "0dd22b6522a66e7399f703ddf8e75d9f5b3ab2bc451dbc4873d9da8820742446",
+    "lib/auth/authErrorRecovery.ts": "0a97ae98db8036baf04be1d058217e711aacf818bfe5c59412d44bc88f64c3ab",
+    "app/auth/error/page.tsx": "9e337973071dc81309fe0a33f2423367205bf688355c310e9507d2288635284b",
+    "app/auth/signin/AuthFormClient.tsx": "ad144b6c90666334a7a9f1c286644ce22590ac317317fe24a7088d04cf7f8ef1",
+    "lib/auth/canonicalAuthOrigin.ts": "1d494874578894f781f155d79c3d5209ae92c7242b7fb523bd7c6bb9c3eb754b",
+    "lib/auth/__tests__/authErrorRecovery.test.ts": "95350757b4a62218b046d4fe555fc84f6ecf05b1d96d40e11969ad2ee790196f",
+    "lib/__tests__/authErrorRouting.test.ts": "0108d7b007484bd536468c59a152294f80f40b80f7217c4404904f1d1aeee314",
+    "app/auth/error/__tests__/page.test.ts": "fee177d2769e78f89f555f19cea011f345d729ffd76cac251d8f8305f07bf67b",
+    "docs/product/knowledge/browser-signin-and-session-controls.md": "9cea20792122821649c40b3918b1780911f3d5f97633f5be014a96edd3be0d39"
+  }
+}

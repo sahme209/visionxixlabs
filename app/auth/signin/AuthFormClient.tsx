@@ -102,26 +102,66 @@ function SignInForm() {
   };
 
   return (
-    <div className="relative flex min-h-screen items-center justify-center bg-[#101010] px-5 py-24 text-zinc-100">
-      <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-[0.04]" style={{ backgroundImage: "url('/images/axiom-hero-landscape-v1.png')" }} />
-      <div aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]" />
-      <Link href="/" className="absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white">
-        <Image src="/vision-xix-logo.png" alt="" width={27} height={27} className="rounded-md" />
-        Vision XIX Labs
-      </Link>
-
-      <div className="relative z-10 w-full max-w-[380px]">
-        <div className="mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/4.5">
-          <Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" />
-        </div>
-        <h1 className="mb-2 text-3xl font-normal tracking-[-0.045em]">Welcome to Axiom</h1>
-        <p className="mb-2 text-sm text-zinc-400">Your workspace, connected.</p>
-        <p className="mb-8 text-xs leading-5 text-zinc-400">Sign in to manage your account and governed cloud operations.</p>
+    <div className="flex min-h-screen items-center justify-center bg-[#0a0908] px-6 py-16 text-zinc-100">
+      <div className="w-full max-w-[360px]">
+        <Link href="/" aria-label="vxix home" className="mx-auto mb-8 flex w-fit rounded-sm focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-zinc-300">
+          <Image src="/brand/vxix-wordmark.svg" alt="vxix" width={120} height={30} priority />
+        </Link>
+        <h1 className="text-center text-[28px] font-medium tracking-[-0.04em]">Welcome to Axiom</h1>
+        <p className="mb-8 mt-2 text-center text-[15px] text-zinc-400">Your engineering workspace.</p>
 
         {switchingAccount && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Choose the account you want to pair. Google will ask you to select an account. Signing out here does not sign you out of GitHub: switch to the intended account on GitHub before continuing if needed. You must still review and approve the desktop after signing in.</p>}
 
         {searchParams.get("verified") === "1" && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Email verification completed. Sign in to continue. This confirmation does not sign you in or approve desktop pairing.</p>}
 
+        {oauthError && <div role="alert" className="mb-6 flex items-start gap-2 rounded-lg border border-white/15 bg-white/5 p-3 text-sm leading-6 text-zinc-300">
+          <ExclamationTriangleIcon aria-hidden="true" className="mt-1 h-4 w-4 shrink-0" />
+          <p>We couldn&apos;t complete sign-in. Try again, or <Link href="/support" className="underline underline-offset-4 hover:text-white">contact support</Link> if it continues.</p>
+        </div>}
+        {/* OAuth buttons — only render when actually configured. Cleaner than
+            showing greyed-out "NOT SET" buttons (the previous approach). */}
+        {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && (
+          <>
+
+            <div className="grid gap-2.5">
+              {(enabledProviders === null || enabledProviders.google) && (
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("google")}
+                  disabled={oauthLoading !== null || loading}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-medium text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
+                >
+                  <GoogleMark className="h-4 w-4" />
+                  {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
+                </button>
+              )}
+              {(enabledProviders === null || enabledProviders.github) && (
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("github")}
+                  disabled={oauthLoading !== null || loading}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
+                >
+                  <GitHubMark className="h-4 w-4" />
+                  {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
+                </button>
+              )}
+              {enabledProviders?.cognito && (
+                <button
+                  type="button"
+                  onClick={() => handleOAuth("cognito")}
+                  disabled={oauthLoading !== null || loading}
+                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
+                >
+                  <SsoMark className="h-4 w-4" />
+                  {oauthLoading === "cognito" ? "Opening…" : "Sign in with Cognito"}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && <div className="my-6 flex items-center gap-3" aria-hidden="true"><span className="h-px flex-1 bg-white/10" /><span className="text-xs text-zinc-500">or use email</span><span className="h-px flex-1 bg-white/10" /></div>}
         <form onSubmit={handleSubmit} className="space-y-4" noValidate>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
@@ -135,9 +175,8 @@ function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              autoFocus
               placeholder="you@company.com"
-              className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"
+              className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-white/30 focus:bg-white/6 focus:ring-2 focus:ring-white/15"
             />
           </div>
           <div>
@@ -154,12 +193,12 @@ function SignInForm() {
                 required
                 autoComplete="current-password"
                 placeholder="••••••••"
-                className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"
+                className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-12 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-white/30 focus:bg-white/6 focus:ring-2 focus:ring-white/15"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword((s) => !s)}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 hover:text-zinc-200 transition-colors"
+                className="absolute right-0.5 top-1/2 inline-flex min-h-11 min-w-11 -translate-y-1/2 items-center justify-center rounded-sm text-zinc-400 hover:text-zinc-200 transition-colors focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-200"
                 aria-label={showPassword ? "Hide password" : "Show password"}
 
               >
@@ -168,14 +207,14 @@ function SignInForm() {
             </div>
           </div>
           {error && (
-            <div role="alert" aria-live="assertive" className="rounded-lg border border-red-500/20 bg-red-500/8 px-3.5 py-2.5 text-sm text-red-300">
+            <div role="alert" aria-live="assertive" className="rounded-lg border border-white/15 bg-white/5 px-3.5 py-2.5 text-sm text-zinc-200">
               {error}
             </div>
           )}
           <button
             type="submit"
             disabled={loading || oauthLoading !== null}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"
+            className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-100 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? "Signing in…" : "Sign in"}
             {!loading && <ArrowRightIcon className="h-4 w-4" />}
@@ -183,61 +222,6 @@ function SignInForm() {
         </form>
 
         <VerificationRecovery initialEmail={email} callbackUrl={callbackUrl} />
-
-        {/* OAuth buttons — only render when actually configured. Cleaner than
-            showing greyed-out "NOT SET" buttons (the previous approach). */}
-        {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && (
-          <>
-            <div className="flex items-center gap-3 my-6">
-              <div className="flex-1 h-px bg-white/6" />
-              <span className="text-xs text-zinc-400">Or</span>
-              <div className="flex-1 h-px bg-white/6" />
-            </div>
-
-            {oauthError && (
-              <div className="mb-3 rounded-lg border border-white/20 bg-white/6 px-3.5 py-2.5 text-xs text-zinc-200 flex items-start gap-2">
-                <ExclamationTriangleIcon className="h-3.5 w-3.5 shrink-0 mt-0.5" />
-                <span>OAuth returned <span className="font-mono">{oauthError}</span>.</span>
-              </div>
-            )}
-
-            <div className={`grid gap-3 ${enabledProviders === null ? "grid-cols-2" : [enabledProviders.google, enabledProviders.github, enabledProviders.cognito].filter(Boolean).length >= 2 ? "grid-cols-2" : "grid-cols-1"}`}>
-              {(enabledProviders === null || enabledProviders.google) && (
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("google")}
-                  disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/9 bg-white/2.5 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <GoogleMark className="h-4 w-4" />
-                  {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
-                </button>
-              )}
-              {(enabledProviders === null || enabledProviders.github) && (
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("github")}
-                  disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/9 bg-white/2.5 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <GitHubMark className="h-4 w-4" />
-                  {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
-                </button>
-              )}
-              {enabledProviders?.cognito && (
-                <button
-                  type="button"
-                  onClick={() => handleOAuth("cognito")}
-                  disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-white/9 bg-white/2.5 px-3 py-2.5 text-xs font-medium text-zinc-200 transition hover:bg-white/[0.07] hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                >
-                  <SsoMark className="h-4 w-4" />
-                  {oauthLoading === "cognito" ? "Opening…" : "Sign in with Cognito"}
-                </button>
-              )}
-            </div>
-          </>
-        )}
 
         <p className="mt-6 text-sm text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
@@ -311,7 +295,7 @@ export default function SignInPage() {
     <Suspense
       fallback={
         <div className="axiom-canvas min-h-screen flex items-center justify-center">
-          <div className="h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent" />
+          <div className="h-6 w-6 animate-spin rounded-full border-2 border-zinc-300 border-t-transparent" />
         </div>
       }
     >

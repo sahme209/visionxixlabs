@@ -1,0 +1,13 @@
+{
+  "dagster": {
+    "source": "https://dagster.io/company-pages/brand/dagster-icon.svg",
+    "finalSource": "https://dagster.io/company-pages/brand/dagster-icon.svg",
+    "bytes": 2740,
+    "sha256": "969f05006991cacf9c2a5dfb2cf852f8d0c2021b71e326bdd67371d2f2e36133",
+    "usageGuidelines": "https://dagster.io/brand",
+    "unalteredBytes": true,
+    "scope": "referential catalog icon; no endorsement"
+  },
+  "azure": "reuse public/brands/azure.svg; existing SimpleIcons11.15.0 source/notices",
+  "vscode": "official guidance inspected at https://code.visualstudio.com/brand; marketing association permission unestablished; retain an explicitly generic editor symbol rather than fabricate or copy a mark"
+}

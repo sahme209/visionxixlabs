@@ -1,0 +1,33 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+···stderr | app/auth/signin/__tests__/verifiedConfirmation.test.ts > explains verification is separate from authentication and pairing consent
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+stderr | app/auth/signin/__tests__/accountSwitchProviders.test.ts > requests Google account selection only for the explicit switching flow
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+stderr | app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > offers configured providers before the email form while retaining every existing sign-in method
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+··stderr | app/auth/signin/__tests__/overlappingFlows.test.ts > does not submit a second password login while the first is pending, then permits an explicit provider choice after refusal
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+·····································
+
+ Test Files  7 passed (7)
+      Tests  42 passed (42)
+   Start at  08:20:22
+   Duration  752ms (environment 56%, import 24%, tests 15%, transform 4%)
+

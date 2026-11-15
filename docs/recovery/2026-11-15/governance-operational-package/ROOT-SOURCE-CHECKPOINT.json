@@ -1,0 +1,17 @@
+{
+  "branch": "codex/governance-operational-package",
+  "baseSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "scope": "fixed installed private-main source and mocked actual-entrypoint checks",
+  "independentSourceReview": "CLEAR",
+  "rootEntryAndDemoTests": 26,
+  "rootTypes": "PASS (MAIN-GUARD-TYPES.log)",
+  "diffCheck": "PASS",
+  "fullSuiteOrBuildAtThisNewSource": false,
+  "nativeExecution": false,
+  "governanceEnabled": false,
+  "files": {
+    "lib/governance/platform/nativeTime/installedOperationalMain.ts": "aa3971d2f1077ce325f7fb2a32ce302b60427e5b02dd43a99176d255af26c142",
+    "lib/governance/platform/nativeTime/__tests__/installedOperationalMain.test.ts": "321040331a67a4125243ddfefdcb7fbbe232bab0b46b6f50ad1eac13a82d5619",
+    "lib/demo/demoScenarios.ts": "6765057f9062377c8c5d8299ba2d0d06552dcc1a0623167a36cc7b6d815ddbca"
+  }
+}

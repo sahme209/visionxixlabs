@@ -1,0 +1,21 @@
+.................EE
+======================================================================
+ERROR: test_selected_registry_archive_matches_its_named_locked_checksum (__main__.RegistryClosure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 143, in test_selected_registry_archive_matches_its_named_locked_checksum
+    self.assertEqual(m.freeze_registry_sources({'packages':[package]},lock,root,freeze,source)[0]['archiveSha256'],digest)
+TypeError: freeze_registry_sources() takes 4 positional arguments but 5 were given
+
+======================================================================
+ERROR: test_unlocked_or_outside_registry_metadata_refuses_without_reading_it (__main__.RegistryClosure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 134, in test_unlocked_or_outside_registry_metadata_refuses_without_reading_it
+    with self.assertRaises(ValueError):m.freeze_registry_sources({'packages':[package]},b'version = 4\n',root,lambda *args:None,source)
+TypeError: freeze_registry_sources() takes 4 positional arguments but 5 were given
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.119s
+
+FAILED (errors=2)

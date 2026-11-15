@@ -1,0 +1,29 @@
+.......................EEE
+======================================================================
+ERROR: test_added_file_replaced_directory_and_symlink_are_detected (__main__.SourceTopology)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 168, in test_added_file_replaced_directory_and_symlink_are_detected
+    snapshot=m.source_topology(root)
+AttributeError: module 'operational_compile' has no attribute 'source_topology'
+
+======================================================================
+ERROR: test_artifact_identity_binds_exact_bytes (__main__.SourceTopology)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 182, in test_artifact_identity_binds_exact_bytes
+    evidence=m.artifact_identity(path)
+AttributeError: module 'operational_compile' has no attribute 'artifact_identity'
+
+======================================================================
+ERROR: test_dynamic_search_paths_and_unknown_libraries_refuse (__main__.SourceTopology)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 176, in test_dynamic_search_paths_and_unknown_libraries_refuse
+    self.assertEqual(m.validate_dynamic_libraries(base),['libc.so.6'])
+AttributeError: module 'operational_compile' has no attribute 'validate_dynamic_libraries'
+
+----------------------------------------------------------------------
+Ran 26 tests in 0.119s
+
+FAILED (errors=3)

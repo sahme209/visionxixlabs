@@ -1,0 +1,23 @@
+..................E
+======================================================================
+ERROR: test_unlocked_or_outside_registry_metadata_refuses_without_reading_it (__main__.RegistryClosure)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 134, in test_unlocked_or_outside_registry_metadata_refuses_without_reading_it
+    with self.assertRaises(ValueError):m.freeze_registry_sources({'packages':[package]},b'version = 4\n',root,lambda *args:None,source)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 239, in freeze_registry_sources
+    need(manifest.is_absolute() and not manifest.is_symlink() and manifest.name=='Cargo.toml' and manifest.resolve(strict=True).is_relative_to(workspace.resolve(strict=True)),'local_dependency_outside_owned_source')
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 1205, in resolve
+    s = self._flavour.resolve(self, strict=strict)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 363, in resolve
+    return _resolve(base, str(path)) or sep
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 347, in _resolve
+    target = accessor.readlink(newpath)
+  File "/Library/Developer/CommandLineTools/Library/Frameworks/Python3.framework/Versions/3.9/lib/python3.9/pathlib.py", line 452, in readlink
+    return os.readlink(path)
+FileNotFoundError: [Errno 2] No such file or directory: '/unrelated'
+
+----------------------------------------------------------------------
+Ran 19 tests in 0.118s
+
+FAILED (errors=1)

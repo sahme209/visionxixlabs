@@ -1,0 +1,1174 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+··················································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+·····················································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+··stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+············stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'credential', outcome: 'started' }
+
+·stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'policy', outcome: 'started' }
+
+····································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+·stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'target', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'final_authority', outcome: 'started' }
+
+·····································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+···········stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+····stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'write', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'confirmation', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'confirmation', outcome: 'confirmed' }
+
+························································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+···················································································································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+················stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'credential', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'policy', outcome: 'started' }
+
+·································································································stderr | lib/desktop/__tests__/desktopGithubPrSequence.test.ts > stops follow-up writes when the user leaves the Git settings section
+The current testing environment is not configured to support act(...)
+
+····················stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+·····················stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'target', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'final_authority', outcome: 'started' }
+
+·····························································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+·············stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+···························stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'write', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'write', outcome: 'unknown' }
+
+··············································stderr | lib/terraform/__tests__/customerPlanAwsRead.test.ts > uses actual SDK fixed S3 reads and strongly consistent GetItem without returning state values or credentials
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+·······························································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+·······················stderr | lib/governance/platform/operations/__tests__/workloadJoinedExecution.test.ts > joins actual signed JWT → original claim/intent → native source gate → installed STS/ECS exactly once
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+········stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+·····stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'authority', outcome: 'refused' }
+
+·················································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+········································································································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+···stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+·····stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual private coverage and default enrolled V2 guard reach one synthetic merge with real writers and mocked SQL/native/provider
+[axiom.release.merge] { phase: 'authority', outcome: 'refused' }
+
+···stderr | app/auth/signin/__tests__/overlappingFlows.test.ts > does not submit a second password login while the first is pending, then permits an explicit provider choice after refusal
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+·······················································································································································································································································································································································································································································stderr | lib/governance/platform/nativeTime/__tests__/linuxComposition.test.ts > connects one explicitly synthetic publication source through actual JWT/native source/STS/ECS and original no-replay
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+·····················································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+······························································································································································································stderr | app/auth/signin/__tests__/accountSwitchProviders.test.ts > requests Google account selection only for the explicit switching flow
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+··················································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+········stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'credential', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'policy', outcome: 'started' }
+
+·····························································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+·············stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'target', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'final_authority', outcome: 'started' }
+
+········································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+······stderr | app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > offers configured providers before the email form while retaining every existing sign-in method
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+······stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'write', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'confirmation', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'confirmation', outcome: 'confirmed' }
+
+··············································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+········································································································································stderr | app/(marketing)/__tests__/truthfulExecutionClaims.test.ts > mounted capabilities describes a pure policy decision without claiming signed approval or universal admission
+React does not recognize the `whileHover` prop on a DOM element. If you intentionally want it to appear in the DOM as a custom attribute, spell it as lowercase `whilehover` instead. If you accidentally passed it from a parent component, remove it from the DOM element.
+
+·················································································································································································stderr | lib/governance/platform/operations/__tests__/ecsOutcomeSource.test.ts > joins the actual installed SDK read gate to the original owner with one shared private clock and intercepted HTTP
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+···················································································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+··············································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'credential', outcome: 'started' }
+
+······stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'policy', outcome: 'started' }
+
+·····················stderr | app/api/leads/__tests__/deploymentAuthority.test.ts > preserves an existing working preview during ERROR revision
+[preview update] Error: website_deployment_failed
+    at websiteDeploymentUpdate (/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/deploy/websiteDeploymentState.ts:16:72)
+    at POST (/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/leads/[id]/preview/update/route.ts:102:20)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/leads/__tests__/deploymentAuthority.test.ts:80:20
+    at async file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:20
+
+stderr | app/api/leads/__tests__/deploymentAuthority.test.ts > preserves an existing working preview during reject revision
+[preview update] Error: provider unavailable
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/leads/__tests__/deploymentAuthority.test.ts:77:58
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2886:64
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+
+·········································································································································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'target', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'final_authority', outcome: 'started' }
+
+························································································stderr | lib/governance/platform/nativeTime/__tests__/sdkOperationalTransport.test.ts > joins the actual ECS reader factory to installed operational signing and original final owner
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+·····················································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+············································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'write', outcome: 'started' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'write', outcome: 'unknown' }
+
+······stderr | app/auth/signin/__tests__/verifiedConfirmation.test.ts > explains verification is separate from authentication and pairing consent
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+···················································································································································································································································································stdout | app/api/desktop/access/__tests__/route.test.ts > GET /api/desktop/access > still rejects a genuinely invalid/expired/revoked session as 401 (membership relaxation does not weaken token/session validity)
+{"ts":"2026-11-15T14:45:45.590Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"no active session for token","metadata":{"route":"/api/desktop/access"}}
+
+stderr | app/api/desktop/access/__tests__/route.test.ts > GET /api/desktop/access > still rejects a token with a bad/forged signature as 401
+{"ts":"2026-11-15T14:45:45.592Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"unexpected exception resolving desktop session","metadata":{"route":"/api/desktop/access","errorMessage":"Desktop token signature does not match."}}
+
+·················stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+····················································································································································································································································································································································································································stderr | lib/governance/platform/operations/__tests__/ecsSdkTransport.test.ts > an update cannot dispatch when its original owner omits the final native-facts acknowledgment
+@aws-sdk/core/protocols - WARN - JsonCodec2: you have called a string method on a Uint8Array request body. It has been automatically converted to string. In a future version this will throw an error.
+
+············································································································································································································································································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+···stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+···································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'authority', outcome: 'refused' }
+
+···························································································································································································································································································································stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > classifies explicit invalid grant as refusal and never retries
+[Outlook authorization] {
+  phase: 'token',
+  error: 'invalid_grant',
+  status: 400,
+  numericErrorCodes: []
+}
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > requires profile, inbox and calendar access before confirming mailbox readiness
+[Outlook read status] { phase: 'profile', status: 200 }
+
+··············stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > requires profile, inbox and calendar access before confirming mailbox readiness
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > requires profile, inbox and calendar access before confirming mailbox readiness
+[Outlook read status] { phase: 'inbox', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > requires profile, inbox and calendar access before confirming mailbox readiness
+[Outlook read status] { phase: 'calendar', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > requires profile, inbox and calendar access before confirming mailbox readiness
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > refuses a profile-only account without a mailbox and leaks no provider body
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > refuses a profile-only account without a mailbox and leaks no provider body
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > refuses a profile-only account without a mailbox and leaks no provider body
+[Outlook read status] { phase: 'inbox', status: 404 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > accepts a nullable Microsoft principal name without inventing account identity
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > accepts a nullable Microsoft principal name without inventing account identity
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > accepts a nullable Microsoft principal name without inventing account identity
+[Outlook read status] { phase: 'inbox', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > accepts a nullable Microsoft principal name without inventing account identity
+[Outlook read status] { phase: 'calendar', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookProvider.test.ts > accepts a nullable Microsoft principal name without inventing account identity
+[Outlook read status] { phase: 'profile', status: 200 }
+
+········································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'authority', outcome: 'started' }
+
+··································································································································stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > records pending consent only for the current initiating browser actor without exposing token
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing or changed initiating actor before exchanging provider code
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'authorization_required',
+  phase: 'browser_authority'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > does not save credentials when role is revoked during exchange
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'authorization_required',
+  phase: 'credential_store'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > uses exact revision/cipher CAS so concurrent reconnect or disconnect wins
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'connection_changed',
+  phase: 'credential_store'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > bounds unresponsive exchange and never retries a consumed code
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > rejects oversized or malformed exchange bodies as unknown without saving
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > retains consumed-state refusal without provider code replay
+axiom.integration.callback { provider: 'teams', status: 'invalid_state', phase: 'state' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > binds state consumption to current actor/tenant and exact platform callback
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > rejects duplicate callback parameters before consuming state
+axiom.integration.callback { provider: 'teams', status: 'invalid_state', phase: 'parameters' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > preserves scope refusal audit without storing incomplete consent
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: false,
+  hasUnsupportedResource: false,
+  scopeCountWithinBounds: true,
+  knownOidc: [ 'openid' ]
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > preserves scope refusal audit without storing incomplete consent
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > keeps the exact PKCE verifier and authorization-code grant bound to the trusted callback
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > corrupt PKCE fails before any provider exchange
+axiom.integration.callback { provider: 'teams', status: 'invalid_state', phase: 'pkce' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > malformed successful rotating credentials remain unknown without saving {"expires_in":-1}
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > malformed successful rotating credentials remain unknown without saving {"refresh_token":{"value":"bad"}}
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+·····stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > malformed successful rotating credentials remain unknown without saving {"access_token":"bad\ntoken"}
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > ambiguous token exchange HTTP 500 never becomes ordinary retryable failure
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > ambiguous token exchange HTTP 502 never becomes ordinary retryable failure
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > bounded hanging body cancels the read and never replays the code
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > authority loss after awaited transaction write withholds success and success audit
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'authorization_required',
+  phase: 'credential_store'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > preserves Microsoft token endpoint, exact identity scopes, and structured credential storage
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > accepts explicitly reported identity access scope without inventing omitted OIDC grants: User.Read
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > accepts explicitly reported identity access scope without inventing omitted OIDC grants: https://graph.microsoft.com/User.Read
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > accepts explicitly reported identity access scope without inventing omitted OIDC grants: User.Read openid
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > accepts explicitly reported identity access scope without inventing omitted OIDC grants: openid offline_access https://graph.microsoft.com/User.Read
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: openid offline_access
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: false,
+  hasUnsupportedResource: false,
+  scopeCountWithinBounds: true,
+  knownOidc: [ 'openid', 'offline_access' ]
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: openid offline_access
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: User.Read Mail.Read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: User.Read Mail.Read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: https://evil.test/User.Read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: false,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: https://evil.test/User.Read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: https://graph.microsoft.com/Mail.Read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: false,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: https://graph.microsoft.com/Mail.Read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: User.ReadWrite
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: false,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: User.ReadWrite
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: openid offline_access User.Read Mail.Read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: [ 'openid', 'offline_access' ]
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses missing User.Read or unexpected scopes: openid offline_access User.Read Mail.Read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > does not infer scopes from the original request, refresh token or an opaque ID token
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'exchange_outcome_unknown',
+  phase: 'exchange'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > accepts a bounded opaque3KiB authorization code without treating it as missing registration
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses oversized or control-bearing authorization code without an exchange
+axiom.integration.callback { provider: 'teams', status: 'unavailable', phase: 'code_validation' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses oversized or control-bearing authorization code without an exchange
+axiom.integration.callback { provider: 'teams', status: 'unavailable', phase: 'code_validation' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses oversized or control-bearing authorization code without an exchange
+axiom.integration.callback { provider: 'teams', status: 'unavailable', phase: 'code_validation' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > rejects duplicate codes before state consumption or provider exchange
+axiom.integration.callback { provider: 'teams', status: 'invalid_state', phase: 'parameters' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > enforces the16KiB code ceiling by actual UTF8 bytes
+axiom.integration.callback { provider: 'teams', status: 'unavailable', phase: 'code_validation' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > recognizes only approved identity resource aliases and OIDC metadata: user.read
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > recognizes only approved identity resource aliases and OIDC metadata: USER.READ
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > recognizes only approved identity resource aliases and OIDC metadata: https://graph.microsoft.com/user.read
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > recognizes only approved identity resource aliases and OIDC metadata: https://GRAPH.MICROSOFT.COM/User.Read
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > recognizes only approved identity resource aliases and OIDC metadata: User.Read openid offline_access profile email
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: profile email
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: false,
+  hasUnsupportedResource: false,
+  scopeCountWithinBounds: true,
+  knownOidc: [ 'profile', 'email' ]
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: profile email
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: user.read Mail.Read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: user.read Mail.Read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read Group.Read.All
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read Group.Read.All
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read User.ReadWrite
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read User.ReadWrite
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read https://attacker.test/user.read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read https://attacker.test/user.read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read unknown_scope
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read unknown_scope
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read https://graph.microsoft.com.evil.test/User.Read
+axiom.integration.scope_validation {
+  provider: 'teams',
+  hasRequiredResource: true,
+  hasUnsupportedResource: true,
+  scopeCountWithinBounds: true,
+  knownOidc: []
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > refuses unexpected grants even with identity labels: User.Read https://graph.microsoft.com.evil.test/User.Read
+axiom.integration.callback {
+  provider: 'teams',
+  status: 'scope_insufficient',
+  phase: 'scope_validation'
+}
+
+stdout | app/api/integrations/teams/callback/__tests__/route.test.ts > explicitly narrows token redemption to the identity request without accepting action grants
+axiom.integration.callback { provider: 'teams', status: 'consent_recorded', phase: 'complete' }
+
+·······································································································stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > refuses reconciliation before storage when trusted verifier is not installed
+[axiom.release.evidence] {
+  phase: 'plan',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects wrong release and evidence version/digest binding before cancellation
+[axiom.release.evidence] {
+  phase: 'plan',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects wrong release and evidence version/digest binding before cancellation
+[axiom.release.evidence] {
+  phase: 'saved_history',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects wrong release and evidence version/digest binding before cancellation
+[axiom.release.evidence] {
+  phase: 'saved_history',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects wrong release and evidence version/digest binding before cancellation
+[axiom.release.evidence] {
+  phase: 'saved_history',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects wrong release and evidence version/digest binding before cancellation
+[axiom.release.evidence] {
+  phase: 'saved_history',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects create/clientbinding/extraauthority or invalidversion {"action":"create","id":"release_workflow_evidence_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","expectedVersion":0}
+[axiom.release.evidence] {
+  phase: 'authority',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects create/clientbinding/extraauthority or invalidversion {"action":"cancel","id":"release_workflow_evidence_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","expectedVersion":0,"binding":{"organizationId":"org","releaseId":"release","releaseVersion":3,"intakeDigest":"dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd","planId":"release_plan_aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","planDigest":"568874876cae0c5aab954ccb24058c1ecc75b51a4fe67db02370c2c034e20fdd","connectionId":"connection","connectionRevision":"2030-01-01T00:00:00.000Z","repositoryFullName":"team/service","workflowPath":".github/workflows/deploy.yml","dispatchedRef":"main","sourceCommit":"cccccccccccccccccccccccccccccccccccccccc","runId":"12345","runAttempt":2,"dispatchEvidenceDigest":"eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee","expiresAt":"2030-01-02T00:30:00.000Z"}}
+[axiom.release.evidence] {
+  phase: 'authority',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects create/clientbinding/extraauthority or invalidversion {"action":"cancel","id":"release_workflow_evidence_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","expectedVersion":9}
+[axiom.release.evidence] {
+  phase: 'authority',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects create/clientbinding/extraauthority or invalidversion {"action":"cancel","id":"release_workflow_evidence_bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb","expectedVersion":0,"actorUserId":"forged"}
+[axiom.release.evidence] {
+  phase: 'authority',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > bounds history to five rows with explicit truncation and rejects query/APIkey/session changes
+[axiom.release.evidence] {
+  phase: 'request',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > bounds history to five rows with explicit truncation and rejects query/APIkey/session changes
+[axiom.release.evidence] {
+  phase: 'authority',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > bounds history to five rows with explicit truncation and rejects query/APIkey/session changes
+[axiom.release.evidence] {
+  phase: 'saved_history',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > refuses a wrong-release collected binding before creating evidence
+[axiom.release.evidence] {
+  phase: 'accepted_binding',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects caller-supplied run IDs and collection without the accepted-operation adapter
+[axiom.release.evidence] {
+  phase: 'authority',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+stderr | lib/desktop/__tests__/releaseWorkflowEvidenceHttp.test.ts > rejects caller-supplied run IDs and collection without the accepted-operation adapter
+[axiom.release.evidence] {
+  phase: 'plan',
+  reason: 'read_refused',
+  outcome: 'refused',
+  durationMs: 0
+}
+
+·······················································································································································································································································································································································································································································································································································································································································································stderr | lib/__tests__/desktopSignupRoute.test.ts > desktop-initiated signup > still returns the created identity when workspace membership bootstrap fails (self-heals on next sign-in)
+[Signup] workspace bootstrap failed (best-effort): Error: unique constraint race
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/__tests__/desktopSignupRoute.test.ts:108:46
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64
+
+····························································································································································································································································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.topology] { phase: 'classic_protection', outcome: 'verified' }
+
+stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge.policy] { phase: 'final_authority', outcome: 'verified' }
+
+···········································stdout | lib/governance/qualification/__tests__/privateFixtureJoined.test.ts > actual fixture bootstrap initializes and drains the same composed ten-case graph without manual F3 invocation
+[axiom.release.merge] { phase: 'authority', outcome: 'refused' }
+
+···················································································································································································································································stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > reads only the signed-in mailbox and bounded calendar view, strips bodies and does not follow pagination
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > reads only the signed-in mailbox and bounded calendar view, strips bodies and does not follow pagination
+[Outlook read status] { phase: 'inbox', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > reads only the signed-in mailbox and bounded calendar view, strips bodies and does not follow pagination
+[Outlook read status] { phase: 'calendar', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > reads only the signed-in mailbox and bounded calendar view, strips bodies and does not follow pagination
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > rejects a mismatched provider identity even if credential labels claim the right account
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > rejects account revocation after reads rather than returning prior-account context
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > reports an unavailable Outlook mailbox without creating one or retrying
+[Outlook read status] { phase: 'profile', status: 200 }
+
+stderr | lib/integrations/outlook/__tests__/outlookReadiness.test.ts > reports an unavailable Outlook mailbox without creating one or retrying
+[Outlook read status] { phase: 'inbox', status: 404 }
+
+····································································································································································································································································································································································································································································································································································································································································································································································································stderr | lib/desktop/__tests__/associatedTicketActionsHttp.test.ts > returns a bounded secret-free refusal with no automatic retry
+ticket_associated_action_refused {
+  phase: 'action_service',
+  reason: 'unknown',
+  claimMayHaveStarted: false,
+  elapsedMs: 1
+}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with pipeline:read scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.913Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"GET /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with pipeline:read scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.916Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with pipeline:read scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.916Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plans/import"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with pipeline:trigger scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.916Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"GET /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with pipeline:trigger scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.917Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stderr | lib/desktop/__tests__/associatedTicketActionsHttp.test.ts > reports a pre-claim dispatch refusal as known refusal, never unknown
+ticket_associated_action_refused {
+  phase: 'action_service',
+  reason: 'unknown',
+  claimMayHaveStarted: false,
+  elapsedMs: 0
+}
+
+stderr | lib/desktop/__tests__/associatedTicketActionsHttp.test.ts > preserves uncertainty if claiming may have started, without leaking the cause
+ticket_associated_action_refused {
+  phase: 'action_service',
+  reason: 'unknown',
+  claimMayHaveStarted: true,
+  elapsedMs: 0
+}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with pipeline:trigger scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.917Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plans/import"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with * scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.917Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"GET /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with * scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.917Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses API key with * scope at all actual handlers before feature IO
+{"ts":"2026-11-15T14:45:49.918Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plans/import"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows operator current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.918Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows operator current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.918Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+·····stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows read_only current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.919Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows read_only current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.919Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows security_reviewer current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.919Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows security_reviewer current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.919Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows finance_viewer current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.920Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > allows finance_viewer current read but refuses all mutations through actual current-role resolver
+{"ts":"2026-11-15T14:45:49.920Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingSession actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.920Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"no active session for token","metadata":{"route":"GET /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingSession actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.920Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"no active session for token","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingSession actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"no active session for token","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile"}}
+
+stderr | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-owned","organizationId":"org-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"GET /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stderr | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-owned","organizationId":"org-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stderr | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-owned","organizationId":"org-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses missingMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.921Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stderr | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses unacceptedMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.922Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-owned","organizationId":"org-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses unacceptedMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.922Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"GET /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stderr | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses unacceptedMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.922Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-owned","organizationId":"org-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses unacceptedMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.922Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+stderr | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses unacceptedMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.922Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-owned","organizationId":"org-owned"}}
+
+stdout | app/api/desktop/deployments/[id]/terraform-plan-profile/__tests__/route.test.ts > refuses unacceptedMembership actual resolver state before feature calls
+{"ts":"2026-11-15T14:45:49.922Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"POST /api/desktop/deployments/request-owned/terraform-plan-profile","organizationId":"org-owned","userId":"user-owned"}}
+
+···············································································································································································································································································································································································································································································································································································································································································································································································································································································stderr | lib/__tests__/authSignInGate.test.ts > OAuth signIn callback — identity vs. workspace-bootstrap split > allows sign-in when identity resolves but workspace bootstrap fails
+{"ts":"2026-11-15T14:45:50.548Z","level":"error","module":"auth.membershipBootstrap","message":"workspace bootstrap failed (best-effort)","metadata":{"path":"signIn","userId":"user-1","errorMessage":"unique constraint race"}}
+
+stderr | lib/__tests__/authSignInGate.test.ts > OAuth signIn callback — identity vs. workspace-bootstrap split > denies sign-in when the identity store itself fails, with a safe reason code and correlation id
+[NextAuth signIn] identity upsert failed: Error: connection refused
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/__tests__/authSignInGate.test.ts:62:40
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64
+
+stderr | lib/__tests__/authSignInGate.test.ts > OAuth signIn callback — identity vs. workspace-bootstrap split > denies sign-in safely when the OAuth provider returns no email, without writing an unscoped audit record
+[NextAuth signIn] github returned no email — denying sign-in.
+
+··································································································································································································································································································································································································································································································································································································································································································································stderr | lib/auth/__tests__/currentContextAuthorityContract.test.ts > current workspace authority contract > does not recover workspace authority from a stale login-session role, even after the bootstrap retry finds nothing
+{"ts":"2026-11-15T14:45:51.332Z","level":"error","module":"auth.currentContext.membershipRetry","message":"membership bootstrap retry ran without throwing but still produced no role","metadata":{"userId":"user-1","organizationId":"ws_8a39ca2160d1a170"}}
+
+stderr | lib/auth/__tests__/currentContextAuthorityContract.test.ts > current workspace authority contract > still returns no roles, fail-closed, when the bootstrap retry itself fails
+{"ts":"2026-11-15T14:45:51.335Z","level":"error","module":"auth.currentContext.membershipRetry","message":"membership bootstrap retry failed","metadata":{"userId":"user-1","organizationId":"ws_8a39ca2160d1a170","errorMessage":"db unavailable"}}
+
+stderr | lib/auth/__tests__/currentContextAuthorityContract.test.ts > current workspace authority contract > does not grant authority when a pending membership appears during the bootstrap retry
+{"ts":"2026-11-15T14:45:51.335Z","level":"error","module":"auth.currentContext.membershipRetry","message":"membership bootstrap retry ran without throwing but still produced no role","metadata":{"userId":"user-1","organizationId":"ws_8a39ca2160d1a170"}}
+
+stderr | lib/auth/__tests__/currentContextAuthorityContract.test.ts > does not bootstrap ownership or recover role authority for a revoked selected workspace
+{"ts":"2026-11-15T14:45:51.336Z","level":"error","module":"auth.currentContext.membershipRetry","message":"session organizationId does not match this identity's derived personal workspace; bootstrap retry skipped","metadata":{"userId":"reviewer","sessionOrganizationId":"shared-workspace","derivedPersonalWorkspaceId":"ws_ed856f14ff9bca83"}}
+
+··························stderr | lib/contact/__tests__/contactRoute.test.ts > contact route > reports durable acceptance separately from unconfigured email delivery
+[Contact] RESEND_API_KEY not configured; emails not sent
+
+·························································································································stderr | app/api/desktop/pair/approve/__tests__/route.test.ts > POST /api/desktop/pair/approve — audit coverage > records a failure audit with a correlation id when session creation fails
+[corr_mwhy5vy0_a3kgykhb] Desktop pairing approval failed Error: store unavailable
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/desktop/pair/approve/__tests__/route.test.ts:132:50
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64
+
+······································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································stderr | app/api/dashboard/github-installation-transition/__tests__/route.test.ts > POST /api/dashboard/github-installation-transition > a cache-purge failure is best-effort and does not break the response
+[github-installation-transition] token cache purge failed: Error: db unavailable
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/dashboard/github-installation-transition/__tests__/route.test.ts:136:46
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64
+
+··································stdout | lib/desktop/__tests__/resolveRequestDesktopSessionEntitlement.test.ts > resolveRequestDesktopSession entitlement default > rejects a non-entitled session on an operational route by default
+{"ts":"2026-11-15T14:45:52.311Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"commercial access not allowed","metadata":{"route":"/api/desktop/deployments","organizationId":"org-1"}}
+
+stdout | lib/desktop/__tests__/resolveRequestDesktopSessionEntitlement.test.ts > resolveRequestDesktopSession entitlement default > heartbeat-free rechecks still refuse withdrawn entitlement
+{"ts":"2026-11-15T14:45:52.318Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"commercial access not allowed","metadata":{"route":"release locked recheck","organizationId":"org-1"}}
+
+stderr | lib/desktop/__tests__/resolveRequestDesktopSessionEntitlement.test.ts > resolveRequestDesktopSession entitlement default > heartbeat-free rechecks still refuse removed membership
+{"ts":"2026-11-15T14:45:52.319Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal membership bootstrap retry failed","metadata":{"userId":"user-1","organizationId":"org-1","errorMessage":"Cannot read properties of undefined (reading 'findUnique')"}}
+
+stdout | lib/desktop/__tests__/resolveRequestDesktopSessionEntitlement.test.ts > resolveRequestDesktopSession entitlement default > heartbeat-free rechecks still refuse removed membership
+{"ts":"2026-11-15T14:45:52.319Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"release locked recheck","organizationId":"org-1","userId":"user-1"}}
+
+······················································································································································································································································································································································································································································································stderr | app/api/support/stripe-webhook/__tests__/route.test.ts > POST /api/support/stripe-webhook > returns 500 so Stripe retries when confirmation delivery fails
+[Supporter webhook] Processing failed: Error: Supporter confirmation email was not accepted for delivery.
+    at deliverConfirmation (/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/support/stripe-webhook/route.ts:104:20)
+    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)
+    at Module.POST (/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/support/stripe-webhook/route.ts:134:23)
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/app/api/support/stripe-webhook/__tests__/route.test.ts:70:22
+    at async file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:20
+
+········································································································································································································································stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > denies accepted read_only before plan or provider reads
+{"ts":"2026-11-15T14:45:52.820Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"/api/desktop/billing/portal","organizationId":"org-1","userId":"user-1"}}
+
+stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > denies accepted operator before plan or provider reads
+{"ts":"2026-11-15T14:45:52.823Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"/api/desktop/billing/portal","organizationId":"org-1","userId":"user-1"}}
+
+stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > denies accepted finance_viewer before plan or provider reads
+{"ts":"2026-11-15T14:45:52.824Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"/api/desktop/billing/portal","organizationId":"org-1","userId":"user-1"}}
+
+stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > denies accepted security_reviewer before plan or provider reads
+{"ts":"2026-11-15T14:45:52.824Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"/api/desktop/billing/portal","organizationId":"org-1","userId":"user-1"}}
+
+stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > rechecks role on each request so an unchanged paired token loses management after downgrade
+{"ts":"2026-11-15T14:45:52.825Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace admin role required but absent","metadata":{"route":"/api/desktop/billing/portal","organizationId":"org-1","userId":"user-1"}}
+
+stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > rejects API keys before authentication or billing IO
+{"ts":"2026-11-15T14:45:52.825Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"api key not allowed on this route","metadata":{"route":"/api/desktop/billing/portal"}}
+
+stderr | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > fails closed on a current membership read outage
+{"ts":"2026-11-15T14:45:52.826Z","level":"error","module":"desktop.resolveRequestDesktopSession","message":"self-heal skipped: no user row (or no email) found for this session's userId","metadata":{"userId":"user-1","organizationId":"org-1"}}
+
+stdout | app/api/desktop/billing/portal/__tests__/route.test.ts > desktop billing portal current management authority > fails closed on a current membership read outage
+{"ts":"2026-11-15T14:45:52.826Z","level":"info","module":"desktop.resolveRequestDesktopSession","message":"workspace membership missing or unaccepted","metadata":{"route":"/api/desktop/billing/portal","organizationId":"org-1","userId":"user-1"}}
+
+··················································································································································································································································································································································································································································································································································································································································································································································································································································································································stderr | lib/workforce/pipelines/__tests__/mintCodingArtifactApproval.test.ts > stores exact artifact bytes with an approval action bound to its digest
+[secureAudit] no store configured — drop engineer.approval_created
+
+·························stderr | lib/workforce/pipelines/__tests__/mintCodingArtifactApproval.test.ts > routes the coding gate through the artifact-bound minter
+[secureAudit] no store configured — drop engineer.approval_created
+
+······································································································································································································································································································stderr | lib/__tests__/authLoginRecovery.test.ts > password login after the verification schema is deployed > fails closed during schema drift instead of bypassing verification
+[NextAuth authorize] Error: missing verification column
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/__tests__/authLoginRecovery.test.ts:48:52
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64 {
+  code: 'P2022'
+}
+
+stderr | lib/__tests__/authLoginRecovery.test.ts > google identity-store recovery > denies a missing identity schema and records the safe server-side reason
+[NextAuth signIn] identity upsert failed: Error: missing verification column
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/__tests__/authLoginRecovery.test.ts:69:54
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64 {
+  code: 'P2022'
+}
+
+stderr | lib/__tests__/authLoginRecovery.test.ts > google identity-store recovery > denies identities without an email
+[NextAuth signIn] google returned no email — denying sign-in.
+
+stderr | lib/__tests__/authLoginRecovery.test.ts > github identity-store recovery > denies a missing identity schema and records the safe server-side reason
+[NextAuth signIn] identity upsert failed: Error: missing verification column
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/__tests__/authLoginRecovery.test.ts:69:54
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64 {
+  code: 'P2022'
+}
+
+····················stderr | lib/__tests__/authLoginRecovery.test.ts > github identity-store recovery > denies identities without an email
+[NextAuth signIn] github returned no email — denying sign-in.
+
+···································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································································--------------------·------------------------------···-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------··---------------------------------------------------------------------------------------------------------
+
+ Test Files  1803 passed | 106 skipped (1909)
+      Tests  19669 passed | 1 expected fail | 1144 skipped (20814)
+   Start at  09:45:26
+   Duration  33.29s (tests 46%, import 29%, environment 17%, transform 6%, worker 1%)
+
+    Isolate  1909 workers spawned · ~90ms startup each (spawn + environment, per file)
+             at least ~12.14s faster with isolate: false — reuses workers across files instead of one per file
+

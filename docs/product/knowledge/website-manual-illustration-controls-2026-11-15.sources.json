@@ -5,8 +5,8 @@
   "publicationApproved": false,
   "humanEditorialOwner": null,
   "baseHead": "93302541e4d02ff06f5daedb3a19fdd993ac005f",
-  "sourceKind": "Uncommitted local source; baseHead is ancestry only",
-  "scope": "Current static hero, manual model/story controls and native-scroll depth; old orbital scenes and player hooks are unmounted historical work; evaluation checklist keyboard control",
+  "sourceKind": "Current uncommitted local source; not published or installed acceptance",
+  "scope": "Current local manual model/story selection, finite original painted scene reveals and native scroll; no automatic approval or step progression",
   "renderedAcceptance": false,
   "runtimeHelpBindingInstalled": false,
   "sources": [
@@ -28,7 +28,7 @@
     },
     {
       "path": "components/marketing/CinematicAxiomDemo.tsx",
-      "sha256": "1c275425c66494ab95b8b4453f3e37a641e5bd8159bddc6ddf327d3a29450818"
+      "sha256": "31d07e263eb19432e302d626d996a72c1f25820e28514effe16309b20f5ad20f"
     },
     {
       "path": "components/marketing/workflowStories.ts",
@@ -48,15 +48,15 @@
     },
     {
       "path": "docs/product/knowledge/website-manual-illustration-controls-2026-11-15.md",
-      "sha256": "85934fd6f141036959277b42f950b603ffdb457344c16cdc5c16dc430f8ab17a"
+      "sha256": "10fbe915e94104e53c35ccec1e28725b4fd0656c07ea964ebea0f51e7745608c"
     },
     {
       "path": "app/orbit-public.css",
-      "sha256": "ddcb5d2e3a12ad652d930714ed150353234ca3544c414346c59fafe3366fd2d7"
+      "sha256": "0dec6c6f93def18ab5e8af2d21280a69eb43b32bf0f3beb7e2c8024144bc527a"
     },
     {
       "path": "components/marketing/AxiomPublicHero.tsx",
-      "sha256": "7020640b21796645d55fc5a951b2e448a77a5a61b859fd74d00f3350f6fadeb2"
+      "sha256": "0da47a40a29f7496b90030e60ed50802829bd718dd60851e3bc14e4cac942e1a"
     },
     {
       "path": "components/marketing/DesktopPreviewFrame.tsx",
@@ -73,6 +73,10 @@
     {
       "path": "app/(marketing)/compare/CompareClient.tsx",
       "sha256": "6e18bbfdb6d579f187f9cbddbbd2ffe1701e93b138bf457a204fb9ee440023be"
+    },
+    {
+      "path": "components/marketing/usePreviewSequence.ts",
+      "sha256": "916a6b0b3014cb3bf24830b6a22187bacfd46dd2b2b78ca063d097747a923e45"
     }
   ],
   "localSourceNote": "Current branded frontend has finite compiled/browser evidence; website pointer/menu/disclosure/fallback checks pass. Separate compiled desktop short-split correction passes. Full rendered/editorial/native/master acceptance remains open."

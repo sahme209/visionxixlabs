@@ -1,0 +1,55 @@
+EEEEE.........
+======================================================================
+ERROR: test_exact_phase_once_and_no_governance_output_execution (__main__.CompilerPhaseOwnership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 67, in test_exact_phase_once_and_no_governance_output_execution
+    context,calls=self.fixture(Path(d),[0.]);self.assertEqual(context.run('owner-compile',['/usr/bin/cc','-c','fixed.c'],30),'ok\n')
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 64, in fixture
+    return m.CompileContext(root,{'/usr/bin/cc'},lambda:None,supervisor,lambda:clock[0]),calls
+AttributeError: module 'operational_compile' has no attribute 'CompileContext'
+
+======================================================================
+ERROR: test_failure_or_unknown_cleanup_stops_all_following_commands_and_keeps_result (__main__.CompilerPhaseOwnership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 77, in test_failure_or_unknown_cleanup_stops_all_following_commands_and_keeps_result
+    context,calls=self.fixture(Path(d),[0.],{'status':status,'returncode':1,'cleanup_confirmed':clean,'stdout_bytes':3,'stderr_bytes':0})
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 64, in fixture
+    return m.CompileContext(root,{'/usr/bin/cc'},lambda:None,supervisor,lambda:clock[0]),calls
+AttributeError: module 'operational_compile' has no attribute 'CompileContext'
+
+======================================================================
+ERROR: test_signal_handlers_restore_without_permitting_another_phase (__main__.CompilerPhaseOwnership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 105, in test_signal_handlers_restore_without_permitting_another_phase
+    context,calls=self.fixture(Path(d),[0.]);old={sig:signal.getsignal(sig) for sig in (signal.SIGTERM,signal.SIGINT,signal.SIGHUP)}
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 64, in fixture
+    return m.CompileContext(root,{'/usr/bin/cc'},lambda:None,supervisor,lambda:clock[0]),calls
+AttributeError: module 'operational_compile' has no attribute 'CompileContext'
+
+======================================================================
+ERROR: test_source_recheck_failure_retains_original_command_outcome (__main__.CompilerPhaseOwnership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 96, in test_source_recheck_failure_retains_original_command_outcome
+    context,calls=self.fixture(Path(d),[0.]);checks=[0]
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 64, in fixture
+    return m.CompileContext(root,{'/usr/bin/cc'},lambda:None,supervisor,lambda:clock[0]),calls
+AttributeError: module 'operational_compile' has no attribute 'CompileContext'
+
+======================================================================
+ERROR: test_whole_deadline_and_late_cleanup_cannot_become_success (__main__.CompilerPhaseOwnership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 84, in test_whole_deadline_and_late_cleanup_cannot_become_success
+    clock=[0.];context,calls=self.fixture(Path(d),clock);clock[0]=2400.
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 64, in fixture
+    return m.CompileContext(root,{'/usr/bin/cc'},lambda:None,supervisor,lambda:clock[0]),calls
+AttributeError: module 'operational_compile' has no attribute 'CompileContext'
+
+----------------------------------------------------------------------
+Ran 14 tests in 0.113s
+
+FAILED (errors=5)

@@ -1,0 +1,27 @@
+....F..........
+======================================================================
+FAIL: test_verification_time_cannot_extend_the_shared_command_deadline (__main__.CompilerPhaseOwnership)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 108, in test_verification_time_cannot_extend_the_shared_command_deadline
+    self.assertEqual(calls,[])
+AssertionError: Lists differ: [(['/usr/bin/cc'], {'cwd': PosixPath('/var[386 chars] 5})] != []
+
+First list contains 1 additional elements.
+First extra element 0:
+(['/usr/bin/cc'], {'cwd': PosixPath('/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/tmp0x8y_uva'), 'env': {}, 'stdout_path': PosixPath('/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/tmp0x8y_uva/logs/expired-before-spawn.stdout'), 'stderr_path': PosixPath('/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/tmp0x8y_uva/logs/expired-before-spawn.stderr'), 'timeout_seconds': 30, 'max_output_bytes': 262144, 'cleanup_seconds': 5})
+
++ []
+- [(['/usr/bin/cc'],
+-   {'cleanup_seconds': 5,
+-    'cwd': PosixPath('/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/tmp0x8y_uva'),
+-    'env': {},
+-    'max_output_bytes': 262144,
+-    'stderr_path': PosixPath('/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/tmp0x8y_uva/logs/expired-before-spawn.stderr'),
+-    'stdout_path': PosixPath('/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/tmp0x8y_uva/logs/expired-before-spawn.stdout'),
+-    'timeout_seconds': 30})]
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.118s
+
+FAILED (failures=1)

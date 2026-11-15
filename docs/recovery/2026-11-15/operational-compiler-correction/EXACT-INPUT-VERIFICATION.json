@@ -1,0 +1,17 @@
+{
+  "pr": 337,
+  "before": "35b88cba5aae932aa53f9aa08bc87810a1ce0697",
+  "ownerDecision": "call_53b0ce938750472db5f024371d7db8ce",
+  "packetSha256": "8fa43e020a281c0aeaf932f5cc1e4bcfecde89d2916098e868903b5a6e62e193",
+  "inputs": 45,
+  "changedInputs": [
+    ".github/workflows/linux-operational-compile.yml",
+    "scripts/governance_operational_compile.py",
+    "scripts/tests/test_governance_operational_compile.py"
+  ],
+  "exactControllerDeltaVerified": true,
+  "pureChecks": 40,
+  "redBeforeFix": 3,
+  "runtimeExecuted": false,
+  "retryAuthorizedAfterAttempt": false
+}

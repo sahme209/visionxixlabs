@@ -1,0 +1,47 @@
+{
+  "outputDirectory": "/private/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-operational-main-capsule-MVDKay/capsule",
+  "receipt": {
+    "format": 1,
+    "scope": "closed-operational-supplier-source-capsule",
+    "sources": {
+      "lib/governance/platform/nativeTime/installedOperationalMain.ts": "aa3971d2f1077ce325f7fb2a32ce302b60427e5b02dd43a99176d255af26c142",
+      "lib/governance/platform/nativeTime/operationalNativePorts.ts": "85adf25b5db3b61fededc03a870d5df7e4572b989dbff149f4853914c235fa62",
+      "lib/governance/platform/nativeTime/operationalSource.ts": "80cf2c6c9c2a4c0207eb024db93056428135881aa975bb7ef70fca1b25b77f31"
+    },
+    "compiler": {
+      "rolldown": "1.2.19",
+      "typescript": "5.9.3",
+      "node": "24.21.0",
+      "platform": "darwin",
+      "architecture": "arm64",
+      "hashes": {
+        "lock": "39956a9cc5fb352be676e51055b7854e7d7b637993fd6a3c22b5d965a4d5db0b",
+        "rolldownPackage": "73ea5ca898ac22574e23d66e54dc9c5b3714f9d8c1be934412824d62f25e21fc",
+        "rolldownEntry": "c10c853d3ed1bea34f1dae1a8f1166ffafbc19a8665a696f33205b57fd28e85c",
+        "bindingPackage": "bfed2115e14183ea7ff0ca02cfea97dd91a7f202d8e698cb30382559db024fe9",
+        "binding": "f7624c9163c8b8e4c6997ac94764c48d6e8630844a975ff4c661980531c623e9",
+        "typescriptPackage": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+        "typescriptEntry": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+      }
+    },
+    "externals": [
+      "node:module",
+      "node:process"
+    ],
+    "output": {
+      "name": "main.mjs",
+      "bytes": 11241,
+      "sha256": "9a058466aa4b247ead7d352821056a3319c33739197057fa6118ab0d55c45810"
+    },
+    "serverOnlyMarker": "private-build-only-erased",
+    "targetExecuted": false,
+    "nativeQualified": false,
+    "administrativeLifecycleQualified": false,
+    "governanceEnabled": false
+  },
+  "syntaxOnly": {
+    "exitCode": 0,
+    "signal": null
+  },
+  "targetProgramImported": false
+}

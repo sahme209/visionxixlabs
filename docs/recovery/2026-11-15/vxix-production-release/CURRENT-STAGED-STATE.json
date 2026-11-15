@@ -1,0 +1,18 @@
+{
+  "deploymentId": "dpl_2G1faD3e8Ru6HS9yeXqrR8wFvJkv",
+  "state": "READY",
+  "target": "production",
+  "liveAliases": [
+    {
+      "name": "www.visionxixlabs.com",
+      "deploymentId": "dpl_EBjGUqmBPxwLSHjdW2noMDqXVHuy"
+    },
+    {
+      "name": "visionxixlabs.com",
+      "deploymentId": "dpl_EBjGUqmBPxwLSHjdW2noMDqXVHuy"
+    }
+  ],
+  "readOnly": true,
+  "privateSettingRead": false,
+  "observedAt": "2026-11-15T11:39:21.914026+00:00"
+}

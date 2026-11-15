@@ -1,0 +1,91 @@
+{
+  "ownerReportedProvider": "google",
+  "publicReadScope": "unauthenticated owned public HTTPS only; no cookies/credentials",
+  "providers": {
+    "httpStatus": 200,
+    "ids": [
+      "credentials",
+      "google",
+      "github",
+      "cognito"
+    ],
+    "bytes": 781,
+    "sha256": "c2b2404444ca27f229e1920b6fd41af4f47b1452958a6b65b185681bf006f175"
+  },
+  "download": {
+    "httpStatus": 503,
+    "availability": "temporarily_unavailable",
+    "bytes": 323,
+    "sha256": "1472ee1da49439f585067a08f30e278f266361005cabf102f33a193d1f040339"
+  },
+  "status": {
+    "overall": "unknown",
+    "unknown": [
+      "autonomy_loop",
+      "outbound_channel",
+      "billing_plane"
+    ],
+    "operational": [
+      "cron_self_heal",
+      "agi_spine",
+      "ai_provider"
+    ]
+  },
+  "exactFailureCauseEstablished": false,
+  "liveGoogleCallbackTested": false,
+  "liveDeploymentIdentityCurrentlyVerified": false,
+  "privateDiagnosticApprovalStillPending": true,
+  "localLoginSource": {
+    "path": "app/auth/signin/AuthFormClient.tsx",
+    "sha256": "ad144b6c90666334a7a9f1c286644ce22590ac317317fe24a7088d04cf7f8ef1",
+    "focusedTestsPassed": 37,
+    "newRecoveryTestsRedBeforeImplementation": 5,
+    "handlersAndServerAuthUnchanged": true,
+    "compiledOrRendered": true,
+    "published": false
+  },
+  "framerReference": "REFERENCE-OBSERVATIONS.md",
+  "motionOrIntegrationProductEditsStarted": true,
+  "productionChanged": false,
+  "governanceEnabled": false,
+  "sourceStatus": "local implementation and finite compiled review complete; not published",
+  "combinedFocusedTestsPassed": 58,
+  "finalTapPolishFocusedTestsPassed": 42,
+  "fullSuite": {
+    "passed": 19634,
+    "expectedFailure": 1,
+    "skipped": 1144
+  },
+  "rootStrictTypes": "pass before final styling-only polish; final production types/build pass",
+  "builds": [
+    {
+      "receipt": "docs/recovery/2026-11-15/framer-website-followup/WEBSITE-BUILD-RESULT.json",
+      "sha256": "ae2962a92000d4f3fbe21708818262e6bb031da652a44574b6cb4eadc30b3672"
+    },
+    {
+      "receipt": "docs/recovery/2026-11-15/framer-website-followup/render-polish/WEBSITE-BUILD-RESULT.json",
+      "sha256": "06a15d8187532657894581763dcac38d0e2664e74f022569df86ebb997ed341d"
+    }
+  ],
+  "compiledBrowserReview": {
+    "desktopWidth": 1280,
+    "mobileWidth": 390,
+    "documentHorizontalOverflow": false,
+    "catalogColumns": [
+      4,
+      2
+    ],
+    "plannedLinks": 0,
+    "searchEmptyResetDetailsFaqKeyboard": "observed",
+    "actualDemoTyping": "observed after deliberate step selection",
+    "automaticStoryAdvance": false,
+    "reducedMotionFullContentAndNoCursor": "observed",
+    "finalPasswordAndVerificationTargetsPx": 44,
+    "fixtures": "provider list synthetic; no login/provider/account/verification submission",
+    "cleanup": "owned tabs closed, viewport/media restored, all owned listeners normal exit0"
+  },
+  "independentSourceReview": "no Important/Critical product findings; build parent signal finding corrected after2RED then2PASS plus20helperPASS",
+  "deferredMinor": "decorative lower logo row centering assumes9tiles; future catalog size changes may miscenter it",
+  "logoLimitation": "VS Code uses explicit generic editor symbol, not an official mark",
+  "installedDesktopChanged": false
+}

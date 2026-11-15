@@ -12,6 +12,8 @@
  * field, extension or trailing byte. A reply is for ONE request, never a cache. */
 enum axiom_operational_state { AXIOM_OP_UNKNOWN=0, AXIOM_OP_READY=1,
  AXIOM_OP_DISRUPTED=2, AXIOM_OP_WITHDRAWN=3 };
+/* Immutable semantic policy has no runtime identity or claimed digest. */
+struct axiom_operational_policy {uint64_t revision,reader_uid,reader_gid;};
 struct axiom_operational_acceptance {
  char profile[65],host[129],source_generation[129],boot[129];
  uint64_t revision,directory_device,directory_inode,publisher_uid,reader_gid;
@@ -21,6 +23,10 @@ struct axiom_operational_status {
  char profile[65],host[129],source_generation[129];
  enum axiom_operational_state state;
 };
+int axiom_operational_policy_decode(const unsigned char*,size_t,struct axiom_operational_policy*);
+/* Pure derivation only. The fixed root owner supplies verified digest and held
+ * kernel facts. This helper does not qualify or enroll any package. */
+int axiom_operational_accept_derive(const struct axiom_operational_policy*,const char*,const char*,uint64_t,uint64_t,const unsigned char*,size_t,struct axiom_operational_acceptance*);
 int axiom_operational_accept_decode(const unsigned char*,size_t,struct axiom_operational_acceptance*);
 int axiom_operational_accept_encode(const struct axiom_operational_acceptance*,unsigned char*,size_t*);
 int axiom_operational_status_decode(const unsigned char*,size_t,struct axiom_operational_status*);

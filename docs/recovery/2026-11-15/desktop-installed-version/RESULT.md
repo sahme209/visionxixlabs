@@ -1,0 +1,7 @@
+# Installed-version source result
+
+Settings → General now shows the version reported by the installed native app, Checking… or Unavailable. No candidate/site fallback. Review releases is an explicit fixed browser handoff only, with fixed error copy; no update, installation, preference, credential or provider write. Actual Settings12 regressions and existing App/preference/demo/docs cases total37passes. Strict root and desktop types pass. Full ordinary suite19618PASS/1expectedfailure/1144skips.
+
+One desktop frontend build completed with networking denied and an owned empty environment-file directory; original accepted visual artifacts and installed app were untouched. Existing large-chunk and dynamic-import warnings remain. Output manifest/receipt retained. No rendered or native/installed/release acceptance is claimed for this newer source. Independent source review found no material desktop defect. Historical help bindings remain unrequalified; public install guide/index/support corpus updated using existing generators.
+
+The initial actual-App regression failed because the old fixture allowed only its original two native reads. Its whitelist now adds only the exact read-only version command, asserts one call and preserves no-access/no-write/no-browser conditions. Earlier failures remain saved. All changes are local/unpublished; the existing staged deployment is from the earlier merged source.

@@ -1,0 +1,45 @@
+FF........F.............................
+======================================================================
+FAIL: test_exact_owner_decision_and_before_head_are_enrolled (__main__.ApprovedEnrollment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 290, in test_exact_owner_decision_and_before_head_are_enrolled
+    self.assertEqual((m.APPROVED_PR,m.APPROVED_BEFORE,m.OWNER_DECISION),(337,'35b88cba5aae932aa53f9aa08bc87810a1ce0697','call_53b0ce938750472db5f024371d7db8ce'))
+AssertionError: Tuples differ: (337, 'b693178ea7485b3a976a100da06ca75b8fa995e6'[37 chars]6d1') != (337, '35b88cba5aae932aa53f9aa08bc87810a1ce0697'[37 chars]8ce')
+
+First differing element 1:
+'b693178ea7485b3a976a100da06ca75b8fa995e6'
+'35b88cba5aae932aa53f9aa08bc87810a1ce0697'
+
+  (337,
+-  'b693178ea7485b3a976a100da06ca75b8fa995e6',
+-  'call_60732fcbde694192b8efdaf317b506d1')
++  '35b88cba5aae932aa53f9aa08bc87810a1ce0697',
++  'call_53b0ce938750472db5f024371d7db8ce')
+
+======================================================================
+FAIL: test_workflow_enforces_the_exact_public_same_repo_transition (__main__.ApprovedEnrollment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 297, in test_workflow_enforces_the_exact_public_same_repo_transition
+    self.assertIn(required,workflow)
+AssertionError: "github.event.before == '35b88cba5aae932aa53f9aa08bc87810a1ce0697'" not found in "name: One approved joined operational compiler test\n\n# One owner-approved exact PR transition; no resulting Governance output runs.\non:\n  pull_request:\n    types: [synchronize]\n    paths:\n      - 'scripts/governance_operational_compile.py'\n      - '.github/workflows/linux-operational-compile.yml'\npermissions:\n  contents: read\njobs:\n  compile-only:\n    if: >-\n      github.repository == 'sahme209/visionxixlabs' &&\n      github.event.repository.private == false &&\n      github.event.action == 'synchronize' &&\n      github.event.number == 337 &&\n      github.event.pull_request.number == 337 &&\n      github.event.pull_request.base.ref == 'main' &&\n      github.event.pull_request.base.repo.full_name == github.repository &&\n      github.event.pull_request.head.repo.full_name == github.repository &&\n      github.event.pull_request.head.ref == 'codex/governance-operational-package' &&\n      github.event.before == 'b693178ea7485b3a976a100da06ca75b8fa995e6' &&\n      github.event.after == github.event.pull_request.head.sha &&\n      github.run_attempt == 1\n    runs-on: ubuntu-24.04\n    timeout-minutes: 42\n    steps:\n      - name: Check out exact reviewed head without credentials\n        uses: actions/checkout@v7\n        with:\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: One fixed owner-approved compiler batch\n        env:\n          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}\n        run: python3 scripts/governance_operational_compile.py --approved-ci-once\n"
+
+======================================================================
+FAIL: test_corrected_plan_only_preserves_daemon_symbols_and_other_commands (__main__.OperationalCompile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 18, in test_corrected_plan_only_preserves_daemon_symbols_and_other_commands
+    self.assertEqual(self.plan(),expected)
+AssertionError: Lists differ: [{'na[732 chars]o', 'rustc', '--locked', '--offline', '--targe[1935 chars]lse}] != [{'na[732 chars]o', '--config', 'profile.release.strip=false',[1978 chars]lse}]
+
+First differing element 2:
+{'nam[47 chars]o', 'rustc', '--locked', '--offline', '--targe[537 chars]alse}
+{'nam[47 chars]o', '--config', 'profile.release.strip=false',[580 chars]alse}
+
+Diff is 4152 characters long. Set self.maxDiff to None to see it.
+
+----------------------------------------------------------------------
+Ran 40 tests in 0.166s
+
+FAILED (failures=3)

@@ -1,0 +1,34 @@
+{
+  "head": "b4237fdfccaf6316660ce5c6459d0c525082ba3b",
+  "PR": 337,
+  "normalTestRun": 43725338590,
+  "desktopRun": 43725338596,
+  "isolatedWebsiteRun": 43725338518,
+  "checks": {
+    "Type check": "success",
+    "Vitest (1/3)": "success",
+    "Vitest (2/3)": "success",
+    "Vitest (3/3)": "success",
+    "Build and offline checks": "success",
+    "Typecheck + Vitest": "success",
+    "macOS native transport and policy checks": "success",
+    "Frontend and native security checks": "success",
+    "isolated-website": "failure"
+  },
+  "websiteFailure": {
+    "job": 132845929841,
+    "currentInteraction": "manual_step_check",
+    "completedEvidence": [
+      "essential_consent_selected",
+      "player_controls_absent",
+      "direct_step_state"
+    ],
+    "cleanup": "owned_groups_empty",
+    "sourceUnchanged": true,
+    "reproducedOldStateComparison": true,
+    "localReproducerFailuresBeforeFix": 3
+  },
+  "newOperationalNativeWorkflowRan": false,
+  "merged": false,
+  "deployed": false
+}

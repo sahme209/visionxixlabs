@@ -1,0 +1,19 @@
+{
+  "scope": "Current local source; matching product compiled and finitely browser-reviewed, no production/native/customer acceptance",
+  "sources": {
+    "app/auth/signin/AuthFormClient.tsx": "ad144b6c90666334a7a9f1c286644ce22590ac317317fe24a7088d04cf7f8ef1",
+    "components/marketing/AxiomPublicHero.tsx": "0da47a40a29f7496b90030e60ed50802829bd718dd60851e3bc14e4cac942e1a",
+    "components/marketing/CinematicAxiomDemo.tsx": "31d07e263eb19432e302d626d996a72c1f25820e28514effe16309b20f5ad20f",
+    "components/marketing/IntegrationCatalogBrowser.tsx": "54ea672083f457995ff777f87084598ae870b1b0b620e194d8cc9ce1871787e6",
+    "components/marketing/IntegrationCatalogLogo.tsx": "59783ab66ce3ab58db64983ca04cf80c9f5f3da6d1dff83d24cf9c0da59a2431",
+    "components/marketing/IntegrationConnectionsScene.tsx": "be4c71bbc0b999cdd87a93d7249d7c9034a11655f85831fed6d6230f686008dd",
+    "components/marketing/usePreviewSequence.ts": "916a6b0b3014cb3bf24830b6a22187bacfd46dd2b2b78ca063d097747a923e45",
+    "app/integrations/page.tsx": "83d5b41121bd905448a81cb8c751840809cbea3433887d86871763e2f2aefe64",
+    "app/orbit-public.css": "0dec6c6f93def18ab5e8af2d21280a69eb43b32bf0f3beb7e2c8024144bc527a",
+    "docs/product/knowledge/integrations-catalog-controls.md": "7f78787102486fb88e57d142146252d911034e0bc0922c078d0dda2a856d06c4",
+    "docs/product/knowledge/website-manual-illustration-controls-2026-11-15.md": "10fbe915e94104e53c35ccec1e28725b4fd0656c07ea964ebea0f51e7745608c",
+    "public/logos/integrations/dagster.svg": "969f05006991cacf9c2a5dfb2cf852f8d0c2021b71e326bdd67371d2f2e36133",
+    "public/logos/integrations/NOTICE.md": "af727d56ccf3312285f12e97bf8d57884facaa46ee1831991500e6fb257d2dea",
+    "components/auth/VerificationRecovery.tsx": "4380c764a296a8ee72b75e2d33f9a7dcf122052cfda96f0e28b8f525154b606c"
+  }
+}

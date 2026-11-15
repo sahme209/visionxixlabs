@@ -1,0 +1,52 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+························································stderr | lib/__tests__/authSignInGate.test.ts > OAuth signIn callback — identity vs. workspace-bootstrap split > allows sign-in when identity resolves but workspace bootstrap fails
+{"ts":"2026-11-15T13:31:16.155Z","level":"error","module":"auth.membershipBootstrap","message":"workspace bootstrap failed (best-effort)","metadata":{"path":"signIn","userId":"user-1","errorMessage":"unique constraint race"}}
+
+stderr | lib/__tests__/authSignInGate.test.ts > OAuth signIn callback — identity vs. workspace-bootstrap split > denies sign-in when the identity store itself fails, with a safe reason code and correlation id
+[NextAuth signIn] identity upsert failed: Error: connection refused
+    at /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/lib/__tests__/authSignInGate.test.ts:62:40
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:1632:35
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:2801:26
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3338:20
+    at new Promise (<anonymous>)
+    at runWithCancel (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3333:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3318:20
+    at new Promise (<anonymous>)
+    at runWithTimeout (file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3276:10)
+    at file:///Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/vitest/dist/chunks/run.CjdgFZiW.js:3922:64
+
+stderr | lib/__tests__/authSignInGate.test.ts > OAuth signIn callback — identity vs. workspace-bootstrap split > denies sign-in safely when the OAuth provider returns no email, without writing an unscoped audit record
+[NextAuth signIn] github returned no email — denying sign-in.
+
+···········stderr | app/auth/signin/__tests__/accountSwitchProviders.test.ts > requests Google account selection only for the explicit switching flow
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+stderr | app/auth/signin/__tests__/verifiedConfirmation.test.ts > explains verification is separate from authentication and pairing consent
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+stderr | app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > offers configured providers before the email form while retaining every existing sign-in method
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+··stderr | app/auth/signin/__tests__/overlappingFlows.test.ts > does not submit a second password login while the first is pending, then permits an explicit provider choice after refusal
+Received `true` for a non-boolean attribute `priority`.
+
+If you want to write it to the DOM, pass a string instead: priority="true" or priority={value.toString()}.
+
+··················
+
+ Test Files  10 passed (10)
+      Tests  87 passed (87)
+   Start at  08:31:16
+   Duration  593ms (environment 50%, import 29%, tests 14%, transform 7%, worker 1%)
+

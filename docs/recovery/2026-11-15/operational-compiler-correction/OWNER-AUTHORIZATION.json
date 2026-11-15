@@ -1,0 +1,11 @@
+{
+  "ownerDecision": "call_53b0ce938750472db5f024371d7db8ce",
+  "answer": "Approve one corrected compiler test",
+  "proposal": "docs/recovery/2026-11-15/operational-compiler-enrollment/CORRECTED-COMPILER-PROPOSAL.md",
+  "pr": 337,
+  "before": "35b88cba5aae932aa53f9aa08bc87810a1ce0697",
+  "maximumCorrectedRuns": 1,
+  "outputsMayRun": false,
+  "finalReviewRequiredBeforePush": true,
+  "consumed": false
+}

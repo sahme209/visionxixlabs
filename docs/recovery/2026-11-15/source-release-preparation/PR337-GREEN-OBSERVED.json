@@ -1,0 +1,80 @@
+{
+  "pr": 337,
+  "url": "https://github.com/sahme209/visionxixlabs/pull/337",
+  "state": "open",
+  "draft": true,
+  "merged": false,
+  "head": "b693178ea7485b3a976a100da06ca75b8fa995e6",
+  "base": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "successfulChecks": [
+    {
+      "id": 132850161898,
+      "name": "Typecheck + Vitest",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276198/job/132850161898"
+    },
+    {
+      "id": 132848782843,
+      "name": "isolated-website",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276310/job/132848782843"
+    },
+    {
+      "id": 132848782662,
+      "name": "Vitest (1/3)",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276198/job/132848782662"
+    },
+    {
+      "id": 132848782661,
+      "name": "Build and offline checks",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276198/job/132848782661"
+    },
+    {
+      "id": 132848782652,
+      "name": "Vitest (3/3)",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276198/job/132848782652"
+    },
+    {
+      "id": 132848782634,
+      "name": "Vitest (2/3)",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276198/job/132848782634"
+    },
+    {
+      "id": 132848782602,
+      "name": "macOS native transport and policy checks",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276187/job/132848782602"
+    },
+    {
+      "id": 132848782437,
+      "name": "Type check",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276198/job/132848782437"
+    },
+    {
+      "id": 132848782366,
+      "name": "Frontend and native security checks",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276187/job/132848782366"
+    }
+  ],
+  "skippedChecks": [
+    {
+      "id": 132848784388,
+      "name": "shots",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276213/job/132848784388"
+    },
+    {
+      "id": 132848783705,
+      "name": "compile-only",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276264/job/132848783705"
+    },
+    {
+      "id": 132848783173,
+      "name": "Linux time compile and link (no runtime)",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43726276200/job/132848783173"
+    }
+  ],
+  "allNineNormalChecksPassed": true,
+  "nativeCompilerDecision": "unanswered",
+  "newOperationalNativeCompiler": "not run; closed workflow skipped",
+  "deployed": false,
+  "governanceEnabled": false,
+  "fullGoal": "active/incomplete",
+  "previousGoalTurn": "progress: reviewed source committed,PR created,CI failure reproduced/fixed and exact-head checks passed"
+}

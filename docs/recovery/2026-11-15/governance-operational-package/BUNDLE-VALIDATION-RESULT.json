@@ -1,0 +1,142 @@
+{
+  "scope": "reviewed closed supplier source capsule, not native/runtime qualification",
+  "branch": "codex/governance-operational-package",
+  "baseSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "sources": {
+    "lib/governance/platform/nativeTime/installedOperationalMain.ts": "aa3971d2f1077ce325f7fb2a32ce302b60427e5b02dd43a99176d255af26c142",
+    "lib/governance/platform/nativeTime/__tests__/installedOperationalMain.test.ts": "321040331a67a4125243ddfefdcb7fbbe232bab0b46b6f50ad1eac13a82d5619",
+    "lib/governance/platform/nativeTime/__tests__/operationalMainBundle.test.ts": "b2af2610ea2d5f3e686ab8beabe64cef5c3139b5626f477832af51f9433bf3c9",
+    "scripts/build-operational-private-main.mjs": "b20954e64013961c729aa9ab98aa0251240661e0f49675ac2dbad9f0c10e4a95",
+    "scripts/tests/test_operational_private_main_bundle.mjs": "46de397379af1928fb494d10ee6666fd799aad305370eb318d1f8fa0436fb2e6",
+    "lib/demo/demoScenarios.ts": "ff96ce67feb54d5291d983fdebc5af5f633d8a95c6467db7be6acb9748b22f7f"
+  },
+  "nodeCompilerPolicyTests": 11,
+  "fullOrdinary": {
+    "passed": 19606,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "processExit": 0
+  },
+  "rootTypesExit": 0,
+  "pythonCli": {
+    "passed": 36,
+    "processExit": 0
+  },
+  "artifact": {
+    "outputDirectory": "/private/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-operational-main-capsule-final-N8ztaR/capsule",
+    "receipt": {
+      "format": 1,
+      "scope": "closed-operational-supplier-source-capsule",
+      "sources": {
+        "lib/governance/platform/nativeTime/installedOperationalMain.ts": "aa3971d2f1077ce325f7fb2a32ce302b60427e5b02dd43a99176d255af26c142",
+        "lib/governance/platform/nativeTime/operationalNativePorts.ts": "85adf25b5db3b61fededc03a870d5df7e4572b989dbff149f4853914c235fa62",
+        "lib/governance/platform/nativeTime/operationalSource.ts": "80cf2c6c9c2a4c0207eb024db93056428135881aa975bb7ef70fca1b25b77f31"
+      },
+      "compiler": {
+        "rolldown": "1.2.19",
+        "typescript": "5.9.3",
+        "node": "24.21.0",
+        "platform": "darwin",
+        "architecture": "arm64",
+        "hashes": {
+          "recipe": "b20954e64013961c729aa9ab98aa0251240661e0f49675ac2dbad9f0c10e4a95",
+          "lock": "39956a9cc5fb352be676e51055b7854e7d7b637993fd6a3c22b5d965a4d5db0b",
+          "rolldownPackage": "73ea5ca898ac22574e23d66e54dc9c5b3714f9d8c1be934412824d62f25e21fc",
+          "rolldownEntry": "c10c853d3ed1bea34f1dae1a8f1166ffafbc19a8665a696f33205b57fd28e85c",
+          "bindingPackage": "bfed2115e14183ea7ff0ca02cfea97dd91a7f202d8e698cb30382559db024fe9",
+          "binding": "f7624c9163c8b8e4c6997ac94764c48d6e8630844a975ff4c661980531c623e9",
+          "typescriptPackage": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+          "typescriptEntry": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+        }
+      },
+      "externals": [
+        "node:module",
+        "node:process"
+      ],
+      "output": {
+        "name": "main.mjs",
+        "bytes": 11241,
+        "sha256": "9a058466aa4b247ead7d352821056a3319c33739197057fa6118ab0d55c45810"
+      },
+      "serverOnlyMarker": "private-build-only-erased",
+      "targetExecuted": false,
+      "nativeQualified": false,
+      "administrativeLifecycleQualified": false,
+      "governanceEnabled": false
+    },
+    "syntaxOnly": {
+      "exitCode": 0,
+      "signal": null
+    },
+    "targetProgramImported": false,
+    "reasonForNewReceipt": "review correction binds compiler recipe and rejects extra loaders; original artifact preserved"
+  },
+  "review": {
+    "reviewer": "operational_capsule_final_review",
+    "initialImportantFindings": 1,
+    "finding": "extra loader aliases/additional node:module exports were accepted",
+    "correction": "three compiler-only REDs, restrict every loader reference and module binding; all11checks and fullsuitePASS",
+    "independentReviewDidNotClaimFinalClearAfterFix": true
+  },
+  "nativeBuiltOrRun": false,
+  "installed": false,
+  "productionChanged": false,
+  "governanceEnabled": false,
+  "logs": {
+    "BUNDLE-RED.log": {
+      "bytes": 10285,
+      "sha256": "1b83299c89f406473ddb600f4b5698dcd13ef596841311d440bfe28bbb682388",
+      "retainedLocally": true
+    },
+    "BUNDLE-FIRST-GREEN.log": {
+      "bytes": 789,
+      "sha256": "f9a986fff1ecb1b72122c9018fe384e31b861da36d3a783dae65a67235c6e5b1",
+      "retainedLocally": true
+    },
+    "BUNDLE-OUTPUT-REPLACEMENT-RED.log": {
+      "bytes": 1671,
+      "sha256": "33fddd1ca17afb7d0b75f8477dd5488c62416f5cb8ffa500277b725191c746a2",
+      "retainedLocally": true
+    },
+    "BUNDLE-OUTPUT-REPLACEMENT-GREEN.log": {
+      "bytes": 906,
+      "sha256": "4d7379382248cc2b57dc7372695b30d56f8ebf49753eed05d8c233494e4ac4fa",
+      "retainedLocally": true
+    },
+    "BUNDLE-EXTRA-LOADER-RED.log": {
+      "bytes": 3466,
+      "sha256": "90a2b1cc20b8ec0bf7c3a1cc5abbd5335e95ed4b4ffc5c3cbaac4997821c2971",
+      "retainedLocally": true
+    },
+    "BUNDLE-RECIPE-AND-LOADER-RED.log": {
+      "bytes": 4370,
+      "sha256": "cbfa3b93e20bcdb987e1385bcaa03cc7ff6fb262ca65cb34f5cc4343dae99550",
+      "retainedLocally": true
+    },
+    "BUNDLE-FINAL-GREEN.log": {
+      "bytes": 1219,
+      "sha256": "a2305199c139bdd5b917d1cc4909d56d6be11eb15a51510c8c2e9dc0e71591af",
+      "retainedLocally": true
+    },
+    "BUNDLE-FULL-SUITE.log": {
+      "bytes": 129416,
+      "sha256": "f7988acf803353fd185e942805d9d5c579e040a23c9ae303be648aeeaf75a080",
+      "retainedLocally": true
+    },
+    "BUNDLE-FINAL-FULL-SUITE.log": {
+      "bytes": 129416,
+      "sha256": "9d416f0d4b2906182064b77f205958e7979486d91cd863aeb89d75f856f854b1",
+      "retainedLocally": true
+    },
+    "BUNDLE-FINAL-TYPES.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retainedLocally": true
+    },
+    "BUNDLE-PYTHON-CLI.log": {
+      "bytes": 1130,
+      "sha256": "16b702e4c88b1c5b00655249076f2d320c3f703dd1e467731a4db196bdee44b2",
+      "retainedLocally": true
+    }
+  }
+}

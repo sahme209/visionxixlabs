@@ -1,0 +1,28 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+·········x
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/IntegrationCatalogBrowser.test.ts > shows real catalog marks and keeps detailed limitations available through native disclosures
+TypeError: .toMatch() expects to receive a string, but got undefined
+ ❯ components/marketing/__tests__/IntegrationCatalogBrowser.test.ts:91:63
+     89|   const card=screen.getByRole('article',{name:`${entry.name} integrati…
+     90|   if(entry.id==='vscode')expect(card.querySelector('[data-logo-kind="g…
+     91|   else expect(card.querySelector('img')?.getAttribute('src')).toMatch(…
+       |                                                               ^
+     92|   const disclosure=card.querySelector('details');expect(disclosure).no…
+     93|   expect(disclosure?.textContent).toContain(entry.availability.detail);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 9 passed (10)
+   Start at  08:01:16
+   Duration  507ms (environment 56%, tests 25%, import 14%, transform 5%)
+
