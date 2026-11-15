@@ -1,0 +1,12 @@
+{
+  "scope": "text-only source assembly/readiness review",
+  "files": {
+    "docs/recovery/2026-11-15/operational-source-assembly/audit.py": "a83a2a0e924f800fdaecaf00a45f916a93cf536692eab807db0d81abdea05305",
+    "scripts/governance_host_evaluation_inputs.py": "6e013e95c027c2f2c45a277d3ebb60c0a24f4ddccd83833cab4804757941c741",
+    "scripts/governance_linux_compile_inputs.py": "2e6ae367bc3480681fa1c7c11ff28943f0cfe7a3cbc756f3163be4b264ae17da",
+    "packages/verified-issuer-runtime/linux/clockbound-operational-time.patch": "34ff9f5a1c4b1971de4cffdca13ddae14996f2e1b7b5d483d716161bd534fe0e"
+  },
+  "actualResultSha256": "1a5e3801ad2496696198d275e31df862b839ef4a1147e06405cb63211474d39f",
+  "fullRustManifestSha256": "358f10db01c8db3c993b8a9200662acaa6ac6fa374779a539755774f52ee45c6",
+  "nativeCompilerRunAuthorized": false
+}
