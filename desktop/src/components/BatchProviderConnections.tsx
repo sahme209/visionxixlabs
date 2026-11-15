@@ -18,7 +18,7 @@ export function BatchProviderConnections() {
   return (
     <section aria-labelledby="batch-providers-title" className="mt-8 rounded-2xl border border-white/[0.07] bg-white/[0.018] p-6">
       <div className="flex items-center gap-3">
-        <Eye className="h-5 w-5 text-sky-200" aria-hidden="true" />
+        <Eye className="h-5 w-5 text-zinc-200" aria-hidden="true" />
         <div>
           <h2 id="batch-providers-title" className="text-base font-medium">More batch providers</h2>
           <p className="mt-1 text-sm text-zinc-400">Read-only. The Agent can inspect flows, jobs and runs; it cannot start, retry or cancel anything.</p>

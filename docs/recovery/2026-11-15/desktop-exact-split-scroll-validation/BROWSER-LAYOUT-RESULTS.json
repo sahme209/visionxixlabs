@@ -1,0 +1,110 @@
+[
+  {
+    "documentHeight": 600,
+    "documentWidth": 1024,
+    "height": 600,
+    "mainScrollWidth": 792,
+    "mainWidth": 792,
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=dark",
+    "width": 1024
+  },
+  {
+    "documentHeight": 600,
+    "documentWidth": 1024,
+    "height": 600,
+    "mainScrollWidth": 792,
+    "mainWidth": 792,
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=dark",
+    "width": 1024
+  },
+  {
+    "documentHeight": 600,
+    "documentWidth": 1024,
+    "height": 600,
+    "mainScrollWidth": 792,
+    "mainWidth": 792,
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=dark",
+    "width": 1024
+  },
+  {
+    "documentHeight": 600,
+    "documentWidth": 1024,
+    "height": 600,
+    "mainScrollWidth": 792,
+    "mainWidth": 792,
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=light",
+    "width": 1024
+  },
+  {
+    "documentHeight": 600,
+    "documentWidth": 1024,
+    "height": 600,
+    "mainScrollWidth": 792,
+    "mainWidth": 792,
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=light",
+    "width": 1024
+  },
+  {
+    "documentHeight": 600,
+    "documentWidth": 1024,
+    "height": 600,
+    "mainScrollWidth": 792,
+    "mainWidth": 792,
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=light",
+    "width": 1024
+  },
+  {
+    "documentHeight": 900,
+    "documentWidth": 1280,
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=dark",
+    "width": 1280
+  },
+  {
+    "documentHeight": 900,
+    "documentWidth": 1280,
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=dark",
+    "width": 1280
+  },
+  {
+    "documentHeight": 900,
+    "documentWidth": 1280,
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=dark",
+    "width": 1280
+  },
+  {
+    "documentHeight": 900,
+    "documentWidth": 1280,
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "url": "http://127.0.0.1:5401/__desktop-study/agent?theme=light",
+    "width": 1280
+  },
+  {
+    "documentHeight": 900,
+    "documentWidth": 1280,
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "url": "http://127.0.0.1:5401/__desktop-study/repositories?theme=light",
+    "width": 1280
+  },
+  {
+    "documentHeight": 900,
+    "documentWidth": 1280,
+    "height": 900,
+    "mainScrollWidth": 1048,
+    "mainWidth": 1048,
+    "url": "http://127.0.0.1:5401/__desktop-study/welcome?theme=light",
+    "width": 1280
+  }
+]

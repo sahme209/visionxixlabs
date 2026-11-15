@@ -20,6 +20,7 @@ import {
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { SectionRail } from "@/components/motion/SectionRail";
+import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
   title: "Team — VisionXIXLabs",
@@ -75,50 +76,35 @@ const PRACTICES: readonly Practice[] = [
 
 export default function TeamPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
-      </div>
-
+    <div className="axiom-canvas min-h-screen bg-[#0a0908] text-zinc-100">
       <Navigation />
 
       <SectionRail items={PRACTICES.map((p) => ({ id: `team-${p.num}`, label: p.title.replace(/[.,].*/, ""), num: p.num }))} />
 
-      <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
-        <p className="mono-label inline-flex items-center gap-3 mb-6">
-          <span className="text-brand-coral/90 tabular-nums">TM</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Team
-        </p>
-
-        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.02] mb-8 tracking-[-0.045em]">
-          A small team{" "}
-          <span className="relative inline-block">
-            shipping carefully.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </h1>
-
-        <p className="text-[17px] text-zinc-400 max-w-2xl leading-relaxed mb-16">
+      <main className="public-reading-marketing-page">
+        <PageHero
+          eyebrow="Team"
+          title="A small team"
+          muted="shipping carefully."
+          lead={<>
           We don&apos;t have a headshot grid. We do have six working principles
           that explain how a small high-trust team ships serious AI-operations
           software without breaking it &mdash; or you.
-        </p>
+        </>}
+        />
 
         <div className="space-y-20">
           {PRACTICES.map((p) => {
             const Icon = p.icon;
             return (
-              <article key={p.num} id={`team-${p.num}`} className="surface-glass rounded-2xl p-7 sm:p-9 hover:border-brand-coral/20 transition-all scroll-mt-24">
+              <article key={p.num} id={`team-${p.num}`} className="rounded-xl border border-white/[0.08] bg-[#171615] p-7 sm:p-9 scroll-mt-24">
                 <header className="flex items-center gap-4 mb-5">
-                  <div className="shrink-0 w-10 h-10 rounded-lg border border-brand-coral/25 bg-linear-to-br from-brand-coral/10 to-brand-orange/10 flex items-center justify-center">
-                    <Icon className="h-4.5 w-4.5 text-brand-coral" style={{ height: "1.125rem", width: "1.125rem" }} />
+                  <div className="shrink-0 w-10 h-10 rounded-lg border border-white/10 bg-white/[0.03] flex items-center justify-center">
+                    <Icon className="h-4.5 w-4.5 text-zinc-300" style={{ height: "1.125rem", width: "1.125rem" }} />
                   </div>
                   <div>
-                    <p className="mono-label text-[10px] text-brand-coral/85 mb-0.5">{p.num} / 06</p>
-                    <h2 className="font-display text-xl sm:text-2xl font-bold text-white leading-tight tracking-tight">
+                    <p className="mono-label text-[10px] text-zinc-400 mb-0.5">{p.num} / 06</p>
+                    <h2 className="font-display text-xl sm:text-2xl font-medium text-white leading-tight tracking-tight">
                       {p.title}
                     </h2>
                   </div>
@@ -131,7 +117,7 @@ export default function TeamPage() {
 
         <div className="mt-28 pt-12 border-t border-white/6">
           <p className="mono-label mb-4">Hiring</p>
-          <h3 className="font-display text-2xl md:text-3xl font-bold text-white mb-3 leading-tight tracking-tight">
+          <h3 className="font-display text-2xl md:text-3xl font-medium text-white mb-3 leading-tight tracking-tight">
             We are not hiring right now.
           </h3>
           <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl mb-6">
@@ -141,7 +127,7 @@ export default function TeamPage() {
           </p>
           <Link
             href="/manifesto"
-            className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight"
+            className="inline-flex border border-white/15 bg-white/[0.02] hover:bg-white/[0.05] items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight"
           >
             Read our manifesto
             <ArrowRightIcon className="h-3.5 w-3.5" />

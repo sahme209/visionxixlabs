@@ -13,8 +13,9 @@ import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { HomepageMediaShowcase } from "@/components/marketing/HomepageMediaShowcase";
 import { CinematicAxiomDemo } from "@/components/marketing/CinematicAxiomDemo";
-import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
-import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeploymentModel";
+import { AxiomPublicHero } from "@/components/marketing/AxiomPublicHero";
+import { PublicFeatureSection } from "@/components/marketing/PublicFeatureSection";
+import { PublicFeaturePanel } from "@/components/marketing/PublicFeaturePanel";
 import { WorksWithStrip } from "@/components/marketing/WorksWithStrip";
 
 const phases = ["Window", "Scope", "Execution", "Validation", "Recovery"];
@@ -42,42 +43,44 @@ const pillars = [
 
 export default function Home() {
   return (
-    <div className="axiom-canvas min-h-screen text-[#ecece8]">
+    <div className="axiom-canvas min-h-screen text-white">
       <Navigation />
       <main>
-        {/* A clear introduction, then one primary deployment explanation. */}
-        <section className="mx-auto max-w-[1280px] px-5 pb-16 pt-28 sm:px-8 lg:px-10 lg:pt-32">
-          <div className="mx-auto max-w-[880px] text-center">
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-500">Axiom Agent · the governed engineering workspace</p>
-            <h1 className="mt-6 text-[clamp(2.6rem,6vw,4.75rem)] font-medium leading-[1.02] tracking-[-0.045em] text-[#f1f1ed]">
-              Engineering work.<br /><span className="text-zinc-400">With you in control.</span>
-            </h1>
-            <p className="mx-auto mt-6 max-w-[620px] text-base leading-7 text-zinc-400 sm:text-lg sm:leading-8">
-              A governed workspace for deployments and connected operational changes. Bring repository context, AI assistance, human review, and recorded outcomes into one clear flow.
-            </p>
-            <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Link href="/product" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-7 py-3 text-sm font-semibold text-[#151513] hover:bg-white">
-                Explore Axiom <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-              <Link href="/demo" className="btn-axiom inline-flex min-h-12 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-7 py-3 text-sm font-medium text-zinc-200 hover:bg-white/8">
-                Explore the scripted tour <ArrowRightIcon className="h-4 w-4" />
-              </Link>
-            </div>
-            <p className="mx-auto mt-6 max-w-[620px] text-[13px] leading-6 text-zinc-500">
-              Actual actions depend on the installed version, current permissions, and enabled workflow. Complete Governance enforcement and activation are not established.{" "}
-              <Link href="/security" className="text-zinc-300 underline underline-offset-4">Assess security boundaries</Link>{" · "}
-              <Link href="/docs/approval-workflow" className="text-zinc-300 underline underline-offset-4">Read the approval workflow</Link>.
-            </p>
-          </div>
-        </section>
+        <AxiomPublicHero />
 
-        <GovernedDeploymentModel />
+        <PublicFeatureSection labelledBy="public-features-title">
+          <div className="public-section-intro"><p>// Inside the workflow</p><h2 id="public-features-title">Frame the request.<br/><span>Follow the evidence.</span></h2></div>
+          <p className="max-w-3xl text-sm leading-6 text-zinc-400">These boards are conceptual examples. Support depends on the installed version and enabled workflow. A saved request, approval, or workflow is not a verified provider result, application health, or rollback proof.</p>
+          <PublicFeaturePanel
+            eyebrow="01 · Intake"
+            action={{ href: "/docs/execution-plans", label: "Explore execution plans" }}
+            title="Every request, fully framed."
+            copy="Window, scope, execution, validation and recovery are captured before review. Recorded fields alone do not make a change ready."
+            visual={<StageBoard />}
+          />
+          <PublicFeaturePanel
+            reverse
+            eyebrow="02 · History"
+            action={{ href: "/docs/audit-logs", label: "Understand audit history" }}
+            title="Every revision, kept."
+            copy="Authorship and earlier revisions stay visible for comparison. Conflict handling depends on your surface and installed version."
+            visual={<HistoryBoard />}
+          />
+          <PublicFeaturePanel
+            eyebrow="03 · Validation"
+            action={{ href: "/docs/releaseops/readiness", label: "Read the readiness guide" }}
+            title="Green is not the same as validated."
+            copy="Trigger, execution, technical and functional checks, rollback and closure are judged separately. A passing workflow alone does not verify the outcome."
+            visual={<ValidationBoard />}
+          />
+        </PublicFeatureSection>
+        <div className="public-feature-followup">
+          <Link href="/product#deployment-model" className="inline-flex min-h-11 items-center gap-2 text-sm text-zinc-300 underline underline-offset-4 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-offset-4">Inspect deployment scenarios and stages <span aria-hidden="true">↗</span></Link>
+        </div>
 
         <WorksWithStrip />
 
-        <section aria-label="Inside a deployment decision" className="border-t border-white/6 px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto max-w-[1200px]"><GovernanceAssembly /></div>
-        </section>
+
 
         <section aria-labelledby="workspace-preview-title" className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10">
           <div className="mb-8 max-w-2xl">
@@ -88,83 +91,36 @@ export default function Home() {
           <HomepageMediaShowcase fallback={<CinematicAxiomDemo variant="hero" />} />
         </section>
 
-        <section className="border-y border-white/6 bg-[#0e0e0c] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-          <div className="mx-auto max-w-[1200px]">
-            <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">Built for engineering teams</p>
-            <h2 className="mt-3 max-w-3xl text-3xl font-medium tracking-[-0.045em] text-zinc-100 sm:text-[44px] sm:leading-[1.1]">More context. Clearer decisions.</h2>
-            <div className="mt-12 grid border-y border-white/8 md:grid-cols-3 md:divide-x md:divide-white/8">
-              {pillars.map((pillar) => (
-                <article key={pillar.eyebrow} className="border-b border-white/8 py-8 last:border-b-0 md:border-b-0 md:px-8 md:first:pl-0 md:last:pr-0">
-                  <pillar.icon className="h-5 w-5 text-zinc-300" />
-                  <p className="mt-4 text-[10px] uppercase tracking-[0.18em] text-orange-300">{pillar.eyebrow}</p>
-                  <h3 className="mt-2 text-lg font-medium leading-snug tracking-[-0.02em] text-zinc-100">{pillar.title}</h3>
-                  <p className="mt-3 text-sm leading-6 text-zinc-400">{pillar.copy}</p>
-                </article>
-              ))}
+        <section className="px-5 py-24 sm:px-8 lg:px-10" aria-labelledby="public-benefits-title">
+          <div className="mx-auto max-w-[1080px]">
+            <div className="public-section-intro"><p>// Built for engineering teams</p><h2 id="public-benefits-title">More context.<br/><span>Clearer decisions.</span></h2></div>
+            <div className="mt-10 grid gap-4 md:grid-cols-3">
+              {pillars.map(pillar=><EvidenceCard key={pillar.eyebrow} eyebrow={pillar.eyebrow} icon={<pillar.icon className="h-5 w-5" />} title={pillar.title} detail={pillar.copy} />)}
+              <EvidenceCard icon={<ScaleIcon className="h-5 w-5" />} title="Policy stays in charge" detail="Local preferences cannot weaken your organization's approvals, permissions or production gates." />
+              <EvidenceCard icon={<FingerPrintIcon className="h-5 w-5" />} title="Sign in through your browser" detail="Desktop sessions start in the system browser with an expiring, one-time, device-bound challenge." />
+              <EvidenceCard icon={<ClockIcon className="h-5 w-5" />} title="History survives reconnects" detail="Last-known records stay visible, clearly marked stale with the time of the last good response." />
             </div>
           </div>
         </section>
 
-        <section className="mx-auto max-w-[1280px] space-y-8 px-5 py-16 sm:px-8 lg:px-10">
-          <p className="max-w-3xl text-sm leading-6 text-zinc-400">These boards are conceptual examples. Support depends on the installed version and enabled workflow. A saved request, approval, or workflow is not a verified provider result, application health, or rollback proof.</p>
-          <EditorialPanel
-            eyebrow="01 · Intake"
-            title="Every request, fully framed."
-            copy="Window, scope, execution, validation and recovery are captured before review. Recorded fields alone do not make a change ready."
-            visual={<StageBoard />}
-          />
-          <EditorialPanel
-            reverse
-            eyebrow="02 · History"
-            title="Every revision, kept."
-            copy="Authorship and earlier revisions stay visible for comparison. Conflict handling depends on your surface and installed version."
-            visual={<HistoryBoard />}
-          />
-          <EditorialPanel
-            eyebrow="03 · Validation"
-            title="Green is not the same as validated."
-            copy="Trigger, execution, technical and functional checks, rollback and closure are judged separately. A passing workflow alone does not verify the outcome."
-            visual={<ValidationBoard />}
-          />
-        </section>
-
-        <section className="border-y border-white/6 bg-[#11110f] px-5 py-16 sm:px-8 lg:px-10">
-          <h2 className="mx-auto max-w-[1200px] text-center text-3xl font-medium tracking-[-0.04em] sm:text-4xl">Built for production reality.</h2>
-          <div className="mx-auto mt-9 grid max-w-[1200px] gap-3 md:grid-cols-3">
-            <EvidenceCard icon={<ScaleIcon className="h-6 w-6" />} title="Policy stays in charge" detail="Local preferences cannot weaken your organization's approvals, permissions or production gates." />
-            <EvidenceCard icon={<FingerPrintIcon className="h-6 w-6" />} title="Sign in through your browser" detail="Desktop sessions start in the system browser with an expiring, one-time, device-bound challenge." />
-            <EvidenceCard icon={<ClockIcon className="h-6 w-6" />} title="History survives reconnects" detail="Last-known records stay visible, clearly marked stale with the time of the last good response." />
-          </div>
-        </section>
-
-        <section className="border-y border-white/[0.07] px-5 py-16 sm:px-8 lg:px-10">
-          <div className="mx-auto flex max-w-[1200px] flex-col gap-8 md:flex-row md:items-center md:justify-between">
-            <div className="max-w-3xl">
-              <p className="text-[10px] font-medium uppercase tracking-[0.2em] text-orange-300">Founding Supporters</p>
-              <h2 className="mt-4 text-3xl font-medium tracking-[-0.04em] text-zinc-100 sm:text-4xl">Help build autonomous engineering with people in control.</h2>
+        <section className="mx-auto max-w-[1128px] px-6 py-24 text-center">
+          <div className="rounded-xl bg-[#171615] px-6 py-16">
+            <h2 className="text-4xl leading-tight">Start with a verified request.</h2>
+            <p className="mx-auto mt-5 max-w-xl text-base leading-6 text-zinc-400">Help build autonomous engineering with people in control.</p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
+              <Link href="/download" className="orbit-primary">Download Axiom Agent <ArrowRightIcon className="ml-2 h-4 w-4" /></Link>
+              <Link href="/support" className="orbit-secondary">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
             </div>
-            <Link href="/support" className="inline-flex min-h-12 shrink-0 items-center gap-2 self-start rounded-full border border-white/[0.14] px-6 text-sm font-medium text-zinc-200 transition hover:border-orange-300/35 hover:bg-white/4">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
           </div>
-        </section>
-
-        <section className="px-5 py-20 text-center sm:px-8 lg:py-24">
-          <h2 className="text-[clamp(2.5rem,5vw,4.25rem)] font-medium leading-[1.05] tracking-[-0.045em]">Start with a verified request.</h2>
-          <Link href="/download" className="mt-8 inline-flex min-h-12 items-center justify-center gap-2 rounded-lg bg-[#efefec] px-8 py-3 text-sm font-semibold text-[#151513] hover:bg-white">Download Axiom Agent <ArrowRightIcon className="h-4 w-4" /></Link>
         </section>
       </main>
-      <Footer />
+      <Footer showCta={false} />
     </div>
   );
 }
 
-function EditorialPanel({ eyebrow, title, copy, visual, reverse = false }: { eyebrow: string; title: string; copy: string; visual: ReactNode; reverse?: boolean }) {
-  return <article className="grid gap-8 border-t border-white/8 py-10 lg:grid-cols-2 lg:items-center lg:gap-16">
-    <div className={`max-w-lg ${reverse ? "lg:order-2" : ""}`}><p className="text-[11px] uppercase tracking-[0.16em] text-zinc-400">{eyebrow}</p><h2 className="mt-4 text-3xl font-medium leading-tight tracking-[-0.04em] sm:text-[34px]">{title}</h2><p className="mt-4 text-base leading-7 text-zinc-400">{copy}</p></div>
-    <div className={`min-w-0 rounded-lg border border-white/8 bg-brand-ink p-5 sm:p-7 ${reverse ? "lg:order-1" : ""}`}><p className="mb-4 text-[10px] uppercase tracking-widest text-zinc-400">Illustrated record · sample data</p>{visual}</div>
-  </article>;
-}
 
-function StageBoard() { return <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-white/10 bg-[#10110f]/95 text-zinc-200"><div className="border-b border-white/[0.07] px-5 py-4 text-sm">Request completeness</div>{phases.map((phase, index) => <div key={phase} className="flex items-center gap-3 border-b border-white/6 px-5 py-4 last:border-0"><span className={`h-2 w-2 rounded-full ${index < 4 ? 'bg-orange-300' : 'bg-zinc-600'}`} /><span className="text-sm">{phase}</span><span className="ml-auto text-xs text-zinc-400">{index < 4 ? 'Recorded' : 'Review required'}</span></div>)}</div>; }
-function HistoryBoard() { return <div className="mx-auto max-w-xl rounded-xl border border-white/10 bg-[#10110f]/95 p-5 text-zinc-200"><p className="text-sm font-medium">Immutable history</p>{[4,3,2].map((version, index) => <div key={version} className="mt-4 rounded-lg border border-white/[0.07] bg-white/2.5 p-4"><div className="flex justify-between"><span className="text-sm">Revision {version}</span><span className="text-xs text-zinc-400">{index === 0 ? 'Current record' : 'Superseded'}</span></div><p className="mt-2 text-xs text-zinc-400">Actor recorded · changed field names only · SHA-256 digest</p></div>)}</div>; }
-function ValidationBoard() { return <div className="mx-auto grid max-w-2xl gap-px overflow-hidden rounded-xl border border-white/10 bg-black/35 text-zinc-200 sm:grid-cols-2">{[["Trigger","Workflow accepted"],["Execution","No result yet"],["Technical validation","Required"],["Functional validation","Required"],["Rollback","Instruction recorded"],["Closure","Blocked until evidence"]].map(([label,value]) => <div key={label} className="bg-[#10110f]/95 p-5"><p className="text-xs text-zinc-400">{label}</p><p className="mt-2 text-sm">{value}</p></div>)}</div>; }
-function EvidenceCard({ icon, title, detail }: { icon: ReactNode; title: string; detail: string }) { return <article className="rounded-lg border border-white/6 bg-white/2.5 p-7 sm:p-8"><span className="text-zinc-400">{icon}</span><h3 className="mt-5 text-lg font-medium">{title}</h3><p className="mt-3 text-sm leading-6 text-zinc-400">{detail}</p></article>; }
+function StageBoard() { return <div className="mx-auto max-w-xl overflow-hidden rounded-xl border border-white/10 bg-[#0a0908]/95 text-zinc-200"><div className="border-b border-white/[0.07] px-5 py-4 text-sm">Request completeness</div>{phases.map((phase, index) => <div key={phase} className="flex items-center gap-3 border-b border-white/6 px-5 py-4 last:border-0"><span className={`h-2 w-2 rounded-full ${index < 4 ? 'bg-zinc-300' : 'bg-zinc-600'}`} /><span className="text-sm">{phase}</span><span className="ml-auto text-xs text-zinc-400">{index < 4 ? 'Recorded' : 'Review required'}</span></div>)}</div>; }
+function HistoryBoard() { return <div className="mx-auto max-w-xl rounded-xl border border-white/10 bg-[#0a0908]/95 p-5 text-zinc-200"><p className="text-sm font-medium">Immutable history</p>{[4,3,2].map((version, index) => <div key={version} className="mt-4 rounded-lg border border-white/[0.07] bg-white/2.5 p-4"><div className="flex justify-between"><span className="text-sm">Revision {version}</span><span className="text-xs text-zinc-400">{index === 0 ? 'Current record' : 'Superseded'}</span></div><p className="mt-2 text-xs text-zinc-400">Actor recorded · changed field names only · SHA-256 digest</p></div>)}</div>; }
+function ValidationBoard() { return <div className="mx-auto grid max-w-2xl gap-px overflow-hidden rounded-xl border border-white/10 bg-black/35 text-zinc-200 sm:grid-cols-2">{[["Trigger","Workflow accepted"],["Execution","No result yet"],["Technical validation","Required"],["Functional validation","Required"],["Rollback","Instruction recorded"],["Closure","Blocked until evidence"]].map(([label,value]) => <div key={label} className="bg-[#0a0908]/95 p-5"><p className="text-xs text-zinc-400">{label}</p><p className="mt-2 text-sm">{value}</p></div>)}</div>; }
+function EvidenceCard({ icon, title, detail, eyebrow }: { icon: ReactNode; title: string; detail: string; eyebrow?:string }) { return <article className="rounded-xl border border-white/6 bg-[#171615] p-7"><span className="text-zinc-400">{icon}</span>{eyebrow&&<p className="mt-5 text-sm text-zinc-400">{eyebrow}</p>}<h3 className="mt-5 text-xl font-normal leading-6">{title}</h3><p className="mt-3 text-base leading-relaxed text-zinc-400">{detail}</p></article>; }

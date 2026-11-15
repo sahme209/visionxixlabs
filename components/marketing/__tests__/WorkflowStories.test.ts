@@ -1,23 +1,13 @@
 /** @vitest-environment jsdom */
-import { createElement } from "react";
-import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, expect, it, vi } from "vitest";
-import { CinematicAxiomDemo } from "../CinematicAxiomDemo";
+import {createElement} from "react";
+import {act,cleanup,fireEvent,render,screen} from "@testing-library/react";
+import {afterEach,beforeEach,expect,it,vi} from "vitest";
+import {CinematicAxiomDemo} from "../CinematicAxiomDemo";
 import ApprovalWorkflowPage from "@/app/docs/approval-workflow/page";
-
-let intersect: (entries: { isIntersecting: boolean }[]) => void;
-let motionChange: (event: { matches: boolean }) => void;
-let reduced = false;
-let media: { matches: boolean; addEventListener: (_: string, cb: typeof motionChange) => void; removeEventListener: ReturnType<typeof vi.fn> };
-beforeEach(() => {
-  vi.useFakeTimers(); reduced = false;
-  vi.stubGlobal("matchMedia", () => { media = { matches: reduced, addEventListener: (_: string, cb: typeof motionChange) => { motionChange = cb; }, removeEventListener: vi.fn() }; return media; });
-  vi.stubGlobal("IntersectionObserver", class { constructor(cb: typeof intersect) { intersect = cb; } observe() {} disconnect() {} });
-});
-afterEach(() => { cleanup(); vi.useRealTimers(); vi.unstubAllGlobals(); });
-function mount() { render(createElement(CinematicAxiomDemo)); act(() => intersect([{ isIntersecting: true }])); }
-function advance(ms = 6000) { act(() => vi.advanceTimersByTime(ms)); }
-
+beforeEach(()=>{vi.useFakeTimers();});
+afterEach(()=>{cleanup();vi.useRealTimers();vi.unstubAllGlobals();});
+function mount(){render(createElement(CinematicAxiomDemo));}
+function advance(ms=30000){act(()=>vi.advanceTimersByTime(ms));}
 it("keeps the linked approval documentation distinct from verified ECS execution and recovery", () => {
   const { container } = render(createElement(ApprovalWorkflowPage));
   const execution = container.querySelector("#execution")!;
@@ -49,57 +39,44 @@ it("describes check environment and output limits without promising credential i
   expect(screen.queryByText(/removes credentials/)).toBeNull();
 });
 
-it("pauses at human review without recording approval or contacting a service", () => {
-  const fetch = vi.fn(); vi.stubGlobal("fetch", fetch); mount();
-  fireEvent.click(screen.getByRole("button", { name: "Play story" })); advance(); advance();
-  expect(screen.getByRole("heading", { name: "Review the bounded check." })).toBeDefined();
-  advance(30000);
-  expect(screen.getByRole("button", { name: "Simulate approval" })).toBeDefined();
-  expect(screen.queryByText("Sample decision recorded" )).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Simulate approval" }));
-  expect(screen.getByText("Sample decision recorded")).toBeDefined();
-  expect(fetch).not.toHaveBeenCalled();
-});
 
+it("keeps review deliberate and never contacts a service from a sample decision",()=>{
+ const fetch=vi.fn();vi.stubGlobal("fetch",fetch);mount();
+ fireEvent.click(screen.getByRole("button",{name:"Step 3: Review the bounded check."}));advance();
+ expect(screen.queryByText("Sample decision recorded")).toBeNull();
+ fireEvent.click(screen.getByRole("button",{name:"Simulate approval"}));
+ expect(screen.getByText("Sample decision recorded")).toBeDefined();expect(fetch).not.toHaveBeenCalled();
+});
+it("uses direct selection without player buttons or automatic step changes",()=>{
+ const view=render(createElement(CinematicAxiomDemo));
+ expect(screen.queryByRole("button",{name:/^(Play|Pause|Replay) story$/})).toBeNull();
+ fireEvent.click(screen.getByRole("button",{name:/Step 2:/}));const before=view.container.textContent;advance();
+ expect(view.container.textContent).toBe(before);
+ expect(screen.getByRole("heading",{name:"Make a small, reviewable edit."})).toBeDefined();
+ view.unmount();advance();expect(vi.getTimerCount()).toBe(0);
+});
+it("supports direct keyboard steps without overriding dropdown keys",()=>{
+ mount();const steps=screen.getByRole("group",{name:"Story steps"});
+ fireEvent.keyDown(steps,{key:"ArrowRight"});
+ expect(screen.getByRole("heading",{name:"Make a small, reviewable edit."})).toBeDefined();
+ fireEvent.keyDown(screen.getByLabelText("Branch"),{key:"End"});
+ expect(screen.getByRole("heading",{name:"Make a small, reviewable edit."})).toBeDefined();
+ fireEvent.keyDown(steps,{key:"Home"});expect(screen.getByRole("heading",{name:"Choose the working context."})).toBeDefined();
+});
+it("keeps sample rejection separate from subsequent stories and final outcomes",()=>{
+ mount();fireEvent.click(screen.getByRole("button",{name:/Step 3: Review the bounded check/}));
+ fireEvent.click(screen.getByRole("button",{name:"Reject sample"}));
+ expect(screen.getByText("Sample rejected · no action taken")).toBeDefined();
+ fireEvent.click(screen.getByRole("button",{name:"Agent & approval"}));
+ expect(screen.queryByText("Sample rejected · no action taken")).toBeNull();
+ fireEvent.click(screen.getByRole("button",{name:"Step 4: Keep the outcome honest."}));advance();
+ expect(screen.getByRole("heading",{name:"Keep the outcome honest."})).toBeDefined();
+});
 it("invalidates sample approval when selected context changes", () => {
   mount(); fireEvent.click(screen.getByRole("button", { name: "Step 3: Review the bounded check." }));
   fireEvent.click(screen.getByRole("button", { name: "Simulate approval" }));
   fireEvent.change(screen.getByLabelText("Branch"), { target: { value: "review/retry-policy" } });
   expect(screen.queryByText("Sample decision recorded")).toBeNull();
-  expect(screen.getByRole("heading", { name: "Choose the working context." })).toBeDefined();
-});
-
-it("freezes playback offscreen and in a hidden document, then resumes without skipping", () => {
-  mount(); fireEvent.click(screen.getByRole("button", { name: "Play story" }));
-  act(() => intersect([{ isIntersecting: false }])); advance(30000);
-  expect(screen.getByRole("heading", { name: "Choose the working context." })).toBeDefined();
-  act(() => intersect([{ isIntersecting: true }])); advance();
-  expect(screen.getByRole("heading", { name: "Make a small, reviewable edit." })).toBeDefined();
-  Object.defineProperty(document, "hidden", { configurable: true, value: true }); fireEvent(document, new Event("visibilitychange")); advance(30000);
-  expect(screen.getByRole("heading", { name: "Make a small, reviewable edit." })).toBeDefined();
-  Object.defineProperty(document, "hidden", { configurable: true, value: false }); fireEvent(document, new Event("visibilitychange"));
-});
-
-it("honors reduced motion initially and when preferences change", () => {
-  reduced = true; mount(); advance(30000);
-  expect(screen.queryByRole("button", { name: "Pause story" })).toBeNull();
-  expect(screen.getByText("Reduced motion · use the step controls")).toBeDefined();
-  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
-  expect(screen.getByRole("heading", { name: "Make a small, reviewable edit." })).toBeDefined();
-  act(() => { media.matches = false; motionChange({ matches: false }); });
-  fireEvent.click(screen.getByRole("button", { name: "Play story" }));
-  expect(screen.getByRole("button", { name: "Pause story" })).toBeDefined();
-  act(() => { media.matches = true; motionChange({ matches: true }); }); advance(30000);
-  expect(screen.getByRole("heading", { name: "Make a small, reviewable edit." })).toBeDefined();
-});
-
-it("supports keyboard navigation and replay without overriding dropdown keys", () => {
-  mount(); const controls = screen.getByRole("group", { name: "Story playback" });
-  fireEvent.keyDown(controls, { key: "ArrowRight" });
-  expect(screen.getByRole("heading", { name: "Make a small, reviewable edit." })).toBeDefined();
-  fireEvent.keyDown(screen.getByLabelText("Branch"), { key: "ArrowRight" });
-  expect(screen.getByRole("heading", { name: "Make a small, reviewable edit." })).toBeDefined();
-  fireEvent.click(screen.getByRole("button", { name: "Replay story" }));
   expect(screen.getByRole("heading", { name: "Choose the working context." })).toBeDefined();
 });
 
@@ -110,30 +87,6 @@ it("keeps Terraform authority unavailable and never offers apply or fabricated c
   expect(screen.queryByRole("button", { name: /apply|approve|Simulate approval/i })).toBeNull();
   expect(screen.getByText("Current target authority unavailable")).toBeDefined();
 });
-
-it("preserves partial typing when paused and cleans up all timers on unmount", () => {
-  const view = render(createElement(CinematicAxiomDemo)); act(() => intersect([{ isIntersecting: true }]));
-  fireEvent.click(screen.getByRole("button", { name: "Play story" })); advance(720);
-  fireEvent.click(screen.getByRole("button", { name: "Pause story" }));
-  const visibleText = view.container.textContent;
-  advance(30000); expect(view.container.textContent).toBe(visibleText);
-  fireEvent.click(screen.getByRole("button", { name: "Play story" }));
-  view.unmount(); advance(30000); expect(vi.getTimerCount()).toBe(0);
-});
-
-it("rejects a sample, resets when switching stories, and stops on the final scene", () => {
-  mount(); fireEvent.click(screen.getByRole("button", { name: "Step 3: Review the bounded check." }));
-  fireEvent.click(screen.getByRole("button", { name: "Reject sample" }));
-  expect(screen.getByText("Sample rejected · no action taken")).toBeDefined();
-  fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
-  expect(screen.queryByText("Sample rejected · no action taken")).toBeNull();
-  fireEvent.click(screen.getByRole("button", { name: "Step 4: Keep the outcome honest." }));
-  fireEvent.click(screen.getByRole("button", { name: "Play story" })); advance();
-  expect(screen.queryByRole("button", { name: "Pause story" })).toBeNull();
-  expect(screen.getByRole("heading", { name: "Keep the outcome honest." })).toBeDefined();
-  expect((screen.getByRole("button", { name: "Next step" }) as HTMLButtonElement).disabled).toBe(true);
-});
-
 
 it("grounds the scripted frame in customer navigation without exposing operational controls", () => {
   mount();
@@ -154,27 +107,10 @@ it("announces the current story step after deliberate navigation and story chang
   expect(status.getAttribute("aria-live")).toBe("polite");
   expect(status.getAttribute("aria-atomic")).toBe("true");
   expect(status.textContent).toContain("Choose the working context.");
-  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
+  fireEvent.click(screen.getByRole("button", { name: /Step 2:/ }));
   expect(status.textContent).toContain("Step 2 of");
   expect(status.textContent).toContain("Make a small, reviewable edit.");
   fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
   expect(status.textContent).toContain("Step 1 of");
   expect(status.textContent).toContain(screen.getAllByRole("heading", { level: 2 })[0].textContent!);
-});
-
-it("announces manual reduced-motion steps without per-frame animation chatter", async () => {
-  reduced = true; mount();
-  const status = screen.getByRole("status", { name: "Current story step" });
-  fireEvent.click(screen.getByRole("button", { name: "Next step" }));
-  expect(status.textContent).toContain("Make a small, reviewable edit.");
-  act(() => { media.matches = false; motionChange({ matches: false }); });
-  const mutations: MutationRecord[] = [];
-  const observer = new MutationObserver(records => mutations.push(...records));
-  observer.observe(status, { subtree: true, childList: true, characterData: true });
-  fireEvent.click(screen.getByRole("button", { name: "Play story" }));
-  advance(360);
-  await act(async () => { await Promise.resolve(); });
-  expect(mutations).toHaveLength(0);
-  expect(status.textContent).toContain("Make a small, reviewable edit.");
-  observer.disconnect();
 });

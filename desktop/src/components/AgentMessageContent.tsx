@@ -34,7 +34,7 @@ export const AgentMessageContent = memo(function AgentMessageContent({text}:{tex
     <Markdown skipHtml remarkPlugins={[remarkGfm]} components={{
       pre:({children})=><CodeBlock>{children}</CodeBlock>,
       code:({children,className})=><code className={className??"rounded-sm bg-white/[0.07] px-1 py-0.5 font-mono text-[12px]"}>{children}</code>,
-      a:({href,children})=>{const url=safeLink(href);return url?<a data-help-id="agent.workspace.message-link" href={url} onClick={event=>{event.preventDefault();void openExternal(url);}} className="text-sky-300 underline decoration-sky-300/40 underline-offset-2 hover:text-sky-200">{children}</a>:<span>{children}</span>;},
+      a:({href,children})=>{const url=safeLink(href);return url?<a data-help-id="agent.workspace.message-link" href={url} onClick={event=>{event.preventDefault();void openExternal(url);}} className="text-zinc-300 underline decoration-zinc-300/40 underline-offset-2 hover:text-zinc-200">{children}</a>:<span>{children}</span>;},
       img:({alt})=><span className="text-xs text-zinc-500">[Image{alt?`: ${alt}`:""}]</span>,
       table:({children})=><div className="my-3 max-w-full overflow-x-auto"><table className="w-full border-collapse text-left text-xs">{children}</table></div>,
     }}>{text}</Markdown>

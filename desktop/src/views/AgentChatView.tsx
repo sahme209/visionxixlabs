@@ -1107,7 +1107,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
       </div>
       {historyOpen && <section id="agent-conversation-history" aria-label="Conversation history" className="shrink-0 border-b border-white/6 px-8 py-3">
         <div className="flex items-center gap-2">
-          <input data-help-id="agent.workspace.history-search" autoFocus type="search" maxLength={200} aria-label="Search conversations" value={historySearch} onChange={event => editHistorySearch(event.target.value)} onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape") setHistoryOpen(false); if (event.key === "Enter" && !historyBusy && historySearch.trim()) void loadHistory(true); }} placeholder="Search chat titles" className="min-w-0 flex-1 rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25" />
+          <input data-help-id="agent.workspace.history-search" autoFocus type="search" maxLength={200} aria-label="Search conversations" value={historySearch} onChange={event => editHistorySearch(event.target.value)} onKeyDown={event => { if (event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return; if (event.key === "Escape") setHistoryOpen(false); if (event.key === "Enter" && !historyBusy && historySearch.trim()) void loadHistory(true); }} placeholder="Search chat titles" className="min-w-0 flex-1 rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs text-zinc-200 outline-hidden focus:border-white/25" />
           <button data-help-id="agent.workspace.history-search-submit" type="button" disabled={historyBusy || !historySearch.trim()} onClick={() => void loadHistory(true)} className="shrink-0 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6 disabled:opacity-40">Search all saved titles</button>
         </div>
         <p className="mt-2 text-[10px] text-zinc-500">{searchResults === null ? "Filters loaded titles. Search all saved titles to find older chats in your workspace." : `Saved title matches for “${searchedQuery}”.`}</p>
@@ -1125,9 +1125,9 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
         </>}>
         <div className="mx-auto mt-3 max-w-5xl">
         <div className="grid grid-cols-1 gap-2 md:grid-cols-3">
-          <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+          <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-400">
             Repository
-            <input data-help-id="agent.workspace.repository-search" type="search" aria-label="Search connected repositories" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder="Find a connected repository" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25" />
+            <input data-help-id="agent.workspace.repository-search" type="search" aria-label="Search connected repositories" value={repositorySearch} onChange={event => setRepositorySearch(event.target.value)} placeholder="Find a connected repository" className="mt-1 w-full rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25" />
             <select data-help-id="agent.workspace.repository"
               aria-label="Active GitHub repository"
               value={manualRepository ? "__manual__" : repositoryFullName}
@@ -1149,7 +1149,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                 setBranch(repository?.defaultBranch ?? "main");
               }}
               disabled={repositoriesLoading}
-              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
+              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
             >
               {repositoryOptions.length === 0 && <option value="">{repositoriesLoading ? "Loading connected repositories…" : repositoryError ? "Repositories unavailable" : "No connected repositories"}</option>}
               {repositoryOptions.filter(repository => repository.fullName === repositoryFullName || repository.fullName.toLowerCase().includes(repositorySearch.trim().toLowerCase())).map((repository) => <option key={repository.id} value={repository.fullName}>{repository.fullName} · {repository.visibility}</option>)}
@@ -1158,9 +1158,9 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             {repositoriesTruncated && <span className="mt-1 block normal-case tracking-normal">Repository catalog is truncated. Search filters the loaded connected repositories only.</span>}
             {repositorySearch && !repositoriesLoading && !repositoryOptions.some(repository => repository.fullName.toLowerCase().includes(repositorySearch.trim().toLowerCase())) && <span className="mt-1 block normal-case tracking-normal">No matching connected repositories. Your selection is retained.</span>}
             {manualRepository && <span className="mt-1 block normal-case tracking-normal">Entered manually; catalog membership unverified. The service still authorizes access.</span>}
-            {manualRepository && <input data-help-id="agent.workspace.repository-manual" autoFocus aria-label="Repository owner and name" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualRepository && <input data-help-id="agent.workspace.repository-manual" autoFocus aria-label="Repository owner and name" value={repositoryFullName} onChange={(event) => setRepositoryFullName(event.target.value)} placeholder="owner/repository" className="mt-2 w-full rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden placeholder:text-zinc-400 focus:border-white/25" />}
           </div>
-          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+          <label className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-400">
             Branch
             <select data-help-id="agent.workspace.branch"
               aria-label="Active GitHub branch"
@@ -1176,17 +1176,17 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                 }
               }}
               disabled={!repositoryFullName}
-              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
+              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
             >
               {branchOptions.length === 0 && <option value={branch}>{branch || "No branches available"}</option>}
               {branchOptions.map((option) => <option key={option.name} value={option.name}>{option.name}{option.protected ? " · protected" : ""}</option>)}
               <option value="__manual__">Enter another branch…</option>
             </select>
-            {manualBranch && <input data-help-id="agent.workspace.branch-manual" autoFocus aria-label="Git branch name" value={branch} onChange={(event) => { setBranch(event.target.value); setFilePath(""); setFileOptions([]); setManualFilePath(false); }} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualBranch && <input data-help-id="agent.workspace.branch-manual" autoFocus aria-label="Git branch name" value={branch} onChange={(event) => { setBranch(event.target.value); setFilePath(""); setFileOptions([]); setManualFilePath(false); }} placeholder="branch name" className="mt-2 w-full rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden placeholder:text-zinc-400 focus:border-white/25" />}
           </label>
-          <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+          <div className="min-w-0 text-[10px] uppercase tracking-[0.12em] text-zinc-400">
             Deployment environment
-            <input data-help-id="agent.workspace.environment-search" type="search" aria-label="Search deployment environments" value={environmentSearch} onChange={event => setEnvironmentSearch(event.target.value)} placeholder="Find an environment" className="mt-1 w-full rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25" />
+            <input data-help-id="agent.workspace.environment-search" type="search" aria-label="Search deployment environments" value={environmentSearch} onChange={event => setEnvironmentSearch(event.target.value)} placeholder="Find an environment" className="mt-1 w-full rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25" />
             <select data-help-id="agent.workspace.environment"
               aria-label="Active deployment environment"
               value={environmentId}
@@ -1197,7 +1197,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                 setEnvironmentId(event.target.value);
               }}
               disabled={environmentsLoading}
-              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
+              className="mt-1 w-full truncate rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
             >
               <option value="">No deployment environment</option>
               {environmentOptions.filter(environment => environment.id === environmentId || `${environment.name} ${environment.tier}`.toLowerCase().includes(environmentSearch.trim().toLowerCase())).map((environment) => <option key={environment.id} value={environment.id}>{environment.name} · {environment.tier}</option>)}
@@ -1295,7 +1295,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
           )}
         </div>
       </div>
-      {newActivity && <button data-help-id="agent.workspace.jump-latest" type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-[#242529] px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
+      {newActivity && <button data-help-id="agent.workspace.jump-latest" type="button" onClick={jumpToLatest} className="absolute bottom-3 right-5 rounded-full border border-white/15 bg-axiom-surface-2 px-3 py-2 text-xs text-zinc-200 shadow-lg">Jump to latest</button>}
       </div>
       <div aria-label="Agent composer" className="agent-composer min-h-0 max-h-[45vh] shrink overflow-y-auto px-5 py-4">
         <div className="max-w-3xl mx-auto">
@@ -1324,7 +1324,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               <button data-help-id="agent.workspace.edit-queued-message" type="button" aria-label="Edit queued message" onClick={() => { if (input.trim()) { setError("Keep or clear the current draft before editing queued work."); return; } setQueuePaused(true); setInput(message.instruction); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} className="text-zinc-400 hover:text-white">Edit</button>
               <button data-help-id="agent.workspace.remove-queued-message" type="button" aria-label="Remove queued message" onClick={() => { setQueuePaused(true); setQueuedMessages(current => current.filter(item => item.id !== message.id)); }} className="text-zinc-400 hover:text-white">Remove</button>
             </div></li>)}</ol>
-            <p className="mt-2 text-[10px] text-zinc-600">Session-only queue. Each message retains its conversation and request configuration; service policy still authorizes every action.</p>
+            <p className="mt-2 text-[10px] text-zinc-400">Session-only queue. Each message retains its conversation and request configuration; service policy still authorizes every action.</p>
           </section>}
           <p aria-label="Request configuration" className="sr-only">
             {OPERATION_MODES.find(mode => mode.id === operationMode)?.label} · {resolveAgentProfile(agentProfile)?.label} · {modelOptions.find(model => model.key === selectedModel)?.label ?? "No approved model"}{composerMode === "code" ? ` · File: ${filePath || "Choose a file below"}` : " · Chat"}
@@ -1373,12 +1373,12 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
               <select data-help-id="agent.workspace.profile" aria-label="Specialized Agent" value={agentProfile} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => {
                 const profile = resolveAgentProfile(event.target.value);
                 if (profile) setAgentProfile(profile.id);
-              }} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
+              }} className="ml-2 rounded-md border border-white/10 bg-axiom-bg-elev px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
                 {AGENT_PROFILES.map(profile => <option key={profile.id} value={profile.id}>{profile.label}</option>)}
               </select>
             </label>
             <label className="text-xs text-zinc-400">Model-call limit
-              <select data-help-id="agent.workspace.call-limit" aria-label="Model-call limit" value={maxDecisionSteps ?? ""} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => setModelCallLimit(event.target.value)} className="ml-2 rounded-md border border-white/10 bg-[#151519] px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
+              <select data-help-id="agent.workspace.call-limit" aria-label="Model-call limit" value={maxDecisionSteps ?? ""} disabled={sending || loadingConversation || Boolean(pendingProposal)} onChange={event => setModelCallLimit(event.target.value)} className="ml-2 rounded-md border border-white/10 bg-axiom-bg-elev px-2 py-1.5 text-xs text-zinc-200 disabled:opacity-40">
                 <option value="">Mode default ({modeCallLimit})</option>
                 {Array.from({ length: modeCallLimit }, (_, index) => index + 1).map(limit => <option key={limit} value={limit}>{limit}</option>)}
               </select>
@@ -1404,7 +1404,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
             </div>
           </div>}
           {composerMode === "code" && <div className="mb-3 space-y-2">
-            <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-600">
+            <label className="block text-[10px] uppercase tracking-[0.12em] text-zinc-400">
               File
               <select data-help-id="agent.workspace.file"
                 aria-label="Repository file"
@@ -1419,7 +1419,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                   }
                 }}
                 disabled={fileCatalogLoading || !repositoryFullName || !branch.trim()}
-                className="mt-1 w-full truncate rounded-lg border border-white/10 bg-[#151719] px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
+                className="mt-1 w-full truncate rounded-lg border border-white/10 bg-axiom-bg-elev px-3 py-2 text-xs normal-case tracking-normal text-zinc-200 outline-hidden focus:border-white/25 disabled:opacity-50"
               >
                 {fileCatalogLoading && <option value="">Loading repository files…</option>}
                 {!fileCatalogLoading && fileOptions.length === 0 && <option value="">No editable files found</option>}
@@ -1427,7 +1427,7 @@ function AgentChatSession({ onOpenSettings, identity, active, compact = false, r
                 <option value="__manual__">Enter another file path…</option>
               </select>
             </label>
-            {manualFilePath && <input data-help-id="agent.workspace.file-manual" autoFocus aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="w-full rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-xs text-zinc-200 outline-hidden placeholder:text-zinc-600 focus:border-white/25" />}
+            {manualFilePath && <input data-help-id="agent.workspace.file-manual" autoFocus aria-label="Repository file path" value={filePath} onChange={(event) => setFilePath(event.target.value)} placeholder="src/path/to/file.ts" className="w-full rounded-lg border border-white/10 bg-white/3 px-3 py-2 text-xs text-zinc-200 outline-hidden placeholder:text-zinc-400 focus:border-white/25" />}
             {fileCatalogError && <p role="status" className="text-[11px] text-zinc-400">{fileCatalogError}</p>}
             {!fileCatalogError && fileCatalogTruncated && <p role="status" className="text-[11px] text-zinc-500">Showing editable files returned by GitHub. Use “Enter another file path” for a file outside this list.</p>}
           </div>}
@@ -1455,7 +1455,7 @@ function ChatBubble({ turn }: { turn: ChatTurn }) {
 function UsageReceipt({ usage }: { usage: { decisionSteps: number; inputTokens: number | null; outputTokens: number | null; totalTokens: number | null } }) {
   const tokenText = aiUsageText(usage);
   return (
-    <section className="rounded-xl border border-violet-300/12 bg-violet-300/2.5 px-4 py-3" aria-label="Latest governed AI usage">
+    <section className="rounded-xl border border-white/12 bg-white/2.5 px-4 py-3" aria-label="Latest governed AI usage">
       <p className="text-xs font-medium text-zinc-200">Latest governed AI usage</p>
       <p className="mt-0.5 text-[11px] text-zinc-400">{usage.decisionSteps} decision step{usage.decisionSteps === 1 ? "" : "s"} · {tokenText}</p>
       <p className="mt-1 text-[10px] leading-4 text-zinc-500">Provider-reported usage evidence only. Customer credit charges, when applicable, settle separately under workspace policy.</p>
@@ -1467,7 +1467,7 @@ export function EvidencePanel({ actions }: { actions: Proposal[] }) {
   const [expanded, setExpanded] = useState(true);
   const failures = actions.filter((action) => action.status === "failed").length;
   return (
-    <section className="rounded-xl border border-sky-300/12 bg-sky-300/2.5" aria-label="Evidence used by the Agent">
+    <section className="rounded-xl border border-white/12 bg-white/2.5" aria-label="Evidence used by the Agent">
       <button
         type="button"
         aria-expanded={expanded}

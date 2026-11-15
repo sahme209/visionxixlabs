@@ -21,7 +21,7 @@ it("closes the mobile dialog and releases both scroll locks when desktop navigat
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1280 });
   fireEvent(window, new Event("resize"));
   expect(screen.queryByRole("dialog", { name: "Site navigation" })).toBeNull();
-  expect(document.activeElement).toBe(screen.getByRole("link", { name: "Vision XIX Labs home" }));
+  expect(document.activeElement).toBe(screen.getByRole("link", { name: "vxix home" }));
   expect(document.body.style.overflow).toBe("auto");
   expect(document.documentElement.style.overflow).toBe("scroll");
 });
@@ -60,5 +60,5 @@ it("moves focus from the desktop More menu to the visible home link when narrowe
   Object.defineProperty(window, "innerWidth", { configurable: true, value: 1279 });
   fireEvent(window, new Event("resize"));
   expect(screen.queryByRole("group", { name: "More destinations" })).toBeNull();
-  expect(document.activeElement).toBe(screen.getByRole("link", { name: "Vision XIX Labs home" }));
+  expect(document.activeElement).toBe(screen.getByRole("link", { name: "vxix home" }));
 });

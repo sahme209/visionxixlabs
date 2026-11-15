@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { CompareClient } from "./CompareClient";
 
 export const metadata: Metadata = {
-  title: "Compare — Axiom vs the alternatives",
-  description: "Axiom versus hiring the team, versus point AI tools, versus the SaaS stack you'd stitch together. Side-by-side coverage matrix.",
+  title: "Compare workflow evidence — Axiom",
+  description: "Concrete questions to evaluate Axiom alongside a team, an AI tool or a configured SaaS stack. Verify current support, permissions and outcomes.",
 };
 
 export default function ComparePage() {

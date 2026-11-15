@@ -15,6 +15,7 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { SectionRail } from "@/components/motion/SectionRail";
+import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
   title: "Design Principles — VisionXIXLabs",
@@ -41,13 +42,13 @@ const PRINCIPLES: readonly Principle[] = [
     num: "02",
     title: "Repetition",
     rule: "Brand consistency is design discipline at scale.",
-    detail: "Every page hero uses the same numbered eyebrow. Every card uses one of two materials. Every primary CTA uses the same physics. Nothing is bespoke unless bespoke is the point — and bespoke is almost never the point.",
+    detail: "Every page hero shares the same typography and spacing. Every card uses a consistent neutral surface. Every primary CTA uses the same physics. Nothing is bespoke unless bespoke is the point — and bespoke is almost never the point.",
   },
   {
     num: "03",
     title: "Materials",
-    rule: "Surfaces should feel like they have weight.",
-    detail: "Frosted glass with backdrop-saturate, not flat tints. Top-edge inner highlight on every glass card so the eye reads thickness. Outer shadow-sm that breathes on hover. This is what separates a 2026 product page from a 2018 one.",
+    rule: "Opaque surfaces. Clear edges.",
+    detail: "Use near-black opaque panels, restrained borders, and clear spacing to establish depth. Reading surfaces stay quiet and legible. Blur and layered glass are not the default material for the public website.",
   },
   {
     num: "04",
@@ -64,8 +65,8 @@ const PRINCIPLES: readonly Principle[] = [
   {
     num: "06",
     title: "Color",
-    rule: "One accent. Coral.",
-    detail: "Orange is the cool base. Coral (#FF783D) is the warm signal. Cyan appears in ambient washes only. Every other color is semantic (emerald for success, rose for danger, amber for warning) and used only at semantic boundaries.",
+    rule: "Neutral by default.",
+    detail: "The public interface uses near-black structure, white primary text, and warm neutral secondary text. Original artwork can retain its color. Labels and icons must explain state; color alone is never the only way to identify success, warning, or failure.",
   },
   {
     num: "07",
@@ -83,53 +84,37 @@ const PRINCIPLES: readonly Principle[] = [
 
 export default function PrinciplesPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      {/* Restrained aurora — quieter than marketing pages */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-orange/[0.07] blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-coral/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
-      </div>
-
+    <div className="axiom-canvas min-h-screen bg-[#0a0908] text-zinc-100">
       <Navigation />
 
       <SectionRail items={PRINCIPLES.map((p) => ({ id: `principle-${p.num}`, label: p.title, num: p.num }))} />
 
-      <main className="relative max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-32">
-        <p className="mono-label inline-flex items-center gap-3 mb-6">
-          <span className="text-brand-coral/90 tabular-nums">PR</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Design principles
-        </p>
-
-        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.02] mb-8 tracking-[-0.045em]">
-          How we make{" "}
-          <span className="relative inline-block">
-            visual decisions.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </h1>
-
-        <p className="text-[17px] text-zinc-400 max-w-2xl leading-relaxed mb-16">
+      <main className="public-reading-marketing-page">
+        <PageHero
+          eyebrow="Design principles"
+          title="How we make"
+          muted="visual decisions."
+          lead={<>
           Eight principles &mdash; the rules behind every page, every component,
           every animation. Companion to{" "}
-          <Link href="/manifesto" className="text-brand-coral hover:underline">
+          <Link href="/manifesto" className="text-zinc-300 hover:underline">
             our manifesto
           </Link>
           : that one is what we believe about the product; this one is how we
           decide what to ship.
-        </p>
+        </>}
+        />
 
         <div className="space-y-24">
           {PRINCIPLES.map((p) => (
             <article key={p.num} id={`principle-${p.num}`} className="relative scroll-mt-24">
-              <div className="hairline-soft mb-10" />
+              <div className="mb-10 h-px bg-white/[0.08]" />
               <p className="mono-label mb-5 inline-flex items-center gap-3">
-                <span className="text-brand-coral/90 tabular-nums text-[11px]">{p.num}</span>
-                <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
+                <span className="text-zinc-400 tabular-nums text-[11px]">{p.num}</span>
+                <span className="h-px w-6 bg-white/10" />
                 <span className="text-zinc-500">{p.title}</span>
               </p>
-              <h2 className="font-display text-3xl sm:text-4xl font-bold text-white leading-[1.06] tracking-[-0.035em] mb-5">
+              <h2 className="font-display text-3xl sm:text-4xl font-medium text-white leading-[1.06] tracking-[-0.035em] mb-5">
                 {p.rule}
               </h2>
               <p className="text-[16px] text-zinc-300 leading-[1.78] max-w-2xl">
@@ -146,7 +131,7 @@ export default function PrinciplesPage() {
           </div>
           <Link
             href="/manifesto"
-            className="btn-ghost-press inline-flex items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight shrink-0"
+            className="inline-flex border border-white/15 bg-white/[0.02] hover:bg-white/[0.05] items-center gap-2 px-5 py-3 rounded-full text-[13.5px] font-medium tracking-tight shrink-0"
           >
             Read the manifesto
             <ArrowRightIcon className="h-3.5 w-3.5" />

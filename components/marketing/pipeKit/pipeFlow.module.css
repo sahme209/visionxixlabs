@@ -1,6 +1,6 @@
 /* Pipe-flow kit (calm v4, 2D). Data moves through pipes; nothing flashes.
    Tones are muted so text stays the brightest thing on screen. */
-.flow { --sky: 125 196 245; --teal: 94 205 196; --violet: 167 150 240; --amber: 232 190 120; --emerald: 120 214 168; }
+.flow { --sky: 191 189 182; --teal: 191 189 182; --violet: 191 189 182; --amber: 191 189 182; --emerald: 191 189 182; }
 .tone { --c: var(--sky); }
 .sky { --c: var(--sky); } .teal { --c: var(--teal); } .violet { --c: var(--violet); } .amber { --c: var(--amber); } .emerald { --c: var(--emerald); }
 
@@ -12,7 +12,7 @@
 .tube { position: absolute; left: 6%; right: 6%; top: 50%; height: 8px; margin-top: -4px; border-radius: 4px;
   background: rgb(255 255 255 / 0.03); border: 1px solid rgb(255 255 255 / 0.08); overflow: hidden; }
 .bit { position: absolute; top: 1px; width: 16px; height: 4px; border-radius: 2px; background: rgb(var(--c) / 0.85);
-  animation: across 3.6s linear infinite; }
+  left:45%; }
 @keyframes across { from { left: -16px; } to { left: 100%; } }
 
 /* Vertical pipe between stages, carrying a labelled packet. */
@@ -20,7 +20,7 @@
 .vtube { position: absolute; left: 24px; top: 0; bottom: 0; width: 6px; margin-left: -3px; border-radius: 3px;
   background: rgb(255 255 255 / 0.03); border: 1px solid rgb(255 255 255 / 0.08); }
 .packet { position: absolute; left: 24px; width: 4px; height: 8px; margin-left: -2px; border-radius: 3px;
-  background: rgb(var(--c) / 0.9); animation: down 3.2s ease-in-out infinite; }
+  background: rgb(var(--c) / 0.9); top:calc(50% - 4px); }
 @keyframes down { 0% { top: 0; opacity: 0; } 12% { opacity: 1; } 88% { opacity: 1; } 100% { top: calc(100% - 8px); opacity: 0; } }
 
 .paused .bit, .paused .packet { animation-play-state: paused; }
@@ -29,3 +29,6 @@
   .bit { left: 45%; }
   .packet { top: calc(50% - 4px); }
 }
+
+/* Let the mobile grid shrink to its rail instead of its longest stage summary. */
+.flow > * { min-width: 0; }

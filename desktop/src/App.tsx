@@ -201,9 +201,9 @@ function AuthenticatedWorkspace({ identity, onSignOut }: { identity: VerifiedDes
   if (!booted) return <BootScreen status="Loading engineering workspace" />;
 
   return (
-    <div className="flex h-screen bg-axiom-bg text-white overflow-hidden">
+    <div className="desktop-application flex h-screen bg-axiom-bg text-white overflow-hidden">
       {activeView !== "settings" && <Sidebar compact={false} activeView={activeView} onNavigate={navigate} homeVisible={welcomeVisible} onOpenWelcome={() => {setBotAppsReturn(null);setWelcomeVisible(true)}} />}
-      <main className="flex-1 flex flex-col min-w-0 min-h-0">
+      <main className="desktop-main-panel flex-1 flex flex-col min-w-0 min-h-0">
         {activeView !== "settings" && <TopBar welcome={welcomeVisible} splitActive={splitVisible} onToggleSplit={workspaceVisible ? () => {setRepositoryVisited(true); setSplitWorkspace(value => !value);} : undefined} activeView={activeView} identity={identity} onOpenCommands={() => setCommandsOpen(true)} />}
         {welcomeVisible && <WelcomeView onBot={() => navigate("axiom-bot")} onBuild={() => navigate("agent")} onAutomate={() => navigate("airflow-automation")} onDeploy={() => navigate("deployment-requests")} />}
         <div hidden={!workspaceVisible} style={{display: workspaceVisible ? "flex" : "none"}} className={`engineering-panes min-h-0 flex-1 ${splitVisible ? "engineering-panes-split" : "flex-col"}`}>

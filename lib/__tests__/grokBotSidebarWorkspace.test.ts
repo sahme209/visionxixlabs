@@ -20,7 +20,7 @@ vi.mock('../../desktop/src/views/DesktopAccessRequiredView',()=>({DesktopAccessR
 import App from '../../desktop/src/App';
 afterEach(cleanup);
 it('opens the distinct sidebar workspace between Agent and Releases and retains both local drafts without reinitializing Chat',async()=>{
- render(createElement(App));fireEvent.click(await screen.findByRole('button',{name:/Build with AI/}));await screen.findByLabelText('Chat draft');fireEvent.change(screen.getByLabelText('Chat draft'),{target:{value:'Retained Agent draft'}});
+ render(createElement(App));fireEvent.click(await screen.findByRole('button',{name:/Open Agent/}));await screen.findByLabelText('Chat draft');fireEvent.change(screen.getByLabelText('Chat draft'),{target:{value:'Retained Agent draft'}});
  const agent=screen.getByRole('button',{name:'Agent'}),bot=screen.getByRole('button',{name:'Axiom Bot'}),releases=screen.getByRole('button',{name:'Releases'});
  expect(agent.compareDocumentPosition(bot)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(bot.compareDocumentPosition(releases)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
  fireEvent.click(bot);await screen.findByLabelText('Bot task title');expect(screen.getByTestId('chat-active').textContent).toBe('false');expect(screen.queryByRole('textbox',{name:'Chat draft'})).toBeNull();
@@ -29,7 +29,7 @@ it('opens the distinct sidebar workspace between Agent and Releases and retains 
 });
 
 it('opens connection management from the catalogue and returns to the same workspace',async()=>{
- render(createElement(App));await screen.findByRole('button',{name:/Build with AI/});fireEvent.click(screen.getByRole('button',{name:'Apps & skills'}));
+ render(createElement(App));await screen.findByRole('button',{name:/Open Agent/});fireEvent.click(screen.getByRole('button',{name:'Apps & skills'}));
  fireEvent.click(await screen.findByRole('button',{name:'Connection settings'}));expect(screen.getByTestId('settings-section').textContent).toBe('integrations');
  fireEvent.click(screen.getByRole('button',{name:'Return from settings'}));expect(screen.getByRole('button',{name:'Connection settings'})).toBeTruthy();expect(screen.queryByTestId('settings-section')).toBeNull();
 });

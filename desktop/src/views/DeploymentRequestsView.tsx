@@ -506,7 +506,7 @@ export function DeploymentRequestsView() {
 
   return (
     <ViewShell wide>
-      <div className="release-workspace-heading flex flex-wrap items-start justify-between gap-4">
+      <div className="desktop-view-heading release-workspace-heading flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Releases</h1>
           <p className="text-sm text-zinc-500 mt-0.5">
@@ -555,7 +555,7 @@ export function DeploymentRequestsView() {
                     {execution.repositoryFullName}{execution.sourceRef ? `@${execution.sourceRef}` : ""}
                   </p>
                   {execution.sourceCommitSha && (
-                    <p className="mt-1 font-mono text-[10px] text-zinc-600">
+                    <p className="mt-1 font-mono text-[10px] text-zinc-400">
                       {execution.sourceKind ?? "ref"} · {execution.sourceCommitSha.slice(0, 12)}
                       {execution.branchPolicyId ? " · policy enforced" : ""}
                     </p>
@@ -715,8 +715,8 @@ export function DeploymentRequestsView() {
                 </p>
               )}
               {revisionHistory[request.id] && (
-                <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-2">
-                  <p className="text-xs font-medium text-sky-100">Governed revision history</p>
+                <div className="mt-3 rounded-lg border border-white/15 bg-white/5 px-3 py-2">
+                  <p className="text-xs font-medium text-zinc-100">Governed revision history</p>
                   <p className="mt-1 text-xs leading-5 text-zinc-500">
                     This view lists only safe field categories. Contacts, URLs, workflow inputs, evidence references, and full member identities remain private.
                   </p>
@@ -739,8 +739,8 @@ export function DeploymentRequestsView() {
                 </p>
               )}
               {operationLedger[request.id] && (
-                <div className="mt-3 rounded-lg border border-cyan-500/15 bg-cyan-500/5 px-3 py-2">
-                  <p className="text-xs font-medium text-cyan-100">Execution controls</p>
+                <div className="mt-3 rounded-lg border border-white/15 bg-white/5 px-3 py-2">
+                  <p className="text-xs font-medium text-zinc-100">Execution controls</p>
                   <p className="mt-1 text-xs leading-5 text-zinc-500">
                     Read-only durable operation status. This workspace cannot create, retry, approve, or dispatch an operation from this view.
                   </p>
@@ -765,8 +765,8 @@ export function DeploymentRequestsView() {
                 </div>
               )}
               {request.latestPlaybook && !generatedPlaybooks[request.id] && (
-                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-white/15 bg-white/5" : "border-violet-500/15 bg-violet-500/5"}`}>
-                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-zinc-100" : "text-violet-100"}`}>
+                <div className={`mt-3 rounded-lg border px-3 py-2 ${request.latestPlaybook.status === "superseded" ? "border-white/15 bg-white/5" : "border-white/15 bg-white/5"}`}>
+                  <p className={`text-xs ${request.latestPlaybook.status === "superseded" ? "text-zinc-100" : "text-zinc-100"}`}>
                     {request.latestPlaybook.status === "superseded"
                       ? `Previous playbook v${request.latestPlaybook.version} was superseded by a request revision.`
                       : `Latest persisted playbook: v${request.latestPlaybook.version} · ${request.latestPlaybook.status.replaceAll("_", " ")}`}
@@ -776,7 +776,7 @@ export function DeploymentRequestsView() {
                   </p>
                   <button data-help-id="releases.workspace.playbook-read"
                     type="button"
-                    className="mt-2 text-[11px] font-medium text-violet-200 transition hover:text-white disabled:opacity-50"
+                    className="mt-2 text-[11px] font-medium text-zinc-200 transition hover:text-white disabled:opacity-50"
                     disabled={loadingPlaybookId === request.id}
                     onClick={() => void loadLatestPlaybook(request.id)}
                   >
@@ -911,8 +911,8 @@ function ReleaseContext({ request, stale }: { request: RequestSummary; stale:boo
 
 function GitHubEvidenceCard({ evidence }: { evidence: GitHubReleaseEvidence }) {
   return (
-    <div className="mt-3 rounded-lg border border-sky-500/15 bg-sky-500/5 px-3 py-3">
-      <p className="text-xs font-medium text-sky-100">GitHub release evidence</p>
+    <div className="mt-3 rounded-lg border border-white/15 bg-white/5 px-3 py-3">
+      <p className="text-xs font-medium text-zinc-100">GitHub release evidence</p>
       <p className="mt-1 text-[10px] leading-4 text-zinc-500">
         Read-only signals from the repositories and pull requests already recorded on this request. No workflow, pull request, deployment, or approval was changed.
       </p>
@@ -1154,7 +1154,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
         </div>
         <div className="mt-4 grid grid-cols-5 gap-2" aria-label="Intake progress">
           {INTAKE_STEPS.map((label, index) => (
-            <button data-help-id="releases.workspace.intake-step" key={label} type="button" disabled={index > step || submitting} aria-current={index === step ? "step" : undefined} onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-violet-500/40 bg-violet-500/10 text-violet-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
+            <button data-help-id="releases.workspace.intake-step" key={label} type="button" disabled={index > step || submitting} aria-current={index === step ? "step" : undefined} onClick={() => { if (index <= step) { setStep(index); setError(undefined); } }} className={`rounded-lg border px-2 py-2 text-[10px] font-mono transition-colors ${index === step ? "border-white/40 bg-white/10 text-zinc-200" : index < step ? "border-emerald-500/20 bg-emerald-500/5 text-emerald-300" : "cursor-default border-white/5 text-zinc-600"}`}>
               {index + 1}. {label}
             </button>
           ))}
@@ -1290,7 +1290,7 @@ function DeploymentIntakeForm({ onCreated, revision }: { onCreated: () => void; 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <fieldset className="grid grid-cols-2 gap-3 border border-white/5 rounded-xl p-4">
-      <legend className="px-2 text-xs font-semibold text-violet-200">{title}</legend>
+      <legend className="px-2 text-xs font-semibold text-zinc-200">{title}</legend>
       {children}
     </fieldset>
   );

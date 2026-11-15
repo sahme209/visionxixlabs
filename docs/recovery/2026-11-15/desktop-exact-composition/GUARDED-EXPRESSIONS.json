@@ -1,0 +1,77 @@
+{
+  "scope": "Source AST comparison of handlers, disabled/hidden/value/current/expanded attributes and effects; not native/runtime qualification",
+  "results": [
+    {
+      "file": "desktop/src/App.tsx",
+      "guardedAttributes": 38,
+      "effects": 4,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/components/Sidebar.tsx",
+      "guardedAttributes": 8,
+      "effects": 0,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/components/TopBar.tsx",
+      "guardedAttributes": 4,
+      "effects": 1,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/components/Primitives.tsx",
+      "guardedAttributes": 1,
+      "effects": 0,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/WelcomeView.tsx",
+      "guardedAttributes": 4,
+      "effects": 0,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/SettingsView.tsx",
+      "guardedAttributes": 258,
+      "effects": 16,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/DesktopSignInView.tsx",
+      "guardedAttributes": 12,
+      "effects": 1,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/DesktopAccessRequiredView.tsx",
+      "guardedAttributes": 8,
+      "effects": 1,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/DocsView.tsx",
+      "guardedAttributes": 1,
+      "effects": 0,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/PluginsSkillsView.tsx",
+      "guardedAttributes": 42,
+      "effects": 1,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/DeploymentRequestsView.tsx",
+      "guardedAttributes": 161,
+      "effects": 6,
+      "preserved": true
+    },
+    {
+      "file": "desktop/src/views/AirflowAutomationView.tsx",
+      "guardedAttributes": 95,
+      "effects": 5,
+      "preserved": true
+    }
+  ]
+}

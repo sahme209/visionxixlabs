@@ -114,7 +114,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
   }, [manifest, manifestError]);
 
   return (
-    <div className={cockpit ? "text-zinc-100" : "min-h-screen bg-[#101010] text-zinc-100"}>
+    <div className={cockpit ? "text-zinc-100" : "axiom-canvas public-download-page min-h-screen text-zinc-100"}>
       {!cockpit && <Navigation />}
 
       <main className={cockpit ? "max-w-5xl" : undefined}>

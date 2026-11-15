@@ -1,0 +1,52 @@
+{
+  "supportedNode": "24.21.0",
+  "fullVitest": {
+    "exitCode": 0,
+    "passed": 19591,
+    "expectedFail": 1,
+    "skipped": 1144,
+    "initialUnsupportedRuntimeFailurePreserved": true
+  },
+  "pythonCLI": {
+    "exitCode": 0,
+    "passed": 36
+  },
+  "finalDemoAndMobileContracts": {
+    "exitCode": 0,
+    "passed": 21
+  },
+  "rootTypesExitCode": 0,
+  "desktopTypesExitCode": 0,
+  "logs": [
+    {
+      "path": "INITIAL-REQUIRED-TESTS.log",
+      "sha256": "1dace7f9065ae5e6287fb34236b4d068880081c1e5d0646555b9a08ddc559ff2",
+      "bytes": 234370
+    },
+    {
+      "path": "SUPPORTED-NODE-REQUIRED-TESTS.log",
+      "sha256": "34449b505a5fe459a325cc4c00b09fd4245eb3e1a601f44d7f1abb6a4bf6d65a",
+      "bytes": 129387
+    },
+    {
+      "path": "PYTHON-CLI.log",
+      "sha256": "16b702e4c88b1c5b00655249076f2d320c3f703dd1e467731a4db196bdee44b2",
+      "bytes": 1130
+    },
+    {
+      "path": "FINAL-DEMO-CONTRACTS.log",
+      "sha256": "ef4a78b169c3606c53e68bdd6a427c24314ac5f0474ec1d48dfe4eaaea8d6021",
+      "bytes": 652
+    },
+    {
+      "path": "FINAL-ROOT-TYPES.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "FINAL-DESKTOP-TYPES.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ]
+}

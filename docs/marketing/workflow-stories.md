@@ -1,3 +1,5 @@
+> **Superseded November 15, 2026:** the mounted local presentation now uses direct scenario/stage/story selection with no player controls or automatic story clock. This document and its original bindings are historical. See [the current internal guide](../product/knowledge/website-manual-illustration-controls-2026-11-15.md) and its source manifest. Nothing here grants customer publication or runtime authority.
+
 # Interactive workflow stories
 
 Reviewed 2026-10-18 against main bd44b180. This is a scoped replacement of the existing CinematicAxiomDemo, already embedded on home, product, demo and support pages. It changes no page layout, support workflow or production setting.

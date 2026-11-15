@@ -43,23 +43,20 @@ it('shows all three possible outcomes and has no network, timer or storage opera
  expect(screen.getByText(/no actions are performed/)).toBeTruthy();expect(request).not.toHaveBeenCalled();expect(interval).not.toHaveBeenCalled();interval.mockRestore();
 });
 
-it('keeps the approved Home sequence: clear hero, deployment model, detailed assembly, then preserved media',()=>{
+it('keeps Home focused on the approved static hero, feature panels and one media section',()=>{
  render(createElement(Home));
- const [first]=Array.from(screen.getByRole('main').querySelectorAll<HTMLElement>(':scope > section'));
- const second=screen.getByRole('main').querySelector<HTMLElement>(':scope > section[aria-label="Inside a deployment decision"]')!;
+ const main=screen.getByRole('main'),first=main.querySelector<HTMLElement>(':scope > section')!;
  expect(within(first).getByRole('link',{name:'Explore Axiom'}).getAttribute('href')).toBe('/product');
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();
- const primary=screen.getByRole('heading',{level:2,name:'How a governed deployment moves through Axiom'}).closest('section')!;
+ expect(within(first).getByRole('heading',{level:1,name:'Deploy with clarity.'})).toBeTruthy();
+ expect(first.querySelector('canvas,video')).toBeNull();
  const media=screen.getByRole('heading',{level:2,name:'See the workflow in context.'}).closest('section')!;
  expect(within(media).getByText('Existing media fixture')).toBeTruthy();
  expect(screen.getAllByText('Existing media fixture')).toHaveLength(1);
- for(const [before,after] of [[first,primary],[primary,second],[second,media]]){
-  expect(Boolean(before.compareDocumentPosition(after)&Node.DOCUMENT_POSITION_FOLLOWING)).toBe(true);
- }
- expect(within(first).getByText(/^A governed workspace for deployments and connected operational changes/)).toBeTruthy();
- expect(within(first).queryByRole('list',{name:'Conceptual workflow'})).toBeNull();
- expect(within(second).getByRole('list',{name:'Conceptual workflow'})).toBeTruthy();
- expect(within(second).getByRole('img',{name:/Deployment constellation/})).toBeTruthy();
+ expect(screen.queryByRole('heading',{name:'How a governed deployment moves through Axiom'})).toBeNull();
+ expect(screen.queryByRole('list',{name:'Conceptual workflow'})).toBeNull();
+ expect(screen.getByRole('link',{name:'Inspect deployment scenarios and stages'}).getAttribute('href')).toBe('/product#deployment-model');
+ for(const text of ['Every request, fully framed.','Every revision, kept.','Green is not the same as validated.','Policy stays in charge','Sign in through your browser','History survives reconnects'])expect(screen.getByRole('heading',{name:text})).toBeTruthy();
 });
 
 it('server renders a complete ordered no-JavaScript reading of every record and boundary',()=>{

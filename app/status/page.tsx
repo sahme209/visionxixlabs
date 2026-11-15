@@ -8,6 +8,8 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Navigation } from "@/components/Navigation";
+import { Footer } from "@/components/Footer";
 import { buildPublicStatus, type StatusVerdict } from "@/lib/status/publicStatusBuilder";
 import {
   CheckCircleIcon,
@@ -49,81 +51,66 @@ export default async function StatusPage() {
   const OverallIcon = ICON[report.overall];
 
   return (
-    <div className="axiom-canvas axiom-product-canvas min-h-screen text-zinc-200 relative overflow-hidden">
-      {/* Restrained aurora */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[720px] h-[440px] rounded-full bg-brand-orange/6 blur-[140px]" />
-        <div className="ambient-drift absolute top-[30%] right-[5%] w-[420px] h-[340px] rounded-full bg-brand-coral/5 blur-[130px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[360px] h-[280px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
-      </div>
-
-      <header className="relative z-20 border-b border-white/6 sticky top-0 bg-brand-ink/80 backdrop-blur-xl">
-        <div className="max-w-6xl mx-auto px-6 md:px-10 py-3.5 flex items-center justify-between">
-          <Link href="/" className="font-bold text-white tracking-[-0.04em]">Axiom</Link>
-          <Link href="/download" className="text-[12px] text-zinc-300 hover:text-brand-coral transition-colors">Get desktop app →</Link>
-        </div>
-      </header>
-
-      <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 py-16">
-        <p className="mono-label inline-flex items-center gap-3 mb-6">
-          <span className="text-brand-coral/90 tabular-nums">ST</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Live status
-        </p>
-
-        <div className={`surface-frost rounded-3xl p-7 mb-8 flex items-start gap-5`}>
+    <div className="axiom-canvas public-status-page min-h-screen text-zinc-200">
+      <Navigation />
+      <main className="public-status-main">
+        <p className="public-feature-eyebrow">Axiom · Live status</p>
+        <div className="public-status-summary">
           <div className={`shrink-0 w-14 h-14 rounded-2xl border flex items-center justify-center ${TONE[report.overall]}`}>
             <OverallIcon className="h-7 w-7" />
           </div>
           <div className="min-w-0">
             <p className="mono-label mb-1">Overall</p>
-            <h1 className="font-display text-3xl md:text-4xl font-bold text-white leading-tight tracking-tight">
+            <h1 className="text-3xl md:text-4xl font-medium text-white leading-tight tracking-tight">
               {LABEL[report.overall]}
             </h1>
-            <p className="text-[11px] font-mono text-zinc-500 mt-2 tabular-nums">
-              Last checked {new Date(report.generatedAt).toLocaleString()}
+            <p className="text-xs text-zinc-400 mt-3 tabular-nums">
+              Last checked <time dateTime={report.generatedAt}>{new Date(report.generatedAt).toLocaleString()}</time>
             </p>
           </div>
         </div>
 
-        <p className="mono-label mb-4">Components · {report.components.length}</p>
-        <div className="space-y-2 mb-10">
+        <section aria-labelledby="status-components">
+        <h2 id="status-components" className="text-xl font-medium mb-6">Components · {report.components.length}</h2>
+        <div className="public-status-components">
           {report.components.map((c) => {
             const CIcon = ICON[c.verdict];
             return (
-              <div
+              <article
                 key={c.id}
-                className={`surface-glass rounded-xl p-4 flex items-start gap-3 hover:border-brand-coral/15 transition-all`}
+                className="public-status-component"
               >
                 <div className={`shrink-0 w-8 h-8 rounded-lg border flex items-center justify-center ${TONE[c.verdict]}`}>
                   <CIcon className="h-4 w-4" />
                 </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                    <p className="text-[14px] font-semibold text-white tracking-tight">{c.label}</p>
-                    <span className={`text-[9px] font-mono uppercase tracking-[0.18em] border rounded-full px-1.5 py-px ${TONE[c.verdict]}`}>
+                    <h3 className="text-[15px] font-medium text-white tracking-tight">{c.label}</h3>
+                    <span className={`text-[11px] border rounded-md px-2 py-0.5 ${TONE[c.verdict]}`}>
                       {c.verdict}
                     </span>
                   </div>
-                  <p className="text-[12.5px] text-zinc-400 leading-relaxed">{c.detail}</p>
+                  <p className="text-sm text-zinc-400 leading-7">{c.detail}</p>
                 </div>
-              </div>
+              </article>
             );
           })}
         </div>
+        </section>
 
-        <div className="pt-8 border-t border-white/6 flex flex-wrap items-center justify-between gap-3 text-[11px] font-mono text-zinc-500">
+        <div className="public-status-links">
           <p>
             JSON probe:{" "}
-            <Link href="/api/status" className="text-brand-coral/85 hover:text-brand-coral transition-colors">/api/status</Link>
+            <Link href="/api/status" className="underline underline-offset-4 hover:text-white">/api/status</Link>
           </p>
           <div className="flex items-center gap-4">
-            <Link href="/docs/surfaces" className="hover:text-brand-coral transition-colors">Docs</Link>
-            <Link href="/plans" className="hover:text-brand-coral transition-colors">Pricing</Link>
-            <a href="https://github.com/sahme209/visionxixlabs/releases" className="hover:text-brand-coral transition-colors">Release notes</a>
+            <Link href="/docs/surfaces" className="hover:text-white transition-colors">Docs</Link>
+            <Link href="/plans" className="hover:text-white transition-colors">Pricing</Link>
+            <a href="https://github.com/sahme209/visionxixlabs/releases" className="hover:text-white transition-colors">Release notes</a>
           </div>
         </div>
       </main>
+      <Footer />
     </div>
   );
 }

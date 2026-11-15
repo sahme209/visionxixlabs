@@ -8,7 +8,6 @@ import {
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { ArrowLeftIcon, ArrowRightIcon } from "@heroicons/react/24/outline";
-import { Reveal } from "@/components/motion/Reveal";
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -47,30 +46,25 @@ export default async function InsightArticlePage({ params }: Props) {
   const nextArticle = nextSlug ? getInsightBySlug(nextSlug) : null;
 
   return (
-    <div className="min-h-screen bg-brand-ink relative overflow-hidden">
-      <div className="absolute top-0 left-1/2 h-[420px] w-[700px] -translate-x-1/2 rounded-full bg-orange-500/6 blur-[150px] pointer-events-none" aria-hidden />
+    <div className="axiom-canvas min-h-screen relative">
 
       <Navigation />
-      <main className="relative z-10 max-w-6xl mx-auto px-6 md:px-10 pt-24 pb-16">
-        <Reveal direction="up" blur delay={0.05}>
+      <main className="relative mx-auto max-w-[1240px] px-5 pt-32 pb-20 sm:px-10">
           <nav className="mb-8" aria-label="Breadcrumb">
             <Link
               href="/insights"
-              className="inline-flex items-center text-sm text-zinc-400 hover:text-orange-400 transition-colors"
+              className="inline-flex items-center text-sm text-zinc-400 hover:text-white transition-colors"
             >
-              <ArrowLeftIcon className="h-4 w-4 mr-1" />
+              <ArrowLeftIcon className="h-4 w-4 mr-1" aria-hidden="true" />
               Insights
             </Link>
           </nav>
-        </Reveal>
 
-        <Reveal direction="up" blur delay={0.1}>
-          <header className="mb-8">
-            <h1 className="relative text-3xl md:text-4xl font-bold text-white mb-3 tracking-[-0.04em] leading-[1.06] pl-5">
-              <span aria-hidden className="absolute left-0 top-0 bottom-0 w-[3px] rounded-full bg-linear-to-b from-brand-coral via-amber-400 to-brand-orange opacity-85" />
+          <header className="mx-auto mb-10 max-w-[70ch]">
+            <h1 className="text-[clamp(2.5rem,4.2vw,3.5rem)] font-normal text-white mb-5 tracking-[-0.045em] leading-[1.05] [overflow-wrap:anywhere]">
               {article.title}
             </h1>
-            <p className="text-zinc-500 text-[12px] font-mono uppercase tracking-[0.16em]">
+            <p className="flex flex-wrap items-center gap-y-2 text-zinc-400 text-xs font-mono uppercase tracking-[0.16em]">
               <time dateTime={article.date}>
                 {new Date(article.date).toLocaleDateString("en-US", {
                   year: "numeric",
@@ -82,23 +76,19 @@ export default async function InsightArticlePage({ params }: Props) {
               {article.readTime} read
             </p>
           </header>
-        </Reveal>
 
-        <Reveal direction="up" blur delay={0.15}>
-          <div className="article-body max-w-none">
+          <div className="article-body mx-auto max-w-[70ch] [overflow-wrap:anywhere]">
             {article.body.map((paragraph, i) => (
-              <p key={i} className="mb-4 text-zinc-300 leading-relaxed">
+              <p key={i} className="mb-5 text-[15.5px] leading-[1.75] text-zinc-300">
                 {paragraph}
               </p>
             ))}
           </div>
-        </Reveal>
 
         <div className="section-divider my-10" />
 
-        <Reveal direction="up" blur delay={0.2}>
-          <section className="glass-card glow-border-card rounded-2xl p-6 text-center">
-            <h2 className="text-lg font-bold text-white mb-2 tracking-[-0.04em]">
+          <section className="mx-auto max-w-[70ch] rounded-xl border border-white/8 bg-[var(--public-surface)] p-6 text-center sm:p-10">
+            <h2 className="text-lg font-medium text-white mb-2 tracking-[-0.04em]">
               See Axiom Agent in context
             </h2>
             <p className="text-zinc-400 text-sm mb-4">
@@ -107,19 +97,18 @@ export default async function InsightArticlePage({ params }: Props) {
             </p>
             <Link
               href="/download"
-              className="btn-axiom cta-glow inline-flex items-center px-5 py-2.5 rounded-full bg-white text-zinc-900 text-sm font-semibold hover:bg-zinc-100 transition-colors"
+              className="public-feature-action"
             >
               Download Axiom Agent
-              <ArrowRightIcon className="ml-2 h-4 w-4" />
+              <ArrowRightIcon className="ml-2 h-4 w-4" aria-hidden="true" />
             </Link>
           </section>
-        </Reveal>
 
         <nav className="mt-12 pt-8 border-t border-white/6 flex flex-col sm:flex-row justify-between gap-4">
           {prevArticle ? (
             <Link
               href={`/insights/${prevArticle.slug}`}
-              className="text-sm font-medium text-orange-400 hover:underline hover-lift transition-all inline-block"
+              className="text-sm font-medium text-zinc-300 hover:underline transition-colors inline-block min-w-0 sm:max-w-[45%] [overflow-wrap:anywhere]"
             >
               &larr; {prevArticle.title}
             </Link>
@@ -129,7 +118,7 @@ export default async function InsightArticlePage({ params }: Props) {
           {nextArticle ? (
             <Link
               href={`/insights/${nextArticle.slug}`}
-              className="text-sm font-medium text-orange-400 hover:underline sm:text-right hover-lift transition-all inline-block"
+              className="text-sm font-medium text-zinc-300 hover:underline sm:text-right transition-colors inline-block min-w-0 sm:max-w-[45%] [overflow-wrap:anywhere]"
             >
               {nextArticle.title} &rarr;
             </Link>

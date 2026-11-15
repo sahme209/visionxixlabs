@@ -87,13 +87,13 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           </div>
         </article>
 
-        <article className="flex flex-col rounded-xl border border-[#f54e00]/40 bg-brand-ink-card p-6">
+        <article className="flex flex-col rounded-xl border border-white/15 bg-brand-ink-card p-6">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">AI usage</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Prepaid credits, the only paid part</h2>
           <figure className="mt-5 rounded-lg border border-white/8 bg-black/30 p-4" aria-label="Example credit meter">
             <figcaption className="text-[11px] uppercase tracking-[0.14em] text-zinc-500">Example credit meter</figcaption>
             <div className="mt-3 flex items-baseline justify-between text-sm text-zinc-300"><span>Prepaid balance</span><span className="tabular-nums text-zinc-100">{usd(AI_RATE_CARD.minimumTopUpCents)}</span></div>
-            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8" aria-hidden><div className="h-full w-full rounded-full bg-[#ff783d]" /></div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/8" aria-hidden><div className="h-full w-full rounded-full bg-zinc-300" /></div>
             <p className="mt-3 text-xs leading-5 text-zinc-400">Shown before you run it: a typical code analysis costs about {usd(exampleCustomerCents)}.</p>
           </figure>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
@@ -104,7 +104,7 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
           <div className="mt-auto flex flex-col gap-3 pt-8">
             <a href="#ai-rates" className="flex min-h-11 items-center justify-center rounded-lg border border-white/15 px-5 text-sm font-medium text-zinc-200 transition hover:bg-white/4">See AI rates</a>
             {creditPurchasesOpen
-              ? <Link href="/auth/signin?callbackUrl=%2Fcontrol%2Fusage-billing" className="flex min-h-11 items-center justify-center rounded-lg bg-[#f54e00] px-5 text-sm font-semibold text-white transition hover:bg-[#ff641f]">Buy prepaid credits</Link>
+              ? <Link href="/auth/signin?callbackUrl=%2Fcontrol%2Fusage-billing" className="flex min-h-11 items-center justify-center rounded-lg bg-white px-5 text-sm font-semibold text-zinc-950 transition hover:bg-zinc-200">Buy prepaid credits</Link>
               : <p className="text-xs leading-5 text-zinc-500">Credit purchases are not open yet. No charge can be started from this page.</p>}
           </div>
         </article>

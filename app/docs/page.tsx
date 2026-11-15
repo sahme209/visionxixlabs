@@ -42,7 +42,7 @@ export default function DocsIndexPage() {
     <Callout variant="info" title="Version and scope">
       Guides describe different surfaces and stages of availability. Check the installed version, current access and each guide’s preview or supported-scope notes. A guide’s presence does not establish that every operation is available or production-activated.
     </Callout>
-    <div className="my-12 divide-y divide-white/8 border-y border-white/8">
+    <div className="public-doc-paths my-12">
       {PATHS.map((group,index)=><section key={group.title} aria-labelledby={`docs-path-${index}`} className="grid gap-6 py-8 xl:grid-cols-[minmax(0,0.75fr)_minmax(0,1.25fr)] xl:gap-10">
         <div>
           <p aria-hidden="true" className="mb-3 font-mono text-[11px] tracking-widest text-brand-coral">0{index+1}</p>

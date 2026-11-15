@@ -1,3 +1,5 @@
+> **Superseded November 15, 2026:** the mounted local presentation now uses direct scenario/stage/story selection with no player controls or automatic story clock. This document and its original bindings are historical. See [the current internal guide](website-manual-illustration-controls-2026-11-15.md) and its source manifest. Nothing here grants customer publication or runtime authority.
+
 # Homepage illustrative deployment model — controls and limits
 
 **INTERNAL SOURCE GUIDE — unpublished and customer ineligible.** Author: Codex draft; genuine human editorial owner unassigned. This describes the current local presentation source, not an installed/released version, a live deployment or complete Governance. The [source ledger](website-governed-model-controls.sources.json) binds the exact files. Documentation identifiers below are proposed labels, not installed help attributes, permission keys or retrieval eligibility.

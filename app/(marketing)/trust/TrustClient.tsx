@@ -1,7 +1,8 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
+import { motion } from "framer-motion";
 import Link from "next/link";
+import { PageHero } from "@/components/marketing/PageHero";
 
 const CONTRACTS: ReadonlyArray<{ title: string; body: string; symbol: string }> = [
   {
@@ -46,46 +47,10 @@ const COMPLIANCE: ReadonlyArray<{ tag: string; status: "implemented" | "unverifi
 ];
 
 export function TrustClient() {
-  const reduce = useReducedMotion();
   return (
-    <div className="relative">
-      {!reduce && (
-        <div aria-hidden className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
-          <div className="ambient-drift absolute -top-1/4 right-1/4 h-[60vh] w-[50vw] rounded-full bg-brand-orange/8 blur-[140px]" />
-          <div className="ambient-drift absolute top-[15%] left-[5%] h-[50vh] w-[40vw] rounded-full bg-brand-coral/6 blur-[130px]" style={{ animationDelay: "-8s" }} />
-        </div>
-      )}
-
-      <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pt-24 pb-12">
-        <motion.p
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mono-label inline-flex items-center gap-3"
-        >
-          <span className="text-brand-coral/90 tabular-nums">TR</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Trust + safety
-        </motion.p>
-        <motion.h1
-          initial={{ opacity: 0, y: 16 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="font-display mt-5 text-4xl md:text-6xl font-bold leading-[1.04]"
-        >
-          The safety contract{" "}
-          <span className="relative inline-block">
-            is the product.
-            <span aria-hidden className="absolute left-0 -bottom-0.5 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </motion.h1>
-        <motion.p
-          initial={{ opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-          className="mt-5 max-w-2xl text-[16px] text-zinc-400 leading-relaxed"
-        >
-          These are implemented product controls and explicit limitations—not certification badges. Each control still depends on configuration, permissions, and verification of the exact workflow being used.
-        </motion.p>
+    <div className="public-detail-page public-trust-page">
+      <section className="public-detail-header">
+        <PageHero eyebrow="Axiom · Trust and safety" title="The safety contract" muted="is the product." lead="These are implemented product controls and explicit limitations—not certification badges. Each control still depends on configuration, permissions, and verification of the exact workflow being used." />
       </section>
 
       <section className="relative z-10 mx-auto max-w-6xl px-6 md:px-10 pb-12">

@@ -10,11 +10,12 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { Navigation } from "@/components/Navigation";
 import { Footer } from "@/components/Footer";
 import { SectionRail } from "@/components/motion/SectionRail";
+import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
   title: "Manifesto — VisionXIXLabs",
   description:
-    "Why we built VisionXIXLabs. The seven things we believe about AI-assisted cloud operations — approval-first, audit-immutable, transparency-as-default.",
+    "Why we built VisionXIXLabs. The seven things we believe about AI-assisted cloud operations — human authority, reviewable evidence, scoped access and clear availability limits.",
 };
 
 interface Tenet {
@@ -26,28 +27,28 @@ interface Tenet {
 const TENETS: readonly Tenet[] = [
   {
     num: "01",
-    short: "Humans approve. Always.",
-    long: "An AI that can ship to production without you is a problem you can't undo. Every change we propose passes a human approval gate — even when the agent is certain. Certainty is not authority.",
+    short: "Human authority stays explicit.",
+    long: "We design consequential changes around a reviewable proposal and explicit human authority. Check the controls available for your operation and version; complete Governance coverage and activation remain unfinished. Certainty is not authority.",
   },
   {
     num: "02",
-    short: "Closed-union over runtime checks.",
-    long: "The safest production code is code that can't be wrong. We model every decision as a closed-union type so the compiler rejects category errors before runtime. Safety should be a property of the type system, not a hope at deploy time.",
+    short: "Types and runtime checks, together.",
+    long: "Closed-union types help catch category errors before runtime. They do not prove that execution is safe. External input, current permissions and actual outcomes still need validation.",
   },
   {
     num: "03",
     short: "Honesty is the first feature.",
-    long: "If a feature isn't shipped, the docs say so. If a connector is in preview, the dashboard tells you. We never describe what we wish were true. Buyers can tell the difference, and trust scales linearly with how rarely we lie.",
+    long: "Describe capabilities at the level the evidence supports: source, simulation, preview or verified workflow. Mark uncertainty and missing acceptance clearly. A configuration screen or a green build is not proof of a completed customer operation.",
   },
   {
     num: "04",
     short: "Audit is not optional.",
-    long: "Every action the system takes — approved, rejected, rolled back — writes a sha-256-signed audit row with who, what, when, and why. Compliance is a side-effect, not the goal. The goal is being able to look someone in the eye and explain what happened.",
+    long: "Recorded events and linked SHA-256 seals support audit review. They are not signatures on every action or tamper prevention; coverage, storage availability and verification limits matter. The goal is being able to explain what happened with evidence.",
   },
   {
     num: "05",
     short: "Bounded blast radius.",
-    long: "Plans that touch more than a handful of resources auto-stage. Production accounts cap at one. We'd rather ship a smaller fix today than a larger one we can't reverse tomorrow.",
+    long: "Prefer small, reviewable changes with explicit recovery. Check the configured planning limits and the enforcement available for the exact execution path. Planning bounds alone do not establish live provider limits or verified recovery.",
   },
   {
     num: "06",
@@ -56,61 +57,42 @@ const TENETS: readonly Tenet[] = [
   },
   {
     num: "07",
-    short: "Connect once. Stay connected.",
-    long: "The IAM role you set up on day one is the IAM role we use forever. We don't ask for more access as features ship. We don't store credentials. We assume-role for every operation. Revoke us from your own console any time — we will not phone home asking why.",
+    short: "Access deserves ongoing review.",
+    long: "Connect only what the workflow needs. Review the requested scopes, credential handling and revocation for each integration. Some integrations retain encrypted, context-bound credentials; an existing connection does not authorize future access expansion.",
   },
 ];
 
 export default function ManifestoPage() {
   return (
-    <div className="min-h-screen bg-[#09090b] text-white relative overflow-hidden">
-      {/* Restrained aurora — quieter than typical marketing pages */}
-      <div aria-hidden className="pointer-events-none absolute inset-0">
-        <div className="ambient-drift absolute top-0 left-1/2 -translate-x-1/2 w-[820px] h-[480px] rounded-full bg-brand-coral/6 blur-[150px]" />
-        <div className="ambient-drift absolute top-[40%] right-[5%] w-[460px] h-[400px] rounded-full bg-brand-orange/6 blur-[140px]" style={{ animationDelay: "-9s" }} />
-        <div className="ambient-drift absolute bottom-0 left-[5%] w-[380px] h-[300px] rounded-full bg-orange-500/4 blur-[120px]" style={{ animationDelay: "-15s" }} />
-      </div>
-
+    <div className="axiom-canvas min-h-screen bg-[#0a0908] text-zinc-100">
       <Navigation />
 
       <SectionRail items={TENETS.map((t) => ({ id: `tenet-${t.num}`, label: t.short, num: t.num }))} />
 
-      <main className="relative max-w-6xl mx-auto px-6 md:px-10 pt-32 pb-32">
-        {/* Tiny manifesto eyebrow */}
-        <p className="mono-label inline-flex items-center gap-3 mb-6">
-          <span className="text-brand-coral/90 tabular-nums">MA</span>
-          <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-          Manifesto
-        </p>
-
-        {/* Big declarative statement */}
-        <h1 className="font-display text-5xl sm:text-6xl md:text-7xl font-bold leading-[1.02] mb-8 tracking-[-0.045em]">
-          Seven things{" "}
-          <span className="relative inline-block">
-            we believe.
-            <span aria-hidden className="absolute left-0 -bottom-1 h-[2px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400/70 to-transparent" />
-          </span>
-        </h1>
-
-        <p className="text-[17px] text-zinc-400 max-w-2xl leading-relaxed mb-24">
-          Approval-first. Audit-immutable. Transparency-as-default. These are
+      <main className="public-reading-marketing-page">
+        <PageHero
+          eyebrow="Manifesto"
+          title="Seven things"
+          muted="we believe."
+          lead={<>
+          Human authority. Reviewable evidence. Clear limits. These are
           the seven principles we use to decide what ships, what doesn&apos;t,
           and what we&apos;ll never build &mdash; even when the market would
-          let us.
-        </p>
+          let us. Availability and enforcement depend on the operation, installed version and current configuration.
+        </>}
+        />
 
-        {/* Tenets — one per scroll, Apple keynote rhythm */}
         <div className="space-y-28">
           {TENETS.map((tenet) => (
             <article key={tenet.num} id={`tenet-${tenet.num}`} className="relative scroll-mt-24">
-              {/* Subtle coral hairline above each tenet */}
-              <div className="hairline-soft mb-10" />
+              {/* A quiet divider separates each tenet. */}
+              <div className="mb-10 h-px bg-white/[0.08]" />
               <p className="mono-label mb-6 inline-flex items-center gap-3">
-                <span className="text-brand-coral/90 tabular-nums text-[11px]">{tenet.num}</span>
-                <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
+                <span className="text-zinc-400 tabular-nums text-[11px]">{tenet.num}</span>
+                <span className="h-px w-6 bg-white/10" />
                 <span className="text-zinc-500">of 07</span>
               </p>
-              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-white leading-[1.04] tracking-[-0.035em] mb-6">
+              <h2 className="font-display text-3xl sm:text-4xl md:text-5xl font-medium text-white leading-[1.04] tracking-[-0.035em] mb-6">
                 {tenet.short}
               </h2>
               <p className="text-[17px] text-zinc-300 leading-[1.75] max-w-2xl">
@@ -123,7 +105,7 @@ export default function ManifestoPage() {
         {/* Closing signature block — Apple-style "Designed by" */}
         <div className="mt-32 pt-16 border-t border-white/6 text-center">
           <p className="mono-label mb-5">Signed</p>
-          <p className="font-display text-2xl md:text-3xl font-bold text-white leading-tight mb-2 tracking-tight">
+          <p className="font-display text-2xl md:text-3xl font-medium text-white leading-tight mb-2 tracking-tight">
             Designed and built<br className="sm:hidden" /> in New York.
           </p>
           <p className="text-[13px] text-zinc-500 max-w-md mx-auto mb-10">
@@ -134,18 +116,18 @@ export default function ManifestoPage() {
           {/* Single closing CTA */}
           <Link
             href="/download"
-            className="btn-press inline-flex items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
+            className="inline-flex bg-white text-[#0a0908] hover:bg-zinc-100 items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
           >
             Download Axiom Agent
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
 
           <div className="mt-10 flex items-center justify-center gap-6 text-[12px] font-mono uppercase tracking-[0.22em] text-zinc-500">
-            <Link href="/changelog" className="hover:text-brand-coral transition-colors">Changelog</Link>
+            <Link href="/changelog" className="hover:text-white transition-colors">Changelog</Link>
             <span className="text-zinc-700">·</span>
-            <Link href="/trust" className="hover:text-brand-coral transition-colors">Trust</Link>
+            <Link href="/trust" className="hover:text-white transition-colors">Trust</Link>
             <span className="text-zinc-700">·</span>
-            <Link href="/security" className="hover:text-brand-coral transition-colors">Security</Link>
+            <Link href="/security" className="hover:text-white transition-colors">Security</Link>
           </div>
         </div>
       </main>

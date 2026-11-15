@@ -2,11 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { insightsArticles } from "@/lib/insightsContent";
 import { Navigation } from "@/components/Navigation";
+import { PageHero } from "@/components/marketing/PageHero";
 import { Footer } from "@/components/Footer";
 import { ArrowRightIcon, DocumentTextIcon } from "@heroicons/react/24/outline";
 import { Reveal } from "@/components/motion/Reveal";
 import { Stagger } from "@/components/motion/Stagger";
-import { AnimatedButton } from "@/components/ui/AnimatedButton";
 
 export const metadata: Metadata = {
   title: "Insights | Cloud & AI Engineering",
@@ -22,51 +22,37 @@ export const metadata: Metadata = {
 
 export default function InsightsPage() {
   return (
-    <div className="min-h-screen bg-brand-ink relative overflow-hidden">
-      <div className="absolute -top-40 left-1/3 h-[480px] w-[520px] rounded-full bg-orange-500/6 blur-[150px] pointer-events-none" aria-hidden />
+    <div className="axiom-canvas min-h-screen relative">
 
       <Navigation />
-      <main className="max-w-[1400px] mx-auto px-6 md:px-10 pt-32 pb-16 relative">
-        <Reveal direction="up" blur delay={0.05}>
-          <header className="mb-12">
-            <p className="text-[10px] font-mono uppercase tracking-[0.28em] text-zinc-500 mb-4 inline-flex items-center gap-3">
-              <span className="text-brand-coral/90 tabular-nums">I1</span>
-              <span className="h-px w-6 bg-linear-to-r from-brand-coral/60 to-transparent" />
-              Insights
-            </p>
-            <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.04em] leading-[1.04] mb-4">
-              Field notes from{" "}
-              <span className="relative inline-block">
-                production.
-                <span aria-hidden className="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-linear-to-r from-brand-coral via-amber-400 to-transparent opacity-85" />
-              </span>
-            </h1>
-            <p className="text-zinc-400 max-w-2xl">
-              Technical deep-dives on production AI, RAG vs. fine-tuning, AI cost management, internal assistants, cloud security, IAM, and DevOps. No hype — practical guidance for modern infrastructure.
-            </p>
-          </header>
-        </Reveal>
-
+      <main className="mx-auto max-w-[1240px] px-5 pb-20 pt-32 sm:px-10 lg:pb-28">
+        <PageHero
+          eyebrow="Insights"
+          title="Field notes from"
+          muted="production."
+          lead="Technical deep-dives on production AI, RAG vs. fine-tuning, AI cost management, internal assistants, cloud security, IAM, and DevOps. No hype — practical guidance for modern infrastructure."
+        />
+        <div className="h-12 sm:h-16" aria-hidden="true" />
         <Stagger delay={0.1} interval={0.06}>
           <ul className="space-y-6">
             {insightsArticles.map((article) => (
               <li key={article.slug}>
                 <Link
                   href={`/insights/${article.slug}`}
-                  className="block animated-border card-inner-glow card-hover rounded-xl border border-white/6 bg-white/2 p-6 shadow-xs hover:border-white/12 transition-all group"
+                  className="block rounded-xl border border-white/8 bg-[var(--public-surface)] p-6 sm:p-8 hover:border-white/12 transition-all group"
                 >
                   <div className="flex items-start gap-4">
-                    <div className="shrink-0 rounded-lg bg-orange-500/10 p-3">
-                      <DocumentTextIcon className="h-6 w-6 text-orange-400" />
+                    <div className="shrink-0 rounded-lg bg-white/5 p-3">
+                      <DocumentTextIcon className="h-6 w-6 text-zinc-300" aria-hidden="true" />
                     </div>
                     <div className="min-w-0 flex-1">
-                      <h2 className="text-lg font-semibold text-white group-hover:text-orange-400 transition-colors">
+                      <h2 className="text-lg font-semibold text-white group-hover:text-white transition-colors">
                         {article.title}
                       </h2>
                       <p className="mt-1 text-sm text-zinc-400 line-clamp-2">
                         {article.excerpt}
                       </p>
-                      <div className="mt-3 flex items-center gap-3 text-xs text-zinc-500">
+                      <div className="mt-3 flex flex-wrap items-center gap-3 text-xs text-zinc-400">
                         <time dateTime={article.date}>
                           {new Date(article.date).toLocaleDateString("en-US", {
                             year: "numeric",
@@ -77,7 +63,7 @@ export default function InsightsPage() {
                         <span>{article.readTime} read</span>
                       </div>
                     </div>
-                    <ArrowRightIcon className="h-5 w-5 shrink-0 text-zinc-500 group-hover:text-orange-400 group-hover:translate-x-0.5 transition-all" />
+                    <ArrowRightIcon className="h-5 w-5 shrink-0 text-zinc-400 group-hover:text-white group-hover:translate-x-0.5 transition-all" aria-hidden="true" />
                   </div>
                 </Link>
               </li>
@@ -88,7 +74,7 @@ export default function InsightsPage() {
         <div className="section-divider my-12" />
 
         <Reveal direction="up" blur delay={0.15}>
-          <section className="glass-card rounded-2xl border border-orange-500/20 bg-orange-500/10 p-8 text-center">
+          <section className="rounded-xl border border-white/8 bg-[var(--public-surface)] p-8 text-center sm:p-12">
             <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
               See Axiom Agent in context
             </h2>
@@ -96,9 +82,9 @@ export default function InsightsPage() {
               Watch a scripted repository-to-deployment workflow, then download
               the desktop app to connect a supported system.
             </p>
-            <AnimatedButton variant="primary" href="/download">
+            <Link className="public-feature-action" href="/download">
               Download Axiom Agent
-            </AnimatedButton>
+            </Link>
           </section>
         </Reveal>
       </main>
