@@ -35,5 +35,23 @@
   "correctedWindowsCI": "pending",
   "liveGoogleAcceptance": false,
   "liveDownloadRepairAccepted": false,
-  "governanceEnabled": false
+  "governanceEnabled": false,
+  "subsequentFrozenFullOrdinary": {
+    "passed": 19690,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "passedFiles": 1804,
+    "skippedFiles": 106,
+    "logSha256": "2e5b89a2b9ea5282427cac900e0f46d866eb9a2957042a6d34287ee349b115e6"
+  },
+  "lastWindowsResult": {
+    "head": "889389c948ef91fc3e6aae110dbade3cadc6d9c9",
+    "job": 132884449995,
+    "passed": 84,
+    "failed": 1,
+    "ignored": 0,
+    "remaining": "scoped_git_clone_records_only_the_credential_free_origin",
+    "lintReached": false
+  },
+  "lastFixtureCorrection": "test-only normalized global config; required loaded marker; independent file-only protocol; bounded redacted probe/clone diagnostics; reviewer CLEAR; actual Windows pending"
 }

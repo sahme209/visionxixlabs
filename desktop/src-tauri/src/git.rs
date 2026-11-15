@@ -757,12 +757,34 @@ mod tests {
         let destination = parent.0.join("clone");
         let git_destination = super::git_local_path(&destination).unwrap();
         let global = parent.0.join("owned-config");
-        std::fs::write(&global, format!("[url \"{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", reqwest::Url::from_directory_path(&remote.0).unwrap())).unwrap();
+        let git_global = super::git_local_path(&global).unwrap();
+        std::fs::write(&global, format!("[axiomfixture]\n loaded = true\n[url \"{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", reqwest::Url::from_directory_path(&remote.0).unwrap())).unwrap();
         let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        // Verify the fixture configuration was actually read, rather than
+        // allowing an optional/unreadable global file to make this vacuous.
+        let loaded = |path: &std::path::Path| {
+            let mut probe = super::scoped_git_command(None, &["config", "--get", "axiomfixture.loaded"], url).unwrap();
+            probe.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", path)
+                .env("GIT_ALLOW_PROTOCOL", "file");
+            let output = super::redact_scoped_output(probe.command.output().unwrap(), probe.authorization.as_deref());
+            let diagnostic = super::redact_credential(&String::from_utf8_lossy(&output.stderr), url)
+                .chars().take(2048).collect::<String>();
+            (output.status.success() && String::from_utf8_lossy(&output.stdout).trim() == "true", diagnostic)
+        };
+        let (original_loaded, _) = loaded(&global);
+        let (normalized_loaded, config_diagnostic) = loaded(&git_global);
+        println!("owned_global_configuration_loaded: original={original_loaded}, normalized={normalized_loaded}");
+        assert!(normalized_loaded, "Owned clone configuration was not read: {config_diagnostic}");
         let mut scoped = super::scoped_git_command(None,
             &["clone", "--", url, git_destination.to_str().unwrap()], url).unwrap();
-        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
-        assert!(scoped.command.output().unwrap().status.success());
+        // This fixture uses only an owned file remote. Enforce that independently
+        // of the rewrite file, so a broken fixture can never contact GitHub.
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &git_global)
+            .env("GIT_ALLOW_PROTOCOL", "file");
+        let output = super::redact_scoped_output(scoped.command.output().unwrap(), scoped.authorization.as_deref());
+        let diagnostic = super::redact_credential(&String::from_utf8_lossy(&output.stderr), url)
+            .chars().take(2048).collect::<String>();
+        assert!(output.status.success(), "Owned clone failed: {diagnostic}");
         let stored = std::fs::read_to_string(destination.join(".git/config")).unwrap();
         assert!(!stored.contains("ghs_SYNTHETIC_ONLY"));
         assert!(!stored.contains("x-access-token:"));
