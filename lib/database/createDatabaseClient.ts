@@ -1,5 +1,6 @@
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../prismaClient.ts";
+import { directNeonSessionOptions } from "./directNeonSession.ts";
 import { postgresConnectionOptions } from "./postgresConnectionPolicy.ts";
 
 /** Construction is lazy configuration, never authorization or resource custody.
@@ -11,7 +12,7 @@ export function createDatabaseClient(target: string | undefined): PrismaClient {
       async connect() { throw new Error("database_configuration_unavailable"); },
     } });
   }
-  const driver = new PrismaPg(postgresConnectionOptions(target), { schema: "public" });
+  const driver = new PrismaPg(directNeonSessionOptions(postgresConnectionOptions(target)), { schema: "public" });
   // Expose only the query adapter contract, never migration/shadow-DB methods.
   return new PrismaClient({ adapter: {
     provider: "postgres", adapterName: driver.adapterName,

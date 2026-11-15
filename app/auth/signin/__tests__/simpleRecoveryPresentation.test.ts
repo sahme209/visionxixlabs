@@ -1,7 +1,7 @@
 /** @vitest-environment jsdom */
 import {createElement} from 'react';
 import {afterEach,beforeEach,expect,it,vi} from 'vitest';
-import {cleanup,render,screen} from '@testing-library/react';
+import {cleanup,fireEvent,render,screen} from '@testing-library/react';
 const ports=vi.hoisted(()=>({error:'AccessDenied',configured:true,signIn:vi.fn(),push:vi.fn()}));
 vi.mock('next/navigation',()=>({useRouter:()=>({push:ports.push,refresh:vi.fn()}),useSearchParams:()=>new URLSearchParams({error:ports.error,callbackUrl:'/desktop/connect?challenge=synthetic'})}));
 vi.mock('next-auth/react',()=>({signIn:ports.signIn,getProviders:async()=>ports.configured?{google:{},github:{},cognito:{}}:{}}));
@@ -17,6 +17,9 @@ it('offers configured providers before the email form while retaining every exis
  const email=screen.getByLabelText('Email');
  expect(google.compareDocumentPosition(email)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
  expect(cognito.compareDocumentPosition(email)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+ expect(screen.queryByLabelText('Password')).toBeNull();
+ fireEvent.change(email,{target:{value:'person@example.test'}});
+ fireEvent.click(screen.getByRole('button',{name:'Continue'}));
  expect(screen.getByLabelText('Password')).toBeTruthy();
  expect(screen.queryByRole('button',{name:/GitLab/i})).toBeNull();
  expect(ports.signIn).not.toHaveBeenCalled();expect(ports.push).not.toHaveBeenCalled();
@@ -33,4 +36,15 @@ it('keeps recovery visible even when no OAuth provider can currently be listed',
  ports.configured=false;render(createElement(SignInPage));
  expect((await screen.findByRole('alert')).textContent).toContain("couldn't complete sign-in");
  expect(screen.getByLabelText('Email')).toBeTruthy();
+});
+
+it('requires an email before revealing password and never starts auth from Continue',async()=>{
+ ports.error='';render(createElement(SignInPage));
+ await screen.findByRole('button',{name:'Sign in with Cognito'});
+ fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+ expect(screen.queryByLabelText('Password')).toBeNull();
+ fireEvent.change(screen.getByLabelText('Email'),{target:{value:'person@example.test'}});
+ fireEvent.click(screen.getByRole('button',{name:'Continue'}));
+ expect(screen.getByLabelText('Password')).toBeTruthy();
+ expect(ports.signIn).not.toHaveBeenCalled();expect(ports.push).not.toHaveBeenCalled();
 });

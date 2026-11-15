@@ -1,0 +1,11 @@
+# Compact sign-in and reactive workflow preview
+
+Local source refinement, November 15, 2026. Unpublished; no deployed or installed-app acceptance.
+
+Sign-in now uses a 320px centered column. Google is primary; configured GitHub and Cognito remain available as compact secondary buttons with explicit accessible names. Email Continue validates the address and reveals the existing password sign-in; it makes no authentication request. Password focus follows the deliberate Continue action. Verification recovery and support remain under the native Need help signing in disclosure. Account-switch, verification, error, callback and pairing notices retain their original meaning and handlers. No GitLab provider is added.
+
+The scripted workflow preview keeps the original painted frame and finite text reveal. It removes the decorative moving pointer and uses neutral warm charcoal panels. Inside-app actions connect the existing request to its sample diff, the project-check review, scripted output and separate publication review. Rejecting a sample does not expose the output continuation; a deliberate sample approval does. Step selectors remain an inspection tool and can inspect any sample state independently. Neither route is execution authority. Agent proposal review can continue to explicit outcome evidence. Terraform remains held without apply controls.
+
+Reference inspection: [Cursor](https://cursor.com/) was inspected in the in-app browser for its task/sidebar, user-request and app-response structure. One live telemetry control was exercised; the other demos were not comprehensively exercised. This finite browser observation informed the conceptual interaction pattern, without copying assets or product claims. It does not establish browser acceptance of Axiom’s implementation.
+
+Focused local DOM checks cover Continue without authentication, provider/callback/switching and overlapping-flow guards, request-to-diff-to-review-to-output interaction, rejection, no service calls, keyboard selection, reduced-motion/visibility scheduling and evidence readability. Current actual results are reported with the handoff. Real browser screenshots/mobile/touch/assistive/performance and production sign-in remain separate acceptance work. No new package, server/app restart, native build, provider request, credentials, database change or deployment.

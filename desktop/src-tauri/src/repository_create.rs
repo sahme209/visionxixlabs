@@ -102,3 +102,17 @@ mod tests {
         std::fs::remove_dir_all(root).unwrap();
     }
 }
+
+#[cfg(all(test, not(unix)))]
+#[test]
+fn unsupported_creation_never_writes_even_a_valid_draft() {
+    let root = std::env::temp_dir().join(format!("axiom-create-unsupported-{}-{}", std::process::id(), std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
+    std::fs::create_dir(&root).unwrap();
+    std::fs::write(root.join("existing.rs"), "original").unwrap();
+    for path in ["new.rs", "existing.rs", "../escape.rs", ".git/config"] {
+        assert_eq!(create(&root, path, "replacement"), Err("Safe local file creation is unavailable on this platform.".into()));
+    }
+    assert_eq!(std::fs::read_to_string(root.join("existing.rs")).unwrap(), "original");
+    assert_eq!(std::fs::read_dir(&root).unwrap().count(), 1);
+    std::fs::remove_dir_all(root).unwrap();
+}

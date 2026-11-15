@@ -1,0 +1,26 @@
+{
+  "ownerDecision": "call_ed9a9f4cd6fa4f85a203c87d48f7c13b",
+  "privateCallsUsed": 1,
+  "maximumPrivateCalls": 2,
+  "stopped": true,
+  "noUnusedCallCarryover": true,
+  "retryAuthorized": false,
+  "productionDatabaseRowReturned": false,
+  "selectionVerified": false,
+  "settingActuallyAbsentEstablished": false,
+  "privateValueRead": false,
+  "credentialOutput": false,
+  "settingChanged": false,
+  "databaseQueryRun": false,
+  "deploymentStarted": false,
+  "publicStatus": {
+    "overall": "unknown",
+    "databaseBackedUnknownComponents": 3
+  },
+  "publicDownload": {
+    "platform": "mac-arm",
+    "httpStatus": 503,
+    "reason": "required storage checks unavailable"
+  },
+  "preparedSourceSha": "6358f1363f5d4a2f811cc89a1b92ee58aa4a6068"
+}

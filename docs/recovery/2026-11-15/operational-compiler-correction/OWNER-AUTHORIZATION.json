@@ -7,5 +7,10 @@
   "maximumCorrectedRuns": 1,
   "outputsMayRun": false,
   "finalReviewRequiredBeforePush": true,
-  "consumed": false
+  "consumed": true,
+  "run": 43730458593,
+  "job": 132861519084,
+  "head": "c36dbc356c332d7d05be2c35b9328d9c5a18551e",
+  "compilerAccepted": true,
+  "retryAuthorized": false
 }

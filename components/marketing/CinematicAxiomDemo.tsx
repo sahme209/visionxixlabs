@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef, type KeyboardEvent } from "react";
+import { useState, useRef, useEffect, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { DesktopPreviewFrame } from "./DesktopPreviewFrame";
@@ -16,6 +16,10 @@ export function CinematicAxiomDemo({ variant = "section" }: { variant?: "section
   const [stepIndex, setStepIndex] = useState(0);
   const step = story.steps[stepIndex] ?? story.steps[0];
   const sceneRef=useRef<HTMLDivElement>(null);
+  const focusResponse = useRef(false);
+  useEffect(() => {
+    if (focusResponse.current) { focusResponse.current = false; sceneRef.current?.focus(); }
+  }, [stepIndex]);
   const reveal=usePreviewSequence(sceneRef,`${storyIndex}:${stepIndex}:${context.repository}:${context.branch}:${context.environment}`);
   function selectStory(index: number) { setStoryIndex(index); setDecision(null); setStepIndex(0); }
   function choose(index: number) { setDecision(null); setStepIndex(Math.max(0, Math.min(story.steps.length - 1, index))); }
@@ -40,12 +44,12 @@ export function CinematicAxiomDemo({ variant = "section" }: { variant?: "section
         <p className="mt-4 text-sm leading-6 text-zinc-400">{step.caption}</p>
         <div className="mt-5 grid gap-1" role="group" aria-label="Story steps" onKeyDown={keyboard}>{story.steps.map((item, index) => <button key={item.title} type="button" aria-current={index === stepIndex ? "step" : undefined} aria-label={`Step ${index + 1}: ${item.title}`} onClick={() => choose(index)} className={`flex min-h-11 items-center gap-3 rounded-lg px-3 py-2 text-left text-xs leading-5 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-300 ${index === stepIndex ? "bg-white/6 text-zinc-100" : "text-zinc-400 hover:bg-white/3"}`}><span className={`font-mono text-[10px] ${index === stepIndex ? "text-zinc-300" : "text-zinc-500"}`}>0{index + 1}</span>{item.title}</button>)}</div>
         <p role="status" aria-label="Current story step" aria-live="polite" aria-atomic="true" className="mt-5 text-xs tabular-nums text-zinc-400"><span aria-hidden="true">{stepIndex + 1} / {story.steps.length}</span><span className="sr-only">Step {stepIndex + 1} of {story.steps.length}: {step.title}</span></p>
-        <p className="mt-3 text-[11px] leading-5 text-zinc-400">Choose a step to inspect its sample state. Decisions here are samples only.</p>
+        <p className="mt-3 text-[11px] leading-5 text-zinc-400">Choose a step to inspect its sample state. Or follow the actions inside the app preview. Decisions here are samples only.</p>
       </div>
       <DesktopPreviewFrame view={story.id === "workspace" ? "repository-workspace" : story.id === "agent" ? "agent" : "deployment-requests"}>
         <div className="h-0.5 bg-white/5" aria-hidden="true"><div className="h-full bg-zinc-400" style={{ width: `${((stepIndex + 1) / story.steps.length) * 100}%` }} /></div>
         <div className="grid gap-3 border-b border-white/8 p-4 sm:grid-cols-3"><ContextSelect label="Repository" value={context.repository} values={["acme/customer-web", "acme/payments-api"]} onChange={value => changeContext("repository", value)} /><ContextSelect label="Branch" value={context.branch} values={["feature/timeout", "review/retry-policy"]} onChange={value => changeContext("branch", value)} /><ContextSelect label="Environment" value={context.environment} values={["Development", "Test", "Production · held"]} onChange={value => changeContext("environment", value)} /></div>
-        <div ref={sceneRef} className="p-4 sm:p-5"><WorkflowStoryScene scene={step.scene} context={context} fraction={reveal.fraction} reducedMotion={reveal.reducedMotion} active={reveal.active} decision={decision} onDecision={value => { setStepIndex(stepIndex); setDecision(value); }} /></div>
+        <div ref={sceneRef} tabIndex={-1} aria-label="Sample workflow response" className="p-4 focus-visible:outline-2 focus-visible:outline-inset focus-visible:outline-zinc-300 sm:p-5"><WorkflowStoryScene scene={step.scene} context={context} fraction={reveal.fraction} reducedMotion={reveal.reducedMotion} active={reveal.active} decision={decision} onContinue={stepIndex < story.steps.length - 1 ? () => { focusResponse.current = true; choose(stepIndex + 1); } : undefined} onDecision={value => { setStepIndex(stepIndex); setDecision(value); }} /></div>
         <div className="border-t border-white/10 bg-white/2 px-4 py-3"><p className="text-[11px] leading-5 text-zinc-400">Illustrated from Axiom workflows. Sample content; no live actions.</p></div>
       </DesktopPreviewFrame>
     </div>

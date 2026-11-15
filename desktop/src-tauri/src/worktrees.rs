@@ -102,8 +102,9 @@ fn create(source: &Path, branch: &str) -> Result<Worktree,String> {
     let nonce=std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).map_err(|_|"System clock unavailable.")?.as_nanos();
     let path=parent.join(format!("axiom-{nonce}-{}",NEXT.fetch_add(1,Ordering::Relaxed)));
     let head=text(source,&["rev-parse","--verify","HEAD^{commit}"])?;
+    let git_path=crate::git::git_local_path(&path)?;
     // New branch at a captured commit; no checkout/branch movement in the source.
-    git(root,&["worktree","add","-b",branch,path.to_str().ok_or("Worktree path is not UTF-8.")?,head.trim()])?;
+    git(root,&["worktree","add","-b",branch,git_path.to_str().ok_or("Worktree path is not UTF-8.")?,head.trim()])?;
     let bytes=size(&path)?;
     if rows.iter().map(|row|row.bytes).sum::<u64>().saturating_add(bytes)>MAX_BYTES {return Err("Worktree was created but exceeds the disk limit. Inspect and remove the clean checkout explicitly.".into());}
     Ok(Worktree{path:path.to_string_lossy().into(),branch:branch.into(),bytes})
@@ -121,7 +122,8 @@ fn remove(root: &Path, target: &Path) -> Result<(),String> {
     if !git(target,&["status","--porcelain=v1","--untracked-files=all","--ignored"] )?.is_empty() {return Err("Worktree contains changed, untracked or ignored files. Preserve them before removing it.".into());}
     if crate::git::repository_root(target.to_str().ok_or("Invalid worktree path.")?)?!=target {return Err("Worktree ownership changed.".into());}
     // Git checks tracked/untracked changes again. Never --force, prune or delete a branch.
-    git(root,&["worktree","remove","--",target.to_str().ok_or("Invalid worktree path.")?])?;
+    let git_target=crate::git::git_local_path(target)?;
+    git(root,&["worktree","remove","--",git_target.to_str().ok_or("Invalid worktree path.")?])?;
     Ok(())
 }
 #[tauri::command]
@@ -143,6 +145,7 @@ mod tests {
             let path = std::env::temp_dir().join(format!("axiom-worktree-{}-{}", std::process::id(), std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
             fs::create_dir(&path).unwrap();
             assert!(Command::new("git").args(["init", "-b", "main"]).arg(&path).output().unwrap().status.success());
+            assert!(Command::new("git").arg("-C").arg(&path).args(["config", "core.autocrlf", "false"]).output().unwrap().status.success());
             fs::write(path.join("file.txt"), "original\n").unwrap();
             fs::write(path.join(".gitignore"), "ignored.txt\n").unwrap();
             assert!(Command::new("git").arg("-C").arg(&path).args(["add", "."]).output().unwrap().status.success());
@@ -202,9 +205,10 @@ mod tests {
         let created=create(&f.0,"axiom/hooks").unwrap();
         assert!(!f.0.join("HOOK_RAN").exists());
         let target=std::path::PathBuf::from(created.path);
-        git(&f.0,&["worktree","lock",target.to_str().unwrap()]).unwrap();
+        let git_target=crate::git::git_local_path(&target).unwrap();
+        git(&f.0,&["worktree","lock",git_target.to_str().unwrap()]).unwrap();
         assert!(remove(&f.0,&target).is_err());
-        git(&f.0,&["worktree","unlock",target.to_str().unwrap()]).unwrap();
+        git(&f.0,&["worktree","unlock",git_target.to_str().unwrap()]).unwrap();
         fs::write(target.join(".gitignore"),"ignored.txt\n").unwrap();
         fs::write(target.join("ignored.txt"),"must retain").unwrap();
         assert!(remove(&f.0,&target).is_err());
@@ -238,7 +242,7 @@ mod tests {
         assert_eq!(list(&f.0).unwrap().len(),2);
     }
 }
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod additional_tests {
     use super::*;
     #[cfg(unix)]

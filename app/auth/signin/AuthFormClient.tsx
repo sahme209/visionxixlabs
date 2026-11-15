@@ -11,6 +11,7 @@ import { ArrowRightIcon, EyeIcon, EyeSlashIcon, ExclamationTriangleIcon } from "
 function SignInForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [emailExpanded, setEmailExpanded] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -42,9 +43,14 @@ function SignInForm() {
     return () => { cancelled = true; };
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (authInFlight.current) return;
+    if (!emailExpanded) {
+      if (!e.currentTarget.checkValidity()) { e.currentTarget.reportValidity(); return; }
+      setEmailExpanded(true);
+      return;
+    }
     authInFlight.current = true;
     setError("");
     setLoading(true);
@@ -103,12 +109,12 @@ function SignInForm() {
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-[#0a0908] px-6 py-16 text-zinc-100">
-      <div className="w-full max-w-[360px]">
-        <Link href="/" aria-label="vxix home" className="mx-auto mb-8 flex w-fit rounded-sm focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-zinc-300">
+      <div className="w-full max-w-[320px]">
+        <Link href="/" aria-label="vxix home" className="mx-auto mb-7 flex w-fit rounded-sm focus-visible:outline-2 focus-visible:outline-offset-8 focus-visible:outline-zinc-300">
           <Image src="/brand/vxix-wordmark.svg" alt="vxix" width={120} height={30} priority />
         </Link>
         <h1 className="text-center text-[28px] font-medium tracking-[-0.04em]">Welcome to Axiom</h1>
-        <p className="mb-8 mt-2 text-center text-[15px] text-zinc-400">Your engineering workspace.</p>
+        <p className="mb-7 mt-2 text-center text-[15px] text-zinc-400">Your engineering workspace.</p>
 
         {switchingAccount && <p role="status" className="mb-5 rounded-lg border border-white/10 p-3 text-sm text-zinc-300">Choose the account you want to pair. Google will ask you to select an account. Signing out here does not sign you out of GitHub: switch to the intended account on GitHub before continuing if needed. You must still review and approve the desktop after signing in.</p>}
 
@@ -123,13 +129,13 @@ function SignInForm() {
         {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && (
           <>
 
-            <div className="grid gap-2.5">
+            <div className="grid grid-cols-2 gap-2.5">
               {(enabledProviders === null || enabledProviders.google) && (
                 <button
                   type="button"
                   onClick={() => handleOAuth("google")}
                   disabled={oauthLoading !== null || loading}
-                  className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-medium text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
+                  className="col-span-2 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-medium text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
                 >
                   <GoogleMark className="h-4 w-4" />
                   {oauthLoading === "google" ? "Opening…" : "Sign in with Google"}
@@ -139,30 +145,32 @@ function SignInForm() {
                 <button
                   type="button"
                   onClick={() => handleOAuth("github")}
+                  aria-label={oauthLoading === "github" ? "Opening GitHub…" : "Sign in with GitHub"}
                   disabled={oauthLoading !== null || loading}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
                 >
                   <GitHubMark className="h-4 w-4" />
-                  {oauthLoading === "github" ? "Opening…" : "Sign in with GitHub"}
+                  {oauthLoading === "github" ? "Opening…" : "GitHub"}
                 </button>
               )}
               {enabledProviders?.cognito && (
                 <button
                   type="button"
                   onClick={() => handleOAuth("cognito")}
+                  aria-label={oauthLoading === "cognito" ? "Opening Cognito…" : "Sign in with Cognito"}
                   disabled={oauthLoading !== null || loading}
                   className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
                 >
                   <SsoMark className="h-4 w-4" />
-                  {oauthLoading === "cognito" ? "Opening…" : "Sign in with Cognito"}
+                  {oauthLoading === "cognito" ? "Opening…" : "Cognito SSO"}
                 </button>
               )}
             </div>
           </>
         )}
 
-        {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && <div className="my-6 flex items-center gap-3" aria-hidden="true"><span className="h-px flex-1 bg-white/10" /><span className="text-xs text-zinc-500">or use email</span><span className="h-px flex-1 bg-white/10" /></div>}
-        <form onSubmit={handleSubmit} className="space-y-4" noValidate>
+        {(enabledProviders === null || enabledProviders.google || enabledProviders.github || enabledProviders.cognito) && <div className="my-5 flex items-center gap-3" aria-hidden="true"><span className="h-px flex-1 bg-white/10" /><span className="text-xs text-zinc-500">or</span><span className="h-px flex-1 bg-white/10" /></div>}
+        <form onSubmit={handleSubmit} className="grid gap-4" noValidate>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-zinc-300 mb-1.5">
               Email
@@ -175,11 +183,11 @@ function SignInForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               autoComplete="email"
-              placeholder="you@company.com"
+              placeholder="Work email"
               className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-white/30 focus:bg-white/6 focus:ring-2 focus:ring-white/15"
             />
           </div>
-          <div>
+          {emailExpanded && <div>
             <label htmlFor="password" className="block text-sm font-medium text-zinc-300 mb-1.5">
               Password
             </label>
@@ -192,6 +200,7 @@ function SignInForm() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
+                autoFocus
                 placeholder="••••••••"
                 className="block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-12 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-white/30 focus:bg-white/6 focus:ring-2 focus:ring-white/15"
               />
@@ -205,7 +214,7 @@ function SignInForm() {
                 {showPassword ? <EyeSlashIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
               </button>
             </div>
-          </div>
+          </div>}
           {error && (
             <div role="alert" aria-live="assertive" className="rounded-lg border border-white/15 bg-white/5 px-3.5 py-2.5 text-sm text-zinc-200">
               {error}
@@ -216,14 +225,18 @@ function SignInForm() {
             disabled={loading || oauthLoading !== null}
             className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-100 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50"
           >
-            {loading ? "Signing in…" : "Sign in"}
+            {loading ? "Signing in…" : emailExpanded ? "Sign in" : "Continue"}
             {!loading && <ArrowRightIcon className="h-4 w-4" />}
           </button>
         </form>
 
-        <VerificationRecovery initialEmail={email} callbackUrl={callbackUrl} />
+        <details className="mt-3 text-center text-xs text-zinc-400">
+          <summary className="mx-auto min-h-11 w-fit cursor-pointer content-center rounded-sm px-2 focus-visible:outline-2 focus-visible:outline-zinc-300">Need help signing in?</summary>
+          <VerificationRecovery initialEmail={email} callbackUrl={callbackUrl} />
+          <Link href="/support" className="inline-flex min-h-11 items-center underline underline-offset-4">Contact support</Link>
+        </details>
 
-        <p className="mt-6 text-sm text-zinc-500 text-center">
+        <p className="mt-4 text-xs text-zinc-500 text-center">
           Don&apos;t have an account?{" "}
           {callbackUrl.startsWith("/desktop/") ? (
             <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">

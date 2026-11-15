@@ -15,6 +15,25 @@ use std::process::{Command, Output};
 const MAX_TEXT_FILE_BYTES: u64 = 1_000_000;
 const MAX_LISTED_FILES: usize = 5_000;
 
+/// Keep canonical filesystem paths for ownership checks, but spell Windows
+/// verbatim drive/UNC paths normally at Git's path-argument boundary. Git's
+/// protected-NTFS path validator rejects the '?' in a verbatim prefix.
+pub(crate) fn git_local_path(path: &Path) -> Result<PathBuf, String> {
+    #[cfg(windows)]
+    if matches!(path.components().next(), Some(Component::Prefix(prefix)) if matches!(prefix.kind(), std::path::Prefix::VerbatimDisk(_) | std::path::Prefix::VerbatimUNC(_, _))) {
+        // Removing the verbatim prefix must not introduce Win32 trimming or
+        // relative-component aliases. Leave such paths unavailable to Git.
+        if path.components().any(|component| match component {
+            Component::Normal(name) => name.to_string_lossy().ends_with(['.', ' ']),
+            Component::CurDir | Component::ParentDir => true,
+            _ => false,
+        }) { return Err("Git path cannot be represented safely.".into()); }
+        return reqwest::Url::from_file_path(path).map_err(|_| "Git path cannot be represented safely.".to_string())?
+            .to_file_path().map_err(|_| "Git path cannot be represented safely.".to_string());
+    }
+    Ok(path.to_path_buf())
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RepositoryFileStatus {
@@ -231,8 +250,9 @@ pub async fn clone_repository(clone_url: String, destination_path: String) -> Re
     if let Some(parent) = destination.parent() {
         fs::create_dir_all(parent).map_err(|error| format!("Could not create {}: {error}", parent.display()))?;
     }
+    let git_destination = git_local_path(&destination)?;
     let clone_result = output_text(
-        run_scoped_git(None, &["clone", "--", clone_url.as_str(), destination_path.as_str()], &clone_url)?,
+        run_scoped_git(None, &["clone", "--", clone_url.as_str(), git_destination.to_str().ok_or("Git destination is not UTF-8.")?], &clone_url)?,
         Some(&clone_url),
     );
     if let Err(error) = clone_result {
@@ -456,6 +476,17 @@ fn dirs_home() -> Result<PathBuf, String> {
 mod tests {
     use super::{redact_credential, safe_remote_url, valid_relative_path};
 
+    #[cfg(windows)]
+    #[test]
+    fn git_path_arguments_remove_only_verbatim_drive_or_unc_spelling() {
+        for (input, expected) in [(r"\\?\C:\owned space\checkout", r"C:\owned space\checkout"), (r"\\?\UNC\server\share\checkout", r"\\server\share\checkout"), (r"C:\ordinary\checkout", r"C:\ordinary\checkout"), (r"relative\checkout", r"relative\checkout")] {
+            assert_eq!(super::git_local_path(std::path::Path::new(input)).unwrap(), std::path::PathBuf::from(expected));
+        }
+        for input in [r"\\?\C:\owned.\checkout", r"\\?\C:\owned \checkout", r"\\?\C:\owned\..\checkout"] {
+            assert!(super::git_local_path(std::path::Path::new(input)).is_err());
+        }
+    }
+
     struct OwnedDirectory(std::path::PathBuf);
     impl OwnedDirectory {
         fn new() -> Self {
@@ -564,7 +595,7 @@ mod tests {
         std::fs::write(directory.0.join("workflow.txt"), "initial").unwrap();
         run(&directory.0, &["add", "workflow.txt"]);
         run(&directory.0, &["commit", "-m", "initial fixture"]);
-        let local_remote = format!("file://{}", remote.0.display());
+        let local_remote = reqwest::Url::from_directory_path(&remote.0).unwrap().to_string();
         let rewrite = format!("url.{}.insteadOf", local_remote);
         let synthetic_url = "https://github.com/owner/repository.git";
         run(&directory.0, &["config", &rewrite, synthetic_url]);
@@ -724,13 +755,36 @@ mod tests {
         let parent = OwnedDirectory::new();
         assert!(super::git(Some(&remote.0), ["init", "--bare"]).unwrap().status.success());
         let destination = parent.0.join("clone");
+        let git_destination = super::git_local_path(&destination).unwrap();
         let global = parent.0.join("owned-config");
-        std::fs::write(&global, format!("[url \"file://{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", remote.0.display())).unwrap();
+        let git_global = super::git_local_path(&global).unwrap();
+        std::fs::write(&global, format!("[axiomfixture]\n loaded = true\n[url \"{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", reqwest::Url::from_directory_path(&remote.0).unwrap())).unwrap();
         let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
+        // Verify the fixture configuration was actually read, rather than
+        // allowing an optional/unreadable global file to make this vacuous.
+        let loaded = |path: &std::path::Path| {
+            let mut probe = super::scoped_git_command(None, &["config", "--get", "axiomfixture.loaded"], url).unwrap();
+            probe.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", path)
+                .env("GIT_ALLOW_PROTOCOL", "file");
+            let output = super::redact_scoped_output(probe.command.output().unwrap(), probe.authorization.as_deref());
+            let diagnostic = super::redact_credential(&String::from_utf8_lossy(&output.stderr), url)
+                .chars().take(2048).collect::<String>();
+            (output.status.success() && String::from_utf8_lossy(&output.stdout).trim() == "true", diagnostic)
+        };
+        let (original_loaded, _) = loaded(&global);
+        let (normalized_loaded, config_diagnostic) = loaded(&git_global);
+        println!("owned_global_configuration_loaded: original={original_loaded}, normalized={normalized_loaded}");
+        assert!(normalized_loaded, "Owned clone configuration was not read: {config_diagnostic}");
         let mut scoped = super::scoped_git_command(None,
-            &["clone", "--", url, destination.to_str().unwrap()], url).unwrap();
-        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
-        assert!(scoped.command.output().unwrap().status.success());
+            &["clone", "--", url, git_destination.to_str().unwrap()], url).unwrap();
+        // This fixture uses only an owned file remote. Enforce that independently
+        // of the rewrite file, so a broken fixture can never contact GitHub.
+        scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &git_global)
+            .env("GIT_ALLOW_PROTOCOL", "file");
+        let output = super::redact_scoped_output(scoped.command.output().unwrap(), scoped.authorization.as_deref());
+        let diagnostic = super::redact_credential(&String::from_utf8_lossy(&output.stderr), url)
+            .chars().take(2048).collect::<String>();
+        assert!(output.status.success(), "Owned clone failed: {diagnostic}");
         let stored = std::fs::read_to_string(destination.join(".git/config")).unwrap();
         assert!(!stored.contains("ghs_SYNTHETIC_ONLY"));
         assert!(!stored.contains("x-access-token:"));
@@ -763,8 +817,9 @@ mod tests {
     fn scoped_git_disables_configured_trace_destinations_for_secret_environment() {
         let directory = OwnedDirectory::new();
         let trace = directory.0.join("owned-trace.json");
+        let trace_config = reqwest::Url::from_file_path(&trace).unwrap().to_file_path().unwrap();
         let global = directory.0.join("owned-config");
-        std::fs::write(&global, format!("[trace2]\n eventTarget = {}\n envVars = GIT_CONFIG_VALUE_3\n", trace.display())).unwrap();
+        std::fs::write(&global, format!("[trace2]\n eventTarget = {}\n envVars = GIT_CONFIG_VALUE_3\n", trace_config.to_string_lossy().replace('\\', "/"))).unwrap();
         let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
         let mut scoped = super::scoped_git_command(Some(&directory.0),
             &["config", "--get-urlmatch", "http.extraHeader", "https://github.com/owner/repository.git"], url).unwrap();

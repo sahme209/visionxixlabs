@@ -109,3 +109,38 @@ jobs:
 
       - name: Lint native macOS commands
         run: cargo clippy --manifest-path desktop/src-tauri/Cargo.toml --locked --all-targets -- -D warnings
+
+  windows-native:
+    name: Windows frontend and native security checks
+    runs-on: windows-2022
+    timeout-minutes: 30
+    # Standard public runner only. No installer, signing, publication, live
+    # provider, credential-vault access or Governance artifact execution.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: desktop/package-lock.json
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: clippy
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm ci
+
+      - name: Validate release identity and build frontend only
+        working-directory: desktop
+        run: npm run build
+
+      - name: Test native Windows commands and isolated security fixtures
+        run: cargo test --manifest-path desktop/src-tauri/Cargo.toml --locked
+
+      - name: Lint native Windows commands
+        run: cargo clippy --manifest-path desktop/src-tauri/Cargo.toml --locked --all-targets -- -D warnings

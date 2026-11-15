@@ -114,3 +114,20 @@ it("announces the current story step after deliberate navigation and story chang
   expect(status.textContent).toContain("Step 1 of");
   expect(status.textContent).toContain(screen.getAllByRole("heading", { level: 2 })[0].textContent!);
 });
+
+it("follows app actions from request through diff, deliberate check decision and output",()=>{
+ const fetch=vi.fn();vi.stubGlobal('fetch',fetch);mount();
+ fireEvent.click(screen.getByRole('button',{name:'Prepare sample change →'}));
+ expect(screen.getAllByText('retry-policy.ts').length).toBeGreaterThan(0);
+ expect(document.activeElement?.getAttribute('aria-label')).toBe('Sample workflow response');
+ fireEvent.click(screen.getByRole('button',{name:'Review project check →'}));
+ expect(screen.queryByRole('button',{name:'Inspect sample check output →'})).toBeNull();
+ fireEvent.click(screen.getByRole('button',{name:'Reject sample'}));
+ expect(screen.queryByRole('button',{name:'Inspect sample check output →'})).toBeNull();
+ fireEvent.click(screen.getByRole('button',{name:'Simulate approval'}));
+ fireEvent.click(screen.getByRole('button',{name:'Inspect sample check output →'}));
+ expect(screen.getByText('Bounded check output')).toBeDefined();
+ fireEvent.click(screen.getByRole('button',{name:'Review branch publication →'}));
+ expect(screen.getByRole('heading',{name:'Publish branch and open a pull request?'})).toBeDefined();
+ expect(fetch).not.toHaveBeenCalled();
+});

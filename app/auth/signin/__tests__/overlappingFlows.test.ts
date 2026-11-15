@@ -23,6 +23,7 @@ afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 async function prepare() {
   render(createElement(SignInPage));
   fireEvent.change(screen.getByLabelText("Email"), { target: { value: " person@example.test " } });
+  fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   fireEvent.change(screen.getByLabelText("Password"), { target: { value: "synthetic-password" } });
   await screen.findByRole("button", { name: "Sign in with Cognito" });
   return screen.getByRole("button", { name: "Sign in" }).closest("form")!;
