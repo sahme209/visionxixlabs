@@ -6,9 +6,10 @@ export interface PostgresConnectionOptions {
   idleTimeoutMillis: number; options: string; application_name: string; client_encoding: string;
   enableChannelBinding: boolean; query_timeout?: number; statement_timeout?: number;
   connectionString?: never;
+  requireChannelBinding?: true;
 }
 // Opaque, input-free server diagnostic codes. Never attach parser exceptions or
-// target fragments. The public error message and every acceptance rule stay fixed.
+// target fragments. Refused inputs retain the fixed public error message.
 type ConfigurationRefusal =
   | "PCP_001" | "PCP_002" | "PCP_003" | "PCP_004" | "PCP_005" | "PCP_006"
   | "PCP_007" | "PCP_008" | "PCP_009" | "PCP_010" | "PCP_011" | "PCP_012"
@@ -28,9 +29,9 @@ export function postgresConnectionOptions(target: string): PostgresConnectionOpt
   if (url.searchParams.has("schema") && url.searchParams.get("schema") !== "public") unavailable("PCP_005");
   if (url.searchParams.has("sslaccept") && url.searchParams.get("sslaccept") !== "strict") unavailable("PCP_006");
   const binding = url.searchParams.get("channel_binding");
-  // pg offers opportunistic channel binding, not a strict require mode. Refuse
-  // unsupported requirements rather than silently degrading their meaning.
-  if (binding && !["prefer", "disable"].includes(binding)) unavailable("PCP_007");
+  // Strict require is enforced by the private physical-client adapter, never
+  // by pg's opportunistic boolean alone. Unknown selections still refuse.
+  if (binding && !["prefer", "disable", "require"].includes(binding)) unavailable("PCP_007");
   const pgbouncer = url.searchParams.get("pgbouncer");
   if (pgbouncer && !["true", "false"].includes(pgbouncer)) unavailable("PCP_008");
   function positive(name: string, fallback: number, diagnostic: readonly [ConfigurationRefusal, ConfigurationRefusal], milliseconds = false): number {
@@ -52,6 +53,7 @@ export function postgresConnectionOptions(target: string): PostgresConnectionOpt
   const sslmode = url.searchParams.get("sslmode");
   if (sslmode && !["disable", "require", "verify-full"].includes(sslmode) || !local && sslmode === "disable") unavailable("PCP_011");
   const tls = sslmode === "require" || sslmode === "verify-full" || !local;
+  if (binding === "require" && !tls) unavailable("PCP_011");
   let user: string, password: string, database: string;
   try { user = decodeURIComponent(url.username); password = decodeURIComponent(url.password); database = decodeURIComponent(url.pathname.slice(1)); } catch { unavailable("PCP_012"); }
   if (!user || !database || /[\u0000]/.test(user + password + database)) unavailable("PCP_013");
@@ -66,5 +68,6 @@ export function postgresConnectionOptions(target: string): PostgresConnectionOpt
     idleTimeoutMillis: positive("max_idle_connection_lifetime", 300000, ["PCP_028", "PCP_029"], true),
     options: "-c search_path=public", application_name: application, client_encoding: "UTF8",
     enableChannelBinding: tls && binding !== "disable", query_timeout: queryTimeout, statement_timeout: queryTimeout,
+    ...(binding === "require" ? { requireChannelBinding: true as const } : {}),
   };
 }

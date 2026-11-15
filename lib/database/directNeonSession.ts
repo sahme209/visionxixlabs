@@ -1,4 +1,5 @@
 import { Client, type PoolConfig, type QueryConfig } from "pg";
+import { requiredChannelBindingClient } from "./requiredChannelBinding.ts";
 import type { PostgresConnectionOptions } from "./postgresConnectionPolicy.ts";
 
 function unavailable(): never { throw new Error("postgres_session_initialization_unavailable"); }
@@ -31,10 +32,14 @@ class DirectNeonClient extends Client {
  * Session search_path is appropriate only for the direct connection above;
  * this makes no transaction-pooler session guarantee. */
 export function directNeonSessionOptions(options: PostgresConnectionOptions): PoolConfig {
-  if (!isDirectNeonHost(options.host)) return options;
+  const direct = isDirectNeonHost(options.host);
+  if (!direct && !options.requireChannelBinding) return options;
+  const Base = direct ? DirectNeonClient : Client;
+  const Constructor = options.requireChannelBinding ? requiredChannelBindingClient(Base) : Base;
+  if (!direct) return { ...options, Client: Constructor };
   return {
     ...options,
-    Client: DirectNeonClient,
+    Client: Constructor,
     async onConnect(client) {
       // pg reads per-query query_timeout; its declaration only lists the
       // client-level counterpart. Keep the runtime option explicitly typed.

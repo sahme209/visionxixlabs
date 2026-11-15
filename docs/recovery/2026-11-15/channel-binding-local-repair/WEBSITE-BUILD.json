@@ -1,0 +1,18 @@
+{
+  "accepted": true,
+  "stage": "/private/tmp/axiom-current-web-desktop-xfna45q5",
+  "receiptSha256": "4b1ddcd18c9784a55834ff8b1079b444754697401ba350c5a73e0f9d7a4fdfa3",
+  "packetSha256": "d9a8efaabd9e3ae4f9b582a41ac9534ecfa09ae924e05a6c26748a10ab0bbc14",
+  "phases": {
+    "website": {
+      "exitCode": 0,
+      "reason": null,
+      "cleanupConfirmed": true,
+      "logBytesObserved": 43925,
+      "logSha256": "1da6d1ccc8a6780d40cf9efe8ee49d60aea9767ea3681822c640d638b554c8ac",
+      "logPath": "/private/tmp/axiom-current-web-desktop-xfna45q5/website.log"
+    }
+  },
+  "failure": null,
+  "finalInputsMatched": true
+}

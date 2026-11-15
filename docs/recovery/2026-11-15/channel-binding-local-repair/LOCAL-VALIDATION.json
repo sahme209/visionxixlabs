@@ -1,0 +1,24 @@
+{
+  "ordinary": {
+    "passed": 19763,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "passFiles": 1808,
+    "totalFiles": 1914,
+    "logSha256": "9bfab302da383cb633c952a4f4b33e171ca83450c27c8570b1a18f6de9c112fe"
+  },
+  "strictRootTypes": "pass_8GiB",
+  "realTlsWireScenarios": 19,
+  "actualPrismaPostgres17": true,
+  "ownedCleanupConfirmed": true,
+  "configurationSelectorRead": false,
+  "actualHostedRecoveryVerified": false,
+  "additionalVercelDeployment": false,
+  "productionChanged": false,
+  "sourceReview": "independent_clear",
+  "websiteBuild": {
+    "accepted": true,
+    "receiptSha256": "4b1ddcd18c9784a55834ff8b1079b444754697401ba350c5a73e0f9d7a4fdfa3",
+    "productSourceUnchangedAfterBuild": true
+  }
+}

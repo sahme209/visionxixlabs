@@ -11,7 +11,7 @@ const cases: ReadonlyArray<readonly [string, string]> = [
   ["PCP_004", `${base}?schema=public&schema=public`],
   ["PCP_005", `${base}?schema=synthetic_schema`],
   ["PCP_006", `${base}?sslaccept=synthetic_policy`],
-  ["PCP_007", `${base}?channel_binding=require`],
+  ["PCP_007", `${base}?channel_binding=synthetic_unsupported`],
   ["PCP_008", `${base}?pgbouncer=synthetic_choice`],
   ["PCP_009", base.replace(".invalid/", ".invalid:0/")],
   ["PCP_010", `${base}?host=%2Fsynthetic_socket`],
