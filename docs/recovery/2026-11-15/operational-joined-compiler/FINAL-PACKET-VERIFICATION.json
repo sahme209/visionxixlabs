@@ -1,0 +1,17 @@
+{
+  "scope": "Local controller source and synthetic preparation only",
+  "sourceInputs": 45,
+  "packetSha256": "b38c77fc4046ad06d93ef0d4e750c396e73a2a1e39571b89e068094f744cb909",
+  "pureTests": 36,
+  "independentReviewImportant": 4,
+  "importantFixedByRoot": 4,
+  "independentRereview": false,
+  "nativeExecuted": false,
+  "workflowClosed": true,
+  "approvalConstants": [
+    null,
+    null,
+    null
+  ],
+  "governanceEnabled": false
+}

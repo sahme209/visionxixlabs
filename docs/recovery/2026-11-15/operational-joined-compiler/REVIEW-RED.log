@@ -1,0 +1,59 @@
+.......................EFEEEE......
+======================================================================
+ERROR: test_diagnostic_prefix_is_explicitly_bounded_and_binds_the_complete_stream (__main__.ReviewRegressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 257, in test_diagnostic_prefix_is_explicitly_bounded_and_binds_the_complete_stream
+    raw=b'warning\n'*10000;result=m.diagnostic_evidence(raw,16*1024)
+AttributeError: module 'operational_compile' has no attribute 'diagnostic_evidence'
+
+======================================================================
+ERROR: test_failed_phase_retains_diagnostic_content_and_identity (__main__.ReviewRegressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 248, in test_failed_phase_retains_diagnostic_content_and_identity
+    context,_=CommandOwnership().fixture(Path(d),[0.])
+NameError: name 'CommandOwnership' is not defined
+
+======================================================================
+ERROR: test_full_daemon_symbols_above_256k_are_checked_without_truncation (__main__.ReviewRegressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 240, in test_full_daemon_symbols_above_256k_are_checked_without_truncation
+    result=m.inspect_artifact(Context(),{'name':'operational-daemon','output':str(path)},{'nm':'/nm','readelf':'/readelf'},{},Path('/launcher'),lambda *args:None)
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 239, in inspect_artifact
+    proof={**artifact_identity(path),'elf':elf,'requiredSymbols':verify_symbols(symbols,required),'runtimeExecuted':False}
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_native_worker_compile.py", line 56, in verify_symbols
+    need(isinstance(text,str) and len(text.encode())<=256*1024,'symbol_output_limit');rows=[]
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_native_worker_compile.py", line 23, in need
+    if not value:raise ValueError(reason)
+ValueError: symbol_output_limit
+
+======================================================================
+ERROR: test_sigint_during_deferred_popen_handoff_keeps_supervisor_ownership (__main__.ReviewRegressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 226, in test_sigint_during_deferred_popen_handoff_keeps_supervisor_ownership
+    context,_=CommandOwnership().fixture(Path(d),[0.]);pending=[]
+NameError: name 'CommandOwnership' is not defined
+
+======================================================================
+ERROR: test_symbol_policy_still_refuses_oversize_missing_duplicate_and_wrong_type (__main__.ReviewRegressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 245, in test_symbol_policy_still_refuses_oversize_missing_duplicate_and_wrong_type
+    with self.assertRaises(ValueError):m.verify_operational_symbols(bad,('main',),'daemon')
+AttributeError: module 'operational_compile' has no attribute 'verify_operational_symbols'
+
+======================================================================
+FAIL: test_existing_or_symlink_root_is_never_claimed_for_result_writes (__main__.ReviewRegressions)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 270, in test_existing_or_symlink_root_is_never_claimed_for_result_writes
+    self.assertFalse((existing/'RESULT.json').exists());self.assertFalse((outside/'RESULT.json').exists())
+AssertionError: True is not false
+
+----------------------------------------------------------------------
+Ran 35 tests in 0.137s
+
+FAILED (failures=1, errors=5)

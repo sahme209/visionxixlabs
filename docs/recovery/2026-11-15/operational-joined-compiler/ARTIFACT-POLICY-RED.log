@@ -1,0 +1,21 @@
+........E.E......
+======================================================================
+ERROR: test_existing_real_elf_header_requires_current_linux_x64_kind (__main__.OperationalCompile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 38, in test_existing_real_elf_header_requires_current_linux_x64_kind
+    elf=proof['elfHeader'];m.validate_operational_elf(elf,'daemon')
+AttributeError: module 'operational_compile' has no attribute 'validate_operational_elf'
+
+======================================================================
+ERROR: test_native_host_call_inventory_is_source_bound_not_an_arbitrary_napi_prefix (__main__.OperationalCompile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 47, in test_native_host_call_inventory_is_source_bound_not_an_arbitrary_napi_prefix
+    self.assertEqual(names,m.NODE_API_IMPORTS);self.assertEqual(len(names),31)
+AttributeError: module 'operational_compile' has no attribute 'NODE_API_IMPORTS'
+
+----------------------------------------------------------------------
+Ran 17 tests in 0.118s
+
+FAILED (errors=2)

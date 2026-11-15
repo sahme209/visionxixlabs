@@ -1,0 +1,31 @@
+.................E.EE..
+======================================================================
+ERROR: test_malformed_context_forks_retry_and_wrong_head_refuse (__main__.PreparedEventGate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 157, in test_malformed_context_forks_retry_and_wrong_head_refuse
+    with self.assertRaises(ValueError):m.validate_event(event,'pull_request','1')
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 20, in validate_event
+    pr=event.get('pull_request',{});repo=event.get('repository',{});head=pr.get('head',{});base=pr.get('base',{})
+AttributeError: 'NoneType' object has no attribute 'get'
+
+======================================================================
+ERROR: test_normal_compiler_scope_stays_explicit_in_the_primary_receipt (__main__.ReceiptConsistency)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 163, in test_normal_compiler_scope_stays_explicit_in_the_primary_receipt
+    result=json.loads(m.primary_receipt({'accepted':True,'nativeRuntimeExecuted':False,'scope':'compiler-only'}));self.assertEqual(result['scope'],'compiler-only');self.assertTrue(result['accepted'])
+AttributeError: module 'operational_compile' has no attribute 'primary_receipt'
+
+======================================================================
+ERROR: test_oversized_receipt_cannot_leave_a_true_local_result (__main__.ReceiptConsistency)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 161, in test_oversized_receipt_cannot_leave_a_true_local_result
+    result=json.loads(m.primary_receipt({'accepted':True,'detail':'x'*(1024*1024)}));self.assertFalse(result['accepted']);self.assertEqual(result['errorCategory'],'compiler_receipt_limit')
+AttributeError: module 'operational_compile' has no attribute 'primary_receipt'
+
+----------------------------------------------------------------------
+Ran 23 tests in 0.122s
+
+FAILED (errors=3)

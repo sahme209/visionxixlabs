@@ -1,0 +1,17 @@
+E........
+======================================================================
+ERROR: test_actual_operational_feature_includes_the_daemon_implicit_optional_dependency (__main__.OperationalCompile)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 35, in test_actual_operational_feature_includes_the_daemon_implicit_optional_dependency
+    m.validate_operational_features('clock-bound v3.0.0-rc.0 (/owned/source/clock-bound) axiom-operational-time,daemon,tracing-subscriber\n')
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 61, in validate_operational_features
+    features=set(m[1].split(','));need(features=={'axiom-operational-time','daemon'},'unexpected_operational_root_features')
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/governance_operational_compile.py", line 14, in need
+    if not ok:raise ValueError(reason)
+ValueError: unexpected_operational_root_features
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.093s
+
+FAILED (errors=1)

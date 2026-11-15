@@ -1,0 +1,21 @@
+......EE
+======================================================================
+ERROR: test_changed_native_input_refuses_before_creating_output (__main__.OperationalMaterialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 50, in test_changed_native_input_refuses_before_creating_output
+    with self.assertRaises(ValueError):m.prepare_sources(shadow,dest)
+AttributeError: module 'operational_compile' has no attribute 'prepare_sources'
+
+======================================================================
+ERROR: test_materializes_actual_closed_tree_and_native_inputs_without_running_output (__main__.OperationalMaterialization)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 35, in test_materializes_actual_closed_tree_and_native_inputs_without_running_output
+    result=m.prepare_sources(ROOT,Path(d)/'assembly')
+AttributeError: module 'operational_compile' has no attribute 'prepare_sources'
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.008s
+
+FAILED (errors=2)

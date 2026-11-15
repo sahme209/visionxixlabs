@@ -1,0 +1,26 @@
+name: Prepared operational compiler (closed)
+
+# Preparation only. No event or workflow_dispatch can authorize this job.
+on:
+  pull_request:
+    types: [synchronize]
+    paths:
+      - 'scripts/governance_operational_compile.py'
+      - '.github/workflows/linux-operational-compile.yml'
+permissions:
+  contents: read
+jobs:
+  compile-only:
+    if: ${{ false }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 42
+    steps:
+      - name: Check out exact reviewed head without credentials
+        uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - name: One fixed compiler batch (requires a separate reviewed owner decision)
+        env:
+          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/governance_operational_compile.py --approved-ci-once

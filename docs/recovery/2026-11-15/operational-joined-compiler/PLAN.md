@@ -1,0 +1,9 @@
+# Joined operational compiler preparation
+
+Continue the full protected operational-package dependency from9ff18eb. Local compiler-controller source and synthetic/pure tests only. New compiler/benign-fixture execution still requires its exact owner decision; no existing consumed grant is reused. Preserve all real target/native/controller/storage/custody/fleet/people/provider/production gates.
+
+1. Fixed complete build recipe for current status/publisher/daemon/worker/private addon/owner; bounded ELF/symbol/Node-API import checks with meaningful counterexamples. Native output never executes. Keep empty owner digests refusing and O0 owner compile; Node24.22.2 headers only. Exact normal/build feature closure and source/header/library/tool identity remain mandatory.
+2. Fixed source materializer using accepted327file snapshot plus current frozen26input set and original policy/filter/native sources; exclusive fresh owned outputs, original source bytes and post-command checks. No downloaded source imports.
+3. Closed hosted controller reusing existing supervision/restriction fixture, exact prior toolchain proof and clean environments; one explicit locked fetch then restricted offline commands; shared2400seconds+5cleanup, bounded diagnostics/primary receipt. Only trusted benign restriction/tiny Cargo probes may execute. No Governance owner/daemon/worker/addon/Node main launch/import/ldd. Preparation event/owner gates stay closed.
+4. New workflow and complete input/command/event packet. Tests must reject forks/private repos/old or wrong heads/retries/ambiguous metadata/missing approval. No automatic compiler job, PR or owner request before all preparation inputs/review are concrete.
+5. One independent final source/packet review, important reproducer fixes, full ordinary/types and updated complete handoff/goal. Only then request the precise native compiler batch. This plan is not that approval or a deployable package.

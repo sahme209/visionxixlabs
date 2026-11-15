@@ -1,0 +1,26 @@
+{
+  "backup": "docs/recovery/2026-11-15/operational-joined-compiler/living-before-20261115-093007",
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "beforeSha256": "3392026a5d81f4ee463acb496667a92bf036ceb1f49a2cd2552fce4405058043",
+      "originalBytesPreserved": true
+    },
+    "CLAUDE.md": {
+      "beforeSha256": "cf64253628c97fa337835f03c9276e4d68ff9fdd3bf7bc08f620ca48b1f0f072",
+      "originalBytesPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "beforeSha256": "e67987d56d293d0095ed12c579566dbcbde6587766f90423a8fabae628cea4e6",
+      "originalBytesPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "beforeSha256": "3df44e5ee08085f4c0cfbb3ea8e2a7a5b0cb872f5f02c027b8f0b80873b08326",
+      "originalBytesPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "beforeSha256": "566b7090e52440f55c5820e719f4b881b87fcf7de72646710debb37428accaa4",
+      "originalBytesPreserved": true
+    }
+  },
+  "goalMirrorIdentical": true
+}
