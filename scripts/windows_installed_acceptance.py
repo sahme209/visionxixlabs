@@ -15,6 +15,9 @@ from pathlib import Path
 import shutil
 import subprocess
 import sys
+
+# Local helper imports must never add bytecode to the frozen source inventory.
+sys.dont_write_bytecode = True
 import time
 import uuid
 
@@ -176,7 +179,7 @@ def child_environment(inherited, extra=None):
     names = ["PATH", "SYSTEMROOT", "WINDIR", "TEMP", "TMP", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "PROGRAMDATA", "PROGRAMFILES", "PROGRAMFILES(X86)", "HOME", "CARGO_HOME", "RUSTUP_HOME", "NUMBER_OF_PROCESSORS", "PROCESSOR_ARCHITECTURE", "COMSPEC", "PATHEXT"]
     inherited = {name.upper(): value for name, value in inherited.items()}
     env = {name: inherited[name] for name in names if name in inherited}
-    env.update({"CI": "1", "NO_COLOR": "1"})
+    env.update({"CI": "1", "NO_COLOR": "1", "PYTHONDONTWRITEBYTECODE": "1"})
     if extra:
         need(set(extra) <= {"AXIOM_WINDOWS_ACCEPTANCE_KEY", "AXIOM_WINDOWS_ACCEPTANCE_STAGE"}, "extra_environment_refused")
         env.update(extra)

@@ -17,16 +17,42 @@ class WindowsAcceptancePreparation(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "acceptance_not_enrolled"):
                 candidate.authority()
 
+    def test_entry_setup_and_future_helper_imports_never_write_source_bytecode(self):
+        import json,os,shutil,subprocess,sys
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);scripts=root/'scripts';scripts.mkdir()
+            shutil.copyfile(SOURCE,scripts/SOURCE.name)
+            shutil.copyfile(SOURCE.parent/'windows_upgrade_acceptance.py',scripts/'windows_upgrade_acceptance.py')
+            shutil.copyfile(SOURCE.parent/'windows_legacy_acquire.py',scripts/'windows_legacy_acquire.py')
+            code="import json,pathlib,runpy,sys; sys.dont_write_bytecode=False; root=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(root/'scripts')); runpy.run_path(str(root/'scripts/windows_installed_acceptance.py'),run_name='fixture_controller'); import windows_upgrade_acceptance; print(json.dumps({'guard':sys.dont_write_bytecode,'bytecode':[str(p.relative_to(root)) for p in root.rglob('*.pyc')]}))"
+            env={key:os.environ[key] for key in ['PATH','SYSTEMROOT','WINDIR','TEMP','TMP'] if key in os.environ}
+            result=subprocess.run([sys.executable,'-c',code,str(root)],env=env,capture_output=True,text=True,timeout=10)
+            self.assertEqual(result.returncode,0,result.stderr)
+            proof=json.loads(result.stdout);self.assertTrue(proof['guard']);self.assertEqual(proof['bytecode'],[])
+            # Removing only the entry guard reproduces the observed source-tree
+            # mutation: this is not an inventory ignore or fabricated pyc fixture.
+            entry=scripts/SOURCE.name;entry.write_text(entry.read_text().replace('sys.dont_write_bytecode = True','sys.dont_write_bytecode = False'))
+            result=subprocess.run([sys.executable,'-c',code,str(root)],env=env,capture_output=True,text=True,timeout=10)
+            self.assertEqual(result.returncode,0,result.stderr)
+            proof=json.loads(result.stdout);self.assertFalse(proof['guard']);self.assertTrue(any('windows_upgrade_acceptance' in name for name in proof['bytecode']))
+            shutil.rmtree(scripts/'__pycache__')
+            downloader="import json,pathlib,runpy,sys; root=pathlib.Path(sys.argv[1]); sys.path.insert(0,str(root/'scripts')); runpy.run_path(str(root/'scripts/windows_legacy_acquire.py'),run_name='fixture_downloader'); print(json.dumps({'startupGuard':sys.flags.dont_write_bytecode,'bytecode':[str(p.relative_to(root)) for p in root.rglob('*.pyc')]}))"
+            child_env=candidate.child_environment(env)
+            result=subprocess.run([sys.executable,'-c',downloader,str(root)],env=child_env,capture_output=True,text=True,timeout=10)
+            self.assertEqual(result.returncode,0,result.stderr)
+            proof=json.loads(result.stdout);self.assertEqual(proof['startupGuard'],1);self.assertEqual(proof['bytecode'],[])
+
+
     def test_child_environment_drops_credentials_and_injection_options(self):
-        env = candidate.child_environment({"Path": "owned-path", "SystemRoot": r"C:\Windows", "GITHUB_TOKEN": "synthetic-do-not-retain", "AWS_SECRET_ACCESS_KEY": "synthetic-do-not-retain", "NODE_OPTIONS": "--require synthetic", "RUSTFLAGS": "synthetic", "TAURI_SIGNING_PRIVATE_KEY": "synthetic-do-not-retain"})
-        self.assertEqual(env, {"PATH": "owned-path", "SYSTEMROOT": r"C:\Windows", "CI": "1", "NO_COLOR": "1"})
+        env = candidate.child_environment({"Path": "owned-path", "SystemRoot": r"C:\Windows", "GITHUB_TOKEN": "synthetic-do-not-retain", "AWS_SECRET_ACCESS_KEY": "synthetic-do-not-retain", "NODE_OPTIONS": "--require synthetic", "PYTHONPATH": "synthetic-injection", "PYTHONPYCACHEPREFIX": "synthetic-outside-path", "PYTHONDONTWRITEBYTECODE": "0", "RUSTFLAGS": "synthetic", "TAURI_SIGNING_PRIVATE_KEY": "synthetic-do-not-retain"})
+        self.assertEqual(env, {"PATH": "owned-path", "SYSTEMROOT": r"C:\Windows", "CI": "1", "NO_COLOR": "1", "PYTHONDONTWRITEBYTECODE": "1"})
         with self.assertRaisesRegex(RuntimeError, "extra_environment_refused"):
             candidate.child_environment({}, {"GITHUB_TOKEN": "synthetic"})
 
     def test_only_fixed_synthetic_vault_fields_can_be_added(self):
         extra = {"AXIOM_WINDOWS_ACCEPTANCE_KEY": "owned-roundtrip-1-2", "AXIOM_WINDOWS_ACCEPTANCE_STAGE": "cleanup"}
         env = candidate.child_environment({}, extra)
-        self.assertEqual(env, {"CI": "1", "NO_COLOR": "1", **extra})
+        self.assertEqual(env, {"CI": "1", "NO_COLOR": "1", "PYTHONDONTWRITEBYTECODE": "1", **extra})
 
     def test_installer_inventory_requires_exactly_one_of_each_kind(self):
         with tempfile.TemporaryDirectory() as folder:
