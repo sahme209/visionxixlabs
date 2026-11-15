@@ -791,7 +791,14 @@ def run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_m
         attempted = True
         log = runner.output / (case+'-old-install.log')
         old_args = plan['oldInstall'] + (['/L*v',log] if kind == 'msi' else [])
-        runner.run(case+'-old-install', old_args, ROOT, 120, extra_logs=(log,) if kind == 'msi' else ())
+        try:
+            runner.run(case+'-old-install', old_args, ROOT, 120, extra_logs=(log,) if kind == 'msi' else ())
+        finally:
+            if kind == 'msi':
+                # Observation precedes the unchanged expected-payload assertion,
+                # including a failed installer return; it grants no acceptance.
+                from windows_msi_observation import observe_legacy_setup
+                row['legacySetupObservation'] = observe_legacy_setup(runner,tools,base,install,legacy[kind]['path'],legacy['msi']['metadata']['ProductCode'],log)
         old_exe = owned_file(executable, install)
         require_pe_role(old_exe, 'Application')
         row['legacyInstalledPayloadSha256'] = digest(old_exe)

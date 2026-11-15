@@ -1,0 +1,10 @@
+{
+  "source": "219e6723b56e322405dacb7894e3616112d8a470",
+  "localPrimaryReceipt": "/tmp/v19-format-corrected-result.json",
+  "primarySha256": "0c0029a3b751fe05b880f2d39c506895f900863cc9f7582b7e7a76866945ff66",
+  "safeSubsetSha256": "9e9f661127cfe616008a800ee2b3aef988a7316c498bc6616bde366796acd95a",
+  "selection": "fixed nonsecret outcome/format/installer metadata only; no raw process logs, commands, environment, credentials or vault values",
+  "runAndJobIdentity": "not copied: this primary JSON does not encode run/job coordinates",
+  "allWindowsAccepted": false,
+  "productionChanged": false
+}

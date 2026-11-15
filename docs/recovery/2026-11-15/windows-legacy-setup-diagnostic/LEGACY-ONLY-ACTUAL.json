@@ -1,0 +1,539 @@
+{
+  "accepted": true,
+  "baselineOnly": "fixed-public-0.1.21",
+  "v19PredecessorNotReproduced": true,
+  "cases": [
+    {
+      "case": "shallow-no-admin",
+      "cleanupConfirmed": true,
+      "componentPath": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "shallow-no-admin\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      },
+      "componentState": 3,
+      "directoryFileCountBounded": 2,
+      "installConfirmed": true,
+      "installDirectoryExists": true,
+      "log": {
+        "applicationFileMentioned": true,
+        "applicationFileOperationLines": 2,
+        "bytes": 110810,
+        "mainEngineReturnCodes": [
+          0,
+          0
+        ],
+        "present": true,
+        "properties": {
+          "ACTION": {
+            "isAll": false,
+            "isInstall": true,
+            "isOne": false,
+            "present": true
+          },
+          "INSTALLDIR": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "shallow-no-admin",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "REINSTALLMODE": {
+            "isAll": false,
+            "isInstall": false,
+            "isOne": false,
+            "present": true
+          },
+          "ROOTDRIVE": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          },
+          "SourceDir": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "fixture",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "TARGETDIR": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          }
+        },
+        "rawTextEmitted": false,
+        "sha256": "4dcdda387edf38e4cab72a8d3578d5246aeb17eba0b3d777b8e8c702ba0d2618"
+      },
+      "payloadMetadata": {
+        "ProductName": "Axiom Agent",
+        "ProductVersion": "0.1.21",
+        "artifactKind": "Application",
+        "bytes": 17018880,
+        "machine": "AMD64",
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+        "signatureStatus": "NotSigned"
+      },
+      "productInstallLocations": [
+        {
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "shallow-no-admin",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": false
+        }
+      ],
+      "productState": 5,
+      "protocolLocations": [
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "shallow-no-admin\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        },
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "shallow-no-admin\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        }
+      ],
+      "requestedPayload": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "shallow-no-admin\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      }
+    },
+    {
+      "case": "nested-no-admin",
+      "cleanupConfirmed": true,
+      "componentPath": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "nested-no-admin\\msi-major-upgrade\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      },
+      "componentState": 3,
+      "directoryFileCountBounded": 2,
+      "installConfirmed": true,
+      "installDirectoryExists": true,
+      "log": {
+        "applicationFileMentioned": true,
+        "applicationFileOperationLines": 2,
+        "bytes": 111520,
+        "mainEngineReturnCodes": [
+          0,
+          0
+        ],
+        "present": true,
+        "properties": {
+          "ACTION": {
+            "isAll": false,
+            "isInstall": true,
+            "isOne": false,
+            "present": true
+          },
+          "INSTALLDIR": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "nested-no-admin\\msi-major-upgrade",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "REINSTALLMODE": {
+            "isAll": false,
+            "isInstall": false,
+            "isOne": false,
+            "present": true
+          },
+          "ROOTDRIVE": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          },
+          "SourceDir": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "fixture",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "TARGETDIR": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          }
+        },
+        "rawTextEmitted": false,
+        "sha256": "8cf62f078480ebaf94ed0724e8fa44e307def6d467f3f612405498e69b534944"
+      },
+      "payloadMetadata": {
+        "ProductName": "Axiom Agent",
+        "ProductVersion": "0.1.21",
+        "artifactKind": "Application",
+        "bytes": 17018880,
+        "machine": "AMD64",
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+        "signatureStatus": "NotSigned"
+      },
+      "productInstallLocations": [
+        {
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "nested-no-admin\\msi-major-upgrade",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": false
+        }
+      ],
+      "productState": 5,
+      "protocolLocations": [
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "nested-no-admin\\msi-major-upgrade\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        },
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "nested-no-admin\\msi-major-upgrade\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        }
+      ],
+      "requestedPayload": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "nested-no-admin\\msi-major-upgrade\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      }
+    },
+    {
+      "case": "shallow-after-admin",
+      "cleanupConfirmed": true,
+      "componentPath": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "shallow-after-admin\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      },
+      "componentState": 3,
+      "directoryFileCountBounded": 2,
+      "installConfirmed": true,
+      "installDirectoryExists": true,
+      "log": {
+        "applicationFileMentioned": true,
+        "applicationFileOperationLines": 2,
+        "bytes": 111144,
+        "mainEngineReturnCodes": [
+          0,
+          0
+        ],
+        "present": true,
+        "properties": {
+          "ACTION": {
+            "isAll": false,
+            "isInstall": true,
+            "isOne": false,
+            "present": true
+          },
+          "INSTALLDIR": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "shallow-after-admin",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "REINSTALLMODE": {
+            "isAll": false,
+            "isInstall": false,
+            "isOne": false,
+            "present": true
+          },
+          "ROOTDRIVE": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          },
+          "SourceDir": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "fixture",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "TARGETDIR": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          }
+        },
+        "rawTextEmitted": false,
+        "sha256": "c9a384f96c3f69cf6411e23daf298aad9e3216719a91164ada3a0a6a1d8f23ca"
+      },
+      "payloadMetadata": {
+        "ProductName": "Axiom Agent",
+        "ProductVersion": "0.1.21",
+        "artifactKind": "Application",
+        "bytes": 17018880,
+        "machine": "AMD64",
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+        "signatureStatus": "NotSigned"
+      },
+      "productInstallLocations": [
+        {
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "shallow-after-admin",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": false
+        }
+      ],
+      "productState": 5,
+      "protocolLocations": [
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "shallow-after-admin\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        },
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "shallow-after-admin\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        }
+      ],
+      "requestedPayload": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "shallow-after-admin\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      }
+    },
+    {
+      "case": "nested-after-admin",
+      "cleanupConfirmed": true,
+      "componentPath": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "nested-after-admin\\msi-major-upgrade\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      },
+      "componentState": 3,
+      "directoryFileCountBounded": 2,
+      "installConfirmed": true,
+      "installDirectoryExists": true,
+      "log": {
+        "applicationFileMentioned": true,
+        "applicationFileOperationLines": 2,
+        "bytes": 111658,
+        "mainEngineReturnCodes": [
+          0,
+          0
+        ],
+        "present": true,
+        "properties": {
+          "ACTION": {
+            "isAll": false,
+            "isInstall": true,
+            "isOne": false,
+            "present": true
+          },
+          "INSTALLDIR": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "nested-after-admin\\msi-major-upgrade",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "REINSTALLMODE": {
+            "isAll": false,
+            "isInstall": false,
+            "isOne": false,
+            "present": true
+          },
+          "ROOTDRIVE": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          },
+          "SourceDir": {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "fixture",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          },
+          "TARGETDIR": {
+            "insideOwnedRoot": false,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "provided": true
+          }
+        },
+        "rawTextEmitted": false,
+        "sha256": "5c3d2ba789121394e79dfd11ff2362405d332a48b67e9e2a00a535162e0dc996"
+      },
+      "payloadMetadata": {
+        "ProductName": "Axiom Agent",
+        "ProductVersion": "0.1.21",
+        "artifactKind": "Application",
+        "bytes": 17018880,
+        "machine": "AMD64",
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+        "signatureStatus": "NotSigned"
+      },
+      "productInstallLocations": [
+        {
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "nested-after-admin\\msi-major-upgrade",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": false
+        }
+      ],
+      "productState": 5,
+      "protocolLocations": [
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "nested-after-admin\\msi-major-upgrade\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        },
+        {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "nested-after-admin\\msi-major-upgrade\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        }
+      ],
+      "requestedPayload": {
+        "bytes": 17018880,
+        "insideOwnedRoot": true,
+        "matchesRequestedPath": true,
+        "outsideOwnedFileRead": false,
+        "ownedRelativePath": "nested-after-admin\\msi-major-upgrade\\axiom-desktop.exe",
+        "physicalOwnedPathValidated": true,
+        "provided": true,
+        "regularFile": true,
+        "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+      }
+    }
+  ],
+  "diagnosticCompleted": true,
+  "adminCleanupConfirmed": true,
+  "administrativeExtractionConfirmed": true,
+  "ownedDirectoriesCleaned": true,
+  "ownedProcessesEmpty": true,
+  "run": 43775014022,
+  "source": "1e9287b54e25db85780d673106802f7c549f2616",
+  "primarySha256": "5ad49e4ac1e3adbef3a963ac7697c85317625232515f75035639e325fcbaa863"
+}

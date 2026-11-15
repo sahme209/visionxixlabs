@@ -41,7 +41,7 @@ class Cycle(unittest.TestCase):
    if label.endswith('-pristine'):return OLD if preexisting else EMPTY
    if label.endswith('-old-state'):return OLD
    return EMPTY
-  with patch('windows_upgrade_acceptance.LEGACY_ASSETS',{kind:{'sha256':owner.digest(old),'bytes':old.stat().st_size} for kind in ['msi','nsis']}),patch.object(owner,'upgrade_snapshot',side_effect=snapshot),patch.object(owner,'require_webview_runtime',return_value={}),patch.object(owner,'product_state',return_value=-1),patch.object(owner,'pe_machine',return_value=0x8664),patch.object(owner,'protocol_args_match',return_value=True),patch('windows_upgrade_acceptance.upgrade_audit',side_effect=audit):
+  with patch('windows_upgrade_acceptance.LEGACY_ASSETS',{kind:{'sha256':owner.digest(old),'bytes':old.stat().st_size} for kind in ['msi','nsis']}),patch.object(owner,'upgrade_snapshot',side_effect=snapshot),patch.object(owner,'require_webview_runtime',return_value={}),patch.object(owner,'product_state',return_value=-1),patch('windows_msi_observation.observe_legacy_setup',return_value={'syntheticObservation':True}),patch.object(owner,'pe_machine',return_value=0x8664),patch.object(owner,'protocol_args_match',return_value=True),patch('windows_upgrade_acceptance.upgrade_audit',side_effect=audit):
    if fail or preexisting:
     with self.assertRaises(RuntimeError):owner.run_upgrade_cycle(runner,{'pwsh.exe':'fixed-pwsh.exe','msiexec.exe':'fixed-msiexec.exe'},root,case,legacy,candidates,metadata,'0.1.23',payload_hashes,receipt)
    else:owner.run_upgrade_cycle(runner,{'pwsh.exe':'fixed-pwsh.exe','msiexec.exe':'fixed-msiexec.exe'},root,case,legacy,candidates,metadata,'0.1.23',payload_hashes,receipt)
