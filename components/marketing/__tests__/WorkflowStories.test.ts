@@ -131,3 +131,14 @@ it("follows app actions from request through diff, deliberate check decision and
  expect(screen.getByRole('heading',{name:'Publish branch and open a pull request?'})).toBeDefined();
  expect(fetch).not.toHaveBeenCalled();
 });
+
+for (const width of [360, 1135]) it(`keeps response focus while scrolling the correct context at ${width}px`,()=>{
+ const originalWidth=window.innerWidth;Object.defineProperty(window,'innerWidth',{configurable:true,value:width});
+ const scroll=vi.fn();const previous=HTMLElement.prototype.scrollIntoView;HTMLElement.prototype.scrollIntoView=scroll;
+ try {mount();fireEvent.click(screen.getByRole('button',{name:'Prepare sample change →'}));
+ const response=screen.getByLabelText('Sample workflow response');
+ expect(document.activeElement).toBe(response);
+ expect(scroll).toHaveBeenCalledWith({block:'nearest',inline:'nearest'});
+ expect(scroll.mock.instances.at(-1)).toBe(width>=1024?screen.getByRole('heading',{name:'Make a small, reviewable edit.'}):response);
+ }finally{HTMLElement.prototype.scrollIntoView=previous;Object.defineProperty(window,'innerWidth',{configurable:true,value:originalWidth});}
+});

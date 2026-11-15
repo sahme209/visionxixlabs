@@ -194,10 +194,13 @@
 }
 
 /* ── Base ──────────────────────────────────────────────────────── */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+/* Keep base resets below the unlayered, zero-specificity spacing utilities. */
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
 }
 
 html {

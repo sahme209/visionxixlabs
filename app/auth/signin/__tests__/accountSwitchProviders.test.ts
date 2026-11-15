@@ -12,18 +12,19 @@ afterEach(() => cleanup());
 it("requests Google account selection only for the explicit switching flow", async () => {
   render(createElement(SignInPage));
   expect((await screen.findByRole("status")).textContent).toContain("does not sign you out of GitHub");
-  fireEvent.click(await screen.findByRole("button", { name: "Sign in with Google" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Continue with Google" }));
   await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("google", { callbackUrl: mocks.callback, redirect: true }, { prompt: "select_account" }));
   expect(mocks.push).not.toHaveBeenCalled();
 });
 it("keeps ordinary Google login unchanged", async () => {
   mocks.switchAccount = "0"; render(createElement(SignInPage));
-  fireEvent.click(await screen.findByRole("button", { name: "Sign in with Google" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Continue with Google" }));
   await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("google", { callbackUrl: mocks.callback, redirect: true }));
   expect(screen.queryByRole("status")).toBeNull();
 });
 it("does not invent GitHub account-selector parameters", async () => {
   render(createElement(SignInPage));
+  fireEvent.click(screen.getByText("Other sign-in options"));
   fireEvent.click(await screen.findByRole("button", { name: "Sign in with GitHub" }));
   await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("github", { callbackUrl: mocks.callback, redirect: true }));
 });
@@ -31,16 +32,16 @@ it("cannot use the switching marker to bypass callback safety or create an authe
   mocks.callback = "//evil.test/desktop/connect?challenge=x";
   render(createElement(SignInPage));
   expect(mocks.signIn).not.toHaveBeenCalled(); expect(mocks.push).not.toHaveBeenCalled();
-  fireEvent.click(await screen.findByRole("button", { name: "Sign in with Google" }));
+  fireEvent.click(await screen.findByRole("button", { name: "Continue with Google" }));
   await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("google", { callbackUrl: "/control", redirect: true }, { prompt: "select_account" }));
 });
 
 it('retains a same-origin absolute callback returned by an OAuth error',async()=>{
  mocks.switchAccount='0';mocks.callback=`${window.location.origin}/control/plans?plan=enterprise&interval=annual`;
- render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Sign in with Google'}));
+ render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Continue with Google'}));
  await waitFor(()=>expect(mocks.signIn).toHaveBeenCalledWith('google',{callbackUrl:'/control/plans?plan=enterprise&interval=annual',redirect:true}));
 });
 it.each(['https://evil.test/control','https://user:pass@localhost:3000/control','/\\evil.test/control','javascript:alert(1)'])('rejects unsafe recovery callback %s',async callback=>{
- mocks.switchAccount='0';mocks.callback=callback;render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Sign in with Google'}));
+ mocks.switchAccount='0';mocks.callback=callback;render(createElement(SignInPage));fireEvent.click(await screen.findByRole('button',{name:'Continue with Google'}));
  await waitFor(()=>expect(mocks.signIn).toHaveBeenCalledWith('google',{callbackUrl:'/control',redirect:true}));
 });

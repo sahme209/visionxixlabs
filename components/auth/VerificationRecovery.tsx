@@ -5,7 +5,7 @@ import Link from "next/link";
 import { verificationDesktopCallback } from "@/lib/auth/verificationCallback";
 
 /** Public account-neutral recovery, never a claim that a mailbox/account exists. */
-export function VerificationRecovery({ initialEmail = "", callbackUrl }: { initialEmail?: string; callbackUrl?: string | null }) {
+export function VerificationRecovery({ initialEmail = "", callbackUrl, showSupportLink = true }: { initialEmail?: string; callbackUrl?: string | null; showSupportLink?: boolean }) {
   const [email, setEmail] = useState(initialEmail);
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
@@ -37,18 +37,18 @@ export function VerificationRecovery({ initialEmail = "", callbackUrl }: { initi
   }
   if (!open) return <button type="button" onClick={() => { setEmail(initialEmail); setOpen(true); }} className="mt-4 inline-flex min-h-11 items-center text-sm text-zinc-300 underline underline-offset-4 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-zinc-200">Need a verification email?</button>;
   return (
-    <section aria-label="Email verification recovery" className="mt-5 space-y-3 rounded-lg border border-white/10 p-4 text-sm">
+    <section aria-label="Email verification recovery" className="mt-5 grid w-full gap-3 rounded-lg border border-white/10 p-4 text-left text-sm">
       <p className="text-zinc-300">Request a new verification link for an existing email/password account. This does not reset your password or create an account.</p>
-      <form onSubmit={submit} className="space-y-3">
+      <form onSubmit={submit} className="grid gap-3">
         <label className="block text-zinc-300">Verification email address
-          <input type="email" autoComplete="email" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} className="auth-input mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2" />
+          <input type="email" autoComplete="email" required maxLength={254} value={email} onChange={(event) => setEmail(event.target.value)} className="mt-1 w-full rounded-lg border border-white/10 bg-white/5 px-3 py-2 [@media(pointer:coarse)]:text-base outline-hidden focus:border-white/30 focus:ring-2 focus:ring-white/15" />
         </label>
         <button type="submit" disabled={pending} className="min-h-11 rounded-lg border border-white/20 px-3 py-2 text-zinc-200 disabled:opacity-50">{pending ? "Requesting link…" : "Request verification link"}</button>
       </form>
       {message && <p role="status" className="text-zinc-300">{message}</p>}
       {error && <p role="alert" className="text-zinc-200">{error}</p>}
       <p className="text-xs text-zinc-500">A new link replaces previous unused links. If desktop pairing expires, return to Axiom Agent and choose Log in again.</p>
-      <Link href="/contact" className="inline-flex min-h-11 items-center text-zinc-300 underline underline-offset-4">Contact support</Link>
+      {showSupportLink && <Link href="/contact" className="inline-flex min-h-11 items-center text-zinc-300 underline underline-offset-4">Contact support</Link>}
     </section>
   );
 }
