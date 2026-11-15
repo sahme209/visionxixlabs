@@ -1,0 +1,28 @@
+{
+  "ownerDecision": "call_60732fcbde694192b8efdaf317b506d1",
+  "answer": "Approve conditional compiler test",
+  "PR": 337,
+  "before": "b693178ea7485b3a976a100da06ca75b8fa995e6",
+  "sourceInputs": 45,
+  "packetSha256": "c2ab235f9c91cfc6620a9ff275a0a63b24ab30e54f0e2c466f77a88798cac74a",
+  "changedInputs": [
+    ".github/workflows/linux-operational-compile.yml",
+    "lib/governance/platform/nativeTime/__tests__/operationalCompilePreparation.test.ts",
+    "scripts/governance_operational_compile.py",
+    "scripts/tests/test_governance_operational_compile.py"
+  ],
+  "controllerAstExceptApprovedConstantsUnchanged": true,
+  "compilerProfileAndNativeInputsUnchanged": true,
+  "pureTestsPassed": 38,
+  "nativeAttemptStarted": false,
+  "governanceEnabled": false,
+  "independentFinalEnrollmentReview": "CLEAR by joined_compiler_final_review; all45hashes and unchanged controller AST verified",
+  "fullOrdinary": {
+    "passed": 19669,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "passedFiles": 1803,
+    "skippedFiles": 106
+  },
+  "rootTypes": "pass"
+}

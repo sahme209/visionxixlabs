@@ -1,0 +1,16 @@
+{
+  "questionCall": "call_60732fcbde694192b8efdaf317b506d1",
+  "answer": "Approve conditional compiler test",
+  "sourceProposal": "docs/recovery/2026-11-15/source-release-preparation/NATIVE-COMPILER-DECISION.md",
+  "PR": 337,
+  "before": "b693178ea7485b3a976a100da06ca75b8fa995e6",
+  "maximumAttempts": 1,
+  "publicStandardRunner": "ubuntu-24.04",
+  "sharedSeconds": 2400,
+  "terminalCleanupSeconds": 5,
+  "noRetry": true,
+  "governanceOutputsMayRun": false,
+  "deploymentOrEnablement": false,
+  "spending": false,
+  "attemptStarted": false
+}

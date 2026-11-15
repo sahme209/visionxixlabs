@@ -1,4 +1,4 @@
-"""Joined operational compiler preparation. No native invocation is enabled.
+"""Joined operational compiler: one exact owner-approved PR transition.
 
 Pure recipes/static evidence checks feed the later fixed hosted controller.
 Historical compiler profiles/receipts are never modified or reenrolled here.
@@ -6,15 +6,15 @@ Historical compiler profiles/receipts are never modified or reenrolled here.
 from pathlib import Path
 import re,os,stat,json,importlib.util
 TARGET='x86_64-unknown-linux-gnu'
-APPROVED_PR=None
-APPROVED_BEFORE=None
-OWNER_DECISION=None
+APPROVED_PR=337
+APPROVED_BEFORE='b693178ea7485b3a976a100da06ca75b8fa995e6'
+OWNER_DECISION='call_60732fcbde694192b8efdaf317b506d1'
 
 def need(ok,reason='operational_compile_unavailable'):
  if not ok:raise ValueError(reason)
 
 def validate_event(event,name,attempt):
- # Closed during preparation; neither environment nor event data grants approval.
+ # Exact source-bound approval; neither environment nor event data grants approval.
  need(isinstance(APPROVED_PR,int) and not isinstance(APPROVED_PR,bool) and APPROVED_PR>0 and isinstance(APPROVED_BEFORE,str) and re.fullmatch('[0-9a-f]{40}',APPROVED_BEFORE) and isinstance(OWNER_DECISION,str) and OWNER_DECISION.startswith('call_'),'native_compile_not_approved')
  need(name=='pull_request' and attempt=='1' and isinstance(event,dict) and event.get('action')=='synchronize')
  pr=event.get('pull_request',{});repo=event.get('repository',{})

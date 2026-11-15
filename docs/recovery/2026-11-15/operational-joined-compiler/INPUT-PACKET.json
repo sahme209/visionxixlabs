@@ -1,12 +1,12 @@
 {
   "approval": {
-    "before": null,
-    "ownerDecision": null,
-    "pr": null
+    "before": "b693178ea7485b3a976a100da06ca75b8fa995e6",
+    "ownerDecision": "call_60732fcbde694192b8efdaf317b506d1",
+    "pr": 337
   },
-  "eligible": false,
+  "eligible": true,
   "files": {
-    ".github/workflows/linux-operational-compile.yml": "5a8e45e1b29c84c6ddd887bc659782d24801835c33d62f9429b822c7cffad249",
+    ".github/workflows/linux-operational-compile.yml": "0ef167d263bc9257d8bddccfa1660b83aa803225054fea2cd68ae9d73a692940",
     "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
     "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-FORMAT-PRIMARY-EVIDENCE.json": "1fabfa175dcb5e7df1396e8b86b25620519b04a9ccf0722dce48ec326674bbf3",
     "docs/recovery/2026-11-14/native-worker-local/COMPILER-OBSERVED-RESULT.json": "a5ec95bb79d6f278d626db0a36fadcd64a728b09a6314f75b98741705d520687",
@@ -15,7 +15,7 @@
     "docs/recovery/2026-11-15/operational-source-assembly/ASSEMBLED-RUST-SOURCE.json": "358f10db01c8db3c993b8a9200662acaa6ac6fa374779a539755774f52ee45c6",
     "docs/recovery/2026-11-15/operational-source-assembly/SOURCE-ASSEMBLY-RESULT.json": "1a5e3801ad2496696198d275e31df862b839ef4a1147e06405cb63211474d39f",
     "docs/recovery/2026-11-15/operational-source-assembly/audit.py": "a83a2a0e924f800fdaecaf00a45f916a93cf536692eab807db0d81abdea05305",
-    "lib/governance/platform/nativeTime/__tests__/operationalCompilePreparation.test.ts": "3761c636719756f58a39378adbd6434c1000d4e8c686f6cf21f7184aab6d560a",
+    "lib/governance/platform/nativeTime/__tests__/operationalCompilePreparation.test.ts": "e671343dfeaae5ae79cc365b5e85b0f5c88799c9a9ce6e4635ce7185ce24683b",
     "packages/verified-issuer-runtime/linux/clockbound-host-evaluation.patch": "ebc1f8288f3b74d10ff52258a01129d19186e0027719350b89bf166ddcc52708",
     "packages/verified-issuer-runtime/linux/clockbound-operational-time.patch": "34ff9f5a1c4b1971de4cffdca13ddae14996f2e1b7b5d483d716161bd534fe0e",
     "packages/verified-issuer-runtime/linux/clockbound-precise-origin.patch": "ce791c7fb9757d6d00ba754161364926dd422cce366c7813b5b0dc87f0906ab1",
@@ -44,14 +44,14 @@
     "scripts/governance_linux_compile_inputs.py": "2e6ae367bc3480681fa1c7c11ff28943f0cfe7a3cbc756f3163be4b264ae17da",
     "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
     "scripts/governance_native_worker_compile.py": "7b80cb97d066cf0bb0eb3c4d2014a023dbe28a5ae3e2a5de08e785b928798025",
-    "scripts/governance_operational_compile.py": "c2e454a79a7fc4accd681e2b3b882ecbe0419b92a0ed70a68eda1422ca468369",
+    "scripts/governance_operational_compile.py": "838fb68c29dd1bfbb797d14db558156052b14bc47607b63fb6e2422d0a12beb5",
     "scripts/governance_rust_spawn_diagnostic.py": "fb03466e0f732b52841e2d246b0779db5c2294861203a941a04a1d2f8baaec2e",
     "scripts/linux-compile/benign_fixture.c": "6bb8c6d2d5758f4d593763770b937f65e464a7e7faefb0e86060e41d54a3d446",
     "scripts/linux-compile/compiler_profile.h": "9706421ed659d4b30a7d82e39e30af5dff944988bc3957ab2f7f84513470a8fe",
     "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
     "scripts/linux-native-behavior/runtime_profile.h": "8fbd5d645a75956279e77123d07d7f2a0f67db3a1a3852e184415468c3211ed4",
-    "scripts/tests/test_governance_operational_compile.py": "ee7dbef6e1e59d575c1d7354d6ef8e424a672fee75f4f8dbff393e4f38319d89"
+    "scripts/tests/test_governance_operational_compile.py": "466a5615b475fe898a8678eeeff18cd0427e87dd616f9e4f2d5d46a6cda9d1dc"
   },
   "format": "axiom.operational-compiler-preparation/1",
-  "scope": "Preparation only. Compiler/build scripts trusted; Governance outputs never execute. Runtime/target/production qualification absent."
+  "scope": "One exact owner-approved compiler-only transition, contingent on final independent setup review before push. Governance outputs never execute; no runtime/target/production qualification."
 }

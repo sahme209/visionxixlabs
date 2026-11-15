@@ -1,0 +1,30 @@
+FF....................................
+======================================================================
+FAIL: test_exact_owner_decision_and_before_head_are_enrolled (__main__.ApprovedEnrollment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 282, in test_exact_owner_decision_and_before_head_are_enrolled
+    self.assertEqual((m.APPROVED_PR,m.APPROVED_BEFORE,m.OWNER_DECISION),(337,'b693178ea7485b3a976a100da06ca75b8fa995e6','call_60732fcbde694192b8efdaf317b506d1'))
+AssertionError: Tuples differ: (None, None, None) != (337, 'b693178ea7485b3a976a100da06ca75b8fa[43 chars]6d1')
+
+First differing element 0:
+None
+337
+
+- (None, None, None)
++ (337,
++  'b693178ea7485b3a976a100da06ca75b8fa995e6',
++  'call_60732fcbde694192b8efdaf317b506d1')
+
+======================================================================
+FAIL: test_workflow_enforces_the_exact_public_same_repo_transition (__main__.ApprovedEnrollment)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/scripts/tests/test_governance_operational_compile.py", line 289, in test_workflow_enforces_the_exact_public_same_repo_transition
+    self.assertIn(required,workflow)
+AssertionError: "github.repository == 'sahme209/visionxixlabs'" not found in "name: Prepared operational compiler (closed)\n\n# Preparation only. No event or workflow_dispatch can authorize this job.\non:\n  pull_request:\n    types: [synchronize]\n    paths:\n      - 'scripts/governance_operational_compile.py'\n      - '.github/workflows/linux-operational-compile.yml'\npermissions:\n  contents: read\njobs:\n  compile-only:\n    if: ${{ false }}\n    runs-on: ubuntu-24.04\n    timeout-minutes: 42\n    steps:\n      - name: Check out exact reviewed head without credentials\n        uses: actions/checkout@v7\n        with:\n          ref: ${{ github.event.pull_request.head.sha }}\n          persist-credentials: false\n      - name: One fixed compiler batch (requires a separate reviewed owner decision)\n        env:\n          AXIOM_PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}\n        run: python3 scripts/governance_operational_compile.py --approved-ci-once\n"
+
+----------------------------------------------------------------------
+Ran 38 tests in 0.138s
+
+FAILED (failures=2)

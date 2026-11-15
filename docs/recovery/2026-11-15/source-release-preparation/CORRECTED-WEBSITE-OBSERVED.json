@@ -1,0 +1,410 @@
+{
+  "currentInteraction": "approval-documentation",
+  "lastInteraction": "approval-documentation",
+  "completedEvidence": [
+    "essential_consent_selected",
+    "player_controls_absent",
+    "direct_step_state",
+    "manual_idle_state_retained",
+    "manual_offscreen_state_retained",
+    "sample_approve_reject",
+    "step_clears_sample_decision",
+    "native_branch_selector_resets_story",
+    "context_clears_sample_decision",
+    "current_story_resets_step_and_decision",
+    "manual_hidden_state_retained",
+    "story_retains_context",
+    "story_clears_sample_decision",
+    "terraform_apply_absent",
+    "mobile_360_no_horizontal_overflow",
+    "keyboard_manual_step_bounds",
+    "product_disclosure_and_scenario",
+    "reduced_motion_static_manual_step",
+    "actual_documentation_destination"
+  ],
+  "documentationPointer": [
+    {
+      "type": "selection",
+      "elapsedMs": 11.4,
+      "trusted": false,
+      "primary": false,
+      "anchorPresent": true,
+      "anchorReplaced": false,
+      "target": "none",
+      "hit": "none",
+      "x": null,
+      "y": null,
+      "rect": [
+        134,
+        1287.72,
+        154.39,
+        44
+      ],
+      "scroll": [
+        0,
+        2979
+      ],
+      "layout": [
+        1440,
+        1000
+      ],
+      "visual": [
+        0,
+        0,
+        1434,
+        1000,
+        1
+      ]
+    },
+    {
+      "type": "after_scroll_call",
+      "elapsedMs": 12.2,
+      "trusted": false,
+      "primary": false,
+      "anchorPresent": true,
+      "anchorReplaced": false,
+      "target": "none",
+      "hit": "link",
+      "x": 211.2,
+      "y": 539.72,
+      "rect": [
+        134,
+        517.72,
+        154.39,
+        44
+      ],
+      "scroll": [
+        0,
+        3749
+      ],
+      "layout": [
+        1440,
+        1000
+      ],
+      "visual": [
+        0,
+        0,
+        1434,
+        1000,
+        1
+      ]
+    },
+    {
+      "type": "pointerdown",
+      "elapsedMs": 125.6,
+      "trusted": true,
+      "primary": true,
+      "anchorPresent": true,
+      "anchorReplaced": false,
+      "target": "link",
+      "hit": "link",
+      "x": 211.2,
+      "y": 539.72,
+      "rect": [
+        134,
+        517.72,
+        154.39,
+        44
+      ],
+      "scroll": [
+        0,
+        3749
+      ],
+      "layout": [
+        1440,
+        1000
+      ],
+      "visual": [
+        0,
+        0,
+        1434,
+        1000,
+        1
+      ]
+    },
+    {
+      "type": "pointerup",
+      "elapsedMs": 129.1,
+      "trusted": true,
+      "primary": true,
+      "anchorPresent": true,
+      "anchorReplaced": false,
+      "target": "link",
+      "hit": "link",
+      "x": 211.2,
+      "y": 539.72,
+      "rect": [
+        134,
+        517.72,
+        154.39,
+        44
+      ],
+      "scroll": [
+        0,
+        3749
+      ],
+      "layout": [
+        1440,
+        1000
+      ],
+      "visual": [
+        0,
+        0,
+        1434,
+        1000,
+        1
+      ]
+    },
+    {
+      "type": "click",
+      "elapsedMs": 129.3,
+      "trusted": true,
+      "primary": true,
+      "anchorPresent": true,
+      "anchorReplaced": false,
+      "target": "link",
+      "hit": "link",
+      "x": 211,
+      "y": 539,
+      "rect": [
+        134,
+        517.72,
+        154.39,
+        44
+      ],
+      "scroll": [
+        0,
+        3749
+      ],
+      "layout": [
+        1440,
+        1000
+      ],
+      "visual": [
+        0,
+        0,
+        1434,
+        1000,
+        1
+      ]
+    }
+  ],
+  "initialNavigation": {
+    "issued": true,
+    "requestPaused": true,
+    "requestContinued": true,
+    "requestDenied": false,
+    "navigationAcknowledged": true,
+    "mainFrameCommitted": true
+  },
+  "documentationClick": {
+    "captureSeen": true,
+    "bubbleSeen": true,
+    "targetIsDocumentation": true,
+    "trusted": true,
+    "primaryButton": true,
+    "defaultPrevented": true,
+    "routerIntentSeen": true
+  },
+  "documentationTransitionSeen": true,
+  "documentationTiming": {
+    "startedMs": 26912,
+    "clickCompletedMs": 27108,
+    "preWaitCompletedMs": 27117,
+    "lastPollMs": 27664,
+    "pollCount": 6,
+    "observedMs": 27964
+  },
+  "documentationPreWaitSnapshot": null,
+  "documentationTimeoutSnapshot": null,
+  "scriptRequests": {
+    "allowed": 22,
+    "denied": 0
+  },
+  "scriptCounts": null,
+  "schema": 1,
+  "sourceHead": "b693178ea7485b3a976a100da06ca75b8fa995e6",
+  "sourceKind": "pull_request_head",
+  "productionEquivalent": false,
+  "outcome": "passed",
+  "cleanup": "owned_groups_empty",
+  "cleanupErrors": [],
+  "sourceUnchanged": true,
+  "captureSuccess": true,
+  "cleanupDiagnostics": [],
+  "homeCapturePhase": "manual_steps_ready_after_essential_consent",
+  "consoleErrorCount": 8,
+  "runtimeExceptionCount": 0,
+  "evaluationExceptionClass": null,
+  "predicateExceptionClass": null,
+  "captureFailure": null,
+  "preImagePhase": null,
+  "nextMarkers": null,
+  "preImageDomSnapshot": null,
+  "timedOutOperation": null,
+  "qualification": "Isolated public website fixture only; not production, authentication, native desktop, or customer deployment acceptance.",
+  "startupDiagnostic": {
+    "status": "observed",
+    "categories": []
+  },
+  "serverGuard": {
+    "stage": "stopping",
+    "counts": {
+      "transport": 2,
+      "process": 0,
+      "worker": 0,
+      "listener": 0
+    }
+  },
+  "proxyDelivery": {
+    "stage": "stopped",
+    "counts": {
+      "script_accepted": 22,
+      "script_response": 22,
+      "script_complete": 22,
+      "script_cancelled": 0,
+      "script_upstream_timeout": 0,
+      "upstream_timeout": 0
+    },
+    "categories": {
+      "webpack": {
+        "accepted": 4,
+        "response": 4,
+        "complete": 4,
+        "cancelled": 0,
+        "status_2xx": 4,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 4,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "main_app": {
+        "accepted": 4,
+        "response": 4,
+        "complete": 4,
+        "cancelled": 0,
+        "status_2xx": 4,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 4,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "app_page": {
+        "accepted": 3,
+        "response": 3,
+        "complete": 3,
+        "cancelled": 0,
+        "status_2xx": 3,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 3,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "app_layout": {
+        "accepted": 4,
+        "response": 4,
+        "complete": 4,
+        "cancelled": 0,
+        "status_2xx": 4,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 4,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      },
+      "other": {
+        "accepted": 7,
+        "response": 7,
+        "complete": 7,
+        "cancelled": 0,
+        "status_2xx": 7,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_js": 7,
+        "mime_other": 0,
+        "cancelled_successful_js": 0,
+        "cancelled_other": 0
+      }
+    },
+    "documentation": {
+      "rsc_navigation": {
+        "accepted": 1,
+        "response": 1,
+        "complete": 1,
+        "cancelled": 0,
+        "status_2xx": 1,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_rsc": 1,
+        "mime_html": 0,
+        "mime_other": 0,
+        "upstream_timeout": 0
+      },
+      "rsc_prefetch": {
+        "accepted": 0,
+        "response": 0,
+        "complete": 0,
+        "cancelled": 0,
+        "status_2xx": 0,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_rsc": 0,
+        "mime_html": 0,
+        "mime_other": 0,
+        "upstream_timeout": 0
+      },
+      "document": {
+        "accepted": 0,
+        "response": 0,
+        "complete": 0,
+        "cancelled": 0,
+        "status_2xx": 0,
+        "status_3xx": 0,
+        "status_4xx": 0,
+        "status_5xx": 0,
+        "status_other": 0,
+        "mime_rsc": 0,
+        "mime_html": 0,
+        "mime_other": 0,
+        "upstream_timeout": 0
+      },
+      "denied": 0
+    },
+    "homepage": {
+      "accepted": 3,
+      "response": 3,
+      "complete": 3,
+      "cancelled": 0,
+      "status_2xx": 3,
+      "status_3xx": 0,
+      "status_4xx": 0,
+      "status_5xx": 0,
+      "status_other": 0,
+      "mime_rsc": 0,
+      "mime_html": 3,
+      "mime_other": 0,
+      "upstream_timeout": 0
+    }
+  }
+}

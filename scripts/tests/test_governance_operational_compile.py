@@ -147,9 +147,10 @@ class RegistryClosure(unittest.TestCase):
 class PreparedEventGate(unittest.TestCase):
  def event(self):return {'action':'synchronize','number':337,'before':'a'*40,'after':'b'*40,'repository':{'full_name':'sahme209/visionxixlabs','private':False},'pull_request':{'number':337,'base':{'ref':'main','repo':{'full_name':'sahme209/visionxixlabs'}},'head':{'ref':'codex/governance-operational-package','sha':'b'*40,'repo':{'full_name':'sahme209/visionxixlabs'}}}}
  def test_valid_synthetic_event_does_not_grant_any_real_preparation_approval(self):
+  original=m.OWNER_DECISION
   with patch.multiple(m,APPROVED_PR=337,APPROVED_BEFORE='a'*40,OWNER_DECISION='call_synthetic_test_only'):
    self.assertEqual(m.validate_event(self.event(),'pull_request','1'),'b'*40)
-  self.assertIsNone(m.OWNER_DECISION)
+  self.assertEqual(m.OWNER_DECISION,original)
  def test_malformed_context_forks_retry_and_wrong_head_refuse(self):
   with patch.multiple(m,APPROVED_PR=337,APPROVED_BEFORE='a'*40,OWNER_DECISION='call_synthetic_test_only'):
    events=[self.event() for _ in range(7)];events[0]['pull_request']=None;events[1]['repository']['private']=True;events[2]['pull_request']['head']['repo']['full_name']='foreign/fork';events[3]['after']='c'*40;events[4]['before']='d'*40;events[5]['pull_request']['base']['ref']='develop';events[6]['pull_request']['head']=[]
@@ -182,16 +183,16 @@ class SourceTopology(unittest.TestCase):
    evidence=m.artifact_identity(path)
    self.assertEqual(evidence['bytes'],path.stat().st_size);self.assertEqual(evidence['sha256'],hashlib.sha256(path.read_bytes()).hexdigest())
 class WholeControllerPreparation(unittest.TestCase):
- def test_complete_packet_detects_source_change_and_workflow_remains_closed(self):
+ def test_complete_packet_detects_source_change_and_matches_enrolled_approval(self):
   files={name:hashlib.sha256((ROOT/name).read_bytes()).hexdigest() for name in m.packet_inputs(ROOT)}
-  packet={'format':'axiom.operational-compiler-preparation/1','approval':{'pr':None,'before':None,'ownerDecision':None},'files':files}
+  packet={'format':'axiom.operational-compiler-preparation/1','approval':{'pr':m.APPROVED_PR,'before':m.APPROVED_BEFORE,'ownerDecision':m.OWNER_DECISION},'files':files}
   m.verify_packet(ROOT,json.dumps(packet))
   files['scripts/governance_operational_compile.py']='0'*64
   with self.assertRaises(ValueError):m.verify_packet(ROOT,json.dumps(packet))
-  self.assertIn('if: ${{ false }}',(ROOT/'.github/workflows/linux-operational-compile.yml').read_text())
+  self.assertIn("github.event.before == '"+m.APPROVED_BEFORE+"'",(ROOT/'.github/workflows/linux-operational-compile.yml').read_text())
  def test_closed_main_refuses_before_reading_host_context(self):
   import io,contextlib
-  with patch.object(sys,'argv',['fixed','--approved-ci-once']),patch.object(m,'_read_regular',side_effect=AssertionError('unexpected read')),contextlib.redirect_stdout(io.StringIO()) as out:
+  with patch.multiple(m,APPROVED_PR=None,APPROVED_BEFORE=None,OWNER_DECISION=None),patch.object(sys,'argv',['fixed','--approved-ci-once']),patch.object(m,'_read_regular',side_effect=AssertionError('unexpected read')),contextlib.redirect_stdout(io.StringIO()) as out:
    self.assertEqual(m.main(),1)
   self.assertEqual(json.loads(out.getvalue())['errorCategory'],'native_compile_not_approved')
  def test_joined_commands_are_fixed_order_restricted_and_failure_stops(self):
@@ -277,4 +278,15 @@ class ReviewRegressions(unittest.TestCase):
     with patch.multiple(m,APPROVED_PR=337,APPROVED_BEFORE='a'*40,OWNER_DECISION='call_synthetic_test_only'),patch.object(m,'verify_packet',return_value={}),patch.object(m,'validate_event',return_value='b'*40),patch.object(sys,'argv',['fixed','--approved-ci-once']),patch.dict(os.environ,env,clear=True),contextlib.redirect_stdout(io.StringIO()):
      self.assertEqual(m.main(),1)
     self.assertFalse((existing/'RESULT.json').exists());self.assertFalse((outside/'RESULT.json').exists())
+class ApprovedEnrollment(unittest.TestCase):
+ def test_exact_owner_decision_and_before_head_are_enrolled(self):
+  self.assertEqual((m.APPROVED_PR,m.APPROVED_BEFORE,m.OWNER_DECISION),(337,'b693178ea7485b3a976a100da06ca75b8fa995e6','call_60732fcbde694192b8efdaf317b506d1'))
+  event=PreparedEventGate().event();event['before']=m.APPROVED_BEFORE
+  self.assertEqual(m.validate_event(event,'pull_request','1'),'b'*40)
+  with self.assertRaises(ValueError):m.validate_event(event,'pull_request','2')
+ def test_workflow_enforces_the_exact_public_same_repo_transition(self):
+  workflow=(ROOT/'.github/workflows/linux-operational-compile.yml').read_text()
+  for required in ["github.repository == 'sahme209/visionxixlabs'",'github.event.repository.private == false',"github.event.action == 'synchronize'",'github.event.number == 337','github.event.pull_request.number == 337',"github.event.pull_request.base.ref == 'main'",'github.event.pull_request.base.repo.full_name == github.repository','github.event.pull_request.head.repo.full_name == github.repository',"github.event.pull_request.head.ref == 'codex/governance-operational-package'","github.event.before == 'b693178ea7485b3a976a100da06ca75b8fa995e6'",'github.event.after == github.event.pull_request.head.sha','github.run_attempt == 1','runs-on: ubuntu-24.04','timeout-minutes: 42','persist-credentials: false','contents: read']:
+   self.assertIn(required,workflow)
+  self.assertNotIn('workflow_dispatch',workflow);self.assertEqual(workflow.count('run: python3 scripts/governance_operational_compile.py --approved-ci-once'),1)
 if __name__=='__main__':unittest.main()

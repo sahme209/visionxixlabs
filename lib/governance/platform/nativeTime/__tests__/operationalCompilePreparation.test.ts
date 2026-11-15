@@ -2,7 +2,7 @@ import {spawnSync} from 'node:child_process';
 import {fileURLToPath} from 'node:url';
 import {expect,it} from 'vitest';
 
-it('checks the closed compiler controller with synthetic inputs and no native process',()=>{
+it('checks the source-bound compiler controller with synthetic inputs and no native process',()=>{
  const root=fileURLToPath(new URL('../../../../../',import.meta.url));
  const result=spawnSync('/usr/bin/python3',['scripts/tests/test_governance_operational_compile.py'],{
   cwd:root,encoding:'utf8',timeout:15_000,maxBuffer:64*1024,
