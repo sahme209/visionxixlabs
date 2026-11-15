@@ -2,6 +2,8 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task only after the explicit owner authority decision.
 
+**Local implementation status:** Source, actual isolated fixture tests and one independent review completed; final ordinary suite result is recorded in the linked result receipt. Real controller/host/provider/security qualification remains OPEN.
+
 **Goal:** Add the real private local attempt-consumption primitive needed before the future external supervisor may create a host or start its original owner.
 
 **Architecture:** One effect-free-on-import Python module owns exclusive journal creation, sync-before-grant and single-use in-memory phase claims. It contains no provider/host launcher and cannot reconstruct an execution grant from disk. All real authenticity/controller/storage/native/provider qualification stays unavailable.
@@ -27,19 +29,19 @@
 
 ### Task1: Closed original manifest and durable local marker
 
-- [ ] Add actual tests first in scripts/tests/test_governance_original_attempt.py for invalid/duplicate/extra/oversize/noncanonical input and original digest/identity/protected ancestor binding mismatch, missing original deadline and expired deadline; observe RED from missing implementation.
-- [ ] Implement scripts/governance_original_attempt.py with closed record/manifest validation, held directory/file identity, exclusive marker, bounded write and file→directory sync order. No production controller/root path is chosen.
-- [ ] Invoke actual fixture filesystem code and injected failures: full/short/zero/error write, existing valid/partial/corrupt marker, wrong/link/replaced original, file/directory sync failure, cancellation; observe GREEN with zero grant on uncertainty and no unlink/repair.
-- [ ] Preserve initial failures and exact source/log hashes; do not execute host/native/provider behavior.
+- [x] Add actual tests first in scripts/tests/test_governance_original_attempt.py for invalid/duplicate/extra/oversize/noncanonical input and original digest/identity/protected ancestor binding mismatch, missing original deadline and expired deadline; observe RED from missing implementation.
+- [x] Implement scripts/governance_original_attempt.py with closed record/manifest validation, held directory/file identity, exclusive marker, bounded write and file→directory sync order. No production controller/root path is chosen.
+- [x] Invoke actual fixture filesystem code and injected failures: full/short/zero/error write, existing valid/partial/corrupt marker, wrong/link/replaced original, file/directory sync failure, cancellation; observe GREEN with zero grant on uncertainty and no unlink/repair.
+- [x] Preserve initial failures and exact source/log hashes; do not execute host/native/provider behavior.
 
 ### Task2: Original opaque grant and phase consumption
 
-- [ ] RED tests for foreign/reloaded/copied/retired/repeated grants, competing threads, close-versus-claim, simulated post-fork PID change before lock, original deadline equality/expiry, cancellation, missing original creation receipt and simulated restart. Keep authentic receipt production supplier absent.
-- [ ] Implement once-only creation claim/retirement private to the original PID/instance, atomically under its original lock with PID-before-lock refusal and original deadline/currentness/cancellation checks; consume before returning. Production owner-start stays negative-only. Any positive owner-start example is a separate test-only specification model, never a runtime constructor/import path. No callback execution or generic effect factory.
-- [ ] GREEN actual module tests, existing bootstrap/source tests, relevant ordinary contracts and strict types as affected. Ordinary tests do not qualify provider or target host.
+- [x] RED tests for foreign/reloaded/copied/retired/repeated grants, competing threads, close-versus-claim, simulated post-fork PID change before lock, original deadline equality/expiry, cancellation, missing original creation receipt and simulated restart. Keep authentic receipt production supplier absent.
+- [x] Implement once-only creation claim/retirement private to the original PID/instance, atomically under its original lock with PID-before-lock refusal and original deadline/currentness/cancellation checks; consume before returning. Production owner-start stays negative-only. Any positive owner-start example is a separate test-only specification model, never a runtime constructor/import path. No callback execution or generic effect factory.
+- [x] GREEN actual module tests, existing bootstrap/source tests, relevant ordinary contracts and strict types as affected. Ordinary tests do not qualify provider or target host.
 
 ### Task3: Independent source review and coherent savepoint
 
-- [ ] One independent whole-change review of original manifest provenance, file/directory sync ordering, crash/refusal and test-only receipt seam. Reproduce material findings RED→GREEN; retain evidence, no fabricated final CLEAR.
-- [ ] Update package/host gap map and complete living goal with timestamped preservation backups. Mark external controller/storage/authenticity/provider/native/runtime/cleanup qualification OPEN; Governance DISABLED.
-- [ ] Save one coherent local commit; no extra PR/CI/deployment or real journal run follows automatically.
+- [x] One independent whole-change review of original manifest provenance, file/directory sync ordering, crash/refusal and test-only receipt seam. Reproduce material findings RED→GREEN; retain evidence, no fabricated final CLEAR.
+- [x] Update package/host gap map and complete living goal with timestamped preservation backups. Mark external controller/storage/authenticity/provider/native/runtime/cleanup qualification OPEN; Governance DISABLED.
+- [x] Save one coherent local commit; no extra PR/CI/deployment or real journal run follows automatically.

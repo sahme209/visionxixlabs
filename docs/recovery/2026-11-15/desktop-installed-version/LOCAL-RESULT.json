@@ -22,10 +22,40 @@
     "chunk larger than500kB",
     "ineffective existing dynamic shell import"
   ],
-  "renderedReviewPerformed": false,
+  "renderedReviewPerformed": true,
   "nativeAppRun": false,
   "installedAppChanged": false,
   "installerPublished": false,
   "deployed": false,
-  "historicalSettingsBindingsRequalified": false
+  "historicalSettingsBindingsRequalified": false,
+  "renderedScope": "Actual-App static captured Settings; synthetic identity/version7.8.9, no desktop JS/actions/native calls",
+  "renderedSizes": [
+    [
+      1024,
+      600
+    ],
+    [
+      1280,
+      900
+    ]
+  ],
+  "renderedThemes": [
+    "dark",
+    "light"
+  ],
+  "renderedResult": "version and release review visible after keyboard focus; window scrollY0; no document overflow; 34px button height",
+  "renderedNotVerified": [
+    "actual installed/native app",
+    "click delivery in static study",
+    "all Settings controls",
+    "Linux/Windows/native WebKit",
+    "assistive technology/performance"
+  ],
+  "previewCleanup": "Owned tab closed; viewport override reset; original loopback process73869 normal close/exit0; no installed-app change",
+  "screenshots": {
+    "settings-short-light.jpg": "31589677c2ac308647b26ed6b276eb0b2fddb17168112ea5bdf47acf330575b6",
+    "settings-large-dark.jpg": "bbb0cb8d08eb27b22ae6c2bad148403fc302a2fb91a83fd8ebc5671d360fa557",
+    "settings-short-dark.jpg": "fc6e6a4c34ecbbbde34af192d03596871d969a2071cd0382d1388b53ba066680",
+    "settings-large-light.jpg": "b8ff3fd44f4af99ed2f23d7eca1765fe4acb574239164121297fb7063e3b9026"
+  }
 }

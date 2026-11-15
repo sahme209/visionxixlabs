@@ -1,3 +1,5 @@
+Current November15 update: original external-attempt private primitive is now approved/implemented and locally tested; see ../governance-original-attempt/LOCAL-RESULT.json. Its authentic binding/controller/storage/provider/watchdog qualification remains absent; it is not a real host supervisor. Owner requested website sign-in/download/Framer demo+integration follow-ups after this source unit; complete scope is in docs/product/2026-11-15-framer-followup.md. Older pending descriptions below are historical.
+
 ## November15 current source status after aa5e828
 
 The installed JavaScript main seam and its closed one-file compilation are complete locally (0d27398). The immutable semantic-policy/original-owner split is now approved and implemented locally (aa5e828); the old host-late compiled-profile sequencing in rows7/9 below is historical. The fixed profile path now holds the closed semantic policy, whose digest the owner pins; boot/directory/generation are once-captured by that original owner. The existing daemon/binding AXIOM_ACCEPT_V1 wire remains unchanged. Historical build/host receipts do not qualify this newer source.
