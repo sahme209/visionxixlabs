@@ -52,7 +52,7 @@ function readDocumentationClickProbe() {
   return descriptor && Object.hasOwn(descriptor, 'value') ? descriptor.value : null;
 }
 function controlToken(label) {
-  return ({ 'Inspect deployment scenarios and stages': 'product_disclosure', 'Unknown outcome': 'product_unknown', 'Code & review': 'workspace_story', 'Step 1: Choose the working context.': 'context_step', 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control' })[label] ?? 'unclassified';
+  return ({ 'Inspect deployment scenarios and stages': 'product_disclosure', 'Unknown outcome': 'product_unknown', 'Code & review': 'workspace_story', 'Step 1: Choose the working context.': 'context_step', 'Step 2: Make a small, reviewable edit.': 'edit_step', 'Play story': 'play', 'Pause story': 'pause', 'Step 3: Review the bounded check.': 'review_step', 'Simulate approval': 'sample_approve', 'Reject sample': 'sample_reject', 'Replay story': 'replay_control', 'Agent & approval': 'agent_story', 'Step 3: Decide on the exact action.': 'agent_decide', 'Terraform & cloud': 'terraform_story', 'Step 3: Keep the release on hold.': 'terraform_hold', 'Next step': 'next_control', 'Read approval workflow': 'documentation_control', 'Essential only': 'essential_consent_control', 'Prepare sample change →': 'inline_prepare', 'Review project check →': 'inline_review_check', 'Inspect sample check output →': 'inline_check_output', 'Review branch publication →': 'inline_branch_review', 'Review proposed action →': 'inline_review_action', 'Inspect outcome evidence →': 'inline_outcome' })[label] ?? 'unclassified';
 }
 // Manual workflow selection is distinct from the finite decorative typed prefix.
 function readWorkflowStoryState() {
@@ -65,6 +65,10 @@ function readWorkflowPaintState() {
   const visible = pre?.querySelector('[aria-hidden="true"]');
   if (!source || !visible) return null;
   return { source: source.textContent, shown: [...visible.childNodes].filter(node => node.nodeType === 3).map(node => node.textContent).join('') };
+}
+function isWorkflowResponseFocused() {
+  const response = document.querySelector('#product-tour [aria-label="Sample workflow response"]');
+  return Boolean(response && response.getAttribute('tabindex') === '-1' && document.activeElement === response);
 }
 function isHomepageManualReady() {
   const tour = document.querySelector('#product-tour');
@@ -245,7 +249,7 @@ try {
   async function navigate(path, preImagePhase = undefined) { assert.ok(['/', '/product', '/docs/approval-workflow'].includes(path)); if (path === '/') initialNavigation.issued = true; await send('Page.navigate', { url: `${windowState.origin}${path}` }); if (path === '/') initialNavigation.navigationAcknowledged = true; await waitFor(path => document.readyState === 'complete' && Boolean(document.querySelector(path === '/docs/approval-workflow' ? '#execution' : path === '/product' ? '#deployment-model' : '#product-tour')), path, 45000, preImagePhase); }
   async function click(label) {
     currentInteraction = controlToken(label);
-    const point = label === 'Read approval workflow'
+    const point = ['Read approval workflow', 'Prepare sample change →', 'Review project check →', 'Inspect sample check output →', 'Review branch publication →', 'Review proposed action →', 'Inspect outcome evidence →'].includes(label)
       ? await settleControlPointer(() => evaluate(pointerForControl, label), point => send('Input.dispatchMouseEvent', { type: 'mouseMoved', ...point }), () => evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve(true))))))
       : await evaluate(pointerForControl, label);
     await send('Input.dispatchMouseEvent', { type: 'mousePressed', button: 'left', clickCount: 1, ...point }); await send('Input.dispatchMouseEvent', { type: 'mouseReleased', button: 'left', clickCount: 1, ...point });
@@ -276,6 +280,29 @@ try {
   currentInteraction = 'manual_controls_check';
   assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => /^(?:Play|Pause|Replay) story$|^(?:Next|Previous) step$/.test(button.getAttribute('aria-label') ?? button.textContent.trim()))), false);
   evidence.push('player_controls_absent');
+  // Exercise the actual app-preview buttons, independently of the step selector.
+  await click('Prepare sample change →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Make a small, reviewable edit.');
+  await waitFor(isWorkflowResponseFocused);
+  await click('Review project check →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Review the bounded check.');
+  await waitFor(isWorkflowResponseFocused);
+  currentInteraction = 'inline_action_check';
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => button.textContent.trim() === 'Inspect sample check output →')), false);
+  await click('Reject sample');
+  await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample rejected'));
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => button.textContent.trim() === 'Inspect sample check output →')), false);
+  await click('Simulate approval');
+  await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample decision recorded'));
+  await click('Inspect sample check output →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Read the check output.');
+  await waitFor(isWorkflowResponseFocused);
+  assert.ok((await state()).code.includes('[sample] Process exited with code 0') && (await state()).code.includes('[sample] No deployment was requested.'));
+  await click('Review branch publication →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Review before publishing.');
+  await waitFor(isWorkflowResponseFocused);
+  assert.equal(await evaluate(() => /Sample decision recorded|Sample rejected/.test(document.querySelector('#product-tour').innerText)), false);
+  evidence.push('inline_workspace_action_chain', 'inline_response_focus', 'inline_approval_gates_continuation');
   await click('Step 2: Make a small, reviewable edit.');
   await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Make a small, reviewable edit.');
   currentInteraction = 'manual_step_check';
@@ -313,6 +340,24 @@ try {
   await click('Agent & approval');
   await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Attach context to the request.');
   assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour select')][1].value), changedBranch); evidence.push('story_retains_context');
+  await click('Prepare sample change →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Inspect the proposed change.');
+  await waitFor(isWorkflowResponseFocused);
+  await click('Review proposed action →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Decide on the exact action.');
+  await waitFor(isWorkflowResponseFocused);
+  currentInteraction = 'inline_action_check';
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => button.textContent.trim() === 'Inspect outcome evidence →')), false);
+  await click('Reject sample');
+  await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample rejected'));
+  assert.equal(await evaluate(() => [...document.querySelectorAll('#product-tour button')].some(button => button.textContent.trim() === 'Inspect outcome evidence →')), false);
+  await click('Simulate approval');
+  await waitFor(() => document.querySelector('#product-tour').innerText.includes('Sample decision recorded'));
+  await click('Inspect outcome evidence →');
+  await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Keep the outcome honest.');
+  await waitFor(isWorkflowResponseFocused);
+  assert.ok(await evaluate(() => ['A sample decision is not proof of execution', 'GitHub write not performed', 'AWS ECS health not observed', 'Recovery evidence not verified'].every(text => document.querySelector('#product-tour').innerText.includes(text))));
+  evidence.push('inline_agent_action_chain');
   await click('Step 3: Decide on the exact action.'); await click('Simulate approval'); await frame('agent-review-desktop');
   await click('Terraform & cloud');
   await waitFor(() => document.querySelector('#product-tour h2').textContent === 'Start with a configuration preview.');

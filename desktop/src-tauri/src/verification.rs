@@ -257,6 +257,12 @@ fn verification_path(inherited: Option<std::ffi::OsString>) -> Result<std::ffi::
     { Ok(inherited.unwrap_or_default()) }
 }
 
+#[cfg(windows)]
+fn verification_system_root(inherited: Option<std::ffi::OsString>) -> Result<std::ffi::OsString, String> {
+    inherited.filter(|value| std::path::Path::new(value).is_absolute())
+        .ok_or_else(|| "Windows verification system directory is unavailable.".into())
+}
+
 async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadline: Duration, mut cancel: watch::Receiver<bool>) -> Result<RepositoryCheckResult, String> {
     if *cancel.borrow() { return Err("Verification canceled before spawn; no passing receipt.".into()); }
     let check_id = check.definition.id.clone();
@@ -267,6 +273,10 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
         .env("HOME", std::env::var_os("HOME").unwrap_or_default())
         .env("CI", "1").env("NO_COLOR", "1")
         .stdin(Stdio::null()).stdout(Stdio::piped()).stderr(Stdio::piped());
+    // Windows system DLL/crypto loading needs SystemRoot. Keep the otherwise
+    // minimal environment; never inherit model tokens, NODE_OPTIONS or profiles.
+    #[cfg(windows)]
+    command.env("SystemRoot", verification_system_root(std::env::var_os("SystemRoot"))?);
     #[cfg(unix)]
     command.process_group(0);
     let mut child = command.spawn().map_err(|error| format!("Could not start {}: {error}", check.definition.command))?;
@@ -358,6 +368,21 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
 #[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(windows)]
+    #[test]
+    fn windows_system_root_must_be_present_and_absolute() {
+        assert!(verification_system_root(None).is_err());
+        for value in ["", ".", "relative", r"C:Windows"] { assert!(verification_system_root(Some(value.into())).is_err()); }
+        assert_eq!(verification_system_root(Some(r"C:\Windows".into())).unwrap(), std::ffi::OsString::from(r"C:\Windows"));
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_node_retains_only_the_fixed_minimal_environment() {
+        let result = run_detected_check(&std::env::temp_dir(), node("process.stdout.write(Object.keys(process.env).map(k=>k.toLowerCase()).sort().join(','))"), Duration::from_secs(10)).await.unwrap();
+        assert!(result.success);
+        assert_eq!(result.output, "ci,home,no_color,path,systemroot");
+    }
     #[cfg(windows)]
     fn node(script: &str) -> CheckCommand {
         CheckCommand {

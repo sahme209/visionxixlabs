@@ -15,6 +15,25 @@ use std::process::{Command, Output};
 const MAX_TEXT_FILE_BYTES: u64 = 1_000_000;
 const MAX_LISTED_FILES: usize = 5_000;
 
+/// Keep canonical filesystem paths for ownership checks, but spell Windows
+/// verbatim drive/UNC paths normally at Git's path-argument boundary. Git's
+/// protected-NTFS path validator rejects the '?' in a verbatim prefix.
+pub(crate) fn git_local_path(path: &Path) -> Result<PathBuf, String> {
+    #[cfg(windows)]
+    if matches!(path.components().next(), Some(Component::Prefix(prefix)) if matches!(prefix.kind(), std::path::Prefix::VerbatimDisk(_) | std::path::Prefix::VerbatimUNC(_, _))) {
+        // Removing the verbatim prefix must not introduce Win32 trimming or
+        // relative-component aliases. Leave such paths unavailable to Git.
+        if path.components().any(|component| match component {
+            Component::Normal(name) => name.to_string_lossy().ends_with(['.', ' ']),
+            Component::CurDir | Component::ParentDir => true,
+            _ => false,
+        }) { return Err("Git path cannot be represented safely.".into()); }
+        return reqwest::Url::from_file_path(path).map_err(|_| "Git path cannot be represented safely.".to_string())?
+            .to_file_path().map_err(|_| "Git path cannot be represented safely.".to_string());
+    }
+    Ok(path.to_path_buf())
+}
+
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RepositoryFileStatus {
@@ -231,8 +250,9 @@ pub async fn clone_repository(clone_url: String, destination_path: String) -> Re
     if let Some(parent) = destination.parent() {
         fs::create_dir_all(parent).map_err(|error| format!("Could not create {}: {error}", parent.display()))?;
     }
+    let git_destination = git_local_path(&destination)?;
     let clone_result = output_text(
-        run_scoped_git(None, &["clone", "--", clone_url.as_str(), destination_path.as_str()], &clone_url)?,
+        run_scoped_git(None, &["clone", "--", clone_url.as_str(), git_destination.to_str().ok_or("Git destination is not UTF-8.")?], &clone_url)?,
         Some(&clone_url),
     );
     if let Err(error) = clone_result {
@@ -455,6 +475,17 @@ fn dirs_home() -> Result<PathBuf, String> {
 #[cfg(test)]
 mod tests {
     use super::{redact_credential, safe_remote_url, valid_relative_path};
+
+    #[cfg(windows)]
+    #[test]
+    fn git_path_arguments_remove_only_verbatim_drive_or_unc_spelling() {
+        for (input, expected) in [(r"\\?\C:\owned space\checkout", r"C:\owned space\checkout"), (r"\\?\UNC\server\share\checkout", r"\\server\share\checkout"), (r"C:\ordinary\checkout", r"C:\ordinary\checkout"), (r"relative\checkout", r"relative\checkout")] {
+            assert_eq!(super::git_local_path(std::path::Path::new(input)).unwrap(), std::path::PathBuf::from(expected));
+        }
+        for input in [r"\\?\C:\owned.\checkout", r"\\?\C:\owned \checkout", r"\\?\C:\owned\..\checkout"] {
+            assert!(super::git_local_path(std::path::Path::new(input)).is_err());
+        }
+    }
 
     struct OwnedDirectory(std::path::PathBuf);
     impl OwnedDirectory {
@@ -724,11 +755,12 @@ mod tests {
         let parent = OwnedDirectory::new();
         assert!(super::git(Some(&remote.0), ["init", "--bare"]).unwrap().status.success());
         let destination = parent.0.join("clone");
+        let git_destination = super::git_local_path(&destination).unwrap();
         let global = parent.0.join("owned-config");
         std::fs::write(&global, format!("[url \"{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", reqwest::Url::from_directory_path(&remote.0).unwrap())).unwrap();
         let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
         let mut scoped = super::scoped_git_command(None,
-            &["clone", "--", url, destination.to_str().unwrap()], url).unwrap();
+            &["clone", "--", url, git_destination.to_str().unwrap()], url).unwrap();
         scoped.command.env("GIT_CONFIG_NOSYSTEM", "1").env("GIT_CONFIG_GLOBAL", &global);
         assert!(scoped.command.output().unwrap().status.success());
         let stored = std::fs::read_to_string(destination.join(".git/config")).unwrap();

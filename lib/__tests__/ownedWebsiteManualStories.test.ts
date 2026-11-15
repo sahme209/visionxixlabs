@@ -27,3 +27,18 @@ it('preserves a bounded current manual-readiness phase and consent checkpoint', 
   expect(summary.preImagePhase).toBe('homepage_manual');
   expect(summary.homeCapturePhase).toBe('manual_steps_ready_after_essential_consent');
 });
+
+it('only accepts the current programmatically focusable response as focused', () => {
+  const start=source.indexOf('function isWorkflowResponseFocused()');
+  expect(start).toBeGreaterThanOrEqual(0);
+  const helper=source.slice(start,source.indexOf('function isHomepageManualReady()',start));
+  const check=vm.compileFunction(`${helper}; return isWorkflowResponseFocused();`,['document']);
+  const response={getAttribute:(name:string)=>name==='tabindex'?'-1':null};
+  expect(check({querySelector:()=>response,activeElement:response})).toBe(true);
+  expect(check({querySelector:()=>response,activeElement:{}})).toBe(false);
+  expect(check({querySelector:()=>null,activeElement:null})).toBe(false);
+  expect(check({querySelector:()=>({getAttribute:()=>null}),activeElement:response})).toBe(false);
+});
+it('retains only fixed inline-action, response-focus and decision-gating evidence',()=>{
+ expect(publicInteractions({currentInteraction:'inline_action_check',lastInteraction:'inline_check_output',evidence:['inline_workspace_action_chain','inline_response_focus','inline_approval_gates_continuation','inline_agent_action_chain','PRIVATE_URL?token=secret']})).toEqual({currentInteraction:'inline_action_check',lastInteraction:'inline_check_output',completedEvidence:['inline_workspace_action_chain','inline_response_focus','inline_approval_gates_continuation','inline_agent_action_chain']});
+});

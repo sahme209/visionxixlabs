@@ -1,0 +1,39 @@
+{
+  "scope": "local combined source/build/render correction; production and Windows acceptance pending",
+  "buildInputPacketSha256": "a5eaf330e9da5d9d9c03b49f3adb8eed24c6a6eb87ba31b338de3de6062cb2ec",
+  "buildReceiptSha256": "4a003996e88244c2ea722861e22c92c52f8dc24467877b9891342577a155898b",
+  "websiteBuildExit": 0,
+  "desktopFrontendBuildExit": 0,
+  "buildCleanupConfirmed": true,
+  "finalFrozenInputsMatched": true,
+  "strictRootTypes": "passed",
+  "pythonCliPassed": 36,
+  "finalFocusedPassed": 869,
+  "finalFocusedSkipped": 178,
+  "earlierAggregate": {
+    "passed": 19688,
+    "failedDuringFixtureEdits": 2,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "frozenFailedFilesRecheckPassed": 8
+  },
+  "renderedDesktopAnd360px": {
+    "loginOverflow": false,
+    "emailContinueFocusesPassword": true,
+    "workspaceInlineFlow": true,
+    "rejectionHidesContinuation": true,
+    "agentInlineFlow": true,
+    "responseFocus": true,
+    "providersSynthetic": true,
+    "authenticationBlocked": true
+  },
+  "previewExit": 0,
+  "previewCleanupConfirmed": true,
+  "postBuildSourceDelta": "AuthFormClient form space-y-4 to grid gap-4; independently reviewed; final CI/browser pending",
+  "latestPublishedInstaller": "desktop-v0.1.21",
+  "currentSourceVersion": "0.1.23",
+  "correctedWindowsCI": "pending",
+  "liveGoogleAcceptance": false,
+  "liveDownloadRepairAccepted": false,
+  "governanceEnabled": false
+}
