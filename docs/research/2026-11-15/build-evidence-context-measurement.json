@@ -1,0 +1,84 @@
+{
+  "scope": "development-assistant evidence transfer bytes, not Axiom runtime tokens/cost",
+  "sourceCommit": "0d27398",
+  "rawLogsRetainedLocally": true,
+  "logs": [
+    {
+      "name": "BUNDLE-RED.log",
+      "bytes": 10285,
+      "sha256": "1b83299c89f406473ddb600f4b5698dcd13ef596841311d440bfe28bbb682388"
+    },
+    {
+      "name": "BUNDLE-FIRST-GREEN.log",
+      "bytes": 789,
+      "sha256": "f9a986fff1ecb1b72122c9018fe384e31b861da36d3a783dae65a67235c6e5b1"
+    },
+    {
+      "name": "BUNDLE-OUTPUT-REPLACEMENT-RED.log",
+      "bytes": 1671,
+      "sha256": "33fddd1ca17afb7d0b75f8477dd5488c62416f5cb8ffa500277b725191c746a2"
+    },
+    {
+      "name": "BUNDLE-OUTPUT-REPLACEMENT-GREEN.log",
+      "bytes": 906,
+      "sha256": "4d7379382248cc2b57dc7372695b30d56f8ebf49753eed05d8c233494e4ac4fa"
+    },
+    {
+      "name": "BUNDLE-EXTRA-LOADER-RED.log",
+      "bytes": 3466,
+      "sha256": "90a2b1cc20b8ec0bf7c3a1cc5abbd5335e95ed4b4ffc5c3cbaac4997821c2971"
+    },
+    {
+      "name": "BUNDLE-RECIPE-AND-LOADER-RED.log",
+      "bytes": 4370,
+      "sha256": "cbfa3b93e20bcdb987e1385bcaa03cc7ff6fb262ca65cb34f5cc4343dae99550"
+    },
+    {
+      "name": "BUNDLE-FINAL-GREEN.log",
+      "bytes": 1219,
+      "sha256": "a2305199c139bdd5b917d1cc4909d56d6be11eb15a51510c8c2e9dc0e71591af"
+    },
+    {
+      "name": "BUNDLE-FULL-SUITE.log",
+      "bytes": 129416,
+      "sha256": "f7988acf803353fd185e942805d9d5c579e040a23c9ae303be648aeeaf75a080"
+    },
+    {
+      "name": "BUNDLE-FINAL-FULL-SUITE.log",
+      "bytes": 129416,
+      "sha256": "9d416f0d4b2906182064b77f205958e7979486d91cd863aeb89d75f856f854b1"
+    },
+    {
+      "name": "BUNDLE-FINAL-TYPES.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "BUNDLE-PYTHON-CLI.log",
+      "bytes": 1130,
+      "sha256": "16b702e4c88b1c5b00655249076f2d320c3f703dd1e467731a4db196bdee44b2"
+    }
+  ],
+  "comparison": {
+    "hypotheticalFullLogTransferBytes": 288689,
+    "compactReceiptBytes": 6021,
+    "rawLogBytesOmittedFromRoutineTransfer": 282668
+  },
+  "retainedReceiptFields": {
+    "sourceAndArtifactHashes": true,
+    "compilerAndRecipeHashes": true,
+    "failedAndPassedLogHashes": true,
+    "actualSuitePassExpectedFailureSkipCounts": true,
+    "nativeQualificationAndGovernanceDisabledFlags": true
+  },
+  "notEstablished": [
+    "model token count",
+    "actual billed cost",
+    "actual assistant input savings",
+    "equal task quality across encodings",
+    "runtime AI/provider optimization",
+    "authorization or qualification from a summary"
+  ],
+  "newModelProviderOrPaidCall": false,
+  "newDependencyOrRuntimeChange": false
+}

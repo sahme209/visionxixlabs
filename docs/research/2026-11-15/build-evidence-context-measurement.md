@@ -1,0 +1,9 @@
+# Development-assistant evidence transfer - local measurement
+
+One real source-build checkpoint at local commit0d27398 retains 11 original test/compiler logs (282,668UTF8/filebytes) and its 6,021byte structured result receipt. A hypothetical transfer of both all logs and receipt would be 288,689bytes; routine transfer of that receipt alone is 6,021bytes. The original logs remain locally available by exact size/SHA256, including initial failures. This is an encoding comparison for status review, not a measured reduction in actual assistant inputs or a full-information-equivalence claim. Current execution already used bounded extracts; no new runtime optimization was installed.
+
+The receipt keeps source/artifact/compiler/recipe identity, actual pass/expected-failure/skip counts and native-unqualified/Governance-disabled status explicit. Approval state, current authority, private targets, attempts and live qualification must still be checked against their original authoritative records; hashes/summaries never grant execution or replay. Raw failures remain available for diagnosis. A short receipt alone cannot prove all source or security acceptance.
+
+No tokenizer/model/provider/customer/database/billing call occurred. UTF8/filebytes are neither model-token counts nor invoices; no token/cost/quality-equivalence saving is established. This measures the development-assistant track only and says nothing about Axiom runtime usage, customer tariffs, prompt compression or model caching. Reuse deterministic source-bound extraction before adding dependencies; no new tool/repo adoption or implementation ticket follows.
+
+Exact measured inputs, hashes, dimensions and limitations: build-evidence-context-measurement.json. Existing eight-area future-technology and tooling assessments are preserved; no recommendation is renewed as current without its own evidence.

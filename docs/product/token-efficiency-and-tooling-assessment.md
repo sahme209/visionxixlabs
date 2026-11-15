@@ -71,3 +71,8 @@ Source-bound research and one synthetic arithmetic measurement are saved in docs
 ### November14 — existing Agent context controls assessed during build-permission wait
 
 The [source-bound Agent context assessment](../research/2026-11-14/agent-context-reuse-assessment.md) verifies existing transcript/fresh-evidence limits, shared decision/repair budgets and the separate final-input byte bound. One synthetic pure-helper measurement passes five cases; no model/provider/database calls, new runtime optimization, token/cost-saving claim, dependency or pricing change. The earlier retrieval measurements are preserved, not rerun. Reuse current controls before new libraries; real quality/cost/adoption gates and the pending presentation-build decision remain open.
+
+
+### November15 - development-assistant evidence bytes, no runtime adoption
+
+[One real build-evidence checkpoint](../research/2026-11-15/build-evidence-context-measurement.md) compares a hypothetical all-log transfer with the existing compact source/test/artifact receipt while retaining all failed/passed originals by hash. Dimensions are file/UTF8bytes only; actual assistant inputs, model tokens, billing and quality-equivalence savings remain unmeasured. No model/provider/customer/database call, dependency, runtime, tariff or production change. Authority/attempt/qualification state remains outside lossy compression and must be checked at its original source.

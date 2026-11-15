@@ -1,3 +1,9 @@
+## November 15 — package source saved; two real decisions pending
+
+Closed operational-main source/build/evidence is saved locally as0d27398; no push, PR, native run or production action. Final19606ordinary passes/1expectedfailure/1144skips, strict root types,36CLI checks and11compiler/filesystem checks are recorded below. The next semantic-policy/original-owner acceptance authority design has independent-review clarifications incorporated and is awaiting explicit LOCAL implementation/test decision; no native policy code changed. The private production connection diagnostic also remains unanswered. Fresh metadata confirms the one staged buildREADY and both live domains still on the previous deployment; no secret read/promotion/secondbuild.
+
+During this genuine decision gap, deterministic local measurement records11retained logs/282668bytes versus the existing6021byte result receipt for a hypothetical context transfer. It does not establish actual assistant inputs, model tokens, invoices, equal task quality or runtime savings; no new dependency/adoption/provider action. Evidence: docs/research/2026-11-15/build-evidence-context-measurement.md. Complete master scope remains ACTIVE; Governance INCOMPLETE/DISABLED and native/host/custody/fleet/people/provider/distribution/security/production acceptance stays OPEN.
+
 ## November 15 — closed operational main compiled locally; next authority design prepared
 
 The installed supplier entrypoint plus its two runtime source modules now produce one11241byte owner-hashable main.mjs (SHA2569a058466aa4b247ead7d352821056a3319c33739197057fa6118ab0d55c45810), using existing rolldown1.2.19/TS5.9.3 with exact closed source/import/loader and original output-identity checks. Syntax-only verification exits0; the emitted program/addon was never imported. No new dependency, native target build/run, installation or qualifier/default registration.
