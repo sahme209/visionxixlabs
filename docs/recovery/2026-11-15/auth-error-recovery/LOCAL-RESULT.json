@@ -1,0 +1,69 @@
+{
+  "scope": "local denial recovery; not a Google identity/storage repair",
+  "parentCheckpoint": "f2a0290",
+  "actualInstalledDispatcherRed": true,
+  "focusedPassed": 87,
+  "finalFullSuite": {
+    "passed": 19665,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "passedFiles": 1801,
+    "skippedFiles": 106
+  },
+  "finalRootTypes": "pass",
+  "review": {
+    "reviewer": "framer_followup_review",
+    "importantFinding": "missing-config branch could become a cached unavailable page",
+    "actualCompilerRed": {
+      "routeCompiled": true,
+      "staticallyCached": true,
+      "prerenderManifestSha256": "c9682c0bfc814a3ba2a35c5457f5dc5571ad7a74c7c1330227ffa06f14fc265a",
+      "buildReceiptSha256": "9e9e1d31bd18dbc8d94b69b7f955de7f3198dcd2bf2fd721e598edf416b16a53"
+    },
+    "actualCompilerGreen": {
+      "routeCompiled": true,
+      "staticallyCached": false,
+      "prerenderManifestSha256": "ba788908e1c651ee0046df1cca4748ecb31ec6f7ba557dfb456fda9aa3024527",
+      "buildReceiptSha256": "4f2151c1a4be2553a2dc6277ffc1eb96e7581e13c81062283871f5d734830cbe"
+    },
+    "fixedByAuthor": true,
+    "subsequentReviewerClearClaimed": false
+  },
+  "compiledHttp": {
+    "compiledRequestTimeRecovery": "pass",
+    "originalSyntheticPairingReturnPreserved": true,
+    "genericFailureOnly": true,
+    "incomingOAuthCodeStateDiscarded": true,
+    "missingCookieNormalFallback": true,
+    "aliasUsesConfiguredHost": true,
+    "forwardedHostIgnored": true,
+    "signInHtmlStatus": 200,
+    "errorResponseNoStore": true,
+    "authProviderOrVerificationSubmission": false,
+    "fixture": "only exact synthetic callback cookie forwarded; no real session/provider cookies"
+  },
+  "browser": {
+    "desktopWidth": 1280,
+    "mobileWidth": 390,
+    "mobileHorizontalOverflow": 0,
+    "originalSyntheticPairingCallbackPreserved": true,
+    "queryKeys": [
+      "error",
+      "callbackUrl"
+    ],
+    "missingCookieCallbackAbsent": true,
+    "genericNoticeVisible": true,
+    "realProviderOrAccountSubmission": false,
+    "tabClosed": true,
+    "viewportReset": true,
+    "ownedServerExitCode": 0
+  },
+  "privateDiagnosticApprovalStillPending": true,
+  "realGoogleFailureCauseEstablished": false,
+  "downloadRepaired": false,
+  "productionChanged": false,
+  "nativeOrInstalledChanged": false,
+  "credentialsOrAccountsAccessed": false,
+  "spending": false,
+  "governanceEnabled": false
+}

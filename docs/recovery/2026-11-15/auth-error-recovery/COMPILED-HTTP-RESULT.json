@@ -1,0 +1,13 @@
+{
+  "compiledRequestTimeRecovery": "pass",
+  "originalSyntheticPairingReturnPreserved": true,
+  "genericFailureOnly": true,
+  "incomingOAuthCodeStateDiscarded": true,
+  "missingCookieNormalFallback": true,
+  "aliasUsesConfiguredHost": true,
+  "forwardedHostIgnored": true,
+  "signInHtmlStatus": 200,
+  "errorResponseNoStore": true,
+  "authProviderOrVerificationSubmission": false,
+  "fixture": "only exact synthetic callback cookie forwarded; no real session/provider cookies"
+}

@@ -150,7 +150,7 @@ export const authOptions: NextAuthOptions = {
   // OAuth must honor the original callback so a newly created identity returns
   // to its short-lived desktop pairing request just like an existing one.
   // A static new-user page would strand the browser outside Axiom Agent.
-  pages: { signIn: "/auth/signin" },
+  pages: { signIn: "/auth/signin", error: "/auth/error" },
   callbacks: {
     async signIn({ user, account }) {
       // For OAuth/OIDC sign-ins (Google/GitHub/Cognito), ensure a User row
