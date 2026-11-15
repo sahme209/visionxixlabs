@@ -1,0 +1,13 @@
+{
+  "pr": "https://github.com/sahme209/visionxixlabs/pull/336",
+  "headSha": "cd3b3ff859f6b3859005fa234a2e87d69f9c1183",
+  "mergeSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "merged": true,
+  "method": "merge",
+  "allActivePrChecksPassed": true,
+  "optionalShotsSkipped": true,
+  "adminBypass": false,
+  "mergedTreeEqualsReviewedHead": true,
+  "mainChecksPending": true,
+  "productionDeploymentsCreated": 0
+}

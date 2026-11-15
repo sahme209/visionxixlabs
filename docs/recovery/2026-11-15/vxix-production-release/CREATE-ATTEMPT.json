@@ -1,0 +1,27 @@
+{
+  "startedAt": "2026-11-15T10:41:52.554527+00:00",
+  "sourceSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "mainChecks": [
+    {
+      "conclusion": "success",
+      "databaseId": 43704338908,
+      "headSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+      "status": "completed",
+      "workflowName": "Test"
+    },
+    {
+      "conclusion": "success",
+      "databaseId": 43704338838,
+      "headSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+      "status": "completed",
+      "workflowName": "Desktop CI"
+    }
+  ],
+  "target": "production",
+  "skipDomain": true,
+  "sourceDirectory": "/private/tmp/axiom-vxix-production-source-xmjk1pnv",
+  "attempt": 1,
+  "automaticCreateRetry": false,
+  "cliExitCode": 0,
+  "cliCompletedAt": "2026-11-15T10:42:35.885621+00:00"
+}

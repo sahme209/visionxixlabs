@@ -1,0 +1,128 @@
+{
+  "deployment": {
+    "id": "dpl_2G1faD3e8Ru6HS9yeXqrR8wFvJkv",
+    "sourceSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+    "state": "READY",
+    "target": "production",
+    "liveDomainsAssigned": false,
+    "createdOnce": true
+  },
+  "pages": [
+    {
+      "path": "/",
+      "status": 200,
+      "hasBrand": true,
+      "hasNewHero": true
+    },
+    {
+      "path": "/product",
+      "status": 200,
+      "success": true,
+      "hasBrand": true,
+      "hasDocument": true,
+      "bodyLength": 154322
+    },
+    {
+      "path": "/security",
+      "status": 200,
+      "success": true,
+      "hasBrand": true,
+      "hasDocument": true,
+      "bodyLength": 91128
+    },
+    {
+      "path": "/docs",
+      "status": 200,
+      "success": true,
+      "hasBrand": true,
+      "hasDocument": true,
+      "bodyLength": 126322
+    },
+    {
+      "path": "/download",
+      "status": 200,
+      "success": true,
+      "hasBrand": true,
+      "hasDocument": true,
+      "bodyLength": 61325
+    },
+    {
+      "path": "/plans",
+      "status": 200,
+      "success": true,
+      "hasBrand": true,
+      "hasDocument": true,
+      "bodyLength": 86002
+    },
+    {
+      "path": "/status",
+      "status": 200,
+      "success": true,
+      "hasBrand": true,
+      "hasDocument": true,
+      "bodyLength": 63678
+    }
+  ],
+  "backend": {
+    "success": true,
+    "httpStatus": 200,
+    "overall": "unknown",
+    "components": [
+      {
+        "id": "autonomy_loop",
+        "verdict": "unknown",
+        "detail": "Could not query rationale store."
+      },
+      {
+        "id": "outbound_channel",
+        "verdict": "unknown",
+        "detail": "Could not query notification record store."
+      },
+      {
+        "id": "billing_plane",
+        "verdict": "unknown",
+        "detail": "Billing-plan store unreachable."
+      },
+      {
+        "id": "cron_self_heal",
+        "verdict": "operational",
+        "detail": "5 cron(s) tracked. No self-heal skip in effect."
+      },
+      {
+        "id": "agi_spine",
+        "verdict": "operational",
+        "detail": "9/9 self-diagnostic checks pass."
+      },
+      {
+        "id": "ai_provider",
+        "verdict": "operational",
+        "detail": "1 provider(s) configured. Active: vercel_gateway (anthropic/claude-sonnet-4.6)."
+      }
+    ],
+    "generatedAt": "2026-11-15T10:48:49.269Z"
+  },
+  "authRefusal": {
+    "path": "/api/desktop/agent/conversations",
+    "status": 401,
+    "body": {
+      "nonJson": true
+    }
+  },
+  "liveAliases": [
+    {
+      "alias": "www.visionxixlabs.com",
+      "deploymentId": "dpl_EBjGUqmBPxwLSHjdW2noMDqXVHuy"
+    },
+    {
+      "alias": "visionxixlabs.com",
+      "deploymentId": "dpl_EBjGUqmBPxwLSHjdW2noMDqXVHuy"
+    }
+  ],
+  "promoted": false,
+  "reason": "Three database-backed status components remain unknown; current scoped runtime error read returned no error records. Cause unestablished.",
+  "desktop": {
+    "candidate": "0.1.23",
+    "installedOrPublished": false
+  },
+  "governanceEnabled": false
+}

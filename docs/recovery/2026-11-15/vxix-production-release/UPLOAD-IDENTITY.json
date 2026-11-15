@@ -1,0 +1,11 @@
+{
+  "sourceSha": "666b4a8ab3ff5ea11c8250b8f52fd5f32a085cf6",
+  "deploymentId": "dpl_2G1faD3e8Ru6HS9yeXqrR8wFvJkv",
+  "localAcceptedProductHashes": 97,
+  "uploadedTreeTruncated": true,
+  "observedMatchingSourceIds": 9,
+  "observedMismatches": [],
+  "omittedFilesNotDeclaredMissing": true,
+  "fullProviderTreeAudit": false,
+  "credentialFilesCopied": false
+}
