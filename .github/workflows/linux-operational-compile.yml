@@ -21,7 +21,7 @@ jobs:
       github.event.pull_request.base.repo.full_name == github.repository &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.head.ref == 'codex/governance-operational-package' &&
-      github.event.before == 'b693178ea7485b3a976a100da06ca75b8fa995e6' &&
+      github.event.before == '35b88cba5aae932aa53f9aa08bc87810a1ce0697' &&
       github.event.after == github.event.pull_request.head.sha &&
       github.run_attempt == 1
     runs-on: ubuntu-24.04

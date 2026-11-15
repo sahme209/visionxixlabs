@@ -1,0 +1,687 @@
+{
+  "accepted": false,
+  "errorCategory": "operational_symbol_output_limit",
+  "finalFrozenInputsMatched": true,
+  "frozenInputCount": 10861,
+  "frozenInputManifestSha256": "41cd0812d2cd3b8c1a9fd08cecf4527499358e5b0cc32439e704fddc96b8990c",
+  "governanceEnabled": false,
+  "head": "35b88cba5aae932aa53f9aa08bc87810a1ce0697",
+  "nativeRuntimeExecuted": false,
+  "packetSha256": "c2ab235f9c91cfc6620a9ff275a0a63b24ab30e54f0e2c466f77a88798cac74a",
+  "records": [
+    {
+      "argv": [
+        "/usr/bin/git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 41,
+          "sha256": "80849b504c7de168bba17a544337d306517610dce61549e593658c6157b072d3",
+          "text": "35b88cba5aae932aa53f9aa08bc87810a1ce0697\n",
+          "truncated": false
+        }
+      },
+      "phase": "source-head",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0016282700000118666,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 41
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "-M",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/network_launcher.c"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 7817,
+          "sha256": "54f23fd7d55e98ca6df1307a760a01e8435ff31fade94cf85fac7b4b57853dc6",
+          "text": "network_launcher.o: \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/network_launcher.c \\\n /usr/include/stdc-predef.h \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/compiler_profile.h \\\n /usr/include/linux/audit.h /usr/include/linux/types.h \\\n /usr/include/x86_64-linux-gnu/asm/types.h \\\n /usr/include/asm-generic/types.h /usr/include/asm-generic/int-ll64.h \\\n /usr/include/x86_64-linux-gnu/asm/bitsperlong.h \\\n /usr/include/asm-generic/bitsperlong.h /usr/include/linux/posix_types.h \\\n /usr/include/linux/stddef.h \\\n /usr/include/x86_64-linux-gnu/asm/posix_types.h \\\n /usr/include/x86_64-linux-gnu/asm/posix_types_64.h \\\n /usr/include/asm-generic/posix_types.h /usr/include/linux/elf-em.h \\\n /usr/include/linux/filter.h /usr/include/linux/bpf_common.h \\\n /usr/include/linux/seccomp.h /usr/include/linux/sched.h \\\n /usr/include/x86_64-linux-gnu/asm/unistd.h \\\n /usr/include/x86_64-linux-gnu/asm/unistd_64.h \\\n /usr/include/x86_64-linux-gnu/sys/syscall.h \\\n /usr/include/x86_",
+          "truncated": true
+        }
+      },
+      "phase": "network-launcher-headers",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.1099329339999997,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 7817
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/network_launcher.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "network-launcher-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.08273790900000222,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "-M",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/benign_fixture.c"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 7061,
+          "sha256": "7a47ce46dd3521dfe493253ac8c144787b067e2d4c29e297120bf8008968f625",
+          "text": "benign_fixture.o: \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/benign_fixture.c \\\n /usr/include/stdc-predef.h /usr/include/errno.h /usr/include/features.h \\\n /usr/include/features-time64.h \\\n /usr/include/x86_64-linux-gnu/bits/wordsize.h \\\n /usr/include/x86_64-linux-gnu/bits/timesize.h \\\n /usr/include/x86_64-linux-gnu/sys/cdefs.h \\\n /usr/include/x86_64-linux-gnu/bits/long-double.h \\\n /usr/include/x86_64-linux-gnu/gnu/stubs.h \\\n /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \\\n /usr/include/x86_64-linux-gnu/bits/errno.h /usr/include/linux/errno.h \\\n /usr/include/x86_64-linux-gnu/asm/errno.h \\\n /usr/include/asm-generic/errno.h /usr/include/asm-generic/errno-base.h \\\n /usr/include/x86_64-linux-gnu/bits/types/error_t.h /usr/include/fcntl.h \\\n /usr/include/x86_64-linux-gnu/bits/types.h \\\n /usr/include/x86_64-linux-gnu/bits/typesizes.h \\\n /usr/include/x86_64-linux-gnu/bits/time64.h \\\n /usr/include/x86_64-linux-gnu/bits/fcntl.h \\\n /usr/include/x86_64-linux-gnu/bits/fcntl-linux.h \\\n /usr/inc",
+          "truncated": true
+        }
+      },
+      "phase": "benign-fixture-headers",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0123438929999935,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 7061
+      }
+    },
+    {
+      "argv": [
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-Werror",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/benign_fixture.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/benign_fixture"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "benign-fixture-compile",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.03595793799999569,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--describe"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 11959,
+          "sha256": "f81b535a97da78bd5e6586b7282e0b0688478de9fca5f91059b8f1499e36ae41",
+          "text": "{\"format\":1,\"target\":\"linux-x86_64\",\"arch\":3221225534,\"defaultErrno\":1,\"clone3Errno\":38,\"allowlist\":[\"read\",\"write\",\"readv\",\"writev\",\"pread64\",\"pwrite64\",\"close\",\"close_range\",\"openat\",\"fstat\",\"newfstatat\",\"statx\",\"lseek\",\"getdents64\",\"readlink\",\"readlinkat\",\"access\",\"faccessat\",\"faccessat2\",\"fcntl\",\"dup\",\"dup2\",\"dup3\",\"pipe\",\"pipe2\",\"poll\",\"ppoll\",\"select\",\"pselect6\",\"epoll_create1\",\"epoll_ctl\",\"epoll_wait\",\"epoll_pwait\",\"mmap\",\"mprotect\",\"munmap\",\"mremap\",\"madvise\",\"brk\",\"arch_prctl\",\"set_tid_address\",\"set_robust_list\",\"rseq\",\"futex\",\"futex_waitv\",\"rt_sigaction\",\"rt_sigprocmask\",\"rt_sigreturn\",\"sigaltstack\",\"rt_sigsuspend\",\"fork\",\"vfork\",\"execve\",\"execveat\",\"wait4\",\"waitid\",\"exit\",\"exit_group\",\"getpid\",\"getppid\",\"gettid\",\"getuid\",\"geteuid\",\"getgid\",\"getegid\",\"getgroups\",\"uname\",\"sysinfo\",\"getrlimit\",\"prlimit64\",\"getrusage\",\"sched_getaffinity\",\"sched_yield\",\"clock_gettime\",\"clock_getres\",\"nanosleep\",\"clock_nanosleep\",\"getrandom\",\"getcwd\",\"chdir\",\"fchdir\",\"mkdir\",\"mkdirat\",\"unlink\",\"unlinkat\",\"rename\",\"rename",
+          "truncated": true
+        }
+      },
+      "phase": "filter-description",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.0009407679999924312,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 11959
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/benign_fixture",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/fixture-owned-file",
+        "/usr/bin/true"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 67,
+          "sha256": "58d0df067db44325c34476b36c91dc638effb03ec92ac90bc0116699f34e31b7",
+          "text": "local-file:ok\nchild-exec:ok\nnetwork-denials:ok\nselector-denials:ok\n",
+          "truncated": false
+        }
+      },
+      "phase": "restriction-preflight",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.10519177599999807,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 67
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustc",
+        "--offline",
+        "--locked",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--lib",
+        "--no-default-features"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 179,
+          "sha256": "07bd8153e61394c890ac2ed67b425b61de330e1b21204798fa5550325ebe84d3",
+          "text": "   Compiling axiom-spawn-probe v0.0.0 (/home/runner/work/_temp/axiom-operational-compiler-once/tiny-crate)\n    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.26s\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "tiny-offline-cargo",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.26939072599999747,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 179,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "fetch",
+        "--locked",
+        "--target",
+        "x86_64-unknown-linux-gnu"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 7656,
+          "sha256": "0d72b83d173bf9c0764c4b638eba999d88842102a56b021947033e0235650459",
+          "text": "warning: profiles for the non root package will be ignored, specify profiles at the workspace root:\npackage:   /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/clock-bound/Cargo.toml\nworkspace: /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/Cargo.toml\n    Updating crates.io index\n Downloading crates ...\n  Downloaded pin-utils v0.1.0\n  Downloaded memoffset v0.7.1\n  Downloaded autocfg v1.5.1\n  Downloaded test-log-core v0.2.21\n  Downloaded percent-encoding v2.3.2\n  Downloaded try-lock v0.2.5\n  Downloaded futures-task v0.3.32\n  Downloaded tracing-test v0.2.6\n  Downloaded stable_deref_trait v1.2.1\n  Downloaded bitflags v1.3.2\n  Downloaded distrs v0.2.3\n  Downloaded futures-macro v0.3.32\n  Downloaded rawpointer v0.2.1\n  Downloaded test-log v0.2.21\n  Downloaded test-log-macros v0.2.21\n  Downloaded synstructure v0.14.0\n  Downloaded http-body-util v0.1.5\n  Downloaded signal-hook-registry v1.4.8\n  Downloaded num-integer v0.1.46\n  Downloaded deadpool v0.12.3\n  Downloaded futures-channel v0.3.32\n  Downloaded smallvec v1.15.2\n  Downloaded cpufeatures v0.2.17\n  Downloaded hex-literal v0.4.1\n  Downloaded utf8parse v0.2.2\n  Downloaded approx v0.5.1\n  Downloaded heck v0.5.0\n  Downloaded serde_derive v1.0.228\n  Downloaded serde_core v1.0.228\n  Downloaded levenberg-marquardt v0.14.0\n  Downloaded thiserror v2.0.21\n  Downloaded mockall v0.13.1\n  Downloaded mockall_derive v0.13.1\n  Downloaded sha2 v0.10.9\n  Downloaded tracing-subscriber v0.3.23\n  Downloaded toml v1.1.4+spec-1.1.0\n  Downloaded rstest v0.26.1\n  Downloaded toml_edit v0.25.15+spec-1.1.0\n  Downloaded prettyplease v0.2.37\n  Downloaded adler2 v2.0.1\n  Downloaded zerofrom-derive v0.1.8\n  Downloaded itoa v1.0.18\n  Downloaded tracing-test-macro v0.2.6\n  Downloaded sharded-slab v0.1.7\n  Downloaded rand v0.9.5\n  Downloaded num-rational v0.4.2\n  Downloaded statrs v0.18.0\n  Downloaded block-buffer v0.10.4\n  Downloaded utf8_iter v1.1.0\n  Downloaded tokio-macros v2.7.0\n  Downloaded futures-core v0.3.32\n  Downloaded num_cpus v1.17.0\n  Downloaded fnv v1.0.7\n  Downloaded yoke-derive v0.8.4\n  Downloaded tempfile v3.27.0\n  Downloaded downcast v0.11.0\n  Downloaded termtree v0.5.1\n  Downloaded clap_lex v1.1.0\n  Downloaded is_terminal_polyfill v1.70.2\n  Downloaded lazy_static v1.5.0\n  Downloaded cfg-if v1.0.4\n  Downloaded equivalent v1.0.2\n  Downloaded httpdate v1.0.3\n  Downloaded futures-io v0.3.32\n  Downloaded deadpool-runtime v0.1.4\n  Downloaded errno v0.3.14\n  Downloaded form_urlencoded v1.2.2\n  Downloaded getrandom v0.4.3\n  Downloaded strsim v0.11.1\n  Downloaded symlink v0.1.0\n  Downloaded crc32fast v1.5.0\n  Downloaded zerovec-derive v0.11.7\n  Downloaded http-body v1.1.0\n  Downloaded proc-macro2 v1.0.106\n  Downloaded matchers v0.2.0\n  Downloaded proc-macro-crate v3.5.0\n  Downloaded md5 v0.8.1\n  Downloaded anstyle-query v1.1.5\n  Downloaded time-core v0.1.9\n  Downloaded zerofrom v0.1.8\n  Downloaded futures-sink v0.3.32\n  Downloaded potential_utf v0.1.6\n  Downloaded want v0.3.2\n  Downloaded num-conv v0.2.2\n  Downloaded nalgebra-macros v0.2.2\n  Downloaded idna_adapter v1.2.2\n  Downloaded rand_chacha v0.3.1\n  Downloaded atomic-waker v1.1.2\n  Downloaded utf_types v1.0.0\n  Downloaded writeable v0.6.4\n  Downloaded futures-executor v0.3.32\n  Downloaded tinystr v0.8.5\n  Downloaded slab v0.4.12\n  Downloaded assert-json-diff v2.0.2\n  Downloaded ident_case v1.0.1\n  Downloaded predicates-tree v1.0.13\n  Downloaded relative-path v1.9.3\n  Downloaded rand_core v0.6.4\n  Downloaded pin-project-lite v0.2.17\n  Downloaded colorchoice v1.0.5\n  Downloaded bytes v1.12.1\n  Downloaded litemap v0.8.3\n  Downloaded url v2.5.8\n  Downloaded clock-bound-vmclock v2.0.3\n  Downloaded thiserror v1.0.69\n  Downloaded paste v1.0.15\n  Downloaded zmij v1.0.23\n  Downloaded thiserror-impl v1.0.69\n  Downloaded quote v1.0.46\n  Downloaded displaydoc v0.2.7\n  Downloaded deranged v0.5.8\n  Downloaded clock-bound-shm v2.0.3\n  Downloaded mockall_double v0.3.1\n  Downloaded yoke v0.8.4\n  Downloaded httparse v1.10.1\n  Downloaded once_cell v1.21.4\n  Downloaded tracing-attributes v0.1.31\n  Downloaded version_check v0.9.5\n  Downloaded thread_local v1.1.10\n  Downloaded serde_spanned v1.1.1\n  Downloaded glob v0.3.4\n  Downloaded indoc v2.0.7\n  Downloaded anstyle-parse v1.0.0\n  Downloaded generic-array v0.14.7\n  Downloaded tracing-serde v0.2.0\n  Downloaded nu-ansi-term v0.50.3\n  Downloaded thiserror-impl v2.0.21\n  Downloaded predicates-core v1.0.10\n  Downloaded toml_datetime v1.1.1+spec-1.1.0\n  Downloaded rand_core v0.9.5\n  Downloaded anstyle v1.0.14\n  Downloaded fragile v2.1.0\n  Downloaded serde v1.0.228\n  Downloaded powerfmt v0.2.0\n  Downloaded getrandom v0.2.17\n  Downloaded unicode-ident v1.0.24\n  Downloaded darling_macro v0.23.0\n  Downloaded crypto-common v0.1.7\n  Downloaded wiremock v0.6.5\n  Downloaded socket2 v0.6.5\n  Downloaded anstream v1.0.0\n  Downloaded digest v0.10.7\n  Downloaded futures-timer v3.0.4\n  Downloaded byteorder v1.5.0\n  Downloaded time-macros v0.2.31\n  Downloaded icu_provider v2.4.0\n  Downloaded fastrand v2.4.1\n  Downloaded semver v1.0.28\n  Downloaded simd-adler32 v0.3.9\n  Downloaded tracing-log v0.2.0\n  Downloaded predicates v3.1.4\n  Downloaded darling v0.23.0\n  Downloaded anyhow v1.0.103\n  Downloaded iana-time-zone v0.1.65\n  Downloaded num-complex v0.4.6\n  Downloaded toml_parser v1.1.3+spec-1.1.0\n  Downloaded rustc_version v0.4.1\n  Downloaded rand_chacha v0.9.0\n  Downloaded ppv-lite86 v0.2.21\n  Downloaded nom v8.0.0\n  Downloaded clap_derive v4.6.1\n  Downloaded tracing-appender v0.2.5\n  Downloaded rstest_macros v0.25.0\n  Downloaded toml_writer v1.1.2+spec-1.1.0\n  Downloaded rustversion v1.0.23\n  Downloaded getrandom v0.3.4\n  Downloaded icu_normalizer_data v2.4.0\n  Downloaded tracing-core v0.1.36\n  Downloaded futures v0.3.32\n  Downloaded icu_locale_core v2.4.0\n  Downloaded base64 v0.22.1\n  Downloaded darling_core v0.23.0\n  Downloaded simba v0.9.1\n  Downloaded rstest v0.25.0\n  Downloaded miniz_oxide v0.8.9\n  Downloaded log v0.4.33\n  Downloaded rand_distr v0.4.3\n  Downloaded icu_collections v2.4.0\n  Downloaded indexmap v2.14.0\n  Downloaded zerotrie v0.2.5\n  Downloaded memchr v2.8.3\n  Downloaded icu_properties v2.4.0\n  Downloaded zerocopy v0.8.54\n  Downloaded clap v4.6.1\n  Downloaded bitflags v2.13.0\n  Downloaded bon v3.9.3\n  Downloaded http v1.5.0\n  Downloaded bytemuck v1.25.1\n  Downloaded safe_arch v0.7.4\n  Downloaded idna v1.1.0\n  Downloaded hashbrown v0.17.1\n  Downloaded hyper-util v0.1.21\n  Downloaded zerovec v0.11.9\n  Downloaded mio v1.2.2\n  Downloaded aho-corasick v1.1.4\n  Downloaded tokio-util v0.7.18\n  Downloaded flate2 v1.1.9\n  Downloaded nix v0.26.4\n  Downloaded rstest_macros v0.26.1\n  Downloaded serde_json v1.0.150\n  Downloaded bon-macros v3.9.3\n  Downloaded regex v1.13.1\n  Downloaded hyper v1.12.0\n  Downloaded wide v0.7.33\n  Downloaded matrixmultiply v0.3.10\n  Downloaded h2 v0.4.20\n  Downloaded icu_properties_data v2.4.0\n  Downloaded futures-util v0.3.32\n  Downloaded num-traits v0.2.19\n  Downloaded crossbeam-channel v0.5.16\n  Downloaded typenum v1.20.1\n  Downloaded num-bigint v0.4.8\n  Downloaded varpro v0.11.0\n  Downloaded winnow v1.0.4\n  Downloaded libm v0.2.16\n  Downloaded clap_builder v4.6.0\n  Downloaded syn v2.0.118\n  Downloaded chrono v0.4.45\n  Downloaded syn v3.0.6\n  Downloaded regex-syntax v0.8.11\n  Downloaded time v0.3.53\n  Downloaded crossbeam-utils v0.8.22\n  Downloaded rand v0.8.7\n  Downloaded nalgebra v0.33.3\n  Downloaded clock-bound-client v2.0.3\n  Downloaded rustix v1.1.4\n  Downloaded icu_normalizer v2.4.0\n  Downloaded regex-automata v0.4.18\n  Downloaded tracing v0.1.44\n  Downloaded libc v0.2.186\n  Downloaded tokio v1.52.3\n  Downloaded linux-raw-sys v0.12.1\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "locked-fetch",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 1.6736115150000046,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 7656,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "metadata",
+        "--locked",
+        "--offline",
+        "--format-version",
+        "1",
+        "--filter-platform",
+        "x86_64-unknown-linux-gnu",
+        "--no-default-features",
+        "--features",
+        "clock-bound/axiom-operational-time"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 296,
+          "sha256": "f2a00bcf2ad10898d5ba25e90d58b7ae64698de2fa13383f365d5f859a070067",
+          "text": "warning: profiles for the non root package will be ignored, specify profiles at the workspace root:\npackage:   /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/clock-bound/Cargo.toml\nworkspace: /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/Cargo.toml\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 1255313,
+          "sha256": "34a2e442f60371ff5dd3676f7bb6344d6e78e6b935674b91ef8dbcb0f611e151",
+          "text": "{\"packages\":[{\"name\":\"adler2\",\"version\":\"2.0.1\",\"id\":\"registry+https://github.com/rust-lang/crates.io-index#adler2@2.0.1\",\"license\":\"0BSD OR MIT OR Apache-2.0\",\"license_file\":null,\"description\":\"A simple clean-room implementation of the Adler-32 checksum\",\"source\":\"registry+https://github.com/rust-lang/crates.io-index\",\"dependencies\":[{\"name\":\"rustc-std-workspace-core\",\"source\":\"registry+https://github.com/rust-lang/crates.io-index\",\"req\":\"^1.0.0\",\"kind\":null,\"rename\":\"core\",\"optional\":true,\"uses_default_features\":true,\"features\":[],\"target\":null,\"registry\":null}],\"targets\":[{\"kind\":[\"lib\"],\"crate_types\":[\"lib\"],\"name\":\"adler2\",\"src_path\":\"/home/runner/work/_temp/axiom-operational-compiler-once/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/adler2-2.0.1/src/lib.rs\",\"edition\":\"2021\",\"doc\":true,\"doctest\":true,\"test\":true},{\"kind\":[\"bench\"],\"crate_types\":[\"bin\"],\"name\":\"bench\",\"src_path\":\"/home/runner/work/_temp/axiom-operational-compiler-once/cargo-home/registry/src/index.crates.io-1949cf8c6b5b557f/ad",
+          "truncated": true
+        }
+      },
+      "phase": "locked-metadata",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.111694803000006,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 296,
+        "stdout_bytes": 1255313
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "tree",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--package",
+        "clock-bound",
+        "--no-default-features",
+        "--features",
+        "axiom-operational-time",
+        "--edges",
+        "normal,build",
+        "--prefix",
+        "none",
+        "--format",
+        "{p} {f}"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 296,
+          "sha256": "f2a00bcf2ad10898d5ba25e90d58b7ae64698de2fa13383f365d5f859a070067",
+          "text": "warning: profiles for the non root package will be ignored, specify profiles at the workspace root:\npackage:   /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/clock-bound/Cargo.toml\nworkspace: /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/Cargo.toml\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 7755,
+          "sha256": "cd2d46ac7aae280397d8d64f2b92fd3260cf413afc48ed828b5d8b9a44ad026a",
+          "text": "clock-bound v3.0.0-rc.0 (/home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/clock-bound) axiom-operational-time,daemon,tracing-subscriber\nbon v3.9.3 alloc,default,std\nbon-macros v3.9.3 (proc-macro) alloc,default,std\ndarling v0.23.0 default,suggestions\ndarling_core v0.23.0 strsim,suggestions\nident_case v1.0.1 \nproc-macro2 v1.0.106 default,proc-macro\nunicode-ident v1.0.24 \nquote v1.0.46 default,proc-macro\nproc-macro2 v1.0.106 default,proc-macro (*)\nstrsim v0.11.1 \nsyn v2.0.118 clone-impls,default,derive,extra-traits,full,parsing,printing,proc-macro,visit,visit-mut\nproc-macro2 v1.0.106 default,proc-macro (*)\nquote v1.0.46 default,proc-macro (*)\nunicode-ident v1.0.24 \ndarling_macro v0.23.0 (proc-macro) \ndarling_core v0.23.0 strsim,suggestions (*)\nquote v1.0.46 default,proc-macro (*)\nsyn v2.0.118 clone-impls,default,derive,extra-traits,full,parsing,printing,proc-macro,visit,visit-mut (*)\nident_case v1.0.1 \nprettyplease v0.2.37 \nproc-macro2 v1.0.106 default,proc-macro (*)\nsyn v2.0.118 clone-impls",
+          "truncated": true
+        }
+      },
+      "phase": "operational-features",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.08549044599999434,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 296,
+        "stdout_bytes": 7755
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "-O0",
+        "-fPIC",
+        "-pthread",
+        "-M",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 7089,
+          "sha256": "dfcbf01851b04666e9b72219a7f9dc73138721040b2e919ee562bc682a749a25",
+          "text": "time_operational_status.o: \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c \\\n /usr/include/stdc-predef.h \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.h \\\n /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \\\n /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \\\n /usr/include/features.h /usr/include/features-time64.h \\\n /usr/include/x86_64-linux-gnu/bits/wordsize.h \\\n /usr/include/x86_64-linux-gnu/bits/timesize.h \\\n /usr/include/x86_64-linux-gnu/sys/cdefs.h \\\n /usr/include/x86_64-linux-gnu/bits/long-double.h \\\n /usr/include/x86_64-linux-gnu/gnu/stubs.h \\\n /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \\\n /usr/include/x86_64-linux-gnu/bits/types.h \\\n /usr/include/x86_64-linux-gnu/bits/typesizes.h \\\n /usr/include/x86_64-linux-gnu/bits/time64.h \\\n /usr/include/x86_64-linux-gnu/bits/wchar.h \\\n /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \\\n /usr/include/x86_64-linux-gnu/bits/stdint-uint",
+          "truncated": true
+        }
+      },
+      "phase": "status-object-headers-0",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.014595181000004231,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 7089
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "-O0",
+        "-fPIC",
+        "-pthread",
+        "-c",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/time_operational_status.o"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 8512,
+          "sha256": "ff516c5350aa273ffa3740f112245a55cf83e87f7a5964e27352fd999179df9d",
+          "text": "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c: In function ‘line’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:15:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   15 |  if(n==c->n)return -1;memcpy(out,c->p,n);out[n]=0;c->p+=n+1;c->n-=n+1;return 0;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:15:23: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   15 |  if(n==c->n)return -1;memcpy(out,c->p,n);out[n]=0;c->p+=n+1;c->n-=n+1;return 0;\n      |                       ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c: In function ‘axiom_operational_policy_decode’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:28:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   28 |  if(!b||!p||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};memset(p,0,sizeof *p);\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:28:56: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   28 |  if(!b||!p||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};memset(p,0,sizeof *p);\n      |                                                        ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c: In function ‘axiom_operational_accept_decode’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:41:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   41 |  if(!b||!a||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};memset(a,0,sizeof *a);\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:41:56: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   41 |  if(!b||!a||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};memset(a,0,sizeof *a);\n      |                                                        ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c: In function ‘decode’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:49:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   49 |  if(!b||!s||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};uint64_t state=0;memset(s,0,sizeof *s);\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:49:56: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   49 |  if(!b||!s||!n||n>AXIOM_OPERATIONAL_WIRE_MAX)return -1;struct cursor c={b,n};uint64_t state=0;memset(s,0,sizeof *s);\n      |                                                        ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:50:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   50 |  if(literal(&c,check?\"AXIOM_CHECK_V1\":\"AXIOM_STATUS_V1\")||number(&c,&s->sequence)||name(&c,s->profile,sizeof s->profile,1)||number(&c,&s->revision)||!s->revision||name(&c,s->host,sizeof s->host,0)||name(&c,s->source_generation,sizeof s->source_generation,0)||number(&c,&s->publication)||number(&c,&s->marker)||number(&c,&s->transition)||number(&c,&state)||state>3||end(&c))return -1;s->state=(enum axiom_operational_state)state;return 0;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:50:384: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   50 |  if(literal(&c,check?\"AXIOM_CHECK_V1\":\"AXIOM_STATUS_V1\")||number(&c,&s->sequence)||name(&c,s->profile,sizeof s->profile,1)||number(&c,&s->revision)||!s->revision||name(&c,s->host,sizeof s->host,0)||name(&c,s->source_generation,sizeof s->source_generation,0)||number(&c,&s->publication)||number(&c,&s->marker)||number(&c,&s->transition)||number(&c,&state)||state>3||end(&c))return -1;s->state=(enum axiom_operational_state)state;return 0;\n      |                                                                                                                                                                                                                                                                                                                                                                                                ^\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c: In function ‘encode’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:55:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   55 |  if(!s||!b||!n)return -1;int v=snprintf((char*)b,AXIOM_OPERATIONAL_WIRE_MAX,\"%s\\n%llu\\n%s\\n%llu\\n%s\\n%s\\n%llu\\n%llu\\n%llu\\n%u\\nEND\\n\",check?\"AXIOM_CHECK_V1\":\"AXIOM_STATUS_V1\",(unsigned long long)s->sequence,s->profile,(unsigned long long)s->revision,s->host,s->source_generation,(unsigned long long)s->publication,(unsigned long long)s->marker,(unsigned long long)s->transition,(unsigned)s->state);\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:55:26: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   55 |  if(!s||!b||!n)return -1;int v=snprintf((char*)b,AXIOM_OPERATIONAL_WIRE_MAX,\"%s\\n%llu\\n%s\\n%llu\\n%s\\n%s\\n%llu\\n%llu\\n%llu\\n%u\\nEND\\n\",check?\"AXIOM_CHECK_V1\":\"AXIOM_STATUS_V1\",(unsigned long long)s->sequence,s->profile,(unsigned long long)s->revision,s->host,s->source_generation,(unsigned long long)s->publication,(unsigned long long)s->marker,(unsigned long long)s->transition,(unsigned)s->state);\n      |                          ^~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:56:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   56 |  if(v<1||(unsigned)v>=AXIOM_OPERATIONAL_WIRE_MAX)return -1;*n=(size_t)v;struct axiom_operational_status copy;return decode(b,*n,&copy,check);\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:56:60: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   56 |  if(v<1||(unsigned)v>=AXIOM_OPERATIONAL_WIRE_MAX)return -1;*n=(size_t)v;struct axiom_operational_status copy;return decode(b,*n,&copy,check);\n      |                                                            ^\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c: In function ‘axiom_operational_daemon_initialize’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:76:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   76 |  if(daemon_initialized||getuid()!=0)return -1;struct stat a,w,r;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:76:47: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   76 |  if(daemon_initialized||getuid()!=0)return -1;struct stat a,w,r;\n      |                                               ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:81:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   81 |  if(fcntl(11,F_SETFL,O_NONBLOCK)||fcntl(12,F_SETFL,O_NONBLOCK))return -1;daemon_initialized=1;return 0;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_operational_status.c:81:74: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   81 |  if(fcntl(11,F_SETFL,O_NONBLOCK)||fcntl(12,F_SETFL,O_NONBLOCK))return -1;daemon_initialized=1;return 0;\n      |                                                                          ^~~~~~~~~~~~~~~~~~\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "status-object",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.04354475499999921,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 8512,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "-O0",
+        "-fPIC",
+        "-M",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 5684,
+          "sha256": "924d98e04ca0a265cce15729003016c3ffa66785abd5da7b44df1737bf9d3e4d",
+          "text": "time_publication.o: \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c \\\n /usr/include/stdc-predef.h \\\n /home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.h \\\n /usr/lib/gcc/x86_64-linux-gnu/13/include/stdint.h /usr/include/stdint.h \\\n /usr/include/x86_64-linux-gnu/bits/libc-header-start.h \\\n /usr/include/features.h /usr/include/features-time64.h \\\n /usr/include/x86_64-linux-gnu/bits/wordsize.h \\\n /usr/include/x86_64-linux-gnu/bits/timesize.h \\\n /usr/include/x86_64-linux-gnu/sys/cdefs.h \\\n /usr/include/x86_64-linux-gnu/bits/long-double.h \\\n /usr/include/x86_64-linux-gnu/gnu/stubs.h \\\n /usr/include/x86_64-linux-gnu/gnu/stubs-64.h \\\n /usr/include/x86_64-linux-gnu/bits/types.h \\\n /usr/include/x86_64-linux-gnu/bits/typesizes.h \\\n /usr/include/x86_64-linux-gnu/bits/time64.h \\\n /usr/include/x86_64-linux-gnu/bits/wchar.h \\\n /usr/include/x86_64-linux-gnu/bits/stdint-intn.h \\\n /usr/include/x86_64-linux-gnu/bits/stdint-uintn.h \\\n /usr/include/x",
+          "truncated": true
+        }
+      },
+      "phase": "publisher-object-headers-0",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.010698900999997818,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 5684
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-gcc-13",
+        "-std=c11",
+        "-Wall",
+        "-Wextra",
+        "-I",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native",
+        "-O0",
+        "-fPIC",
+        "-c",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c",
+        "-o",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/time_publication.o"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 2678,
+          "sha256": "dc86dcbe5ff05b8e2259510e3eed775fc22fd52db588fe342cca419d19fd31a2",
+          "text": "/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c: In function ‘generation_ok’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:28:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   28 |  if(!g)return 0; size_t n=strnlen(g,129); if(n<1||n>128)return 0;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:28:18: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   28 |  if(!g)return 0; size_t n=strnlen(g,129); if(n<1||n>128)return 0;\n      |                  ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c: In function ‘uint_line’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:43:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n   43 |  if(!s||!*s||(s[0]=='0'&&s[1]))return 0; uint64_t n=0;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:43:42: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n   43 |  if(!s||!*s||(s[0]=='0'&&s[1]))return 0; uint64_t n=0;\n      |                                          ^~~~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c: In function ‘axiom_time_capture_v2’:\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:112:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n  112 |  if(!out)return -1;memset(out,0,sizeof(*out));out->held_fd=-1;out->time_authority=0;\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:112:20: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n  112 |  if(!out)return -1;memset(out,0,sizeof(*out));out->held_fd=-1;out->time_authority=0;\n      |                    ^~~~~~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:114:2: warning: this ‘if’ clause does not guard... [-Wmisleading-indentation]\n  114 |  if(c->source_fd<0)return -1;int flags=fcntl(c->source_fd,F_GETFL);\n      |  ^~\n/home/runner/work/_temp/axiom-operational-compiler-once/inputs/native/time_publication.c:114:30: note: ...this statement, but the latter is misleadingly indented as if it were guarded by the ‘if’\n  114 |  if(c->source_fd<0)return -1;int flags=fcntl(c->source_fd,F_GETFL);\n      |                              ^~~\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "publisher-object",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.033875425000005066,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 2678,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/home/runner/.rustup/toolchains/stable-x86_64-unknown-linux-gnu/bin/cargo",
+        "rustc",
+        "--locked",
+        "--offline",
+        "--target",
+        "x86_64-unknown-linux-gnu",
+        "--package",
+        "clock-bound",
+        "--bin",
+        "axiom-operational-daemon",
+        "--no-default-features",
+        "--features",
+        "axiom-operational-time",
+        "--release",
+        "--",
+        "-C",
+        "link-arg=/home/runner/work/_temp/axiom-operational-compiler-once/outputs/time_operational_status.o",
+        "-C",
+        "link-arg=/home/runner/work/_temp/axiom-operational-compiler-once/outputs/time_publication.o",
+        "-C",
+        "link-arg=-Wl,--no-undefined",
+        "-C",
+        "link-arg=-lpthread",
+        "-C",
+        "link-arg=-lrt"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 4992,
+          "sha256": "2db28f6d004ab26008e00902ff8d91e7d0a59e291fddd865dc80e3e4acb698a8",
+          "text": "warning: profiles for the non root package will be ignored, specify profiles at the workspace root:\npackage:   /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/clock-bound/Cargo.toml\nworkspace: /home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/Cargo.toml\n   Compiling proc-macro2 v1.0.106\n   Compiling quote v1.0.46\n   Compiling unicode-ident v1.0.24\n   Compiling libc v0.2.186\n   Compiling serde_core v1.0.228\n   Compiling autocfg v1.5.1\n   Compiling syn v2.0.118\n   Compiling memchr v2.8.3\n   Compiling cfg-if v1.0.4\n   Compiling pin-project-lite v0.2.17\n   Compiling once_cell v1.21.4\n   Compiling ident_case v1.0.1\n   Compiling getrandom v0.3.4\n   Compiling strsim v0.11.1\n   Compiling futures-sink v0.3.32\n   Compiling zerocopy v0.8.54\n   Compiling futures-core v0.3.32\n   Compiling futures-channel v0.3.32\n   Compiling darling_core v0.23.0\n   Compiling futures-macro v0.3.32\n   Compiling tracing-core v0.1.36\n   Compiling prettyplease v0.2.37\n   Compiling zmij v1.0.23\n   Compiling futures-task v0.3.32\n   Compiling futures-io v0.3.32\n   Compiling slab v0.4.12\n   Compiling utf8parse v0.2.2\n   Compiling rustversion v1.0.23\n   Compiling serde v1.0.228\n   Compiling anstyle-parse v1.0.0\n   Compiling futures-util v0.3.32\n   Compiling darling_macro v0.23.0\n   Compiling serde_derive v1.0.228\n   Compiling memoffset v0.7.1\n   Compiling num-traits v0.2.19\n   Compiling errno v0.3.14\n   Compiling serde_json v1.0.150\n   Compiling hashbrown v0.17.1\n   Compiling equivalent v1.0.2\n   Compiling is_terminal_polyfill v1.70.2\n   Compiling anstyle-query v1.1.5\n   Compiling anstyle v1.0.14\n   Compiling colorchoice v1.0.5\n   Compiling anstream v1.0.0\n   Compiling indexmap v2.14.0\n   Compiling signal-hook-registry v1.4.8\n   Compiling ppv-lite86 v0.2.21\n   Compiling darling v0.23.0\n   Compiling rand_core v0.9.5\n   Compiling tokio-macros v2.7.0\n   Compiling syn v3.0.6\n   Compiling mio v1.2.2\n   Compiling socket2 v0.6.5\n   Compiling winnow v1.0.4\n   Compiling bytes v1.12.1\n   Compiling itoa v1.0.18\n   Compiling heck v0.5.0\n   Compiling clap_lex v1.1.0\n   Compiling thiserror v2.0.21\n   Compiling lazy_static v1.5.0\n   Compiling log v0.4.33\n   Compiling tracing-log v0.2.0\n   Compiling sharded-slab v0.1.7\n   Compiling clap_derive v4.6.1\n   Compiling clap_builder v4.6.0\n   Compiling thiserror-impl v2.0.21\n   Compiling tokio v1.52.3\n   Compiling toml_parser v1.1.3+spec-1.1.0\n   Compiling bon-macros v3.9.3\n   Compiling rand_chacha v0.9.0\n   Compiling tracing-serde v0.2.0\n   Compiling futures-executor v0.3.32\n   Compiling tracing-attributes v0.1.31\n   Compiling toml_datetime v1.1.1+spec-1.1.0\n   Compiling serde_spanned v1.1.1\n   Compiling thread_local v1.1.10\n   Compiling bitflags v1.3.2\n   Compiling smallvec v1.15.2\n   Compiling pin-utils v0.1.0\n   Compiling nu-ansi-term v0.50.3\n   Compiling iana-time-zone v0.1.65\n   Compiling chrono v0.4.45\n   Compiling tracing-subscriber v0.3.23\n   Compiling nix v0.26.4\n   Compiling tracing v0.1.44\n   Compiling toml v1.1.4+spec-1.1.0\n   Compiling bon v3.9.3\n   Compiling futures v0.3.32\n   Compiling rand v0.9.5\n   Compiling tokio-util v0.7.18\n   Compiling clap v4.6.1\n   Compiling nom v8.0.0\n   Compiling md5 v0.8.1\n   Compiling byteorder v1.5.0\n   Compiling clock-bound v3.0.0-rc.0 (/home/runner/work/_temp/axiom-operational-compiler-once/inputs/source/clock-bound)\nwarning: unused imports: `Duration`, `Instant`, `Period`, and `TscCount`\n  --> clock-bound/src/daemon/clock_state/shm_writer/shm0.rs:10:23\n   |\n10 |             ClockExt, Duration, Instant, TscCount, clocks,\n   |                       ^^^^^^^^  ^^^^^^^  ^^^^^^^^\n11 |             tsc::{Period, Skew},\n   |                   ^^^^^^\n   |\n   = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default\n\nwarning: variant `Withdrawn` is never constructed\n  --> clock-bound/src/daemon/operational_publication.rs:11:53\n   |\n11 | enum State { Unknown = 0, Ready = 1, Disrupted = 2, Withdrawn = 3 }\n   |      ----- variant in this enum                     ^^^^^^^^^\n   |\n   = note: `State` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis\n   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default\n\nwarning: method `withdraw` is never used\n  --> clock-bound/src/daemon/operational_publication.rs:47:19\n   |\n13 | impl OperationalPublisherState {\n   | ------------------------------ method in this implementation\n...\n47 |     pub(crate) fn withdraw(&mut self, publication: u64, marker: u64) {\n   |                   ^^^^^^^^\n\nwarning: method `handle_disruption` is never used\n   --> clock-bound/src/daemon/clock_state/shm_writer/shm0.rs:121:12\n    |\n 46 | impl Shm0 {\n    | --------- method in this implementation\n...\n121 |     pub fn handle_disruption(\n    |            ^^^^^^^^^^^^^^^^^\n\nwarning: `clock-bound` (lib) generated 4 warnings (run `cargo fix --lib -p clock-bound` to apply 1 suggestion)\n    Finished `release` profile [optimized] target(s) in 49.58s\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "operational-daemon",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 49.600195133,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 4992,
+        "stdout_bytes": 0
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-readelf",
+        "-h",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/rust/x86_64-unknown-linux-gnu/release/axiom-operational-daemon"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 981,
+          "sha256": "3bfb7d4b187c7d9b54ffc1d6072932fab713e4d5f99f09e9f2933738ba61efce",
+          "text": "ELF Header:\n  Magic:   7f 45 4c 46 02 01 01 00 00 00 00 00 00 00 00 00 \n  Class:                             ELF64\n  Data:                              2's complement, little endian\n  Version:                           1 (current)\n  OS/ABI:                            UNIX - System V\n  ABI Version:                       0\n  Type:                              DYN (Position-Independent Executable file)\n  Machine:                           Advanced Micro Devices X86-64\n  Version:                           0x1\n  Entry point address:               0x2ef60\n  Start of program headers:          64 (bytes into file)\n  Start of section headers:          941880 (bytes into file)\n  Flags:                             0x0\n  Size of this header:               64 (bytes)\n  Size of program headers:           56 (bytes)\n  Number of program headers:         12\n  Size of section headers:           64 (bytes)\n  Number of section headers:         33\n  Section header string table index: 32\n",
+          "truncated": false
+        }
+      },
+      "phase": "daemon-elf",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.10269753899999046,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 0,
+        "stdout_bytes": 981
+      }
+    },
+    {
+      "argv": [
+        "/home/runner/work/_temp/axiom-operational-compiler-once/network_launcher",
+        "--",
+        "/usr/bin/x86_64-linux-gnu-nm",
+        "--extern-only",
+        "--defined-only",
+        "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/rust/x86_64-unknown-linux-gnu/release/axiom-operational-daemon"
+      ],
+      "diagnostics": {
+        "stderr": {
+          "bytes": 169,
+          "sha256": "a9dc58b03a91efd14dea44f864bab23cf5da89aea9c5f0a0fe631312da70e714",
+          "text": "/usr/bin/x86_64-linux-gnu-nm: /home/runner/work/_temp/axiom-operational-compiler-once/outputs/rust/x86_64-unknown-linux-gnu/release/axiom-operational-daemon: no symbols\n",
+          "truncated": false
+        },
+        "stdout": {
+          "bytes": 0,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": "",
+          "truncated": false
+        }
+      },
+      "phase": "daemon-symbols",
+      "result": {
+        "cleanup_confirmed": true,
+        "elapsed_seconds": 0.483479219000003,
+        "returncode": 0,
+        "status": "success",
+        "stderr_bytes": 169,
+        "stdout_bytes": 0
+      }
+    }
+  ],
+  "retired": false,
+  "scope": "trusted compiler/build scripts only; Governance outputs never launch",
+  "targetCompatibilityQualified": false,
+  "tinyCrateArtifact": {
+    "bytes": 5688,
+    "sha256": "85dd1b1a4db65e063e658a05ea70fa357f1a1669c2938378d18006f80a8c0bd8"
+  }
+}

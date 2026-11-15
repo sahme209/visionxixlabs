@@ -1,0 +1,27 @@
+{
+  "PR": 337,
+  "run": 43729260461,
+  "job": 132857866569,
+  "attempt": 1,
+  "outcome": "failed; no-symbol daemon inspection",
+  "ownerGrantConsumed": true,
+  "retryAuthorized": false,
+  "packetSha256": "c2ab235f9c91cfc6620a9ff275a0a63b24ab30e54f0e2c466f77a88798cac74a",
+  "retainedPhaseRecordsMatched": true,
+  "phases": 18,
+  "allOriginalPhaseCommandsExitedZero": true,
+  "allOwnedCleanupConfirmed": true,
+  "finalFrozenInputsMatched": true,
+  "frozenEntries": 10861,
+  "frozenManifestSha256": "41cd0812d2cd3b8c1a9fd08cecf4527499358e5b0cc32439e704fddc96b8990c",
+  "outputHashesObserved": {
+    "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/rust/x86_64-unknown-linux-gnu/release/axiom-operational-daemon": "56b42bc560a61e48d20fa6162a2a8b0f5fc79a81ed63a615db2fd51de43f581f",
+    "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/time_operational_status.o": "f295a92212b7628fd9571fb8e86f1e8e287ef789f791bbd63a2bdf39d5964b2b",
+    "/home/runner/work/_temp/axiom-operational-compiler-once/outputs/time_publication.o": "457dd9a1a4d4200f7094c5a0a7db1701308fdc6d62e2d11710918762fa521aa6"
+  },
+  "workerAddonOwnerReached": false,
+  "governanceOutputExecuted": false,
+  "governanceEnabled": false,
+  "logSha256": "fbaf8127ac0fa31abd993bf5c506ceb88fce7db5cad8de6235d50bfcc7a6ca5c",
+  "warningsRetained": true
+}

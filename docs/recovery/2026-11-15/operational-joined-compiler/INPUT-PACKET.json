@@ -1,12 +1,12 @@
 {
   "approval": {
-    "before": "b693178ea7485b3a976a100da06ca75b8fa995e6",
-    "ownerDecision": "call_60732fcbde694192b8efdaf317b506d1",
+    "before": "35b88cba5aae932aa53f9aa08bc87810a1ce0697",
+    "ownerDecision": "call_53b0ce938750472db5f024371d7db8ce",
     "pr": 337
   },
   "eligible": true,
   "files": {
-    ".github/workflows/linux-operational-compile.yml": "0ef167d263bc9257d8bddccfa1660b83aa803225054fea2cd68ae9d73a692940",
+    ".github/workflows/linux-operational-compile.yml": "0bc2ad8271f5cb5eb9f381cd5d8acd8b300e9bb666f3e8ede7da4a904dea4a42",
     "docs/recovery/2026-11-13/real-governance-qualification/design/linux-artifact-integration/archive-read/reader.py": "ff4b51212957ef82cccbea47c76526eda4e83f95b9699bfeca5aef85e48b22a1",
     "docs/recovery/2026-11-13/real-governance-qualification/design/linux-compiler-validation/BUILD-SYMBOL-FORMAT-PRIMARY-EVIDENCE.json": "1fabfa175dcb5e7df1396e8b86b25620519b04a9ccf0722dce48ec326674bbf3",
     "docs/recovery/2026-11-14/native-worker-local/COMPILER-OBSERVED-RESULT.json": "a5ec95bb79d6f278d626db0a36fadcd64a728b09a6314f75b98741705d520687",
@@ -44,14 +44,14 @@
     "scripts/governance_linux_compile_inputs.py": "2e6ae367bc3480681fa1c7c11ff28943f0cfe7a3cbc756f3163be4b264ae17da",
     "scripts/governance_linux_compile_supervisor.py": "c0a4300bd547bbcbd6e806ff373bbc6d32a5f54b6fccca0a609eed406c563868",
     "scripts/governance_native_worker_compile.py": "7b80cb97d066cf0bb0eb3c4d2014a023dbe28a5ae3e2a5de08e785b928798025",
-    "scripts/governance_operational_compile.py": "838fb68c29dd1bfbb797d14db558156052b14bc47607b63fb6e2422d0a12beb5",
+    "scripts/governance_operational_compile.py": "8f835a537748b296efadfad9cc3d9ea2867e3662047edab22eb3afc93f350eb6",
     "scripts/governance_rust_spawn_diagnostic.py": "fb03466e0f732b52841e2d246b0779db5c2294861203a941a04a1d2f8baaec2e",
     "scripts/linux-compile/benign_fixture.c": "6bb8c6d2d5758f4d593763770b937f65e464a7e7faefb0e86060e41d54a3d446",
     "scripts/linux-compile/compiler_profile.h": "9706421ed659d4b30a7d82e39e30af5dff944988bc3957ab2f7f84513470a8fe",
     "scripts/linux-compile/network_launcher.c": "7c11459094c8b4e02d5ec50a1110e339f9446b10e8315bc8958df25b1666e0b7",
     "scripts/linux-native-behavior/runtime_profile.h": "8fbd5d645a75956279e77123d07d7f2a0f67db3a1a3852e184415468c3211ed4",
-    "scripts/tests/test_governance_operational_compile.py": "466a5615b475fe898a8678eeeff18cd0427e87dd616f9e4f2d5d46a6cda9d1dc"
+    "scripts/tests/test_governance_operational_compile.py": "cf7ec6833b1fd92acea0d8eaa855bf06f4add837bda737bf85cb23e6275623b4"
   },
   "format": "axiom.operational-compiler-preparation/1",
-  "scope": "One exact owner-approved compiler-only transition, contingent on final independent setup review before push. Governance outputs never execute; no runtime/target/production qualification."
+  "scope": "One corrected owner-approved compiler-only transition; daemon validation artifact explicitly unstripped. Final independent source/packet review before push; no Governance output execution or runtime/target/production qualification."
 }

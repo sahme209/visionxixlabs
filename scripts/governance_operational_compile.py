@@ -7,8 +7,8 @@ from pathlib import Path
 import re,os,stat,json,importlib.util
 TARGET='x86_64-unknown-linux-gnu'
 APPROVED_PR=337
-APPROVED_BEFORE='b693178ea7485b3a976a100da06ca75b8fa995e6'
-OWNER_DECISION='call_60732fcbde694192b8efdaf317b506d1'
+APPROVED_BEFORE='35b88cba5aae932aa53f9aa08bc87810a1ce0697'
+OWNER_DECISION='call_53b0ce938750472db5f024371d7db8ce'
 
 def need(ok,reason='operational_compile_unavailable'):
  if not ok:raise ValueError(reason)
@@ -33,7 +33,7 @@ def compile_plan(cc,cargo,source,native,out,sdk):
  status=out/'time_operational_status.o';publisher=out/'time_publication.o'
  plan=[phase('status-object',c+['-O0','-fPIC','-pthread','-c',str(native/'time_operational_status.c'),'-o',str(status)],status,30),phase('publisher-object',c+['-O0','-fPIC','-c',str(native/'time_publication.c'),'-o',str(publisher)],publisher,30)]
  daemon=out/'rust'/TARGET/'release/axiom-operational-daemon'
- plan.append(phase('operational-daemon',[str(cargo),'rustc','--locked','--offline','--target',TARGET,'--package','clock-bound','--bin','axiom-operational-daemon','--no-default-features','--features','axiom-operational-time','--release','--','-C','link-arg='+str(status),'-C','link-arg='+str(publisher),'-C','link-arg=-Wl,--no-undefined','-C','link-arg=-lpthread','-C','link-arg=-lrt'],daemon,1500))
+ plan.append(phase('operational-daemon',[str(cargo),'--config','profile.release.strip=false','rustc','--locked','--offline','--target',TARGET,'--package','clock-bound','--bin','axiom-operational-daemon','--no-default-features','--features','axiom-operational-time','--release','--','-C','link-arg='+str(status),'-C','link-arg='+str(publisher),'-C','link-arg=-Wl,--no-undefined','-C','link-arg=-lpthread','-C','link-arg=-lrt'],daemon,1500))
  worker=out/'time_worker'
  plan.append(phase('worker',c+['-O2','-fPIE','-pie',*[str(native/n) for n in ('time_worker.c','time_worker_protocol.c','time_publication.c')],'-o',str(worker)],worker,30))
  addon=out/'operational.node'
