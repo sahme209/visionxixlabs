@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, type KeyboardEvent } from "react";
+import { useState, useRef, type KeyboardEvent } from "react";
 import Link from "next/link";
 import { ChevronRightIcon } from "@heroicons/react/24/outline";
 import { DesktopPreviewFrame } from "./DesktopPreviewFrame";
+import {usePreviewSequence} from "./usePreviewSequence";
 import { WORKFLOW_STORIES } from "./workflowStories";
 import { WorkflowStoryScene, storyButton, type SampleDecision, type StoryContext } from "./WorkflowStoryScene";
 
@@ -14,6 +15,8 @@ export function CinematicAxiomDemo({ variant = "section" }: { variant?: "section
   const story = WORKFLOW_STORIES[storyIndex];
   const [stepIndex, setStepIndex] = useState(0);
   const step = story.steps[stepIndex] ?? story.steps[0];
+  const sceneRef=useRef<HTMLDivElement>(null);
+  const reveal=usePreviewSequence(sceneRef,`${storyIndex}:${stepIndex}:${context.repository}:${context.branch}:${context.environment}`);
   function selectStory(index: number) { setStoryIndex(index); setDecision(null); setStepIndex(0); }
   function choose(index: number) { setDecision(null); setStepIndex(Math.max(0, Math.min(story.steps.length - 1, index))); }
   function changeContext(key: keyof StoryContext, value: string) { setContext(current => ({ ...current, [key]: value })); setDecision(null); setStepIndex(0); }
@@ -42,7 +45,7 @@ export function CinematicAxiomDemo({ variant = "section" }: { variant?: "section
       <DesktopPreviewFrame view={story.id === "workspace" ? "repository-workspace" : story.id === "agent" ? "agent" : "deployment-requests"}>
         <div className="h-0.5 bg-white/5" aria-hidden="true"><div className="h-full bg-zinc-400" style={{ width: `${((stepIndex + 1) / story.steps.length) * 100}%` }} /></div>
         <div className="grid gap-3 border-b border-white/8 p-4 sm:grid-cols-3"><ContextSelect label="Repository" value={context.repository} values={["acme/customer-web", "acme/payments-api"]} onChange={value => changeContext("repository", value)} /><ContextSelect label="Branch" value={context.branch} values={["feature/timeout", "review/retry-policy"]} onChange={value => changeContext("branch", value)} /><ContextSelect label="Environment" value={context.environment} values={["Development", "Test", "Production · held"]} onChange={value => changeContext("environment", value)} /></div>
-        <div className="p-4 sm:p-5"><WorkflowStoryScene scene={step.scene} context={context} fraction={1} reducedMotion={true} active={false} decision={decision} onDecision={value => { setStepIndex(stepIndex); setDecision(value); }} /></div>
+        <div ref={sceneRef} className="p-4 sm:p-5"><WorkflowStoryScene scene={step.scene} context={context} fraction={reveal.fraction} reducedMotion={reveal.reducedMotion} active={reveal.active} decision={decision} onDecision={value => { setStepIndex(stepIndex); setDecision(value); }} /></div>
         <div className="border-t border-white/10 bg-white/2 px-4 py-3"><p className="text-[11px] leading-5 text-zinc-400">Illustrated from Axiom workflows. Sample content; no live actions.</p></div>
       </DesktopPreviewFrame>
     </div>

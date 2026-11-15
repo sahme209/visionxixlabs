@@ -1,3 +1,5 @@
+Current progress: original-attempt source task completed locally as7e71915. Owner confirms Google failure. Public provider registration200, installer readiness503 and three storage-status unknowns reproduced without accounts/credentials; exact cause remains open. Reference MCP structure/motion read with finite limits; homepage dynamic/login browser review still pending. Simplified login composition and safe error-query presentation now implemented locally with37focused tests PASS; server auth/handlers unchanged. Not yet compiled/rendered/reviewed/published. Remaining original artwork demos and whole logo-led integration page are next. Evidence: ../recovery/2026-11-15/framer-website-followup/CURRENT-RESULT.json and plan ../superpowers/plans/2026-11-15-framer-website-followups.md.
+
 # Owner follow-up after the current Governance gate
 
 Explicit owner addition November15 during the approved original-attempt gate. Keep that current task moving first, then address these issues; preserve the whole existing master goal and release/security boundaries.

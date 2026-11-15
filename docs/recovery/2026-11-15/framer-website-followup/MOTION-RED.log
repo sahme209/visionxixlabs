@@ -1,0 +1,83 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+xxxxxxx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 7 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > animates the original request illustration once on entry, then settles within five seconds
+AssertionError: expected 0 to be greater than 0
+ ❯ notify components/marketing/__tests__/ProductPreviewMotion.test.ts:17:64
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:20:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/7]⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > retains all source and review facts throughout motion without running any request
+AssertionError: expected 0 to be greater than 0
+ ❯ notify components/marketing/__tests__/ProductPreviewMotion.test.ts:17:64
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:27:90
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/7]⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > pauses when outside the viewport and resumes only the remaining finite reveal
+AssertionError: expected 0 to be greater than 0
+ ❯ notify components/marketing/__tests__/ProductPreviewMotion.test.ts:17:64
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:32:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/7]⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > stops on page hiding and does not spend animation time in the background
+AssertionError: expected 0 to be greater than 0
+ ❯ notify components/marketing/__tests__/ProductPreviewMotion.test.ts:17:64
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:37:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/7]⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > keeps reduced-motion and unsupported observers fully static and readable
+AssertionError: expected null to be '1' // Object.is equality
+
+- Expected:
+"1"
+
++ Received:
+null
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:42:108
+     40| });
+     41| it('keeps reduced-motion and unsupported observers fully static and re…
+     42|  reduced=true;render(createElement(AxiomPublicHero));expect(board().ge…
+       |                                                                                                            ^
+     43|  cleanup();reduced=false;vi.stubGlobal('IntersectionObserver',undefine…
+     44|  expect(board().getAttribute('data-preview-progress')).toBe('1');expec…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/7]⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > settles immediately if reduced motion is requested during the reveal
+AssertionError: expected 0 to be greater than 0
+ ❯ notify components/marketing/__tests__/ProductPreviewMotion.test.ts:17:64
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:47:41
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/7]⎯
+
+ FAIL  components/marketing/__tests__/ProductPreviewMotion.test.ts > cleans the clock/listeners/observer and ignores late callbacks after unmount
+AssertionError: expected 0 to be greater than 0
+ ❯ notify components/marketing/__tests__/ProductPreviewMotion.test.ts:17:64
+
+ ❯ components/marketing/__tests__/ProductPreviewMotion.test.ts:52:52
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/7]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  7 failed (7)
+   Start at  07:55:00
+   Duration  440ms (environment 69%, import 19%, tests 7%, transform 5%)
+

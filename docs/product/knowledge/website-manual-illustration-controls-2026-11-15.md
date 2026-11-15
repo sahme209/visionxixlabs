@@ -6,7 +6,7 @@ INTERNAL SOURCE GUIDE. Unpublished, customer/retrieval ineligible, no human edit
 
 The detailed model now lives on `/product#deployment-model`, inside the native **Inspect deployment scenarios and stages** disclosure. Home links to it. Open its summary with pointer or native Enter/Space to reveal the unchanged controls. The separate record/object assembly lives at `/product#decision-records`; it is outside this finite guide.
 
-`GovernedDeploymentModel` is an HTML illustration with five scenario buttons and eight stage buttons. It does not load the legacy Three.js deployment scene. The homepage uses a static centered hero and painted product frame; it mounts no orbital renderer.
+`GovernedDeploymentModel` is an HTML illustration with five scenario buttons and eight stage buttons. It does not load the legacy Three.js deployment scene. The homepage uses a centered hero and original painted product frame; it mounts no orbital renderer.
 
 The Scenario group offers Approved release, Failed scan, Rejected, Unknown outcome and Rollback. Approved release is initially selected; Approval gate is the initial inspector. Every scenario shows its final defined sample state immediately, including blocked/unreached stages and sample usage. Selecting a scenario preserves the inspected stage. Nothing advances on a timer.
 
@@ -16,7 +16,7 @@ There are no Pause, Play or Overview controls. Stage states are text as well as 
 
 ## Scripted workflow stories
 
-`CinematicAxiomDemo` retains three stories: Code & review (five steps), Agent & approval (four), and Terraform & cloud (three). It starts at the first story/step. Each named step button shows its full sample scene immediately, with aria-current=step and an accessible Step N title. The polite Current story step status announces the selection. There is no clock, cursor playback, Play/Pause, Replay or Previous/Next player row.
+`CinematicAxiomDemo` retains three stories: Code & review (five steps), Agent & approval (four), and Terraform & cloud (three). It starts at the first story/step. Each named step button selects its sample scene, with aria-current=step and an accessible Step N title. The polite Current story step status announces the selection. There is no automatic step progression or Play/Pause, Replay or Previous/Next player row. A finite4800ms viewport-triggered paint sequence reveals text and the decorative cursor within the deliberately selected scene. Hidden pages/out-of-view scenes stop the animation clock; reduced-motion or unsupported APIs keep a full static scene. No story, sample decision or execution changes on a timer.
 
 Within the Story steps group, ArrowLeft/ArrowRight select the preceding/following step, clamped at the ends; Home/End select the first/final step. Modified/composing events and native select/input targets are ignored. Selection does not explicitly move focus. Tab and Enter/Space remain available for each step. Story changes, step selection and actual context changes clear the sample decision; story/context changes reset step one. Choosing the current story also resets it. Context survives story changes.
 
@@ -26,7 +26,7 @@ Sample approve/reject buttons in review scenes change only the local sample deci
 
 Read approval workflow navigates to /docs/approval-workflow and sends the existing local documentation-navigation event. Explore every safe demo navigates to /demo; it does not guarantee a reset when already on that route. Neither link grants authority. Shared site navigation has a separate implementation and is outside this finite guide.
 
-## Static hero and scroll
+## Original painted hero and scroll
 
 Owner explicitly removed the vortex and approved the displayed Exact-only direction on November 15. `AxiomPublicHero` renders a centered title, download/product links and an original painted frame around explicitly synthetic product content. It mounts no canvas, video, WebGL renderer or player. The old orbital source/studies and their tests are historical, unmounted work; they are not current product behavior. The old component name re-exports this static hero for import compatibility.
 
@@ -54,3 +54,9 @@ Current website navigation uses an original outlined `</>` box and lowercase `vx
 ## November 15 — current branded frontend compiled review
 
 The current joint website/desktop frontend build and bounded browser review verified loaded vxix branding on27public routes at desktop/phone widths,44px homepage actions, mobile-menu Escape focus return, stack-active follow-up pointer navigation and Product disclosure/scenario selection. Reduced-motion and32px-root-text fallback observations remain finite evidence. Detailed receipts: `docs/recovery/2026-11-15/desktop-exact-composition-validation/BROWSER-REVIEW.md`. A separately compiled desktop-only correction also passes the formerly failing short split-view keyboard path without outer window scroll; original accepted website files are retained exactly. This does not establish every public control, installed desktop/native WebKit, customer, Safari, performance or editorial approval.
+
+## November15 — finite original-artwork demonstrations
+
+The hero keeps its exact original painting, request source and review boundaries. Its code uses paint-only clipping and its request panel rises8px during the same finite4800ms sequence; the full code remains in the DOM. The demo routes `/demo`, `/product`, support and the homepage fallback share CinematicAxiomDemo and therefore the same sequence. No reference artwork, video, remote media, credentials or real job is used. Existing record/assembly and deployment scenario controls remain deliberate interactions rather than a timed release. Focused DOM checks pass; compiled browser/assistive/performance and installed native acceptance remain separate. Current manifest is docs/recovery/2026-11-15/framer-website-followup/SOURCE-MANIFEST.json; historical receipts remain unchanged.
+
+Current finite compiled/browser follow-up is recorded in docs/recovery/2026-11-15/framer-website-followup/REVIEW-AND-RESULT.md: desktop/mobile geometry, actual step typing/manual retention and reduced-motion static text/no cursor observed. This supersedes only the pending finite local-browser observations for this exact source; complete Safari/assistive/performance/customer/native/editorial acceptance stays open.

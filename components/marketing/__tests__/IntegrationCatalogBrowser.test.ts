@@ -82,3 +82,16 @@ it('does not autofocus at mount or steal focus during ordinary filter changes',(
  search.focus();fireEvent.change(search,{target:{value:'Git'}});expect(document.activeElement).toBe(search);
  const job=screen.getByLabelText('Job');job.focus();fireEvent.change(job,{target:{value:'cloud'}});expect(document.activeElement).toBe(job);
 });
+
+it('shows real catalog marks and keeps detailed limitations available through native disclosures',()=>{
+ render(createElement(IntegrationCatalogBrowser,{entries:publicCatalogEntries()}));
+ for(const entry of publicCatalogEntries()){
+  const card=screen.getByRole('article',{name:`${entry.name} integration`});
+  if(entry.id==='vscode')expect(card.querySelector('[data-logo-kind="generic-editor"]')).not.toBeNull();
+  else expect(card.querySelector('img')?.getAttribute('src')).toMatch(/^\/(?:logos\/integrations|brands)\//);
+  const disclosure=card.querySelector('details');expect(disclosure).not.toBeNull();expect(disclosure?.open).toBe(false);
+  expect(disclosure?.textContent).toContain(entry.availability.detail);
+  fireEvent.click(within(card).getByText('Connection details'));expect(disclosure?.open).toBe(true);
+  if(!entry.availability.enabled)expect(within(card).queryByRole('link')).toBeNull();
+ }
+});

@@ -1,0 +1,721 @@
+(!) Your Vite config uses features that are unsupported by `configLoader: 'native'`, which is planned to become the default in a future major version of Vite:
+  - ESM syntax in a file loaded as CommonJS (vitest.config.ts:19:1). Use a `.mjs` extension or set `"type": "module"` in the closest package.json
+Set `VITE_CONFIG_NATIVE_IGNORE_WARNING=true` to suppress this warning.
+
+ RUN  v5.1.0 /Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14
+
+xxxxx
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 5 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > offers configured providers before the email form while retaining every existing sign-in method
+AssertionError: expected +0 to be truthy
+
+- Expected:
+true
+
++ Received:
+0
+
+ ❯ app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts:18:81
+     16|  expect(screen.getByRole('button',{name:'Sign in with GitHub'})).toBeT…
+     17|  const email=screen.getByLabelText('Email');
+     18|  expect(google.compareDocumentPosition(email)&Node.DOCUMENT_POSITION_F…
+       |                                                                                 ^
+     19|  expect(cognito.compareDocumentPosition(email)&Node.DOCUMENT_POSITION_…
+     20|  expect(screen.getByLabelText('Password')).toBeTruthy();
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/5]⎯
+
+ FAIL  app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > shows safe recovery without reflecting the OAuth query value AccessDenied
+ FAIL  app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > shows safe recovery without reflecting the OAuth query value OAuthCallback
+ FAIL  app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > shows safe recovery without reflecting the OAuth query value private_untrusted_error_payload
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex min-h-screen items-center justify-center bg-[#101010] px-5 py-24 text-zinc-100"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-cover bg-center opacity-[0.04]"[39m
+        [33mstyle[39m=[32m"background-image: url(\"/images/axiom-hero-landscape-v1.png\");"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]"[39m
+      [36m/>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white"[39m
+        [33mhref[39m=[32m"/"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33mclass[39m=[32m"rounded-md"[39m
+          [33mheight[39m=[32m"27"[39m
+          [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+          [33mwidth[39m=[32m"27"[39m
+        [36m/>[39m
+        [0mVision XIX Labs[0m
+      [36m</a>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative z-10 w-full max-w-[380px]"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/4.5"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m""[39m
+            [33mclass[39m=[32m"rounded-md"[39m
+            [33mheight[39m=[32m"30"[39m
+            [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+            [33mwidth[39m=[32m"30"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"mb-2 text-3xl font-normal tracking-[-0.045em]"[39m
+        [36m>[39m
+          [0mWelcome to Axiom[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-2 text-sm text-zinc-400"[39m
+        [36m>[39m
+          [0mYour workspace, connected.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-8 text-xs leading-5 text-zinc-400"[39m
+        [36m>[39m
+          [0mSign in to manage your account and governed cloud operations.[0m
+        [36m</p>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"space-y-4"[39m
+          [33mnovalidate[39m=[32m""[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"email"[39m
+            [36m>[39m
+              [0mEmail[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"email"[39m
+              [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+              [33mid[39m=[32m"email"[39m
+              [33mname[39m=[32m"email"[39m
+              [33mplaceholder[39m=[32m"you@company.com"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"email"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"password"[39m
+            [36m>[39m
+              [0mPassword[0m
+            [36m</label>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"current-password"[39m
+                [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+                [33mid[39m=[32m"password"[39m
+                [33mname[39m=[32m"password"[39m
+                [33mplaceholder[39m=[32m"••••••••"[39m
+                [33mrequired[39m=[32m""[39m
+                [33mtype[39m=[32m"password"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Show password"[39m
+                [33mclass[39m=[32m"absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 hover:text-zinc-200 transition-colors"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"h-4 w-4"[39m
+                  [33mdata-slot[39m=[32m"icon"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-width[39m=[32m"1.5"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mSign in[0m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-4 w-4"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[...
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex min-h-screen items-center justify-center bg-[#101010] px-5 py-24 text-zinc-100"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-cover bg-center opacity-[0.04]"[39m
+        [33mstyle[39m=[32m"background-image: url(\"/images/axiom-hero-landscape-v1.png\");"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]"[39m
+      [36m/>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white"[39m
+        [33mhref[39m=[32m"/"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33mclass[39m=[32m"rounded-md"[39m
+          [33mheight[39m=[32m"27"[39m
+          [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+          [33mwidth[39m=[32m"27"[39m
+        [36m/>[39m
+        [0mVision XIX Labs[0m
+      [36m</a>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative z-10 w-full max-w-[380px]"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/4.5"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m""[39m
+            [33mclass[39m=[32m"rounded-md"[39m
+            [33mheight[39m=[32m"30"[39m
+            [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+            [33mwidth[39m=[32m"30"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"mb-2 text-3xl font-normal tracking-[-0.045em]"[39m
+        [36m>[39m
+          [0mWelcome to Axiom[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-2 text-sm text-zinc-400"[39m
+        [36m>[39m
+          [0mYour workspace, connected.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-8 text-xs leading-5 text-zinc-400"[39m
+        [36m>[39m
+          [0mSign in to manage your account and governed cloud operations.[0m
+        [36m</p>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"space-y-4"[39m
+          [33mnovalidate[39m=[32m""[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"email"[39m
+            [36m>[39m
+              [0mEmail[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"email"[39m
+              [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+              [33mid[39m=[32m"email"[39m
+              [33mname[39m=[32m"email"[39m
+              [33mplaceholder[39m=[32m"you@company.com"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"email"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"password"[39m
+            [36m>[39m
+              [0mPassword[0m
+            [36m</label>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"current-password"[39m
+                [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+                [33mid[39m=[32m"password"[39m
+                [33mname[39m=[32m"password"[39m
+                [33mplaceholder[39m=[32m"••••••••"[39m
+                [33mrequired[39m=[32m""[39m
+                [33mtype[39m=[32m"password"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Show password"[39m
+                [33mclass[39m=[32m"absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 hover:text-zinc-200 transition-colors"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"h-4 w-4"[39m
+                  [33mdata-slot[39m=[32m"icon"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-width[39m=[32m"1.5"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mSign in[0m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-4 w-4"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[...
+ ❯ waitForWrapper ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts:26:27
+     24| it.each(['AccessDenied','OAuthCallback','private_untrusted_error_paylo…
+     25|  ports.error=error;render(createElement(SignInPage));
+     26|  const alert=await screen.findByRole('alert');
+       |                           ^
+     27|  expect(alert.textContent).toContain("couldn't complete sign-in");
+     28|  expect(alert.textContent).not.toContain(error);
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/5]⎯
+
+ FAIL  app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts > keeps recovery visible even when no OAuth provider can currently be listed
+TestingLibraryElementError: Unable to find role="alert"
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex min-h-screen items-center justify-center bg-[#101010] px-5 py-24 text-zinc-100"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-cover bg-center opacity-[0.04]"[39m
+        [33mstyle[39m=[32m"background-image: url(\"/images/axiom-hero-landscape-v1.png\");"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]"[39m
+      [36m/>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white"[39m
+        [33mhref[39m=[32m"/"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33mclass[39m=[32m"rounded-md"[39m
+          [33mheight[39m=[32m"27"[39m
+          [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+          [33mwidth[39m=[32m"27"[39m
+        [36m/>[39m
+        [0mVision XIX Labs[0m
+      [36m</a>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative z-10 w-full max-w-[380px]"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/4.5"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m""[39m
+            [33mclass[39m=[32m"rounded-md"[39m
+            [33mheight[39m=[32m"30"[39m
+            [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+            [33mwidth[39m=[32m"30"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"mb-2 text-3xl font-normal tracking-[-0.045em]"[39m
+        [36m>[39m
+          [0mWelcome to Axiom[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-2 text-sm text-zinc-400"[39m
+        [36m>[39m
+          [0mYour workspace, connected.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-8 text-xs leading-5 text-zinc-400"[39m
+        [36m>[39m
+          [0mSign in to manage your account and governed cloud operations.[0m
+        [36m</p>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"space-y-4"[39m
+          [33mnovalidate[39m=[32m""[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"email"[39m
+            [36m>[39m
+              [0mEmail[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"email"[39m
+              [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+              [33mid[39m=[32m"email"[39m
+              [33mname[39m=[32m"email"[39m
+              [33mplaceholder[39m=[32m"you@company.com"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"email"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"password"[39m
+            [36m>[39m
+              [0mPassword[0m
+            [36m</label>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"current-password"[39m
+                [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+                [33mid[39m=[32m"password"[39m
+                [33mname[39m=[32m"password"[39m
+                [33mplaceholder[39m=[32m"••••••••"[39m
+                [33mrequired[39m=[32m""[39m
+                [33mtype[39m=[32m"password"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Show password"[39m
+                [33mclass[39m=[32m"absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 hover:text-zinc-200 transition-colors"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"h-4 w-4"[39m
+                  [33mdata-slot[39m=[32m"icon"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-width[39m=[32m"1.5"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mSign in[0m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-4 w-4"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</form>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"mt-4 text-sm text-orange-300 underline"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mNeed a verification email?[0m
+        [36m</button>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-6 text-sm text-zinc-500 text-center"[39m
+        [36m>[39m
+          [0mDon't have an account?[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"font-medium text-zinc-200 hover:text-white"[39m
+            [33mhref[39m=[32m"/auth/signup?redirect=%2Fdesktop%2Fconnect%3Fchallenge%3Dsynthetic"[39m
+          [36m>[39m
+            [0mCreate one[0m
+          [36m</a>[39m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-xs text-zinc-500 text-center"[39m
+        [36m>[39m
+          [0mNeed the application?[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"font-medium text-zinc-300 underline decoration-white/20 underline-offset-2 hover:text-white"[39m
+            [33mhref[39m=[32m"/download"[39m
+          [36m>[39m
+            [0mReturn to downloads →[0m
+          [36m</a>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+
+Ignored nodes: comments, script, style
+[36m<body>[39m
+  [36m<div>[39m
+    [36m<div[39m
+      [33mclass[39m=[32m"relative flex min-h-screen items-center justify-center bg-[#101010] px-5 py-24 text-zinc-100"[39m
+    [36m>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-cover bg-center opacity-[0.04]"[39m
+        [33mstyle[39m=[32m"background-image: url(\"/images/axiom-hero-landscape-v1.png\");"[39m
+      [36m/>[39m
+      [36m<div[39m
+        [33maria-hidden[39m=[32m"true"[39m
+        [33mclass[39m=[32m"absolute inset-0 bg-[linear-gradient(180deg,rgba(11,12,11,0.76),rgba(11,12,11,0.96)_72%,#0c0d0c)]"[39m
+      [36m/>[39m
+      [36m<a[39m
+        [33mclass[39m=[32m"absolute left-6 top-6 z-20 flex items-center gap-2.5 text-sm font-semibold text-zinc-200 transition-colors hover:text-white"[39m
+        [33mhref[39m=[32m"/"[39m
+      [36m>[39m
+        [36m<img[39m
+          [33malt[39m=[32m""[39m
+          [33mclass[39m=[32m"rounded-md"[39m
+          [33mheight[39m=[32m"27"[39m
+          [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+          [33mwidth[39m=[32m"27"[39m
+        [36m/>[39m
+        [0mVision XIX Labs[0m
+      [36m</a>[39m
+      [36m<div[39m
+        [33mclass[39m=[32m"relative z-10 w-full max-w-[380px]"[39m
+      [36m>[39m
+        [36m<div[39m
+          [33mclass[39m=[32m"mb-8 flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/4.5"[39m
+        [36m>[39m
+          [36m<img[39m
+            [33malt[39m=[32m""[39m
+            [33mclass[39m=[32m"rounded-md"[39m
+            [33mheight[39m=[32m"30"[39m
+            [33msrc[39m=[32m"/vision-xix-logo.png"[39m
+            [33mwidth[39m=[32m"30"[39m
+          [36m/>[39m
+        [36m</div>[39m
+        [36m<h1[39m
+          [33mclass[39m=[32m"mb-2 text-3xl font-normal tracking-[-0.045em]"[39m
+        [36m>[39m
+          [0mWelcome to Axiom[0m
+        [36m</h1>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-2 text-sm text-zinc-400"[39m
+        [36m>[39m
+          [0mYour workspace, connected.[0m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mb-8 text-xs leading-5 text-zinc-400"[39m
+        [36m>[39m
+          [0mSign in to manage your account and governed cloud operations.[0m
+        [36m</p>[39m
+        [36m<form[39m
+          [33mclass[39m=[32m"space-y-4"[39m
+          [33mnovalidate[39m=[32m""[39m
+        [36m>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"email"[39m
+            [36m>[39m
+              [0mEmail[0m
+            [36m</label>[39m
+            [36m<input[39m
+              [33mautocomplete[39m=[32m"email"[39m
+              [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+              [33mid[39m=[32m"email"[39m
+              [33mname[39m=[32m"email"[39m
+              [33mplaceholder[39m=[32m"you@company.com"[39m
+              [33mrequired[39m=[32m""[39m
+              [33mtype[39m=[32m"email"[39m
+              [33mvalue[39m=[32m""[39m
+            [36m/>[39m
+          [36m</div>[39m
+          [36m<div>[39m
+            [36m<label[39m
+              [33mclass[39m=[32m"block text-sm font-medium text-zinc-300 mb-1.5"[39m
+              [33mfor[39m=[32m"password"[39m
+            [36m>[39m
+              [0mPassword[0m
+            [36m</label>[39m
+            [36m<div[39m
+              [33mclass[39m=[32m"relative"[39m
+            [36m>[39m
+              [36m<input[39m
+                [33mautocomplete[39m=[32m"current-password"[39m
+                [33mclass[39m=[32m"block w-full rounded-lg border border-white/8 bg-white/4 px-3.5 py-2.5 pr-10 text-sm text-white placeholder:text-zinc-400 outline-hidden transition focus:border-orange-500/50 focus:bg-white/6 focus:ring-2 focus:ring-orange-500/20"[39m
+                [33mid[39m=[32m"password"[39m
+                [33mname[39m=[32m"password"[39m
+                [33mplaceholder[39m=[32m"••••••••"[39m
+                [33mrequired[39m=[32m""[39m
+                [33mtype[39m=[32m"password"[39m
+                [33mvalue[39m=[32m""[39m
+              [36m/>[39m
+              [36m<button[39m
+                [33maria-label[39m=[32m"Show password"[39m
+                [33mclass[39m=[32m"absolute right-2.5 top-1/2 -translate-y-1/2 rounded-sm p-1 text-zinc-500 hover:text-zinc-200 transition-colors"[39m
+                [33mtype[39m=[32m"button"[39m
+              [36m>[39m
+                [36m<svg[39m
+                  [33maria-hidden[39m=[32m"true"[39m
+                  [33mclass[39m=[32m"h-4 w-4"[39m
+                  [33mdata-slot[39m=[32m"icon"[39m
+                  [33mfill[39m=[32m"none"[39m
+                  [33mstroke[39m=[32m"currentColor"[39m
+                  [33mstroke-width[39m=[32m"1.5"[39m
+                  [33mviewBox[39m=[32m"0 0 24 24"[39m
+                  [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+                [36m>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                  [36m<path[39m
+                    [33md[39m=[32m"M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"[39m
+                    [33mstroke-linecap[39m=[32m"round"[39m
+                    [33mstroke-linejoin[39m=[32m"round"[39m
+                  [36m/>[39m
+                [36m</svg>[39m
+              [36m</button>[39m
+            [36m</div>[39m
+          [36m</div>[39m
+          [36m<button[39m
+            [33mclass[39m=[32m"inline-flex w-full items-center justify-center gap-2 rounded-lg bg-zinc-100 px-4 py-3 text-sm font-semibold text-zinc-950 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-50"[39m
+            [33mtype[39m=[32m"submit"[39m
+          [36m>[39m
+            [0mSign in[0m
+            [36m<svg[39m
+              [33maria-hidden[39m=[32m"true"[39m
+              [33mclass[39m=[32m"h-4 w-4"[39m
+              [33mdata-slot[39m=[32m"icon"[39m
+              [33mfill[39m=[32m"none"[39m
+              [33mstroke[39m=[32m"currentColor"[39m
+              [33mstroke-width[39m=[32m"1.5"[39m
+              [33mviewBox[39m=[32m"0 0 24 24"[39m
+              [33mxmlns[39m=[32m"http://www.w3.org/2000/svg"[39m
+            [36m>[39m
+              [36m<path[39m
+                [33md[39m=[32m"M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"[39m
+                [33mstroke-linecap[39m=[32m"round"[39m
+                [33mstroke-linejoin[39m=[32m"round"[39m
+              [36m/>[39m
+            [36m</svg>[39m
+          [36m</button>[39m
+        [36m</form>[39m
+        [36m<button[39m
+          [33mclass[39m=[32m"mt-4 text-sm text-orange-300 underline"[39m
+          [33mtype[39m=[32m"button"[39m
+        [36m>[39m
+          [0mNeed a verification email?[0m
+        [36m</button>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-6 text-sm text-zinc-500 text-center"[39m
+        [36m>[39m
+          [0mDon't have an account?[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"font-medium text-zinc-200 hover:text-white"[39m
+            [33mhref[39m=[32m"/auth/signup?redirect=%2Fdesktop%2Fconnect%3Fchallenge%3Dsynthetic"[39m
+          [36m>[39m
+            [0mCreate one[0m
+          [36m</a>[39m
+        [36m</p>[39m
+        [36m<p[39m
+          [33mclass[39m=[32m"mt-2 text-xs text-zinc-500 text-center"[39m
+        [36m>[39m
+          [0mNeed the application?[0m
+          [0m [0m
+          [36m<a[39m
+            [33mclass[39m=[32m"font-medium text-zinc-300 underline decoration-white/20 underline-offset-2 hover:text-white"[39m
+            [33mhref[39m=[32m"/download"[39m
+          [36m>[39m
+            [0mReturn to downloads →[0m
+          [36m</a>[39m
+        [36m</p>[39m
+      [36m</div>[39m
+    [36m</div>[39m
+  [36m</div>[39m
+[36m</body>[39m
+ ❯ waitForWrapper ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@testing-library/dom/dist/wait-for.js:163:27
+ ❯ ../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/@testing-library/dom/dist/query-helpers.js:86:33
+ ❯ app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts:34:23
+     32| it('keeps recovery visible even when no OAuth provider can currently b…
+     33|  ports.configured=false;render(createElement(SignInPage));
+     34|  expect((await screen.findByRole('alert')).textContent).toContain("cou…
+       |                       ^
+     35|  expect(screen.getByLabelText('Email')).toBeTruthy();
+     36| });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/5]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  5 failed (5)
+   Start at  07:47:03
+   Duration  4.68s (tests 88%, environment 7%, import 4%)
+
