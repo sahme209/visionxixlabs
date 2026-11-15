@@ -355,9 +355,55 @@ async fn run_detected_check_cancelable(root: &Path, check: CheckCommand, deadlin
 }
 
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
 mod tests {
     use super::*;
+    #[cfg(windows)]
+    fn node(script: &str) -> CheckCommand {
+        CheckCommand {
+            definition: RepositoryCheck { id: "fixture".into(), label: "Fixture".into(), command: "fixture node".into(), description: "Isolated native test".into() },
+            executable: "node", args: vec!["-e".into(), script.into()],
+        }
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_captures_both_streams_and_nonzero_exit() {
+        let result = run_detected_check(&std::env::temp_dir(), node("process.stdout.write('stdout'); process.stderr.write('stderr'); process.exitCode=7"), Duration::from_secs(10)).await.unwrap();
+        assert!(!result.success);
+        assert_eq!(result.exit_code, Some(7));
+        assert_eq!(result.output, "stdout\nstderr");
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_refuses_combined_output_above_limit() {
+        let result = run_detected_check(&std::env::temp_dir(), node("process.stdout.write('a'.repeat(600000)); process.stderr.write('b'.repeat(600000))"), Duration::from_secs(10)).await;
+        assert!(result.unwrap_err().contains("combined output"));
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_deadline_bounds_direct_child_and_collectors() {
+        let result = run_detected_check(&std::env::temp_dir(), node("setTimeout(()=>{}, 10000)"), Duration::from_millis(100)).await;
+        assert!(result.unwrap_err().contains("safety limit"));
+    }
+
+    #[cfg(windows)]
+    #[tokio::test]
+    async fn windows_cancellation_never_returns_a_passing_receipt() {
+        let (sender, receiver) = watch::channel(true);
+        let result = run_detected_check_cancelable(&std::env::temp_dir(), node("process.exit(0)"), Duration::from_secs(10), receiver).await;
+        assert!(result.unwrap_err().contains("before spawn"));
+        sender.send_replace(false);
+        let root = std::env::temp_dir();
+        let execution = run_detected_check_cancelable(&root, node("setTimeout(()=>{}, 10000)"), Duration::from_secs(10), sender.subscribe());
+        let cancel = async { tokio::task::yield_now().await; sender.send_replace(true); };
+        let (result, _) = tokio::join!(execution, cancel);
+        assert!(result.unwrap_err().contains("canceled"));
+    }
+
+    #[cfg(unix)]
     fn shell(script: &str) -> CheckCommand {
         CheckCommand {
             definition: RepositoryCheck { id: "fixture".into(), label: "Fixture".into(), command: "fixture shell".into(), description: "Isolated native test".into() },
@@ -375,6 +421,7 @@ mod tests {
         std::fs::remove_dir_all(root).unwrap();
     }
 
+    #[cfg(unix)]
     #[tokio::test]
     async fn runs_an_owned_configured_build_with_a_real_artifact() {
         let root = std::env::temp_dir().join(format!("axiom-build-execution-{}", std::process::id()));
@@ -407,6 +454,7 @@ mod tests {
         std::fs::remove_dir_all(root).unwrap();
     }
 
+    #[cfg(unix)]
     #[test]
     fn refuses_a_replaced_fifo_without_waiting_for_a_writer() {
         use std::os::unix::ffi::OsStrExt;
@@ -441,6 +489,7 @@ mod tests {
         }
     }
 
+    #[cfg(unix)]
     #[tokio::test]
     async fn exit_observation_reserves_identity_until_group_cleanup_and_reaping() {
         let mut command = Command::new("/bin/sh");
@@ -477,6 +526,7 @@ mod tests {
         }
     }
 
+    #[cfg(unix)]
     #[tokio::test]
     async fn cancellation_before_spawn_never_runs_script() {
         let (sender, receiver) = watch::channel(true);
@@ -484,6 +534,7 @@ mod tests {
         assert!(result.unwrap_err().contains("before spawn"));
         drop(sender);
     }
+    #[cfg(unix)]
     #[tokio::test]
     async fn cancellation_during_wait_never_returns_success() {
         let (sender, receiver) = watch::channel(false);
@@ -493,6 +544,7 @@ mod tests {
         let (result, _) = tokio::join!(execution, cancel);
         assert!(result.unwrap_err().contains("canceled"));
     }
+    #[cfg(unix)]
     #[tokio::test]
     async fn cancellation_stops_an_owned_descendant_before_it_can_write() {
         let nonce = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos();
@@ -520,6 +572,7 @@ mod tests {
         assert!(!leaked, "The canceled verification left its owned descendant running");
     }
 
+    #[cfg(unix)]
     #[tokio::test]
     async fn captures_both_streams_and_nonzero_exit() {
         let result = run_detected_check(&std::env::temp_dir(), shell("printf stdout; printf stderr >&2; exit 7"), Duration::from_secs(2)).await.unwrap();
@@ -527,17 +580,20 @@ mod tests {
         assert_eq!(result.exit_code, Some(7));
         assert_eq!(result.output, "stdout\nstderr");
     }
+    #[cfg(unix)]
     #[tokio::test]
     async fn rejects_combined_output_even_when_each_stream_is_under_limit() {
         let result = run_detected_check(&std::env::temp_dir(), shell("printf '%600000s' ''; printf '%600000s' '' >&2"), Duration::from_secs(2)).await;
         assert!(result.unwrap_err().contains("combined output"));
     }
+    #[cfg(unix)]
     #[tokio::test]
     async fn deadline_includes_pipes_retained_after_direct_child_exit() {
         // Inherited pipes cannot extend the deadline; owned-group cleanup is best effort.
         let result = run_detected_check(&std::env::temp_dir(), shell("sleep 0.3 & exit 0"), Duration::from_millis(40)).await;
         assert!(result.unwrap_err().contains("safety limit"));
     }
+    #[cfg(unix)]
     #[tokio::test]
     async fn deadline_bounds_direct_child_and_collectors() {
         let result = run_detected_check(&std::env::temp_dir(), shell("sleep 0.3"), Duration::from_millis(40)).await;

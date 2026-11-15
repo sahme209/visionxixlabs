@@ -143,6 +143,7 @@ mod tests {
             let path = std::env::temp_dir().join(format!("axiom-worktree-{}-{}", std::process::id(), std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH).unwrap().as_nanos()));
             fs::create_dir(&path).unwrap();
             assert!(Command::new("git").args(["init", "-b", "main"]).arg(&path).output().unwrap().status.success());
+            assert!(Command::new("git").arg("-C").arg(&path).args(["config", "core.autocrlf", "false"]).output().unwrap().status.success());
             fs::write(path.join("file.txt"), "original\n").unwrap();
             fs::write(path.join(".gitignore"), "ignored.txt\n").unwrap();
             assert!(Command::new("git").arg("-C").arg(&path).args(["add", "."]).output().unwrap().status.success());
@@ -238,7 +239,7 @@ mod tests {
         assert_eq!(list(&f.0).unwrap().len(),2);
     }
 }
-#[cfg(test)]
+#[cfg(all(test, unix))]
 mod additional_tests {
     use super::*;
     #[cfg(unix)]

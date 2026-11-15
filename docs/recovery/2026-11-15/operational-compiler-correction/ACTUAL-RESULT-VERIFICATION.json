@@ -1,0 +1,22 @@
+{
+  "head": "c36dbc356c332d7d05be2c35b9328d9c5a18551e",
+  "run": 43730458593,
+  "job": 132861519084,
+  "attempt": 1,
+  "ownerGrantConsumed": true,
+  "retryAuthorized": false,
+  "compilerAccepted": true,
+  "supervisedCommands": 42,
+  "allExitZeroAndOwnedCleanupConfirmed": true,
+  "frozenEntries": 10885,
+  "frozenManifestSha256": "6942561fe807171233c270c6538b211dd8739710b6169b1742d5f3b085042d57",
+  "allRetainedRecordsMatched": true,
+  "allOutputHashesFrozen": true,
+  "nodeApiImports": 31,
+  "daemonValidationProfile": "unstripped; no stripped production equivalence",
+  "warningsRetained": true,
+  "nativeRuntimeExecuted": false,
+  "governanceEnabled": false,
+  "targetCompatibilityQualified": false,
+  "logSha256": "8e7f05f75537ee6f7c90e3028c540471fca97c0cf88feec0b2cd01c7a402272b"
+}

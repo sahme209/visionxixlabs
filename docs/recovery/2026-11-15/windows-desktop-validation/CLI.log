@@ -1,0 +1,20 @@
+....................usage: vxl listen [-h] [--port PORT] --secret SECRET [--verbose]
+vxl listen: error: the following arguments are required: --secret
+.usage: vxl [-h] [--api-key API_KEY] [--base-url BASE_URL] [--json]
+           {whoami,gate,trigger,runs,connectors,events,ask,outcome,listen} ...
+vxl: error: the following arguments are required: cmd
+.usage: vxl runs get [-h] run_id
+vxl runs get: error: the following arguments are required: run_id
+..usage: vxl runs list [-h] [--limit LIMIT] [--cursor CURSOR]
+                     [--status {running,succeeded,failed,awaiting_approval}]
+vxl runs list: error: argument --status: invalid choice: 'garbage' (choose from 'running', 'succeeded', 'failed', 'awaiting_approval')
+..usage: vxl trigger [-h] --repo REPO [--branch BRANCH]
+                   [--idempotency-key IDEMPOTENCY_KEY]
+                   instruction [instruction ...]
+vxl trigger: error: the following arguments are required: --repo
+....vxl: no API key. Set VXL_API_KEY in the environment or pass --api-key.
+......
+----------------------------------------------------------------------
+Ran 36 tests in 0.021s
+
+OK

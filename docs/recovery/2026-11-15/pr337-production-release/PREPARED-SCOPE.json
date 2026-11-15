@@ -1,0 +1,17 @@
+{
+  "sourceSha": "6358f1363f5d4a2f811cc89a1b92ee58aa4a6068",
+  "sourceDirectory": "/var/folders/8w/qtcfsj5j4t31dmtf4ydmcz1c0000gn/T/axiom-pr337-production-source-k5tjaaa5",
+  "projectName": "visionxixlabs",
+  "projectId": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+  "teamId": "team_j0CEiAAorasdEVQyeAJjpNfm",
+  "target": "production",
+  "skipDomain": true,
+  "oneBuildMaximum": 1,
+  "schemaDiffFromPriorStagedSourceEmpty": true,
+  "allEightMainChecksPassed": true,
+  "sourceClean": true,
+  "ambientEnvironmentCopied": false,
+  "deploymentStarted": false,
+  "privateSettingRead": false,
+  "gate": "Two-call private diagnostic still needs fresh explicit consent; no promotion on unknown health."
+}

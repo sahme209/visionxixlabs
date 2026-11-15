@@ -1,0 +1,37 @@
+
+> axiom-desktop@0.1.23 build
+> npm run check:release && npm run typecheck && vite build
+
+
+> axiom-desktop@0.1.23 check:release
+> node ../scripts/check-desktop-release.mjs
+
+Desktop release alignment passed: Axiom Agent v0.1.23
+
+> axiom-desktop@0.1.23 typecheck
+> node ../scripts/run-native-typecheck.mjs --desktop --noEmit
+
+vite v8.3.6 building client environment for production...
+transforming...
+✓ 2667 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                          0.69 kB │ gzip:   0.45 kB
+dist/assets/servicenow-B5BT0v3W.png     11.03 kB
+dist/assets/index-BEcJXPVS.css         138.72 kB │ gzip:  20.88 kB
+dist/assets/dist-js-2NoaumV7.js          2.29 kB │ gzip:   0.83 kB
+dist/assets/index-xcwyF6XK.js        1,661.05 kB │ gzip: 433.64 kB
+
+[plugin builtin:vite-reporter] 
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rolldownOptions.output.codeSplitting to improve chunking: https://rolldown.rs/reference/OutputOptions.codeSplitting
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+[33m[INEFFECTIVE_DYNAMIC_IMPORT] [0m../../axiom-aws-sdk-upgrade/axiom-ticket-install-completion/desktop/node_modules/@tauri-apps/plugin-shell/dist-js/index.js is dynamically imported by src/lib/notifications.ts but also statically imported by src/components/AwsGuidedConnection.tsx, src/components/AzureGuidedConnection.tsx, src/components/ConnectedActionsPanel.tsx, src/components/DesktopMcpTools.tsx, src/components/GcpGuidedConnection.tsx, ..., dynamic import will not move module into another chunk.
+
+✓ built in 643ms
+npm notice
+npm notice New major version of npm available! 11.19.0 -> 12.2.2
+npm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.2
+npm notice To update run: npm install -g npm@12.2.2
+npm notice

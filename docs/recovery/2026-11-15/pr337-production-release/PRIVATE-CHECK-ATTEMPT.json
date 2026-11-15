@@ -1,0 +1,9 @@
+{
+  "ownerDecision": "call_ed9a9f4cd6fa4f85a203c87d48f7c13b",
+  "answer": "Approve read-only check, then verified deployment",
+  "maximumPrivateCalls": 2,
+  "scope": "Existing DATABASE_URL only; metadata then exact row value parsed in tool memory. No SQL, setting mutation or credential output.",
+  "sourceSha": "6358f1363f5d4a2f811cc89a1b92ee58aa4a6068",
+  "attemptStarted": true,
+  "automaticRetry": false
+}

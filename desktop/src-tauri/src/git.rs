@@ -564,7 +564,7 @@ mod tests {
         std::fs::write(directory.0.join("workflow.txt"), "initial").unwrap();
         run(&directory.0, &["add", "workflow.txt"]);
         run(&directory.0, &["commit", "-m", "initial fixture"]);
-        let local_remote = format!("file://{}", remote.0.display());
+        let local_remote = reqwest::Url::from_directory_path(&remote.0).unwrap().to_string();
         let rewrite = format!("url.{}.insteadOf", local_remote);
         let synthetic_url = "https://github.com/owner/repository.git";
         run(&directory.0, &["config", &rewrite, synthetic_url]);
@@ -725,7 +725,7 @@ mod tests {
         assert!(super::git(Some(&remote.0), ["init", "--bare"]).unwrap().status.success());
         let destination = parent.0.join("clone");
         let global = parent.0.join("owned-config");
-        std::fs::write(&global, format!("[url \"file://{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", remote.0.display())).unwrap();
+        std::fs::write(&global, format!("[url \"{}\"]\n insteadOf = https://github.com/owner/repository.git\n[protocol \"https\"]\n allow = never\n", reqwest::Url::from_directory_path(&remote.0).unwrap())).unwrap();
         let url = "https://x-access-token:ghs_SYNTHETIC_ONLY@github.com/owner/repository.git";
         let mut scoped = super::scoped_git_command(None,
             &["clone", "--", url, destination.to_str().unwrap()], url).unwrap();
@@ -763,8 +763,9 @@ mod tests {
     fn scoped_git_disables_configured_trace_destinations_for_secret_environment() {
         let directory = OwnedDirectory::new();
         let trace = directory.0.join("owned-trace.json");
+        let trace_config = reqwest::Url::from_file_path(&trace).unwrap().to_file_path().unwrap();
         let global = directory.0.join("owned-config");
-        std::fs::write(&global, format!("[trace2]\n eventTarget = {}\n envVars = GIT_CONFIG_VALUE_3\n", trace.display())).unwrap();
+        std::fs::write(&global, format!("[trace2]\n eventTarget = {}\n envVars = GIT_CONFIG_VALUE_3\n", trace_config.to_string_lossy().replace('\\', "/"))).unwrap();
         let url = "https://x-access-token:synthetic@github.com/owner/repository.git";
         let mut scoped = super::scoped_git_command(Some(&directory.0),
             &["config", "--get-urlmatch", "http.extraHeader", "https://github.com/owner/repository.git"], url).unwrap();
