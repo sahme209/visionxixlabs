@@ -1,0 +1,49 @@
+{
+  "node": "24.21.0",
+  "ownedCases": 320,
+  "focusedCases": 337,
+  "fullSuite": {
+    "passed": 19594,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "exitCode": 0
+  },
+  "strictTypesExitCode": 0,
+  "logs": {
+    "red": {
+      "bytes": 2487,
+      "sha256": "816b68fa4dc2db9f97806ee881aca005b0f54389e72d37ea0a78cf91d4d12271",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-red.log"
+    },
+    "greenSubset": {
+      "bytes": 689,
+      "sha256": "5bb8c911abeb61dabf53ad090289578ee0515d493783e96bf50052ca3e4e6392",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-green.log"
+    },
+    "ownedFinal": {
+      "bytes": 1253,
+      "sha256": "7fa41f6841a6acf7bbdb21f2ec37f6ae6396e4d347df11e9b4f0caaad8c46bc2",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-owned-suite-final2.log"
+    },
+    "aggregateInitialAzureTimeout": {
+      "bytes": 129926,
+      "sha256": "cc66a4dfe099ea1e1dadb9e9399a73d67b6114ecfd45e529d23eaf15cdaad53a",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-required-suite.log"
+    },
+    "focusedFinal": {
+      "bytes": 1303,
+      "sha256": "6cefcdadfd2516b994c5f517767ef52819eee21e88ee6ed87da58fb8f56d789d",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-focused-final.log"
+    },
+    "aggregateFinal": {
+      "bytes": 129392,
+      "sha256": "9c192942cb34040231b347e586e3c6aa2c14eeea30a65b92948cba792ae1fea2",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-required-suite-final.log"
+    },
+    "strictTypes": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "localPath": "/private/tmp/axiom-pr336-manual-ci-types-final.log"
+    }
+  }
+}

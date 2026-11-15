@@ -1,0 +1,42 @@
+{
+  "scope": "Read-only observation during root editing; not a new qualification or reviewed execution manifest",
+  "launcherScriptClosureCount": 15,
+  "observedScriptHashes": {
+    "scripts/run-owned-website-visual.mjs": "28c243950b866e6fd9efef70edf62975b13005eb2c44e87c66003e8afd90d995",
+    "scripts/owned-website-ci.mjs": "592e41165ae47c8f033cafa34f4bd38ab4fb7579c5d676930456719e0e40bdfc",
+    "scripts/fixtures/ownedWebsiteConfig.cjs": "e81460bbef229377b031b3cc10c52f1c33eca2bf28fcb387d463c391e8b42d06",
+    "scripts/fixtures/ownedWebsitePolicy.cjs": "6cd6031e26dee32d81fa6d8c0825745c018effccea63be69388191a12d77e5d8",
+    "scripts/fixtures/ownedWebsiteGuard.cjs": "7717ab88be545b7f04066b852667ab895144aa1bf77c1ef3d543b336dc80ed3b",
+    "scripts/fixtures/ownedWebsiteFramework.cjs": "df7ae42d571e71c2d5decc068de2bcd5e5ccde68dd9eb45c0d1f1ffe4c9530b6",
+    "scripts/fixtures/ownedWebsiteChild.cjs": "421859af0af4a9d9086e6f83f53fa3d4005bfb07ea6b902b1f428d9bf62535ee",
+    "scripts/fixtures/ownedWebsiteProxy.cjs": "e3a91de391bd5aefbef43a2b7f54a13022da20e1a55d1cda571d17abac7e8e4e",
+    "scripts/fixtures/ownedWebsiteProxyTransport.cjs": "a5ec45f4331bfebdc7ab30cb844dc6dc1bb826dbdafb0845e391113d72c755a0",
+    "scripts/fixtures/ownedWebsiteLifecycle.cjs": "da4e0fe4dcccdd01c598e6c999bf2d4c8fc482012e9aed1fc97471fb3ffc0499",
+    "scripts/fixtures/ownedWebsiteSession.cjs": "28878d14db519d2af6fa0134cef7ab11cc7955ba8a7854bbfbd53958b249bcff",
+    "scripts/fixtures/ownedWebsitePointerObservation.cjs": "11e23e778db670ea0482ce5c9337928f6a474c8cd010cb78834fb179f45006cb",
+    "scripts/fixtures/ownedWebsiteManagedNodePath.cjs": "64e19a8629bdc92110dd4e23f3b6316f4cbd47d2df80749ef0e0370fcce08346",
+    "scripts/fixtures/ownedManagedEnvironment.cjs": "76b56578dfe709ad9694f560f41054342226a5850c7fc9c68744cc7a7a257715",
+    "scripts/capture-owned-website.mjs": "b6181c14b06813e11d0e4ae73c77cf46701e83478ee979351f33370400787e2a"
+  },
+  "activeFrameworkStaticSourcePins": {
+    "package-lock.json": {
+      "expected": "39956a9cc5fb352be676e51055b7854e7d7b637993fd6a3c22b5d965a4d5db0b",
+      "observed": "39956a9cc5fb352be676e51055b7854e7d7b637993fd6a3c22b5d965a4d5db0b"
+    },
+    "next.config.ts": {
+      "expected": "491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f",
+      "observed": "491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f"
+    },
+    "tsconfig.json": {
+      "expected": "e3c560859e61945c5c02ff889bb574481b6db8e5b0e41a4f4325fd8d452f70d1",
+      "observed": "e3c560859e61945c5c02ff889bb574481b6db8e5b0e41a4f4325fd8d452f70d1"
+    },
+    "tsconfig.next.json": {
+      "expected": "d2027302038c7fb1276839fba23a1418489a1e36faa74bbc2e520392e0191e45",
+      "observed": "d2027302038c7fb1276839fba23a1418489a1e36faa74bbc2e520392e0191e45"
+    }
+  },
+  "allStaticSourcePinsMatch": true,
+  "noHistoricalPacketModified": true,
+  "testsExecuted": false
+}

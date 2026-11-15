@@ -8,7 +8,7 @@ const source = readFileSync(`${process.cwd()}/scripts/capture-owned-website.mjs`
 const start = source.indexOf("  async function waitFor(");
 const end = source.indexOf("  async function viewport(", start);
 if (start < 0 || end < 0) throw Error("driver_poll_source_missing");
-const helpersAt = source.indexOf("function isHomepagePlaybackReady()");
+const helpersAt = source.indexOf("function isHomepageManualReady()");
 const helpers = helpersAt < 0 ? "" : source.slice(helpersAt, source.indexOf("// Start the absolute clock", helpersAt));
 const snapshot = { readyState: "interactive", tourPresent: true, playPresent: true, playDisabled: true, reducedMotion: false, visibility: "visible" };
 
@@ -21,11 +21,11 @@ function fixture(overrides: Record<string, unknown> = {}, resources: unknown[] =
     evaluations++;
     return vm.compileFunction(`return (${String(fn)})(argument);`, ["document", "window", "argument", "HTMLButtonElement", "performance"])(document, window, argument, Button, { getEntriesByType: () => resources });
   };
-  const build = vm.compileFunction(`${helpers}\nlet preImageWait = null;\n${source.slice(start, end)}\nreturn { waitFor, diagnostic: () => preImageWait, ready: isHomepagePlaybackReady, markers: readNextBootstrapMarkers, sanitizeMarkers: sanitizeNextBootstrapMarkers, sanitize: typeof sanitizePreImageDomSnapshot === 'function' ? sanitizePreImageDomSnapshot : undefined };`, ["evaluate", "sleep", "Date", "assert", "document", "window", "HTMLButtonElement"]);
+  const build = vm.compileFunction(`${helpers}\nlet preImageWait = null;\n${source.slice(start, end)}\nreturn { waitFor, diagnostic: () => preImageWait, ready: isHomepageManualReady, markers: readNextBootstrapMarkers, sanitizeMarkers: sanitizeNextBootstrapMarkers, sanitize: typeof sanitizePreImageDomSnapshot === 'function' ? sanitizePreImageDomSnapshot : undefined };`, ["evaluate", "sleep", "Date", "assert", "document", "window", "HTMLButtonElement"]);
   return { ...build(evaluate, async (ms: number) => { now += ms; }, { now: () => now }, { ok: (value: unknown) => { if (!value) throw Error("invalid_phase"); } }, document, window, Button), evaluations: () => evaluations, elapsed: () => now };
 }
 
-it.each(["homepage_document", "homepage_playback"])("retains the exact %s timeout phase and last bounded DOM observation", async phase => {
+it.each(["homepage_document", "homepage_manual"])("retains the exact %s timeout phase and last bounded DOM observation", async phase => {
   const f = fixture();
   await expect(f.waitFor(() => false, undefined, 300, phase)).rejects.toThrow("website_dom_timeout");
   expect(f.diagnostic()).toEqual({ phase, lastDomSnapshot: snapshot, nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false } });
@@ -41,8 +41,8 @@ it("keeps the unchanged predicate result and uses no extra evaluation for diagno
 
 it("keeps unavailable DOM observations unknown without retaining page text or allowing readiness", async () => {
   const f = fixture({ readyState: "private-page-text" });
-  await expect(f.waitFor(() => false, undefined, 300, "homepage_playback")).rejects.toThrow("website_dom_timeout");
-  expect(f.diagnostic()).toEqual({ phase: "homepage_playback", lastDomSnapshot: null, nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false } });
+  await expect(f.waitFor(() => false, undefined, 300, "homepage_manual")).rejects.toThrow("website_dom_timeout");
+  expect(f.diagnostic()).toEqual({ phase: "homepage_manual", lastDomSnapshot: null, nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false } });
   expect(JSON.stringify(f.diagnostic())).not.toContain("private-page-text");
 });
 
@@ -57,18 +57,18 @@ it("accepts only six own data fields with closed strings and boolean or absent-c
 
 it("fails immediately on a missing playback control while retaining the same-poll DOM snapshot", async () => {
   const f = fixture({ readyState: "complete", querySelector: (selector: string) => selector === "#product-tour" ? {} : null });
-  await expect(f.waitFor(() => !document.querySelector<HTMLButtonElement>('[aria-label="Play story"]')!.disabled, undefined, 45000, "homepage_playback")).rejects.toThrow("website_browser_evaluation_failed");
+  await expect(f.waitFor(() => !document.querySelector<HTMLButtonElement>('[aria-label="Play story"]')!.disabled, undefined, 45000, "homepage_manual")).rejects.toThrow("website_browser_evaluation_failed");
   expect(f.evaluations()).toBe(1); expect(f.elapsed()).toBe(0);
-  expect(f.diagnostic()).toEqual({ phase: "homepage_playback", predicateExceptionClass: "TypeError", nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false }, lastDomSnapshot: { ...snapshot, readyState: "complete", playPresent: false, playDisabled: null } });
+  expect(f.diagnostic()).toEqual({ phase: "homepage_manual", predicateExceptionClass: "TypeError", nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false }, lastDomSnapshot: { ...snapshot, readyState: "complete", playPresent: false, playDisabled: null } });
 });
 
-it("redacts unknown predicate exception names and captures after mandatory playback readiness and real consent dismissal", async () => {
+it("redacts unknown predicate exception names and captures after mandatory manual readiness and real consent dismissal", async () => {
   const f = fixture();
-  await expect(f.waitFor(() => { throw { name: "PRIVATE_URL", message: "PRIVATE_SECRET" }; }, undefined, 45000, "homepage_playback")).rejects.toThrow("website_browser_evaluation_failed");
+  await expect(f.waitFor(() => { throw { name: "PRIVATE_URL", message: "PRIVATE_SECRET" }; }, undefined, 45000, "homepage_manual")).rejects.toThrow("website_browser_evaluation_failed");
   expect(f.diagnostic().predicateExceptionClass).toBe("other"); expect(JSON.stringify(f.diagnostic())).not.toContain("PRIVATE");
   const documentReady = source.indexOf("await navigate('/', 'homepage_document')");
   const screenshot = source.indexOf("await frame('home-desktop')");
-  const playback = source.indexOf("undefined, 45000, 'homepage_playback'");
+  const playback = source.indexOf("undefined, 45000, 'homepage_manual'");
   const consent = source.indexOf("await click('Essential only')");
   const dismissed = source.indexOf("await waitFor(() => !document.querySelector('[role=\"dialog\"][aria-labelledby=\"privacy-consent-title\"]'))");
   expect(documentReady).toBeGreaterThan(0); expect(playback).toBeGreaterThan(documentReady);
@@ -101,21 +101,20 @@ it("counts script elements and resource statuses without retaining script conten
 
 it("keeps script diagnostics separate from the unchanged six-field snapshot in the same poll", async () => {
  const f = fixture({ scripts: [{ hasAttribute: () => true }] }, [{ initiatorType: "script" }]);
- await expect(f.waitFor(() => false, undefined, 100, "homepage_playback")).rejects.toThrow("website_dom_timeout");
+ await expect(f.waitFor(() => false, undefined, 100, "homepage_manual")).rejects.toThrow("website_dom_timeout");
  expect(f.evaluations()).toBe(1);
- expect(f.diagnostic()).toEqual({ phase: "homepage_playback", lastDomSnapshot: snapshot, nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false }, scriptCounts: { elements: 1, external: 1, inline: 0, resourceSuccess: 0, resourceFailure: 0, resourceUnknown: 1 } });
+ expect(f.diagnostic()).toEqual({ phase: "homepage_manual", lastDomSnapshot: snapshot, nextMarkers: { bootstrapRegistered: false, flightArrayPresent: false, flightConsumerInstalled: false }, scriptCounts: { elements: 1, external: 1, inline: 0, resourceSuccess: 0, resourceFailure: 0, resourceUnknown: 1 } });
 });
 
-it("treats loading, absent and disabled Play controls as unmet readiness, not exceptions", () => {
+it("treats loading, absent, disabled or noncurrent manual steps as unmet readiness", () => {
   for (const change of [{ readyState: "loading" }, { querySelector: () => null }, {}]) expect(fixture(change).ready()).toBe(false);
-  // Reuse the actual helper with the same realm's HTMLButtonElement for instanceof.
-  const helper = source.slice(source.indexOf('function isHomepagePlaybackReady()'), source.indexOf('function readNextBootstrapMarkers()'));
-  const ready = vm.compileFunction(`${helper}; return isHomepagePlaybackReady();`, ['document', 'HTMLButtonElement']);
-  class Button { disabled = false; }
+  const helper = source.slice(source.indexOf('function isHomepageManualReady()'), source.indexOf('function readNextBootstrapMarkers()'));
+  const ready = vm.compileFunction(`${helper}; return isHomepageManualReady();`, ['document', 'HTMLButtonElement']);
+  class Button { disabled = false; getAttribute() { return 'step'; } }
   expect(ready({ readyState: 'complete', querySelector: () => new Button() }, Button)).toBe(true);
   expect(ready({ readyState: 'interactive', querySelector: () => new Button() }, Button)).toBe(false);
   expect(ready({ readyState: 'complete', querySelector: () => ({ disabled: false }) }, Button)).toBe(false);
-  expect(source).toContain("await waitFor(isHomepagePlaybackReady, undefined, 45000, 'homepage_playback')");
+  expect(source).toContain("await waitFor(isHomepageManualReady, undefined, 45000, 'homepage_manual')");
 });
 
 it("observes only the three pinned bootstrap boundaries without retaining Flight payload", () => {
