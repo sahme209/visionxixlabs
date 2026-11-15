@@ -201,7 +201,7 @@
     {
       "href": "/docs/desktop-install",
       "source": "app/docs/desktop-install/page.tsx",
-      "sourceSha256": "0f809eb9b8d96ac86c97413f11ea337ad58614c898d84547f92b8f47b8a54d16",
+      "sourceSha256": "481e76363d33c16d4b82a46ddd2530b5f75ee15f390d3e9e5b4b9eb7b84cadbe",
       "fields": [
         "Install the desktop app.",
         "The website explains and distributes Axiom Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application.",

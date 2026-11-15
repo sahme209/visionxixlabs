@@ -1,0 +1,26 @@
+{
+  "ownerApproval": "call_ec97375ab4774ada843d22f242fcb95a",
+  "scope": "local policy split source and simulated checks only",
+  "hashes": {
+    "packages/verified-issuer-runtime/linux/time_operational_status.h": "abc4b30d020e0939ff15794a9e29e59c3ddd840a9e33049ed42b8d69512fd18b",
+    "packages/verified-issuer-runtime/linux/time_operational_status.c": "17e9e8b4cf23dd14db48e4ae3301f67fb00548532fbbe4c808382c800ee66926",
+    "packages/verified-issuer-runtime/linux/time_operational_owner.c": "5232e94c0ce215ad5b0a9d23cbf3bffb3d681ef08b19ae3fdbd2e26bd1d5c707",
+    "scripts/tests/test_operational_policy_split.py": "662ffcf9aafff17eb43d74486555562560669b23a54069a1fe7b80f0e976bb0f"
+  },
+  "sourceAssertions": 12,
+  "syntheticSpecificationScenarios": 4,
+  "existingSourceAssertions": 15,
+  "ordinaryTests": {
+    "passed": 19618,
+    "expectedFailure": 1,
+    "skipped": 1144
+  },
+  "rootTypes": "pass",
+  "desktopTypes": "pass",
+  "nativeCodeCompiled": false,
+  "nativeCodeExecuted": false,
+  "externalDurableAttemptControllerImplemented": false,
+  "hostQualified": false,
+  "governanceEnabled": false,
+  "independentSourceReview": "one P2 incomplete policy read; root RED-to-GREEN fix; no subsequent CLEAR claimed"
+}

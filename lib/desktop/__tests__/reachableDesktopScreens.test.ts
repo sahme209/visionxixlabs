@@ -27,6 +27,7 @@ beforeEach(()=>{
  ports.vaultClear.mockRejectedValue(new Error('fixture_vault_clear_forbidden'));
  ports.open.mockRejectedValue(new Error('fixture_external_open_forbidden'));
  ports.native.mockImplementation(async(command:string)=>{
+  if(command==='plugin:app|version')return '7.8.9';
   if(command==='default_repos_directory')return '/synthetic/empty-repositories';
   if(command==='list_local_repositories')return [];
   throw Error('fixture_native_command_forbidden:'+command);
@@ -98,7 +99,9 @@ it('keeps all eight real customer destinations navigable when data services are 
  await screen.findAllByRole('heading',{name:'Documentation'});
  await waitFor(()=>expect(requests.some(request=>request.path==='/api/desktop/access')).toBe(true));
  expect(requests.every(request=>request.method==='GET'||request.method==='HEAD')).toBe(true);
- expect(ports.native.mock.calls.every(([command])=>['default_repos_directory','list_local_repositories'].includes(command))).toBe(true);
+ expect(ports.native.mock.calls.every(([command])=>['default_repos_directory','list_local_repositories','plugin:app|version'].includes(command))).toBe(true);
+ expect(ports.native.mock.calls.filter(([command])=>command==='plugin:app|version')).toHaveLength(1);
+ expect(screen.queryByText('7.8.9')).toBeNull(); // Settings was closed again.
  expect(ports.open).not.toHaveBeenCalled();
  expect(ports.vaultWrite).not.toHaveBeenCalled();expect(ports.vaultClear).not.toHaveBeenCalled();
  if(process.env.AXIOM_WRITE_DESKTOP_SCREEN_STUDY==='1'){

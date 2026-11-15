@@ -1,0 +1,31 @@
+{
+  "scope": "installed-version local source and frontend compilation only",
+  "sourceHashesAfterChecks": {
+    "desktop/src/views/SettingsView.tsx": "7c391a71d486fe634eb597ba843493d96637b8205517776881f148d905458031",
+    "lib/desktop/__tests__/installedDesktopVersion.test.ts": "ccecbe649de601a61f602b24f36d3ad1ba9eabc68564d48aa41f9a86f32273a2",
+    "lib/desktop/__tests__/reachableDesktopScreens.test.ts": "04b27380d1f819c751254f7425b89b4b68332c9a28c0ef60bbb9e3ba5a3f95f3",
+    "app/docs/desktop-install/page.tsx": "481e76363d33c16d4b82a46ddd2530b5f75ee15f390d3e9e5b4b9eb7b84cadbe",
+    "docs/product/knowledge/settings-workspace-controls.md": "b8ef4b8f4760c08e61ca48da5b41ebaa95a98836eade547c9fef2aae730ec5ca",
+    "lib/demo/demoScenarios.ts": "ee108d2477f1aa6ee521c625be5fbb2454ff6145059cbd1a7f812edaddb26c0d",
+    "lib/docs/guide-heading-index.json": "f4e50cf3604281dbc3a6ba397e4ae72d8ab4ce160b3d7ac8802604f6687ede11",
+    "lib/support/docsCorpus.json": "acb50096a2930b7d5c9727a9ade43d0e1c1ac5d149bd944967bdd8d648c2789a"
+  },
+  "focusedTests": 37,
+  "ordinaryPassed": 19618,
+  "ordinaryExpectedFailure": 1,
+  "ordinarySkipped": 1144,
+  "rootTypes": "pass",
+  "desktopTypes": "pass",
+  "sourceReview": "no material desktop finding",
+  "frontendBuild": "FRONTEND-RESULT.json",
+  "buildWarningsPreserved": [
+    "chunk larger than500kB",
+    "ineffective existing dynamic shell import"
+  ],
+  "renderedReviewPerformed": false,
+  "nativeAppRun": false,
+  "installedAppChanged": false,
+  "installerPublished": false,
+  "deployed": false,
+  "historicalSettingsBindingsRequalified": false
+}

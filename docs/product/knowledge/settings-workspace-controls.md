@@ -18,6 +18,14 @@ The mounted desktop App renders Settings for its `settings` view, hiding the usu
 
 These twelve sections are mounted conditionally by selection. Read-only notices, labels and locked rows are not editable controls. UI statements about enforcement, least privilege, vaults, credentials or safety are not independent security verification in this guide.
 
+## November15 local source addendum: installed version and update review
+
+The newer local Settings source adds **General → About this app → Installed version**. It reads the existing read-only native `plugin:app|version` command once per General mount, shows **Checking…**, the bounded native-reported version, or **Unavailable**, and ignores results after leaving that section. It never substitutes the repository/package candidate or website version. No preference, credential, service, download, install or update operation is invoked by viewing it.
+
+**Desktop updates → Review releases** (`settings.workspace.desktop-release-review`) explicitly opens only `https://visionxixlabs.com/download`. It does not run an updater or installer. Browser-open failure shows a fixed instruction without raw diagnostics. The General search keywords now include installed/version/updates/releases/about. Existing preference/session/authority controls remain unchanged.
+
+This is a new local source behavior, not proof that any published/installed release includes it or that native/browser/upgrade acceptance passed. The historical69-node Settings binding packet above is preserved and is not requalified by this addendum. A separate exact source receipt for this change is in `docs/recovery/2026-11-15/desktop-installed-version/`; comprehensive current help/binding/native/customer acceptance remains open.
+
 ## Preferences and device session
 
 **General** exposes **Axiom account → Open** (`/account`) and **Organization governance → Open governance** (`/control/governance`) as browser handoffs. **Workspace access** is a status row directing readers to Plan & usage, not a grant. **System notifications** saves a local boolean; **Test** calls the desktop notification helper and is disabled when notifications are off. It is not a successful notification-delivery receipt. **Resume observation after restart** is locked copy.

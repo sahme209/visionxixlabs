@@ -75,7 +75,7 @@ type Section =
   | "identity";
 
 const sectionKeywords: Record<Section, string> = {
-  general: "startup notifications account",
+  general: "startup notifications account installed desktop version updates releases about",
   profile: "name email session sign out logout",
   appearance: "theme density motion contrast accessibility",
   plan: "billing subscription tokens cost usage",
@@ -234,6 +234,29 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
 }
 
 function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits }: PreferenceSectionProps & {onOpenGovernance:()=>void;onOpenExecutionLimits:()=>void}) {
+  const [installedVersion, setInstalledVersion] = useState<string | null>();
+  const [releasePageError, setReleasePageError] = useState(false);
+  const mounted = useRef(false);
+  useEffect(() => {
+    let current = true;
+    mounted.current = true;
+    async function readVersion() {
+      try {
+        // Same read-only core command used by the installed Tauri SDK's
+        // getVersion. A source/package version is not an installed receipt.
+        const value = await invoke<unknown>("plugin:app|version");
+        const displayable = typeof value === "string" && value.length <= 64 && /^(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)\.(?:0|[1-9]\d*)(?:-[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/.test(value);
+        if (current) setInstalledVersion(displayable ? value : null);
+      } catch { if (current) setInstalledVersion(null); }
+    }
+    void readVersion();
+    return () => { current = false; mounted.current = false; };
+  }, []);
+  async function reviewReleases() {
+    setReleasePageError(false);
+    try { await open(`${WEB_BASE}/download`); }
+    catch { if (mounted.current) setReleasePageError(true); }
+  }
   return <div>
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
@@ -247,6 +270,11 @@ function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits
       <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button data-help-id="settings.workspace.notification-test" type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
       <LockedRow title="Resume observation after restart" detail="Durable operation IDs are reconciled with the service after the app starts again." />
     </Group>
+    <Group label="About this app">
+      <InfoRow label="Installed version" value={installedVersion === undefined ? "Checking…" : installedVersion ?? "Unavailable"} mono />
+      <ActionRow title="Desktop updates" detail="Website deployments do not replace this installed app. Review a verified desktop release before upgrading." action={<button data-help-id="settings.workspace.desktop-release-review" type="button" onClick={() => void reviewReleases()} className="inline-flex items-center gap-1.5 rounded-lg border border-white/10 px-3 py-2 text-xs text-zinc-300 hover:bg-white/6">Review releases<ChevronRight className="h-3.5 w-3.5" /></button>} />
+    </Group>
+    {releasePageError && <p role="alert" className="mt-2 text-xs leading-5 text-zinc-400">The download page could not be opened. Visit visionxixlabs.com/download in your browser.</p>}
   </div>;
 }
 
