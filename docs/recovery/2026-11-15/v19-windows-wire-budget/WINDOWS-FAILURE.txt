@@ -1,0 +1,15 @@
+2026-11-15T19:21:53.6141567Z failures:
+2026-11-15T19:21:53.6141683Z
+2026-11-15T19:21:53.6142021Z ---- http::stream_wire_tests::real_wire_bounds_total_bytes_and_each_ipc_chunk stdout ----
+2026-11-15T19:21:53.6142382Z
+2026-11-15T19:21:53.6142932Z thread 'http::stream_wire_tests::real_wire_bounds_total_bytes_and_each_ipc_chunk' (744) panicked at src\http_stream_wire_tests.rs:229:47:
+2026-11-15T19:21:53.6143657Z full permitted stream deadline: Elapsed(())
+2026-11-15T19:21:53.6144855Z note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+2026-11-15T19:21:53.6145193Z
+2026-11-15T19:21:53.6145220Z
+2026-11-15T19:21:53.6145324Z failures:
+2026-11-15T19:21:53.6145707Z     http::stream_wire_tests::real_wire_bounds_total_bytes_and_each_ipc_chunk
+2026-11-15T19:21:53.6146019Z
+2026-11-15T19:21:53.6146370Z test result: FAILED. 84 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 6.22s
+2026-11-15T19:21:53.6146740Z
+2026-11-15T19:21:53.6164106Z [1m[91merror[0m: test failed, to rerun pass `--bin axiom-desktop`

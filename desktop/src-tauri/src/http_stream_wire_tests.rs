@@ -14,6 +14,12 @@ use tokio::task::JoinHandle;
 use tokio::time::timeout;
 
 const WAIT: Duration = Duration::from_secs(5);
+// Full-cap throughput is separate from event/cancellation responsiveness. In a
+// debug Windows job this serializes/deserializes 8 MiB through real TCP + JSON
+// IPC and acknowledges every <=16 KiB delivery alongside the other fixtures.
+// This finite harness ceiling remains below the unchanged 120-second product
+// stream deadline; short events, cancellation and excess-byte refusal keep WAIT.
+const BULK_TRANSFER_WAIT: Duration = Duration::from_secs(30);
 const PATH: &str = "/api/desktop/agent/conversations/fixture/messages";
 fn request() -> DesktopHttpRequest {
     DesktopHttpRequest {
@@ -204,7 +210,7 @@ async fn real_wire_bounds_total_bytes_and_each_ipc_chunk() {
     // An internally tagged enum buffers every byte into serde Content before
     // decoding Vec<u8>. A flat envelope decodes bytes directly, so this bound
     // fixture does not measure millions of temporary debug-build allocations.
-    // Real TCP/reqwest/Channel, byte limits, acknowledgments and WAIT are unchanged.
+    // Real TCP/reqwest/Channel, byte limits and acknowledgments are unchanged.
     #[derive(serde::Deserialize)]
     struct BoundEvent {
         kind: String,
@@ -226,7 +232,10 @@ async fn real_wire_bounds_total_bytes_and_each_ipc_chunk() {
     });
     let (_cancel, canceled) = oneshot::channel();
     let task = worker(address, channel, acknowledged, canceled);
-    timeout(WAIT, limit_reached.recv()).await.expect("full permitted stream deadline").expect("limit event");
+    timeout(BULK_TRANSFER_WAIT, limit_reached.recv()).await.unwrap_or_else(|error| {
+        panic!("full permitted stream deadline: {error:?}; delivered={} of {STREAM_TOTAL_BYTES} bytes; worker_finished={}",
+            delivered.load(Ordering::SeqCst), task.is_finished());
+    }).expect("limit event");
     release_extra.send(()).expect("release excess byte");
     assert!(complete(task).await.is_err());
     assert_eq!(delivered.load(Ordering::SeqCst), STREAM_TOTAL_BYTES);
