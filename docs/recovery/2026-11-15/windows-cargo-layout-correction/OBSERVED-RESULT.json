@@ -1,0 +1,80 @@
+{
+  "failureClass": "RuntimeError",
+  "failureCode": "artifact_outside_owned_root",
+  "source": "e74b27dda4e1a9a48e603dd7e80355e94be7e8ee",
+  "sourceBinding": {
+    "externalHumanApprovalProof": false,
+    "manifestSha256": "da8a821e0ea01bc50c874e3037619d2f97fe24543dc61dd9c417d313f7d2cd5e",
+    "sha": "e74b27dda4e1a9a48e603dd7e80355e94be7e8ee",
+    "sourceAuthority": "ordinary-owner-PR-CI"
+  },
+  "ownedProcessCleanupConfirmed": true,
+  "installations": [],
+  "upgradeAcceptance": "NOT_RUN",
+  "published": false,
+  "signingPerformed": false,
+  "run": 43761112239,
+  "job": 132957411077,
+  "cargo": "1.100.0",
+  "rust": "1.100.0",
+  "completedPhases": [
+    [
+      "source-head",
+      0
+    ],
+    [
+      "source-inventory-0",
+      0
+    ],
+    [
+      "tool-node",
+      0
+    ],
+    [
+      "tool-cargo",
+      0
+    ],
+    [
+      "tool-rustc",
+      0
+    ],
+    [
+      "tool-pwsh",
+      0
+    ],
+    [
+      "tool-git",
+      0
+    ],
+    [
+      "tool-npm",
+      0
+    ],
+    [
+      "tool-msiexec",
+      0
+    ],
+    [
+      "desktop-dependencies",
+      0
+    ],
+    [
+      "source-inventory-1",
+      0
+    ],
+    [
+      "frontend",
+      0
+    ],
+    [
+      "vault-build",
+      0
+    ]
+  ],
+  "selectedExecutablePath": "NOT_RETAINED_DO_NOT_INFER",
+  "logSha256": "e1635d982ccc5b673e697b709e5ff59249d34b59ea1975646baeddde2dd58106",
+  "primaryReferences": [
+    "https://doc.rust-lang.org/cargo/reference/build-cache.html",
+    "https://github.com/rust-lang/cargo/issues/15010"
+  ]
+}

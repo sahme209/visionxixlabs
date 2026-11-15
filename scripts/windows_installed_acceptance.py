@@ -20,6 +20,7 @@ import sys
 sys.dont_write_bytecode = True
 import time
 import uuid
+from urllib.parse import urlsplit, unquote
 
 EXPECTED_REF = "refs/heads/codex/watched-review-corrections"
 EXPECTED_ACTOR = "sahme209"
@@ -163,6 +164,61 @@ def owned_file(path, parent):
     need(path.is_file() and not path.is_symlink(), "artifact_not_regular")
     need(path.resolve().is_relative_to(parent.resolve()), "artifact_outside_owned_root")
     return path
+
+
+def windows_path_identity(value):
+    need(isinstance(value, str) and 0 < len(value) <= 32767 and not any(ord(char) < 32 for char in value), 'windows_artifact_path_invalid')
+    value = value.replace('/', '\\')
+    if value.startswith('\\\\?\\'): value = value[4:]
+    drive, tail = ntpath.splitdrive(value)
+    need(re.fullmatch(r'[A-Za-z]:', drive) is not None and tail.startswith('\\') and ':' not in tail, 'windows_artifact_path_invalid')
+    need(all(part not in ('.','..') and part == part.rstrip(' .') for part in tail.split('\\') if part), 'windows_artifact_path_invalid')
+    return ntpath.normcase(ntpath.normpath(value))
+
+
+def windows_path_within(path, parent):
+    try:
+        path, parent = windows_path_identity(str(path)), windows_path_identity(str(parent))
+        return path != parent and ntpath.commonpath([path,parent]) == parent
+    except (RuntimeError, ValueError):
+        return False
+
+
+def vault_artifact_diagnostics(rows, target_root):
+    def text(value):
+        return ''.join(char for char in value[:1024] if ord(char) >= 32) if isinstance(value,str) else None
+    result = {'candidateCount':len(rows), 'expectedOwnedRoot':text(str(target_root)), 'candidates':[]}
+    for row in rows[:2]:
+        target = row.get('target', {}) if isinstance(row.get('target'),dict) else {}
+        result['candidates'].append({'executable':text(row.get('executable')), 'manifestPath':text(row.get('manifest_path')), 'sourcePath':text(target.get('src_path')), 'targetName':text(target.get('name')), 'targetKinds':[text(value) for value in target.get('kind',[])[:4]] if isinstance(target.get('kind'),list) else None, 'profileTest':row.get('profile',{}).get('test') is True if isinstance(row.get('profile'),dict) else False, 'insideOwnedRoot':windows_path_within(row.get('executable',''),target_root)})
+    return result
+
+
+def select_vault_artifact(rows, target_root, manifest_path, source_path, version):
+    need(len(rows) == 1, 'synthetic_vault_executable_ambiguous')
+    row = rows[0]; target = row.get('target', {}); profile = row.get('profile', {})
+    need(row.get('reason') == 'compiler-artifact' and isinstance(target,dict) and target.get('name') == 'windows_keyring_acceptance' and target.get('kind') == ['test'] and target.get('crate_types') == ['bin'] and target.get('test') is True and isinstance(profile,dict) and profile.get('test') is True, 'synthetic_vault_artifact_target_mismatch')
+    need(windows_path_identity(row.get('manifest_path')) == windows_path_identity(str(manifest_path)) and windows_path_identity(target.get('src_path')) == windows_path_identity(str(source_path)), 'synthetic_vault_artifact_source_mismatch')
+    package = row.get('package_id')
+    need(isinstance(package,str) and len(package) <= 4096 and package.startswith('path+file:'), 'synthetic_vault_package_mismatch')
+    parsed = urlsplit(package[5:]); package_path = unquote(parsed.path)
+    if re.match(r'^/[A-Za-z]:/',package_path): package_path = package_path[1:]
+    need(not parsed.netloc and not parsed.query and parsed.fragment == 'axiom-desktop@'+version and windows_path_identity(package_path) == windows_path_identity(ntpath.dirname(str(manifest_path))), 'synthetic_vault_package_mismatch')
+    executable = row.get('executable'); names = row.get('filenames')
+    need(isinstance(executable,str) and windows_path_within(executable,target_root), 'artifact_outside_owned_root')
+    need(re.fullmatch(r'windows_keyring_acceptance(?:-[a-f0-9]{1,64})?\.exe', ntpath.basename(executable), flags=re.I) is not None, 'synthetic_vault_executable_name_invalid')
+    need(isinstance(names,list) and 0 < len(names) <= 32 and all(isinstance(name,str) and windows_path_within(name,target_root) for name in names) and sum(windows_path_identity(name) == windows_path_identity(executable) for name in names) == 1, 'synthetic_vault_executable_provenance_mismatch')
+    return executable
+
+
+def owned_vault_file(path, parent):
+    path, parent = Path(path), Path(parent)
+    need(parent.is_dir() and not parent.is_symlink() and path.is_file() and not path.is_symlink(), 'artifact_not_regular')
+    actual, root = path.resolve(strict=True), parent.resolve(strict=True)
+    inside = windows_path_within(actual,root) if os.name == 'nt' else actual.is_relative_to(root) and actual != root
+    need(inside, 'artifact_outside_owned_root')
+    require_pe_role(actual, 'Application')
+    return actual
 
 
 def installers(bundle):
@@ -517,15 +573,22 @@ def main():
         need(source_snapshot(runner, tools) == frozen, "source_changed_after_dependencies")
         receipt["installedTauri"] = locked_tauri(ROOT, installed=True)
         runner.run("frontend", [tools["node.exe"], npm, "run", "build"], ROOT / "desktop", 300)
-        build = runner.run("vault-build", [tools["cargo.exe"], "test", "--manifest-path", manifest, "--locked", "--test", "windows_keyring_acceptance", "--no-run", "--message-format=json"], ROOT, 600)
+        vault_target = base / 'vault-target'
+        need(not vault_target.exists(), 'vault_target_not_fresh')
+        vault_target.mkdir(exist_ok=False)
+        receipt['syntheticVaultOwnedTarget'] = str(vault_target)
+        build = runner.run("vault-build", [tools["cargo.exe"], "test", "--manifest-path", manifest, "--locked", "--target-dir", vault_target, "--test", "windows_keyring_acceptance", "--no-run", "--message-format=json"], ROOT, 600)
         artifacts = []
         for line in build.splitlines():
             value = json.loads(line)
             if value.get("reason") == "compiler-artifact" and value.get("target", {}).get("name") == "windows_keyring_acceptance" and value.get("executable"):
-                artifacts.append(Path(value["executable"]))
-        need(len(artifacts) == 1, "synthetic_vault_executable_ambiguous")
-        vault_executable = owned_file(artifacts[0], ROOT / "desktop/src-tauri/target/debug/deps")
-        need(re.fullmatch(r"windows_keyring_acceptance-[a-f0-9]+\.exe", vault_executable.name), "synthetic_vault_executable_name_invalid")
+                artifacts.append(value)
+        # Persist the bounded selected metadata before any provenance/refusal so
+        # a changed toolchain cannot hide the selected path in a stdout prefix.
+        receipt['syntheticVaultArtifactSelection'] = vault_artifact_diagnostics(artifacts, vault_target)
+        expected_version = json.loads((ROOT / 'desktop/package.json').read_text())['version']
+        selected = select_vault_artifact(artifacts, vault_target, ROOT / manifest, ROOT / 'desktop/src-tauri/tests/windows_keyring_acceptance.rs', expected_version)
+        vault_executable = owned_vault_file(selected, vault_target)
         vault_executable_hash = digest(vault_executable)
         receipt["syntheticVaultExecutableSha256"] = vault_executable_hash
         vault_args = [vault_executable, "--ignored", "--exact"]

@@ -1,0 +1,17 @@
+{
+  "scope": "harmless_guard_and_literal_listener_only",
+  "exitCode": 0,
+  "stderrBytes": 0,
+  "result": {
+    "accepted": true,
+    "legacyLiteralLookupDenialReproduced": true,
+    "originalBuiltinDelegated": true,
+    "actualLiteralLoopbackBind": true,
+    "externalDnsRefused": true,
+    "promisesResolveReverseAndOtherLookupRefused": true,
+    "listenerClosed": true,
+    "databaseOrApplicationStarted": false
+  },
+  "profileSha256": "16d55b37f0b0b13a94123ef5bebc9cea81cc8a0ac2530e9ffe6bcc4230fe71d3",
+  "noDatabaseOrCompiledAppRun": true
+}

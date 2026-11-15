@@ -1,0 +1,16 @@
+{
+  "accepted": true,
+  "compiledProductionServer": true,
+  "actualOwnedPostgres": true,
+  "strictRequireConfigured": true,
+  "googleOAuthVerified": false,
+  "installerAvailable": false,
+  "productionAccess": false,
+  "statusStoresOperational": true,
+  "passwordVerificationAndCanonicalSession": true,
+  "wrongPasswordAndUnverifiedRefused": true,
+  "membershipBootstrap": true,
+  "downloadStorageGate": "503_missing_then_404_no_external_asset_then_503_removed",
+  "actualCompiledAppTlsSessions": true,
+  "buildId": "X_Te7yFVWrKNIErWYrRjJ"
+}

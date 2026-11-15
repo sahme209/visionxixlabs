@@ -102,6 +102,57 @@ class WindowsAcceptancePreparation(unittest.TestCase):
         self.assertIn("if($ArtifactKind -eq 'NsisInstaller')",source)
         self.assertIn("if($machine -ne 0x14c)",source);self.assertIn("if($machine -ne 0x8664)",source)
 
+    def vault_message(self, executable):
+        return {'reason':'compiler-artifact','package_id':'path+file:///D:/repo/desktop/src-tauri#axiom-desktop@0.1.23','manifest_path':r'D:\repo\desktop\src-tauri\Cargo.toml','target':{'name':'windows_keyring_acceptance','kind':['test'],'crate_types':['bin'],'src_path':r'D:\repo\desktop\src-tauri\tests\windows_keyring_acceptance.rs','test':True},'profile':{'test':True},'executable':executable,'filenames':[executable]}
+
+    def test_vault_selection_accepts_actual_json_for_old_and_cargo_1100_layouts(self):
+        target=r'D:\owned\vault-target'
+        for executable in [target+r'\debug\deps\windows_keyring_acceptance-0123456789abcdef.exe',target+r'\debug\build\axiom-desktop\0123456789abcdef\out\windows_keyring_acceptance.exe']:
+            row=self.vault_message(executable)
+            selected=candidate.select_vault_artifact([row],target,r'D:\repo\desktop\src-tauri\Cargo.toml',r'D:\repo\desktop\src-tauri\tests\windows_keyring_acceptance.rs','0.1.23')
+            self.assertEqual(selected,executable)
+
+    def test_windows_ownership_handles_case_drive_and_verbatim_aliases_without_escape(self):
+        self.assertTrue(candidate.windows_path_within(r'\\?\D:\OWNED\vault-target\debug\test.exe',r'd:\owned\vault-target'))
+        for path in [r'E:\owned\vault-target\test.exe',r'D:\owned\vault-target-other\test.exe',r'D:\owned\vault-target\..\foreign.exe',r'\\server\share\test.exe',r'\\.\GLOBALROOT\test.exe',r'D:relative.exe',r'D:\owned\vault-target\test.exe:stream']:
+            with self.subTest(path=path):self.assertFalse(candidate.windows_path_within(path,r'D:\owned\vault-target'))
+
+    def test_vault_json_provenance_rejects_wrong_crate_source_profile_filename_and_outside(self):
+        import copy
+        target=r'D:\owned\vault-target';row=self.vault_message(target+r'\debug\build\axiom-desktop\hash\out\windows_keyring_acceptance.exe')
+        for change in ['package','manifest','source','kind','profile','filenames','outside','basename','duplicate']:
+            bad=copy.deepcopy(row)
+            if change=='package':bad['package_id']='path+file:///D:/repo/desktop/src-tauri#another-crate@0.1.23'
+            elif change=='manifest':bad['manifest_path']=r'D:\other\Cargo.toml'
+            elif change=='source':bad['target']['src_path']=r'D:\other\windows_keyring_acceptance.rs'
+            elif change=='kind':bad['target']['kind']=['bin']
+            elif change=='profile':bad['profile']['test']=False
+            elif change=='filenames':bad['filenames']=[target+r'\other.exe']
+            elif change=='outside':bad['executable']=r'D:\foreign\windows_keyring_acceptance.exe';bad['filenames']=[bad['executable']]
+            elif change=='basename':bad['executable']=target+r'\other.exe';bad['filenames']=[bad['executable']]
+            rows=[bad,bad] if change=='duplicate' else [bad]
+            with self.subTest(change=change),self.assertRaises(RuntimeError):candidate.select_vault_artifact(rows,target,r'D:\repo\desktop\src-tauri\Cargo.toml',r'D:\repo\desktop\src-tauri\tests\windows_keyring_acceptance.rs','0.1.23')
+
+    def test_vault_file_requires_owned_real_amd64_pe_and_refuses_resolved_escape(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root=Path(folder);owned=root/'vault-target';owned.mkdir();inside=owned/'windows_keyring_acceptance.exe';outside=root/'outside.exe'
+            data=bytearray(136);data[:2]=b'MZ';data[0x3c:0x40]=(128).to_bytes(4,'little');data[128:132]=b'PE\0\0';data[132:134]=(0x8664).to_bytes(2,'little')
+            inside.write_bytes(data);outside.write_bytes(data)
+            self.assertEqual(candidate.owned_vault_file(inside,owned),inside.resolve())
+            with self.assertRaisesRegex(RuntimeError,'artifact_outside_owned_root'):candidate.owned_vault_file(outside,owned)
+            (owned/'linked').symlink_to(root,target_is_directory=True)
+            with self.assertRaisesRegex(RuntimeError,'artifact_outside_owned_root'):candidate.owned_vault_file(owned/'linked/outside.exe',owned)
+            data[132:134]=(0x14c).to_bytes(2,'little');inside.write_bytes(data)
+            with self.assertRaisesRegex(RuntimeError,'artifact_pe_role_mismatch'):candidate.owned_vault_file(inside,owned)
+
+    def test_vault_diagnostics_bound_selected_paths_without_arbitrary_output(self):
+        row=self.vault_message(r'\\?\D:\owned\vault-target\debug\windows_keyring_acceptance.exe')
+        row['arbitrary']='synthetic-private-do-not-emit'
+        proof=candidate.vault_artifact_diagnostics([row],r'D:\owned\vault-target')
+        import json
+        self.assertNotIn('synthetic-private-do-not-emit',json.dumps(proof));self.assertEqual(proof['candidateCount'],1)
+        self.assertTrue(proof['candidates'][0]['insideOwnedRoot']);self.assertLess(len(json.dumps(proof)),16384)
+
     def test_msi_absence_requires_explicit_unknown_product(self):
         self.assertTrue(candidate.msi_absent(-1))
         for state in [-7,-6,-5,-4,-3,-2,0,1,2,3,4,5]:
