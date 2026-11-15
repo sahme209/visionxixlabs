@@ -127,6 +127,49 @@ def locked_tauri(root, installed=False):
     return proof
 
 
+MAX_BUNDLE_PAYLOAD_BYTES = 128 * 1024 * 1024
+BUNDLE_TYPE_MARKER = b"__TAURI_BUNDLE_TYPE_VAR_UNK"
+BUNDLE_TYPE_REPLACEMENTS = {'msi': b"__TAURI_BUNDLE_TYPE_VAR_MSI", 'nsis': b"__TAURI_BUNDLE_TYPE_VAR_NSS"}
+BUNDLE_PATCH_PROVENANCE = {
+    'version': '2.12.4',
+    'bundlerSource': 'https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle.rs',
+    'bundlerSourceSha256': '91c8387ccb2e52388cdcfeccfd23f69dac5439aba397d464b1d5446153fdc82e',
+    'cliSource': 'https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-cli/src/bundle.rs',
+    'cliSourceSha256': 'fa883f16f84ad4a0d7d091daa2a57e177b804b481a9ec8f8227c5a398dcafdf6',
+    'algorithm': 'first-UNK-marker-same-width-replacement-full-file-sha256',
+}
+
+
+def bundled_payload_expectations(payload, owned_root, installed_tauri):
+    # This mirrors the pinned trusted bundler's normal per-format patch. It does
+    # not normalize installed bytes or permit differences anywhere else.
+    names = {'@tauri-apps/cli', '@tauri-apps/cli-win32-x64-msvc'}
+    need(isinstance(installed_tauri, dict) and set(installed_tauri) == names, 'payload_patch_source_unqualified')
+    for name in names:
+        row = installed_tauri[name]
+        need(isinstance(row, dict) and row.get('version') == '2.12.4' and isinstance(row.get('integrity'), str) and row['integrity'].startswith('sha512-') and isinstance(row.get('payloadSha256'), str) and re.fullmatch(r'[a-f0-9]{64}', row['payloadSha256']) is not None, 'payload_patch_source_unqualified')
+    payload = owned_file(payload, owned_root)
+    size = payload.stat().st_size
+    need(0 < size <= MAX_BUNDLE_PAYLOAD_BYTES, 'payload_patch_size_refused')
+    with payload.open('rb') as stream: raw = stream.read(MAX_BUNDLE_PAYLOAD_BYTES + 1)
+    need(len(raw) == size, 'payload_changed_during_patch_inventory')
+    offset = raw.find(BUNDLE_TYPE_MARKER)
+    need(offset >= 0, 'payload_bundle_marker_missing')
+    hashes = {}
+    for kind, replacement in BUNDLE_TYPE_REPLACEMENTS.items():
+        need(len(replacement) == len(BUNDLE_TYPE_MARKER), 'payload_bundle_marker_width_changed')
+        patched = raw[:offset] + replacement + raw[offset+len(BUNDLE_TYPE_MARKER):]
+        hashes[kind] = hashlib.sha256(patched).hexdigest()
+    return {'rawInputSha256': hashlib.sha256(raw).hexdigest(), 'bytes':size,
+            'markerOffset':offset, 'markerBytes':len(BUNDLE_TYPE_MARKER),
+            'formatExpectedSha256':hashes, 'sourceProvenance':dict(BUNDLE_PATCH_PROVENANCE)}
+
+
+def format_payload_hash(expected, kind):
+    need(kind in ('msi', 'nsis') and isinstance(expected, dict) and set(expected) == {'msi','nsis'} and all(isinstance(value,str) and re.fullmatch(r'[a-f0-9]{64}',value) is not None for value in expected.values()), 'payload_format_expectation_invalid')
+    return expected[kind]
+
+
 def vendor_cache_snapshot(cache):
     files = sorted(path for path in cache.rglob('*') if path.is_file())
     need(0 < len(files) <= 2000 and all(not path.is_symlink() for path in files), 'vendor_cache_invalid')
@@ -638,6 +681,9 @@ def main():
         need(pe_machine(payload) == 0x8664, "built_payload_not_windows_x64")
         payload_hash = digest(payload)
         receipt["builtPayloadSha256"] = payload_hash
+        receipt["bundlePayloadExpectations"] = bundled_payload_expectations(payload, payload.parent, receipt["installedTauri"])
+        need(receipt["bundlePayloadExpectations"]["rawInputSha256"] == payload_hash, "built_payload_changed_before_expectations")
+        payload_hashes = receipt["bundlePayloadExpectations"]["formatExpectedSha256"]
         candidates = installers(ROOT / "desktop/src-tauri/target" / TARGET / "release/bundle")
         candidate_metadata = {}
         for kind, candidate in candidates.items():
@@ -651,11 +697,11 @@ def main():
         codes = [legacy['msi']['metadata']['ProductCode'], candidate_metadata['msi']['ProductCode']]
         absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [], codes, 'all-installs-pristine'))
         for kind, candidate in candidates.items():
-            install_one(runner, tools, base, kind, candidate, candidate_metadata[kind], version, payload_hash, receipt)
+            install_one(runner, tools, base, kind, candidate, candidate_metadata[kind], version, format_payload_hash(payload_hashes, kind), receipt)
             need(source_snapshot(runner, tools) == frozen, "source_changed_after_install_cycle")
         receipt['upgradeCycles'] = []
         for case in ('msi-major-upgrade','nsis-silent-upgrade','nsis-update','nsis-collision-legacy','nsis-collision-current'):
-            run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_metadata, version, payload_hash, receipt)
+            run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_metadata, version, payload_hashes, receipt)
             need(source_snapshot(runner, tools) == frozen, 'source_changed_after_upgrade_cycle')
         receipt['upgradeAcceptance'] = 'automated-five-cycles-passed'
         receipt["sourceUnchanged"] = source_snapshot(runner, tools) == frozen
@@ -718,11 +764,12 @@ def legacy_fixtures(runner, tools, base):
     return result
 
 
-def run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_metadata, version, payload_hash, receipt):
+def run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_metadata, version, payload_hashes, receipt):
     from windows_upgrade_acceptance import upgrade_commands, absent_before_owned_cycle, absent_after_cleanup, upgrade_audit, LEGACY_ASSETS
     collision = case.removeprefix('nsis-collision-') if case.startswith('nsis-collision-') else None
     recipe = 'nsis-update' if collision else case
     kind = 'msi' if recipe == 'msi-major-upgrade' else 'nsis'
+    payload_hash = format_payload_hash(payload_hashes, kind)
     need(digest(legacy[kind]['path']) == LEGACY_ASSETS[kind]['sha256'] and legacy[kind]['path'].stat().st_size == LEGACY_ASSETS[kind]['bytes'], 'legacy_asset_changed_before_cycle')
     need(digest(candidates[kind]) == candidate_metadata[kind]['sha256'], 'candidate_changed_before_cycle')
     plan = upgrade_commands(recipe, tools, base / case, legacy[kind]['path'], candidates[kind])
@@ -838,10 +885,18 @@ def install_one(runner, tools, base, kind, candidate, metadata, version, payload
             runner.run("install-nsis", [candidate, "/S", "/D=" + str(install)], ROOT, 120)
         executable = owned_file(install / "axiom-desktop.exe", install)
         require_pe_role(executable, 'Application')
-        need(digest(executable) == payload_hash, "installed_payload_mismatch")
+        row["expectedPayloadSha256"] = payload_hash
         row["installedPayloadSha256"] = digest(executable)
+        row["installedPayloadBytes"] = executable.stat().st_size
         row["installedMachine"] = "AMD64"
-        row["installedVersionMetadata"] = json.loads(runner.run("installed-metadata-" + kind, [tools["pwsh.exe"], "-NoProfile", "-NonInteractive", "-File", ROOT / "scripts/windows_installer_metadata.ps1", "-Candidate", executable, "-ExpectedVersion", version, "-ArtifactKind", "Application"], ROOT, 20))
+        metadata_ok = False
+        try:
+            row["installedVersionMetadata"] = json.loads(runner.run("installed-metadata-" + kind, [tools["pwsh.exe"], "-NoProfile", "-NonInteractive", "-File", ROOT / "scripts/windows_installer_metadata.ps1", "-Candidate", executable, "-ExpectedVersion", version, "-ArtifactKind", "Application"], ROOT, 20))
+            metadata_ok = True
+        except Exception:
+            row["installedVersionMetadataUnavailable"] = True
+        need(row["installedPayloadSha256"] == payload_hash, "installed_payload_mismatch")
+        need(metadata_ok, "installed_metadata_unavailable")
         row["installConfirmed"] = True
         if kind == "nsis":
             found = list(install.glob("uninstall*.exe"))

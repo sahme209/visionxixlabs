@@ -1,0 +1,18 @@
+{
+  "accepted": true,
+  "stage": "/private/tmp/axiom-google-website-nnaxvk7_",
+  "receiptSha256": "331eae822ee197904bced85e8c5fd215f32285f8c23949e03ba9130470a26c59",
+  "packetSha256": "84581f0b0a004aa8171b5c88cf7ff622cfceda34b090b0cf06672ee32adfd5f5",
+  "phases": {
+    "website": {
+      "exitCode": 0,
+      "reason": null,
+      "cleanupConfirmed": true,
+      "logBytesObserved": 43973,
+      "logSha256": "76f55556e15f303fce2f79822122c2bd05933a4ca4c73e3294ff31b92684e147",
+      "logPath": "/private/tmp/axiom-google-website-nnaxvk7_/website.log"
+    }
+  },
+  "failure": null,
+  "finalInputsMatched": true
+}

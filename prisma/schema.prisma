@@ -231,6 +231,8 @@ model User {
   updatedAt            DateTime  @updatedAt
   bots                 Bot[]
   emailVerificationTokens EmailVerificationToken[]
+  oauthIdentities OAuthIdentity[]
+  pendingGoogleIdentityLinks PendingGoogleIdentityLink[]
 }
 
 /// A hashed, single-use proof that a credentials-account holder controls the
@@ -5423,4 +5425,39 @@ model PlatformImageUploadGrant {
   action PlatformGovernanceAction @relation(fields: [actionId], references: [id], onDelete: Restrict)
   artifact PlatformImageArtifact @relation(fields: [artifactId], references: [id], onDelete: Restrict)
   @@index([artifactId])
+}
+
+/// Stable authenticated provider subject. Never infer these rows from email.
+model OAuthIdentity {
+  id String @id @default(cuid())
+  provider String
+  issuer String
+  subject String
+  userId String
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  @@unique([provider, issuer, subject])
+  @@unique([userId, provider, issuer])
+}
+
+/// Short-lived explicit account recovery. Only hashes of browser/mail proofs persist.
+model PendingGoogleIdentityLink {
+  id String @id @default(cuid())
+  issuer String
+  subject String
+  email String
+  candidateUserId String?
+  candidateUser User? @relation(fields: [candidateUserId], references: [id], onDelete: Cascade)
+  candidateUpdatedAt DateTime?
+  browserNonceHash String @unique
+  csrfHash String
+  emailProofHash String? @unique
+  emailProofExpiresAt DateTime?
+  emailSentAt DateTime?
+  attempts Int @default(0)
+  callbackPath String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  consumedAt DateTime?
+  @@index([expiresAt])
 }

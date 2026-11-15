@@ -1,0 +1,55 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/axiom-google-identity-pg17-86nzcha9",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.054,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.052,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.35,
+      "logSha256": "9b2fd8ea7e8143e674c1c31da631dd813699dbe1b4ccf300b17d868231631876"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.058,
+      "logSha256": "d5d4f237e89b16116f79c7d81b8599d8cc75c06f82c482bb2cac227cffde7e92"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.122,
+      "logSha256": "3ccffd0b6adf659ea65fa7d7772e90be0fbba7afd26d917e25bed00df2c52c93"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.06,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "google-identity-client",
+      "exit": 0,
+      "seconds": 0.404,
+      "logSha256": "19e230e95a7a76c151bd1d02ea698ca2be23a1b9967215828c15426689ce6f37"
+    }
+  ],
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

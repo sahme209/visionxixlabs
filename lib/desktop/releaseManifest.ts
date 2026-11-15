@@ -123,7 +123,7 @@ function frictionFor(platform: DesktopPlatform, signed: boolean, notarized: bool
       if (signed) return "Signed with EV certificate. Double-click to install.";
       return "Unsigned developer build — SmartScreen will warn; click 'More info' → 'Run anyway'.";
     case "linux-x64":
-      return "Standard Linux install — chmod +x ./Axiom*.AppImage (or use the .deb / .rpm).";
+      return "Make the downloaded AppImage executable, then open it. Alternatively, install the .deb or .rpm package.";
   }
 }
 

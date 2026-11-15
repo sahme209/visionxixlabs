@@ -1,0 +1,58 @@
+{
+  "accepted": true,
+  "scope": "actual compiled Next HTTP + fresh owned PostgreSQL17.11, explicitly synthetic Google-link intent",
+  "packetSha256": "dfe27cd0609c2a444e96b7fc0bdbb22727cfb7785e1942ada30799865d009865",
+  "buildId": "_R-Im3H7NFzUF__Ojs7Ph",
+  "compiledTreeSha256": "56442469a1fe0de04f8caee4bbf6b182face3345eb9491b82a1b9da4f22f2488",
+  "compiledMembers": 6571,
+  "checks": {
+    "all62InputHashesMatch": true,
+    "allPhaseLogHashesMatch": true,
+    "compiledTreeUnchanged": true,
+    "compiledMemberCountUnchanged": true,
+    "allLogsWithin1MiBCap": true,
+    "clusterActuallyAbsent": true,
+    "ephemeralPrivateFilesActuallyAbsent": true,
+    "parentAndOwnedReceiptIdentical": true,
+    "ownedProcessGroupsEmptyReceipt": true,
+    "parentAccepted": true,
+    "clientAccepted": true
+  },
+  "actualHttp": {
+    "explicitlySyntheticIntent": true,
+    "realGoogle": false,
+    "cookieOriginCsrfAndBodyBoundaries": true,
+    "mailAbsentTruthful503": true,
+    "verifiedPasswordLinksCanonicalUser": true,
+    "intentConsumedOnce": true,
+    "callbackUnchanged": true,
+    "browserCookieCleared": true,
+    "noPlatformSessionMint": true,
+    "replayRefused": true,
+    "compiledPageHttp200": true
+  },
+  "credentials": {
+    "canonicalSession": true,
+    "wrongPasswordAndUnverifiedRefused": true,
+    "membershipBootstrap": true
+  },
+  "statusStoresOperational": true,
+  "actualCompiledAppTlsSessions": true,
+  "strictRequireConfigured": true,
+  "downloadStorageGate": "503_missing_then_404_no_external_asset_then_503_removed",
+  "compiledHttpSeconds": 1.105,
+  "limits": {
+    "realGoogleVerified": false,
+    "liveEmailVerified": false,
+    "nativePairingVerified": false,
+    "publicInstallerVerified": false,
+    "browserPaintVerified": false,
+    "productionAccess": false
+  },
+  "evidence": {
+    "/tmp/axiom-google-link-compiled-http-utc-proposal/RESULT.json": "128b741015ffb53371c3b38a7e5bd9a51f626c516eb95037f9a749d1b553b177",
+    "/private/tmp/axiom-google-link-compiled-http-utc-trso836t/CLIENT-RESULT.json": "b6ed3b2e44a90d5f6079e27dc59721b80e9b9264857a73fa7c92a2bc84f249b2",
+    "/private/tmp/axiom-google-link-compiled-http-utc-trso836t/compiled-http.log": "048de9f3d1eac6138a11a09d0bad74f9c13b4d6542ef53efeaabe5259a751c4d"
+  },
+  "history": "Original failed local-Date fixture and both frozen packets preserved unchanged; corrected UTC seed only."
+}

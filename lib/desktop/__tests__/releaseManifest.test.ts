@@ -8,6 +8,48 @@ describe("desktop release manifest", () => {
     vi.stubGlobal("fetch", vi.fn());
   });
 
+  it("recognizes V19 installers and pairs signatures without legacy filename assumptions", async () => {
+    const names = {
+      "macos-arm": "V19_0.1.23_aarch64.dmg",
+      "macos-intel": "V19_0.1.23_x64.dmg",
+      "windows-x64": "V19_0.1.23_x64_en-US.msi",
+      "linux-x64": "V19_0.1.23_amd64.AppImage",
+    } as const;
+    const release = {
+      tag_name: "desktop-v0.1.23",
+      html_url: "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.23",
+      published_at: "2026-11-15T12:00:00Z",
+      prerelease: false,
+      draft: false,
+      body: "",
+      assets: [
+        asset("V19-0.1.23-1.x86_64.rpm"),
+        asset("V19_0.1.23_amd64.deb"),
+        asset("V19_0.1.23_x64-setup.exe"),
+        ...Object.values(names).flatMap(name => [asset(name), asset(`${name}.asc`)]),
+      ],
+    };
+    vi.mocked(fetch).mockResolvedValue(new Response(JSON.stringify([release]), { status: 200 }));
+
+    const { getDesktopReleaseManifest } = await import("../releaseManifest");
+    const manifest = await getDesktopReleaseManifest();
+
+    expect(manifest.tag).toBe("desktop-v0.1.23");
+    for (const [platform, name] of Object.entries(names)) {
+      expect(manifest.assets[platform as keyof typeof names]).toMatchObject({
+        platform,
+        fileName: name,
+        downloadUrl: `https://example.test/${encodeURIComponent(name)}`,
+        digest: "sha256:abc123",
+        signatureUrl: `https://example.test/${encodeURIComponent(`${name}.asc`)}`,
+      });
+    }
+    const hint = manifest.assets["linux-x64"]?.installFriction;
+    expect(hint).toContain("Make the downloaded AppImage executable");
+    expect(hint).not.toContain("Axiom");
+    expect(hint).not.toContain("*");
+  });
+
   it("prefers the most broadly installable asset and never infers signing from prose", async () => {
     const release = {
       tag_name: "desktop-v0.1.7",

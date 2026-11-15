@@ -1,0 +1,21 @@
+{
+  "accepted": true,
+  "actualPostgres": true,
+  "actualPrismaFactory": true,
+  "actualService": true,
+  "emailAdapterOnly": true,
+  "googleOAuthVerified": false,
+  "productionAccess": false,
+  "cases": [
+    "existing_email_never_automatically_linked",
+    "delivered_code_browser_csrf_positive_and_one_use",
+    "bound_subject_keeps_canonical_user_after_google_email_change",
+    "parallel_confirm_consumes_once",
+    "wrong_proof_parallel_attempt_cap",
+    "real_user_lock_edit_refuses_stale_candidate",
+    "fresh_clock_after_actual_intent_lock_wait",
+    "subject_unique_failure_rolls_back_consumption_and_new_user",
+    "different_google_binding_never_replaced"
+  ],
+  "clientsDisconnected": true
+}

@@ -52,7 +52,8 @@ describe("password login after the verification schema is deployed", () => {
   });
 });
 
-describe.each(["google", "github"])("%s identity-store recovery", (provider) => {
+// Google stable-subject recovery is covered separately in googleIdentity tests.
+describe.each(["github"])("%s identity-store recovery", (provider) => {
   const signIn = () => authOptions.callbacks!.signIn!({ user: { email: "pilot@example.test" }, account: { provider } } as never);
   it("accepts an existing identity without rewriting its role", async () => {
     expect(await signIn()).toBe(true);

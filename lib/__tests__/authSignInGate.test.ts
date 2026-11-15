@@ -49,7 +49,7 @@ describe("OAuth signIn callback — identity vs. workspace-bootstrap split", () 
     const { authOptions } = await import("@/lib/auth");
     const result = await authOptions.callbacks!.signIn!({
       user: { email: "pilot@example.test" },
-      account: { provider: "google" },
+      account: { provider: "github" },
     } as never);
     expect(result).toBe(true);
     expect(mocks.upsertUser).toHaveBeenCalled();
@@ -63,7 +63,7 @@ describe("OAuth signIn callback — identity vs. workspace-bootstrap split", () 
     const { authOptions } = await import("@/lib/auth");
     const result = await authOptions.callbacks!.signIn!({
       user: { email: "pilot@example.test" },
-      account: { provider: "google" },
+      account: { provider: "github" },
     } as never);
     expect(result).toBe(false);
     expect(mocks.ensureMembership).not.toHaveBeenCalled();

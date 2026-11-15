@@ -1,0 +1,515 @@
+{
+  "accepted": true,
+  "baselineOnly": "fixed-public-0.1.21",
+  "byteIdentical": true,
+  "cleanupArmed": true,
+  "cleanupConfirmed": true,
+  "extracted": {
+    "ProductName": "Axiom Agent",
+    "ProductVersion": "0.1.21",
+    "artifactKind": "Application",
+    "bytes": 17018880,
+    "machine": "AMD64",
+    "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+    "signatureStatus": "NotSigned"
+  },
+  "installAttempted": true,
+  "installed": {
+    "bytes": 17018880,
+    "machine": "AMD64",
+    "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+  },
+  "installedVersion": {
+    "ProductName": "Axiom Agent",
+    "ProductVersion": "0.1.21",
+    "artifactKind": "Application",
+    "bytes": 17018880,
+    "machine": "AMD64",
+    "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+    "signatureStatus": "NotSigned"
+  },
+  "ownedProcessesEmpty": true,
+  "phases": [
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 41,
+          "prefixTruncated": false,
+          "sha256": "6c0cfe7cdf69a44582cbc1db336656474c4319a0a4c10f62326d5557d0f494a0",
+          "text": "2105f5af70d34e52d308ab78fc0e313d3cb64c6f\n"
+        }
+      },
+      "executableSha256": "177bc8a9af84fa3a400c694c975fda731d048279c074e1a93947ce8b067ebb48",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "source-head",
+      "logRetention": [
+        {
+          "name": "source-head.stdout",
+          "observedBytes": 41,
+          "retainedBytes": 41,
+          "truncated": false
+        },
+        {
+          "name": "source-head.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 41,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "fe9f38a67d439eead0b965a422455d7e6435f443ddb64b1899cf42d36437f9e5",
+          "text": "{\"shortcuts\":[],\"protocolCommandStrings\":[],\"products\":[],\"ownedPayloads\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "helper-snapshot-preflight",
+      "logRetention": [
+        {
+          "name": "helper-snapshot-preflight.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "helper-snapshot-preflight.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 98,
+          "prefixTruncated": false,
+          "sha256": "d8571618690891a70ba8dbd97b05a04245768b26b2f7e92b85db12803302a511",
+          "text": "{\"sha256\": \"670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1\", \"bytes\": 5869568}\r\n"
+        }
+      },
+      "executableSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "fixed-legacy-download",
+      "logRetention": [
+        {
+          "name": "fixed-legacy-download.stdout",
+          "observedBytes": 98,
+          "retainedBytes": 98,
+          "truncated": false
+        },
+        {
+          "name": "fixed-legacy-download.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 98,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 337,
+          "prefixTruncated": false,
+          "sha256": "452950e075035f72cce61c683041fdb614d36ff26e9d7b680686068817351574",
+          "text": "{\"artifactKind\":\"MsiInstaller\",\"machine\":\"AMD64\",\"bytes\":5869568,\"ProductName\":\"Axiom Agent\",\"ProductVersion\":\"0.1.21\",\"ProductCode\":\"{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\",\"UpgradeCode\":\"{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}\",\"signatureStatus\":\"NotSigned\",\"sha256\":\"670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1\"}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "legacy-msi-metadata",
+      "logRetention": [
+        {
+          "name": "legacy-msi-metadata.stdout",
+          "observedBytes": 337,
+          "retainedBytes": 337,
+          "truncated": false
+        },
+        {
+          "name": "legacy-msi-metadata.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 337,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "08fed75774c53c54a612091599f603eb62ae2de64492111d7496a2db271aaf3c",
+          "text": "{\"protocolCommandStrings\":[],\"products\":[],\"ownedPayloads\":[],\"shortcuts\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "pristine",
+      "logRetention": [
+        {
+          "name": "pristine.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "pristine.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 81840,
+          "name": "extract.log",
+          "sha256": "bbcf8736b33fb31328cb95f7267168b000c273056b18af1be934381cd8aaf364"
+        }
+      ],
+      "label": "administrative-extract",
+      "logRetention": [
+        {
+          "name": "administrative-extract.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "administrative-extract.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "extract.log",
+          "observedBytes": 81840,
+          "retainedBytes": 81840,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 227,
+          "prefixTruncated": false,
+          "sha256": "c5ba51fc644f93c03797b8aaf710b6e651e567769ba3d9c06e99c98083ae0270",
+          "text": "{\"signatureStatus\":\"NotSigned\",\"ProductVersion\":\"0.1.21\",\"machine\":\"AMD64\",\"bytes\":17018880,\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\",\"artifactKind\":\"Application\",\"ProductName\":\"Axiom Agent\"}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "extracted-metadata",
+      "logRetention": [
+        {
+          "name": "extracted-metadata.stdout",
+          "observedBytes": 227,
+          "retainedBytes": 227,
+          "truncated": false
+        },
+        {
+          "name": "extracted-metadata.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 227,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 110218,
+          "name": "install.log",
+          "sha256": "37a43c2b26a8212076a0f41f2b9033873195d97d7bc1bef643422c20a362d35b"
+        }
+      ],
+      "label": "install",
+      "logRetention": [
+        {
+          "name": "install.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "install.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "install.log",
+          "observedBytes": 110218,
+          "retainedBytes": 110218,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 227,
+          "prefixTruncated": false,
+          "sha256": "ca839183cddde0c7917f1c3170bd737f51d03a68f54fa92fb50c828274549a22",
+          "text": "{\"machine\":\"AMD64\",\"bytes\":17018880,\"ProductVersion\":\"0.1.21\",\"ProductName\":\"Axiom Agent\",\"signatureStatus\":\"NotSigned\",\"artifactKind\":\"Application\",\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\"}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "installed-metadata",
+      "logRetention": [
+        {
+          "name": "installed-metadata.stdout",
+          "observedBytes": 227,
+          "retainedBytes": 227,
+          "truncated": false
+        },
+        {
+          "name": "installed-metadata.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 227,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 101188,
+          "name": "uninstall.log",
+          "sha256": "5e5a12f14581d98421314a29ca7a2cdad3934c2fbe109e4826bdbbedb7db7b14"
+        }
+      ],
+      "label": "uninstall",
+      "logRetention": [
+        {
+          "name": "uninstall.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "uninstall.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "uninstall.log",
+          "observedBytes": 101188,
+          "retainedBytes": 101188,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "93a2d652871ce0fc8c06d1a1db75544b4408936be93e1c8db9b909c129c64e4d",
+          "text": "{\"products\":[],\"protocolCommandStrings\":[],\"ownedPayloads\":[],\"shortcuts\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "cleaned",
+      "logRetention": [
+        {
+          "name": "cleaned.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "cleaned.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    }
+  ],
+  "published": false,
+  "tools": {
+    "git.exe": {
+      "sha256": "177bc8a9af84fa3a400c694c975fda731d048279c074e1a93947ce8b067ebb48"
+    },
+    "msiexec.exe": {
+      "sha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191"
+    },
+    "pwsh.exe": {
+      "sha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5"
+    },
+    "python.exe": {
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+    }
+  },
+  "uninstallConfirmed": true,
+  "v19MismatchFixed": false,
+  "webview": {
+    "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+    "msiSeesInstalledRuntime": true,
+    "nsisSeesInstalledRuntime": true,
+    "runtimeInstallationPermitted": false,
+    "versions": {
+      "system-wow64": "131.0.2903.86"
+    },
+    "webviewRenderingVerified": false
+  }
+}

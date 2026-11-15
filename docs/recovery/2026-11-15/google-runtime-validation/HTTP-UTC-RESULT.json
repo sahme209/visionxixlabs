@@ -1,0 +1,73 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/axiom-google-link-compiled-http-utc-trso836t",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.062,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "utc-timestamp-premise-preflight",
+      "exit": 0,
+      "seconds": 0.062,
+      "logSha256": "53942614786b337d8ecc2e6b34868270d06586653df214c46a3bd160ee9542d0"
+    },
+    {
+      "phase": "diagnostic-boundary-check",
+      "exit": 0,
+      "seconds": 0.062,
+      "logSha256": "c3583fd8e87110d56cffa95110e199c99806e47eebe8796cc1ed071d5dfa4171"
+    },
+    {
+      "phase": "literal-loopback-bind-preflight",
+      "exit": 0,
+      "seconds": 0.062,
+      "logSha256": "4a0d025833c7495a3e6a9040672631d76c7e939a3ed4e356ab555cdabf410ea5"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.06,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.341,
+      "logSha256": "46c69e1e9a9ea16f9e685924143a9e30b2a3fd0ba36c10d0760dfcca955a2add"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.058,
+      "logSha256": "3bfd2f44053b6629d76ac76e67b73fd48f1299390ba6b9778c311de856cd2ad2"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.06,
+      "logSha256": "ccd122e80e2538b8f347efdaa2264537d58ea4e80f7450890ef2533d96291925"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.056,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "compiled-http",
+      "exit": 0,
+      "seconds": 1.105,
+      "logSha256": "048de9f3d1eac6138a11a09d0bad74f9c13b4d6542ef53efeaabe5259a751c4d"
+    }
+  ],
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

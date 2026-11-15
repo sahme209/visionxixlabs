@@ -1,0 +1,17 @@
+{
+  "sourceManifestSha256": "cc1c9076b56f0f7a09ef12ef6785d56623478cab2a3c52f42e65acdfe6783feb",
+  "focusedTests": 272,
+  "focusedFiles": 29,
+  "fullOrdinaryPass": 19818,
+  "expectedFail": 1,
+  "skipped": 1144,
+  "productionMigrationExecuted": false,
+  "realGoogleVerified": false,
+  "compiledBuildPending": true,
+  "ownedSqlPending": true,
+  "review": "independent CLEAR, exact20 source hashes matched",
+  "strictRootTypes": "PASS",
+  "fullOrdinaryLogSha256": "a4a9aca3eee9aaad206e15d60268dca476ba431de3885617a988c9c067b3d5d7",
+  "strictRootTypesLogSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "frozenSourceRechecked": true
+}

@@ -1,0 +1,45 @@
+{
+  "scope": "local accepted website + owned synthetic PG17/compiled HTTP only",
+  "evidence": {
+    "BUILD-RESULT.json": {
+      "source": "/private/tmp/axiom-google-local-web-build-preparation/RESULT.json",
+      "sha256": "944ff35dae3b475267d34fdcd3da8aeed9a3d107f9607731a1d46f420e87e352"
+    },
+    "GOOGLE-DB9-RESULT.json": {
+      "source": "/tmp/axiom-google-identity-pg17-preparation/RESULT.json",
+      "sha256": "174767dd9fb38de7b2a73f5a43c243210e1f4a365462c357415ea897163e4d03"
+    },
+    "GOOGLE-DB9-CLIENT.json": {
+      "source": "/private/tmp/axiom-google-identity-pg17-86nzcha9/CLIENT-RESULT.json",
+      "sha256": "1ba19e816381ba3a64f594ce6ea915046bcc118fc41a11bdb6951c000a1a615f"
+    },
+    "GOOGLE-DB9-INDEPENDENT.json": {
+      "source": "/tmp/axiom-google-identity-pg17-preparation/INDEPENDENT-OUTCOME.json",
+      "sha256": "89c782a51086e72269835ee76c9dc9a071adf854d3ac4f63df3560766bf670cf"
+    },
+    "HTTP-ORIGINAL-FAILED-RESULT.json": {
+      "source": "/tmp/axiom-google-link-compiled-http-proposal/RESULT.json",
+      "sha256": "04220ef5ba3f9249c21946fa0e49701a4edb6d2a5e0c51953ba77fce44c02fbe"
+    },
+    "HTTP-ORIGINAL-FAILED-CLIENT.json": {
+      "source": "/private/tmp/axiom-google-link-compiled-http-53yq1qo_/CLIENT-RESULT.json",
+      "sha256": "198273766ad2ff839f0b18a9bce2233eb00c0d7896ecf852b6d8835772d3fcc1"
+    },
+    "HTTP-UTC-RESULT.json": {
+      "source": "/tmp/axiom-google-link-compiled-http-utc-proposal/RESULT.json",
+      "sha256": "128b741015ffb53371c3b38a7e5bd9a51f626c516eb95037f9a749d1b553b177"
+    },
+    "HTTP-UTC-CLIENT.json": {
+      "source": "/private/tmp/axiom-google-link-compiled-http-utc-trso836t/CLIENT-RESULT.json",
+      "sha256": "b6ed3b2e44a90d5f6079e27dc59721b80e9b9264857a73fa7c92a2bc84f249b2"
+    },
+    "HTTP-UTC-INDEPENDENT.json": {
+      "source": "/tmp/axiom-google-link-http-verified-outcome.json",
+      "sha256": "19f78864ecbcbf6c18675d5517a02602bd4bdc115e9b0c2046218b801dfd8de6"
+    }
+  },
+  "db9PacketSha256": "edcc2dfe5d30c46cae305bc33a866cb773e81c985f0dc02f2f3b5f6529525c79",
+  "httpUtcPacketSha256": "dfe27cd0609c2a444e96b7fc0bdbb22727cfb7785e1942ada30799865d009865",
+  "acceptedBuildReceiptSha256": "331eae822ee197904bced85e8c5fd215f32285f8c23949e03ba9130470a26c59",
+  "noRawLogsKeysOrCredentialsCopied": true
+}

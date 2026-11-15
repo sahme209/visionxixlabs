@@ -1,0 +1,32 @@
+{
+  "accepted": true,
+  "compiledProductionServer": true,
+  "actualOwnedPostgres": true,
+  "strictRequireConfigured": true,
+  "googleOAuthVerified": false,
+  "installerAvailable": false,
+  "productionAccess": false,
+  "googleLinkIntentExplicitlySynthetic": true,
+  "googleLinkDoesNotAttestGoogle": true,
+  "liveMailAttempted": false,
+  "statusStoresOperational": true,
+  "googleLinkHttp": {
+    "explicitlySyntheticIntent": true,
+    "realGoogle": false,
+    "cookieOriginCsrfAndBodyBoundaries": true,
+    "mailAbsentTruthful503": true,
+    "verifiedPasswordLinksCanonicalUser": true,
+    "intentConsumedOnce": true,
+    "callbackUnchanged": true,
+    "browserCookieCleared": true,
+    "noPlatformSessionMint": true,
+    "replayRefused": true,
+    "compiledPageHttp200": true
+  },
+  "passwordVerificationAndCanonicalSession": true,
+  "wrongPasswordAndUnverifiedRefused": true,
+  "membershipBootstrap": true,
+  "downloadStorageGate": "503_missing_then_404_no_external_asset_then_503_removed",
+  "actualCompiledAppTlsSessions": true,
+  "buildId": "_R-Im3H7NFzUF__Ojs7Ph"
+}
