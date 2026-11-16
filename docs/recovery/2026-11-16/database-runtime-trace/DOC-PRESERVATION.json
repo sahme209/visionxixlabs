@@ -1,0 +1,96 @@
+{
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/database-runtime-trace/living-before-20261116-150323/CODEX_HANDOFF.md",
+      "beforeSha256": "26715be12632e712ae5af4db81abdaa660475c9f0cf53162fe833fe3f70a231d",
+      "bytes": 433003,
+      "afterSha256": "618ee800bd3df75cb62decc112551a10831e43add3e982b3b4bbd4d7e97edb4c",
+      "historicalSuffixPreserved": true,
+      "compiledClosureUpdate": {
+        "priorCurrentPrefixBackup": "docs/recovery/2026-11-16/database-runtime-trace/prefix-before-compiled-closure-20261116-152830/CODEX_HANDOFF.md.prefix.json",
+        "priorCurrentPrefixSha256": "294a88975a2d98dfe529c791f6a9c794a642f4450cb57422433a7718f9527cf8",
+        "priorWholeFileSha256": "629055b43ab702aa639a6bcac16ab4312c1717c97f8746f6987358e280976f42",
+        "onlyCurrentPrefixChanged": true,
+        "priorCurrentPrefixBackupFormat": "base64-json",
+        "priorCurrentPrefixEnvelopeSha256": "a5b552d76cf3608513e9dbc7ad56cfe792b5c54df06921e0ee0af5a1b8e1c337"
+      }
+    },
+    "CLAUDE.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/database-runtime-trace/living-before-20261116-150323/CLAUDE.md",
+      "beforeSha256": "df5fb9e693c3e8b49e320f594fb5418a2e699188f78470a52fcf7b9b5b3784f2",
+      "bytes": 188266,
+      "afterSha256": "ccdf2a9764cc49d15db223bc27d874bf27f5c81659fa7b4ee196356c56d8b2d1",
+      "historicalSuffixPreserved": true,
+      "compiledClosureUpdate": {
+        "priorCurrentPrefixBackup": "docs/recovery/2026-11-16/database-runtime-trace/prefix-before-compiled-closure-20261116-152830/CLAUDE.md.prefix.json",
+        "priorCurrentPrefixSha256": "294a88975a2d98dfe529c791f6a9c794a642f4450cb57422433a7718f9527cf8",
+        "priorWholeFileSha256": "c3e876652c9c5f824c5c0c8f474878d4eb08f54f4dcf68f6f99593656f75a729",
+        "onlyCurrentPrefixChanged": true,
+        "priorCurrentPrefixBackupFormat": "base64-json",
+        "priorCurrentPrefixEnvelopeSha256": "a5b552d76cf3608513e9dbc7ad56cfe792b5c54df06921e0ee0af5a1b8e1c337"
+      }
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/database-runtime-trace/living-before-20261116-150323/docs/product/axiom-master-action-plan.md",
+      "beforeSha256": "6251ed452051dcbc7b793788045559f90bf76e2aae4bac60ba652f334ce926cc",
+      "bytes": 627231,
+      "afterSha256": "2d7beb06b9e20e62321a16aa48df19932d00ce17787c5a1929fe638209214b40",
+      "historicalSuffixPreserved": true,
+      "compiledClosureUpdate": {
+        "priorCurrentPrefixBackup": "docs/recovery/2026-11-16/database-runtime-trace/prefix-before-compiled-closure-20261116-152830/docs/product/axiom-master-action-plan.md.prefix.json",
+        "priorCurrentPrefixSha256": "294a88975a2d98dfe529c791f6a9c794a642f4450cb57422433a7718f9527cf8",
+        "priorWholeFileSha256": "806c47e42c4102551e676249f5cdfe14b8ec74b0bfabe7504f66d977b32d42d5",
+        "onlyCurrentPrefixChanged": true,
+        "priorCurrentPrefixBackupFormat": "base64-json",
+        "priorCurrentPrefixEnvelopeSha256": "a5b552d76cf3608513e9dbc7ad56cfe792b5c54df06921e0ee0af5a1b8e1c337"
+      }
+    },
+    "docs/product/current-execution-board.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/database-runtime-trace/living-before-20261116-150323/docs/product/current-execution-board.md",
+      "beforeSha256": "93c74645b4b2ac491f36403621a2ffd7668559511623b608f462e4b39ddf82d2",
+      "bytes": 556207,
+      "afterSha256": "fabde8fe571f2272769883d2d88406e078d9010beb113bd5754f0327c0e50905",
+      "historicalSuffixPreserved": true,
+      "compiledClosureUpdate": {
+        "priorCurrentPrefixBackup": "docs/recovery/2026-11-16/database-runtime-trace/prefix-before-compiled-closure-20261116-152830/docs/product/current-execution-board.md.prefix.json",
+        "priorCurrentPrefixSha256": "294a88975a2d98dfe529c791f6a9c794a642f4450cb57422433a7718f9527cf8",
+        "priorWholeFileSha256": "cecdf3dff68a63c02440293f48bca09ea9831800f14da19c32fe62037915dc50",
+        "onlyCurrentPrefixChanged": true,
+        "priorCurrentPrefixBackupFormat": "base64-json",
+        "priorCurrentPrefixEnvelopeSha256": "a5b552d76cf3608513e9dbc7ad56cfe792b5c54df06921e0ee0af5a1b8e1c337"
+      }
+    },
+    "docs/product/remaining-work.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/database-runtime-trace/living-before-20261116-150323/docs/product/remaining-work.md",
+      "beforeSha256": "0eaa5897f4d580aad12ca37bcaa5f2f26a41dbfe14267d5abac4f7eba9617576",
+      "bytes": 543230,
+      "afterSha256": "6dc3be5abe15ab302e94dcdfbc60d55cc2e6c4d6338c154d0223fb29fb07ac63",
+      "historicalSuffixPreserved": true,
+      "compiledClosureUpdate": {
+        "priorCurrentPrefixBackup": "docs/recovery/2026-11-16/database-runtime-trace/prefix-before-compiled-closure-20261116-152830/docs/product/remaining-work.md.prefix.json",
+        "priorCurrentPrefixSha256": "294a88975a2d98dfe529c791f6a9c794a642f4450cb57422433a7718f9527cf8",
+        "priorWholeFileSha256": "baf2bbad22abe819fad9c010e0a68091cb5d0a42c23ed6b9a6bc42475e52e22c",
+        "onlyCurrentPrefixChanged": true,
+        "priorCurrentPrefixBackupFormat": "base64-json",
+        "priorCurrentPrefixEnvelopeSha256": "a5b552d76cf3608513e9dbc7ad56cfe792b5c54df06921e0ee0af5a1b8e1c337"
+      }
+    },
+    "docs/product/codex-resume-goal.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/database-runtime-trace/living-before-20261116-150323/docs/product/codex-resume-goal.md",
+      "beforeSha256": "2a88038f8bbc15b5d0436ef1fd657f9c18233e83032c9bc81169c6c21555f020",
+      "bytes": 352352,
+      "afterSha256": "5a90feaee8c6e7414af04919be2bcf401a2764d9676c37f10768192d5b3d4968",
+      "historicalSuffixPreserved": true,
+      "compiledClosureUpdate": {
+        "priorCurrentPrefixBackup": "docs/recovery/2026-11-16/database-runtime-trace/prefix-before-compiled-closure-20261116-152830/docs/product/codex-resume-goal.md.prefix.json",
+        "priorCurrentPrefixSha256": "294a88975a2d98dfe529c791f6a9c794a642f4450cb57422433a7718f9527cf8",
+        "priorWholeFileSha256": "9fc47e0fa3eba8a5e318220d34ac71035d38264f8e12f7a775066a90669b69e5",
+        "onlyCurrentPrefixChanged": true,
+        "priorCurrentPrefixBackupFormat": "base64-json",
+        "priorCurrentPrefixEnvelopeSha256": "a5b552d76cf3608513e9dbc7ad56cfe792b5c54df06921e0ee0af5a1b8e1c337"
+      }
+    }
+  },
+  "goalMirrorByteMatches": true,
+  "goalMirrorSha256": "5a90feaee8c6e7414af04919be2bcf401a2764d9676c37f10768192d5b3d4968"
+}

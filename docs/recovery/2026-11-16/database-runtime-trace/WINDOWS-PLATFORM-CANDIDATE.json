@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sourceSha": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+  "releaseTag": "desktop-v0.1.24",
+  "version": "0.1.24",
+  "runId": "43878118864",
+  "platform": "windows-x64",
+  "target": "x86_64-pc-windows-msvc",
+  "assets": [
+    {
+      "fileName": "V19_0.1.24_x64_en-US.msi",
+      "sizeBytes": 7573504,
+      "sha256": "8b636ea5314ce3406cbfe86d5ad6a6ba8943d2b5f85c06c9d6b1511a26d1b1b7"
+    },
+    {
+      "fileName": "V19_0.1.24_x64-setup.exe",
+      "sizeBytes": 5449085,
+      "sha256": "74c4721486af429a3f8644f08edf756ca29efa1690eca652e2b750f57777a00b"
+    }
+  ],
+  "windowsInstalledQa": {
+    "fileName": "windows-installed-release-qa.json",
+    "sha256": "a83db4f3087f51c3fdb35b1bc6a2f89446f286016a25887b05fc675f2bd36614"
+  }
+}

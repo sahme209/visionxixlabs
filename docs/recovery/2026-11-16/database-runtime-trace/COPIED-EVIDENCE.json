@@ -1,0 +1,216 @@
+{
+  "PR344-MAIN-CHECKS.json": {
+    "source": "/private/tmp/v19-release-0124-owner-decision-template/MAIN-CHECKS.json",
+    "sizeBytes": 1639,
+    "sha256": "8936470e050f89df037d8bbd124e87e02b302d3ec76f6ef7ff4a02ec50cc21b0",
+    "copied": true
+  },
+  "RELEASE-RUN-SUCCESS.json": {
+    "source": "/private/tmp/v19-release-0124-execution/run-success.json",
+    "sizeBytes": 238,
+    "sha256": "0125f1ceb2e97ef6c4dde3941ca2f116dd2394aebd69943cd1caab656cd6f247",
+    "copied": true
+  },
+  "OWNER-PUBLICATION-REVIEW.json": {
+    "source": "/private/tmp/v19-release-0124-execution/owner-publication-review.json",
+    "sizeBytes": 212,
+    "sha256": "0552143ba5218f284cb1ab9cc3b74991b08188ce01352e12947db744a6afa436",
+    "copied": true
+  },
+  "PUBLISHED-RELEASE.json": {
+    "source": "/private/tmp/v19-release-0124-execution/published-release.json",
+    "sizeBytes": 5963,
+    "sha256": "23aee88bdc2e1912640ea0f89d78023f55b498bc006c99973e76a81973199225",
+    "copied": true
+  },
+  "PUBLICATION-READINESS-OFF.json": {
+    "source": "/private/tmp/v19-release-0124-execution/ready-disabled-readback.json",
+    "sizeBytes": 148,
+    "sha256": "dd1fb61c8f8aee77af20d74040469c7f289dc061f2463097528c0da1edb5cb7b",
+    "copied": true
+  },
+  "LOCAL-MAC-CANDIDATE.json": {
+    "source": "/private/tmp/v19-0124-macos-candidate-review/LOCAL-TRUST-RESULT.json",
+    "sizeBytes": 517,
+    "sha256": "53987f8c9fb6cc180d2aff8b00466313a67dad8329351c84ac7556cdb1345fc8",
+    "copied": true
+  },
+  "PUBLIC-WINDOWS-DOWNLOADS.json": {
+    "source": "/private/tmp/v19-0124-public-download-verification/RESULT.json",
+    "sizeBytes": 505,
+    "sha256": "01c50c3843d0062bbdf6881bced9d2ba0cd6c3b86033eee751a7c1121d137ced",
+    "copied": true
+  },
+  "WINDOWS-PLATFORM-CANDIDATE.json": {
+    "source": "/private/tmp/v19-0124-windows-candidate-review/candidate-windows-x64.json",
+    "sizeBytes": 750,
+    "sha256": "ef3b29fd5500aea307c678e8eec03b1e12175a45c93f5e21c735ed099b037a15",
+    "copied": true
+  },
+  "WINDOWS-INSTALLED-QA.json": {
+    "source": "/private/tmp/v19-0124-windows-candidate-review/windows-installed-release-qa.json",
+    "sizeBytes": 1061,
+    "sha256": "a83db4f3087f51c3fdb35b1bc6a2f89446f286016a25887b05fc675f2bd36614",
+    "copied": false,
+    "bytePreservingEnvelope": true,
+    "storedSha256": "e6a8a1dccb606c0172e8e675065b6a3444140e94a98285925c763a4e4b70ddcd",
+    "storedSizeBytes": 2907,
+    "note": "Git text normalization avoided by an explicit base64 envelope; decoded bytes match original candidate-bound receipt"
+  },
+  "PRODUCTION-PUBLIC-SMOKE.json": {
+    "source": "/private/tmp/v19-final-live-public-smoke.json",
+    "sizeBytes": 3473,
+    "sha256": "ae6591aa2d21d709090e72b6c10ef0127e3e62733c80a30c956181935f304702",
+    "copied": true
+  },
+  "PRODUCTION-OWNER-DEPLOYMENT.json": {
+    "source": "/private/tmp/v19-final-website-deployment-started.json",
+    "sizeBytes": 440,
+    "sha256": "ce8311d2904db08d6a10c807f70c512d51a037dd9ee61beb29bc9201ad3c4f29",
+    "copied": true
+  },
+  "CURRENT-SETTING-ROUTE-SAFE.json": {
+    "source": "/private/tmp/v19-current-database-route-safe-result.json",
+    "sizeBytes": 552,
+    "sha256": "b19db6935907a1610a117fdde5fe922e1f3d46991d3b9467731bc88c4ac7a6a7",
+    "copied": true
+  },
+  "REGRESSION-HISTORY.json": {
+    "source": "/private/tmp/v19-database-startup-regression-history.json",
+    "sizeBytes": 2391,
+    "sha256": "deab9d7e9c6a605fda3b22ce99b8d0334f31591e4c9b8fb193a24fcb50cd7d36",
+    "copied": true
+  },
+  "COMPILED-ROUTE-WIRE-RESULT.json": {
+    "source": "/private/tmp/v19-current-compiled-startup-wire-probe/RESULT.json",
+    "sizeBytes": 1493,
+    "sha256": "5a87f703726f2077676c03d21a3149f96a38b351941db4b9d537a843ed688de4",
+    "copied": true
+  },
+  "COMPILED-ROUTE-WIRE-INPUTS.json": {
+    "source": "/private/tmp/v19-current-compiled-startup-wire-probe/INPUTS.json",
+    "sizeBytes": 425,
+    "sha256": "64f90b3fda654560dcd075ff879b06271dfe929ec5e4e5f53f5024ae772eb675",
+    "copied": true
+  },
+  "TRACE-SOURCE-INPUTS.json": {
+    "source": "/tmp/v19-database-runtime-trace-evidence/INPUTS.json",
+    "sizeBytes": 1658,
+    "sha256": "18476376762365454be19a4fa3878dcbee7d1219a4829eda930addbc98b71255",
+    "copied": true
+  },
+  "TRACE-SOURCE-RESULT.json": {
+    "source": "/tmp/v19-database-runtime-trace-evidence/RESULT.json",
+    "sizeBytes": 825,
+    "sha256": "f9db7068152bea49137faef7fa7ec168d475c5c7d23a4cd8d4cbc3681f8dc7f1",
+    "copied": true
+  },
+  "TRACE-INDEPENDENT-REVIEW.json": {
+    "source": "/private/tmp/v19-database-trace-independent-review.json",
+    "sizeBytes": 654,
+    "sha256": "77d84da42cbb3fd349124bf607662e5d21b5f15698b8a85ed529b836b5e92ba4",
+    "copied": true
+  },
+  "SMOKE-SOURCE-INPUTS.json": {
+    "source": "/private/tmp/v19-production-product-smoke-evidence/INPUTS.json",
+    "sizeBytes": 1028,
+    "sha256": "cd0a31706029c4936401a4b4dd32420a28b5a655deaf5a1cc1cc5a5750fb8e6f",
+    "copied": true
+  },
+  "SMOKE-INDEPENDENT-REVIEW.json": {
+    "source": "/private/tmp/v19-production-product-smoke-independent-review.json",
+    "sizeBytes": 568,
+    "sha256": "5f8729ac33e6276ffb57119f8b42b56a8ec03ddcb6248884c6af7651634de730",
+    "copied": true
+  },
+  "combined-build/RESULT.json": {
+    "source": "/private/tmp/v19-combined-diagnostic-web-build/RESULT.json",
+    "sizeBytes": 619,
+    "sha256": "0a1916ea60e19faec0bee899fbeeee00aadd418008606ce24c4d58449b563784",
+    "copied": true
+  },
+  "combined-build/runner.py": {
+    "source": "/private/tmp/v19-combined-diagnostic-web-build/runner.py",
+    "sizeBytes": 11041,
+    "sha256": "6725a3ee344d57230ee412a6e51bf71ae65604e4d9ad9547119afe4beef9e8d9",
+    "copied": true
+  },
+  "combined-build/test_runner.py": {
+    "source": "/private/tmp/v19-combined-diagnostic-web-build/test_runner.py",
+    "sizeBytes": 4550,
+    "sha256": "5db40b774f53dafd14f1b1020e39d481e6ec68f31744742d987a254dcc8a2601",
+    "copied": true
+  },
+  "combined-build/PURE-CHECKS.log": {
+    "source": "/private/tmp/v19-combined-diagnostic-web-build/PURE-CHECKS.log",
+    "sizeBytes": 1069,
+    "sha256": "4d1665c12091b4dab26af2197d3e4ce60eed962425600929e6aca895df264901",
+    "copied": true
+  },
+  "combined-wire/INPUTS.json": {
+    "source": "/private/tmp/v19-combined-compiled-startup-wire-probe/INPUTS.json",
+    "sizeBytes": 425,
+    "sha256": "e633ef1869f7e71aaa7ffe353200708c4d769507c8a066c0efa960da88334133",
+    "copied": true
+  },
+  "combined-wire/RESULT.json": {
+    "source": "/private/tmp/v19-combined-compiled-startup-wire-probe/RESULT.json",
+    "sizeBytes": 3712,
+    "sha256": "e0f0aade4a8cf3d7ca0e8f02b5d1c2290baae2d0e9a882ad507f4acf464cc7bc",
+    "copied": true
+  },
+  "combined-wire/README.md": {
+    "source": "/private/tmp/v19-combined-compiled-startup-wire-probe/README.md",
+    "sizeBytes": 2606,
+    "sha256": "d4b826b6d034d68da079b99d402a4eeb3943ebd3ed0b65e6979b6cc67bcaa0db",
+    "copied": true
+  },
+  "README-before-combined-closure.md": {
+    "source": "/private/tmp/v19-database-runtime-route-trace/docs/recovery/2026-11-16/database-runtime-trace/README.md",
+    "sizeBytes": 3547,
+    "sha256": "2d87d0b950d132a9cc3018688ddb591e0c04862dbf7da4e6a029474bfb3b4627",
+    "copied": true
+  },
+  "FINAL-RESULT-before-combined-closure.json": {
+    "source": "/private/tmp/v19-database-runtime-route-trace/docs/recovery/2026-11-16/database-runtime-trace/FINAL-RESULT.json",
+    "sizeBytes": 594,
+    "sha256": "7ba783932c70a6d64cae98d6fe4663a8760e789111de8b5e99641006a1949eef",
+    "copied": true
+  },
+  "combined-build/EXTERNAL-INVENTORIES.json": {
+    "source": "/private/tmp/v19-database-runtime-route-trace/docs/recovery/2026-11-16/database-runtime-trace/combined-build/EXTERNAL-INVENTORIES.json",
+    "sizeBytes": 2184,
+    "sha256": "a5b78b1e764a102441b7fe872e5541e478175ee2235f10fd40fdbc90f92a0b33",
+    "copied": false,
+    "purpose": "generated local closure metadata"
+  },
+  "README.md": {
+    "source": "/private/tmp/v19-database-runtime-route-trace/docs/recovery/2026-11-16/database-runtime-trace/README.md",
+    "sizeBytes": 4982,
+    "sha256": "ee580a8d7f5deefbb4ad823cac58e97679b61bd53be0f8aa1969dca8beae3971",
+    "copied": false,
+    "purpose": "generated local closure metadata"
+  },
+  "FINAL-RESULT.json": {
+    "source": "/private/tmp/v19-database-runtime-route-trace/docs/recovery/2026-11-16/database-runtime-trace/FINAL-RESULT.json",
+    "sizeBytes": 1446,
+    "sha256": "328444a672b6edf9ae8fe17d283104de460806078816c3db3fe1ee2fbbb2876a",
+    "copied": false,
+    "purpose": "generated local closure metadata"
+  },
+  "DOC-PRESERVATION.json": {
+    "source": "/private/tmp/v19-database-runtime-route-trace/docs/recovery/2026-11-16/database-runtime-trace/DOC-PRESERVATION.json",
+    "sizeBytes": 6470,
+    "sha256": "8f913e2fc852492f7956830bb41fcf73edcba5df12182622bb9ee58ef3f13ad9",
+    "copied": false,
+    "purpose": "generated local closure metadata"
+  },
+  "combined-build/RUNNER-DIFF.json": {
+    "source": "/private/tmp/v19-combined-diagnostic-web-build/RUNNER.diff",
+    "sourceSha256": "fc7ac09ce4a2e665dd55d4f871019c20c0894958af6594bf8cff474eb0b8ef2e",
+    "sizeBytes": 10592,
+    "sha256": "9efcfc9866c6d742cc00c33dab81cf5a7cf8271a220586a494ba87c5986a1192",
+    "copied": false,
+    "encoding": "base64-json"
+  }
+}

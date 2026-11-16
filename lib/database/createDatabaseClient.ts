@@ -1,3 +1,4 @@
+import { newDatabaseRuntimeTrace } from "./databaseRuntimeTrace.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../prismaClient.ts";
 import { directNeonSessionOptions } from "./directNeonSession.ts";
@@ -7,15 +8,26 @@ import { postgresConnectionOptions } from "./postgresConnectionPolicy.ts";
  * Callers own disconnection and must retain their existing scope/marker checks. */
 export function createDatabaseClient(target: string | undefined): PrismaClient {
   if (target === undefined || target === "") {
-    return new PrismaClient({ adapter: {
+    const trace = newDatabaseRuntimeTrace();
+    trace.observe("unconfigured");
+    const client = new PrismaClient({ adapter: {
       provider: "postgres", adapterName: "axiom-unconfigured-database",
       async connect() { throw new Error("database_configuration_unavailable"); },
     } });
+    trace.register(client);
+    return client;
   }
-  const driver = new PrismaPg(directNeonSessionOptions(postgresConnectionOptions(target)), { schema: "public" });
+  const options = postgresConnectionOptions(target);
+  const trace = newDatabaseRuntimeTrace({
+    tlsVerificationConfigured: options.ssl !== false && options.ssl.rejectUnauthorized === true,
+    channelBindingRequired: options.requireChannelBinding === true,
+  });
+  const driver = new PrismaPg(directNeonSessionOptions(options, trace.observe), { schema: "public" });
   // Expose only the query adapter contract, never migration/shadow-DB methods.
-  return new PrismaClient({ adapter: {
+  const client = new PrismaClient({ adapter: {
     provider: "postgres", adapterName: driver.adapterName,
     connect: () => driver.connect(),
   } });
+  trace.register(client);
+  return client;
 }

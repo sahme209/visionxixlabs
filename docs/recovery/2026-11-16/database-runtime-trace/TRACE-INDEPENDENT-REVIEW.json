@@ -1,0 +1,16 @@
+{
+  "review": "CLEAR-source-only",
+  "inputSha256": "18476376762365454be19a4fa3878dcbee7d1219a4829eda930addbc98b71255",
+  "sixSourceHashesMatched": true,
+  "diagnosticsOnly": true,
+  "startupFieldsTlsSchemaChannelBindingTimeoutsAndAckChecksPreserved": true,
+  "fixedBoundedTagsCountsOnly": true,
+  "observerThrowsCaught": true,
+  "errorProjectionUsesOnlyBoundedOwnDataDescriptors": true,
+  "noRawErrorOrTargetLog": true,
+  "cachedOrExtendedUnregisteredClientsRemainUnknown": true,
+  "directOnlyObservationScopeExplicit": true,
+  "newServiceCallsOrResponses": false,
+  "runtimeOrDeploymentAcceptance": false,
+  "reviewerEditsOrExecutionsToTrace": false
+}

@@ -1,0 +1,50 @@
+{
+  "originalEncoding": "base64",
+  "originalSizeBytes": 1061,
+  "originalSha256": "a83db4f3087f51c3fdb35b1bc6a2f89446f286016a25887b05fc675f2bd36614",
+  "summary": {
+    "accepted": true,
+    "assets": [
+      {
+        "fileName": "V19_0.1.24_x64_en-US.msi",
+        "kind": "msi",
+        "sha256": "8b636ea5314ce3406cbfe86d5ad6a6ba8943d2b5f85c06c9d6b1511a26d1b1b7",
+        "sizeBytes": 7573504
+      },
+      {
+        "fileName": "V19_0.1.24_x64-setup.exe",
+        "kind": "nsis",
+        "sha256": "74c4721486af429a3f8644f08edf756ca29efa1690eca652e2b750f57777a00b",
+        "sizeBytes": 5449085
+      }
+    ],
+    "cleanInstallKinds": [
+      "msi",
+      "nsis"
+    ],
+    "googlePairing": "NOT_RUN",
+    "installerBytesUnchanged": true,
+    "installerCleanupConfirmed": true,
+    "keyringCleanupConfirmed": true,
+    "msiReturncheckVerified": true,
+    "ownedProcessCleanupConfirmed": true,
+    "rawPayloadUnchanged": true,
+    "releaseTag": "desktop-v0.1.24",
+    "runAttempt": "1",
+    "runId": "43878118864",
+    "schema": "axiom.windows-release-installed-validation/1",
+    "signaturePolicy": "unsigned-only",
+    "sourceSha": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+    "target": "x86_64-pc-windows-msvc",
+    "uiVisualAcceptance": "UNVERIFIED",
+    "upgradeCases": [
+      "msi-major-upgrade",
+      "nsis-silent-upgrade",
+      "nsis-update",
+      "nsis-collision-legacy",
+      "nsis-collision-current"
+    ],
+    "version": "0.1.24"
+  },
+  "originalBytesBase64": "eyJhY2NlcHRlZCI6IHRydWUsICJhc3NldHMiOiBbeyJmaWxlTmFtZSI6ICJWMTlfMC4xLjI0X3g2NF9lbi1VUy5tc2kiLCAia2luZCI6ICJtc2kiLCAic2hhMjU2IjogIjhiNjM2ZWE1MzE0Y2UzNDA2Y2JmZTg2ZDVhZDZhNmJhODk0M2QyYjVmODVjMDZjOWQ2YjE1MTFhMjZkMWIxYjciLCAic2l6ZUJ5dGVzIjogNzU3MzUwNH0sIHsiZmlsZU5hbWUiOiAiVjE5XzAuMS4yNF94NjQtc2V0dXAuZXhlIiwgImtpbmQiOiAibnNpcyIsICJzaGEyNTYiOiAiNzRjNDcyMTQ4NmFmNDI5YTNmODY0NGYwOGVkZjc1NmNhMjllZmExNjkwZWNhNjUyZTJiNzUwZjU3Nzc3YTAwYiIsICJzaXplQnl0ZXMiOiA1NDQ5MDg1fV0sICJjbGVhbkluc3RhbGxLaW5kcyI6IFsibXNpIiwgIm5zaXMiXSwgImdvb2dsZVBhaXJpbmciOiAiTk9UX1JVTiIsICJpbnN0YWxsZXJCeXRlc1VuY2hhbmdlZCI6IHRydWUsICJpbnN0YWxsZXJDbGVhbnVwQ29uZmlybWVkIjogdHJ1ZSwgImtleXJpbmdDbGVhbnVwQ29uZmlybWVkIjogdHJ1ZSwgIm1zaVJldHVybmNoZWNrVmVyaWZpZWQiOiB0cnVlLCAib3duZWRQcm9jZXNzQ2xlYW51cENvbmZpcm1lZCI6IHRydWUsICJyYXdQYXlsb2FkVW5jaGFuZ2VkIjogdHJ1ZSwgInJlbGVhc2VUYWciOiAiZGVza3RvcC12MC4xLjI0IiwgInJ1bkF0dGVtcHQiOiAiMSIsICJydW5JZCI6ICI0Mzg3ODExODg2NCIsICJzY2hlbWEiOiAiYXhpb20ud2luZG93cy1yZWxlYXNlLWluc3RhbGxlZC12YWxpZGF0aW9uLzEiLCAic2lnbmF0dXJlUG9saWN5IjogInVuc2lnbmVkLW9ubHkiLCAic291cmNlU2hhIjogImYwNWMzMDdiNDI3NGVlZTlhMzQzZWU1MWNhYTAyZjRmNzZiZTg0NTgiLCAidGFyZ2V0IjogIng4Nl82NC1wYy13aW5kb3dzLW1zdmMiLCAidWlWaXN1YWxBY2NlcHRhbmNlIjogIlVOVkVSSUZJRUQiLCAidXBncmFkZUNhc2VzIjogWyJtc2ktbWFqb3ItdXBncmFkZSIsICJuc2lzLXNpbGVudC11cGdyYWRlIiwgIm5zaXMtdXBkYXRlIiwgIm5zaXMtY29sbGlzaW9uLWxlZ2FjeSIsICJuc2lzLWNvbGxpc2lvbi1jdXJyZW50Il0sICJ2ZXJzaW9uIjogIjAuMS4yNCJ9DQo="
+}

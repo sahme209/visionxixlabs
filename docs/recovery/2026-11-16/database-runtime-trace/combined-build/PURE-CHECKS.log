@@ -1,0 +1,10 @@
+{"phase": "build-starting", "stage": "/private/tmp/v19-owned-pure-stage-wakou3cg", "source": "/private/tmp/v19-owned-pure-stage-wakou3cg/source", "sourceTree": "65967fbb20d9c590f876a3eee861abdb80738cbe"}
+...{"accepted": true, "stage": "/private/tmp/v19-owned-pure-stage-wakou3cg", "failure": null, "receiptSha256": "3416b8860583354c4d86db72725453e7b68bc47f01cd37ad046554dc8b430542"}
+{"accepted": false, "stage": "/private/tmp/v19-owned-pure-stage-qanwri2_", "failure": "cancelled", "receiptSha256": "9cc48988f8bdd48014157f0a1d7498c76f2a0335d89b910baaa987045bac63c4"}
+{"accepted": false, "stage": "/private/tmp/v19-owned-pure-stage-hdc4x7ob", "failure": "dependency_copy_deadline", "receiptSha256": "b5a8897a1a7837ca77fc71e3cf3d36a5f345ea1ac6fd75700d0ac9e3301f2bba"}
+{"phase": "build-starting", "stage": "/private/tmp/v19-owned-pure-stage-h_kxrzda", "source": "/private/tmp/v19-owned-pure-stage-h_kxrzda/source", "sourceTree": "65967fbb20d9c590f876a3eee861abdb80738cbe"}
+.
+----------------------------------------------------------------------
+Ran 4 tests in 0.023s
+
+OK

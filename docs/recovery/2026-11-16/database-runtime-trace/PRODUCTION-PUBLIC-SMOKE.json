@@ -1,0 +1,91 @@
+{
+  "observedAt": "2026-11-16T14:08:40.323158+00:00",
+  "responses": [
+    {
+      "path": "/api/status",
+      "http": 200,
+      "body": {
+        "generatedAt": "2026-11-16T14:08:39.702Z",
+        "overall": "unknown",
+        "components": [
+          {
+            "id": "autonomy_loop",
+            "label": "Autonomy loop",
+            "verdict": "unknown",
+            "detail": "Could not query rationale store."
+          },
+          {
+            "id": "outbound_channel",
+            "label": "Outbound notifications (Slack/Teams)",
+            "verdict": "unknown",
+            "detail": "Could not query notification record store."
+          },
+          {
+            "id": "billing_plane",
+            "label": "Billing + Stripe webhook",
+            "verdict": "unknown",
+            "detail": "Billing-plan store unreachable."
+          },
+          {
+            "id": "cron_self_heal",
+            "label": "Cron schedulers",
+            "verdict": "operational",
+            "detail": "5 cron(s) tracked. No self-heal skip in effect."
+          },
+          {
+            "id": "agi_spine",
+            "label": "AGI loop spine",
+            "verdict": "operational",
+            "detail": "9/9 self-diagnostic checks pass."
+          },
+          {
+            "id": "ai_provider",
+            "label": "AI provider routing",
+            "verdict": "operational",
+            "detail": "1 provider(s) configured. Active: vercel_gateway (anthropic/claude-sonnet-4.6)."
+          }
+        ]
+      }
+    },
+    {
+      "path": "/api/desktop/download?platform=windows&format=json",
+      "http": 503,
+      "body": {
+        "status": "temporarily_unavailable",
+        "platform": "windows",
+        "message": "Required service storage checks are unavailable. Desktop downloads are temporarily paused. Installation, sign-in, and entitlement still require separate verification.",
+        "releaseUrl": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.24"
+      }
+    },
+    {
+      "path": "/api/desktop/download?platform=mac-arm&format=json",
+      "http": 503,
+      "body": {
+        "status": "temporarily_unavailable",
+        "platform": "mac-arm",
+        "message": "Required service storage checks are unavailable. Desktop downloads are temporarily paused. Installation, sign-in, and entitlement still require separate verification.",
+        "releaseUrl": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.24"
+      }
+    },
+    {
+      "path": "/api/desktop/download?platform=mac-intel&format=json",
+      "http": 503,
+      "body": {
+        "status": "temporarily_unavailable",
+        "platform": "mac-intel",
+        "message": "Required service storage checks are unavailable. Desktop downloads are temporarily paused. Installation, sign-in, and entitlement still require separate verification.",
+        "releaseUrl": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.24"
+      }
+    },
+    {
+      "path": "/api/desktop/download?platform=linux&format=json",
+      "http": 503,
+      "body": {
+        "status": "temporarily_unavailable",
+        "platform": "linux",
+        "message": "Required service storage checks are unavailable. Desktop downloads are temporarily paused. Installation, sign-in, and entitlement still require separate verification.",
+        "releaseUrl": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.24"
+      }
+    }
+  ]
+}
