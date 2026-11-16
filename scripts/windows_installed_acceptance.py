@@ -34,7 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TARGET = "x86_64-pc-windows-msvc"
 REVIEWED_MANIFEST = "docs/recovery/2026-11-15/windows-installed-preparation/REVIEWED-FILES.json"
 V19_NSIS_TEMPLATE_SHA256 = "5179b482dc60961a42e9bc82509ba46c8c3c21d9f6235000d61214f6573117eb"
-V19_MSI_TEMPLATE_SHA256 = "9e198939c29168e771242433f6680c60b33e68242daa6529169bc22ac250fa7c"
+V19_MSI_TEMPLATE_SHA256 = "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8"
 LEGACY_MSI_UPGRADE_CODE = "a3c7da37-1792-51f2-8b3a-8848b1b33f88"
 TOOL_NAMES = ("node.exe", "cargo.exe", "rustc.exe", "pwsh.exe", "msiexec.exe", "git.exe")
 
@@ -76,7 +76,7 @@ def reviewed_manifest(binding, root):
     need(path.is_file() and not path.is_symlink() and path.stat().st_size <= 8*1024*1024 and digest(path) == binding['manifestSha256'], "reviewed_manifest_changed")
     value = json.loads(path.read_text())
     need(set(value) == {'schema', 'files'} and value['schema'] == 'axiom.windows-reviewed-files/1' and isinstance(value['files'], dict), 'reviewed_manifest_invalid')
-    required = {'scripts/windows_installed_acceptance.py', 'scripts/windows_installer_metadata.ps1', '.github/workflows/desktop-ci.yml', 'scripts/windows_upgrade_acceptance.py', 'scripts/windows_upgrade_snapshot.ps1', 'scripts/windows_shortcut_collision.ps1', 'scripts/windows_legacy_acquire.py', 'desktop/src-tauri/windows/installer.nsi', 'desktop/src-tauri/windows/main.wxs', 'desktop/src-tauri/windows/msi-shortcut-migration.vbs', 'scripts/windows_msi_shortcut_preflight.py', 'desktop/package-lock.json', 'desktop/src-tauri/Cargo.lock', 'desktop/src-tauri/tauri.conf.json', 'desktop/src-tauri/tests/windows_keyring_acceptance.rs'}
+    required = {'scripts/windows_installed_acceptance.py', 'scripts/windows_installer_metadata.ps1', '.github/workflows/desktop-ci.yml', 'scripts/windows_upgrade_acceptance.py', 'scripts/windows_upgrade_snapshot.ps1', 'scripts/windows_shortcut_collision.ps1', 'scripts/windows_legacy_acquire.py', 'desktop/src-tauri/windows/installer.nsi', 'desktop/src-tauri/windows/main.wxs', 'desktop/src-tauri/windows/msi-shortcut-migration.vbs', 'scripts/windows_msi_shortcut_preflight.py', 'scripts/windows_residual_metadata.py', 'scripts/windows_residual_shortcuts.ps1', 'desktop/package-lock.json', 'desktop/src-tauri/Cargo.lock', 'desktop/src-tauri/tauri.conf.json', 'desktop/src-tauri/tests/windows_keyring_acceptance.rs'}
     need(required <= set(value['files']) and REVIEWED_MANIFEST not in value['files'], 'reviewed_manifest_incomplete')
     return value['files']
 
@@ -453,7 +453,8 @@ class OwnedWindowsProcess:
             for stream, path in [('stdout', out), ('stderr', err)]:
                 if path.is_file():
                     record['diagnostics'][stream] = bounded_stream_diagnostics(path)
-            record["extraLogs"] = [{"name": Path(path).name, "bytes": Path(path).stat().st_size, "sha256": digest(Path(path))} for path in extra_logs if Path(path).is_file()]
+            from windows_residual_metadata import bounded_msi_log_tail
+            record["extraLogs"] = [{"name": Path(path).name, "bytes": Path(path).stat().st_size, "sha256": digest(Path(path)), **bounded_msi_log_tail(path)} for path in extra_logs if Path(path).is_file()]
         need(record["ownedJobEmpty"], "owned_process_cleanup_unconfirmed")
         return out.read_text(encoding="utf-8-sig", errors="strict").strip()
 
@@ -869,6 +870,16 @@ def run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_m
                     proof=json.loads(runner.run(case+'-collision-owned-cleanup', collision_command('Cleanup'), ROOT, 10))
                     need(proof['removed'], 'owned_foreign_fixture_cleanup_failed')
                 absent_after_cleanup(upgrade_snapshot(runner, tools, base, [install], codes, case+'-cleaned-state'))
+                from windows_residual_metadata import installation_residual_metadata
+                try:
+                    row['installationDirectoryResidualMetadata'] = installation_residual_metadata(base)
+                except Exception:
+                    row['installationDirectoryResidualMetadata'] = {'metadataUnavailable':True,'entries':[]}
+                if any(item.get('relativeName','').lower().endswith('.lnk') and item.get('type')=='file' for item in row['installationDirectoryResidualMetadata']['entries']):
+                    try:
+                        row['residualShortcutMetadata'] = json.loads(runner.run(case+'-residual-shortcuts', [tools['pwsh.exe'], '-NoProfile', '-NonInteractive', '-File', ROOT/'scripts/windows_residual_shortcuts.ps1', '-OwnedRoot', base, '-OldProductCode', codes[0], '-NewProductCode', codes[1]], ROOT, 15))
+                    except Exception:
+                        row['residualShortcutMetadataUnavailable'] = True
                 need(not install.exists() or not any(install.iterdir()), 'upgrade_install_directory_residuals')
                 remove_empty_application_directory(base)
                 row['cleanupConfirmed'] = True

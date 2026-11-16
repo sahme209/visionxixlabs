@@ -1,0 +1,18 @@
+ def test_windows_cached_scandir_zero_identity_does_not_hide_regular_file_hash(self):
+  # Windows DirEntry.stat caches st_ino/st_dev as zero. Path.lstat must supply
+  # the actual identity used to compare the later no-follow opened handle.
+  real_scandir=r.os.scandir
+  class CachedStat:
+   def __init__(self,actual):self.actual=actual
+   def __getattr__(self,key):return 0 if key in ('st_ino','st_dev') else getattr(self.actual,key)
+  class CachedEntry:
+   def __init__(self,entry):self.name=entry.name;self.path=entry.path;self.entry=entry
+   def stat(self,**kwargs):return CachedStat(self.entry.stat(**kwargs))
+  class CachedListing:
+   def __init__(self,path):self.iterator=real_scandir(path)
+   def __enter__(self):return (CachedEntry(entry) for entry in self.iterator)
+   def __exit__(self,*unused):self.iterator.close()
+  with tempfile.TemporaryDirectory() as folder:
+   base=Path(folder);directory=base/'application';directory.mkdir();payload=b'owned residual hash regression';(directory/'owned.txt').write_bytes(payload)
+   with patch.object(r.os,'scandir',side_effect=CachedListing):out=r.installation_residual_metadata(base)
+   row=out['entries'][0];self.assertEqual(row['sha256'],hashlib.sha256(payload).hexdigest());self.assertEqual(out['hashBytes'],len(payload));self.assertNotIn('hashUnavailable',row)

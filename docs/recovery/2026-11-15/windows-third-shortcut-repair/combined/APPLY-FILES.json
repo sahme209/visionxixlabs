@@ -1,0 +1,11 @@
+{
+  "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "45ba519c6eafd7773887981fb547d613495de6357f56156b4e9a5bfcac5817a6",
+  "desktop/src-tauri/windows/main.wxs": "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8",
+  "scripts/windows_installed_acceptance.py": "58252af342b3e6e650fe20595dadef30043b84109f6b0c19268d46364e41198c",
+  "scripts/windows_msi_shortcut_preflight.py": "3a16021ed49712a36d4d11111dfa14e76f5879cc4697f9f64521a794150e1360",
+  "scripts/tests/test_v19_uninstall_shortcut_contract.py": "5e9aba9e9d530495ede1cb4d6637ac6405d0170c535cd2f59b995137ef591c50",
+  "scripts/windows_residual_metadata.py": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+  "scripts/windows_residual_shortcuts.ps1": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e",
+  "scripts/tests/test_windows_residual_metadata.py": "3a1f3e88200549702f33c4e92d8269bffcd24f4321ad94a39b33309626e6a8b7",
+  "scripts/tests/test_windows_installed_acceptance.py": "136580fabd9ff1fb0401fb19fb64fab8bd567870e4ee6e94b8e7efe7060ffbb7"
+}

@@ -1,0 +1,98 @@
+{
+  "status": "FROZEN: no edits until root result",
+  "files": [
+    {
+      "path": "app/api/auth/[...nextauth]/route.ts",
+      "sha256": "c5a6888254bad658fc98e589baf0b3eceaae48534aa8f0ae2636f7967de193eb"
+    },
+    {
+      "path": "app/api/auth/__tests__/googleLinkContextRoute.test.ts",
+      "sha256": "a8b93f18f9bcb6e1dd43f9b05cda725297fdc68676dd14bc5b9bde8177b03b53"
+    },
+    {
+      "path": "app/api/auth/google-link/route.ts",
+      "sha256": "e600f1d393c87bc5ac68c7b3257df25ea36a3100d46bc2beafbe8470e70e499c"
+    },
+    {
+      "path": "app/api/auth/google-link/__tests__/route.test.ts",
+      "sha256": "ee80a2f16dc2c9cda177062e1ca23c37e6d2f5c3cefddc26f0975fe80db203c5"
+    },
+    {
+      "path": "app/auth/link-google/page.tsx",
+      "sha256": "a860381798b0cab7f69ce56f3821305db64c31a5b912d8b34581817817e807a4"
+    },
+    {
+      "path": "app/auth/link-google/GoogleLinkClient.tsx",
+      "sha256": "c15c39ed919491cfc20784287a80fd773e82e4775e4fb44244f4acbe2a4ae8bb"
+    },
+    {
+      "path": "app/auth/link-google/__tests__/GoogleLinkClient.test.ts",
+      "sha256": "83bafd0fe7ce65c4a9a60e188a961c8f5ff983e520a674c404ea56f73763666f"
+    },
+    {
+      "path": "lib/auth.ts",
+      "sha256": "5ae62e52b24048d6b505388588fd9dea017146e0e2840d4178821e002d096b93"
+    },
+    {
+      "path": "lib/auth/emailVerification.ts",
+      "sha256": "8d883d26668d312bbb3cff1e8f80e0f081cd8bddfcc439a9720e74b7a00d41d5"
+    },
+    {
+      "path": "lib/auth/canonicalIdentity.ts",
+      "sha256": "612ff9db7ddf97cb6ffdc9c354602c2fa7c6e37a02a596555967a3a9d7015c9e"
+    },
+    {
+      "path": "lib/auth/googleIdentity.ts",
+      "sha256": "7fd042bf91420b3e9047368775d7501c6bcd5ca4c53bbb8d68d6366fd0c42e30"
+    },
+    {
+      "path": "lib/auth/googleIdentityClaims.ts",
+      "sha256": "8320bc6b682b96c12794ba91423e74bbd48de8ed1a8acbd564734895a7044a28"
+    },
+    {
+      "path": "lib/auth/googleLinkContext.ts",
+      "sha256": "b9a9db4c1baab2623ffcf08d513869b279f7a5751df6d891b268854d1d1fc75c"
+    },
+    {
+      "path": "lib/auth/__tests__/googleIdentity.test.ts",
+      "sha256": "265ed263517eb836eb2cd9a534df8d742648992869d7134f11268405a85d812c"
+    },
+    {
+      "path": "lib/auth/__tests__/googleNextAuthFlow.test.ts",
+      "sha256": "e89c8acc60157f617cf1378a4d9fdfb68160da7678f966c51871f73a127b1829"
+    },
+    {
+      "path": "lib/auth/__tests__/googleLinkMail.test.ts",
+      "sha256": "fab7a9aa409d8029f0b438cc08a877139086088a594d6cbb370950d12ab55282"
+    },
+    {
+      "path": "lib/__tests__/authLoginRecovery.test.ts",
+      "sha256": "ba8e3682d6c30731ffd2ba3c4780aff045a8c925d22bfe4013caa3dfe1409e74"
+    },
+    {
+      "path": "lib/__tests__/authSignInGate.test.ts",
+      "sha256": "ebccc1df47bc70024540b7004348d0e6d880af54b8c03bde032c5e7e12023e84"
+    },
+    {
+      "path": "prisma/schema.prisma",
+      "sha256": "38d3e9ecc94fd19b38cdf04eeea095e86ee4ebb9d670a1ac7bdf9e2edfa45fa3"
+    },
+    {
+      "path": "prisma/migrations/20261115180000_google_identity_binding/migration.sql",
+      "sha256": "b7de20d8b16f76294a10e061f888be9bfb8c15bca286c3b51886d84c4a167ffb"
+    }
+  ],
+  "validation": {
+    "focused_auth": {
+      "files": 29,
+      "tests_passed": 272,
+      "log": "/tmp/axiom-google-auth-regression.log",
+      "sha256": "91c9b5ff8ada6f39dfb2961182e5a839af03c9c049381ec93fe51790ffe09f43"
+    },
+    "strict_types": {
+      "exit": 0,
+      "log": "/tmp/axiom-google-types.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  }
+}

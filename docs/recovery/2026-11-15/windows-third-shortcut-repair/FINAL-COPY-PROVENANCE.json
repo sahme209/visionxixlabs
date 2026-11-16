@@ -1,0 +1,92 @@
+[
+  {
+    "source": "/tmp/v19-residual-stat-probe/APPLY-FILES.json",
+    "destination": "collector-correction/APPLY-FILES.json",
+    "bytes": 582,
+    "sha256": "8fda7cf743abb5b5cc156acef3eb6fedc13e397695b18bce2fc2887e66be8fc9"
+  },
+  {
+    "source": "/tmp/v19-residual-stat-probe/scripts/windows_residual_stat_probe.py",
+    "destination": "collector-correction/source/scripts/windows_residual_stat_probe.py",
+    "bytes": 5153,
+    "sha256": "dd1aa0cc8fd18c9c9c94ed376f15e86dd692874dfe6764a84c3e2e6208cc2acd"
+  },
+  {
+    "source": "/tmp/v19-residual-stat-probe/scripts/windows_residual_metadata.py",
+    "destination": "collector-correction/source/scripts/windows_residual_metadata.py",
+    "bytes": 5698,
+    "sha256": "af3aa25b398526ae0918aa1866322cd16c5eab6b3c61ab4ba7168fc43f866492"
+  },
+  {
+    "source": "/tmp/v19-residual-stat-probe/scripts/windows_residual_metadata_original.py",
+    "destination": "collector-correction/source/scripts/windows_residual_metadata_original.py",
+    "bytes": 5707,
+    "sha256": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e"
+  },
+  {
+    "source": "/tmp/v19-residual-stat-probe/.github/workflows/windows-msi-byte-diagnostic.yml",
+    "destination": "collector-correction/source/.github/workflows/windows-msi-byte-diagnostic.yml",
+    "bytes": 860,
+    "sha256": "60c7b1fd470d7b34c98d8c56d35883426ab322a643a50006c501cabe96968dd6"
+  },
+  {
+    "source": "/tmp/v19-residual-stat-probe/scripts/windows-residual-stat-inputs.json",
+    "destination": "collector-correction/source/scripts/windows-residual-stat-inputs.json",
+    "bytes": 803,
+    "sha256": "3e1b0f9fcbd44926a76c868b25213ccac5d097dc7ae4625a54e5191ef230299a"
+  },
+  {
+    "source": "/tmp/v19-residual-stat-actual-result.json",
+    "destination": "collector-correction/ACTUAL-RESULT.json",
+    "bytes": 10605,
+    "sha256": "07e662844ff74b1a198dc2fe1f1035751b8a752dd66ad2977981beeed1b11e11"
+  },
+  {
+    "source": "/private/tmp/v19-residual-hash-product-regression/INPUTS.json",
+    "destination": "collector-regression/INPUTS.json",
+    "bytes": 1732,
+    "sha256": "d3a4128c0b7f3de5b6672ffb7a3f97e0d74f9dcc626a58333e09719e73fd1031"
+  },
+  {
+    "source": "/private/tmp/v19-residual-hash-product-regression/REVIEW.md",
+    "destination": "collector-regression/REVIEW.md",
+    "bytes": 799,
+    "sha256": "ed765025a172ee82b3677916fe3b5d94edbdbf38af10c495b4d998da61d6ce13"
+  },
+  {
+    "source": "/private/tmp/v19-residual-hash-product-regression/NEW-METHOD.txt",
+    "destination": "collector-regression/NEW-METHOD.txt",
+    "bytes": 1317,
+    "sha256": "a7dbd5d5d2daf313167179f918d1ee388452fa19627e3d0b5516c2f739ed2783"
+  },
+  {
+    "source": "/private/tmp/v19-residual-hash-product-regression/RED.log",
+    "destination": "collector-regression/RED.log",
+    "bytes": 1853,
+    "sha256": "48c860e9e080df21ee19f92cb2a05d804c2afb0b6f20f20365fda93b010f9705"
+  },
+  {
+    "source": "/private/tmp/v19-residual-hash-product-regression/GREEN.log",
+    "destination": "collector-regression/GREEN.log",
+    "bytes": 1134,
+    "sha256": "dfa12074de0556283e2d390d6d6bede0c0dfa1867fb7a11b3c3f2f8a7c61b840"
+  },
+  {
+    "source": "/private/tmp/v19-residual-hash-product-regression/corrected/scripts/tests/test_windows_residual_metadata.py",
+    "destination": "collector-regression/corrected/scripts/tests/test_windows_residual_metadata.py",
+    "bytes": 6926,
+    "sha256": "d573fee8e5dd892c0d918147912bcd113b3b0236bcdcc1b71a85185eb0552aee"
+  },
+  {
+    "source": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/docs/recovery/2026-11-15/windows-third-shortcut-repair/COPIED-FILES-SHA256.json",
+    "destination": "INITIAL-COPIED-FILES-SHA256.json",
+    "bytes": 5552,
+    "sha256": "16d9b9bf64bcddea379f7a73ec1f8d814df15bd0d4826ef9784f9fbce04ad749"
+  },
+  {
+    "source": "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/docs/recovery/2026-11-15/windows-third-shortcut-repair/README.md",
+    "destination": "INITIAL-README.md",
+    "bytes": 3551,
+    "sha256": "4b0b73aa3c34fbfa3f3f657956c348e4d758bef9815b60c404b2fc929b80da91"
+  }
+]

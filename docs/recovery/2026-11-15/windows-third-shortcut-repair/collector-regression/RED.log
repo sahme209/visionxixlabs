@@ -1,0 +1,23 @@
+test_empty_and_exact_small_file_hash_without_contents (test_windows_residual_metadata.Residuals) ... ok
+test_entry_depth_and_hash_byte_limits (test_windows_residual_metadata.Residuals) ... ok
+test_large_files_not_read_and_changed_leaf_refuses (test_windows_residual_metadata.Residuals) ... ok
+test_msi_utf16_tail_keeps_final_error_with_raw_bound (test_windows_residual_metadata.Residuals) ... ok
+test_original_residual_failure_survives_collector_exception (test_windows_residual_metadata.Residuals) ... ok
+test_reparse_attribute_refuses_windows_style_junction (test_windows_residual_metadata.Residuals) ... ok
+test_shortcut_script_is_fixed_readonly_bounded_and_does_not_emit_unknown_args (test_windows_residual_metadata.Residuals) ... ok
+test_small_utf8_tail_and_controls (test_windows_residual_metadata.Residuals) ... ok
+test_symlinks_never_followed_or_hashed (test_windows_residual_metadata.Residuals) ... ok
+test_windows_cached_scandir_zero_identity_does_not_hide_regular_file_hash (test_windows_residual_metadata.Residuals) ... ERROR
+
+======================================================================
+ERROR: test_windows_cached_scandir_zero_identity_does_not_hide_regular_file_hash (test_windows_residual_metadata.Residuals)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/v19-residual-hash-product-regression/old/scripts/tests/test_windows_residual_metadata.py", line 72, in test_windows_cached_scandir_zero_identity_does_not_hide_regular_file_hash
+    row=out['entries'][0];self.assertEqual(row['sha256'],hashlib.sha256(payload).hexdigest());self.assertEqual(out['hashBytes'],len(payload));self.assertNotIn('hashUnavailable',row)
+KeyError: 'sha256'
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.020s
+
+FAILED (errors=1)

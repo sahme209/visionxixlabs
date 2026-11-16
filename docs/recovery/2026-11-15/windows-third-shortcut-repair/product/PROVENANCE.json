@@ -1,0 +1,17 @@
+{
+  "pinnedTauriMsiSource": {
+    "path": "/private/tmp/v19-windows-identity-source/msi-mod.rs",
+    "sha256": "f681775bf95122f529e4cbb8dba318e24a0084cfab26a14a76458b77f2e9ecfc",
+    "packageGuidLines": "260-268: UUIDv5 of stable bundle_identifier; namespace96-98; path_component_guid640-641"
+  },
+  "actualLegacyComponentObservation": {
+    "path": "/tmp/v19-registry-corrected-full-actual-result.json",
+    "sha256": "a79bd1cc7e30a372daba7928bc70d3e5bcc86642ca2ee4579e3e0d0e9e510241",
+    "componentGuid": "{EB234B33-5646-54DC-BC0A-9794A161CA82}",
+    "componentPathMatchesRequested": true
+  },
+  "oldMsiTableObservation": {
+    "path": "/tmp/v19-third-probe-actual-result.json",
+    "scope": "Actual exact legacy Shortcut/Directory/RemoveShortcuts rows confirmed; probe overallfailed wrapper shape beforeWSH; no failedVM residual identity claimed"
+  }
+}

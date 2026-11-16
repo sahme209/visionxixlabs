@@ -1,0 +1,7 @@
+{
+  "scripts/windows_residual_stat_probe.py": "dd1aa0cc8fd18c9c9c94ed376f15e86dd692874dfe6764a84c3e2e6208cc2acd",
+  "scripts/windows_residual_metadata.py": "af3aa25b398526ae0918aa1866322cd16c5eab6b3c61ab4ba7168fc43f866492",
+  "scripts/windows_residual_metadata_original.py": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+  ".github/workflows/windows-msi-byte-diagnostic.yml": "60c7b1fd470d7b34c98d8c56d35883426ab322a643a50006c501cabe96968dd6",
+  "scripts/windows-residual-stat-inputs.json": "3e1b0f9fcbd44926a76c868b25213ccac5d097dc7ae4625a54e5191ef230299a"
+}

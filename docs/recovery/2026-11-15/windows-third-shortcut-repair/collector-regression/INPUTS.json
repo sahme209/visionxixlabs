@@ -1,0 +1,24 @@
+{
+  "preparedOnly": true,
+  "authoringApplied": false,
+  "oldModuleSha256": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+  "correctedModuleSha256": "af3aa25b398526ae0918aa1866322cd16c5eab6b3c61ab4ba7168fc43f866492",
+  "redPassed": 9,
+  "redErrors": 1,
+  "greenPassed": 10,
+  "productTestSha256": "d573fee8e5dd892c0d918147912bcd113b3b0236bcdcc1b71a85185eb0552aee",
+  "files": {
+    "GREEN.log": "dfa12074de0556283e2d390d6d6bede0c0dfa1867fb7a11b3c3f2f8a7c61b840",
+    "NEW-METHOD.txt": "a7dbd5d5d2daf313167179f918d1ee388452fa19627e3d0b5516c2f739ed2783",
+    "RED.log": "48c860e9e080df21ee19f92cb2a05d804c2afb0b6f20f20365fda93b010f9705",
+    "REVIEW.md": "ed765025a172ee82b3677916fe3b5d94edbdbf38af10c495b4d998da61d6ce13",
+    "corrected/scripts/tests/test_windows_residual_metadata.py": "d573fee8e5dd892c0d918147912bcd113b3b0236bcdcc1b71a85185eb0552aee",
+    "corrected/scripts/windows_installed_acceptance.py": "58252af342b3e6e650fe20595dadef30043b84109f6b0c19268d46364e41198c",
+    "corrected/scripts/windows_residual_metadata.py": "af3aa25b398526ae0918aa1866322cd16c5eab6b3c61ab4ba7168fc43f866492",
+    "corrected/scripts/windows_residual_shortcuts.ps1": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e",
+    "old/scripts/tests/test_windows_residual_metadata.py": "d573fee8e5dd892c0d918147912bcd113b3b0236bcdcc1b71a85185eb0552aee",
+    "old/scripts/windows_installed_acceptance.py": "58252af342b3e6e650fe20595dadef30043b84109f6b0c19268d46364e41198c",
+    "old/scripts/windows_residual_metadata.py": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+    "old/scripts/windows_residual_shortcuts.ps1": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e"
+  }
+}

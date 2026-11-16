@@ -1,0 +1,18 @@
+{
+  "preparedOnly": true,
+  "frozen": true,
+  "authoringApplied": false,
+  "nativeActionsPerformed": false,
+  "pureTestsPassed": 9,
+  "baselineInstalledControllerSha256": "0fbb66801d205b592f885ed16a8d978d5840e78bfe74ea058acb3e4f21a21a04",
+  "files": {
+    "BASELINE-windows_installed_acceptance.py": "0fbb66801d205b592f885ed16a8d978d5840e78bfe74ea058acb3e4f21a21a04",
+    "CANDIDATE.patch": "bb796520d8836fe3f948ff34c35b097490974e9ff4e25beffdbb9f28f0435233",
+    "REVIEW.md": "a3796b7aa5f4db1960e6db39c64c6c2ae9db86ec353229bdfbf573896f21a694",
+    "TESTS.log": "15f6dc6580ba907260e8900ada5bd0cb38044dfc7c956968f3af599fcf0ebd12",
+    "candidate/scripts/tests/test_windows_residual_metadata.py": "3a1f3e88200549702f33c4e92d8269bffcd24f4321ad94a39b33309626e6a8b7",
+    "candidate/scripts/windows_installed_acceptance.py": "fcd473ab642245f843dfe7d84c112a46fd26ef1ce7568557c5160dcccfb01d79",
+    "candidate/scripts/windows_residual_metadata.py": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+    "candidate/scripts/windows_residual_shortcuts.ps1": "6d7e14c687ade0c1682715cd51429241a20fd1177de0b00fd9d9fb5461a3e5f4"
+  }
+}

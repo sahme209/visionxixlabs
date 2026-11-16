@@ -1,0 +1,26 @@
+{
+  "preparedOnly": true,
+  "frozen": true,
+  "applied": false,
+  "nativeQualified": false,
+  "productApplyManifestSha256": "1449d2e9f794f8d94b41e6addddffa640a4379d1773accc7b1ae12ce72782b7e",
+  "pureTestsPassed": 14,
+  "files": {
+    "APPLY-FILES.json": "1449d2e9f794f8d94b41e6addddffa640a4379d1773accc7b1ae12ce72782b7e",
+    "BEFORE-FILES.json": "9615edfedae719f9fcd954563796c0d09b65e1267f73cc15ca0b9638cb01d154",
+    "GREEN.log": "4c36b42d0c0aac9cb059f13f02b307b6ea5e30373f1e16b77ebbe954a54cc573",
+    "PATCH.diff": "7948561025ad1908673649d6a1215b41e192b28428f9344772e1fbecef472043",
+    "PROVENANCE.json": "491535642a22bc9f115a7dd2d1000a9515d93381417ec32b09ee41c602b39162",
+    "RED.log": "884278954a3d71b5e86b0d4b5fbbbfa091a5a7270cae0e3e1480058b09e1e335",
+    "REVIEW.md": "936be0b1b3c279ff8d255d0cac00ea5c4362e95e818c26c9078c41bfbc1d3414",
+    "desktop/src-tauri/tauri.conf.json": "44461cb956b089f581dd57e80d3eac4a909dad6d8cee6e9ac0710263452b0cba",
+    "desktop/src-tauri/windows/main.wxs": "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8",
+    "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "45ba519c6eafd7773887981fb547d613495de6357f56156b4e9a5bfcac5817a6",
+    "docs/recovery/2026-11-15/windows-msi-shortcut-repair/PINNED-UPSTREAM-main.wxs": "e371a01628a06730828f9bd24111feacb8bec53c250ccec4b46df756fe0a0198",
+    "new_fixture_function.txt": "2b931f5b12d642fe9d547520db28835b4e2fb0335bb2d583aab32c37b3ca57c3",
+    "scripts/tests/test_v19_msi_shortcut_template.py": "647c0904dedd8a6f671546fad752575e1d326e095ae169a31340d992262dff30",
+    "scripts/tests/test_v19_uninstall_shortcut_contract.py": "5e9aba9e9d530495ede1cb4d6637ac6405d0170c535cd2f59b995137ef591c50",
+    "scripts/windows_installed_acceptance.py": "09ece512006850ac4b459889021138952638f7127720647651b7054c762c3e4d",
+    "scripts/windows_msi_shortcut_preflight.py": "3a16021ed49712a36d4d11111dfa14e76f5879cc4697f9f64521a794150e1360"
+  }
+}

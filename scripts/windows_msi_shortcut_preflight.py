@@ -9,10 +9,33 @@ CSCRIPT_FLAGS = ('//NoLogo',)  # //B suppresses the runtime refusal diagnostics.
 
 def vbs_string(value):return '"'+value.replace('"','""')+'"'
 def fixture_script(source,phase,data,second_move_failure=False,removing=False):
-    # Only MSI's Session property boundary is adapted; migration logic is exact.
-    qa.need(source.count('Session.Property(')==3,'script_session_boundary_changed')
-    prefix='Option Explicit\nFunction V19FixtureProperty(name)\nIf name = "REMOVE" Then\nV19FixtureProperty = '+vbs_string('ALL' if removing else '')+'\nElse\nV19FixtureProperty = '+vbs_string(data)+'\nEnd If\nEnd Function\n'
-    body=source.replace('Option Explicit\n','',1).replace('__PHASE__',phase).replace('Session.Property(','V19FixtureProperty(')
+    # Only MSI Session authority is adapted for these synthetic two-link cases.
+    # Real installed-product ownership is qualified by the separate COM probe.
+    boundaries={
+        'Session.Property(name)': 'V19FixtureProperties(name)',
+        'Session.Installer.RelatedProducts(V19UpgradeCode)': 'CreateObject("Scripting.Dictionary")',
+        'Session.Installer.ProductInfo(code, name)': 'V19FixtureUnexpectedProduct()',
+        'Session.Installer.ComponentPath(code, V19MainComponent)': 'V19FixtureUnexpectedProduct()',
+    }
+    qa.need(source.count('Session.Property(name)')==2 and source.count('Session.Installer.')==3,'script_session_boundary_changed')
+    qa.need(all(source.count(key)==(2 if key=='Session.Property(name)' else 1) for key in boundaries),'script_session_boundary_changed')
+    code='{00000000-0000-4000-8000-000000000019}'
+    prefix='''Option Explicit
+Dim V19FixtureProperties, V19FixtureSystemFolder, V19FixtureVerifiedData
+Set V19FixtureProperties = CreateObject("Scripting.Dictionary")
+V19FixtureSystemFolder = CreateObject("WScript.Shell").ExpandEnvironmentStrings("%SystemRoot%") & "\\System32\\"
+V19FixtureProperties("System64Folder") = V19FixtureSystemFolder
+V19FixtureProperties("ProductCode") = '''+vbs_string(code)+'''
+V19FixtureProperties("REMOVE") = '''+vbs_string('ALL' if removing else '')+'''
+V19FixtureProperties("V19MigrateLegacyShortcuts") = '''+vbs_string(data)+'''
+V19FixtureVerifiedData = '''+vbs_string(data)+''' & "|" & V19FixtureSystemFolder & "msiexec.exe|" & '''+vbs_string(code)+''' & "||" & '''+vbs_string(code)+'''
+V19FixtureProperties("CustomActionData") = V19FixtureVerifiedData
+Function V19FixtureUnexpectedProduct()
+Err.Raise vbObjectError + 513, "V19 shortcut migration", "Synthetic product lookup unexpected"
+End Function
+'''
+    body=source.replace('Option Explicit\n','',1).replace('__PHASE__',phase)
+    for original,replacement in boundaries.items():body=body.replace(original,replacement)
     if second_move_failure:
         needle='        fso.MoveFile links(i), backups(i)'
         qa.need(body.count(needle)==1,'fixture_move_boundary_changed')

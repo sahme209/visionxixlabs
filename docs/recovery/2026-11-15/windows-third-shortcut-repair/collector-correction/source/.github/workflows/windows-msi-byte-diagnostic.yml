@@ -1,0 +1,25 @@
+name: Owned Windows residual file identity probe
+on:
+  push:
+    branches: [codex/windows-msi-byte-diagnostic]
+permissions:
+  contents: read
+jobs:
+  residual-file-identity:
+    if: github.repository == 'sahme209/visionxixlabs' && github.repository_id == '1130181785' && github.actor == 'sahme209' && github.run_attempt == 1
+    runs-on: windows-2022
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Check actual file identity and no-follow metadata
+        shell: pwsh
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+        run: python scripts/windows_residual_stat_probe.py

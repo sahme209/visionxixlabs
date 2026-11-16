@@ -419,10 +419,17 @@ class WindowsAcceptancePreparation(unittest.TestCase):
         import json
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);path=root/candidate.REVIEWED_MANIFEST;path.parent.mkdir(parents=True)
-            required=['scripts/windows_installed_acceptance.py','scripts/windows_installer_metadata.ps1','.github/workflows/desktop-ci.yml','scripts/windows_upgrade_acceptance.py','scripts/windows_upgrade_snapshot.ps1','scripts/windows_shortcut_collision.ps1','scripts/windows_legacy_acquire.py','desktop/src-tauri/windows/installer.nsi','desktop/src-tauri/windows/main.wxs','desktop/src-tauri/windows/msi-shortcut-migration.vbs','scripts/windows_msi_shortcut_preflight.py','desktop/package-lock.json','desktop/src-tauri/Cargo.lock','desktop/src-tauri/tauri.conf.json','desktop/src-tauri/tests/windows_keyring_acceptance.rs']
+            required=['scripts/windows_installed_acceptance.py','scripts/windows_installer_metadata.ps1','.github/workflows/desktop-ci.yml','scripts/windows_upgrade_acceptance.py','scripts/windows_upgrade_snapshot.ps1','scripts/windows_shortcut_collision.ps1','scripts/windows_legacy_acquire.py','desktop/src-tauri/windows/installer.nsi','desktop/src-tauri/windows/main.wxs','desktop/src-tauri/windows/msi-shortcut-migration.vbs','scripts/windows_msi_shortcut_preflight.py','scripts/windows_residual_metadata.py','scripts/windows_residual_shortcuts.ps1','desktop/package-lock.json','desktop/src-tauri/Cargo.lock','desktop/src-tauri/tauri.conf.json','desktop/src-tauri/tests/windows_keyring_acceptance.rs']
             value={'schema':'axiom.windows-reviewed-files/1','files':{name:{'bytes':1,'sha256':'a'*64} for name in required}}
             path.write_text(json.dumps(value));binding={'manifestSha256':candidate.digest(path)}
             self.assertEqual(candidate.reviewed_manifest(binding,root),value['files'])
+            for helper in ['scripts/windows_residual_metadata.py','scripts/windows_residual_shortcuts.ps1']:
+                missing={**value,'files':{name:row for name,row in value['files'].items() if name!=helper}}
+                path.write_text(json.dumps(missing))
+                with self.assertRaisesRegex(RuntimeError,'reviewed_manifest_incomplete'):
+                    candidate.reviewed_manifest({'manifestSha256':candidate.digest(path)},root)
+            path.write_text(json.dumps(value))
+            binding={'manifestSha256':candidate.digest(path)}
             path.write_text(json.dumps({**value,'files':{}}))
             with self.assertRaisesRegex(RuntimeError,'reviewed_manifest_changed'):candidate.reviewed_manifest(binding,root)
             binding={'manifestSha256':candidate.digest(path)}

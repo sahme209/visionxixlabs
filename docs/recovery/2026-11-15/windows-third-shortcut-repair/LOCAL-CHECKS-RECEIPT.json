@@ -1,0 +1,43 @@
+{
+  "actualLocalChecksReportedBySupervisingRoot": true,
+  "ordinarySuite": {
+    "passed": 19818,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "seconds": 34.12
+  },
+  "strictRootTypesExit": 0,
+  "desktopFrontendBuildAndStrictTypesExit": 0,
+  "desktopNativeInstallerOrPaintAcceptance": false,
+  "desktopBuildWarningsPresent": true,
+  "pythonCliTestsPassed": 36,
+  "logsHashBoundWithoutCopyingLargeLog": {
+    "full-suite": {
+      "sourcePath": "/tmp/v19-third-fix-full-suite.log",
+      "bytes": 133839,
+      "sha256": "7f69979595ddb975558a6a8f00d124b2c54566b9c60af3ea30d5e06cabb5520a",
+      "reportedExitCodeBySupervisingRoot": 0
+    },
+    "root-types": {
+      "sourcePath": "/tmp/v19-third-fix-root-types.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reportedExitCodeBySupervisingRoot": 0
+    },
+    "desktop-build": {
+      "sourcePath": "/tmp/v19-third-fix-desktop-build.log",
+      "bytes": 1675,
+      "sha256": "f6ae199e3a56b212aca559644ebcc27204b1a960c9a993cc28c8c02884b4dab9",
+      "reportedExitCodeBySupervisingRoot": 0
+    },
+    "cli": {
+      "sourcePath": "/tmp/v19-third-fix-cli.log",
+      "bytes": 1130,
+      "sha256": "535d5e3ace934512c321e7ed8dfbdb4dba1196cdbe8f2ce55137f94c43ff793b",
+      "reportedExitCodeBySupervisingRoot": 0
+    }
+  },
+  "unchangedGoogleSourceInputPins": 20,
+  "googleInputManifestSha256": "cc1c9076b56f0f7a09ef12ef6785d56623478cab2a3c52f42e65acdfe6783feb",
+  "newChecksRunByArchivist": 0
+}

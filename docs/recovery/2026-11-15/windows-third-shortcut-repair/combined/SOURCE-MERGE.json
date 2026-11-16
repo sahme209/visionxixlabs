@@ -1,0 +1,10 @@
+{
+  "productManifestSha256": "00fc1102090043def3a2b3823ab77a4ee9b130239563c6115167cc9bb199158c",
+  "diagnosticManifestSha256": "fafb848d76b83968dcb8f7f4daa42b3babd6a15fe467dba5163c4a1d9487b368",
+  "productControllerDeltaOnlyTemplatePin": true,
+  "controllerForensicHunksRetained": true,
+  "explicitResidualHelpersRequired": true,
+  "candidateControllerSha256": "58252af342b3e6e650fe20595dadef30043b84109f6b0c19268d46364e41198c",
+  "authoringApplied": false,
+  "nativeExecuted": false
+}
