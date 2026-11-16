@@ -19,7 +19,7 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
   // current request rather than captured at build time.
   // eslint-disable-next-line react-hooks/purity
   if (!pairing || pairing.expiresAt.getTime() <= Date.now() || pairing.consumedAt) {
-    return <Message title="Pairing link invalid" detail="Return to Axiom Agent and start sign-in again." />;
+    return <Message title="Pairing link invalid" detail="Return to V19 and start sign-in again." />;
   }
 
   const context = await currentContext();
@@ -39,7 +39,7 @@ export default async function DesktopConnectPage({ searchParams }: { searchParam
       </Link>
       <div className="w-full max-w-lg p-2 sm:p-8">
         <div className="flex h-12 w-12 items-center justify-center rounded-xl border border-white/8 bg-white/[0.035]"><Image src="/vision-xix-logo.png" alt="" width={30} height={30} className="rounded-md" /></div>
-        <h1 className="mt-7 text-3xl font-normal tracking-[-0.045em]">Authorize Axiom Agent</h1>
+        <h1 className="mt-7 text-3xl font-normal tracking-[-0.045em]">Authorize V19</h1>
         <p className="mb-7 mt-2 text-sm leading-6 text-zinc-400">
           Signed in as <span className="text-zinc-200">{context.email}</span>. Approve only if this is your desktop.
         </p>

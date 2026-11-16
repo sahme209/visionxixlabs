@@ -451,7 +451,7 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
       if (!current()) return;
       const result = await desktopClient.openGithubPullRequest({
         repositoryFullName, head: status.branch, base: prBase.trim(), title: prTitle.trim(),
-        body: "Opened from the governed Axiom Agent desktop repository workspace.",
+        body: "Opened from the governed V19 desktop repository workspace.",
       });
       if (!current()) return;
       if (!result.ok) throw new Error(result.error);
@@ -793,7 +793,7 @@ function RepositoryWorkspaceSession({ compact, revision, active, onAskAgent, edi
     </div>}
     {verificationResult && verificationStale && <p role="status" className="border-b border-amber-300/20 px-4 py-2 text-xs text-amber-200">Verification is stale or superseded by a newer attempt. Save and run checks again; historical output remains available.</p>}
     {showVerification && verificationResult && <div className="max-h-56 overflow-auto border-b border-white/[0.07] bg-black/30 p-3">
-      <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside Axiom.</p>
+      <p className="mb-2 text-xs text-zinc-500">Recorded process result only. It does not certify the current working tree or changes made outside V19.</p>
       <div className="mb-2 flex items-center justify-between text-[10px] text-zinc-500"><span>{verificationResult.checkId}</span><span>{(verificationResult.durationMs / 1000).toFixed(1)}s · exit {verificationResult.exitCode ?? "none"}</span></div>
       <pre tabIndex={0} className="whitespace-pre-wrap wrap-break-word font-mono text-[11px] leading-5 text-zinc-300">{verificationResult.output || "The check completed without output."}</pre>
       {onAskAgent && <div className="mt-2 flex flex-wrap gap-2">

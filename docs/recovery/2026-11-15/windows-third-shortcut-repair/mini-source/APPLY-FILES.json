@@ -1,0 +1,11 @@
+{
+  "scripts/windows_third_shortcut_mini_probe.py": "6ded6a3fceec7da4276b32fc7dc888f6fbbb253041b038fda5e16ea0d32926e8",
+  "scripts/windows_legacy_live_identity.ps1": "64248aa1a364c7eac31a629bc8201306553c2f9cd0c2728aef5a564ebb66b5d3",
+  "scripts/windows_third_mini_generate.py": "24558c5493d49f1f08b90b696b666e8167a6d98a7ede519754d942c3951713b1",
+  "desktop/src-tauri/windows/main.wxs": "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8",
+  "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "45ba519c6eafd7773887981fb547d613495de6357f56156b4e9a5bfcac5817a6",
+  "scripts/windows_residual_metadata.py": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+  "scripts/windows_residual_shortcuts.ps1": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e",
+  ".github/workflows/windows-msi-byte-diagnostic.yml": "7f26d9147bbfc3be82c40afaa1fe21704a6449c643b22772e8876ac36754b617",
+  "scripts/windows-third-mini-inputs.json": "91a9c380a0e59413abee1393cab269f980eeb3ab9e29c1b243bd24391af70759"
+}

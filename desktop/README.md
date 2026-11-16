@@ -1,6 +1,6 @@
-# Axiom Desktop
+# V19 desktop
 
-The Axiom desktop runtime is the **customer deployment-operations
+The V19 desktop runtime is the **customer deployment-operations
 workstation**. It captures governed deployment requests, receives signed
 execution-plan handoffs from shared services, lets the user review local
 artifacts under their custody, and initiates authorized provider operations
@@ -47,7 +47,7 @@ desktop/
 │   ├── App.tsx           # Shell + view switcher
 │   ├── components/       # Sidebar, status panels, etc.
 │   ├── views/            # Dashboard / Connectors / Scans / Settings / Handoffs
-│   └── styles.css        # Tailwind + Axiom tokens
+│   └── styles.css        # Tailwind + V19 tokens
 ├── src-tauri/            # Rust backend
 │   ├── src/              # Tauri command handlers
 │   ├── Cargo.toml

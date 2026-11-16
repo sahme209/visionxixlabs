@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-    title: "Azure setup — Axiom Documentation",
+    title: "Azure setup — V19 Documentation",
     description: "Current Azure preview availability, required configuration, and the work needed before live inventory or execution can be enabled.",
 };
 
@@ -13,7 +13,7 @@ export default function AzureSetupPage() {
             <DocHeader
                 kicker="Connect a cloud · Azure · Preview"
                 title="Azure setup."
-                summary="Axiom currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release."
+                summary="V19 currently provides Azure configuration validation and preview-derived analysis. Live Azure inventory and write execution are not enabled by the verified release."
             />
 
             <Callout variant="warning" title="Preview is not a live connector">
@@ -22,7 +22,7 @@ export default function AzureSetupPage() {
 
             <DocSection id="desktop-candidate" title="Desktop source candidate" kicker="Candidate">
                 <p className="text-zinc-400">The source candidate adds paired-desktop enrollment for an existing service principal in Settings → Integrations. An accepted workspace owner/admin enters the tenant, subscription, client UUID and secret. The backend verifies the exact tenant/subscription read identity and stores the credential in the canonical tenant-bound encrypted vault. The secret clears after submission and is not persisted in desktop settings.</p>
-                <p className="mt-3 text-zinc-400">Inventory is an explicit read of at most 100 resource groups from one first page, always labeled incomplete. Validation does not establish Reader-only permissions or VM, storage, security or cost coverage. Disconnect zeroizes Axiom&apos;s stored credential and advances its version; Azure service-principal grants and previously issued tokens are not revoked. Reconnect requires fresh provider validation.</p>
+                <p className="mt-3 text-zinc-400">Inventory is an explicit read of at most 100 resource groups from one first page, always labeled incomplete. Validation does not establish Reader-only permissions or VM, storage, security or cost coverage. Disconnect zeroizes V19&apos;s stored credential and advances its version; Azure service-principal grants and previously issued tokens are not revoked. Reconnect requires fresh provider validation.</p>
                 <p className="mt-3 text-zinc-400">This implemented source candidate is not proof of live Azure authorization, production deployment or verified native release availability. Missing storage, configuration or current authority produces an unavailable state. Provider mutation and generic Agent scans remain disabled.</p>
             </DocSection>
 
@@ -54,7 +54,7 @@ export default function AzureSetupPage() {
                     <li>Run a connector test in a dedicated non-production subscription and require an actual ARM response before reporting connected.</li>
                 </ol>
                 <p>
-                    Download Axiom Agent from <Link href="/download">the release page</Link>. Do not create Azure credentials solely for the preview path unless your administrator has supplied an approved evaluation plan.
+                    Download V19 from <Link href="/download">the release page</Link>. Do not create Azure credentials solely for the preview path unless your administrator has supplied an approved evaluation plan.
                 </p>
             </DocSection>
 
@@ -63,7 +63,7 @@ export default function AzureSetupPage() {
                     items={[
                         { question: "Is Azure live today?", answer: "Not in the verified release. The current path is configuration validation plus preview-derived analysis." },
                         { question: "Does preview data come from my tenant?", answer: "No. Preview output must remain labeled and cannot be treated as live provider evidence." },
-                        { question: "Can Axiom change Azure resources?", answer: "No verified Azure execution adapter is enabled." },
+                        { question: "Can V19 change Azure resources?", answer: "No verified Azure execution adapter is enabled." },
                         { question: "What should a missing credential show?", answer: "Disconnected or unavailable, never a synthetic success." },
                         { question: "When can the status change?", answer: "After live inventory and action paths are implemented, permission-reviewed, integration-tested, and recorded in the release availability matrix." },
                         { question: "Where do I verify release status?", answer: "Use the download page, release notes, and in-app capability status for the installed version." },

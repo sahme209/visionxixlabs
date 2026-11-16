@@ -152,7 +152,7 @@ export function IntegrationConnectionAction({
         </div>
       )}
       {error && <p role="status" className="max-w-56 text-right text-[10px] leading-4 text-rose-300">{error}</p>}
-      {confirmDisconnect && <ConfirmDialog title={`Disconnect ${label}?`} onCancel={() => setConfirmDisconnect(false)} onConfirm={() => void transition("disconnect")} confirmLabel="Disconnect" returnFocusRef={manageButton} busy={working !== null}>Axiom will stop using this connection. Existing deployment and audit records remain intact.</ConfirmDialog>}
+      {confirmDisconnect && <ConfirmDialog title={`Disconnect ${label}?`} onCancel={() => setConfirmDisconnect(false)} onConfirm={() => void transition("disconnect")} confirmLabel="Disconnect" returnFocusRef={manageButton} busy={working !== null}>V19 will stop using this connection. Existing deployment and audit records remain intact.</ConfirmDialog>}
     </div>
   );
 }

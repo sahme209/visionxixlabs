@@ -28,7 +28,7 @@ import {
 } from "@/lib/workforce/agentWorkforceRegistry";
 
 export const metadata: Metadata = {
-  title: "Workforce activity · Axiom",
+  title: "Workforce activity · V19",
   description: "Every engineer action attempt with runtime decision + final approval outcome.",
 };
 

@@ -14,8 +14,8 @@ export function AxiomPublicHero() {
       <h1 id="public-home-title">Deploy with clarity.</h1>
       <p>Your repositories, AI assistance and releases. Connected through clear review and recorded evidence.</p>
       <div className="public-home-actions">
-        <Link className="orbit-primary" href="/download">Download Axiom Agent</Link>
-        <Link className="orbit-secondary" href="/product">Explore Axiom</Link>
+        <Link className="orbit-primary" href="/download">Download V19</Link>
+        <Link className="orbit-secondary" href="/product">Explore V19</Link>
       </div>
     </header>
     <figure className="public-home-product">
@@ -37,7 +37,7 @@ const request = {
               <div className="public-home-editor-note">Illustrative source · no command or code runs</div>
             </div>
             <aside className="public-home-review" aria-label="Illustrative review context">
-              <p className="public-home-review-title">Axiom Agent</p>
+              <p className="public-home-review-title">V19</p>
               <p>Keep the change small. Show the scope and the evidence before asking for a decision.</p>
               <div className="public-home-request" style={{transform:`translateY(${(1-motion.fraction)*8}px)`}}><span>Proposed change</span><strong>Update request timeout</strong><p>Repository and branch attached. Production execution is held.</p></div>
               <div className="public-home-evidence"><span>Review context</span><p>Scope captured</p><p>Independent review required</p><p>Outcome not yet verified</p></div>

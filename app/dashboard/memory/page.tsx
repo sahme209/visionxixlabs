@@ -40,7 +40,7 @@ export default function MemoryPage() {
             Memory <span className="text-gradient">Timeline.</span>
           </h1>
           <p className="text-dim-paragraph text-base max-w-2xl leading-relaxed">
-            Every scan, recommendation, approval, and execution Axiom has performed. <span className="dim-1">The agent remembers outcomes and uses them to recalibrate confidence over time.</span>
+            Every scan, recommendation, approval, and execution V19 has performed. <span className="dim-1">The agent remembers outcomes and uses them to recalibrate confidence over time.</span>
           </p>
         </div>
       </Reveal>

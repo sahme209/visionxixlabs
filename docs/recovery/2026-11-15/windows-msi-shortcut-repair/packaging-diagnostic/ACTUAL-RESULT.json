@@ -1,0 +1,23 @@
+{
+  "source": "046f6a33a79fc689f8f256d3e600515070d9a4b5",
+  "accepted": false,
+  "failureClass": "RuntimeError",
+  "failureCode": "command_failed",
+  "keyringCleanupConfirmed": true,
+  "ownedProcessCleanupConfirmed": true,
+  "installations": [],
+  "upgradeAcceptance": "NOT_RUN",
+  "published": false,
+  "runId": 43785807707,
+  "jobId": 133035281785,
+  "scriptHostPreflightPassed": true,
+  "failedCommand": [
+    {
+      "label": "unsigned-bundle",
+      "exitCode": 1,
+      "stderrBytes": 17747,
+      "prefixTruncated": true
+    }
+  ],
+  "underlyingBuilderCause": "UNKNOWN: only first2048stderr bytes emitted"
+}

@@ -11,8 +11,8 @@ import {
 import { Callout, DocFeedback, DocHeader } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-    title: "Quickstart Checklist — Axiom Agent",
-    description: "A verified checklist for installing Axiom Agent and completing a first non-production deployment workflow.",
+    title: "Quickstart Checklist — V19",
+    description: "A verified checklist for installing V19 and completing a first non-production deployment workflow.",
 };
 
 interface ChecklistItem {
@@ -29,11 +29,11 @@ const STEPS: readonly ChecklistItem[] = [
         title: "Download the correct installer",
         body: "Use the live release manifest to choose the build matching your operating system and architecture. Review the displayed signing or notarization status before installing.",
         status: "release-backed",
-        link: { href: "/download", label: "Download Axiom Agent" },
+        link: { href: "/download", label: "Download V19" },
     },
     {
         num: "02",
-        title: "Install and launch Axiom Agent",
+        title: "Install and launch V19",
         body: "Follow the platform instructions. Do not bypass an unsigned-software warning where your organization forbids unsigned applications.",
         status: "platform-specific",
         link: { href: "/docs/desktop-install", label: "Installation guide" },
@@ -41,7 +41,7 @@ const STEPS: readonly ChecklistItem[] = [
     {
         num: "03",
         title: "Complete desktop authentication",
-        body: "Start sign-in from the installed app. Approve the short-lived pairing request in your browser, then return to Axiom Agent. The browser flow authenticates the desktop; it is not a hosted product.",
+        body: "Start sign-in from the installed app. Approve the short-lived pairing request in your browser, then return to V19 Agent. The browser flow authenticates the desktop; it is not a hosted product.",
         status: "identity required",
     },
     {

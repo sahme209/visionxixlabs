@@ -15,8 +15,8 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 export const metadata = {
-  title: "Connect GitHub · Axiom",
-  description: "Install the Axiom GitHub App with explicit repository scope.",
+  title: "Connect GitHub · V19",
+  description: "Install the V19 GitHub App with explicit repository scope.",
 };
 
 export default async function ConnectGitHubPage() {

@@ -1,0 +1,11 @@
+{
+  "packetSha256": "7cb827af8ce30b5769e0c0e488b8177a37abb578f6b52eff5d97e0318cf580e8",
+  "rootReview": "CLEAR",
+  "independentReview": "CLEAR",
+  "portableWindowsTests": 75,
+  "templateContracts": 5,
+  "demoContracts": 15,
+  "googleFrozenInputsUnchanged": 20,
+  "actualMsiInstallerRun": "PENDING",
+  "productionChanged": false
+}

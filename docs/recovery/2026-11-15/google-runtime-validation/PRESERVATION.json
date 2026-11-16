@@ -1,0 +1,32 @@
+{
+  "backupDirectory": "docs/recovery/2026-11-15/google-runtime-validation/living-before-20261115-180009",
+  "sixLivingDocs": {
+    "CODEX_HANDOFF.md": {
+      "backupSha256": "8481fd34f761a8a47cd0f8cd30c7214f9fda20dd20d0fd9957058f3986d9aece",
+      "originalSuffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "backupSha256": "bfcf07ac3200e71fdbd587ea6ab89487a58a22f42c8283c494fd7d0ddc7bb78d",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "backupSha256": "2a2afa466ad2923524065658e8e18dde27e3e779adc6e93caf42b04e7d8a4879",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "backupSha256": "ce41a4b5dee300423f723d14daad9d36fd8e9cb7d4f07451913e1bd3a4faa446",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "backupSha256": "ad13163a58341287a2ed5ea350d68abaff12f9f66635e599254424179f6bb536",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "backupSha256": "da422dfb9dbb61969c2c292230531aaa7ab2327d3a5a9d7dd1c23c3db13867d9",
+      "originalSuffixPreserved": true
+    }
+  },
+  "demoOriginalBytesPreservedAfterRemovingSingleNewStep": true,
+  "originalGoalCheckoutUntouched": true,
+  "noStagingCommitOrManifestMint": true
+}

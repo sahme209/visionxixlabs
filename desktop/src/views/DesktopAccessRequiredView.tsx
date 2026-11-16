@@ -90,7 +90,7 @@ export function DesktopAccessRequiredView({
     <main className="desktop-entry h-screen w-full bg-axiom-bg text-white flex flex-col px-6 py-10 relative overflow-y-auto">
       <div className="desktop-entry-panel relative m-auto w-full max-w-lg shrink-0 rounded-2xl border border-white/8 bg-axiom-surface p-8 shadow-2xl">
         <div className="flex items-start gap-4">
-          <img src="/brand/vxix-mark.svg" alt="vxix" className="h-10 w-10 shrink-0 object-contain" />
+          <img src="/brand/v19-mark.svg" alt="V19" className="h-10 w-10 shrink-0 object-contain" />
           <div>
             <p className="text-[10px] font-mono uppercase tracking-[0.22em] text-emerald-300">Identity verified</p>
             <h1 className="mt-1 text-2xl font-bold">{identity.access.title}</h1>

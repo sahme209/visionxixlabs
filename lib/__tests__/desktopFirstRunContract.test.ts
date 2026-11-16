@@ -100,7 +100,7 @@ describe("desktop first-run contract", () => {
     expect(startRoute).toContain('new URL("/desktop/connect"');
     expect(consentPage).toContain("App version");
     expect(consentPage).toContain("Request expires");
-    expect(consentClient).toContain("Axiom Agent is authorized");
+    expect(consentClient).toContain("V19 is authorized");
     expect(consentClient).toContain("axiom-agent://auth/complete");
     expect(consentClient).not.toContain("Desktop connected");
     expect(statusRoute).toContain("consumedAt: null");
@@ -274,7 +274,7 @@ describe("desktop first-run contract", () => {
     const panel = readFileSync(join(root, "components/auth/DesktopSessionsPanel.tsx"), "utf8");
     expect(route).toContain("session.organizationId === ctx.organizationId");
     expect(route).toContain("s.organizationId === ctx.organizationId");
-    expect(panel).toContain("Paired Axiom Agent devices");
+    expect(panel).toContain("Paired V19 devices");
     expect(panel).toContain("Revoke device");
     expect(panel).not.toContain("deviceFingerprint");
     expect(panel).not.toContain("accessToken");

@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 export default function IntegrationsCatalog(){
  const entries=publicCatalogEntries();
  return <div className="axiom-canvas min-h-screen text-zinc-100"><Navigation/><main className="public-catalog-page integration-editorial-page">
-  <header className="integration-editorial-intro"><p>Connections, with context.</p><h1>Your tools.<br/><span>One clear workflow.</span></h1><p>Bring repository context, cloud evidence and operational signals into Axiom. Choose the job, check the limits, then follow the setup.</p><Link href="/docs/integration-setup" className="orbit-primary">Read the connection guide <span aria-hidden="true">↗</span></Link></header>
+  <header className="integration-editorial-intro"><p>Connections, with context.</p><h1>Your tools.<br/><span>One clear workflow.</span></h1><p>Bring repository context, cloud evidence and operational signals into V19. Choose the job, check the limits, then follow the setup.</p><Link href="/docs/integration-setup" className="orbit-primary">Read the connection guide <span aria-hidden="true">↗</span></Link></header>
   <section aria-labelledby="connection-catalog" className="public-catalog-section">
    <div className="integration-section-heading"><h2 id="connection-catalog">Find your connection.</h2><p>Availability belongs to each workflow. Browsing starts nothing.</p></div>
    <IntegrationCatalogBrowser entries={entries}/>

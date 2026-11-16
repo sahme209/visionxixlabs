@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
- title: "Trust tools — Axiom Documentation",
+ title: "Trust tools — V19 Documentation",
  description: "Seal and verify the audit log, replay a draft rule over real history, and preview a change's impact before approving it.",
  alternates: { canonical: "/docs/trust-tools" },
 };
@@ -11,8 +11,8 @@ export default function TrustToolsDocsPage() {
    summary="Three read-only tools on Control → Trust tools. Each states its limits." />
   <DocSection id="seal" kicker="01" title="Seal and verify the audit log">
    <p>Owners and admins seal recent audit events. Each seal fingerprints a window of events and links to the previous seal, forming a chain. Anyone in the workspace can verify: the result is intact, or names the seal whose events changed or whose link broke.</p>
-   <p>Because someone who can rewrite the database could also rebuild the chain, download an <em>anchor</em> after sealing and keep it somewhere Axiom cannot write, such as a ticket, a vault or an email to your auditors. The anchor holds the latest seal&apos;s fingerprint and no event content. Later, choose <em>Check a kept anchor</em>: Axiom reports whether that seal still matches, is missing or was rewritten, and refuses an anchor file that was edited or belongs to another workspace.</p>
-   <Callout variant="warning" title="Evidence, not prevention">Sealing does not stop someone from changing data; it makes the change visible. Store the latest seal fingerprint outside Axiom so a rewritten chain is also detectable.</Callout>
+   <p>Because someone who can rewrite the database could also rebuild the chain, download an <em>anchor</em> after sealing and keep it somewhere V19 cannot write, such as a ticket, a vault or an email to your auditors. The anchor holds the latest seal&apos;s fingerprint and no event content. Later, choose <em>Check a kept anchor</em>: V19 reports whether that seal still matches, is missing or was rewritten, and refuses an anchor file that was edited or belongs to another workspace.</p>
+   <Callout variant="warning" title="Evidence, not prevention">Sealing does not stop someone from changing data; it makes the change visible. Store the latest seal fingerprint outside V19 so a rewritten chain is also detectable.</Callout>
   </DocSection>
   <DocSection id="replay" kicker="02" title="Replay a draft rule">
    <p>Pick a draft rule and replay it over up to 90 days of real approval history, through the same rule engine production uses. You see how many actions it would newly block or auto-approve, and each changed action. Nothing is enabled or saved.</p>

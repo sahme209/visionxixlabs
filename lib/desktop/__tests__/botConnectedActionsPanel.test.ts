@@ -16,7 +16,7 @@ it('reuses the existing governed executor panel with exact saved-task binding an
 it('loads channels only on explicit request and passes the selected target plus task to the real composer',async()=>{
  m.channels.mockResolvedValue({ok:true,data:{...page,channels:[channel,{...other,isMember:false}],nextCursor:undefined}});
  render(createElement(BotConnectedActionsPanel,{provider:'slack',sourceTask,canManage:true,onClose:vi.fn()}));expect(m.channels).not.toHaveBeenCalled();expect(screen.queryByRole('textbox',{name:'Slack message'})).toBeNull();
- await act(async()=>fireEvent.click(screen.getByRole('button',{name:'Load Slack channels'})));expect(screen.getByRole('option',{name:'#other · invite Axiom first'})).toHaveProperty('disabled',true);
+ await act(async()=>fireEvent.click(screen.getByRole('button',{name:'Load Slack channels'})));expect(screen.getByRole('option',{name:'#other · invite V19 first'})).toHaveProperty('disabled',true);
  await act(async()=>fireEvent.change(screen.getByLabelText('Bot Slack channel'),{target:{value:channel.id}}));expect(screen.getByRole('textbox',{name:'Slack message'})).toBeTruthy();expect(screen.getByText(/Workspace T123456789 · #acceptance/)).toBeTruthy();expect(m.history).toHaveBeenLastCalledWith({taskId:sourceTask.taskId},expect.any(AbortSignal));expect(m.mutate).not.toHaveBeenCalled();
 });
 it('keeps target discovery unavailable to a reviewer without management authority',()=>{render(createElement(BotConnectedActionsPanel,{provider:'slack',sourceTask,canManage:false,onClose:vi.fn()}));expect(screen.queryByRole('button',{name:'Load Slack channels'})).toBeNull();expect(m.channels).not.toHaveBeenCalled()});
@@ -34,7 +34,7 @@ it.each([{workspaceId:'T999999999'},{connectionVersion:'2030-01-02T00:00:00.000Z
 });
 it('uses a fresh duplicate membership refusal instead of retaining old member flags',async()=>{
  await loadSelected();m.channels.mockResolvedValueOnce({ok:true,data:{...page,channels:[{...channel,isMember:false}]}});await act(async()=>fireEvent.click(screen.getByRole('button',{name:'More channels'})));
- expect(screen.getByRole('option',{name:'#acceptance · invite Axiom first'})).toHaveProperty('disabled',true);expect(screen.getByLabelText('Bot Slack channel')).toHaveProperty('value','');expect(screen.queryByRole('textbox',{name:'Slack message'})).toBeNull();expect(m.mutate).not.toHaveBeenCalled();
+ expect(screen.getByRole('option',{name:'#acceptance · invite V19 first'})).toHaveProperty('disabled',true);expect(screen.getByLabelText('Bot Slack channel')).toHaveProperty('value','');expect(screen.queryByRole('textbox',{name:'Slack message'})).toBeNull();expect(m.mutate).not.toHaveBeenCalled();
 });
 it('uses fresh duplicate channel details while retaining the same-boundary draft',async()=>{
  const input=await loadSelected();m.channels.mockResolvedValueOnce({ok:true,data:{...page,channels:[{...channel,name:'renamed'}]}});await act(async()=>fireEvent.click(screen.getByRole('button',{name:'More channels'})));

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Execution plans — Axiom Documentation",
+  title: "Execution plans — V19 Documentation",
   description: "Understand the difference between a saved plan, independent review, an execution attempt and a verified result.",
   alternates: { canonical: "/docs/execution-plans" },
 };

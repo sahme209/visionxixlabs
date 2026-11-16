@@ -4,8 +4,8 @@ import { DocHeader, DocSection, DocFooterNav, DocFeedback } from "@/components/d
 import { FAQ_GROUPS } from "@/lib/support/faqData";
 
 export const metadata: Metadata = {
-  title: "FAQ — Axiom Documentation",
-  description: "Frequently asked questions about Axiom Agent — cloud connections, scanning, execution, approvals, ReleaseOps, desktop, pricing, and security.",
+  title: "FAQ — V19 Documentation",
+  description: "Frequently asked questions about V19 — cloud connections, scanning, execution, approvals, ReleaseOps, desktop, pricing, and security.",
 };
 
 export default function FaqPage() {

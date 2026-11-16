@@ -43,5 +43,5 @@ export async function GET(request:NextRequest) {
   if(view==='dags') return reply({ok:true,data:{dags:await client.listDags(),observedAt}});
   if(view==='runs') return reply({ok:true,data:{runs:await client.listDagRuns(dag!,50),observedAt}});
   return reply({ok:true,data:{...await client.listTaskInstances(dag!,run!,offset),observedAt}});
- } catch { return error('Airflow information could not be verified. Refresh or check the connection in Axiom Agent.',502); }
+ } catch { return error('Airflow information could not be verified. Refresh or check the connection in V19 Agent.',502); }
 }

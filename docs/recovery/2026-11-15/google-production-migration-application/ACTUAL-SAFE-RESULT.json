@@ -1,0 +1,46 @@
+{
+  "consumed": true,
+  "stage": "complete",
+  "attemptedToolInvocations": 2,
+  "applyResponseVerified": true,
+  "applyDiagnostic": {
+    "knownGuardLiteralsObserved": [],
+    "guardObservationAmbiguous": false,
+    "responseShape": {
+      "outerObject": true,
+      "contentIsArray": true,
+      "contentBlockCount": 1,
+      "topIsError": false,
+      "structuredKind": "null",
+      "parsedKind": "array",
+      "statementArrayCount": 17,
+      "allMembersArrays": true,
+      "allMembersEmptyArrays": true
+    }
+  },
+  "verification": {
+    "database_matches": true,
+    "role_matches": true,
+    "read_only": true,
+    "repeatable_read": true,
+    "inactive_history_shape_matches": true,
+    "user_columns_match": true,
+    "active_baseline_120_matches": true,
+    "all_target_objects_absent": false,
+    "ledger_rows": 127,
+    "unclean_rows": 0,
+    "unknown_rows": 0,
+    "duplicate_names": 0,
+    "expected_migration_mismatches": 0,
+    "historical_rolledback_rows": 6,
+    "active_finished_rows": 121,
+    "all_target_receipts": 1,
+    "exact_target_receipts": 1,
+    "owned_target_tables": 2,
+    "valid_target_indexes": 7,
+    "validated_target_constraints": 13,
+    "cascading_user_fks": 2,
+    "nonowner_acl_entries": 0,
+    "outcome": "applied_source_state_matches"
+  }
+}

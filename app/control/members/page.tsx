@@ -127,7 +127,7 @@ export default async function TeamPage({
       {accessRequests.length > 0 && (
         <section aria-label="Access requests" className="mb-6 rounded-md border border-sky-400/20 bg-sky-400/4 p-4">
           <h2 className="text-sm font-medium text-zinc-100">Access requests</h2>
-          <p className="mt-1 text-xs text-zinc-400">Members asked through Ask Axiom. Nothing has changed; adjust a role below if you agree.</p>
+          <p className="mt-1 text-xs text-zinc-400">Members asked through Ask V19. Nothing has changed; adjust a role below if you agree.</p>
           <ul className="mt-3 space-y-2">{accessRequests.map((r) => {
             const reason = (r.detailJson as { reason?: unknown } | null)?.reason;
             return <li key={r.id} className="text-sm text-zinc-300">{r.summary} <span className="text-xs text-zinc-500">· {r.createdAt.toISOString().slice(0, 10)}</span>{typeof reason === "string" && <p className="text-xs text-zinc-500">“{reason}”</p>}</li>;

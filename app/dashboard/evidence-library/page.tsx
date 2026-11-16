@@ -158,7 +158,7 @@ export default function EvidenceLibraryPage() {
           )}
         </div>
         <h1 className="text-4xl md:text-5xl font-bold text-white tracking-[-0.045em] leading-[1.05] mb-3">
-          What Axiom can <span className="text-gradient">prove.</span>
+          What V19 can <span className="text-gradient">prove.</span>
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           Every evidence record across canonical state. Redacted. Tenant-scoped. Linked to an operational object the operator can audit.

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-    title: "ReleaseOps overview — Axiom Documentation",
-    description: "How the installed Axiom Agent coordinates deployment intake, readiness, approval, execution, validation, evidence, and closure.",
+    title: "ReleaseOps overview — V19 Documentation",
+    description: "How the installed V19 coordinates deployment intake, readiness, approval, execution, validation, evidence, and closure.",
 };
 
 export default function ReleaseOpsDocOverviewPage() {
@@ -13,11 +13,11 @@ export default function ReleaseOpsDocOverviewPage() {
             <DocHeader
                 kicker="ReleaseOps"
                 title="ReleaseOps overview."
-                summary="ReleaseOps is the deployment-governance workflow inside Axiom Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems."
+                summary="ReleaseOps is the deployment-governance workflow inside V19 Agent. It records and coordinates work around existing source-control, CI/CD, infrastructure, change-management, and communication systems."
             />
 
             <Callout variant="safe" title="Coordinate existing tools; do not impersonate them">
-                A connector logo is not proof of availability. Each configured adapter must report its real connection state and source. Preview adapters cannot execute, and an approval in Axiom does not prove an external deployment occurred without provider evidence.
+                A connector logo is not proof of availability. Each configured adapter must report its real connection state and source. Preview adapters cannot execute, and an approval in V19 does not prove an external deployment occurred without provider evidence.
             </Callout>
 
             <DocSection id="lifecycle" title="The deployment lifecycle" kicker="01">
@@ -58,7 +58,7 @@ export default function ReleaseOpsDocOverviewPage() {
                 <TrustGrid
                     items={[
                         { question: "Does ReleaseOps replace CI/CD?", answer: "No. It coordinates governance and evidence around existing systems." },
-                        { question: "Where do users work?", answer: "In the installed Axiom Agent application." },
+                        { question: "Where do users work?", answer: "In the installed V19 application." },
                         { question: "Can a preview adapter execute?", answer: "No. Preview must remain labeled and must not return synthetic success." },
                         { question: "What proves execution?", answer: "An actual adapter response plus persisted validation and audit evidence." },
                         { question: "Can validation be deferred?", answer: "Yes, when policy allows it and an owner, deadline, and follow-up state are recorded." },

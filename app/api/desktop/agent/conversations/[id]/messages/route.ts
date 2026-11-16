@@ -48,7 +48,7 @@ const AI_ERROR_MESSAGES: Record<string, string> = {
   workspace_ai_policy_unavailable: "Couldn't load this workspace's AI provider policy right now. Try again shortly.",
   workspace_ai_credit_meter_unavailable: "Couldn't verify remaining AI usage for this workspace right now. Try again shortly.",
   workspace_ai_credit_pool_exhausted: "I couldn't reserve enough available AI credits for this request. No model request was sent for this step. Review Plan & usage; the required request hold may exceed the remaining balance.",
-  workspace_agent_disabled: "The workspace Agent is disabled by organization policy. An owner can enable it in Axiom Control.",
+  workspace_agent_disabled: "The workspace Agent is disabled by organization policy. An owner can enable it in V19 Control.",
   workspace_agent_policy_unavailable: "I couldn't verify this workspace's Agent permissions, so no AI or tool action was attempted.",
   agent_tool_not_allowed: "Organization policy does not allow this Agent to use the requested tool.",
   decision_malformed: "I couldn't form a safe action from the model response after retrying. No change was made. Try once more or choose a different enabled model.",
@@ -202,7 +202,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
       streaming?.abortSignal.throwIfAborted();
       if (!resolvedSkills.ok) {
         const reply = resolvedSkills.error === "unknown_skill"
-          ? `/${resolvedSkills.skillId} is not a reviewed Axiom skill.`
+          ? `/${resolvedSkills.skillId} is not a reviewed V19 skill.`
           : `/${resolvedSkills.skillId} is not enabled for this workspace. Add or enable it under Plugins & Skills first.`;
         await prisma.agentConversationTurn.create({ data: { conversationId, role: "assistant", content: reply } });
         return NextResponse.json({ ok: true, data: { reply, proposal: null } });

@@ -1,0 +1,28 @@
+{
+  "app": "/private/tmp/v19-local-native-qbnbp18w/target/debug/bundle/macos/V19.app",
+  "metadata": {
+    "CFBundleName": "V19",
+    "CFBundleDisplayName": "V19",
+    "CFBundleShortVersionString": "0.1.23",
+    "CFBundleVersion": "0.1.23",
+    "CFBundleIdentifier": "com.visionxixlabs.axiom",
+    "CFBundleExecutable": "axiom-desktop"
+  },
+  "executableSha256": "9f3a3c9162879ad68aefcfd96270db70c3026e72ac43502a9e6ed65d0405cc59",
+  "buildResult": {
+    "exitCode": 0,
+    "reason": null,
+    "cleanupConfirmed": true,
+    "logBytesObserved": 11874,
+    "logSha256": "72249ed3fdd160b45ab79a27c19bbcd2748dc5b7fc35399a05034318e4715151",
+    "logPath": "/private/tmp/v19-local-native-qbnbp18w/native-build.log"
+  },
+  "installedApplicationReplaced": false,
+  "publicDistribution": false,
+  "actualLocalUIObserved": true,
+  "savedSignInVerified": false,
+  "websiteCorporateVXIXPreserved": true,
+  "productionChanged": false,
+  "publicDownloadFixed": false,
+  "windowsUpgradeQualification": "pending"
+}

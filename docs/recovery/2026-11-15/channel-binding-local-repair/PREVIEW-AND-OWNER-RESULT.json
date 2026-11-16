@@ -1,0 +1,17 @@
+{
+  "source": "f2375c777d0025547a9b859132934ff0df2942e6",
+  "applicableCIPassed": true,
+  "successfulChecks": 12,
+  "intentionalScreenshotSkip": 1,
+  "previewDeploymentId": "dpl_HScXrCyTSoWHjiomxwzfrEpB4Cxk",
+  "previewTarget": null,
+  "previewProjectId": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp",
+  "previewState": "ERROR",
+  "opaqueDiagnostic": "PCP_007",
+  "diagnosticMeaning": "unsupported nonempty channel_binding selector",
+  "exactSelectorValueKnown": false,
+  "manualSettingValueRead": false,
+  "productionChanged": false,
+  "furtherVercelDeploymentsAuthorizedNow": false,
+  "next": "local source investigation and synthetic tests, then reviewed GitHub PR/merge; Vercel only at end per latest owner"
+}

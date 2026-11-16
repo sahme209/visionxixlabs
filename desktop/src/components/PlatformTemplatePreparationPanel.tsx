@@ -37,7 +37,7 @@ export function PlatformTemplatePreparationPanel({client,canPrepare,onSaved}:Pro
  }
  const current=revision===owner.revision&&owns(),locked=!current||!canPrepare||Boolean(reference);
  return <section aria-label="Prepare template proposal" className="rounded-xl border border-white/10 p-5 space-y-4">
-  <header><h2 className="text-lg font-medium">Prepare one exact template operation</h2><p className="text-sm text-zinc-400">The server derives bucket/key/content from the fixed Axiom template. Saving creates only a review proposal, never an AWS resource or URL.</p></header>
+  <header><h2 className="text-lg font-medium">Prepare one exact template operation</h2><p className="text-sm text-zinc-400">The server derives bucket/key/content from the fixed V19 template. Saving creates only a review proposal, never an AWS resource or URL.</p></header>
   {!current&&<p role="alert">Account context changed. Keep the original reference and reopen the workflow.</p>}
   <div className="grid gap-3 sm:grid-cols-2">
    <label>Template operation<select value={operation} disabled={locked} onChange={e=>{if(e.target.value==='create_bucket'||e.target.value==='upload'||e.target.value==='access')setOperation(e.target.value)}}><option value="upload">Upload exact template</option><option value="create_bucket">Create template bucket</option><option value="access">Grant version-specific access</option></select></label>

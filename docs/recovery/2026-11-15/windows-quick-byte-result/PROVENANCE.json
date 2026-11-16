@@ -1,0 +1,9 @@
+{
+  "branch": "codex/windows-msi-byte-diagnostic",
+  "source": "2105f5af70d34e52d308ab78fc0e313d3cb64c6f",
+  "run": 43768626437,
+  "job": 132979295671,
+  "logSha256": "21f3482a4e40ed3baa045996295399fe82a3124ec394d6c24f63ee39b911b8f3",
+  "baselineOnly": true,
+  "v19MismatchFixed": false
+}

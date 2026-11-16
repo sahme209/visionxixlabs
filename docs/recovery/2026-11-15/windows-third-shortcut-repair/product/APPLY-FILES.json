@@ -1,0 +1,7 @@
+{
+  "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "45ba519c6eafd7773887981fb547d613495de6357f56156b4e9a5bfcac5817a6",
+  "desktop/src-tauri/windows/main.wxs": "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8",
+  "scripts/windows_installed_acceptance.py": "09ece512006850ac4b459889021138952638f7127720647651b7054c762c3e4d",
+  "scripts/windows_msi_shortcut_preflight.py": "3a16021ed49712a36d4d11111dfa14e76f5879cc4697f9f64521a794150e1360",
+  "scripts/tests/test_v19_uninstall_shortcut_contract.py": "5e9aba9e9d530495ede1cb4d6637ac6405d0170c535cd2f59b995137ef591c50"
+}

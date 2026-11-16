@@ -16,7 +16,7 @@ import { AGENT_WORKFORCE_REGISTRY } from "@/lib/workforce/agentWorkforceRegistry
 import { MigrationStageForm } from "@/components/workforce/MigrationStageForm";
 
 export const metadata: Metadata = {
-  title: "Stage migration · Axiom",
+  title: "Stage migration · V19",
 };
 
 export const dynamic = "force-dynamic";

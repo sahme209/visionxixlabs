@@ -1,0 +1,35 @@
+{
+  "backupDirectory": "docs/recovery/2026-11-15/windows-legacy-setup-diagnostic/living-before-shared-path-20261115-191104",
+  "livingDocs": {
+    "CODEX_HANDOFF.md": {
+      "priorSha256": "77725a173496a15b8f3f13e587b7fcbd6a71b71eed3c6ce77f1132afd14e080b",
+      "suffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "priorSha256": "27fded9f7613ad9cc88324068d927bb3fcc4b0294ad0da935d0d832f8c61975b",
+      "suffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "priorSha256": "99796e20587279dedea94df6d20159859b43274c8d50a81f87a4cd85ad78c874",
+      "suffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "priorSha256": "6b6f4af686d8d419f56fb7b85b8dd332a0ca76462385e073cc72ba0404d06e3f",
+      "suffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "priorSha256": "a4bf790a75391dd92dc6bacccdc98e4e9faf3e8502b8236203f217dc07d0cbdf",
+      "suffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "priorSha256": "9f3433cf2ad3bb06f594de142613f4b10a5322a42e8a6fe74056debcaf500249",
+      "suffixPreserved": true
+    }
+  },
+  "environmentGoalMirrorMatched": true,
+  "customerDemoInternalHistoryRemoved": 6,
+  "demoChecksPassed": 15,
+  "windowsHarnessPassed": 71,
+  "identityChecksPassed": 5,
+  "actualWindowsCorrectedRun": "PENDING"
+}

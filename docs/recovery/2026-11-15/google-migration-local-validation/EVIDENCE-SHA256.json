@@ -1,0 +1,25 @@
+{
+  "sourceOnlyCopyAfterActualLocalAcceptance": true,
+  "files": {
+    "ATTEMPT.json": "22f9fc3de73f49ec0e38a0394f5df69c47ec62d79d9a2fdaf239f59f21c828cc",
+    "CLIENT-RESULT.json": "82e4d0d6ea589ee6b965053b9f4f32e82b237329c07e2adfa5bde2474547cc23",
+    "CONDITIONAL-APPLY.json": "5c0ec9d6e167408e3462d6155f20ccc05f41e14713f3815f5bd96a24cb0cf79b",
+    "CONDITIONAL-APPLY.sql": "284686247d3ade52103ccaabaf9caf6786781d3974a5e7b51583774adeb3323c",
+    "INPUTS.json": "897a26f3c4482a10bd2e55aee44f6330758946f4ab7f5967c735811bf83aee4d",
+    "LOCAL-OUTCOME.json": "27a37452f78341b20eb94155646d1b4cd5abb8a68a6b570c41d5b9956a34b833",
+    "PRODUCTION-PREREQUISITES.md": "576faf74fd98ebf5aa4bae409416575a05ed9f4f1fc529833443df5ef8e5a3bc",
+    "PURE-TESTS.log": "ca3691546a64a4d2c903e70a78b53a9453c2785cda14a3ed2f0c3bde38f8d3dd",
+    "README.md": "8dd0951880083a27feb1066bc242e32fc5a59ebc963091254dec1a8c803dfef4",
+    "RESULT.json": "c5b3485b9ccbec873cebc803942532e7a2c280696280211e291a0bb357ba8a43",
+    "RUNNER-REVIEW.md": "f08e6656fef2cb3c3b0dd5b0f5de784a0de8c3af6697000625e54aa9f803d4af",
+    "SOURCE-MIGRATIONS.json": "b48f1172dfd903fc5dc18adc3c003f2ca378ecc36f04528258b070cb282b33c3",
+    "client.cjs": "cd80e28a9320912330aae88d140196948d0d6904bdbee45e0f22cae20f755751",
+    "exact-migration.sql": "b7de20d8b16f76294a10e061f888be9bfb8c15bca286c3b51886d84c4a167ffb",
+    "fixture.sql": "ed927dbd39afc5cedc31f3d4504512bf4e16c01f6208301e93adb0bded92d9ff",
+    "literal-dns.cjs": "45521a6054bf4bc47503e85776f6160212f34d7470765e722fcfbcbc818cfaf8",
+    "owned-migration.log": "67c0ce15228889148dcca235c5ac193032c5794aa2d6a56e62ab1bfa9473125d",
+    "prepare.py": "a4350db9a65707ab703f4cbf69da36e458f288643726c8d32f5956f89000ab5f",
+    "pure_tests.py": "b840412c81c45999c713a0d0f181aaf80e091fa6e1582f0123747894ee4add4e",
+    "runner.py": "e9dadcdfd7a9e1b11ebd590d87453492e8ee6f288b5661aff76b032102ea4025"
+  }
+}

@@ -30,7 +30,7 @@ export default async function DashboardLayout({
           <div className="flex items-center gap-4">
             <Link href="/dashboard/command-center" className="flex items-center gap-2 nav-link-underline">
               <CpuChipIcon className="h-7 w-7 text-orange-500" />
-              <span className="font-bold text-white tracking-[-0.04em]">Axiom</span>
+              <span className="font-bold text-white tracking-[-0.04em]">V19</span>
             </Link>
             <OpenPaletteChip />
           </div>

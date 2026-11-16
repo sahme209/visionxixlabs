@@ -5,13 +5,13 @@ import { currentContext } from "@/lib/auth/currentContext";
 
 const TOPICS = {
   "getting-started": {
-    title: "Getting started with Axiom Agent",
+    title: "Getting started with V19",
     intro: "Use the browser companion to establish identity, then use the installed Agent for the governed release workspace.",
-    points: ["Sign in in the browser and return to this companion for account context.", "Install Axiom Agent from the download page for release operations and provider setup.", "Start each release with scope, a validation plan, and recovery context before requesting approval."],
+    points: ["Sign in in the browser and return to this companion for account context.", "Install V19 from the download page for release operations and provider setup.", "Start each release with scope, a validation plan, and recovery context before requesting approval."],
   },
   "release-workflow": {
     title: "The governed release workflow",
-    intro: "Axiom keeps each meaningful step distinct so a request never looks more complete than its evidence supports.",
+    intro: "V19 keeps each meaningful step distinct so a request never looks more complete than its evidence supports.",
     points: ["Collect selected repository and environment context in a release record.", "Record readiness, validation, and recovery evidence before human approval.", "Keep the approval decision and post-release health separate from a trigger or a plan."],
   },
   security: {
@@ -20,7 +20,7 @@ const TOPICS = {
     points: ["A provider is not shown as connected until server-side validation succeeds.", "Connection setup is tenant-scoped, consented, and auditable.", "Browser settings cannot change roles, approvals, workspace membership, or provider credentials."],
   },
   troubleshooting: {
-    title: "Troubleshooting Axiom Agent",
+    title: "Troubleshooting V19",
     intro: "Start with the narrowest safe check before changing an account, connection, or deployment workflow.",
     points: ["Confirm the installed Agent is the latest version for your computer architecture.", "If the Agent is running but hidden, select it from the Dock or its menu-bar icon to restore the window.", "For a connection issue, review its recorded state before repeating consent or sharing any credential."],
   },
@@ -40,7 +40,7 @@ export default async function AccountHelpTopicPage({ params }: { params: Promise
       <div className="mx-auto max-w-[1400px]">
         <article className="max-w-3xl py-2">
           <Link href="/account/help" className="text-sm text-orange-300 transition hover:text-orange-200">← Help</Link>
-          <p className="mt-10 text-[10px] uppercase tracking-[0.22em] text-orange-300">Axiom Control · guide</p>
+          <p className="mt-10 text-[10px] uppercase tracking-[0.22em] text-orange-300">V19 Control · guide</p>
           <h1 className="mt-4 text-2xl font-semibold tracking-[-0.045em] sm:text-3xl">{content.title}</h1>
           <p className="mt-5 max-w-2xl text-base leading-7 text-zinc-400">{content.intro}</p>
           <ol className="mt-10 space-y-3">{content.points.map((point, index) => <li key={point} className="flex gap-4 rounded-xl border border-white/8 bg-white/2.5 p-5"><span className="text-xs text-orange-300">0{index + 1}</span><p className="text-sm leading-6 text-zinc-300">{point}</p></li>)}</ol>

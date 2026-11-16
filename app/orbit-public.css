@@ -125,10 +125,10 @@ body:has(.site-navigation) .public-reading-page main { max-width:960px; }
 body:has(.site-navigation) :is(.public-support-page,.public-pricing-page)>section{max-width:1128px;margin-inline:auto;padding-inline:40px}
 body:has(.site-navigation) :is(.public-support-page,.public-pricing-page)>section:first-of-type{padding-bottom:56px}
 body:has(.site-navigation) :is(.public-support-page,.public-pricing-page) h1{font-size:clamp(2.5rem,4.8vw,4.25rem);line-height:1.08;font-weight:500;letter-spacing:-.045em}
-body:has(.site-navigation) .public-pricing-page section[aria-label="How Axiom is offered"]{gap:22px}
-body:has(.site-navigation) .public-pricing-page section[aria-label="How Axiom is offered"]>article{background:var(--public-surface);border-color:#ffffff08;border-radius:14px;padding:30px}
-body:has(.site-navigation) .public-support-page section[aria-label="Ways to support Axiom"]>article{background:var(--public-surface);border:1px solid #ffffff08;border-radius:14px;padding:30px}
-@media(max-width:700px){.public-doc-paths>section{padding:24px 20px}.public-download-page>main>section{padding-inline:20px}.public-download-page>main>section:first-child>div{gap:24px}.public-download-page section[aria-labelledby="installation-help"]>div{padding:24px 20px}body:has(.site-navigation) :is(.public-support-page,.public-pricing-page)>section{padding-inline:20px}body:has(.site-navigation) .public-support-page section[aria-label="Ways to support Axiom"]>article,body:has(.site-navigation) .public-pricing-page section[aria-label="How Axiom is offered"]>article{padding:26px 22px}}
+body:has(.site-navigation) .public-pricing-page section[aria-label="How V19 is offered"]{gap:22px}
+body:has(.site-navigation) .public-pricing-page section[aria-label="How V19 is offered"]>article{background:var(--public-surface);border-color:#ffffff08;border-radius:14px;padding:30px}
+body:has(.site-navigation) .public-support-page section[aria-label="Ways to support V19"]>article{background:var(--public-surface);border:1px solid #ffffff08;border-radius:14px;padding:30px}
+@media(max-width:700px){.public-doc-paths>section{padding:24px 20px}.public-download-page>main>section{padding-inline:20px}.public-download-page>main>section:first-child>div{gap:24px}.public-download-page section[aria-labelledby="installation-help"]>div{padding:24px 20px}body:has(.site-navigation) :is(.public-support-page,.public-pricing-page)>section{padding-inline:20px}body:has(.site-navigation) .public-support-page section[aria-label="Ways to support V19"]>article,body:has(.site-navigation) .public-pricing-page section[aria-label="How V19 is offered"]>article{padding:26px 22px}}
 
 /* Measured Exact reference: warm charcoal, restrained stacked feature cards.
    Desktop only: phone/short-screen/reduced-motion readers keep the normal flow. */

@@ -26,7 +26,7 @@ describe("Get started page (/plans)", () => {
     expect(screen.getByRole("link", { name: "Talk to us" }).getAttribute("href")).toBe("/contact");
     expect(screen.getByText("Cost shown before each action")).toBeTruthy();
     expect(screen.getByText("Never charged more than you prepaid")).toBeTruthy();
-    expect(metadata.title).toBe("Get started with Axiom");
+    expect(metadata.title).toBe("Get started with V19");
   });
 
   it("shows exact per-model rates from the rate card before any charge", async () => {

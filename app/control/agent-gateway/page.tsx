@@ -11,7 +11,7 @@ import { listAgentScorecards, listGatewayRequests } from "@/lib/agentGateway/gat
 import { ModuleIntro } from "@/components/portal/ModuleIntro";
 import { AgentGatewayDecision } from "@/components/agentGateway/AgentGatewayDecision";
 
-export const metadata: Metadata = { title: "Agent gateway · Axiom" };
+export const metadata: Metadata = { title: "Agent gateway · V19" };
 export const dynamic = "force-dynamic";
 
 const STATUS_TONE: Record<string, string> = {
@@ -30,9 +30,9 @@ export default async function AgentGatewayPage() {
     <div className="mx-auto max-w-6xl px-6 py-8">
       <ModuleIntro
         title="Agent gateway"
-        explanation="AI agents such as Cursor, Claude Code or your own ask Axiom before consequential actions. Review and decide them here."
+        explanation="AI agents such as Cursor, Claude Code or your own ask V19 before consequential actions. Review and decide them here."
         helpsYouDo={["See every action an agent asked to take", "Approve or reject consequential actions", "Check reported outcomes against approvals"]}
-        connectFirst={["An API key with governance:read and governance:request scopes", "The Axiom MCP server (/api/v1/mcp) added to your agent"]}
+        connectFirst={["An API key with governance:read and governance:request scopes", "The V19 MCP server (/api/v1/mcp) added to your agent"]}
         aiEngineers={[]}
         approval={{ severity: "human_required", note: "Deploys, merges, infrastructure, data migrations, secrets and deletes need an owner or admin who did not mint the agent's key. Production secret reads and deletes are always refused. Agents self-report actions; this is a cooperative control point, not a sandbox." }}
         storageKey="agent-gateway"
@@ -49,7 +49,7 @@ export default async function AgentGatewayPage() {
           </li>))}</ul>
       </section>}
       {requests === null ? <p className="mt-6 text-sm text-zinc-400">Agent requests are unavailable right now.</p>
-        : requests.length === 0 ? <p className="mt-6 text-sm text-zinc-400">No agent has asked for anything yet. Add the Axiom MCP server to an agent to begin.</p>
+        : requests.length === 0 ? <p className="mt-6 text-sm text-zinc-400">No agent has asked for anything yet. Add the V19 MCP server to an agent to begin.</p>
         : <ul aria-label="Agent requests" className="mt-6 space-y-3">{requests.map((r) => (
           <li key={r.id} className="rounded-xl border border-white/8 bg-white/2 p-4">
             <div className="flex flex-wrap items-baseline justify-between gap-2">

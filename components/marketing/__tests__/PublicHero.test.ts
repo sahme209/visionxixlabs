@@ -14,7 +14,7 @@ afterEach(cleanup);
 it('presents product context and real destinations without mounting removed decorative rendering',()=>{
  const view=render(createElement(AxiomPublicHero));
  expect(screen.getByRole('heading',{level:1,name:'Deploy with clarity.'})).toBeDefined();
- for(const [name,href] of [['Download Axiom Agent','/download'],['Explore Axiom','/product'],['Explore the scripted tour','/demo']])expect(screen.getByRole('link',{name}).getAttribute('href')).toBe(href);
+ for(const [name,href] of [['Download V19','/download'],['Explore V19','/product'],['Explore the scripted tour','/demo']])expect(screen.getByRole('link',{name}).getAttribute('href')).toBe(href);
  expect(view.container.querySelector('canvas,video')).toBeNull();
  expect(screen.getByText(/sample data/)).toBeDefined();
  expect(screen.getByText(/Complete Governance enforcement and activation are not established/)).toBeDefined();
@@ -29,6 +29,6 @@ it('server renders complete readable sample content without an account or client
   const assets='work/visual-orbit-preview/assets/exact-only';
   const sheets=readdirSync(assets).filter(name=>name.endsWith('.css')).map(name=>`<link rel="stylesheet" href="assets/exact-only/${name}">`).join('');
   const body=renderToStaticMarkup(createElement(Fragment,null,createElement(Navigation),createElement('main',null,createElement(AxiomPublicHero))));
-  writeFileSync('work/visual-orbit-preview/axiom-exact-only.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Axiom · Exact direction review</title>${sheets}<link rel="stylesheet" href="exact-only-fonts.css"><link rel="stylesheet" href="exact-only-public.css"><style>html,body{margin:0;background:#0a0908;color:white}.site-navigation>div{max-width:1128px}.public-home-painting .desktop-demo-frame{font-family:Inter,sans-serif}</style></head><body>${body}</body></html>`);
+  writeFileSync('work/visual-orbit-preview/axiom-exact-only.html',`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>V19 · Exact direction review</title>${sheets}<link rel="stylesheet" href="exact-only-fonts.css"><link rel="stylesheet" href="exact-only-public.css"><style>html,body{margin:0;background:#0a0908;color:white}.site-navigation>div{max-width:1128px}.public-home-painting .desktop-demo-frame{font-family:Inter,sans-serif}</style></head><body>${body}</body></html>`);
  }
 });

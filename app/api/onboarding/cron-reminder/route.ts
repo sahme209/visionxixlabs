@@ -71,7 +71,7 @@ async function handle(req: NextRequest) {
       const pending = checklist.steps.filter((s) => s.status !== "complete");
       const today = new Date().toISOString().slice(0, 10);
       const body = [
-        `*Axiom onboarding · ${pct}% complete*`,
+        `*V19 onboarding · ${pct}% complete*`,
         ``,
         `Your deployment still has ${pending.length} setup step(s) outstanding:`,
         ``,
@@ -86,7 +86,7 @@ async function handle(req: NextRequest) {
         kind: "cycle_summary",
         severity: "info",
         tenantId: String(tenantId),
-        headline: `Axiom onboarding · ${pct}% complete · ${pending.length} step(s) pending`,
+        headline: `V19 onboarding · ${pct}% complete · ${pending.length} step(s) pending`,
         body,
         safeNextAction: { label: "Open onboarding checklist", href: "/dashboard/onboarding" },
         evidenceRefs: [`checklist:${checklist.generatedAt}`],

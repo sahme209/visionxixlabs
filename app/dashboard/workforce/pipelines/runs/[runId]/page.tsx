@@ -24,7 +24,7 @@ import { prisma } from "@/lib/db";
 import { findPipelineDefinition } from "@/lib/workforce/pipelines/pipelineRegistry";
 
 export const metadata: Metadata = {
-  title: "Pipeline run · Axiom",
+  title: "Pipeline run · V19",
 };
 
 export const dynamic = "force-dynamic";

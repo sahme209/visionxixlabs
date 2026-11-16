@@ -9,7 +9,7 @@ afterEach(() => cleanup());
 it("labels itself as illustrative and lists every stage, titled part and passed-on packet", () => {
   render(createElement(ControlPlaneModel));
   expect(screen.getByText(/Illustrative model · architecture, not a live system/)).toBeTruthy();
-  expect(screen.getByRole("heading", { level: 2, name: "Inside the Axiom control plane" })).toBeTruthy();
+  expect(screen.getByRole("heading", { level: 2, name: "Inside the V19 control plane" })).toBeTruthy();
   const stages = within(screen.getByRole("list", { name: "Control-plane layers" })).getAllByRole("listitem");
   expect(stages).toHaveLength(5);
   expect(stages[0].textContent).toMatch(/Interfaces/);

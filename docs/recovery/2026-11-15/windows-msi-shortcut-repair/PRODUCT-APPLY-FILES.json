@@ -1,0 +1,13 @@
+{
+  "desktop/src-tauri/tauri.conf.json": "44461cb956b089f581dd57e80d3eac4a909dad6d8cee6e9ac0710263452b0cba",
+  "desktop/src-tauri/windows/main.wxs": "ae4a893f66d1f8e9582ac919e021ee7bd945156a1d6cd0cf45af3c53f3348ec2",
+  "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "bb65f82277c0c42814dd0b6d43f5ff6fa863291f08c70940533a06635a5eb654",
+  "desktop/src-tauri/windows/NOTICE.md": "9548f557a7101d6aef4f166f4341a80d430c2fa712770fcf180861a43be504ee",
+  "scripts/windows_installed_acceptance.py": "c0af3c5281d70203c37ad1087d477698036d7bc225f430b43e23338c55b4ee04",
+  "scripts/windows_msi_shortcut_preflight.py": "59d594e4e05c0eea2d94578420b565f443eb056101e7d97846bb1478f2256566",
+  "scripts/tests/test_v19_msi_shortcut_template.py": "8d81bb349330672dfd98a2f2e58b05d900c05ba31efc63289f9f2f0d891243cc",
+  "scripts/tests/test_windows_installed_acceptance.py": "3bdd865f1878e476dbf2875b257edb28c8313f593be9a1f5ed166fcddaf090c4",
+  "docs/recovery/2026-11-15/windows-msi-shortcut-repair/PINNED-UPSTREAM-main.wxs": "e371a01628a06730828f9bd24111feacb8bec53c250ccec4b46df756fe0a0198",
+  "docs/recovery/2026-11-15/windows-msi-shortcut-repair/UPSTREAM-PROVENANCE.json": "a69aea7fb05eaa2f51e3806c79a237295e24edc9b9166145753baa4ad723de62",
+  "scripts/windows_shortcut_collision.ps1": "049a0f26802871905b35d8337aca1dfe14a677886ba9ad9bd780305cd653f2ac"
+}

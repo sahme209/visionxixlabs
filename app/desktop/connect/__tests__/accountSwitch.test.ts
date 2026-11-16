@@ -15,7 +15,7 @@ it("switches only the browser account and preserves the pending challenge for ex
   await waitFor(() => expect(mocks.signOut).toHaveBeenCalledWith({ callbackUrl: `/auth/signin?callbackUrl=${encodeURIComponent("/desktop/connect?challenge=pair_example-123&intent=sign_in")}&switchAccount=1` }));
   expect(fetcher).not.toHaveBeenCalled();
   expect(screen.getByText(/Existing paired desktop sessions remain signed in/)).not.toBeNull();
-  expect(screen.queryByRole("link", { name: "Open Axiom Agent" })).toBeNull();
+  expect(screen.queryByRole("link", { name: "Open V19" })).toBeNull();
 });
 it("prevents duplicate switching and an overlapping approval", async () => {
   mocks.signOut.mockReturnValue(new Promise(() => {}));
@@ -57,7 +57,7 @@ it("hides account switching after approval without changing the existing desktop
   vi.stubGlobal("fetch", vi.fn().mockResolvedValue({ ok: true, json: async () => ({ ok: true, status: "approved" }) }));
   render(createElement(PairDesktopClient, { challenge: "pair_123", deviceLabel: "My Mac" }));
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
-  expect(await screen.findByRole("link", { name: "Open Axiom Agent" })).not.toBeNull();
+  expect(await screen.findByRole("link", { name: "Open V19" })).not.toBeNull();
   expect(screen.queryByRole("button", { name: "Use another account" })).toBeNull();
   expect(mocks.signOut).not.toHaveBeenCalled();
 });

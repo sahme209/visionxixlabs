@@ -118,7 +118,7 @@ export default function ManifestoPage() {
             href="/download"
             className="inline-flex bg-white text-[#0a0908] hover:bg-zinc-100 items-center gap-2 px-7 py-3.5 rounded-full text-[14.5px] font-semibold tracking-tight"
           >
-            Download Axiom Agent
+            Download V19
             <ArrowRightIcon className="h-4 w-4 opacity-60" />
           </Link>
 

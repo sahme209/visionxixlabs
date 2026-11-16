@@ -1,0 +1,33 @@
+{
+  "priorCheckpointBackupsRetained": true,
+  "correction": "preflight stage/call count/secret read/readonly SQL unknown; no outcome inferred from generic metadata_refused",
+  "sixLivingDocs": {
+    "CODEX_HANDOFF.md": {
+      "correctionBeforeSha256": "7c23dcf795bd91c14e56adcd3f5f5bb66f56f5893b5af8a312fd0c66f084bfb8",
+      "originalPriorCheckpointSuffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "correctionBeforeSha256": "3416217a8463c3330571ff50f8922395d1722046b6f18d9d6e9aa51bdc492821",
+      "originalPriorCheckpointSuffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "correctionBeforeSha256": "35bcb644d180560ea2e4056244d37d228638846ddf855ce0548f3c573ae45dc6",
+      "originalPriorCheckpointSuffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "correctionBeforeSha256": "478ef4e97df09bf1a22c63194e85c41b16048bac9d707ea671aa72d11e84d82b",
+      "originalPriorCheckpointSuffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "correctionBeforeSha256": "999c1b66dad22567f5ffa2be4d3d51ab373ecc4d0bad7501dd71b71557314287",
+      "originalPriorCheckpointSuffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "correctionBeforeSha256": "3742c93964c4fe676aac6b3515107f191a5af45cbf089eaec875385247515e96",
+      "originalPriorCheckpointSuffixPreserved": true
+    }
+  },
+  "environmentGoalMirrorUpdated": true,
+  "backupDirectory": "docs/recovery/2026-11-15/windows-legacy-setup-diagnostic/preflight-uncertainty-correction-before-20261115-190514",
+  "demoUnaffectedNoPreflightOutcomeClaim": true
+}

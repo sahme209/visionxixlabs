@@ -1,0 +1,357 @@
+{
+  "accepted": true,
+  "appBuilt": false,
+  "caps": {
+    "depthLimitReached": false,
+    "directoryPresent": true,
+    "entries": [
+      {
+        "relativeName": "cap-00.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-01.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-02.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-03.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-04.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-05.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-06.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-07.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-08.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-09.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-10.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-11.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-12.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-13.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-14.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-15.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-16.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-17.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-18.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-19.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-20.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-21.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-22.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-23.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-24.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-25.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-26.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-27.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-28.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-29.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-30.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      },
+      {
+        "relativeName": "cap-31.txt",
+        "sha256": "992a93455c71fedd36ac9bbc439952c041cf61445958472af479269b8d873513",
+        "sizeBytes": 5,
+        "type": "file"
+      }
+    ],
+    "entryLimitReached": true,
+    "hashBytes": 160,
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "metadataUnavailable": false,
+    "schema": "axiom.windows-installation-residuals/1"
+  },
+  "corrected": {
+    "depthLimitReached": false,
+    "directoryPresent": true,
+    "entries": [
+      {
+        "relativeName": "owned-small.txt",
+        "sha256": "72dab14dc19a01838cf1e65763f43a79bba7a1c08e415ddf7fae1fa329254542",
+        "sizeBytes": 39,
+        "type": "file"
+      }
+    ],
+    "entryLimitReached": false,
+    "hashBytes": 39,
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "metadataUnavailable": false,
+    "schema": "axiom.windows-installation-residuals/1"
+  },
+  "directReadAccepted": true,
+  "installerExecuted": false,
+  "original": {
+    "depthLimitReached": false,
+    "directoryPresent": true,
+    "entries": [
+      {
+        "hashUnavailable": true,
+        "relativeName": "owned-small.txt",
+        "sizeBytes": 39,
+        "type": "file"
+      }
+    ],
+    "entryLimitReached": false,
+    "hashBytes": 0,
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "metadataUnavailable": false,
+    "schema": "axiom.windows-installation-residuals/1"
+  },
+  "ownedFixtureRemoved": true,
+  "ownedProcessesEmpty": true,
+  "processes": [
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 41,
+          "prefixTruncated": false,
+          "sha256": "4fb2c4da3156ab40bb58b971917f94f3c6211d46320abad5fc0989bb2235dda1",
+          "text": "767af8838d67c79b04a028f13a7828670da61165\n"
+        }
+      },
+      "executableSha256": "177bc8a9af84fa3a400c694c975fda731d048279c074e1a93947ce8b067ebb48",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "source-head",
+      "logRetention": [
+        {
+          "name": "source-head.stdout",
+          "observedBytes": 41,
+          "retainedBytes": 41,
+          "truncated": false
+        },
+        {
+          "name": "source-head.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 41,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 209,
+          "prefixTruncated": false,
+          "sha256": "4feda66a1bf10549e525b54421bf49ba872b2bb90feaa21e89743f6b77b62f10",
+          "text": "Junction created for d:\\a\\_temp\\axiom-installed-stat-fd73bc74f4b144c28af6fbd71494fee1\\application\\owned-junction <<===>> d:\\a\\_temp\\axiom-installed-stat-fd73bc74f4b144c28af6fbd71494fee1\\owned-junction-target\r\n"
+        }
+      },
+      "executableSha256": "90d120880614e1e2a94067baad1454b09e2be7a9da51b71e33c247077d9f9538",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "owned-junction",
+      "logRetention": [
+        {
+          "name": "owned-junction.stdout",
+          "observedBytes": 209,
+          "retainedBytes": 209,
+          "truncated": false
+        },
+        {
+          "name": "owned-junction.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 209,
+      "windowObservation": null
+    }
+  ],
+  "reparse": {
+    "depthLimitReached": false,
+    "directoryPresent": true,
+    "entries": [
+      {
+        "relativeName": "owned-junction",
+        "type": "reparse"
+      },
+      {
+        "relativeName": "owned-small.txt",
+        "sha256": "72dab14dc19a01838cf1e65763f43a79bba7a1c08e415ddf7fae1fa329254542",
+        "sizeBytes": 39,
+        "type": "file"
+      }
+    ],
+    "entryLimitReached": false,
+    "hashBytes": 39,
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "metadataUnavailable": false,
+    "schema": "axiom.windows-installation-residuals/1"
+  },
+  "sourceInputsMatched": true,
+  "statComparison": {
+    "dirEntryDeviceZero": true,
+    "dirEntryInodeZero": true,
+    "pathHandleDeviceMatch": true,
+    "pathHandleInodeMatch": true,
+    "pathHandleMtimeMatch": true,
+    "pathHandleSizeMatch": true
+  }
+}

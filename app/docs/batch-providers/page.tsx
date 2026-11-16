@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
 export const metadata: Metadata = {
- title: "Batch providers — Axiom Documentation",
+ title: "Batch providers — V19 Documentation",
  description: "Connect Prefect, Dagster or Argo Workflows read-only so the Agent can inspect flows, jobs and runs.",
  alternates: { canonical: "/docs/batch-providers" },
 };
@@ -12,7 +12,7 @@ export default function BatchProvidersDocsPage() {
   <Callout title="Availability">Read-only clients and the desktop connection form are built. Live acceptance with real Prefect, Dagster and Argo accounts is still pending. Airflow remains the existing provider with its own automation features.</Callout>
   <DocSection id="connect" kicker="01" title="Connect a provider">
    <p>In the desktop app open <strong>Batches → Connection</strong>. Under <strong>More batch providers</strong>, enter the API URL and a token. Argo Workflows also needs the one namespace to read. Choose <strong>Connect read-only</strong>.</p>
-   <p>Axiom validates the token with one small read, then stores it encrypted for your workspace. The token is never shown again or sent back to the app.</p>
+   <p>V19 validates the token with one small read, then stores it encrypted for your workspace. The token is never shown again or sent back to the app.</p>
   </DocSection>
   <DocSection id="urls" kicker="02" title="Accepted addresses">
    <dl className="space-y-4">
@@ -24,6 +24,6 @@ export default function BatchProvidersDocsPage() {
   <DocSection id="agent" kicker="03" title="What the Agent can read">
    <p>The Automation Agent and the Batches diagnostics skill can list flows, jobs and templates and read recent runs and task runs, up to 20 entries from the first page. Results are observation only and labelled as incomplete coverage. Logs, parameters, artifacts and secrets are never read.</p>
   </DocSection>
-  <DocFooterNav prev={{href:"/docs/integration-setup",label:"Integration setup"}} next={{href:"/docs/ask-axiom",label:"Ask Axiom"}} />
+  <DocFooterNav prev={{href:"/docs/integration-setup",label:"Integration setup"}} next={{href:"/docs/ask-axiom",label:"Ask V19"}} />
  </>;
 }

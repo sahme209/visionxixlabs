@@ -183,7 +183,7 @@ it("accepts actual Axiom installer names with interior spaces at both verificati
   const manifestPath = "artifacts/windows-x64/candidate-windows-x64.json";
   const manifest = JSON.parse(readFileSync(join(cwd, manifestPath), "utf8"));
   const asset = manifest.assets[0];
-  const actualName = `Axiom Agent_${expected.VERSION}_x64_en-US.msi`;
+  const actualName = `Axiom_${expected.VERSION}_x64_en-US.msi`;
   renameSync(join(cwd, "artifacts/windows-x64", asset.fileName), join(cwd, "artifacts/windows-x64", actualName));
   asset.fileName = actualName; json(cwd, manifestPath, manifest);
   expect(flatten(cwd).status).toBe(0);

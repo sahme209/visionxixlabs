@@ -71,7 +71,7 @@ export function OrganizationSessionsPanel() {
             <li key={session.id} className="flex flex-col gap-4 py-4 sm:flex-row sm:items-center sm:justify-between">
               <div className="min-w-0">
                 <p className="truncate text-sm text-zinc-200">{session.deviceLabel}</p>
-                <p className="mt-1 truncate text-xs text-zinc-500">{session.platform}{session.desktopVersion ? ` · Axiom ${session.desktopVersion}` : ""} · user {session.userId} · last seen {new Date(session.lastSeenAt).toLocaleString()}</p>
+                <p className="mt-1 truncate text-xs text-zinc-500">{session.platform}{session.desktopVersion ? ` · V19 ${session.desktopVersion}` : ""} · user {session.userId} · last seen {new Date(session.lastSeenAt).toLocaleString()}</p>
               </div>
               <button type="button" disabled={revoking === session.id} onClick={() => void revoke(session.id)} className="min-h-9 shrink-0 self-start rounded-lg border border-rose-300/20 px-3 text-xs font-medium text-rose-200 hover:bg-rose-300/8 disabled:opacity-60 sm:self-auto">
                 {revoking === session.id ? "Revoking…" : "Revoke"}

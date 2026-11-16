@@ -288,23 +288,23 @@ it("sends the last saved baseline on each native editor save", async () => {
   await waitFor(() => expect(m.invoke).toHaveBeenCalledWith("write_repository_file", { repositoryPath: "/owned/A", relativePath: "same.ts", content: "second edit", expectedContent: "first edit" }));
 });
 it("preserves the dirty draft and original baseline after a native external-change rejection", async () => {
-  writes = () => { throw new Error("File changed outside Axiom. Reopen it to review before saving."); };
+  writes = () => { throw new Error("File changed outside V19. Reopen it to review before saving."); };
   await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
   fireEvent.change(await screen.findByRole("textbox", { name: "Editing same.ts" }), { target: { value: "unsaved draft" } });
   fireEvent.click(screen.getByRole("button", { name: "Save ⌘S" }));
-  await screen.findByText(/File changed outside Axiom/);
+  await screen.findByText(/File changed outside V19/);
   expect(screen.getByDisplayValue("unsaved draft")).toBeTruthy();
   expect((screen.getByRole("button", { name: "Save ⌘S" }) as HTMLButtonElement).disabled).toBe(false);
   expect(screen.queryByText("Saved same.ts")).toBeNull();
   expect(m.invoke).toHaveBeenCalledWith("write_repository_file", expect.objectContaining({ expectedContent: "/owned/A:same.ts" }));
 });
 it("uses the same conflict protection for commit's implicit save and never commits a rejected draft", async () => {
-  writes = () => { throw new Error("File changed outside Axiom. Reopen it to review before saving."); };
+  writes = () => { throw new Error("File changed outside V19. Reopen it to review before saving."); };
   await start(); fireEvent.click(screen.getByRole("button", { name: "same.ts" }));
   fireEvent.change(await screen.findByRole("textbox", { name: "Editing same.ts" }), { target: { value: "uncommitted draft" } });
   fireEvent.change(screen.getByPlaceholderText("Commit message for this file"), { target: { value: "Review local change" } });
   fireEvent.click(screen.getByRole("button", { name: "Commit file" }));
-  await screen.findByText(/File changed outside Axiom/);
+  await screen.findByText(/File changed outside V19/);
   expect(m.invoke).toHaveBeenCalledWith("write_repository_file", expect.objectContaining({ expectedContent: "/owned/A:same.ts" }));
   expect(m.invoke.mock.calls.some(([command]) => command === "commit_repository_file")).toBe(false);
   expect(screen.getByDisplayValue("uncommitted draft")).toBeTruthy();

@@ -24,7 +24,7 @@ export function WorkflowStoryScene({ scene, context, fraction, reducedMotion, de
   return <div className="relative min-h-[320px] min-w-0 sm:min-h-[340px]">
     <motion.div key={scene} initial={false} animate={{ opacity: 1 }} transition={{ duration: reducedMotion ? 0 : 0.2 }}>
       {scene === "context" && <div className="space-y-4">
-        <div className="flex items-center gap-2 text-xs text-zinc-400"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/8 text-zinc-200">A</span> Axiom Agent <span className="ml-auto rounded-sm border border-white/10 px-2 py-1">Engineer</span></div>
+        <div className="flex items-center gap-2 text-xs text-zinc-400"><span className="flex h-7 w-7 items-center justify-center rounded-full bg-white/8 text-zinc-200">A</span> V19 <span className="ml-auto rounded-sm border border-white/10 px-2 py-1">Engineer</span></div>
         <div className={`${panel} ml-5 border-white/10 bg-white/2.5`}><p className="text-sm leading-6 text-zinc-100"><Typed text="Make the request timeout configurable. Keep the retry ceiling unchanged, then prepare a review." fraction={progress} /></p></div>
         <div className={panel}><p className="text-[10px] uppercase tracking-widest text-zinc-200">Attached sample context</p><dl className="mt-4 grid gap-3"><Fact label="Repository" value={context.repository} /><Fact label="Branch" value={context.branch} /><Fact label="Environment" value={context.environment} /></dl><button type="button" className={`${storyButton} mt-5`} onClick={onContinue}>Prepare sample change →</button></div>
       </div>}

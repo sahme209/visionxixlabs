@@ -36,7 +36,7 @@ export default async function MultiCloudPage() {
       <PageIntro
         kicker="Cloud operations"
         title={<>One multi-cloud <span className="text-zinc-500">operating system.</span></>}
-        description="Connect AWS, Azure, or Google Cloud so Axiom can discover resources, check resilience, detect security risks, and prepare human-approved remediation plans."
+        description="Connect AWS, Azure, or Google Cloud so V19 can discover resources, check resilience, detect security risks, and prepare human-approved remediation plans."
         helps="Discover every resource across providers, compare posture side-by-side, and route findings to the right AI engineer."
         connectFirst="At least one cloud connector — AWS via CloudFormation, Azure via service principal, or GCP via Cloud Shell."
         engineers={["Cloud Engineer", "Security Engineer", "FinOps Engineer", "Incident Engineer"]}

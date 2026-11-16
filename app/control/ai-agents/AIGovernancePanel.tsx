@@ -91,7 +91,7 @@ export function AIGovernancePanel() {
   const localSelectedAvailable = localModels.some(model => model.id === selectedLocalModel);
   const selectedModel = data.providerPolicy.modelSelections.vercel_gateway ?? "service-default";
   const identity = data.agentIdentity ?? {
-    displayName: "Axiom Agent",
+    displayName: "V19",
     enabled: false,
     allowedTools: data.tools.filter((tool) => tool.riskLevel === "low").map((tool) => tool.name),
     updatedAt: "",
@@ -119,7 +119,7 @@ export function AIGovernancePanel() {
       input.focus();
       return;
     }
-    void save("budget", { defaultMaxCostCents: cents, rationale: "Configured in Axiom Control" });
+    void save("budget", { defaultMaxCostCents: cents, rationale: "Configured in V19 Control" });
   }
 
   return (
@@ -180,7 +180,7 @@ export function AIGovernancePanel() {
               <option value="observer">Observe and recommend</option><option value="review">Prepare for review</option><option value="assisted">Execute approved non-production actions</option><option value="autonomous">Execute explicitly authorized workflows</option>
             </select></label>
             <label className="mt-4 block text-xs text-zinc-400">Maximum actions per cycle<input id="action-limit" type="number" min={1} max={50} defaultValue={autonomy.perCycleActionLimit} disabled={!data.canManage || Boolean(saving)} className={fieldClass} /></label>
-            <div className="mt-4 flex justify-end"><button type="button" disabled={!data.canManage || Boolean(saving)} onClick={() => void save("autonomy", { mode: (document.getElementById("autonomy-mode") as HTMLSelectElement).value, perCycleActionLimit: Number((document.getElementById("action-limit") as HTMLInputElement).value), rationale: "Configured in Axiom Control" })} className={buttonClass}>Save autonomy</button></div>
+            <div className="mt-4 flex justify-end"><button type="button" disabled={!data.canManage || Boolean(saving)} onClick={() => void save("autonomy", { mode: (document.getElementById("autonomy-mode") as HTMLSelectElement).value, perCycleActionLimit: Number((document.getElementById("action-limit") as HTMLInputElement).value), rationale: "Configured in V19 Control" })} className={buttonClass}>Save autonomy</button></div>
           </section>
 
           <section className={cardClass} aria-labelledby="agent-budget-heading">

@@ -18,7 +18,7 @@ import { PageHero } from "@/components/marketing/PageHero";
 export const metadata: Metadata = {
   title: "Engineering Handbook — VisionXIXLabs",
   description:
-    "How we build Axiom. Long-form notes on closed-union safety, approval-gated deploys, audit trails as a feature, and the engineering practices a small team uses to ship serious AI ops software.",
+    "How we build V19. Long-form notes on closed-union safety, approval-gated deploys, audit trails as a feature, and the engineering practices a small team uses to ship serious AI ops software.",
 };
 
 interface Section {

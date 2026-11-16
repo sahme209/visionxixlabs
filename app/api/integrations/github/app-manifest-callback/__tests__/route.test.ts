@@ -97,7 +97,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
       json: async () => ({
         id: 42,
         slug: "axiom-agent",
-        name: "Axiom Agent",
+        name: "V19",
         client_id: "client_123",
         client_secret: "shh-secret",
         webhook_secret: "shh-webhook",
@@ -106,7 +106,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
       }),
     });
     mocks.upsertPlatformGithubAppCredential.mockResolvedValue({
-      appId: 42, slug: "axiom-agent", name: "Axiom Agent", htmlUrl: "https://github.com/apps/axiom-agent", createdAt: new Date().toISOString(),
+      appId: 42, slug: "axiom-agent", name: "V19", htmlUrl: "https://github.com/apps/axiom-agent", createdAt: new Date().toISOString(),
     });
 
     const { GET } = await import("../route");
@@ -134,7 +134,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
       expect.objectContaining({
         action: "github_app.manifest_created",
         outcome: "success",
-        detail: { appId: 42, slug: "axiom-agent", name: "Axiom Agent" },
+        detail: { appId: 42, slug: "axiom-agent", name: "V19" },
       }),
     );
     // Secrets must never reach the audit detail.
@@ -175,7 +175,7 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
     mocks.fetchMock.mockResolvedValue({
       ok: true,
       json: async () => ({
-        id: 42, slug: "axiom-agent", name: "Axiom Agent", client_id: "client_123",
+        id: 42, slug: "axiom-agent", name: "V19", client_id: "client_123",
         client_secret: "shh-secret", webhook_secret: "shh-webhook", pem: "pem-data",
         html_url: "https://github.com/apps/axiom-agent",
       }),
@@ -201,8 +201,8 @@ describe("GET /api/integrations/github/app-manifest-callback", () => {
   });
   it("does not claim success when the required audit receipt fails after a credential write",async()=>{
     mocks.currentContext.mockResolvedValue(adminCtx);mocks.isPlatformAdmin.mockReturnValue(true);
-    mocks.fetchMock.mockResolvedValue({ok:true,json:async()=>({id:42,slug:"axiom-agent",name:"Axiom Agent",client_id:"client",client_secret:"fixture-secret",webhook_secret:"fixture-hook",pem:"fixture-pem",html_url:"https://github.com/apps/axiom-agent"})});
-    mocks.upsertPlatformGithubAppCredential.mockResolvedValue({appId:42,slug:"axiom-agent",name:"Axiom Agent"});mocks.recordAudit.mockRejectedValueOnce(new Error("audit down"));
+    mocks.fetchMock.mockResolvedValue({ok:true,json:async()=>({id:42,slug:"axiom-agent",name:"V19",client_id:"client",client_secret:"fixture-secret",webhook_secret:"fixture-hook",pem:"fixture-pem",html_url:"https://github.com/apps/axiom-agent"})});
+    mocks.upsertPlatformGithubAppCredential.mockResolvedValue({appId:42,slug:"axiom-agent",name:"V19"});mocks.recordAudit.mockRejectedValueOnce(new Error("audit down"));
     const {GET}=await import("../route");const res=await GET(request({code:"code"}));
     expect(res.status).toBe(503);expect((await res.json()).error).toBe("github_app_audit_unconfirmed");expect(res.headers.get("location")).toBeNull();
   });

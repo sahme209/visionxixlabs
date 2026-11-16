@@ -1,0 +1,38 @@
+{
+  "baselineMain": "bb2da7ca3c01b23c2eac5d7e1cb3af46a68432d5",
+  "productionHeld": true,
+  "realGoogleAccepted": false,
+  "realDownloadAccepted": false,
+  "governanceEnabled": false,
+  "authHandlersUnchanged": true,
+  "sourceFiles": {
+    "app/auth/signin/AuthFormClient.tsx": "46179f3f96289a3da60963e6c084982d2a9bc2e35852d9cdffa4c6e5b11038c9",
+    "app/auth/signin/__tests__/accountSwitchProviders.test.ts": "c4170d492d0fa38f0bd46385c6933dc6d8aa068d3a2a51e5bce68a80b66a3a2e",
+    "app/auth/signin/__tests__/overlappingFlows.test.ts": "48e613de39179baad914824f049d40d7cc563d84dccea8140b1347dac61769d1",
+    "app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts": "e1f91ae2d8ec3aad8a9f83ae92a96a0d0e1849d283e809e623921c3568dd2c0e",
+    "app/globals.css": "763e393b32be241a942a9b4ae8e1448c33781bb7c46477a65bc15baf24e578d4",
+    "components/Navigation.tsx": "98ae8bc159183effa650979d31a5b2ded29d005fa74c2ed704055e9b26a8fc0c",
+    "components/auth/VerificationRecovery.tsx": "62871e3a938f09ee76c24a653fbb35fee765fe01e36f717729ca1fd0ccb4f921",
+    "components/marketing/CinematicAxiomDemo.tsx": "37a14236b8a56a1f8ce2c36d2c6aecd453928364492d1375de3f4a93674056a2",
+    "components/marketing/IntegrationCatalogBrowser.tsx": "47b35967c9f642043c5c656f8402b2a5a5b93b1b9e5d7f3b391f8b24dc58c91e",
+    "components/marketing/__tests__/WorkflowStories.test.ts": "1d33ea0b3587f4c9a784dcefe17a741ca7b57dcef3b9c48600f296755561b42b",
+    "lib/database/postgresConnectionPolicy.ts": "9894daf567e88606749a70da617774db51533c2042f36eb5b46c86bbc601d561",
+    "lib/database/__tests__/postgresConnectionDiagnostics.test.ts": "862bec98169974d52fccacfee4e5a48e694951f48cd9cc3694c71cbbf4789c01",
+    "lib/demo/demoScenarios.ts": "1e4c53ecd3d8536074f03fbcc0ee134f328bcd37c6128a94b60535c432d19d9a"
+  },
+  "websiteBuild": {
+    "accepted": true,
+    "receiptSha256": "8b2b99e9cf626928af151b07609a850dee3c88cef868eb27fc47622c404d46df"
+  },
+  "reusedDesktopReceiptSha256": "4f17bfe1dceb607cef199b733ab779745468d727e64f5bac5845fd512645804a",
+  "ordinary": {
+    "passed": 19722,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "rawLogSha256": "8ae7af1a7a6a5c20e9d81fde2ab95bb6812ef879290d482b50f8e720c4a17b90"
+  },
+  "screenshots": {
+    "recovery-touch.jpg": "f93e559b42741a782977051cbea04b1c0c2bdc86c29ff6f2014bd1d10afa4af5",
+    "login-desktop.jpg": "096ef05a7857415cacb2904423f3a443b3fc2b8d0d4a2c3503b3be5a0a5817a8"
+  }
+}

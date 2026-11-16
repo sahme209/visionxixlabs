@@ -1,0 +1,1410 @@
+{
+  "preparedOnly": true,
+  "productionAccess": false,
+  "localExecutionOnly": true,
+  "sourceFiles": 121,
+  "files": {
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/runner.py": "e9dadcdfd7a9e1b11ebd590d87453492e8ee6f288b5661aff76b032102ea4025",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/fixture.sql": "ed927dbd39afc5cedc31f3d4504512bf4e16c01f6208301e93adb0bded92d9ff",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/RUNNER-REVIEW.md": "f08e6656fef2cb3c3b0dd5b0f5de784a0de8c3af6697000625e54aa9f803d4af",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/SOURCE-MIGRATIONS.json": "b48f1172dfd903fc5dc18adc3c003f2ca378ecc36f04528258b070cb282b33c3",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/OWNED-PG17-CONTRACT.md": "f3477e6c4e89739b86a867b5f029fe2765b5d8b7914be01f150a5babc84b59d9",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/client.cjs": "cd80e28a9320912330aae88d140196948d0d6904bdbee45e0f22cae20f755751",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/README.md": "ddb1376c15f3aeac368e9ada88eb6eaa181efcaedb5296f5b75e515403d0afb9",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/PURE-TESTS.log": "ca3691546a64a4d2c903e70a78b53a9453c2785cda14a3ed2f0c3bde38f8d3dd",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/exact-migration.sql": "b7de20d8b16f76294a10e061f888be9bfb8c15bca286c3b51886d84c4a167ffb",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/pure_tests.py": "b840412c81c45999c713a0d0f181aaf80e091fa6e1582f0123747894ee4add4e",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/CONDITIONAL-APPLY.sql": "284686247d3ade52103ccaabaf9caf6786781d3974a5e7b51583774adeb3323c",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/CONDITIONAL-APPLY.json": "5c0ec9d6e167408e3462d6155f20ccc05f41e14713f3815f5bd96a24cb0cf79b",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/literal-dns.cjs": "45521a6054bf4bc47503e85776f6160212f34d7470765e722fcfbcbc818cfaf8",
+    "/private/tmp/v19-google-migration-owned-pg17-preparation/prepare.py": "a4350db9a65707ab703f4cbf69da36e458f288643726c8d32f5956f89000ab5f",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/docs/recovery/2026-11-15/exact-release-render-preparation/executor.py": "8e69b92145a98e13f0d3ff2872de8407f814df0101a0bf9b4820a571818832e9",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "/opt/homebrew/opt/postgresql@17/bin/postgres": "4a709ce322875e49f3094d6b724f2cda0d47bf41b88487f7dc8db14f88bcf61e",
+    "/opt/homebrew/opt/postgresql@17/bin/initdb": "556ae72cec9e0444663fe76bf93314a4dce2d9b86a984887547c7f9b3492282c",
+    "/usr/bin/openssl": "45695a456f0f0e1e52e223ff1fe7eef5bc1071cafd9790aa0f1154fe55bdd301",
+    "/usr/bin/sandbox-exec": "10cf4a46a575e4747d2419cf343800db0d11ae6e6e9b8415998d3d8f336b2a92",
+    "/usr/bin/true": "0d7233119152bf4785f3ef148abcab615f4a4ae3ee8b2f1e72eed51c35212db3",
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/package.json": "036c7462b8c32a4db513a5b660e70adb94b6c3e9437af331a8ae07d25c750632",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250225180000_add_lead/migration.sql": "0b8ccb810ad7df7ed3004dbe06b47a6042928c22b406d269f1eecf08f5117d67",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250226120000_add_axiom_score_snapshot/migration.sql": "a19589697abb5f46735c7106b1fe42d77def589606fcaf16f8ab95101a0b41b1",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250226140000_add_audit_log/migration.sql": "906b16ae9c1349a1bf78dace050967e751dc3896e985361fd2d4fab25ad2be05",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250226160000_phase7_enterprise_hardening/migration.sql": "0cd7a514b19f6f4d70fc1fbb3b9a4d24058615aa34f9d2675ef53b668ce56cab",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250226180000_phase8_recurring_analysis/migration.sql": "8fc8cd490ca01ae97684fab8a7a99778b8459196356bf8acf6646a71438ddf3c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250226200000_phase9_sales_pipeline/migration.sql": "174ad0cb8e0dc1e25e5ebcab51bb02fd4bf2b834adb5d1632e06e4d75be013a6",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20250226210000_structural_stabilization_fks/migration.sql": "1e371d62f6abe818f764aa34421f283ead4596e06fc95cde1e5bdd2e6a091d94",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260219120000_add_lead_model/migration.sql": "36c6aaa8ad8e9e303042af7444366772292f42e3cbdf9079ff88b37fcfcca35d",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260225190601_init/migration.sql": "b12c8c233959bbcb668a907cbcde2dbe6de113c0b6eed245a6e2f7282ffbbdae",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260226120000_add_execution_log/migration.sql": "eb4788badafcb595a32957055ccf622951684e70838caf35adf6922bd2dfc47e",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260226140000_add_ai_invocation/migration.sql": "67db65da92262c6061e404026d9ce1148a2b1b5bf283709cae5b2faaf698484d",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260226150000_add_ai_invocation/migration.sql": "510a8506180f48085ce796c4a681ce286add073b493880c69873fc271c37210e",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260226160000_execution_log_plugin_fields/migration.sql": "be105431ced5c1fb6ca7a5bde519287858c180672e3f996e3f96a43cee025408",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260228100000_add_user_modules/migration.sql": "cfe629afba0b3394350fa2b13fa9b7e4493fe7d2446131edbf758fc61cf691d8",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260301120000_add_agent_job/migration.sql": "5e9b5c97c0dfbe6c6f4cff64208766a644f404d71dc8e4a601c5dc39e7779352",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260303120000_add_axiom_conversation_and_message/migration.sql": "c847d21ee00a3325524c54daf8608cac3bfd51a31c864b1197fb279343aac9ab",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260303150000_add_recurring_job_type/migration.sql": "e575c57779f0c3d78b573be7b75761aa6a229fb261d49732fc8cf6679ea8095f",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260516120000_add_observability_and_desktop_models/migration.sql": "ae43ac17c5ff19e0173074b0ceb366d922eb86072e377332acc1146fa5315a8c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519130000_add_outbound_notification_record/migration.sql": "e92af6067e4fe2bf4e517e6edbd8804bfa7cb65ef3b4060d02e58e129d71fbfb",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519140000_add_tenant_autonomy_charter/migration.sql": "6cf24cc619a89970aeeb99b745f517bc2e4d357635b1c0c37abce41d3fda80c6",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519150000_add_staged_remediation_runbook/migration.sql": "b851117be0a010bbfc2052f2399cde08581b6e3dfe989dadee20396cd098e51e",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519160000_add_autonomy_decision_rationale/migration.sql": "b62d0114a5220b675dc2894be9c46a70038760d06ea2519815e8db6bdba985ad",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519170000_add_tenant_feature_flag/migration.sql": "677b804dc69f2a33fbb764aac77e6ae036ff81b47e6bd45c3783d780b5085cc4",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519180000_add_help_query_record/migration.sql": "2bb05ffbc9ed2bdb2197cdaba25810328cec8874b196e9fab8a7daa0840f1ddf",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519190000_add_outbound_notification_retry/migration.sql": "afe7a52d35cfe401c739bc1dff3175af81e2e4f9ee20cc7fb06afa1a20177714",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519200000_add_tenant_billing_plan_and_feedback/migration.sql": "dc472d5b9b266baee5a4e1e3c1c9ccfe29ec1f81ce794dbe111870066a7d47c5",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260519210000_add_tenant_usage_counter/migration.sql": "e6ef3f4951422ed76cf25c0bc8a84652801c0f4ebe6401ba34e60a3798e3e684",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260520120000_add_agent_bus_and_method_proposal/migration.sql": "b9ad350576bbf579f81ac43bbc4146f360480e3613f1b35891f1a232debd4ac8",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522093000_add_agent_engineer_runtime/migration.sql": "250ae08f36a5413f4b0e531d0c640be1db27fba241c1ff2084c8e93e4d09c20e",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522103000_add_engineer_approval_snapshot/migration.sql": "2d68fecc7ccb767374430bfa496bde0ad5b25650843f2d50a166a01decbd61ce",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522110000_add_engineer_approval_decision/migration.sql": "19e11a0568b4f48a2bd031d5924650bfb273e95009e2a8ebbf1b6beacc43b7c9",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522120000_add_engineer_execution_state/migration.sql": "a2c80e6265e32b344ccb4f50f020d8934f0092e56693539d2bedfa810a8091cb",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522130000_add_pipeline_runs/migration.sql": "e8de5a346f826cbf2a15c6f545390e79ec08c0c0c0c26b151f0020ded4a817f6",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522140000_add_pipeline_source_to_snapshot/migration.sql": "820d7ca6298540cc0378200aea4b6e519444f2324df656a299f8daf82fe2e538",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522150000_add_coding_task/migration.sql": "0e033d975d9eba2ce34a5a66dbb1035f6fc21b484916068ab4ac536894d1043c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522160000_add_pricing_economics/migration.sql": "6e65e330215411399d85d045784f7afa83e485fa2765ffc0d2e190b7ec4114a0",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522170000_add_billing_alert/migration.sql": "f7ae0fc4e3c3c49784b849f7ce4b6e2ba7b1dce3078c603bf00e31efb432d3db",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522180000_add_addon_packages/migration.sql": "0a00ec6505dc3487e021f92f61595bd0f8a6017a7a8c3c1465a62ef0c3602951",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522190000_add_eval_harness/migration.sql": "804b914c6042adde5c648bd3d9f25cdbb215e3978e60d9fdede72204860b6608",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522200000_add_api_keys/migration.sql": "84407081250dd6fb07783611019423b17c1f7fca1ed8ff75658014a3686d76d3",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522210000_add_webhooks/migration.sql": "38c0c1bfd2b71e05b18f34b0852bbaaba370f37d2d9c29f0c615c7a98226eb98",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260522220000_add_stage_telemetry/migration.sql": "380794c157b9f23a7b3f17b94bb5a5105066ba999d4efac7a650052b7b790229",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260523100000_add_organization_budget_config/migration.sql": "8f8a04454ee81d33d379f14366555911ef3d239edaa3ce74fab14ffff79411c1",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260523110000_add_idempotency_record/migration.sql": "373199d922032b216852700d7753c10fd7f20e93481d41434e504041007aef42",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260523120000_add_es256_webhook_signing/migration.sql": "3a50aad6c273753b1a725b56f6e53f7a2be8ebc50015211cf20d3359c8d81690",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260525150000_add_connector_setup_session/migration.sql": "4d2933c7a949e0437b48530ccc3148ec8ac36f7348db2f9f4445a4ebf2ec7151",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260525160000_add_alert_escalation_session/migration.sql": "0a982fd196375696911be7742fe4d79a9a0f40deb99a72dd74b8a50a3cbf7f69",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526110000_add_releaseops_foundation/migration.sql": "3038b40d9a486e9903fba7b730db1270d535a8e8ae03c3e780a7d26261c97aef",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526180000_add_git_discovery_and_change_tickets/migration.sql": "7c9447e80b02b263d57a957b8564a5a0dfc0c41780eaa3d8d43eb2ce80b918dd",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526190000_add_growth_linkedin_phase1/migration.sql": "1a32b2eb8e3f8d6d9c899087198a3dbe3e83c2e4ff78738ad71dad4dd2c4a5f5",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526200000_add_growth_autopilot/migration.sql": "92c32459b4ba146cfd2a999c8256cee442c615fd0ddda10ec1a69f57529d7d0a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526220000_add_drift_finding/migration.sql": "54f738f2f48442fb1a200a5ba988da21ce2c4fa24205034129c55c4da4bcbe09",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526230000_add_manual_fix/migration.sql": "86c8a3dcb0ec4c78b8bc86d55a8dccaab4049655eb114d30f8bc725b894b3552",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526240000_add_audit_event/migration.sql": "613a6e44613e37ce581cf09117cef316ae266c801f97bd190375e58a95947a0b",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526250000_add_webhook_delivery/migration.sql": "a33a4fec684af4f8f45976a31e79c787bf03d58ba5308ef5d921f30789da50ad",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526260000_add_branch_protection_snapshot/migration.sql": "1d1649e786186e457f1d23637e79be5fe036057d3650788c18aec80cc767081a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526270000_add_release_notes_draft/migration.sql": "261c6cc80dcc219be9ef42917af5c659e25e5ff3741a0cad9554701014b25282",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526280000_add_deployment_incident/migration.sql": "1c66c621d4f9edaad1d7cb856956416270436c7505875fd0319656f69b65864c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526290000_add_github_installation/migration.sql": "22ca2800c5805c47e81143f97b15a1f36f77765bb37e8db4ceec8ff52c3cee67",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526300000_add_advisor_recommendation/migration.sql": "8d83bc5ec779e7e9b650299445ca0c4b38d358a004371c1c304d20bd644b93f6",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526310000_add_policy_proposal/migration.sql": "8a60f0f5cb1276d504ff6ae2ac26b99b5881bc8821baac58442b8ad398148e9d",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260526320000_add_incident_triage/migration.sql": "73a7d84d4c2c3aaf572d29769d0350f449462d2e7f93b3e789bd777266e1807c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528100000_add_remediation_proposal/migration.sql": "78a7ca80d597a4255b6f9030d47cc018ba7cf90495215d2dc002bd7dce8f4eb9",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528110000_add_autonomous_tick_log/migration.sql": "2e804a59e1971258063fb060c941df332fbd601c63f051b3ece02e98bd7522f3",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528120000_add_advisor_council_decision/migration.sql": "ca411e6c7a19a7c7ec430140d5f1742ce8965a229210a51a536e391c963b2d68",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528130000_add_slack_notifications/migration.sql": "e8642f0731e5e43995cc50bbbb7251e482e3fecd444706d5c72bb89c8637790a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528140000_add_ai_rationale_enrichment/migration.sql": "db9c259461a88bfefb8501ac13f042e87b8fb04b0a43a25ba3c5d4b3fc2f52d3",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528150000_add_ai_memory_summary_log/migration.sql": "22de879a6d2810f42db4cd8cd351cdb395844a64896124e2892d399822a67fe0",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528160000_add_proactive_agi_suggestion/migration.sql": "5487a097ef2b9d4d0ea8a759c8498239bfec60f13f0aa34e2da0095a1c53080a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528170000_add_ai_memory_chat_turn/migration.sql": "5daeeef4bcad61762d3012a931646691382b50b19501dd2b84444b0b60cbe143",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528180000_add_chat_citation_details/migration.sql": "0a6b75720299c56c4aafd5d1c31c4898199cedcb9c238a475a98f491d2435365",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260528190000_add_ai_call_log/migration.sql": "6f0a2efc7ca87a7dda0d9555060b333c01332f8cf5d5c2e924ac2a581f662ca4",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260924130000_add_tauri_deployment_operations/migration.sql": "a3f093ef4fa6960c7929f7303c48e492ed114ea3fd55accfa0bd57bb52a43d86",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260925211000_add_tauri_request_versions_and_operation_ledger/migration.sql": "5cb4ba0e9873ee6ec3fefd02981940019e07e0af6c96e472c6ba89e16946e91b",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20260927172000_add_desktop_pairing_challenges/migration.sql": "70cae203c00eb8c52db9dde2d2504afbe55d97633c3b0f68d38dc72942948c4c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261001190000_add_tenant_integration_connections/migration.sql": "14d9e86dc0a1b7aa42470adee895fe033a89f1d0fd4bdcdeb0d1ee5b685d07bb",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261002120000_add_organization_ai_provider_policy/migration.sql": "3debc540e0ecf4f544fb02da956f78123ef1a8436e7c464a35b39c924bdbdda0",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261002143000_add_workspace_ai_model_selections/migration.sql": "a113a2d12d5360f921363254cea509b9ce7c1195e0a5ceb7a32f40794e32912b",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261002160000_add_workspace_ai_policy_enabled/migration.sql": "fb5509b5c5a876a5229a4f1c4a24eebda6091ddab95124645fbf1645ea59828f",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261004173000_add_release_evidence_repository_binding/migration.sql": "747c27d3ea6574bfab5b9f5b356d1c824bdf1a35c74459493ce76a6204d4adbf",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261005020000_add_simulated_audit_event_status/migration.sql": "868eb1ed94c007edaf4e661b07d9757ec010d66e5328bd0a7f18ca05b5d10d5c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261005130000_add_incident_record/migration.sql": "16c66bf82cef992b2289ca88f64a05d50ecc7517cbdccf93479a102868b8bac2",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261005150000_add_platform_github_app_credential/migration.sql": "3c51a987a27e800670d7afa30299c88388e7e5f947c6fe6be5969f49340a1b62",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261006140000_add_org_membership/migration.sql": "4bd184427365390a4f751b4ed734dfbde4ddcf41cc3db9662806544b3945366a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261006160000_add_deployment_target/migration.sql": "5fe0aef6cd3647b9e464ecebfc972e06839b19fc85b6e635e40745d3f3295951",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261006180000_add_enterprise_identity/migration.sql": "afabd9675385af6d1c907c264bd18b4358e57be64a883677a1d08ce3b98efba0",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261006190000_add_agent_runtime/migration.sql": "8f57403f7618835abb827acf8fa9d6832b6a3cd00726517e7d801aff91d45761",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261006233000_add_agent_workspace_memory/migration.sql": "d76573e6647f77fad302e502f64906b3726d5d74c4c641731f9823b12ceba8e1",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261007123000_agent_skill_installations/migration.sql": "ee684953f1d0c9fe7145dcd73f739088c681da51673710667dc0ee3c6a527e96",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261007160000_deployment_execution_observation/migration.sql": "eee9105a15b962143e2a58dc2b32e40b540bede8dba169bcd9aed00e73966355",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261007190000_add_compliance_control_check_run/migration.sql": "f4fa577fb448d3fbe8df321e70f84d0fd90fffcef3280c4503e579d13c056934",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261007200000_add_deployment_execution_provenance/migration.sql": "1704bc899ae38c6f67bad6d3bb2e06cfda5e1bee10f34da64fc583d126b7aa4f",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261008010000_add_deployment_promotion_chain/migration.sql": "b23801a2f6d26a0b731a3005e2817f737c30389789dea41e8fb63a20a9155068",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261008020000_add_branch_policy_require_tests_passing/migration.sql": "c10313a0fae7cd7ecc422c190b82acdf617dded34f58da2ae6cabec0e0bd57a6",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261008170000_add_airflow_governed_automation/migration.sql": "e1381d0a04c54854d96a737c54999b93268da639980a4e0ecd63e4c9db80a42b",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261012173000_add_deployment_dispatch_idempotency/migration.sql": "e3384609c8ed4057d170738b7c4b7e1acf990e12b80a6b6a76f71aae5fa246cc",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261012181500_add_billing_seat_quantity/migration.sql": "dd4da266487c2d4acd9bd9905b6e79548b0b939f361e13d54ec8b64ae9a64a2a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261013120000_add_gateway_usage_reconciliation/migration.sql": "589e04e1f0bda4d131192eb6866d4e6f492d574c71d7d5753e09a0199cae8208",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261013153000_add_agent_approval_integrity/migration.sql": "5e7638e7656a76e6e6248370d02f19817ac5464eadf3d190777e01223f07f0fc",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261013172000_add_workspace_agent_identity/migration.sql": "fa3703cc048fe9f0f7c1285e44e01280725a2a39dd2a39e5411c52edbaca6ec4",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261013193000_add_durable_agent_workflow/migration.sql": "8a4885e5ca748fd160cf03abfd6ed2c29ce9a390ff89da66967d769ebd70fb75",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261013220000_add_founding_supporters/migration.sql": "ff4b27e0c309b364774948ed47b59b8a42a48af22c6a882ce908f7af8bb792e0",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261014090000_add_ai_usage_stripe_settlement/migration.sql": "5452120f75ffaef7c48e82cb2f6b634f18f853ff23ede3d559a6322b3ee242da",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261014120000_add_email_verification/migration.sql": "ad968345199bb9fa84add0340777631f99d5583aafe1949790051ccdf6d9873f",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261014190000_verified_ai_credit_fulfillment/migration.sql": "226d6c1e3fff21fd3a6a1b88906a2524b7cfd6173f78f58af1ea2efa2102f35f",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261014210000_ai_usage_reservations/migration.sql": "edbce376d52c2e941373a045ff1e6029f892f08d670a3708197fc075972bfb8a",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261016010000_cloud_account_enrollment/migration.sql": "c8069f96117a46bdce012d5727c1b0e17aed3dc68018e884b7177baeafdabc7c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261016020000_cloud_account_credential_revocation/migration.sql": "888b6fd677f7d1fdcaab10ee375587912bbb102d9e266d263784ffdf9963de37",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261016030000_ecs_release_review_core/migration.sql": "7ecc5ea1180d6bd06cbc1e06081389d79dc6a9b321d0314c8bfa1ea7fec22522",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261023220000_bind_legacy_cloud_tenant_relations/migration.sql": "095823adafaa36495edf3c9d97d690a8717bdafc1d8edce656d0bab1cbde4072",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261025174000_add_bot_saved_tasks/migration.sql": "bb4204b90b6242d81343a8a74fc77ed711d3b6b0f3ff356f38645a14bf2c3f1e",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261025235500_add_bot_readonly_runs/migration.sql": "2b3cc03091c3a2c24f36834dd1b6636bc195967580743b5a84093ffb7db1907b",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261026022000_add_bot_ai_tasks_local/migration.sql": "1cbf59e9f7fffa28e1ba1dc1afed61bee69b94bf1522e65d9627e8694c35f553",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261026040000_add_bot_pr_evidence_local/migration.sql": "b3176df72dd3fe4aee50a87f89d1198d7781b2f8319b91275dad3e9269ddf5c5",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261027010000_gcp_guided_authorization/migration.sql": "1a180883f1b2bfa4c5405ce7d459747fed44de4aab204296a0ed54dbc36432a0",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261027020000_aws_guided_connection_flow/migration.sql": "146e74baf84fb960d11bcae7cb94c8b705229f952f7dcf5232f3e4c88ff52ce9",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261027030000_azure_guided_authorization/migration.sql": "b3d0416e5946b323d023bb575a0e416cc4045bb9c212fd6fdfd252ec20f19067",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261108120000_add_pipeline_ai_call_quote_fields/migration.sql": "70b815339b0a28ac9f5a57f3e7bd3e82d4b3a2912640e0bdff096216102f32da",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261109090000_add_agent_gateway_request/migration.sql": "30fdfebae60c9a44f4f31044c67836a7fb388e889f6017784d61e9976b69350e",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261109100000_add_audit_seal/migration.sql": "4e2dd4100891c0caaf5328503e1b77be2e8334deead96ce7e474ad29ff60428c",
+    "/Users/samirahmed/.codex/worktrees/axiom-governance-recovery-2026-11-14/prisma/migrations/20261115180000_google_identity_binding/migration.sql": "b7de20d8b16f76294a10e061f888be9bfb8c15bca286c3b51886d84c4a167ffb"
+  },
+  "cacheInventory": {
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "esm",
+        "lib",
+        "package.json"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/LICENSE": {
+      "kind": "file",
+      "sha256": "192b8f5c96900f04a1271dec39688655d7416c1c6ea84a508e18b50d2b6751f3",
+      "bytes": 1077,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/README.md": {
+      "kind": "file",
+      "sha256": "a02996f80893c4436e600406d5b48cfbc8d5f9500b9f595a6779361ef3a0b4d2",
+      "bytes": 4452,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/esm": {
+      "kind": "directory",
+      "names": [
+        "index.mjs"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/esm/index.mjs": {
+      "kind": "file",
+      "sha256": "5ef4d06556eeb775987759c2c09229dca2139421ee40e819b566612db2b4a8dc",
+      "bytes": 579,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib": {
+      "kind": "directory",
+      "names": [
+        "client.js",
+        "connection-parameters.js",
+        "connection.js",
+        "crypto",
+        "defaults.js",
+        "index.js",
+        "native",
+        "query.js",
+        "result.js",
+        "stream.js",
+        "type-overrides.js",
+        "utils.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/client.js": {
+      "kind": "file",
+      "sha256": "ad6aa93c26b0bf26db1f2ebe74216212790a04c41af5585c63760f9fa8322a32",
+      "bytes": 25715,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/connection-parameters.js": {
+      "kind": "file",
+      "sha256": "6b6548f99acba3502663a17a180582ba8e1f1725aa9d94b5f47cac19dcb6211b",
+      "bytes": 5957,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/connection.js": {
+      "kind": "file",
+      "sha256": "f93e914bf408657f2301393489da561a5a464e9c30f4f51b681b18a21a5f1c84",
+      "bytes": 6399,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/crypto": {
+      "kind": "directory",
+      "names": [
+        "cert-signatures.js",
+        "sasl.js",
+        "utils.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/crypto/cert-signatures.js": {
+      "kind": "file",
+      "sha256": "c4b666a8d8b0dedc0724fbeeb55333d15ced942d1b10f9cd854d77d7861b3d08",
+      "bytes": 4089,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/crypto/sasl.js": {
+      "kind": "file",
+      "sha256": "99f1a2607fe2a29f1c4dd1aaf43dec0fc2b5de8755de72b39d3aa8c575bd6a71",
+      "bytes": 9900,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/crypto/utils.js": {
+      "kind": "file",
+      "sha256": "a849cfe22d7590d79ddee76c8d7a058e2b67360a0d76683275d34133e5637117",
+      "bytes": 2649,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/defaults.js": {
+      "kind": "file",
+      "sha256": "d91c22d082ec974f9f878a71e8d9d56a7e5fa9a711cc63f32522b43f5e9169d4",
+      "bytes": 2612,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/index.js": {
+      "kind": "file",
+      "sha256": "3fad6e6d3d976edbabe0cbc9e1d39f4340bcb719bbbb186a0d3a24f3dbd4a94c",
+      "bytes": 1810,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/native": {
+      "kind": "directory",
+      "names": [
+        "client.js",
+        "index.js",
+        "query.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/native/client.js": {
+      "kind": "file",
+      "sha256": "53d4a4756bb7a33b08154c08047c48421216297bf9033a31445bbb24dc233ebe",
+      "bytes": 11601,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/native/index.js": {
+      "kind": "file",
+      "sha256": "99fb61cb78a6d78b7a5fc0b9ac264ad58272af48be4bc50bfdb948b1342e3292",
+      "bytes": 50,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/native/query.js": {
+      "kind": "file",
+      "sha256": "6a9a594fe12682d25b5dbc03c6e36d44ef303ca338cd4d59db3ce9c0919a3f8e",
+      "bytes": 4836,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/query.js": {
+      "kind": "file",
+      "sha256": "ecf885185f0ad8b82c680a184d65bc08462fd2adee047218268c35dade9f8913",
+      "bytes": 7710,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/result.js": {
+      "kind": "file",
+      "sha256": "6d7193da53f8557600a065e4356626026e8c5baf12c477dc19e439d8f204225c",
+      "bytes": 2829,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/stream.js": {
+      "kind": "file",
+      "sha256": "0bd4001775301604ddf7c94152e05f6f30a9354876717bdae2ab636d00eb12ba",
+      "bytes": 2132,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/type-overrides.js": {
+      "kind": "file",
+      "sha256": "47cb7f7bc6a6e1b1d4dc7c92bacacb436f12e99242b77da8391fd5b71991d2a5",
+      "bytes": 770,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/lib/utils.js": {
+      "kind": "file",
+      "sha256": "0348fa1818f4490823187cafc3d31738de7fe3bd30dd0cd12711c272367b2d80",
+      "bytes": 5797,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg/package.json": {
+      "kind": "file",
+      "sha256": "b1e53333a3d0c2c47c49a5cb919d221135dc03145df740925b899bc2baacc435",
+      "bytes": 1668,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg-pool": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "esm",
+        "index.js",
+        "package.json"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool/LICENSE": {
+      "kind": "file",
+      "sha256": "4f15ee7fc2a72082859d7e0d12dfa4bcdd70b1c744ad3850d07780730ac08557",
+      "bytes": 1073,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool/README.md": {
+      "kind": "file",
+      "sha256": "9d7028ff70e7cddeb97e7a2fda222e12c0e52fe954baf640d62d29880d9628bb",
+      "bytes": 13094,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool/esm": {
+      "kind": "directory",
+      "names": [
+        "index.mjs"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool/esm/index.mjs": {
+      "kind": "file",
+      "sha256": "521c8058172944cb9ceaee95073b49950a3906f91263303837e89f9ee346e81e",
+      "bytes": 125,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool/index.js": {
+      "kind": "file",
+      "sha256": "6f304776edaabde2954cbf8c4366fa6d9512bfba0e408e78cc56b3c46c69d058",
+      "bytes": 14460,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-pool/package.json": {
+      "kind": "file",
+      "sha256": "0a9924def9e06f791b09a44eaefb227f323a39199887f6ce17b44cb5a9193134",
+      "bytes": 1083,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg-protocol": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "dist",
+        "esm",
+        "package.json",
+        "src"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/LICENSE": {
+      "kind": "file",
+      "sha256": "192b8f5c96900f04a1271dec39688655d7416c1c6ea84a508e18b50d2b6751f3",
+      "bytes": 1077,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/README.md": {
+      "kind": "file",
+      "sha256": "163df61eaa9f5337d5c0fcb3c0f15207f91a208dbd12ed26582bfc1e9bd59180",
+      "bytes": 150,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist": {
+      "kind": "directory",
+      "names": [
+        "b.d.ts",
+        "b.js",
+        "b.js.map",
+        "buffer-reader.d.ts",
+        "buffer-reader.js",
+        "buffer-reader.js.map",
+        "buffer-writer.d.ts",
+        "buffer-writer.js",
+        "buffer-writer.js.map",
+        "inbound-parser.test.d.ts",
+        "inbound-parser.test.js",
+        "inbound-parser.test.js.map",
+        "index.d.ts",
+        "index.js",
+        "index.js.map",
+        "messages.d.ts",
+        "messages.js",
+        "messages.js.map",
+        "outbound-serializer.test.d.ts",
+        "outbound-serializer.test.js",
+        "outbound-serializer.test.js.map",
+        "parser.d.ts",
+        "parser.js",
+        "parser.js.map",
+        "serializer.d.ts",
+        "serializer.js",
+        "serializer.js.map"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/b.d.ts": {
+      "kind": "file",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "bytes": 11,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/b.js": {
+      "kind": "file",
+      "sha256": "a1024bdec7246a732be4713a3d3326258732971363ac234d4c1709fe54b48be1",
+      "bytes": 636,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/b.js.map": {
+      "kind": "file",
+      "sha256": "458d1437306773b76c28391cb340e4c3331e3d85d267fd508eac7773f81cb325",
+      "bytes": 812,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/buffer-reader.d.ts": {
+      "kind": "file",
+      "sha256": "0d6484c7d84af67e685cae28bbc96fafdb7d90ae5952747cb6e1f0ca831464e6",
+      "bytes": 365,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/buffer-reader.js": {
+      "kind": "file",
+      "sha256": "fdae5fd80c1ad1015f91a92da667467752eabdf531f19558897e205559e6b714",
+      "bytes": 1600,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/buffer-reader.js.map": {
+      "kind": "file",
+      "sha256": "291ea861a3856e4e13bca046e0e79c0b7d9f84467f13f5498f0a403d17409b27",
+      "bytes": 1717,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/buffer-writer.d.ts": {
+      "kind": "file",
+      "sha256": "6847d4a9b10fc9b84eec9c56b99b7321337e018fdbf5be415d14467b98d73876",
+      "bytes": 636,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/buffer-writer.js": {
+      "kind": "file",
+      "sha256": "78428fc0607cd87c28009159e87ca3704faf7bda000ea44d2ec46a97805cec9d",
+      "bytes": 4094,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/buffer-writer.js.map": {
+      "kind": "file",
+      "sha256": "005eb1ea7ba6bc3af22e0ef96a7be80e7e824b6602df150f56b4ab5258fe583c",
+      "bytes": 4170,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/inbound-parser.test.d.ts": {
+      "kind": "file",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "bytes": 11,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/inbound-parser.test.js": {
+      "kind": "file",
+      "sha256": "b7bcfce357865e993960da4e85d3095e35b8384d52cc3c17dd04dde7fea8e5ad",
+      "bytes": 19844,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/inbound-parser.test.js.map": {
+      "kind": "file",
+      "sha256": "126aa1d6837e1e0f09d6f258f0ad741c8bcedd83af5c29f86e770b819a2a54a6",
+      "bytes": 15213,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/index.d.ts": {
+      "kind": "file",
+      "sha256": "c2c9f431f788b434e6ae327844ef6712bb6a6a88ad08acf20bf6cfeb41d154ba",
+      "bytes": 271,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/index.js": {
+      "kind": "file",
+      "sha256": "e7a99ac02633393d8c3ef16cd6385b8246100d28c838b02420844068429a46c9",
+      "bytes": 775,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/index.js.map": {
+      "kind": "file",
+      "sha256": "5b68cd072bef63afbc4da7e19f6e30f4d8a2c89d5a113193cf1f15eefacd5ef8",
+      "bytes": 522,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/messages.d.ts": {
+      "kind": "file",
+      "sha256": "4a20a0a39aca8738cc5088f9dea2969bf2af3ca1341c56071f513059b122d150",
+      "bytes": 6056,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/messages.js": {
+      "kind": "file",
+      "sha256": "dfd22ad639f3030b41617ff0ee201ece7cdbce4adb7e1aae7978541b1384cd31",
+      "bytes": 4973,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/messages.js.map": {
+      "kind": "file",
+      "sha256": "811fb02046104bfd60c5478bab3e491e8f9eb88602a17ca47f5ae69c72580dd9",
+      "bytes": 3383,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/outbound-serializer.test.d.ts": {
+      "kind": "file",
+      "sha256": "8e609bb71c20b858c77f0e9f90bb1319db8477b13f9f965f1a1e18524bf50881",
+      "bytes": 11,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/outbound-serializer.test.js": {
+      "kind": "file",
+      "sha256": "2f698de794633941a67fc04506d48bc85bc74f0e9927dae08548688a91246112",
+      "bytes": 14588,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/outbound-serializer.test.js.map": {
+      "kind": "file",
+      "sha256": "3bf6249e69edf1068e613db668872a3bc64a357701d1a2fddef22ba92baab911",
+      "bytes": 13013,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/parser.d.ts": {
+      "kind": "file",
+      "sha256": "effa1fd4980f6dff4e81ed67009b847d34449087504319f9a0dd081e8cf23a31",
+      "bytes": 583,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/parser.js": {
+      "kind": "file",
+      "sha256": "6f841aabda7240df44e1b08bbe8e202502ead969576c1ecc17311af48f57f2ef",
+      "bytes": 13515,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/parser.js.map": {
+      "kind": "file",
+      "sha256": "fbce35fbc7e1713ab9edcbbc3a98b978f699a26fe30fbc2afe5292b219ac7507",
+      "bytes": 10727,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/serializer.d.ts": {
+      "kind": "file",
+      "sha256": "a33c98f95c099c2a9a383b156c8f2a16605843d29455a954c1431bcbbc1ce35a",
+      "bytes": 1301,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/serializer.js": {
+      "kind": "file",
+      "sha256": "0c81a499cd210334e14bc65ee514b2ecf842588e27533f5e9a461f914d0b9623",
+      "bytes": 7102,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/dist/serializer.js.map": {
+      "kind": "file",
+      "sha256": "730d03a1396d473526f691495a0b09000840d33a66601e5982ae6df9ea37196c",
+      "bytes": 7334,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/esm": {
+      "kind": "directory",
+      "names": [
+        "index.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/esm/index.js": {
+      "kind": "file",
+      "sha256": "0f6c279f5e18cbc73dd3eab808e6eaa9621ddd3511197da2e67106fdd0b2b3b2",
+      "bytes": 325,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/package.json": {
+      "kind": "file",
+      "sha256": "a4a4e23027b26c72be7729d045d0100ad9329959db0449c535fa7b2ba2e717c6",
+      "bytes": 1073,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src": {
+      "kind": "directory",
+      "names": [
+        "b.ts",
+        "buffer-reader.ts",
+        "buffer-writer.ts",
+        "inbound-parser.test.ts",
+        "index.ts",
+        "messages.ts",
+        "outbound-serializer.test.ts",
+        "parser.ts",
+        "serializer.ts",
+        "testing"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/b.ts": {
+      "kind": "file",
+      "sha256": "eb585946649fd05e86397b77be4a9d00c225d2222cbc356d725afe11ea8ab265",
+      "bytes": 473,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/buffer-reader.ts": {
+      "kind": "file",
+      "sha256": "2465afc8aa6d9863357d35e2ccac9f6b2d0d5d6c10fc4b03d8b01dbc640f3b32",
+      "bytes": 1409,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/buffer-writer.ts": {
+      "kind": "file",
+      "sha256": "568a874ad28c5b235f4c325ba469124a1eaeb029e0dbbdca243280f9186bd306",
+      "bytes": 3771,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/inbound-parser.test.ts": {
+      "kind": "file",
+      "sha256": "3a65f5bf6bfee38c5d8cc85bc9ae993eef7c677ef05d080ee069ca1a5fed6e1e",
+      "bytes": 15695,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/index.ts": {
+      "kind": "file",
+      "sha256": "a7acc3e9fd87b531b93012b3d4d3af0cb1ec88bc4f29ba76b4af9d3d6dde927a",
+      "bytes": 443,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/messages.ts": {
+      "kind": "file",
+      "sha256": "98ceb278f736325f847a0c8326aae46f2573f2a750b056d5061ae0d00714cd2d",
+      "bytes": 6458,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/outbound-serializer.test.ts": {
+      "kind": "file",
+      "sha256": "42d591bf94e2db92b4ae8848be5b543e3bbca97ff882d7d56b7d607929a5557b",
+      "bytes": 11375,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/parser.ts": {
+      "kind": "file",
+      "sha256": "b991370b2b49c7a701e8b75fa0e18e43757c57ccf83b86d830866fcdd3ba825f",
+      "bytes": 13057,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/serializer.ts": {
+      "kind": "file",
+      "sha256": "1d02bc0ea6d07ee7a6e8779c033e0998d1871a320c74157c936a47535d4238bc",
+      "bytes": 7384,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/testing": {
+      "kind": "directory",
+      "names": [
+        "buffer-list.ts",
+        "test-buffers.ts"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/testing/buffer-list.ts": {
+      "kind": "file",
+      "sha256": "01bce658cf7fbb2c03ebb4c3d7e729389d6b3c9edb3cbfc2e1864f2a76647a00",
+      "bytes": 1727,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-protocol/src/testing/test-buffers.ts": {
+      "kind": "file",
+      "sha256": "556522ba2930a51c27b1ad945a6308f3a4d6b4f449a0f9d90e8bc631f9eb8536",
+      "bytes": 4360,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg-types": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types": {
+      "kind": "directory",
+      "names": [
+        ".travis.yml",
+        "Makefile",
+        "README.md",
+        "index.d.ts",
+        "index.js",
+        "index.test-d.ts",
+        "lib",
+        "node_modules",
+        "package.json",
+        "test"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/.travis.yml": {
+      "kind": "file",
+      "sha256": "b09d0d2ec01d004669d7ff94f5fc91f380e88faece76226c7c72b0a99751dc36",
+      "bytes": 83,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/Makefile": {
+      "kind": "file",
+      "sha256": "f8ef5d631da574fb89632ac2664fdab6150b122f06b700d95c98b247bce56257",
+      "bytes": 232,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/README.md": {
+      "kind": "file",
+      "sha256": "ecda9bca71d3f0cee4e600d1dd2bef336213f39ef2e8fca6a1a1c1c8723f643a",
+      "bytes": 3831,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/index.d.ts": {
+      "kind": "file",
+      "sha256": "f60e3e3060207ac982da13363181fd7ee4beecc19a7c569f0d6bb034331066c2",
+      "bytes": 2627,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/index.js": {
+      "kind": "file",
+      "sha256": "ece6d549270ba55d08126b10c9997324d808ee828ef00dad236e84e54d9d556d",
+      "bytes": 1214,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/index.test-d.ts": {
+      "kind": "file",
+      "sha256": "da9b9d37dce95816b504a3b7577135a6060b1ba8053f0a643786ed672488bbdd",
+      "bytes": 759,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/lib": {
+      "kind": "directory",
+      "names": [
+        "arrayParser.js",
+        "binaryParsers.js",
+        "builtins.js",
+        "textParsers.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/lib/arrayParser.js": {
+      "kind": "file",
+      "sha256": "cad20b20e6312125b45f74480eba3ef46b456997da4f53bbec56356d66edd730",
+      "bytes": 208,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/lib/binaryParsers.js": {
+      "kind": "file",
+      "sha256": "4b0105414068ea96450ef0d420db9449c00c565c5894683955af15bf94075fb9",
+      "bytes": 6063,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/lib/builtins.js": {
+      "kind": "file",
+      "sha256": "09213197e4b44012e4c83669aa80884a189e90c777ddfef1f44c90c412167354",
+      "bytes": 1564,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/lib/textParsers.js": {
+      "kind": "file",
+      "sha256": "bd811a530000508b6b90c1db462078e122f0404769d73f57ad41fe90aca159bd",
+      "bytes": 5367,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules": {
+      "kind": "directory",
+      "names": [
+        "postgres-array"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules/postgres-array": {
+      "kind": "directory",
+      "names": [
+        "index.d.ts",
+        "index.js",
+        "license",
+        "package.json",
+        "readme.md"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules/postgres-array/index.d.ts": {
+      "kind": "file",
+      "sha256": "5e5cd3ad9676e8fa514b66502e5d132c537a9d78a849874c4b2d6f59aaff5acf",
+      "bytes": 131,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules/postgres-array/index.js": {
+      "kind": "file",
+      "sha256": "807ba580ed423e518672c27b4022a56acb693be04349733ffc1fe6f324fbcee2",
+      "bytes": 2320,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules/postgres-array/license": {
+      "kind": "file",
+      "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393",
+      "bytes": 1111,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules/postgres-array/package.json": {
+      "kind": "file",
+      "sha256": "dcd6a505fcbc032b409ee2838ab2c776dea3a9cfe02b736364b6cb82a946665f",
+      "bytes": 649,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/node_modules/postgres-array/readme.md": {
+      "kind": "file",
+      "sha256": "d6b0e269174660704b3d72438334a52d2bcb2f353a3354f3c7cd65771e27c0de",
+      "bytes": 692,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/package.json": {
+      "kind": "file",
+      "sha256": "3ec0293cb38cc8d9475e3eb32ac5f19d195bf9fccc8b19a0714e6ecd6e7c2cf0",
+      "bytes": 973,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/test": {
+      "kind": "directory",
+      "names": [
+        "index.js",
+        "types.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/test/index.js": {
+      "kind": "file",
+      "sha256": "903e76e7cd794c5f7918b67847e3790f4c582948eaf75ab9fd43d62278b44bc3",
+      "bytes": 644,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-types/test/types.js": {
+      "kind": "file",
+      "sha256": "b813a6ece808d40094bac1770d4d35cb0e17ae70a4236cc5c93846d72c08c159",
+      "bytes": 11731,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg-connection-string": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "esm",
+        "index.d.ts",
+        "index.js",
+        "package.json"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/LICENSE": {
+      "kind": "file",
+      "sha256": "2244b5486c4427001b6756a87b9a297d427c111dcc3ba64a097492a8979c23d0",
+      "bytes": 1082,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/README.md": {
+      "kind": "file",
+      "sha256": "c2cba494f78d950f91ec21298bbf60a949dc379d4f873ffe3ee319c918a175e0",
+      "bytes": 4932,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/esm": {
+      "kind": "directory",
+      "names": [
+        "index.mjs"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/esm/index.mjs": {
+      "kind": "file",
+      "sha256": "e5af439889cb873c459670b82503c7b0480c7055843c6482242e50282f76b1ee",
+      "bytes": 336,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/index.d.ts": {
+      "kind": "file",
+      "sha256": "ec0ec7d7d754b7d65faf256ad01d85b49a9417a7540161aa7a378969ae095c26",
+      "bytes": 952,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/index.js": {
+      "kind": "file",
+      "sha256": "d8c0ca43dc70daf05a9ff5469c92fd0a3cbcd11cacf68156ebb19ee32d127cfd",
+      "bytes": 7497,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-connection-string/package.json": {
+      "kind": "file",
+      "sha256": "53d453c5a426e69a11ff479e0d8a293505faa1833e6eb3ff7ceefdaac569e3ea",
+      "bytes": 1349,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pgpass": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass": {
+      "kind": "directory",
+      "names": [
+        "README.md",
+        "lib",
+        "package.json"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass/README.md": {
+      "kind": "file",
+      "sha256": "62549909404b5a0dcb2b4b74c9a930baf8095dbcfa1543c4ffc79378acd22b57",
+      "bytes": 3294,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass/lib": {
+      "kind": "directory",
+      "names": [
+        "helper.js",
+        "index.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass/lib/helper.js": {
+      "kind": "file",
+      "sha256": "28d823dcde115f31848ba93d9cb55ba20089ac701b6a38b228d185d96df4f1b5",
+      "bytes": 5488,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass/lib/index.js": {
+      "kind": "file",
+      "sha256": "cc95b8ef6c32a9afdc48b85a5e7128d5e29567f8ded02d9bf7acd27c3d870c39",
+      "bytes": 467,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pgpass/package.json": {
+      "kind": "file",
+      "sha256": "d75240eb4fe759c10db9f903838275348676a8bdc1f329e20a833713cd7c99bd",
+      "bytes": 1074,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg-int8": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "index.js",
+        "package.json"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8/LICENSE": {
+      "kind": "file",
+      "sha256": "4e8e87ccdfc7e4b47fd89015f78468aa53b6bf43ab6e6e12d43e8f55294911de",
+      "bytes": 750,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8/README.md": {
+      "kind": "file",
+      "sha256": "d77eaaca16d1fe569ee6dc87d340d2fa6d14438652618a8cf20382e16648244a",
+      "bytes": 389,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8/index.js": {
+      "kind": "file",
+      "sha256": "f991b0a41119bce0efbb471275dbd02de31a79fe6f87f8f5e5678e373a0f1627",
+      "bytes": 1572,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-int8/package.json": {
+      "kind": "file",
+      "sha256": "147155887a41bb6f69ff98b3dde827b7e6a8214c3a71938da4babf8e12adff2e",
+      "bytes": 475,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/postgres-array": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array": {
+      "kind": "directory",
+      "names": [
+        "index.d.ts",
+        "index.js",
+        "license",
+        "package.json",
+        "readme.md"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array/index.d.ts": {
+      "kind": "file",
+      "sha256": "5e5cd3ad9676e8fa514b66502e5d132c537a9d78a849874c4b2d6f59aaff5acf",
+      "bytes": 131,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array/index.js": {
+      "kind": "file",
+      "sha256": "c90225fad90500e478e31036d962bcc5e33d0720733e846b4e599f26d16298fe",
+      "bytes": 3833,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array/license": {
+      "kind": "file",
+      "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393",
+      "bytes": 1111,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array/package.json": {
+      "kind": "file",
+      "sha256": "97a98c0dffd7eaa0a776da8fb0472639d3ba7ab2f7b508ce77fb1f5b618aae6e",
+      "bytes": 650,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-array/readme.md": {
+      "kind": "file",
+      "sha256": "7ff71eb7cd7a66f52fa912dddcbc7bd1af9f923760bb693737aea00de89f7150",
+      "bytes": 700,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/postgres-bytea": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea": {
+      "kind": "directory",
+      "names": [
+        "index.js",
+        "license",
+        "package.json",
+        "readme.md"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea/index.js": {
+      "kind": "file",
+      "sha256": "c078b99e1009c4bcf6e3ab59d9fe808b12caee3461204ae599cdd9cccd990801",
+      "bytes": 863,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea/license": {
+      "kind": "file",
+      "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393",
+      "bytes": 1111,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea/package.json": {
+      "kind": "file",
+      "sha256": "9125568c5fb51a65b8f11adb0080c2775b99ee82822d73bff8b56b2a9d47d7aa",
+      "bytes": 617,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-bytea/readme.md": {
+      "kind": "file",
+      "sha256": "24d2c6e5bc32e86c9263af0d8ca2e5217a43565a311942888ba979fd5b0ed550",
+      "bytes": 504,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/postgres-date": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date": {
+      "kind": "directory",
+      "names": [
+        "index.js",
+        "license",
+        "package.json",
+        "readme.md"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date/index.js": {
+      "kind": "file",
+      "sha256": "9a09e3ec0775237576b1f6ff0fba0ed6171235aeded635a42c174b517e34cb1a",
+      "bytes": 2676,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date/license": {
+      "kind": "file",
+      "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393",
+      "bytes": 1111,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date/package.json": {
+      "kind": "file",
+      "sha256": "03f9edefa96697072075e02df045cc61ed4ca2f8dfffb1ff87f4070bc3404151",
+      "bytes": 607,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-date/readme.md": {
+      "kind": "file",
+      "sha256": "ac45d399addd5e87db86d35adf84755bceadb0aee2360daeffd7af2d4ab41472",
+      "bytes": 1521,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/postgres-interval": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval": {
+      "kind": "directory",
+      "names": [
+        "index.d.ts",
+        "index.js",
+        "license",
+        "package.json",
+        "readme.md"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval/index.d.ts": {
+      "kind": "file",
+      "sha256": "71f9db35d9032bee846bafdf29caf0229ce594495f6c6457e65276afe962dc8a",
+      "bytes": 422,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval/index.js": {
+      "kind": "file",
+      "sha256": "836fe0a39e52f051d62583d8375d3b270b4cb93dd026b125438a89e5a0258c41",
+      "bytes": 3413,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval/license": {
+      "kind": "file",
+      "sha256": "f057f36739d53d228a746de4440c1e0c644ecde06d6beab45337d39c9d12a393",
+      "bytes": 1111,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval/package.json": {
+      "kind": "file",
+      "sha256": "cc3056db105e66c9128cb8a387cda782d5f1ae9281be90de0b8d26a90af89c57",
+      "bytes": 666,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/postgres-interval/readme.md": {
+      "kind": "file",
+      "sha256": "f5399e5250a2cc93245d874dbfe3527e5845119a65b80ea13cbb66ccf913818e",
+      "bytes": 1115,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/split2": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "bench.js",
+        "index.js",
+        "package.json",
+        "test.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2/LICENSE": {
+      "kind": "file",
+      "sha256": "c372ef2fa1dfcb124ed807609751e75e3a009f108c5724916b489288fcb88a0c",
+      "bytes": 764,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2/README.md": {
+      "kind": "file",
+      "sha256": "7369c93bb01adc348ccdd1ac052880cc7d06e39a4a037c6a3f15175c3a6f0a64",
+      "bytes": 3381,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2/bench.js": {
+      "kind": "file",
+      "sha256": "de9eadc4133f88e9991f504899c47ef841ee923576dba2a8e50dc34a1d48692e",
+      "bytes": 472,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2/index.js": {
+      "kind": "file",
+      "sha256": "842471719e0e901e01ae1a1d3a6a4d1ff3e36747a7f50d5644f09d1d595c1857",
+      "bytes": 3764,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2/package.json": {
+      "kind": "file",
+      "sha256": "87b734c3087c8d9ed5d76d1bff00db30f960831ba8705dd18d73b180d08d2140",
+      "bytes": 1113,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/split2/test.js": {
+      "kind": "file",
+      "sha256": "de9619b9670887b6d1ed959287b96b46334cd9a6be21487c8a715afad90eade8",
+      "bytes": 7925,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/xtend": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend": {
+      "kind": "directory",
+      "names": [
+        ".jshintrc",
+        "LICENSE",
+        "README.md",
+        "immutable.js",
+        "mutable.js",
+        "package.json",
+        "test.js"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/.jshintrc": {
+      "kind": "file",
+      "sha256": "da3531289454b9a256c622c1a74771440d4f0e57092262902cefbc6830ec3a7c",
+      "bytes": 545,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/LICENSE": {
+      "kind": "file",
+      "sha256": "82e67379203d5794e7c44549847d8d64ae6904591381682360470898bd306821",
+      "bytes": 1078,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/README.md": {
+      "kind": "file",
+      "sha256": "fe5fb4d83470799709c32207fc1fff3e522070b2c625a9818f191125406cd360",
+      "bytes": 726,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/immutable.js": {
+      "kind": "file",
+      "sha256": "04986f168b8f16f4f25237d0608cdf57b6ca14f100fed62c0295bda2559ab24b",
+      "bytes": 384,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/mutable.js": {
+      "kind": "file",
+      "sha256": "71a38649c77408217483f81f55daee1d6646d6c670e3d034a4482cb3453886e9",
+      "bytes": 369,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/package.json": {
+      "kind": "file",
+      "sha256": "b02ffef8cda96c5c3ee00a00390e63f608362c2ddfb3ed754e181d013a45d48a",
+      "bytes": 1056,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/xtend/test.js": {
+      "kind": "file",
+      "sha256": "4a7a6d3aade85095607c4aa3bd99f74fa6adaa69058d156677ad7756955e80f6",
+      "bytes": 2307,
+      "mode": 420
+    },
+    "/private/tmp/v19-customer-demo-website-xdm6qgzs/source/node_modules/pg-cloudflare": {
+      "kind": "link",
+      "target": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare",
+      "realpath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare"
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare": {
+      "kind": "directory",
+      "names": [
+        "LICENSE",
+        "README.md",
+        "dist",
+        "esm",
+        "package.json",
+        "src"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/LICENSE": {
+      "kind": "file",
+      "sha256": "192b8f5c96900f04a1271dec39688655d7416c1c6ea84a508e18b50d2b6751f3",
+      "bytes": 1077,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/README.md": {
+      "kind": "file",
+      "sha256": "d76b5e56e088f30e86dba1466ed03adf924344db31278ec966c5a35d219aca26",
+      "bytes": 4383,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist": {
+      "kind": "directory",
+      "names": [
+        "empty.d.ts",
+        "empty.js",
+        "empty.js.map",
+        "index.d.ts",
+        "index.js",
+        "index.js.map"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist/empty.d.ts": {
+      "kind": "file",
+      "sha256": "d889ca31ecf859432c9e675cf056009a227f839856a8cac58a70875e2d619a8b",
+      "bytes": 53,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist/empty.js": {
+      "kind": "file",
+      "sha256": "3f83d105df21adbeeffb03450deb422644c30023ece93b2d6191fac3c620a316",
+      "bytes": 258,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist/empty.js.map": {
+      "kind": "file",
+      "sha256": "d68e0a1a8fc1c84f026b87ff43556987d0fbf0c3cd6c2c3e2715164d4795bb93",
+      "bytes": 150,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist/index.d.ts": {
+      "kind": "file",
+      "sha256": "0db679917266057c64fb2f943bad559ced56831ff56870f877c71c14913cfde4",
+      "bytes": 1156,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist/index.js": {
+      "kind": "file",
+      "sha256": "fdd631639301f2a7478a4770415fafcde43209cdd54b6caa73154ca423137ebd",
+      "bytes": 5712,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/dist/index.js.map": {
+      "kind": "file",
+      "sha256": "2c98af14fed37fdeb2bb9ca46dfb389eee0c4e9d6c6deda414f1e02dc5c5173a",
+      "bytes": 5769,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/esm": {
+      "kind": "directory",
+      "names": [
+        "index.mjs"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/esm/index.mjs": {
+      "kind": "file",
+      "sha256": "8a44ad34a1d541c0607579b46ab4eb3d60c614991429aa053763d7bca58cff7e",
+      "bytes": 87,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/package.json": {
+      "kind": "file",
+      "sha256": "93b30ce3bed1ce3b836aa344c8afdaab74a42c03720e8d5baa801b6ae84ca3e7",
+      "bytes": 944,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/src": {
+      "kind": "directory",
+      "names": [
+        "empty.ts",
+        "index.ts",
+        "types.d.ts"
+      ]
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/src/empty.ts": {
+      "kind": "file",
+      "sha256": "e9bbc49a0780b0f81e9b1906aef57ad9f9371aba33a9f4e9b9eb9191c0dc19c9",
+      "bytes": 144,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/src/index.ts": {
+      "kind": "file",
+      "sha256": "50fe877a1f395ee129e1b97bcef3ef45a124e25586dc44c2799397604ea74c76",
+      "bytes": 5356,
+      "mode": 420
+    },
+    "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/node_modules/pg-cloudflare/src/types.d.ts": {
+      "kind": "file",
+      "sha256": "ba1c222e51377f1d8c47979ec6216e0a566d0828b10de794db31d6a44f5cf491",
+      "bytes": 612,
+      "mode": 420
+    }
+  },
+  "limits": {
+    "seconds": 240,
+    "logBytes": 1048576,
+    "clientSeconds": 120
+  },
+  "expectedPostgres": "17.11",
+  "expectedRole": "fictional local neondb_owner",
+  "providerCoordinatesNeverUsedForConnection": true
+}

@@ -1,0 +1,6 @@
+{
+  "scripts/windows_registry_wix_diagnostic.py": "3bb0fb282e8d9fb274a81f0b988f84af5e39b40c087576ef00735b876a951ed4",
+  "scripts/registry-render-cases.json": "3c49500d7dce1ec216ef0e63e9763e98dd911ebbf81c077284bfad14b0971417",
+  ".github/workflows/windows-msi-byte-diagnostic.yml": "fbe058a33b2d527563dd6950f4fe089f54d2508a4f82793e9616a48dc3bef351",
+  "scripts/windows-registry-wix-inputs.json": "b73512f98003972c46b35d4468ac54095eac90e4a0f6c657c57aa4f3f8fb98d5"
+}

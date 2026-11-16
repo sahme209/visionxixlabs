@@ -1,0 +1,21 @@
+{
+  "accepted": false,
+  "compiledProductionServer": true,
+  "actualOwnedPostgres": true,
+  "strictRequireConfigured": true,
+  "googleOAuthVerified": false,
+  "installerAvailable": false,
+  "productionAccess": false,
+  "googleLinkIntentExplicitlySynthetic": true,
+  "googleLinkDoesNotAttestGoogle": true,
+  "liveMailAttempted": false,
+  "statusStoresOperational": true,
+  "failure": {
+    "stage": "google_link_cookie_boundary",
+    "scenario": "none",
+    "errorClass": "Error",
+    "assertion": "google_link_state",
+    "code": null,
+    "causeCode": null
+  }
+}

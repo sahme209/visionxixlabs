@@ -1,0 +1,13 @@
+{
+  "rootSourceBeforeSha256": "172fb786b545493565c470e7f71dd44c5276ff9cc8e28c684fdc4d7fcf71b68f",
+  "productHttpSourceSha256": "f9731fe0266be2eaf110b0d8b26334849aa1bd56c64fcbe8f5995578eab59f90",
+  "proposedSourceSha256": "79eda9a975593b65c5856c1f9e6aeb79e610ab45488126553b300d33d16aa514",
+  "nativeExecuted": false,
+  "rootEdited": false,
+  "actualFailureLog": "/tmp/v19-windows-ci-failure.log",
+  "actualStreamTotalBytes": 8388608,
+  "actualChunkBytes": 16384,
+  "shortWaitSeconds": 5,
+  "proposedBulkOnlySeconds": 30,
+  "productStreamSeconds": 120
+}

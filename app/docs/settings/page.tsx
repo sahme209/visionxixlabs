@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Callout, DocFooterNav, DocHeader, DocSection } from "@/components/docs/DocPrimitives";
-export const metadata: Metadata = { title: "Settings and sessions — Axiom Documentation", description: "Change your display name and review or revoke your paired desktop sessions.", alternates: { canonical: "/docs/settings" } };
+export const metadata: Metadata = { title: "Settings and sessions — V19 Documentation", description: "Change your display name and review or revoke your paired desktop sessions.", alternates: { canonical: "/docs/settings" } };
 export default function SettingsGuide() {
  return <>
   <DocHeader kicker="Account · Settings and sessions" title="Keep your profile and devices under control." summary="Control → Settings & sessions contains Profile, Security and Sessions. Browser sign-in, workspace membership and paired desktop access are distinct." />
@@ -12,7 +12,7 @@ export default function SettingsGuide() {
    <p><a href="/control/settings?section=security">Security</a> shows the sign-in email and browser-session status. It is not a password, MFA or role-management form. Use <a href="/docs/members">Members and roles</a> for workspace access. Signing out ends the browser session; paired desktop sessions remain independent.</p>
   </DocSection>
   <DocSection id="sessions" kicker="03" title="Review and revoke a paired device">
-   <p>Open <a href="/control/settings?section=sessions">Sessions</a>. Axiom lists active pairings belonging to your account in the current workspace, with device label, platform, app version when available and last-seen time. It does not show bearer tokens or provider credentials. An unavailable list is not proof that no devices exist.</p>
+   <p>Open <a href="/control/settings?section=sessions">Sessions</a>. V19 lists active pairings belonging to your account in the current workspace, with device label, platform, app version when available and last-seen time. It does not show bearer tokens or provider credentials. An unavailable list is not proof that no devices exist.</p>
    <p>Choose <em>Revoke device</em>, check the named device in the confirmation and confirm. The selected pairing loses access to protected APIs; this does not sign out your browser or revoke other devices. If the result is unconfirmed, refresh the session list before retrying.</p>
    <Callout variant="warning" title="Revocation is not a remote wipe">This revokes the pairing. It does not uninstall the app, erase local files, revoke an independent provider credential or prove that earlier work was cancelled.</Callout>
   </DocSection>

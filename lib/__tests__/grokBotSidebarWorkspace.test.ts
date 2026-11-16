@@ -21,7 +21,7 @@ import App from '../../desktop/src/App';
 afterEach(cleanup);
 it('opens the distinct sidebar workspace between Agent and Releases and retains both local drafts without reinitializing Chat',async()=>{
  render(createElement(App));fireEvent.click(await screen.findByRole('button',{name:/Open Agent/}));await screen.findByLabelText('Chat draft');fireEvent.change(screen.getByLabelText('Chat draft'),{target:{value:'Retained Agent draft'}});
- const agent=screen.getByRole('button',{name:'Agent'}),bot=screen.getByRole('button',{name:'Axiom Bot'}),releases=screen.getByRole('button',{name:'Releases'});
+ const agent=screen.getByRole('button',{name:'Agent'}),bot=screen.getByRole('button',{name:'V19 Bot'}),releases=screen.getByRole('button',{name:'Releases'});
  expect(agent.compareDocumentPosition(bot)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();expect(bot.compareDocumentPosition(releases)&Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
  fireEvent.click(bot);await screen.findByLabelText('Bot task title');expect(screen.getByTestId('chat-active').textContent).toBe('false');expect(screen.queryByRole('textbox',{name:'Chat draft'})).toBeNull();
  fireEvent.change(screen.getByLabelText('Bot task title'),{target:{value:'Retained Bot draft'}});fireEvent.click(agent);expect(screen.getByTestId('chat-active').textContent).toBe('true');expect((screen.getByLabelText('Chat draft') as HTMLInputElement).value).toBe('Retained Agent draft');

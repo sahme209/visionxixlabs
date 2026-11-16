@@ -1,0 +1,44 @@
+{
+  "msi-mod.rs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle/windows/msi/mod.rs",
+    "bytes": 35730,
+    "sha256": "f681775bf95122f529e4cbb8dba318e24a0084cfab26a14a76458b77f2e9ecfc"
+  },
+  "nsis-mod.rs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle/windows/nsis/mod.rs",
+    "bytes": 31844,
+    "sha256": "ce129133be31063c51ee3649f69f600b9397f6af1e24075dec3b0d54ae637a2c"
+  },
+  "installer.nsi": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi",
+    "bytes": 34027,
+    "sha256": "d00089d3b1a2c4a30d7b6e098079100cb8f25e980f84d4515aca4597b95e967d"
+  },
+  "released-config.json": {
+    "url": "https://raw.githubusercontent.com/sahme209/visionxixlabs/desktop-v0.1.21/desktop/src-tauri/tauri.conf.json",
+    "bytes": 1291,
+    "sha256": "8913e8f461991b4d48e85ce3d8afe7db4f34c7b5b37c70775263bd85d41a9cdc"
+  },
+  "released-workflow.yml": {
+    "url": "https://raw.githubusercontent.com/sahme209/visionxixlabs/desktop-v0.1.21/.github/workflows/desktop-release.yml",
+    "bytes": 47375,
+    "sha256": "bf7a7b24b6beb548b6b24a8232bd02d7a6febee5f43273110f5ff75c1baaa229"
+  },
+  "legacyMsiUpgradeCode": "a3c7da37-1792-51f2-8b3a-8848b1b33f88",
+  "renamedDefaultMsiUpgradeCode": "f6f3829c-2e88-5fcd-bff1-e247f31b9e46",
+  "released-package-lock.json": {
+    "url": "https://raw.githubusercontent.com/sahme209/visionxixlabs/desktop-v0.1.21/desktop/package-lock.json",
+    "bytes": 163188,
+    "sha256": "fc2fc35cbb9d3410bd2723ae50976d9edd7076f90cad242e1126cc2e7f5d2e48"
+  },
+  "released-msi-mod.rs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.11.1/crates/tauri-bundler/src/bundle/windows/msi/mod.rs",
+    "bytes": 35422,
+    "sha256": "c402e04e42eb5242cd319b55d9a6b96d1ab764c740e61875e2d3cd8769d2bb1d"
+  },
+  "released-installer.nsi": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.11.1/crates/tauri-bundler/src/bundle/windows/nsis/installer.nsi",
+    "bytes": 31796,
+    "sha256": "ee84148e405adc4d736a46456dd8345a644751bd1f28a335dd7fd833a32d7c3e"
+  }
+}

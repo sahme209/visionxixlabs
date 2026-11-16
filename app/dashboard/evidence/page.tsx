@@ -113,7 +113,7 @@ export default function EvidencePage() {
               Audit-ready <span className="text-gradient">evidence.</span>
             </h1>
             <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
-              Every evidence record Axiom has collected, classified by source. Verified evidence comes from real audit + validation runs. Self-attested + manual records are clearly labeled. <span className="text-zinc-500">No SOC 2 / ISO claims without backing records.</span>
+              Every evidence record V19 has collected, classified by source. Verified evidence comes from real audit + validation runs. Self-attested + manual records are clearly labeled. <span className="text-zinc-500">No SOC 2 / ISO claims without backing records.</span>
             </p>
           </div>
 

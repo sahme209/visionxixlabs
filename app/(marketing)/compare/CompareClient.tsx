@@ -36,14 +36,14 @@ const OPTIONS = [
   {
     id:"saas_stack",label:"A SaaS stack",alternative:"Your configured stack",lead:"Compare integration work and verified workflow behavior. A shared interface does not replace every specialist tool.",
     rows:[
-      ["Total cost","Use the current Axiom rates and the costs of any connected services.","Use actual vendor quotes, usage charges and integration maintenance."],
+      ["Total cost","Use the current V19 rates and the costs of any connected services.","Use actual vendor quotes, usage charges and integration maintenance."],
       ["Change scope","Inspect classification and policy support for the exact operation.","Inspect each tool's scope, policy and handoff responsibilities."],
       ["Timeline","Check which records are correlated and whether timestamps and sources are current.","Check how your stack correlates the same source events."],
       ["Compliance assistance","Control mapping is not certification; verify current evidence coverage.","Verify the controls and evidence actually supplied by each service."],
       ["Execution and recovery","A proposal or accepted dispatch does not verify execution, health or recovery.","Verify those outcomes through your own configured deployment workflow."],
       ["Approval boundaries","Inspect current roles, reviewer separation and exact action limits.","Inspect cross-tool roles, approval policy and bypass paths."],
       ["Model availability","Check enabled providers, rate limits and credits. Do not assume a free fallback.","Check provider availability, model selection and billing limits."],
-      ["Observability","Verify the evidence surfaced by Axiom and retain specialist tools where needed.","Evaluate your required telemetry, dashboards, alerting and retention."],
+      ["Observability","Verify the evidence surfaced by V19 and retain specialist tools where needed.","Evaluate your required telemetry, dashboards, alerting and retention."],
     ] satisfies readonly EvidenceRow[],
   },
 ] as const;
@@ -53,8 +53,8 @@ export function CompareClient() {
   const active=OPTIONS.find(option=>option.id===selected)??OPTIONS[0];
   return <div className="public-detail-page public-compare-page">
     <section className="public-detail-header">
-      <PageHero eyebrow="Axiom · Evaluation" title="Compare the evidence." muted="Choose for your workflow."
-        lead="Use concrete questions to evaluate Axiom alongside a team, an AI tool or your current stack."
+      <PageHero eyebrow="V19 · Evaluation" title="Compare the evidence." muted="Choose for your workflow."
+        lead="Use concrete questions to evaluate V19 alongside a team, an AI tool or your current stack."
         note="This is an evaluation checklist, not a measured benchmark or a claim of feature parity. Verify the current version and your configured permissions." />
     </section>
     <section className="pb-12">
@@ -77,8 +77,8 @@ export function CompareClient() {
         }}
         className="public-comparison-frame rounded-xl border border-white/10 bg-[#171615]">
         <table className="public-evaluation-table w-full text-left">
-          <caption className="sr-only">Questions for Axiom and {active.alternative}</caption>
-          <thead><tr><th scope="col">Evaluate</th><th scope="col">Axiom evidence to inspect</th><th scope="col">{active.alternative}</th></tr></thead>
+          <caption className="sr-only">Questions for V19 and {active.alternative}</caption>
+          <thead><tr><th scope="col">Evaluate</th><th scope="col">V19 evidence to inspect</th><th scope="col">{active.alternative}</th></tr></thead>
           <tbody>{active.rows.map(([question,axiom,alternative])=><tr key={question}><th scope="row">{question}</th><td>{axiom}</td><td>{alternative}</td></tr>)}</tbody>
         </table>
       </div>

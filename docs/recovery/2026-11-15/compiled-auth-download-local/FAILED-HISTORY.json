@@ -1,0 +1,161 @@
+[
+  {
+    "packet": "proposal",
+    "receiptSha256": "619ba9da82f9f5761201d69b48e77b1620032713adfd6a037410f6ff59afbf27",
+    "result": {
+      "accepted": false,
+      "failure": "owned_phase_failed",
+      "ownedDirectory": "/private/tmp/axiom-compiled-next-pg17-pq_c0_br",
+      "phases": [
+        {
+          "phase": "postgres-version",
+          "exit": 0,
+          "seconds": 0.115,
+          "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+        },
+        {
+          "phase": "initdb",
+          "exit": 0,
+          "seconds": 0.408,
+          "logSha256": "4796d3e5c56e74b3f578fd92194d9fdce7df5108ae1065c93f70317452e94089"
+        },
+        {
+          "phase": "ca",
+          "exit": 0,
+          "seconds": 0.059,
+          "logSha256": "9c69b68be4ce06f7ec574b0967daf16b9b6e323cf9c065ccee28e17e5ca15c2a"
+        },
+        {
+          "phase": "csr",
+          "exit": 0,
+          "seconds": 0.122,
+          "logSha256": "b9923640f237f36b1d35ec55ac1cad58d0316d4215e661e172bef0bb160ca5ac"
+        },
+        {
+          "phase": "sign",
+          "exit": 0,
+          "seconds": 0.055,
+          "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+        }
+      ],
+      "productionAccess": false,
+      "loopbackOnly": true,
+      "nativeAppOrGovernance": false,
+      "ownedProcessGroupsEmpty": true,
+      "ownedClusterRemoved": true,
+      "privateKeysRemoved": true
+    }
+  },
+  {
+    "packet": "corrected-proposal",
+    "receiptSha256": "7d28fc157b00a5b933b0cd937ff414000f6b739804ae4d0f35924fa4f25ed9e5",
+    "result": {
+      "accepted": false,
+      "failure": "owned_phase_failed",
+      "ownedDirectory": "/private/tmp/axiom-compiled-next-pg17-hme3sppy",
+      "phases": [
+        {
+          "phase": "sandbox-profile-preflight",
+          "exit": 0,
+          "seconds": 0.059,
+          "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "phase": "postgres-version",
+          "exit": 0,
+          "seconds": 0.062,
+          "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+        },
+        {
+          "phase": "initdb",
+          "exit": 0,
+          "seconds": 0.35,
+          "logSha256": "669cf997d0a62a13ab33607d0d3c461419109da272329ae78efee4d78c1e5f53"
+        },
+        {
+          "phase": "ca",
+          "exit": 0,
+          "seconds": 0.062,
+          "logSha256": "7815bd9a1ae44f9ea707a4fbcb46b8545df1ba7dc14547e98f3b82680e3ecbc5"
+        },
+        {
+          "phase": "csr",
+          "exit": 0,
+          "seconds": 0.059,
+          "logSha256": "67b2941aee5b88d07311a4e2266e2fb299994f1ea9a8f01e79c134e27ae2f1f9"
+        },
+        {
+          "phase": "sign",
+          "exit": 0,
+          "seconds": 0.058,
+          "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+        }
+      ],
+      "productionAccess": false,
+      "loopbackOnly": true,
+      "nativeAppOrGovernance": false,
+      "ownedProcessGroupsEmpty": true,
+      "ownedClusterRemoved": true,
+      "privateKeysRemoved": true
+    }
+  },
+  {
+    "packet": "diagnostic-proposal",
+    "receiptSha256": "80027f44adeb40f1517b3f7eaf3cff69c97cebc6d07517f85652bdf02bca5c76",
+    "result": {
+      "accepted": false,
+      "failure": "owned_phase_failed",
+      "ownedDirectory": "/private/tmp/axiom-compiled-next-pg17-0k0z_t87",
+      "phases": [
+        {
+          "phase": "sandbox-profile-preflight",
+          "exit": 0,
+          "seconds": 0.054,
+          "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "phase": "diagnostic-boundary-check",
+          "exit": 0,
+          "seconds": 0.058,
+          "logSha256": "c3583fd8e87110d56cffa95110e199c99806e47eebe8796cc1ed071d5dfa4171"
+        },
+        {
+          "phase": "postgres-version",
+          "exit": 0,
+          "seconds": 0.061,
+          "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+        },
+        {
+          "phase": "initdb",
+          "exit": 0,
+          "seconds": 0.348,
+          "logSha256": "0b6944735cd75d75895be612c862f2d0bec5e7c3527f7f965bb4c372b92f8d40"
+        },
+        {
+          "phase": "ca",
+          "exit": 0,
+          "seconds": 0.061,
+          "logSha256": "28cbcbd8ef25f78b51e074716f7d757391417f66c6a05b6c80144fbe02ef7f78"
+        },
+        {
+          "phase": "csr",
+          "exit": 0,
+          "seconds": 0.053,
+          "logSha256": "a4ce9ccb7b6b22005e46d29c00273c67d41a7b6c2c1f5e25c2e36f8823cd2b25"
+        },
+        {
+          "phase": "sign",
+          "exit": 0,
+          "seconds": 0.058,
+          "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+        }
+      ],
+      "productionAccess": false,
+      "loopbackOnly": true,
+      "nativeAppOrGovernance": false,
+      "ownedProcessGroupsEmpty": true,
+      "ownedClusterRemoved": true,
+      "privateKeysRemoved": true
+    }
+  }
+]

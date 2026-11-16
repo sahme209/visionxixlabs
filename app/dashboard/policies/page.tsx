@@ -131,7 +131,7 @@ export default function PoliciesPage() {
       <PageIntro
         kicker={`Business / admin · policy registry${report?.generatedAt ? ` · declared ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
         title={<>What governs <span className="text-zinc-500">every action.</span></>}
-        description="Every policy Axiom enforces — declarative, auditable, with canonical evidence refs. The registry declares; the underlying engines enforce."
+        description="Every policy V19 enforces — declarative, auditable, with canonical evidence refs. The registry declares; the underlying engines enforce."
         helps="Read every policy in plain English, see its current enforcement state, and the canonical source-of-truth it points at."
         connectFirst="Already in effect — policies apply platform-wide, no setup required."
         engineers={["Council / Safety", "Compliance Officer", "Security Engineer"]}

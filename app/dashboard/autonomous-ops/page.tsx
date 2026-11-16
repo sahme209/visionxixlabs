@@ -98,7 +98,7 @@ export default async function AutonomousOpsPage() {
           The <span className="bg-linear-to-r from-orange-300 via-amber-300 to-cyan-300 bg-clip-text text-transparent">autonomous</span> operations loop.
         </h1>
         <p className="text-sm text-zinc-400 max-w-3xl leading-relaxed">
-          Axiom moves toward A-to-Z cloud operations through one coordinated loop. Every action is approval-gated and reversible. Preview / planned / blocked surfaces are labelled honestly.
+          V19 moves toward A-to-Z cloud operations through one coordinated loop. Every action is approval-gated and reversible. Preview / planned / blocked surfaces are labelled honestly.
         </p>
       </header>
 
@@ -143,7 +143,7 @@ export default async function AutonomousOpsPage() {
       <section className="grid lg:grid-cols-3 gap-5">
         {/* Next actions */}
         <div className="lg:col-span-2 rounded-2xl border border-white/6 bg-white/1.5 p-6">
-          <SectionHeader Icon={BoltIcon} title="What Axiom can do next" tone="text-orange-300" />
+          <SectionHeader Icon={BoltIcon} title="What V19 can do next" tone="text-orange-300" />
           {nextActions.length === 0 && (
             <p className="text-sm text-zinc-500">No high-leverage next action right now — connect a provider to start the loop.</p>
           )}
@@ -215,7 +215,7 @@ export default async function AutonomousOpsPage() {
       <section className="grid lg:grid-cols-2 gap-5">
         <div className="rounded-2xl border border-white/6 bg-white/1.5 p-6">
           <SectionHeader Icon={EyeIcon} title="Coverage gaps" tone="text-cyan-300" />
-          <p className="text-xs text-zinc-500 mb-4">Honest map of what Axiom cannot do yet — guides the engineering roadmap.</p>
+          <p className="text-xs text-zinc-500 mb-4">Honest map of what V19 cannot do yet — guides the engineering roadmap.</p>
           <ul className="space-y-2">
             {gaps.gaps.slice(0, 6).map((g) => (
               <li key={g.id} className="flex items-center justify-between gap-3 rounded-lg border border-white/5 bg-white/1 px-3 py-2">

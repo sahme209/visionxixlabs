@@ -1,6 +1,6 @@
 {
   "$schema": "https://raw.githubusercontent.com/tauri-apps/tauri/dev/crates/tauri-config-schema/schema.json",
-  "productName": "Axiom Agent",
+  "productName": "V19",
   "version": "0.1.23",
   "identifier": "com.visionxixlabs.axiom",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Axiom Agent",
+        "title": "V19",
         "width": 1280,
         "height": 800,
         "minWidth": 960,
@@ -45,6 +45,15 @@
       "icons/128x128@2x.png",
       "icons/icon.icns",
       "icons/icon.ico"
-    ]
+    ],
+    "windows": {
+      "wix": {
+        "upgradeCode": "a3c7da37-1792-51f2-8b3a-8848b1b33f88",
+        "template": "windows/main.wxs"
+      },
+      "nsis": {
+        "template": "windows/installer.nsi"
+      }
+    }
   }
 }

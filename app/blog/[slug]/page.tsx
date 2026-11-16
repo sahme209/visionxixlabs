@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: Params) {
         <section className="mx-auto mt-16 max-w-[70ch] rounded-xl border border-white/8 bg-[var(--public-surface)] p-6 text-center sm:p-10">
           <p className="mono-label inline-flex items-center gap-3 mb-4">
             <span className="text-zinc-400 tabular-nums">AX</span>
-            Try Axiom
+            Try V19
           </p>
           <h3 className="text-2xl md:text-3xl font-medium mb-3 leading-[1.04]">
             <span className="relative inline-block">

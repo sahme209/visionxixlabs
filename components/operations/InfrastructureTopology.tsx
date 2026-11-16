@@ -242,7 +242,7 @@ export function InfrastructureTopology({ topology = DEFAULT_TOPOLOGY, className 
               <CpuChipIcon className="h-10 w-10 text-orange-400 relative z-10" />
               <span className="absolute -bottom-1.5 right-1 w-3 h-3 rounded-full bg-emerald-400 border-2 border-[#09090b] shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
             </div>
-            <p className="text-[10px] font-bold text-center text-white mt-2 tracking-widest uppercase">Axiom Operator</p>
+            <p className="text-[10px] font-bold text-center text-white mt-2 tracking-widest uppercase">V19 Operator</p>
             <p className="text-[9px] text-zinc-500 text-center font-mono">{topology.length} providers connected</p>
           </div>
         </div>

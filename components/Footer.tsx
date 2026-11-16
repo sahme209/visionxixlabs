@@ -38,11 +38,11 @@ export function Footer({showCta=true}:{showCta?:boolean}={}) {
       <div className="mx-auto max-w-[1200px]">
         {showCta && <section className="flex flex-col gap-8 border-b border-white/[0.07] py-12 md:flex-row md:items-end md:justify-between lg:py-16" aria-labelledby="footer-cta-heading">
           <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">Axiom Agent</p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.22em] text-zinc-400">V19</p>
             <h2 id="footer-cta-heading" className="mt-4 max-w-3xl text-3xl font-medium leading-tight tracking-[-0.045em] text-zinc-100 sm:text-5xl">Engineering intent, under control.</h2>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/product" className="rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore Axiom</Link>
+            <Link href="/product" className="rounded-lg bg-zinc-100 px-5 py-3 text-sm font-semibold text-zinc-950 hover:bg-white">Explore V19</Link>
             <Link href="/support" className="rounded-lg border border-white/15 px-5 py-3 text-sm font-medium text-zinc-300 transition hover:border-white/30 hover:bg-white/5">Founding Supporters</Link>
           </div>
         </section>}
@@ -53,7 +53,7 @@ export function Footer({showCta=true}:{showCta?:boolean}={}) {
               <Image src="/vision-xix-logo.png" alt="" width={28} height={28} className="object-contain" />
               Vision XIX Labs
             </Link>
-            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-400">Axiom Agent brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
+            <p className="mt-5 max-w-sm text-sm leading-6 text-zinc-400">V19 brings AI assistance, human authorization, execution, and evidence into one governed engineering workflow.</p>
             <p className="mt-2 max-w-sm text-sm leading-6 text-zinc-400">We also build iOS applications.</p>
           </div>
 

@@ -76,14 +76,14 @@ export default function InsightsPage() {
         <Reveal direction="up" blur delay={0.15}>
           <section className="rounded-xl border border-white/8 bg-[var(--public-surface)] p-8 text-center sm:p-12">
             <h2 className="text-xl font-bold text-white mb-2 tracking-[-0.04em]">
-              See Axiom Agent in context
+              See V19 in context
             </h2>
             <p className="text-zinc-400 text-sm mb-4 max-w-xl mx-auto">
               Watch a scripted repository-to-deployment workflow, then download
               the desktop app to connect a supported system.
             </p>
             <Link className="public-feature-action" href="/download">
-              Download Axiom Agent
+              Download V19
             </Link>
           </section>
         </Reveal>

@@ -19,7 +19,7 @@ export function WorksWithStrip() {
             </li>
           ))}
         </ul>
-        <p className="mt-6 text-center text-[11px] text-zinc-600">Integrations available or in preview in Axiom. Logos are trademarks of their owners and do not imply endorsement. <a href="/integrations" className="underline underline-offset-2 hover:text-zinc-400">See each status</a></p>
+        <p className="mt-6 text-center text-[11px] text-zinc-600">Integrations available or in preview in V19. Logos are trademarks of their owners and do not imply endorsement. <a href="/integrations" className="underline underline-offset-2 hover:text-zinc-400">See each status</a></p>
       </div>
     </section>
   );

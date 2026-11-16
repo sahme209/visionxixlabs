@@ -121,7 +121,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         <section className={cockpit ? "mb-6" : "mx-auto max-w-[1280px] px-5 pb-10 pt-24 sm:px-8 sm:pb-14 lg:pt-28 lg:px-10"}>
           <div className={cockpit ? "max-w-3xl" : "grid gap-6 border-b border-white/[0.07] pb-12 lg:grid-cols-[minmax(0,7fr)_minmax(0,5fr)] lg:items-end lg:gap-16"}>
             <div>
-            {!cockpit && <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">Axiom Agent for desktop</p>}
+            {!cockpit && <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-orange-300">V19 for desktop</p>}
             <h1 className={cockpit ? "text-white" : "mt-5 text-[clamp(2.5rem,5vw,4.5rem)] font-medium leading-[1.05] tracking-tighter text-white"}>
               {cockpit ? "Desktop & provider setup" : <>Work where<br />engineering happens.</>}
             </h1>
@@ -151,7 +151,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         {cockpit && <section aria-label="Provider setup requirements" className="mb-6 rounded-xl border border-white/8 bg-white/1.5 p-5">
           <h2 className="text-sm font-medium text-zinc-100">Connect a provider securely</h2>
           <ol className="mt-3 list-decimal space-y-2 pl-4 text-xs leading-5 text-zinc-400">
-            <li>Sign in to Axiom Agent using the same account and workspace as this cockpit.</li>
+            <li>Sign in to V19 using the same account and workspace as this cockpit.</li>
             <li>Review the provider capabilities available in your installed release. A download does not create a cloud connection.</li>
             <li>Complete only the supported authorization flow with your administrator. Provider consent, scopes, credentials, and backend validation are required before a connection becomes active.</li>
           </ol>
@@ -159,7 +159,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
         </section>}
         <section id="downloads" className={cockpit ? "mb-6 scroll-mt-6" : "mx-auto max-w-[1280px] px-5 pb-16 sm:px-8 lg:px-10"}>
           <div className={cockpit ? "mb-3" : "mb-6 border-t border-white/8 pt-8"}>
-            <h2 className={cockpit ? "text-sm font-medium text-zinc-100" : "text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl"}>{cockpit ? "Desktop installers" : "Use Axiom on your workstation."}</h2>
+            <h2 className={cockpit ? "text-sm font-medium text-zinc-100" : "text-2xl font-medium tracking-[-0.035em] text-zinc-100 sm:text-3xl"}>{cockpit ? "Desktop installers" : "Use V19 on your workstation."}</h2>
             <p className={cockpit ? "mt-1 text-xs text-zinc-500" : "mt-2 text-base text-zinc-400"}>One governed workspace on macOS, Windows and Linux. Sizes are download sizes; installed size may differ.</p>
           </div>
 
@@ -177,7 +177,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
             />
             <DownloadCard
               title="Windows"
-              copy="The Axiom desktop workspace for Windows engineering teams."
+              copy="The V19 desktop workspace for Windows engineering teams."
               icon={CommandLineIcon}
               assets={[{ id: "windows", asset: manifest?.assets["windows-x64"] ?? null }]}
               compact={cockpit}
@@ -204,7 +204,7 @@ export function DownloadContent({ cockpit = false }: { cockpit?: boolean }) {
               <Link href="/docs/approval-workflow" className="text-zinc-200 underline underline-offset-4 hover:text-white">Approval workflow</Link>
             </div>
             <p className="mt-5 text-sm leading-6 text-zinc-400">Need more help? <Link href="/account/help" className="text-zinc-200 underline underline-offset-4 hover:text-white">Account help (account required)</Link> provides an account-context support entry. You can also <Link href="/contact" className="text-zinc-200 underline underline-offset-4 hover:text-white">Contact us</Link> through the public contact page.</p>
-            <p className="mt-3 text-xs leading-5 text-zinc-500"><Link href="/support" className="text-zinc-300 underline underline-offset-4 hover:text-white">Founding Supporters</Link> is a separate way to support Axiom’s development.</p>
+            <p className="mt-3 text-xs leading-5 text-zinc-500"><Link href="/support" className="text-zinc-300 underline underline-offset-4 hover:text-white">Founding Supporters</Link> is a separate way to support V19’s development.</p>
           </div>
         </section>}
 

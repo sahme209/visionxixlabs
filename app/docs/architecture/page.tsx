@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 
 export const metadata: Metadata = {
-  title: "Architecture overview — Axiom Documentation",
-  description: "The current Axiom desktop, governance, integration, and deployment architecture.",
+  title: "Architecture overview — V19 Documentation",
+  description: "The current V19 desktop, governance, integration, and deployment architecture.",
 };
 
 export default function ArchitecturePage() {

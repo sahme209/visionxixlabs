@@ -4,14 +4,14 @@ import { ArrowRightIcon } from "@heroicons/react/24/outline";
 import { DocHeader, Callout, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Documentation — Axiom",
+  title: "Documentation — V19",
   alternates: { canonical: "/docs" },
-  description: "Find setup guides, task instructions, control references and recovery guidance for Axiom. Check each guide's version and availability.",
+  description: "Find setup guides, task instructions, control references and recovery guidance for V19. Check each guide's version and availability.",
 };
 
 const PATHS = [
   { title: "Get started", description: "Set up your workspace, then check what is ready.", items: [
-    ["/docs/getting-started", "Start with Axiom", "Understand the setup sequence and prerequisites."],
+    ["/docs/getting-started", "Start with V19", "Understand the setup sequence and prerequisites."],
     ["/docs/desktop-install", "Install the desktop app", "Check platform and installation guidance."],
     ["/docs/quickstart-checklist", "Follow the quickstart checklist", "Separate installation from workflow readiness."],
   ] },
@@ -37,7 +37,7 @@ const PATHS = [
 
 export default function DocsIndexPage() {
   return <>
-    <DocHeader number="01" kicker="Axiom documentation" title="Find your next step."
+    <DocHeader number="01" kicker="V19 documentation" title="Find your next step."
       summary="Set up, follow a task, check a control or investigate an outcome. Pick the guide for the work in front of you." />
     <Callout variant="info" title="Version and scope">
       Guides describe different surfaces and stages of availability. Check the installed version, current access and each guide’s preview or supported-scope notes. A guide’s presence does not establish that every operation is available or production-activated.

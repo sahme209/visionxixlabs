@@ -33,7 +33,7 @@ import { ExecuteApprovalButton } from "@/components/workforce/ExecuteApprovalBut
 import { findPipelineDefinition } from "@/lib/workforce/pipelines/pipelineRegistry";
 
 export const metadata: Metadata = {
-  title: "Approval detail · Axiom",
+  title: "Approval detail · V19",
   description: "Per-approver decision trail for an engineer-sourced approval.",
 };
 

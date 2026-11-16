@@ -3,7 +3,7 @@ import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } 
 
 export const metadata: Metadata = {
     title: "Readiness checks — ReleaseOps Documentation",
-    description: "How Axiom Agent records deployment readiness signals, uncertainty, evidence, and approval gates.",
+    description: "How V19 records deployment readiness signals, uncertainty, evidence, and approval gates.",
 };
 
 const DIMENSIONS = [
@@ -23,7 +23,7 @@ export default function ReadinessScoringPage() {
             <DocHeader
                 kicker="ReleaseOps · Readiness"
                 title="Deployment readiness."
-                summary="Axiom Agent assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments."
+                summary="V19 assembles evidence-backed readiness checks before approval and execution. It must distinguish verified signals, missing data, preview inputs, and human judgments."
             />
 
             <Callout variant="info" title="A score is not evidence by itself">
@@ -69,7 +69,7 @@ export default function ReadinessScoringPage() {
                         { question: "Can AI decide alone?", answer: "No. AI output carries sources and uncertainty; required human approvals remain authoritative." },
                         { question: "Can thresholds vary?", answer: "Yes. Organizations and environments can use different gates, provided the active policy is recorded." },
                         { question: "What happens after a failure?", answer: "The failed result and evidence remain visible; correct the dependency and rerun only the affected check." },
-                        { question: "Where is readiness reviewed?", answer: "Inside the installed Axiom Agent deployment workflow." },
+                        { question: "Where is readiness reviewed?", answer: "Inside the installed V19 deployment workflow." },
                     ]}
                 />
             </DocSection>

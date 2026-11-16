@@ -2,7 +2,7 @@ import {desktopClient,type ApiResult} from './desktopClient';
 import {awsGuidedResponseSchema,awsGuidedRequestSchema,type AwsGuidedResponse} from '../../../lib/cloud/aws/guided/contract';
 const unavailable='AWS connection status could not be confirmed. Refresh status before taking another action.';
 export async function awsGuidedRequest(body?:unknown,signal?:AbortSignal):Promise<ApiResult<AwsGuidedResponse>>{
- const config=desktopClient.config;if(config.apiBase!=='https://visionxixlabs.com'||!config.sessionToken?.startsWith('axm.desk.'))return{ok:false,error:'A paired Axiom workspace session is required.'};
+ const config=desktopClient.config;if(config.apiBase!=='https://visionxixlabs.com'||!config.sessionToken?.startsWith('axm.desk.'))return{ok:false,error:'A paired V19 workspace session is required.'};
  if(body!==undefined&&!awsGuidedRequestSchema.safeParse(body).success)return{ok:false,error:'The AWS connection action changed. Refresh its status.'};
  const combined=signal?AbortSignal.any([signal,AbortSignal.timeout(25000)]):AbortSignal.timeout(25000);
  try{combined.throwIfAborted();const r=await fetch(`${config.apiBase}/api/desktop/cloud/aws/guided`,{method:body===undefined?'GET':'POST',headers:{Accept:'application/json',Authorization:`Bearer ${config.sessionToken}`,...(body===undefined?{}:{'Content-Type':'application/json'})},credentials:'omit',redirect:'error',cache:'no-store',signal:combined,...(body===undefined?{}:{body:JSON.stringify(body)})});

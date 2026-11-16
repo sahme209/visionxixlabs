@@ -55,14 +55,14 @@ it('keeps all eight real customer destinations navigable when data services are 
  frames.welcome=view.container.innerHTML;
  expect(screen.getByText('Workspace connected')).toBeDefined();
  expect(screen.getByText('Access active')).toBeDefined();
- for(const [label,title] of [['Agent','Agent'],['Axiom Bot','Axiom Bot'],['Releases','Releases'],['Repositories','Repositories'],['Batches','Batches'],['Apps & skills','Apps & skills'],['Documentation','Documentation']] as const){
-  const nav=screen.getByRole('navigation',{name:label==='Documentation'?'Workspace utilities':'Axiom workspace'});
+ for(const [label,title] of [['Agent','Agent'],['V19 Bot','V19 Bot'],['Releases','Releases'],['Repositories','Repositories'],['Batches','Batches'],['Apps & skills','Apps & skills'],['Documentation','Documentation']] as const){
+  const nav=screen.getByRole('navigation',{name:label==='Documentation'?'Workspace utilities':'V19 workspace'});
   fireEvent.click(within(nav).getByRole('button',{name:label}));
   await screen.findAllByRole('heading',{name:title});
   await act(async()=>{});
   // Body landmarks and settled failure states cannot be satisfied by TopBar.
   if(label==='Agent')await screen.findByRole('button',{name:'Retry models'});
-  if(label==='Axiom Bot')await screen.findByRole('region',{name:'Axiom Bot workspace'});
+  if(label==='V19 Bot')await screen.findByRole('region',{name:'V19 Bot workspace'});
   if(label==='Releases')await screen.findByText('Something went wrong loading your requests. Please try again.');
   if(label==='Repositories')await screen.findByRole('textbox',{name:'Local repositories folder'});
   if(label==='Batches'){
@@ -80,7 +80,7 @@ it('keeps all eight real customer destinations navigable when data services are 
   if(label==='Documentation')await screen.findByRole('heading',{name:'From code to governed deployment'});
   expect(screen.queryByText('This view could not be displayed')).toBeNull();
   expect(within(nav).getByRole('button',{name:label}).getAttribute('aria-current')).toBe('page');
-  const frameNames:Record<string,string>={'Agent':'agent','Axiom Bot':'bot','Releases':'releases','Repositories':'repositories','Batches':'batches','Apps & skills':'apps','Documentation':'docs'};
+  const frameNames:Record<string,string>={'Agent':'agent','V19 Bot':'bot','Releases':'releases','Repositories':'repositories','Batches':'batches','Apps & skills':'apps','Documentation':'docs'};
   frames[frameNames[label]]=view.container.innerHTML;
   if(label==='Agent'){
    fireEvent.click(screen.getByRole('button',{name:'Editor & Agent'}));
@@ -116,7 +116,7 @@ it('keeps private destinations unmounted when verified identity lacks workspace 
  render(createElement(App));
  await screen.findByRole('heading',{name:'Workspace access required'});
  await act(async()=>{});
- expect(screen.queryByRole('navigation',{name:'Axiom workspace'})).toBeNull();
+ expect(screen.queryByRole('navigation',{name:'V19 workspace'})).toBeNull();
  expect(screen.queryByText('Workspace connected')).toBeNull();
  expect(screen.queryByText('Access active')).toBeNull();
  expect(screen.queryByRole('heading',{name:/Your next move.*in focus/})).toBeNull();

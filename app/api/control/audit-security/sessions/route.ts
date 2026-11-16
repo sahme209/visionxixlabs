@@ -67,7 +67,7 @@ export async function DELETE(request: NextRequest) {
       },
       data: {
         revokedAt: now,
-        revokeReason: "Revoked by a workspace administrator in Axiom Control.",
+        revokeReason: "Revoked by a workspace administrator in V19 Control.",
       },
     });
     if (result.count !== 1) return false;

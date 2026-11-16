@@ -1,5 +1,5 @@
 /*!
- * System tray — Axiom Agent menubar surface.
+ * System tray — V19 menubar surface.
  *
  * Owns the long-lived TrayIcon attached to the main app. Three responsibilities:
  *   1. Render a menu (Show window · pending-runs submenu · Quit) so the user
@@ -73,7 +73,7 @@ pub fn build<R: Runtime>(app: &AppHandle<R>) -> tauri::Result<()> {
 
     builder
         .icon_as_template(true) // macOS template icon — adapts to light/dark menubar.
-        .tooltip("Axiom Agent")
+        .tooltip("V19")
         .menu(&build_menu(app, &[])?)
         .show_menu_on_left_click(false)
         .on_menu_event(|app, event| {
@@ -138,7 +138,7 @@ fn build_menu<R: Runtime>(
     pending: &[PendingRunSummary],
 ) -> tauri::Result<Menu<R>> {
     const MAX_PENDING_ITEMS: usize = 5;
-    let show = MenuItem::with_id(app, MENU_ID_SHOW, "Show Axiom Agent", true, None::<&str>)?;
+    let show = MenuItem::with_id(app, MENU_ID_SHOW, "Show V19", true, None::<&str>)?;
     let quit = MenuItem::with_id(app, MENU_ID_QUIT, "Quit", true, None::<&str>)?;
 
     let pending_submenu = build_pending_submenu(app, pending, MAX_PENDING_ITEMS)?;
@@ -244,11 +244,11 @@ pub fn set_tray_badge<R: Runtime>(app: AppHandle<R>, count: u32) -> Result<(), S
         Some(count.to_string())
     };
     let tooltip = if count == 0 {
-        "Axiom Agent".to_string()
+        "V19".to_string()
     } else if count == 1 {
-        "Axiom Agent · 1 approval pending".to_string()
+        "V19 · 1 approval pending".to_string()
     } else {
-        format!("Axiom Agent · {count} approvals pending")
+        format!("V19 · {count} approvals pending")
     };
 
     let _ = tray.set_title(title);

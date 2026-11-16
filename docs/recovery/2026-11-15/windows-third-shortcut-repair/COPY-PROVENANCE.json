@@ -1,0 +1,224 @@
+[
+  {
+    "source": "/private/tmp/v19-third-shortcut-product-repair/INPUTS.json",
+    "destination": "product/INPUTS.json",
+    "sha256": "00fc1102090043def3a2b3823ab77a4ee9b130239563c6115167cc9bb199158c",
+    "bytes": 1934
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-product-repair/APPLY-FILES.json",
+    "destination": "product/APPLY-FILES.json",
+    "sha256": "1449d2e9f794f8d94b41e6addddffa640a4379d1773accc7b1ae12ce72782b7e",
+    "bytes": 592
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-product-repair/PROVENANCE.json",
+    "destination": "product/PROVENANCE.json",
+    "sha256": "491535642a22bc9f115a7dd2d1000a9515d93381417ec32b09ee41c602b39162",
+    "bytes": 857
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-product-repair/REVIEW.md",
+    "destination": "product/REVIEW.md",
+    "sha256": "936be0b1b3c279ff8d255d0cac00ea5c4362e95e818c26c9078c41bfbc1d3414",
+    "bytes": 2157
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-product-repair/GREEN.log",
+    "destination": "product/GREEN.log",
+    "sha256": "4c36b42d0c0aac9cb059f13f02b307b6ea5e30373f1e16b77ebbe954a54cc573",
+    "bytes": 113
+  },
+  {
+    "source": "/private/tmp/v19-windows-residual-forensics-preparation/INPUTS.json",
+    "destination": "forensics/INPUTS.json",
+    "sha256": "fafb848d76b83968dcb8f7f4daa42b3babd6a15fe467dba5163c4a1d9487b368",
+    "bytes": 1138
+  },
+  {
+    "source": "/private/tmp/v19-windows-residual-forensics-preparation/REVIEW.md",
+    "destination": "forensics/REVIEW.md",
+    "sha256": "a3796b7aa5f4db1960e6db39c64c6c2ae9db86ec353229bdfbf573896f21a694",
+    "bytes": 3189
+  },
+  {
+    "source": "/private/tmp/v19-windows-residual-forensics-preparation/TESTS.log",
+    "destination": "forensics/TESTS.log",
+    "sha256": "15f6dc6580ba907260e8900ada5bd0cb38044dfc7c956968f3af599fcf0ebd12",
+    "bytes": 107
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/INPUTS.json",
+    "destination": "combined/INPUTS.json",
+    "sha256": "ac50078a99b3758a00dd481aca2ca3f7c08577ed0c6378418ce57ed40fdb8ac3",
+    "bytes": 5092
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/APPLY-FILES.json",
+    "destination": "combined/APPLY-FILES.json",
+    "sha256": "ebb17374646cb3c555dd899d5a71596245585a984a4d77e1ac74a5feb1967934",
+    "bytes": 1059
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/REVIEW.md",
+    "destination": "combined/REVIEW.md",
+    "sha256": "72f5ca02c492461d241ffbb61f5c269b002a9e1272b4c3b3c6be3f3e106f4dd2",
+    "bytes": 1681
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/SOURCE-MERGE.json",
+    "destination": "combined/SOURCE-MERGE.json",
+    "sha256": "f688b3cc3c6734546b3fd017742d9a7b7d1843c7c85e979c48f9e45f668a0398",
+    "bytes": 486
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/FINAL-TESTS.log",
+    "destination": "combined/FINAL-TESTS.log",
+    "sha256": "9031e8165d78e215e893946a0f28cb31f5abd7c5b6010446aad4fd551c79f9c7",
+    "bytes": 13722
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/INITIAL-TESTS.log",
+    "destination": "combined/INITIAL-TESTS.log",
+    "sha256": "21620bed1298b0ac5e13f4770afaa7038b7677a12a4ee84d08822c7e10c1d539",
+    "bytes": 15585
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/desktop/src-tauri/windows/msi-shortcut-migration.vbs",
+    "destination": "combined/source/desktop/src-tauri/windows/msi-shortcut-migration.vbs",
+    "sha256": "45ba519c6eafd7773887981fb547d613495de6357f56156b4e9a5bfcac5817a6",
+    "bytes": 10411
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/desktop/src-tauri/windows/main.wxs",
+    "destination": "combined/source/desktop/src-tauri/windows/main.wxs",
+    "sha256": "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8",
+    "bytes": 63055
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/windows_installed_acceptance.py",
+    "destination": "combined/source/scripts/windows_installed_acceptance.py",
+    "sha256": "58252af342b3e6e650fe20595dadef30043b84109f6b0c19268d46364e41198c",
+    "bytes": 71388
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/windows_msi_shortcut_preflight.py",
+    "destination": "combined/source/scripts/windows_msi_shortcut_preflight.py",
+    "sha256": "3a16021ed49712a36d4d11111dfa14e76f5879cc4697f9f64521a794150e1360",
+    "bytes": 10768
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/tests/test_v19_uninstall_shortcut_contract.py",
+    "destination": "combined/source/scripts/tests/test_v19_uninstall_shortcut_contract.py",
+    "sha256": "5e9aba9e9d530495ede1cb4d6637ac6405d0170c535cd2f59b995137ef591c50",
+    "bytes": 4852
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/windows_residual_metadata.py",
+    "destination": "combined/source/scripts/windows_residual_metadata.py",
+    "sha256": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+    "bytes": 5707
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/windows_residual_shortcuts.ps1",
+    "destination": "combined/source/scripts/windows_residual_shortcuts.ps1",
+    "sha256": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e",
+    "bytes": 2698
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/tests/test_windows_residual_metadata.py",
+    "destination": "combined/source/scripts/tests/test_windows_residual_metadata.py",
+    "sha256": "3a1f3e88200549702f33c4e92d8269bffcd24f4321ad94a39b33309626e6a8b7",
+    "bytes": 5609
+  },
+  {
+    "source": "/private/tmp/v19-third-shortcut-combined-overlay/candidate/scripts/tests/test_windows_installed_acceptance.py",
+    "destination": "combined/source/scripts/tests/test_windows_installed_acceptance.py",
+    "sha256": "136580fabd9ff1fb0401fb19fb64fab8bd567870e4ee6e94b8e7efe7060ffbb7",
+    "bytes": 39081
+  },
+  {
+    "source": "/private/tmp/v19-windows-residual-forensics-preparation/candidate/scripts/windows_residual_metadata.py",
+    "destination": "forensics/original-source/scripts/windows_residual_metadata.py",
+    "sha256": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+    "bytes": 5707
+  },
+  {
+    "source": "/private/tmp/v19-windows-residual-forensics-preparation/candidate/scripts/windows_residual_shortcuts.ps1",
+    "destination": "forensics/original-source/scripts/windows_residual_shortcuts.ps1",
+    "sha256": "6d7e14c687ade0c1682715cd51429241a20fd1177de0b00fd9d9fb5461a3e5f4",
+    "bytes": 2698
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/APPLY-FILES.json",
+    "destination": "mini-source/APPLY-FILES.json",
+    "sha256": "7d29efa5f9a5eaff2eb991e2463e410670c097479de347cb4548eff9f3a9940b",
+    "bytes": 1038
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/scripts/windows_third_shortcut_mini_probe.py",
+    "destination": "mini-source/scripts/windows_third_shortcut_mini_probe.py",
+    "sha256": "6ded6a3fceec7da4276b32fc7dc888f6fbbb253041b038fda5e16ea0d32926e8",
+    "bytes": 12410
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/scripts/windows_legacy_live_identity.ps1",
+    "destination": "mini-source/scripts/windows_legacy_live_identity.ps1",
+    "sha256": "64248aa1a364c7eac31a629bc8201306553c2f9cd0c2728aef5a564ebb66b5d3",
+    "bytes": 1850
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/scripts/windows_third_mini_generate.py",
+    "destination": "mini-source/scripts/windows_third_mini_generate.py",
+    "sha256": "24558c5493d49f1f08b90b696b666e8167a6d98a7ede519754d942c3951713b1",
+    "bytes": 7138
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/desktop/src-tauri/windows/main.wxs",
+    "destination": "mini-source/desktop/src-tauri/windows/main.wxs",
+    "sha256": "bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8",
+    "bytes": 63055
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/desktop/src-tauri/windows/msi-shortcut-migration.vbs",
+    "destination": "mini-source/desktop/src-tauri/windows/msi-shortcut-migration.vbs",
+    "sha256": "45ba519c6eafd7773887981fb547d613495de6357f56156b4e9a5bfcac5817a6",
+    "bytes": 10411
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/scripts/windows_residual_metadata.py",
+    "destination": "mini-source/scripts/windows_residual_metadata.py",
+    "sha256": "b11fe7dc332a87c36a4081963d6f840a9193cff871b804748a81c60eab44252e",
+    "bytes": 5707
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/scripts/windows_residual_shortcuts.ps1",
+    "destination": "mini-source/scripts/windows_residual_shortcuts.ps1",
+    "sha256": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e",
+    "bytes": 2698
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/.github/workflows/windows-msi-byte-diagnostic.yml",
+    "destination": "mini-source/.github/workflows/windows-msi-byte-diagnostic.yml",
+    "sha256": "7f26d9147bbfc3be82c40afaa1fe21704a6449c643b22772e8876ac36754b617",
+    "bytes": 857
+  },
+  {
+    "source": "/tmp/v19-third-mini-probe/scripts/windows-third-mini-inputs.json",
+    "destination": "mini-source/scripts/windows-third-mini-inputs.json",
+    "sha256": "91a9c380a0e59413abee1393cab269f980eeb3ab9e29c1b243bd24391af70759",
+    "bytes": 1603
+  },
+  {
+    "source": "/tmp/v19-third-mini-actual-result.json",
+    "destination": "ACTUAL-MINI-RESULT.json",
+    "sha256": "d43d5f2e5e3ce0aed532611b992f3155ed67d43bdd2c5a2963bb1b4aaaa78b79",
+    "bytes": 97908
+  },
+  {
+    "source": "/tmp/v19-registry-corrected-full-actual-result.json",
+    "destination": "PREVIOUS-FULL-FAILED-RESULT.json",
+    "sha256": "a79bd1cc7e30a372daba7928bc70d3e5bcc86642ca2ee4579e3e0d0e9e510241",
+    "bytes": 308365
+  }
+]

@@ -35,7 +35,7 @@ const ENGINE_NAME_PREFIX = "engineer_qa";
 
 function buildSystemPrompt(engineer: AgentEngineer): string {
   return [
-    `You ARE the ${engineer.displayName} on the Axiom platform.`,
+    `You ARE the ${engineer.displayName} on the V19 platform.`,
     `Your role: ${engineer.role}`,
     `Your department: ${engineer.department}`,
     `Speak in the first person, briefly (≤ 400 chars). If the question`,

@@ -138,7 +138,7 @@ export default function PolicyPreviewsPage() {
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           Every runbook's hardening action becomes ready-to-paste SCP / Azure Policy / GCP Org Policy JSON.
-          Copy, paste into your IaC stack, apply. Axiom never attaches a policy directly.
+          Copy, paste into your IaC stack, apply. V19 never attaches a policy directly.
         </p>
 
         <div className="mt-5 flex items-center gap-2 flex-wrap">

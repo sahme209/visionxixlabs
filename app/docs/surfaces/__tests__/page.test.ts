@@ -8,7 +8,7 @@ afterEach(cleanup);
 it('answers the index destination with each registered desktop destination',()=>{
  render(createElement(SurfacesPage));
  expect(screen.getByRole('heading',{level:1}).textContent).toContain('Find the right place to work.');
- for(const name of ['Agent','Axiom Bot','Releases','Repositories','Batches','Apps & skills','Documentation','Settings'])
+ for(const name of ['Agent','V19 Bot','Releases','Repositories','Batches','Apps & skills','Documentation','Settings'])
   expect(screen.getByRole('heading',{name})).toBeTruthy();
 });
 it('separates browsing, review and provider effects without creating action controls',()=>{

@@ -37,7 +37,7 @@ const TRIGGER_CONTENT: Record<
   "fix-automatically": {
     headline: "Turn this into a governed change",
     description:
-      "Ask the Agent to prepare a repository change. Axiom pauses before every write so an authorized reviewer can inspect and approve it.",
+      "Ask the Agent to prepare a repository change. V19 pauses before every write so an authorized reviewer can inspect and approve it.",
     features: [
       { icon: BoltIcon, label: "Repository-scoped GitHub changes" },
       { icon: ShieldCheckIcon, label: "Explicit approval before every write" },

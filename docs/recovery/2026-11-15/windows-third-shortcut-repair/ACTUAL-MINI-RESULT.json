@@ -1,0 +1,2370 @@
+{
+  "accepted": true,
+  "applicationBuilt": false,
+  "applicationLaunched": false,
+  "cases": [
+    {
+      "case": "foreign-legacy",
+      "foreignByteExact": true,
+      "refused1603": true
+    },
+    {
+      "case": "foreign-current",
+      "foreignByteExact": true,
+      "refused1603": true
+    },
+    {
+      "allThreeLinksByteExact": true,
+      "case": "rollback",
+      "oldRestored": true,
+      "threeBackupsObservedBeforeInjectedFailure": true
+    },
+    {
+      "case": "commit",
+      "thirdLinkRemoved": true,
+      "upgradeConfirmed": true
+    }
+  ],
+  "currentIdentity": {
+    "componentMatchesOwnedPayload": true,
+    "legacyRootArgsExact": true,
+    "legacyRootBytes": 846,
+    "legacyRootShortcutPresent": true,
+    "legacyRootTargetSystem64": true,
+    "oldProductInfo": {
+      "InstallLocation": "d:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\application\\",
+      "InstalledProductName": "V19",
+      "ProductName": "V19",
+      "Publisher": "visionxixlabs",
+      "VersionString": "0.1.23"
+    },
+    "relatedProductCodes": [
+      "{46704BAF-7D89-48BA-AF9C-C50D933813D8}"
+    ]
+  },
+  "fixedErrorObservations": {
+    "foreign-current-refuse": {
+      "Foreign uninstall shortcut preserved": true,
+      "V19ShortcutPreflight": true
+    },
+    "foreign-legacy-refuse": {
+      "Foreign uninstall shortcut preserved": true,
+      "V19ShortcutPreflight": true
+    },
+    "injected-rollback": {
+      "Fixture all three backups verified; rollback requested": true
+    }
+  },
+  "installedCleanupConfirmed": true,
+  "lastResiduals": {
+    "depthLimitReached": false,
+    "directoryPresent": false,
+    "entries": [],
+    "entryLimitReached": false,
+    "hashBytes": 0,
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "metadataUnavailable": false,
+    "schema": "axiom.windows-installation-residuals/1"
+  },
+  "liveIdentity": {
+    "componentMatchesOwnedPayload": true,
+    "legacyRootArgsExact": true,
+    "legacyRootBytes": 892,
+    "legacyRootShortcutPresent": true,
+    "legacyRootTargetSystem64": true,
+    "oldProductInfo": {
+      "InstallLocation": "d:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\application\\",
+      "InstalledProductName": "Axiom Agent",
+      "ProductName": "Axiom Agent",
+      "Publisher": "visionxixlabs",
+      "VersionString": "0.1.21"
+    },
+    "relatedProductCodes": [
+      "{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}"
+    ]
+  },
+  "msiDiagnostics": {
+    "commit-cleanup-46704BAF": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 99860,
+      "tailText": "te: 1: 2205 2:  3: Error \r\nMSI (s) (C0:E8) [03:55:20:972]: Note: 1: 2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1709 \r\nMSI (s) (C0:E8) [03:55:20:972]: Product: V19 -- Removal completed successfully.\r\n\r\nMSI (s) (C0:E8) [03:55:20:972]: Windows Installer removed the product. Product Name: V19. Product Version: 0.1.23. Product Language: 1033. Manufacturer: visionxixlabs. Removal success or error status: 0.\r\n\r\nMSI (s) (C0:E8) [03:55:20:972]: Deferring clean up of packages/files, if any exist\r\nMSI (s) (C0:E8) [03:55:20:972]: MainEngineThread is returning 0\r\nMSI (s) (C0:90) [03:55:20:972]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:90) [03:55:20:972]: No System Restore sequence number for this installation.\r\n=== Logging stopped: 11/16/2026  3:55:20 ===\r\nMSI (s) (C0:90) [03:55:20:988]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:20:988]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:20:988]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:90) [03:55:20:988]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:20:988]: Note: 1: 2265 2:  3: -2147287035 \r\nMSI (s) (C0:90) [03:55:20:988]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:20:988]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (s) (C0:90) [03:55:20:988]: Post-install cleanup: removing installer file 'C:\\Windows\\Installer\\4e0a8.msi'\r\nMSI (s) (C0:90) [03:55:21:003]: Destroying RemoteAPI object.\r\nMSI (s) (C0:38) [03:55:21:003]: Custom Action Manager thread ending.\r\nMSI (c) (28:B4) [03:55:21:003]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (28:B4) [03:55:21:003]: MainEngineThread is returning 0\r\n=== Verbose logging stopped: 11/16/2026  3:55:21 ===\r\n\r\n",
+      "tailTruncated": true
+    },
+    "commit-cleanup-D4907127": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 930,
+      "tailText": "**\r\nMSI (c) (E0:1C) [03:55:21:019]: Client-side and UI is none or basic: Running entire install on the server.\r\nMSI (c) (E0:1C) [03:55:21:019]: Grabbed execution mutex.\r\nMSI (c) (E0:1C) [03:55:21:019]: Cloaking enabled.\r\nMSI (c) (E0:1C) [03:55:21:019]: Attempting to enable all disabled privileges before calling Install on Server\r\nMSI (c) (E0:1C) [03:55:21:019]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:90) [03:55:21:019]: Running installation inside multi-package transaction {D4907127-8B23-42C5-B0D0-1AC545DA54C4}\r\nMSI (s) (C0:90) [03:55:21:019]: Grabbed execution mutex.\r\nMSI (s) (C0:14) [03:55:21:019]: Resetting cached policy values\r\nMSI (s) (C0:14) [03:55:21:019]: Machine policy value 'Debug' is 0\r\nMSI (s) (C0:14) [03:55:21:019]: ******* RunEngine:\r\n           ******* Product: {D4907127-8B23-42C5-B0D0-1AC545DA54C4}\r\n           ******* Action: \r\n           ******* CommandLine: **********\r\nMSI (s) (C0:14) [03:55:21:019]: Machine policy value 'DisableUserInstalls' is 0\r\nMSI (s) (C0:14) [03:55:21:019]: MainEngineThread is returning 1605\r\nMSI (s) (C0:90) [03:55:21:019]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:21:019]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:21:019]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:90) [03:55:21:019]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:21:019]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:21:035]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (E0:1C) [03:55:21:035]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (E0:1C) [03:55:21:035]: MainEngineThread is returning 1605\r\n=== Verbose logging stopped: 11/16/2026  3:55:21 ===\r\n\r\n",
+      "tailTruncated": true
+    },
+    "commit-cleanup-EA2907BA": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 930,
+      "tailText": "**\r\nMSI (c) (78:90) [03:55:21:050]: Client-side and UI is none or basic: Running entire install on the server.\r\nMSI (c) (78:90) [03:55:21:050]: Grabbed execution mutex.\r\nMSI (c) (78:90) [03:55:21:050]: Cloaking enabled.\r\nMSI (c) (78:90) [03:55:21:050]: Attempting to enable all disabled privileges before calling Install on Server\r\nMSI (c) (78:90) [03:55:21:050]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:90) [03:55:21:050]: Running installation inside multi-package transaction {EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\r\nMSI (s) (C0:90) [03:55:21:050]: Grabbed execution mutex.\r\nMSI (s) (C0:14) [03:55:21:050]: Resetting cached policy values\r\nMSI (s) (C0:14) [03:55:21:050]: Machine policy value 'Debug' is 0\r\nMSI (s) (C0:14) [03:55:21:050]: ******* RunEngine:\r\n           ******* Product: {EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\r\n           ******* Action: \r\n           ******* CommandLine: **********\r\nMSI (s) (C0:14) [03:55:21:050]: Machine policy value 'DisableUserInstalls' is 0\r\nMSI (s) (C0:14) [03:55:21:050]: MainEngineThread is returning 1605\r\nMSI (s) (C0:90) [03:55:21:050]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:21:050]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:21:050]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:90) [03:55:21:050]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:21:050]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:21:050]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (78:90) [03:55:21:050]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (78:90) [03:55:21:050]: MainEngineThread is returning 1605\r\n=== Verbose logging stopped: 11/16/2026  3:55:21 ===\r\n\r\n",
+      "tailTruncated": true
+    },
+    "foreign-current-refuse": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 56186,
+      "tailText": ": 1: 2205 2:  3: Error \r\nMSI (s) (C0:40) [03:55:14:445]: Note: 1: 2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1708 \r\nMSI (s) (C0:40) [03:55:14:445]: Note: 1: 2205 2:  3: Error \r\nMSI (s) (C0:40) [03:55:14:445]: Note: 1: 2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1709 \r\nMSI (s) (C0:40) [03:55:14:445]: Product: V19 -- Installation failed.\r\n\r\nMSI (s) (C0:40) [03:55:14:445]: Windows Installer installed the product. Product Name: V19. Product Version: 0.1.23. Product Language: 1033. Manufacturer: visionxixlabs. Installation success or error status: 1603.\r\n\r\nMSI (s) (C0:40) [03:55:14:445]: Deferring clean up of packages/files, if any exist\r\nMSI (s) (C0:40) [03:55:14:445]: MainEngineThread is returning 1603\r\nMSI (s) (C0:00) [03:55:14:445]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:00) [03:55:14:445]: No System Restore sequence number for this installation.\r\n=== Logging stopped: 11/16/2026  3:55:14 ===\r\nMSI (s) (C0:00) [03:55:14:445]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:00) [03:55:14:445]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:00) [03:55:14:445]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:00) [03:55:14:445]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:00) [03:55:14:445]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:00) [03:55:14:445]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (s) (C0:00) [03:55:14:445]: Destroying RemoteAPI object.\r\nMSI (s) (C0:F4) [03:55:14:445]: Custom Action Manager thread ending.\r\nMSI (c) (20:C4) [03:55:14:445]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (20:C4) [03:55:14:445]: MainEngineThread is returning 1603\r\n=== Verbose logging stopped: 11/16/2026  3:55:14 ===\r\n\r\n",
+      "tailTruncated": true
+    },
+    "foreign-legacy-refuse": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 56182,
+      "tailText": ": 1: 2205 2:  3: Error \r\nMSI (s) (C0:38) [03:55:12:330]: Note: 1: 2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1708 \r\nMSI (s) (C0:38) [03:55:12:330]: Note: 1: 2205 2:  3: Error \r\nMSI (s) (C0:38) [03:55:12:330]: Note: 1: 2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1709 \r\nMSI (s) (C0:38) [03:55:12:330]: Product: V19 -- Installation failed.\r\n\r\nMSI (s) (C0:38) [03:55:12:330]: Windows Installer installed the product. Product Name: V19. Product Version: 0.1.23. Product Language: 1033. Manufacturer: visionxixlabs. Installation success or error status: 1603.\r\n\r\nMSI (s) (C0:38) [03:55:12:330]: Deferring clean up of packages/files, if any exist\r\nMSI (s) (C0:38) [03:55:12:330]: MainEngineThread is returning 1603\r\nMSI (s) (C0:00) [03:55:12:330]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:00) [03:55:12:330]: No System Restore sequence number for this installation.\r\n=== Logging stopped: 11/16/2026  3:55:12 ===\r\nMSI (s) (C0:00) [03:55:12:330]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:00) [03:55:12:330]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:00) [03:55:12:330]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:00) [03:55:12:330]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:00) [03:55:12:330]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:00) [03:55:12:330]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (s) (C0:00) [03:55:12:330]: Destroying RemoteAPI object.\r\nMSI (s) (C0:AC) [03:55:12:330]: Custom Action Manager thread ending.\r\nMSI (c) (D8:F0) [03:55:12:330]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (D8:F0) [03:55:12:330]: MainEngineThread is returning 1603\r\n=== Verbose logging stopped: 11/16/2026  3:55:12 ===\r\n\r\n",
+      "tailTruncated": true
+    },
+    "injected-rollback": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 262790,
+      "tailText": "2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1708 \r\nMSI (s) (C0:5C) [03:55:17:012]: Note: 1: 2205 2:  3: Error \r\nMSI (s) (C0:5C) [03:55:17:012]: Note: 1: 2228 2:  3: Error 4: SELECT `Message` FROM `Error` WHERE `Error` = 1709 \r\nMSI (s) (C0:5C) [03:55:17:012]: Product: V19 -- Installation failed.\r\n\r\nMSI (s) (C0:5C) [03:55:17:012]: Windows Installer installed the product. Product Name: V19. Product Version: 0.1.23. Product Language: 1033. Manufacturer: visionxixlabs. Installation success or error status: 1603.\r\n\r\nMSI (s) (C0:5C) [03:55:17:012]: Deferring clean up of packages/files, if any exist\r\nMSI (s) (C0:5C) [03:55:17:012]: MainEngineThread is returning 1603\r\nMSI (s) (C0:00) [03:55:17:012]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:00) [03:55:17:012]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:00) [03:55:17:012]: No System Restore sequence number for this installation.\r\n=== Logging stopped: 11/16/2026  3:55:17 ===\r\nMSI (s) (C0:00) [03:55:17:028]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:00) [03:55:17:028]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:00) [03:55:17:028]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:00) [03:55:17:028]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:00) [03:55:17:028]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:00) [03:55:17:028]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (s) (C0:00) [03:55:17:028]: Destroying RemoteAPI object.\r\nMSI (s) (C0:60) [03:55:17:028]: Custom Action Manager thread ending.\r\nMSI (c) (78:20) [03:55:17:028]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (78:20) [03:55:17:028]: MainEngineThread is returning 1603\r\n=== Verbose logging stopped: 11/16/2026  3:55:17 ===\r\n\r\n",
+      "tailTruncated": true
+    },
+    "mini-commit": {
+      "tailBytes": 4096,
+      "tailEncoding": "utf16",
+      "tailOffsetBytes": 209620,
+      "tailText": "0.\r\n\r\nMSI (s) (C0:20) [03:55:19:516]: Deferring clean up of packages/files, if any exist\r\nMSI (s) (C0:20) [03:55:19:516]: MainEngineThread is returning 0\r\nMSI (s) (C0:90) [03:55:19:516]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:90) [03:55:19:516]: RESTART MANAGER: Session closed.\r\nMSI (s) (C0:90) [03:55:19:516]: No System Restore sequence number for this installation.\r\n=== Logging stopped: 11/16/2026  3:55:19 ===\r\nMSI (s) (C0:90) [03:55:19:516]: User policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:19:516]: Machine policy value 'DisableRollback' is 0\r\nMSI (s) (C0:90) [03:55:19:516]: Incrementing counter to disable shutdown. Counter after increment: 0\r\nMSI (s) (C0:90) [03:55:19:516]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:19:532]: Note: 1: 2265 2:  3: -2147287035 \r\nMSI (s) (C0:90) [03:55:19:532]: Note: 1: 1402 2: HKEY_LOCAL_MACHINE\\Software\\Microsoft\\Windows\\CurrentVersion\\Installer\\Rollback\\Scripts 3: 2 \r\nMSI (s) (C0:90) [03:55:19:532]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (s) (C0:90) [03:55:19:532]: Post-install cleanup: removing installer file 'C:\\Windows\\Installer\\4e09f.msi'\r\nMSI (s) (C0:90) [03:55:19:532]: Post-install cleanup: removing installer file 'C:\\Windows\\Installer\\{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\\ProductIcon'\r\nMSI (s) (C0:90) [03:55:19:532]: Post-install cleanup: removing installer folder 'C:\\Windows\\Installer\\{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\\' (if empty)\r\nMSI (s) (C0:90) [03:55:19:532]: Note: 1: 2318 2:  \r\nMSI (s) (C0:90) [03:55:19:532]: Destroying RemoteAPI object.\r\nMSI (s) (C0:60) [03:55:19:532]: Custom Action Manager thread ending.\r\nMSI (c) (3C:DC) [03:55:19:532]: Decrementing counter to disable shutdown. If counter >= 0, shutdown will be denied.  Counter after decrement: -1\r\nMSI (c) (3C:DC) [03:55:19:532]: MainEngineThread is returning 0\r\n=== Verbose logging stopped: 11/16/2026  3:55:19 ===\r\n\r\n",
+      "tailTruncated": true
+    }
+  },
+  "ownedFixtureRemoved": true,
+  "ownedProcessesEmpty": true,
+  "processes": [
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 41,
+          "prefixTruncated": false,
+          "sha256": "9874a6bd4c0c90032643cbf6422fb35554d633e5e8b50e464ebf2ef37fcab426",
+          "text": "f05a145c0a23bd7ecbe8953a280ba8423581bc88\n"
+        }
+      },
+      "executableSha256": "177bc8a9af84fa3a400c694c975fda731d048279c074e1a93947ce8b067ebb48",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "source-head",
+      "logRetention": [
+        {
+          "name": "source-head.stdout",
+          "observedBytes": 41,
+          "retainedBytes": 41,
+          "truncated": false
+        },
+        {
+          "name": "source-head.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 41,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 1543,
+          "prefixTruncated": false,
+          "sha256": "c3130930378ee85ea68b573328871bbb59f8f4bfdb0964a5be3e0ab6c156caea",
+          "text": "Windows Installer XML Toolset Compiler version 3.14.1.8722\r\nCopyright (c) .NET Foundation and contributors. All rights reserved.\r\n\r\n usage:  candle.exe [-?] [-nologo] [-out outputFile] sourceFile [sourceFile ...] [@responseFile]\r\n\r\n   -arch      set architecture defaults for package, components, etc.\r\n              values: x86, x64, or ia64 (default: x86)\r\n   -d<name>[=<value>]  define a parameter for the preprocessor\r\n   -ext <extension>  extension assembly or \"class, assembly\"\r\n   -fips      enables FIPS compliant algorithms\r\n   -I<dir>    add to include search path\r\n   -nologo    skip printing candle logo information\r\n   -o[ut]     specify output file (default: write to current directory)\r\n   -p<file>   preprocess to a file (or stdout if no file supplied)\r\n   -pedantic  show pedantic messages\r\n   -platform  (deprecated alias for -arch)\r\n   -sfdvital  suppress marking files as Vital by default (deprecated)\r\n   -ss        suppress schema validation of documents (performance boost) (deprecated)\r\n   -sw[N]     suppress all warnings or a specific message ID\r\n              (example: -sw1009 -sw1103)\r\n   -swall     suppress all warnings (deprecated)\r\n   -trace     show source trace for errors, warnings, and verbose messages (deprecated)\r\n   -v         verbose output\r\n   -wx[N]     treat all warnings or a specific message ID as an error\r\n              (example: -wx1009 -wx1103)\r\n   -wxall     treat all warnings as errors (deprecated)\r\n   -? | -help this help information\r\n\r\nFor more information see: http://wixtoolset.org/\r\n"
+        }
+      },
+      "executableSha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "candle-version",
+      "logRetention": [
+        {
+          "name": "candle-version.stdout",
+          "observedBytes": 1543,
+          "retainedBytes": 1543,
+          "truncated": false
+        },
+        {
+          "name": "candle-version.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 1543,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 4726,
+          "prefixTruncated": true,
+          "sha256": "e1391adcbea8f6742a714c1f178ac8bbca8040cdcc816b23f83e57a1f2fb7264",
+          "text": "Windows Installer XML Toolset Linker version 3.14.1.8722\r\nCopyright (c) .NET Foundation and contributors. All rights reserved.\r\n\r\n usage:  light.exe [-?] [-b bindPath] [-nologo] [-out outputFile] objectFile [objectFile ...] [@responseFile]\r\n\r\n   -ai        allow identical rows, identical rows will be treated as a warning (deprecated)\r\n   -ad        allow duplicate directory identities from other libraries (deprecated)\r\n   -au        (experimental) allow unresolved references\r\n              (will not create a valid output) (deprecated)\r\n   -b <path>  specify a binder path to locate all files\r\n              (default: current directory)\r\n              prefix the path with 'name=' where 'name' is the name of your\r\n              named bindpath.\r\n   -bf        bind files into a wixout (only valid with -xo option) (deprecated)\r\n   -binder <classname>  specify a specific custom binder to use provided by\r\n                        an extension (deprecated)\r\n   -cultures:<cultures>  semicolon or comma delimited list of localized\r\n             string cultures to load from .wxl files and libraries.\r\n             Precedence of cultures is from left to right.\r\n   -d<name>[=<value>]  define a wix variable, with or without a value.\r\n   -dut       drop unreal tables from the output image (deprecated)\r\n   -ext <extension>  extension assembly or \"class, assembly\"\r\n   -loc <loc.wxl>  read localization strings from .wxl file\r\n   -nologo    skip printing light logo information\r\n   -notidy    do not delete temporary files (useful for debugging)\r\n   -o[ut]     specify output file (default: write to current directory)\r\n   -pedantic  show pedantic messages\r\n   -sadmin    suppress default admin sequence actions (deprecated)\r\n   -sadv      suppress default adv sequence actions (deprecated)\r\n   -sloc      suppress localization\r\n   -sma       suppress processing the data in MsiAssembly table (deprecated)\r\n   -ss        suppress schema validation of documents (performance boost) (deprecated)\r\n   -sts       suppress tagging sectionId attribute on"
+        }
+      },
+      "executableSha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "light-version",
+      "logRetention": [
+        {
+          "name": "light-version.stdout",
+          "observedBytes": 4726,
+          "retainedBytes": 4726,
+          "truncated": false
+        },
+        {
+          "name": "light-version.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 4726,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "93a2d652871ce0fc8c06d1a1db75544b4408936be93e1c8db9b909c129c64e4d",
+          "text": "{\"products\":[],\"protocolCommandStrings\":[],\"ownedPayloads\":[],\"shortcuts\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "helper-snapshot-preflight",
+      "logRetention": [
+        {
+          "name": "helper-snapshot-preflight.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "helper-snapshot-preflight.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "ce5c5b6bb3421b2626fd7d335d2bf41522b2edc910f9c550fa3c34d7a855eabd",
+          "text": "{\"shortcuts\":[],\"ownedPayloads\":[],\"products\":[],\"protocolCommandStrings\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "initial-pristine",
+      "logRetention": [
+        {
+          "name": "initial-pristine.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "initial-pristine.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 98,
+          "prefixTruncated": false,
+          "sha256": "d8571618690891a70ba8dbd97b05a04245768b26b2f7e92b85db12803302a511",
+          "text": "{\"sha256\": \"670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1\", \"bytes\": 5869568}\r\n"
+        }
+      },
+      "executableSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "fixed-legacy-download",
+      "logRetention": [
+        {
+          "name": "fixed-legacy-download.stdout",
+          "observedBytes": 98,
+          "retainedBytes": 98,
+          "truncated": false
+        },
+        {
+          "name": "fixed-legacy-download.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 98,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 109704,
+          "name": "initial-old-install.log",
+          "sha256": "fe1a7254444833e57dd6b485f181b9bd9d364373c84e3414065276d29f4ce447"
+        }
+      ],
+      "label": "initial-old-install",
+      "logRetention": [
+        {
+          "name": "initial-old-install.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "initial-old-install.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "initial-old-install.log",
+          "observedBytes": 109704,
+          "retainedBytes": 109704,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 458,
+          "prefixTruncated": false,
+          "sha256": "7034425cca1d51742e1673a6a410ba8da97b4246a35ae61e14208d7fb44deeb3",
+          "text": "{\"relatedProductCodes\":[\"{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\"],\"oldProductInfo\":{\"InstalledProductName\":\"Axiom Agent\",\"ProductName\":\"Axiom Agent\",\"VersionString\":\"0.1.21\",\"Publisher\":\"visionxixlabs\",\"InstallLocation\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\\"},\"componentMatchesOwnedPayload\":true,\"legacyRootShortcutPresent\":true,\"legacyRootTargetSystem64\":true,\"legacyRootArgsExact\":true,\"legacyRootBytes\":892}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "live-legacy-identity",
+      "logRetention": [
+        {
+          "name": "live-legacy-identity.stdout",
+          "observedBytes": 458,
+          "retainedBytes": 458,
+          "truncated": false
+        },
+        {
+          "name": "live-legacy-identity.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 458,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 285,
+          "prefixTruncated": false,
+          "sha256": "0c7f86709ed029f7182c51fdc3712d561771a018839cae44007d04f016387e96",
+          "text": "{\"maxDepth\":2,\"schema\":\"axiom.windows-residual-shortcuts/1\",\"rows\":[{\"argumentsAreUninstallGuid\":true,\"argumentsEmpty\":false,\"uninstallProductClass\":\"legacy\",\"targetIsOwnedApplication\":false,\"targetIsSystem32MsiExec\":true,\"relativeName\":\"Uninstall Axiom Agent.lnk\"}],\"maxEntries\":32}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "residual-shortcut-metadata",
+      "logRetention": [
+        {
+          "name": "residual-shortcut-metadata.stdout",
+          "observedBytes": 285,
+          "retainedBytes": 285,
+          "truncated": false
+        },
+        {
+          "name": "residual-shortcut-metadata.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 285,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 248,
+          "prefixTruncated": false,
+          "sha256": "08e4f54e6e2ec8b12c305ccddd992848fe753dc740603b216f2c079ef83af51d",
+          "text": "{\"fixtureOnly\": true, \"releaseAcceptance\": false, \"sourceTemplateSha256\": \"bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8\", \"mode\": \"commit\", \"generatedSha256\": \"4540dbbaa576b597670f81087344d83f7901a80dedf8ca7709af67368a70b8c5\"}\r\n"
+        }
+      },
+      "executableSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "commit-generate",
+      "logRetention": [
+        {
+          "name": "commit-generate.stdout",
+          "observedBytes": 248,
+          "retainedBytes": 248,
+          "truncated": false
+        },
+        {
+          "name": "commit-generate.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 248,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 12,
+          "prefixTruncated": false,
+          "sha256": "b2420ff258ab597a9dfa035ca6f9c4e858e9dc82799f2e60c7ada6e356292634",
+          "text": "commit.wxs\r\n"
+        }
+      },
+      "executableSha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "commit-candle",
+      "logRetention": [
+        {
+          "name": "commit-candle.stdout",
+          "observedBytes": 12,
+          "retainedBytes": 12,
+          "truncated": false
+        },
+        {
+          "name": "commit-candle.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 12,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 1791,
+          "prefixTruncated": false,
+          "sha256": "78c3149e12bc049efc76e37b86d0ad67b5f6625e74e495d94d787bfaaabf78cc",
+          "text": "d:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(11) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19ShortcutPreflight\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(253) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19RollbackLegacyShortcuts\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(495) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19MigrateLegacyShortcuts\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(737) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19CommitLegacyShortcuts\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(7) : warning LGHT1076 : ICE40: REINSTALLMODE is defined in the Property table. This may cause difficulties.\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(993) : warning LGHT1076 : ICE48: Directory 'INSTALLDIR' appears to be hardcoded in the property table to a local drive.\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(1000) : warning LGHT1076 : ICE57: Component 'CMP_UninstallShortcut' has both per-user and per-machine data with an HKCU Registry KeyPath.\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\commit.wxs(8) : warning LGHT1076 : ICE61: This product should remove only older versions of itself. The Maximum version is not less than the current product. (0.1.23 0.1.23)\r\n"
+        }
+      },
+      "executableSha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "commit-light",
+      "logRetention": [
+        {
+          "name": "commit-light.stdout",
+          "observedBytes": 1791,
+          "retainedBytes": 1791,
+          "truncated": false
+        },
+        {
+          "name": "commit-light.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 1791,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 250,
+          "prefixTruncated": false,
+          "sha256": "6a7dace93201b32296d85a8ca5bec0d82f228dd6ecdec367136a356e26243e83",
+          "text": "{\"fixtureOnly\": true, \"releaseAcceptance\": false, \"sourceTemplateSha256\": \"bdca7d5a2bb5a481c85fef58410c2aa00a1b6a2865bbbcd53b920abd471dc1e8\", \"mode\": \"rollback\", \"generatedSha256\": \"b46885b9cb3c5147186dd0001288acbe7175ab0df9e2ddac4d392ad40efbb90f\"}\r\n"
+        }
+      },
+      "executableSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "rollback-generate",
+      "logRetention": [
+        {
+          "name": "rollback-generate.stdout",
+          "observedBytes": 250,
+          "retainedBytes": 250,
+          "truncated": false
+        },
+        {
+          "name": "rollback-generate.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 250,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 14,
+          "prefixTruncated": false,
+          "sha256": "59b80b48cf35922dd5d6f01a5c180418b03dc314e07d04b2687c3b6a431b350b",
+          "text": "rollback.wxs\r\n"
+        }
+      },
+      "executableSha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "rollback-candle",
+      "logRetention": [
+        {
+          "name": "rollback-candle.stdout",
+          "observedBytes": 14,
+          "retainedBytes": 14,
+          "truncated": false
+        },
+        {
+          "name": "rollback-candle.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 14,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 2051,
+          "prefixTruncated": true,
+          "sha256": "8c015143fccaf44a4144276a68aad3c850a0de9c07d2c4a6e50e036b89f97911",
+          "text": "d:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(11) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19ShortcutPreflight\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(253) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19RollbackLegacyShortcuts\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(495) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19MigrateLegacyShortcuts\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(737) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19CommitLegacyShortcuts\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(993) : warning LGHT1076 : ICE03: String overflow (greater than length permitted in column); Table: CustomAction, Column: Target, Key(s): V19FixtureFailAfterMigrate\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(7) : warning LGHT1076 : ICE40: REINSTALLMODE is defined in the Property table. This may cause difficulties.\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(1009) : warning LGHT1076 : ICE48: Directory 'INSTALLDIR' appears to be hardcoded in the property table to a local drive.\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(1016) : warning LGHT1076 : ICE57: Component 'CMP_UninstallShortcut' has both per-user and per-machine data with an HKCU Registry KeyPath.\r\nd:\\a\\_temp\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\rollback.wxs(8) : warning LGHT1076 : ICE61: This product should remove only older versions of itself. The Maximum version is not less than the current product. (0.1.23 0.1.23"
+        }
+      },
+      "executableSha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "rollback-light",
+      "logRetention": [
+        {
+          "name": "rollback-light.stdout",
+          "observedBytes": 2051,
+          "retainedBytes": 2051,
+          "truncated": false
+        },
+        {
+          "name": "rollback-light.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 2051,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 951,
+          "prefixTruncated": false,
+          "sha256": "1878e8956dd90024871e16f9f0befa83101ab5260a0f8e8acf2056297526253e",
+          "text": "{\"protocolCommandStrings\":[\"\\\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\\\" \\\"%1\\\"\"],\"products\":[{\"displayName\":\"Axiom Agent\",\"version\":\"0.1.21\",\"registration\":\"{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\",\"publisher\":\"visionxixlabs\"}],\"ownedPayloads\":[{\"path\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\",\"machine\":\"AMD64\",\"version\":\"0.1.21\"}],\"shortcuts\":[{\"path\":\"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Axiom Agent\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"},{\"path\":\"C:\\\\Users\\\\Public\\\\Desktop\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"}]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "foreign-legacy-old-state",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-old-state.stdout",
+          "observedBytes": 951,
+          "retainedBytes": 951,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-old-state.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 951,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "5abb9e4b0fae68b161acc921bfe69697965b6876daa4e317592e8239728a9190",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "foreign-legacy-seed",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-seed.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-seed.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1603,
+      "extraLogs": [
+        {
+          "bytes": 60278,
+          "name": "foreign-legacy-refuse.log",
+          "sha256": "51c67f1f709449c56ac8b1824048840f4ca29de21c478438577a117abad2419b"
+        }
+      ],
+      "label": "foreign-legacy-refuse",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-refuse.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-refuse.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-refuse.log",
+          "observedBytes": 60278,
+          "retainedBytes": 60278,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "foreign-legacy-cleanup-46704BAF.log",
+          "sha256": "60519b787eaf0b8eba7f57b4f444e3e7dcf2ac34a2b5a46e38e4fc16ded411d7"
+        }
+      ],
+      "label": "foreign-legacy-cleanup-46704BAF",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-cleanup-46704BAF.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-cleanup-46704BAF.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-cleanup-46704BAF.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "foreign-legacy-cleanup-D4907127.log",
+          "sha256": "4a8b930d815c4844ea53c51f566d0a47f260fe991c1127e01c18bdcc9ba65340"
+        }
+      ],
+      "label": "foreign-legacy-cleanup-D4907127",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-cleanup-D4907127.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-cleanup-D4907127.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-cleanup-D4907127.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 101074,
+          "name": "foreign-legacy-cleanup-EA2907BA.log",
+          "sha256": "a0693c11e377b01ab6fb163c40753959885ec619338d02f76e6694f9eecac96b"
+        }
+      ],
+      "label": "foreign-legacy-cleanup-EA2907BA",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-cleanup-EA2907BA.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-cleanup-EA2907BA.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-cleanup-EA2907BA.log",
+          "observedBytes": 101074,
+          "retainedBytes": 101074,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "93a2d652871ce0fc8c06d1a1db75544b4408936be93e1c8db9b909c129c64e4d",
+          "text": "{\"products\":[],\"protocolCommandStrings\":[],\"ownedPayloads\":[],\"shortcuts\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "foreign-legacy-absent",
+      "logRetention": [
+        {
+          "name": "foreign-legacy-absent.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "foreign-legacy-absent.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 109736,
+          "name": "foreign-current-old-install.log",
+          "sha256": "cf72a5b375277b1e9c846669281837f5a894b29ab6d661d5348edf91699f52a0"
+        }
+      ],
+      "label": "foreign-current-old-install",
+      "logRetention": [
+        {
+          "name": "foreign-current-old-install.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-old-install.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-old-install.log",
+          "observedBytes": 109736,
+          "retainedBytes": 109736,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 951,
+          "prefixTruncated": false,
+          "sha256": "ea657c4bc2f072de9ac631279f13914c8fd26c35addab7494c00faee8440501a",
+          "text": "{\"shortcuts\":[{\"path\":\"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Axiom Agent\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"},{\"path\":\"C:\\\\Users\\\\Public\\\\Desktop\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"}],\"products\":[{\"displayName\":\"Axiom Agent\",\"version\":\"0.1.21\",\"registration\":\"{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\",\"publisher\":\"visionxixlabs\"}],\"protocolCommandStrings\":[\"\\\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\\\" \\\"%1\\\"\"],\"ownedPayloads\":[{\"path\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\",\"machine\":\"AMD64\",\"version\":\"0.1.21\"}]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "foreign-current-old-state",
+      "logRetention": [
+        {
+          "name": "foreign-current-old-state.stdout",
+          "observedBytes": 951,
+          "retainedBytes": 951,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-old-state.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 951,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "5abb9e4b0fae68b161acc921bfe69697965b6876daa4e317592e8239728a9190",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "foreign-current-seed",
+      "logRetention": [
+        {
+          "name": "foreign-current-seed.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-seed.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1603,
+      "extraLogs": [
+        {
+          "bytes": 60282,
+          "name": "foreign-current-refuse.log",
+          "sha256": "1b1d9428bbfb973aed5c36a12b6c91715f21484d5467d47db1442e55b8081748"
+        }
+      ],
+      "label": "foreign-current-refuse",
+      "logRetention": [
+        {
+          "name": "foreign-current-refuse.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-refuse.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-refuse.log",
+          "observedBytes": 60282,
+          "retainedBytes": 60282,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "foreign-current-cleanup-46704BAF.log",
+          "sha256": "7ce9309ee3407d1e58fd1d82f07c5665d833884ca532cd80b614270be77329db"
+        }
+      ],
+      "label": "foreign-current-cleanup-46704BAF",
+      "logRetention": [
+        {
+          "name": "foreign-current-cleanup-46704BAF.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-cleanup-46704BAF.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-cleanup-46704BAF.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "foreign-current-cleanup-D4907127.log",
+          "sha256": "b7375ebafce4cf3d8ff71c07bb9f14a5ae53e3cff669dda4d4f33049d5ba070c"
+        }
+      ],
+      "label": "foreign-current-cleanup-D4907127",
+      "logRetention": [
+        {
+          "name": "foreign-current-cleanup-D4907127.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-cleanup-D4907127.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-cleanup-D4907127.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 101078,
+          "name": "foreign-current-cleanup-EA2907BA.log",
+          "sha256": "0c82992982cd33f4efe2897520721103e180b9b0f877d492e83968b16680cb61"
+        }
+      ],
+      "label": "foreign-current-cleanup-EA2907BA",
+      "logRetention": [
+        {
+          "name": "foreign-current-cleanup-EA2907BA.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-cleanup-EA2907BA.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-cleanup-EA2907BA.log",
+          "observedBytes": 101078,
+          "retainedBytes": 101078,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "db137ec2dd0935acad43a4b84f19f64fa097181ba144f85292e207481194a1b1",
+          "text": "{\"ownedPayloads\":[],\"shortcuts\":[],\"products\":[],\"protocolCommandStrings\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "foreign-current-absent",
+      "logRetention": [
+        {
+          "name": "foreign-current-absent.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "foreign-current-absent.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 109708,
+          "name": "rollback-old-install.log",
+          "sha256": "d0c1afe412fbbf795f1bb6b458c54ddc60d41576626a295429306d187a8b2027"
+        }
+      ],
+      "label": "rollback-old-install",
+      "logRetention": [
+        {
+          "name": "rollback-old-install.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-old-install.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-old-install.log",
+          "observedBytes": 109708,
+          "retainedBytes": 109708,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 951,
+          "prefixTruncated": false,
+          "sha256": "ea657c4bc2f072de9ac631279f13914c8fd26c35addab7494c00faee8440501a",
+          "text": "{\"shortcuts\":[{\"path\":\"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Axiom Agent\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"},{\"path\":\"C:\\\\Users\\\\Public\\\\Desktop\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"}],\"products\":[{\"displayName\":\"Axiom Agent\",\"version\":\"0.1.21\",\"registration\":\"{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\",\"publisher\":\"visionxixlabs\"}],\"protocolCommandStrings\":[\"\\\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\\\" \\\"%1\\\"\"],\"ownedPayloads\":[{\"path\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\",\"machine\":\"AMD64\",\"version\":\"0.1.21\"}]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "rollback-old-state",
+      "logRetention": [
+        {
+          "name": "rollback-old-state.stdout",
+          "observedBytes": 951,
+          "retainedBytes": 951,
+          "truncated": false
+        },
+        {
+          "name": "rollback-old-state.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 951,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1603,
+      "extraLogs": [
+        {
+          "bytes": 266886,
+          "name": "injected-rollback.log",
+          "sha256": "044049aa86c806e075d75a464dff0d9e9442f080446a2c1ae9b95dd2c476b2d4"
+        }
+      ],
+      "label": "injected-rollback",
+      "logRetention": [
+        {
+          "name": "injected-rollback.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "injected-rollback.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "injected-rollback.log",
+          "observedBytes": 266886,
+          "retainedBytes": 266886,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "rollback-cleanup-46704BAF.log",
+          "sha256": "b621fa70660551eef40e16cba7e8a39f6f220f8fd8eda37363e47d93f1a9599c"
+        }
+      ],
+      "label": "rollback-cleanup-46704BAF",
+      "logRetention": [
+        {
+          "name": "rollback-cleanup-46704BAF.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-cleanup-46704BAF.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-cleanup-46704BAF.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "rollback-cleanup-D4907127.log",
+          "sha256": "f387f7991dc298e4969e20a366ad8d68f155e639f3d1a076834fe3851484d354"
+        }
+      ],
+      "label": "rollback-cleanup-D4907127",
+      "logRetention": [
+        {
+          "name": "rollback-cleanup-D4907127.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-cleanup-D4907127.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-cleanup-D4907127.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 101050,
+          "name": "rollback-cleanup-EA2907BA.log",
+          "sha256": "9fec17bbd2b8ccc8e8c218c12a4a1ec6d907a71e0e21f5dfebd2bf269bab4207"
+        }
+      ],
+      "label": "rollback-cleanup-EA2907BA",
+      "logRetention": [
+        {
+          "name": "rollback-cleanup-EA2907BA.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-cleanup-EA2907BA.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "rollback-cleanup-EA2907BA.log",
+          "observedBytes": 101050,
+          "retainedBytes": 101050,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "522dead44995d9e4cf97cfe6bb357e8a50e3b1a8ce62be794272aa86b33f0d03",
+          "text": "{\"ownedPayloads\":[],\"shortcuts\":[],\"protocolCommandStrings\":[],\"products\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "rollback-absent",
+      "logRetention": [
+        {
+          "name": "rollback-absent.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "rollback-absent.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 109700,
+          "name": "commit-old-install.log",
+          "sha256": "ca2aca346c6a591bfb95918658dcad323af1fbe93912916f8a0d2883ff12b4be"
+        }
+      ],
+      "label": "commit-old-install",
+      "logRetention": [
+        {
+          "name": "commit-old-install.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-old-install.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-old-install.log",
+          "observedBytes": 109700,
+          "retainedBytes": 109700,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 951,
+          "prefixTruncated": false,
+          "sha256": "e32b9d39c6ac7a29071875d87e0c0008e76c85f746a0a8bac34edb9a9e32a3dd",
+          "text": "{\"shortcuts\":[{\"path\":\"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\Axiom Agent\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"},{\"path\":\"C:\\\\Users\\\\Public\\\\Desktop\\\\Axiom Agent.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"}],\"protocolCommandStrings\":[\"\\\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\\\" \\\"%1\\\"\"],\"ownedPayloads\":[{\"path\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\",\"machine\":\"AMD64\",\"version\":\"0.1.21\"}],\"products\":[{\"displayName\":\"Axiom Agent\",\"version\":\"0.1.21\",\"registration\":\"{EA2907BA-437C-4D29-AD47-4A5ABFBB4CFD}\",\"publisher\":\"visionxixlabs\"}]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "commit-old-state",
+      "logRetention": [
+        {
+          "name": "commit-old-state.stdout",
+          "observedBytes": 951,
+          "retainedBytes": 951,
+          "truncated": false
+        },
+        {
+          "name": "commit-old-state.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 951,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 213716,
+          "name": "mini-commit.log",
+          "sha256": "d443435d3eb2852b42161ccd2cf37363c387f129a05d4cd1230a62f550a4f9c7"
+        }
+      ],
+      "label": "mini-commit",
+      "logRetention": [
+        {
+          "name": "mini-commit.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "mini-commit.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "mini-commit.log",
+          "observedBytes": 213716,
+          "retainedBytes": 213716,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 807,
+          "prefixTruncated": false,
+          "sha256": "490fe2e83c5b7083ff56cd49952c2fc2084209670d3cd01c6b00938f3cc4d992",
+          "text": "{\"products\":[{\"displayName\":\"V19\",\"version\":\"0.1.23\",\"registration\":\"{46704BAF-7D89-48BA-AF9C-C50D933813D8}\",\"publisher\":\"visionxixlabs\"}],\"shortcuts\":[{\"path\":\"C:\\\\ProgramData\\\\Microsoft\\\\Windows\\\\Start Menu\\\\Programs\\\\V19\\\\V19.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"},{\"path\":\"C:\\\\Users\\\\Public\\\\Desktop\\\\V19.lnk\",\"target\":\"D:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"arguments\":\"\"}],\"ownedPayloads\":[{\"path\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\axiom-desktop.exe\",\"sha256\":\"9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98\",\"machine\":\"AMD64\",\"version\":\"0.1.21\"}],\"protocolCommandStrings\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "commit-upgraded-state",
+      "logRetention": [
+        {
+          "name": "commit-upgraded-state.stdout",
+          "observedBytes": 807,
+          "retainedBytes": 807,
+          "truncated": false
+        },
+        {
+          "name": "commit-upgraded-state.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 807,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 442,
+          "prefixTruncated": false,
+          "sha256": "afcafdaaf772c8bbdfc414b465619baafc5c1f0f8f7060b3bfc6f28c29886f0f",
+          "text": "{\"relatedProductCodes\":[\"{46704BAF-7D89-48BA-AF9C-C50D933813D8}\"],\"oldProductInfo\":{\"InstalledProductName\":\"V19\",\"ProductName\":\"V19\",\"VersionString\":\"0.1.23\",\"Publisher\":\"visionxixlabs\",\"InstallLocation\":\"d:\\\\a\\\\_temp\\\\axiom-installed-mini-7b8cfe165f5a4532b04c4ae2386c276d\\\\application\\\\\"},\"componentMatchesOwnedPayload\":true,\"legacyRootShortcutPresent\":true,\"legacyRootTargetSystem64\":true,\"legacyRootArgsExact\":true,\"legacyRootBytes\":846}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "live-candidate-identity",
+      "logRetention": [
+        {
+          "name": "live-candidate-identity.stdout",
+          "observedBytes": 442,
+          "retainedBytes": 442,
+          "truncated": false
+        },
+        {
+          "name": "live-candidate-identity.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 442,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 0,
+      "extraLogs": [
+        {
+          "bytes": 103956,
+          "name": "commit-cleanup-46704BAF.log",
+          "sha256": "8685688d648031019ed38007db0c217da809d2ff9d4f3abda004eab6e9aedd2f"
+        }
+      ],
+      "label": "commit-cleanup-46704BAF",
+      "logRetention": [
+        {
+          "name": "commit-cleanup-46704BAF.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-cleanup-46704BAF.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-cleanup-46704BAF.log",
+          "observedBytes": 103956,
+          "retainedBytes": 103956,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "commit-cleanup-D4907127.log",
+          "sha256": "a6f753e451850fc1637870a25d615149d7f193debe2ca2dd9bb175c0d416cc39"
+        }
+      ],
+      "label": "commit-cleanup-D4907127",
+      "logRetention": [
+        {
+          "name": "commit-cleanup-D4907127.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-cleanup-D4907127.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-cleanup-D4907127.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "commit-cleanup-EA2907BA.log",
+          "sha256": "b4a8c428bd36084b85369e1f65095d0cdaf72242828aa0233bcbfec4d4ea677c"
+        }
+      ],
+      "label": "commit-cleanup-EA2907BA",
+      "logRetention": [
+        {
+          "name": "commit-cleanup-EA2907BA.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-cleanup-EA2907BA.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "commit-cleanup-EA2907BA.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "f2f92c2bad68c1926d82a99a2217657e252ed26e64d7217ddfc92553f2ffd9d0",
+          "text": "{\"products\":[],\"shortcuts\":[],\"ownedPayloads\":[],\"protocolCommandStrings\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "commit-absent",
+      "logRetention": [
+        {
+          "name": "commit-absent.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "commit-absent.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "final-cleanup-46704BAF.log",
+          "sha256": "2ff083c4b8546f3983e929e4b69226988cc73c63978d4c5c184a084384011fa6"
+        }
+      ],
+      "label": "final-cleanup-46704BAF",
+      "logRetention": [
+        {
+          "name": "final-cleanup-46704BAF.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "final-cleanup-46704BAF.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "final-cleanup-46704BAF.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "final-cleanup-D4907127.log",
+          "sha256": "0ed9be3147b543385b76fd68821e8ddb82a924b5bea87dbdf02feff8e3615b11"
+        }
+      ],
+      "label": "final-cleanup-D4907127",
+      "logRetention": [
+        {
+          "name": "final-cleanup-D4907127.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "final-cleanup-D4907127.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "final-cleanup-D4907127.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        }
+      },
+      "executableSha256": "7b0e99653e7d74ea7550feb681672e052328a289ec00259be35956efc91ab191",
+      "exitCode": 1605,
+      "extraLogs": [
+        {
+          "bytes": 5026,
+          "name": "final-cleanup-EA2907BA.log",
+          "sha256": "3d1f39255e76ea70b6f33b1d31f2ac9f17ad411aae35bde7dae563135a6947b4"
+        }
+      ],
+      "label": "final-cleanup-EA2907BA",
+      "logRetention": [
+        {
+          "name": "final-cleanup-EA2907BA.stdout",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "final-cleanup-EA2907BA.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        },
+        {
+          "name": "final-cleanup-EA2907BA.log",
+          "observedBytes": 5026,
+          "retainedBytes": 5026,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 0,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 79,
+          "prefixTruncated": false,
+          "sha256": "9ddea3925ab919ac8637b5cfcf2a347b4c4452fa048e346023d23c7f1aad2224",
+          "text": "{\"ownedPayloads\":[],\"protocolCommandStrings\":[],\"products\":[],\"shortcuts\":[]}\r\n"
+        }
+      },
+      "executableSha256": "e94166ed9f376559c1359bafb08bc49e463a494c330f67644ec1d9f1ffeb5ee5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "final-absent",
+      "logRetention": [
+        {
+          "name": "final-absent.stdout",
+          "observedBytes": 79,
+          "retainedBytes": 79,
+          "truncated": false
+        },
+        {
+          "name": "final-absent.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 79,
+      "windowObservation": null
+    }
+  ],
+  "releaseAcceptance": false,
+  "residualHandleMetadata": {
+    "depthLimitReached": false,
+    "directoryPresent": true,
+    "entries": [
+      {
+        "hashSkippedBound": true,
+        "relativeName": "axiom-desktop.exe",
+        "sizeBytes": 17018880,
+        "type": "file"
+      },
+      {
+        "hashUnavailable": true,
+        "relativeName": "Uninstall Axiom Agent.lnk",
+        "sizeBytes": 892,
+        "type": "file"
+      }
+    ],
+    "entryLimitReached": false,
+    "hashBytes": 0,
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "metadataUnavailable": false,
+    "schema": "axiom.windows-installation-residuals/1"
+  },
+  "residualShortcutMetadata": {
+    "maxDepth": 2,
+    "maxEntries": 32,
+    "rows": [
+      {
+        "argumentsAreUninstallGuid": true,
+        "argumentsEmpty": false,
+        "relativeName": "Uninstall Axiom Agent.lnk",
+        "targetIsOwnedApplication": false,
+        "targetIsSystem32MsiExec": true,
+        "uninstallProductClass": "legacy"
+      }
+    ],
+    "schema": "axiom.windows-residual-shortcuts/1"
+  },
+  "sourceInputsMatched": true,
+  "syntheticMiniMsiOnly": true,
+  "webview": {
+    "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+    "msiSeesInstalledRuntime": true,
+    "nsisSeesInstalledRuntime": true,
+    "runtimeInstallationPermitted": false,
+    "versions": {
+      "system-wow64": "131.0.2903.86"
+    },
+    "webviewRenderingVerified": false
+  }
+}

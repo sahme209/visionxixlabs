@@ -1,0 +1,75 @@
+{
+  "pr": 338,
+  "sourceHead": "37a1c9286dfd9d58fc9ee561fcdf5e7a9ca20a8f",
+  "merge": {
+    "sha": "bb2da7ca3c01b23c2eac5d7e1cb3af46a68432d5",
+    "merged": true,
+    "message": "Pull Request successfully merged"
+  },
+  "mergeTreeMatchesReviewedSource": true,
+  "mainChecks": [
+    {
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711372/job/132891433068"
+    },
+    {
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711372/job/132889943961"
+    },
+    {
+      "name": "macOS native transport and policy checks",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711364/job/132889943908"
+    },
+    {
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711372/job/132889943889"
+    },
+    {
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711372/job/132889943888"
+    },
+    {
+      "name": "Frontend and native security checks",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711364/job/132889943870"
+    },
+    {
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711372/job/132889943847"
+    },
+    {
+      "name": "Windows frontend and native security checks",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711364/job/132889943694"
+    },
+    {
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success",
+      "url": "https://github.com/sahme209/visionxixlabs/actions/runs/43739711372/job/132889943619"
+    }
+  ],
+  "windows": {
+    "passed": 85,
+    "failed": 0,
+    "ignored": 0,
+    "strictClippyPassed": true,
+    "job": 132887954750
+  },
+  "productionHeldByUser": true,
+  "visibleTestingRequested": true
+}

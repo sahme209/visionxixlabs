@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId, kind: "support.action_run", subjectKind: "support_action", subjectId: d.action, summary: `${ctx.email ?? "A member"} asked Ask Axiom to ${d.info.label.toLowerCase()}`, actorUserId: userId, detailJson: { action: d.action, role: me.role, ...result.detail } });
+    await appendAuditEvent(prisma as unknown as AuditEventRepo, { organizationId, kind: "support.action_run", subjectKind: "support_action", subjectId: d.action, summary: `${ctx.email ?? "A member"} asked Ask V19 to ${d.info.label.toLowerCase()}`, actorUserId: userId, detailJson: { action: d.action, role: me.role, ...result.detail } });
   } catch { /* best-effort */ }
   return NextResponse.json({ ok: true, action: d.action, message: result.message, href: d.action === "list_expiring_keys" ? "/control/api-keys" : "/control/trust-tools" }, { headers: NO_STORE });
 }

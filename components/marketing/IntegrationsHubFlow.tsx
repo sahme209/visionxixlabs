@@ -18,8 +18,8 @@ const statusTone = (s: string) => (s === "available" ? "text-emerald-300/90" : s
 export function IntegrationsHubFlow() {
   return (
     <section aria-labelledby="hub-flow" className="public-integrations-map rounded-2xl border border-white/[0.07] bg-white/1.5 p-5 sm:p-7">
-      <h2 id="hub-flow" className="text-xl font-medium tracking-tight text-zinc-100">How your tools connect through Axiom</h2>
-      <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">Tools on the left, Axiom&apos;s checks in the middle, outcomes on the right. Statuses are the real ones from the catalog.</p>
+      <h2 id="hub-flow" className="text-xl font-medium tracking-tight text-zinc-100">How your tools connect through V19</h2>
+      <p className="mt-2 max-w-3xl text-[15px] leading-7 text-zinc-400">Tools on the left, V19&apos;s checks in the middle, outcomes on the right. Statuses are the real ones from the catalog.</p>
       <div className="mt-7 grid items-stretch gap-4 lg:grid-cols-[minmax(0,5fr)_auto_minmax(0,4fr)_auto_minmax(0,3fr)]">
         <ol aria-label="Tools" className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-2">
           {GROUPS.map((g) => (
@@ -38,8 +38,8 @@ export function IntegrationsHubFlow() {
           ))}
         </ol>
         <div aria-hidden="true" className={`hidden lg:block ${styles.pipe}`}><span className={styles.dot} /><span className={`${styles.dot} ${styles.d2}`} /></div>
-        <ol aria-label="Axiom checks" className="flex flex-col justify-center gap-3 rounded-xl border border-sky-300/15 bg-sky-300/3 p-4">
-          <li className="text-[11px] uppercase tracking-[0.14em] text-sky-200/70">Axiom</li>
+        <ol aria-label="V19 checks" className="flex flex-col justify-center gap-3 rounded-xl border border-sky-300/15 bg-sky-300/3 p-4">
+          <li className="text-[11px] uppercase tracking-[0.14em] text-sky-200/70">V19</li>
           {CHECKS.map(([t, d], i) => (
             <li key={t} className="rounded-lg border border-white/[0.07] bg-[#0b0e13] px-3 py-2.5">
               <p className="text-sm text-zinc-100"><span className="mr-2 font-mono text-xs text-sky-200/70">{String(i + 1).padStart(2, "0")}</span>{t}</p>

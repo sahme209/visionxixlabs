@@ -529,7 +529,7 @@ const DEMO_EVENTS: ActivityEvent[] = [
     id: "e7",
     type: "drift.detected",
     title: "Configuration drift detected",
-    description: "2 security group rules modified outside of Axiom · diff captured",
+    description: "2 security group rules modified outside of V19 · diff captured",
     provider: "aws",
     region: "us-west-2",
     timestamp: new Date(NOW - 320_000).toISOString(),

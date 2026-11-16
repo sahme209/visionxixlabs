@@ -23,7 +23,7 @@ import { prisma } from "@/lib/db";
 import { CodingTaskForm } from "@/components/workforce/CodingTaskForm";
 
 export const metadata: Metadata = {
-  title: "AI coding · Axiom",
+  title: "AI coding · V19",
   description: "AI engineer that proposes patches, runs tests, gates two-step approvals, and opens PRs.",
 };
 

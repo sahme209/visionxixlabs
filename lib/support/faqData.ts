@@ -1,5 +1,5 @@
 /**
- * Public FAQ, shared by /docs/faq and the Ask Axiom support agent.
+ * Public FAQ, shared by /docs/faq and the Ask V19 support agent.
  * One source of truth: edit answers here, never in two places.
  */
 export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q: string; a: string }> }> = [
@@ -7,7 +7,7 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
     title: "The basics",
     items: [
       {
-        q: "What is Axiom Agent?",
+        q: "What is V19?",
         a: "A downloadable deployment-operations workspace for intake, readiness, approvals, plan review, guided execution, validation, evidence, and closure. Connector and execution availability is shown in the installed release.",
       },
       {
@@ -15,8 +15,8 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
         a: "A user selects a repository, branch, and environment, then asks the Agent for an outcome. Read-only tools can run inline. Any GitHub write or deployment stops at an explicit proposal, risk check, and admin approval before the real action runs.",
       },
       {
-        q: "Does Axiom replace my existing tooling?",
-        a: "No. The released path uses your GitHub repository, GitHub Actions workflow, AWS role, ECS target, and optional Airflow installation. Axiom adds selection, governance, approval, and evidence around those systems.",
+        q: "Does V19 replace my existing tooling?",
+        a: "No. The released path uses your GitHub repository, GitHub Actions workflow, AWS role, ECS target, and optional Airflow installation. V19 adds selection, governance, approval, and evidence around those systems.",
       },
     ],
   },
@@ -28,12 +28,12 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
         a: "AWS ECS deployment is released through the tenant's own GitHub Actions workflow. GitHub Actions uses OIDC to assume the configured AWS role, waits for ECS steady state, and rolls back to the previous task definition if stabilization fails.",
       },
       {
-        q: "What permissions does Axiom need?",
-        a: "GitHub access is minted for one selected repository through the installed GitHub App. AWS credentials are not stored by Axiom; the deployment workflow uses GitHub OIDC and the role configured for the selected environment.",
+        q: "What permissions does V19 need?",
+        a: "GitHub access is minted for one selected repository through the installed GitHub App. AWS credentials are not stored by V19; the deployment workflow uses GitHub OIDC and the role configured for the selected environment.",
       },
       {
         q: "Are credentials stored?",
-        a: "The released AWS deployment path stores no long-lived AWS access key in Axiom. GitHub Actions obtains short-lived AWS credentials through OIDC. Provider tokens and desktop sessions remain tenant-scoped and are handled by the service, not entered into chat.",
+        a: "The released AWS deployment path stores no long-lived AWS access key in V19. GitHub Actions obtains short-lived AWS credentials through OIDC. Provider tokens and desktop sessions remain tenant-scoped and are handled by the service, not entered into chat.",
       },
       {
         q: "How do I revoke access?",
@@ -66,7 +66,7 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
     title: "Execution & approval",
     items: [
       {
-        q: "Does Axiom apply changes automatically?",
+        q: "Does V19 apply changes automatically?",
         a: "Read-only checks may execute inline. Medium- and high-risk changes require explicit approval, and production context can only increase risk. The Agent cannot approve its own proposal.",
       },
       {
@@ -117,8 +117,8 @@ export const FAQ_GROUPS: ReadonlyArray<{ title: string; items: ReadonlyArray<{ q
     title: "Pricing & access",
     items: [
       {
-        q: "How is Axiom priced?",
-        a: "Axiom is free to explore. Optional prepaid AI credits are the only paid part: exact per-model rates, the cost shown before each action, and never a charge beyond what you prepaid. Credit purchases are not open yet. See /plans for the rate card.",
+        q: "How is V19 priced?",
+        a: "V19 is free to explore. Optional prepaid AI credits are the only paid part: exact per-model rates, the cost shown before each action, and never a charge beyond what you prepaid. Credit purchases are not open yet. See /plans for the rate card.",
       },
       {
         q: "Can I review the product before paying?",

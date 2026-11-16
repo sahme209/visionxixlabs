@@ -1,0 +1,10 @@
+{
+  "bundler.rs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle.rs",
+    "sha256": "91c8387ccb2e52388cdcfeccfd23f69dac5439aba397d464b1d5446153fdc82e"
+  },
+  "cli-bundle.rs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-cli/src/bundle.rs",
+    "sha256": "fa883f16f84ad4a0d7d091daa2a57e177b804b481a9ec8f8227c5a398dcafdf6"
+  }
+}

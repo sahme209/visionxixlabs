@@ -1,0 +1,143 @@
+{
+  "schema": "axiom.windows-installed-validation/1",
+  "source": "219e6723b56e322405dacb7894e3616112d8a470",
+  "sourceBinding": {
+    "externalHumanApprovalProof": false,
+    "manifestSha256": "ba8b5e620c3d5ade412b703df033b84f6e60ec76e5fc90c96bdd86a58df4563b",
+    "sha": "219e6723b56e322405dacb7894e3616112d8a470",
+    "sourceAuthority": "ordinary-owner-PR-CI"
+  },
+  "version": "0.1.23",
+  "accepted": false,
+  "failureClass": "RuntimeError",
+  "failureCode": "artifact_not_regular",
+  "unsignedValidationOnly": true,
+  "published": false,
+  "signingPerformed": false,
+  "keyringCleanupConfirmed": true,
+  "ownedProcessCleanupConfirmed": true,
+  "upgradeAcceptance": "NOT_RUN",
+  "upgradeCycles": [
+    {
+      "candidateSha256": "5401b2196c4f4fc711c71f0eba65f6638050efd3bf40b29e79ad25afb9bb5bbb",
+      "case": "msi-major-upgrade",
+      "cleanupConfirmed": true,
+      "expectedCollisionRefused": false,
+      "installKind": "msi",
+      "oldInstallConfirmed": false,
+      "oldInstallerSha256": "670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1",
+      "upgradeConfirmed": false,
+      "webviewRenderingVerified": false
+    }
+  ],
+  "completeWindowsInstalledAcceptance": false,
+  "googlePairing": "NOT_RUN",
+  "uiVisualAcceptance": "UNVERIFIED",
+  "installerServiceContained": false,
+  "productionVaultEntries": "NOT_USED_BY_SYNTHETIC_HARNESS",
+  "bundlePayloadExpectations": {
+    "bytes": 20215296,
+    "formatExpectedSha256": {
+      "msi": "71aae10e3e46da19a62ec3da5ffa6b98bf06e25222cefb18e7496b1c44828e7a",
+      "nsis": "76b2a13ab5d762cb814b80584d3855201c65df87446326344e1484285f5969f1"
+    },
+    "markerBytes": 27,
+    "markerOffset": 15540288,
+    "rawInputSha256": "e9af574a42dccb95560807f8abf7657d574c1cbeddb766afa6ace845f1e78573",
+    "sourceProvenance": {
+      "algorithm": "first-UNK-marker-same-width-replacement-full-file-sha256",
+      "bundlerSource": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle.rs",
+      "bundlerSourceSha256": "91c8387ccb2e52388cdcfeccfd23f69dac5439aba397d464b1d5446153fdc82e",
+      "cliSource": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-cli/src/bundle.rs",
+      "cliSourceSha256": "fa883f16f84ad4a0d7d091daa2a57e177b804b481a9ec8f8227c5a398dcafdf6",
+      "version": "2.12.4"
+    }
+  },
+  "installations": [
+    {
+      "expectedPayloadSha256": "71aae10e3e46da19a62ec3da5ffa6b98bf06e25222cefb18e7496b1c44828e7a",
+      "installConfirmed": true,
+      "installedMachine": "AMD64",
+      "installedPayloadBytes": 20215296,
+      "installedPayloadSha256": "71aae10e3e46da19a62ec3da5ffa6b98bf06e25222cefb18e7496b1c44828e7a",
+      "installedVersionMetadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "Application",
+        "bytes": 20215296,
+        "machine": "AMD64",
+        "sha256": "71aae10e3e46da19a62ec3da5ffa6b98bf06e25222cefb18e7496b1c44828e7a",
+        "signatureStatus": "NotSigned"
+      },
+      "installerSha256": "5401b2196c4f4fc711c71f0eba65f6638050efd3bf40b29e79ad25afb9bb5bbb",
+      "kind": "msi",
+      "metadata": {
+        "ProductCode": "{B833A4EF-30F7-4A32-8F3D-55B4EE82B774}",
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "UpgradeCode": "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}",
+        "artifactKind": "MsiInstaller",
+        "bytes": 7512064,
+        "machine": "AMD64",
+        "sha256": "5401b2196c4f4fc711c71f0eba65f6638050efd3bf40b29e79ad25afb9bb5bbb",
+        "signatureStatus": "NotSigned"
+      },
+      "nativeTopLevelWindowObserved": true,
+      "protocolRegistered": true,
+      "uninstallConfirmed": true,
+      "visualAcceptance": "UNVERIFIED",
+      "webviewRuntimePreflight": {
+        "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+        "msiSeesInstalledRuntime": true,
+        "nsisSeesInstalledRuntime": true,
+        "runtimeInstallationPermitted": false,
+        "versions": {
+          "system-wow64": "131.0.2903.86"
+        },
+        "webviewRenderingVerified": false
+      }
+    },
+    {
+      "expectedPayloadSha256": "76b2a13ab5d762cb814b80584d3855201c65df87446326344e1484285f5969f1",
+      "installConfirmed": true,
+      "installedMachine": "AMD64",
+      "installedPayloadBytes": 20215296,
+      "installedPayloadSha256": "76b2a13ab5d762cb814b80584d3855201c65df87446326344e1484285f5969f1",
+      "installedVersionMetadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "Application",
+        "bytes": 20215296,
+        "machine": "AMD64",
+        "sha256": "76b2a13ab5d762cb814b80584d3855201c65df87446326344e1484285f5969f1",
+        "signatureStatus": "NotSigned"
+      },
+      "installerSha256": "9ebd726c3f14c3d6cee71d4a2254815920ee76a7a7e4ed81a6f0d03f3121c3df",
+      "kind": "nsis",
+      "metadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "NsisInstaller",
+        "bytes": 5439990,
+        "machine": "I386",
+        "sha256": "9ebd726c3f14c3d6cee71d4a2254815920ee76a7a7e4ed81a6f0d03f3121c3df",
+        "signatureStatus": "NotSigned"
+      },
+      "nativeTopLevelWindowObserved": true,
+      "ownedUninstallerRemovedAfterExit": true,
+      "protocolRegistered": true,
+      "uninstallConfirmed": true,
+      "visualAcceptance": "UNVERIFIED",
+      "webviewRuntimePreflight": {
+        "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+        "msiSeesInstalledRuntime": true,
+        "nsisSeesInstalledRuntime": true,
+        "runtimeInstallationPermitted": false,
+        "versions": {
+          "system-wow64": "131.0.2903.86"
+        },
+        "webviewRenderingVerified": false
+      }
+    }
+  ]
+}

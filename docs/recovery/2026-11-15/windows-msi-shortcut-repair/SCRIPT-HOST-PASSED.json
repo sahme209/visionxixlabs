@@ -1,0 +1,79 @@
+{
+  "accepted": true,
+  "msiSessionOrTransactionVerified": false,
+  "nativeInstallerVerified": false,
+  "ownedFixtureRemoved": true,
+  "ownedProcessesEmpty": true,
+  "packetSha256": "5914d17bde131ce8a27ff1eb32feb8a3849cd044391ed7bb9fdeb5d73c924f40",
+  "published": false,
+  "sourceInputsMatched": true,
+  "syntheticLinksOnly": true,
+  "runId": 43784865150,
+  "jobId": 133030123951,
+  "source": "c38b57021195d1f4bddf81a24a8f79d64d77645f",
+  "cases": [
+    "commit",
+    "rollback",
+    "foreign-old",
+    "foreign-current",
+    "foreign-backup",
+    "partial-rollback",
+    "directory",
+    "reparse-parent",
+    "foreign-arguments",
+    "uninstall-foreign-current"
+  ],
+  "scriptSha256": "bb65f82277c0c42814dd0b6d43f5ff6fa863291f08c70940533a06635a5eb654",
+  "allInnerJobsEmpty": true,
+  "refusals": [
+    {
+      "label": "foreign-old-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Foreign shortcut preserved",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "foreign-current-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Foreign shortcut preserved",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "foreign-backup-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Shortcut backup already exists",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "partial-rollback-migrate",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Synthetic second move failure",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "directory-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Shortcut destination is a directory",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "reparse-parent-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Shortcut parent is a reparse point",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "foreign-arguments-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Shortcut arguments preserved",
+      "completionSentinelObserved": false
+    },
+    {
+      "label": "uninstall-foreign-current-preflight",
+      "exitCode": 0,
+      "fixedExpectedRefusalDescription": "Foreign shortcut preserved",
+      "completionSentinelObserved": false
+    }
+  ],
+  "actualResultSha256": "25caa0d749f0d3399b5c977826793d98afded250eb03faecbdb2f114e0ef6323"
+}

@@ -25,6 +25,7 @@ async function prepare() {
   fireEvent.change(screen.getByLabelText("Email"), { target: { value: " person@example.test " } });
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   fireEvent.change(screen.getByLabelText("Password"), { target: { value: "synthetic-password" } });
+  fireEvent.click(screen.getByText("Other sign-in options"));
   await screen.findByRole("button", { name: "Sign in with Cognito" });
   return screen.getByRole("button", { name: "Sign in" }).closest("form")!;
 }
@@ -34,15 +35,15 @@ it("does not submit a second password login while the first is pending, then per
   const form = await prepare();
   fireEvent.submit(form);
   expect(screen.getByRole("button", { name: "Signing in…" }).hasAttribute("disabled")).toBe(true);
-  expect(screen.getByRole("button", { name: "Sign in with Google" }).hasAttribute("disabled")).toBe(true);
+  expect(screen.getByRole("button", { name: "Continue with Google" }).hasAttribute("disabled")).toBe(true);
   fireEvent.submit(form);
-  fireEvent.click(screen.getByRole("button", { name: "Sign in with Google" }));
+  fireEvent.click(screen.getByRole("button", { name: "Continue with Google" }));
   expect(ports.signIn).toHaveBeenCalledTimes(1);
   expect(ports.signIn).toHaveBeenCalledWith("credentials", { email: "person@example.test", password: "synthetic-password", redirect: false });
   expect(ports.push).not.toHaveBeenCalled();
   await act(async () => { flow.resolve(refused); });
   expect((await screen.findByRole("alert")).textContent).toContain("Invalid email or password");
-  fireEvent.click(screen.getByRole("button", { name: "Sign in with Google" }));
+  fireEvent.click(screen.getByRole("button", { name: "Continue with Google" }));
   await waitFor(() => expect(ports.signIn).toHaveBeenCalledTimes(2));
   expect(ports.signIn).toHaveBeenLastCalledWith("google", { callbackUrl: "/desktop/connect?challenge=synthetic", redirect: true });
   expect(ports.push).not.toHaveBeenCalled();
@@ -68,7 +69,7 @@ it("does not start credentials from a form submit during OAuth, then allows a de
 it("serializes competing provider clicks even before React commits the busy state", async () => {
   const flow = pending(); ports.signIn.mockReturnValue(flow.promise);
   await prepare();
-  const google = screen.getByRole("button", { name: "Sign in with Google" });
+  const google = screen.getByRole("button", { name: "Continue with Google" });
   const cognito = screen.getByRole("button", { name: "Sign in with Cognito" });
   act(() => { google.click(); cognito.click(); google.click(); });
   expect(ports.signIn).toHaveBeenCalledTimes(1);

@@ -1,0 +1,7 @@
+{
+  "accepted": true,
+  "testFile": "lib/demo/__tests__/demoScenarios.test.ts",
+  "passed": 15,
+  "logSha256": "a188225da71a51336b29667aa08ea4e696e373fb4be25508d6ae7214aea9358a",
+  "scope": "Documentation/demo evidence update after compiled auth acceptance; auth source remains frozen."
+}

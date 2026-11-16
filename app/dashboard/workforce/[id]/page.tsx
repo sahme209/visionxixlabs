@@ -30,7 +30,7 @@ import {
 } from "@/lib/workforce/agentWorkforceRegistry";
 
 export const metadata: Metadata = {
-  title: "Engineer detail · Axiom",
+  title: "Engineer detail · V19",
 };
 
 export const dynamic = "force-dynamic";

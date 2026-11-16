@@ -158,14 +158,14 @@ export function CapabilitiesClient() {
   return (
     <div className="public-detail-page public-capabilities-page">
       <section className="public-detail-header">
-        <PageHero eyebrow="Axiom Agent · deployment capabilities" title="Deployment capabilities." muted="With human control." lead="A focused inventory of the release-governance logic behind Axiom: assess a change, prepare evidence, require human approval, and verify the result. A listed capability proves application logic exists; it does not by itself claim a live integration or automated deployment." />
+        <PageHero eyebrow="V19 · deployment capabilities" title="Deployment capabilities." muted="With human control." lead="A focused inventory of the release-governance logic behind V19: assess a change, prepare evidence, require human approval, and verify the result. A listed capability proves application logic exists; it does not by itself claim a live integration or automated deployment." />
       </section>
 
       <section className="relative z-10 mx-auto max-w-[1400px] px-6 pb-12 md:px-10" aria-labelledby="playbook-responsibilities-heading">
         <div className="surface-glass rounded-2xl p-6 sm:p-8">
           <p className="mono-label">One governed Playbook</p>
           <div className="mt-3 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
-            <h2 id="playbook-responsibilities-heading" className="max-w-xl text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">The parts of Axiom are useful only when they support one release decision.</h2>
+            <h2 id="playbook-responsibilities-heading" className="max-w-xl text-2xl font-medium tracking-[-0.04em] text-white sm:text-3xl">The parts of V19 are useful only when they support one release decision.</h2>
             <p className="max-w-sm text-sm leading-6 text-zinc-400">A capability is not a promise of autonomous execution or a live integration. It is a governed part of the workflow.</p>
           </div>
           <ol className="mt-8 grid gap-3 md:grid-cols-5">

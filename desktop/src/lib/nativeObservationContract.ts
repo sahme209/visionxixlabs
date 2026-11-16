@@ -25,7 +25,7 @@ const nativeErrors=new Set(['native_observation_unsupported','native_observation
 export function safeNativeObservationError(error:unknown,fallback:string){const code=typeof error==='string'?error:error instanceof Error?error.message:null;return code&&nativeErrors.has(code)?code:fallback}
 export function nativeObservationRecoveryMessage(code:string|undefined):string|null{
  switch(code){
- case 'native_observation_foreground_required':return 'Bring Axiom to the foreground, then choose Select window again.';
+ case 'native_observation_foreground_required':return 'Bring V19 to the foreground, then choose Select window again.';
  case 'native_observation_operation_busy':return 'Another window observation is still active. Wait for the macOS picker to close, then select a window again.';
  case 'native_observation_invalid_request':return 'Native observation rejected the request (native_observation_invalid_request). Reopen the Computer panel and select a window again.';
  case 'native_observation_selection_cancelled':return 'No window was selected. Choose Select window when you are ready.';
@@ -35,7 +35,7 @@ export function nativeObservationRecoveryMessage(code:string|undefined):string|n
  case 'native_observation_unsupported':return 'Window observation requires a supported native macOS build (15.2 or later).';
  case 'native_observation_capture_invalid':case 'native_observation_capture_unavailable':return 'The selected window could not be captured. Select a window again.';
  case 'native_observation_operation_stopped':return 'Window observation stopped. Select a window again when ready.';
- case 'native_observation_selection_unavailable':return 'The macOS window picker is unavailable. Bring Axiom to the foreground and select a window again.';
+ case 'native_observation_selection_unavailable':return 'The macOS window picker is unavailable. Bring V19 to the foreground and select a window again.';
  default:return null;
  }
 }

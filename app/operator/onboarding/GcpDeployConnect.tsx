@@ -19,8 +19,8 @@ import { useEffect, useState } from "react";
 
 const GCP_SETUP_COMMAND = `PROJECT_ID=$(gcloud config get-value project) && \\
 gcloud iam service-accounts create axiom-agent-reader \\
-  --description="Axiom read-only inventory access" \\
-  --display-name="Axiom Agent Reader" --project="$PROJECT_ID" && \\
+  --description="V19 read-only inventory access" \\
+  --display-name="V19 Reader" --project="$PROJECT_ID" && \\
 gcloud projects add-iam-policy-binding "$PROJECT_ID" \\
   --member="serviceAccount:axiom-agent-reader@$PROJECT_ID.iam.gserviceaccount.com" \\
   --role="roles/iam.securityReviewer" --quiet && \\

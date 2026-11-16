@@ -1,0 +1,14 @@
+{
+  "accepted": true,
+  "inputSha256": "24fd992d78ec7371db4fe1eddbc1559aff316f4aedb59b4bd6a66b65251e0f69",
+  "allInputHashesMatch": 139,
+  "cacheInventoryMatch": 189,
+  "phaseLogsMatch": 7,
+  "oneFixtureTwoVerifierStatesPassed": true,
+  "exactApplyAndVerifyArgsMatch": true,
+  "readonlyPreservedAll126PriorRowsAndUser": true,
+  "clientsDisconnected": true,
+  "ownedGroupsEmpty": true,
+  "clusterKeysPasswordAbsent": true,
+  "productionCallsPerformed": false
+}

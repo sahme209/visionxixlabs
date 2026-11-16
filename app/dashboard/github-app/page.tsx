@@ -103,7 +103,7 @@ export default function GitHubAppPage() {
       const body = await response.json() as { ok: boolean; error?: string; data?: { manifest: Record<string, unknown>; createUrl: string } };
       if (!body.ok || !body.data) {
         const reason = body.error === "platform_admin_required"
-          ? "Only a platform administrator can register Axiom’s service-wide GitHub App. Workspace owners can connect their own repositories after the service App is available."
+          ? "Only a platform administrator can register V19’s service-wide GitHub App. Workspace owners can connect their own repositories after the service App is available."
           : body.error === "auth_required"
             ? "Your sign-in has expired. Sign in again and retry."
             : body.error === "trusted_origin_unavailable"
@@ -144,7 +144,7 @@ export default function GitHubAppPage() {
       <PageIntro
         kicker={`ReleaseOps · GitHub App${data?.installed && data.active ? ` · ${installationAccountLabel(data.active)}` : ""}`}
         title={<>Connect once. <span className="text-zinc-500">Review before each release.</span></>}
-        description="Install the Axiom GitHub App on only the repositories you select. Axiom uses read-only evidence to assemble release context; it does not deploy, change code, or expose a GitHub token."
+        description="Install the V19 GitHub App on only the repositories you select. V19 uses read-only evidence to assemble release context; it does not deploy, change code, or expose a GitHub token."
         helps="This connection is the trusted source for pull requests, checks, workflows, and repository protections used in release review."
         connectFirst="You need admin rights on the GitHub org to authorize the install. If you don't, click the link anyway — GitHub will route a request to the org admins on your behalf. If no GitHub App is configured for this platform yet, a platform administrator can create one here (GitHub's App Manifest flow) — no manual App registration or redeploy required."
         engineers={["DevOps", "Release Captain", "Security"]}
@@ -237,7 +237,7 @@ export default function GitHubAppPage() {
           {data.installReady ? (
             <div className="mb-6 rounded-2xl border border-white/6 bg-white/1.5 p-5">
               <p className="text-[13px] font-semibold text-orange-100 mb-2">
-                {data.installed ? "Re-install or extend repository selection" : "Install Axiom on your GitHub org"}
+                {data.installed ? "Re-install or extend repository selection" : "Install V19 on your GitHub org"}
               </p>
               <button
                 type="button"
@@ -253,8 +253,8 @@ export default function GitHubAppPage() {
               <p className="font-semibold text-zinc-200 mb-1">GitHub connection isn&apos;t set up yet</p>
               <p>
                 {data.isAdmin
-                  ? "Create the Axiom GitHub App with one click — GitHub pre-fills every field from a manifest, so there's nothing to type. Once it's created, you (or any workspace admin) can connect your repositories here."
-                  : "Your Axiom administrator hasn't finished configuring GitHub for this workspace yet. Once they do, you'll be able to connect your repositories here with one click."}
+                  ? "Create the V19 GitHub App with one click — GitHub pre-fills every field from a manifest, so there's nothing to type. Once it's created, you (or any workspace admin) can connect your repositories here."
+                  : "Your V19 administrator hasn't finished configuring GitHub for this workspace yet. Once they do, you'll be able to connect your repositories here with one click."}
               </p>
               {data.isAdmin && (
                 <button
@@ -284,10 +284,10 @@ export default function GitHubAppPage() {
               </div>
               <p className="text-[12px] text-zinc-300 mt-3">
                 {readValidated
-                  ? "Read-only access was last validated by Axiom Agent."
+                  ? "Read-only access was last validated by V19 Agent."
                   : validationOverdue
-                  ? "The last read-only validation is over 24 hours old. Open Axiom Agent to recheck it before relying on this installation for release evidence."
-                  : "Installation is recorded. Open Axiom Agent to run the first read-only validation before it contributes release evidence."}
+                  ? "The last read-only validation is over 24 hours old. Open V19 to recheck it before relying on this installation for release evidence."
+                  : "Installation is recorded. Open V19 to run the first read-only validation before it contributes release evidence."}
               </p>
             </div>
           )}

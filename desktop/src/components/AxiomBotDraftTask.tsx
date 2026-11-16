@@ -24,19 +24,19 @@ export function AxiomBotDraftTask({ownerKey,draft,onDraftChange,active=true,onSa
   setCandidate(undefined);onCandidateChange?.(false);onDraftChange(next);
  }
  const input='w-full rounded-lg border border-white/10 bg-black/20 px-3 py-2 text-sm text-zinc-200';
- return <section hidden={!active} aria-label="Axiom Bot draft task" className="space-y-5">
+ return <section hidden={!active} aria-label="V19 Bot draft task" className="space-y-5">
   <aside className="border-t border-white/10 pt-4 text-sm leading-6 text-zinc-400"><p className="font-semibold text-zinc-200">Task execution is unavailable</p><p className="mt-1">{onSave?"Saving a draft does not run it. Approved routines and governed execution remain unavailable.":"Persistent tasks, approved routines and governed execution are not implemented here."}</p><p className="mt-1">No background work runs from this draft.</p></aside>
   <p className="text-sm text-zinc-400">{onSave?"Task draft · separate from Agent chat":"Unsent draft · separate from Agent chat"}</p>
   {!owned?<p role="alert" className="text-xs text-amber-300">Workspace changed. Open a draft owned by the selected workspace before editing.</p>:<>
    <p id={guidanceId} className="text-xs text-zinc-400">Do not include passwords, API keys, access tokens, private keys or other secrets. Include only information you are authorized to share.</p>
    <div className="space-y-3">
     <label className="block space-y-1 text-xs text-zinc-400"><span>Bot task title</span><input aria-label="Bot task title" className={input} disabled={editingDisabled} value={value.title} onChange={e=>edit('title',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={`${guidanceId}${error?' '+errorId:''}`} /></label>
-    <label className="block space-y-1 text-xs text-zinc-400"><span>What should Axiom Bot help with?</span><textarea aria-label="What should Axiom Bot help with?" className={input} disabled={editingDisabled} rows={4} value={value.task} onChange={e=>edit('task',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={`${guidanceId}${error?' '+errorId:''}`} /></label>
+    <label className="block space-y-1 text-xs text-zinc-400"><span>What should V19 Bot help with?</span><textarea aria-label="What should V19 Bot help with?" className={input} disabled={editingDisabled} rows={4} value={value.task} onChange={e=>edit('task',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={`${guidanceId}${error?' '+errorId:''}`} /></label>
     <label className="block space-y-1 text-xs text-zinc-400"><span>Context to include</span><textarea aria-label="Context to include" className={input} disabled={editingDisabled} rows={3} value={value.context} onChange={e=>edit('context',e.target.value)} aria-invalid={Boolean(error)} aria-describedby={`${guidanceId}${error?' '+errorId:''}`} /></label>
    </div>
    {onSave&&<div className="space-y-2"><button type="button" className="btn-primary disabled:opacity-40" disabled={editingDisabled||saveDisabled||Boolean(error)||!value.title.trim()||!value.task.trim()} onClick={()=>{if(!editingDisabled&&!saveDisabled&&!error&&value.title.trim()&&value.task.trim())onSave(value)}}>Save task draft</button><p className="text-xs text-zinc-500">Save uploads this draft to your signed-in workspace. It does not start a task.</p></div>}
    {error&&<p id={errorId} role="alert" className="text-xs text-amber-300">{error}</p>}
-   <p className="text-[11px] text-zinc-500">Title: 200 characters. Task and context: 4,000 characters each. Combined data: 16 KiB. These are Axiom input limits, not provider work or spending limits.</p>
+   <p className="text-[11px] text-zinc-500">Title: 200 characters. Task and context: 4,000 characters each. Combined data: 16 KiB. These are V19 input limits, not provider work or spending limits.</p>
   </>}
 
  </section>;

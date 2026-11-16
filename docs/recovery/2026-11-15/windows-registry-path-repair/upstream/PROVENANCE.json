@@ -1,0 +1,15 @@
+{
+  "tauriCargoLock": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/Cargo.lock",
+    "sha256": "4900c3f05f3662278f46e560f0339f9275d5dc83a02fdfcc32dc7468574640d6"
+  },
+  "handlebarsVersion": "6.3.0",
+  "grammar": {
+    "url": "https://raw.githubusercontent.com/sunng87/handlebars-rust/v6.3.0/src/grammar.pest",
+    "sha256": "cb1ff8663e48422d3ecb0e69ccc528da4b55eab5d4d64fd06fd280126c2c7278"
+  },
+  "templateCompiler": {
+    "url": "https://raw.githubusercontent.com/sunng87/handlebars-rust/v6.3.0/src/template.rs",
+    "sha256": "f562a9680b6d2deb9930ecc42f7ac0c58d66ead4ba68790ef88c26b5c054b33c"
+  }
+}

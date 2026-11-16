@@ -8,7 +8,7 @@ import { PageHero } from "@/components/marketing/PageHero";
 
 export const metadata: Metadata = {
   title: "Press and brand — Vision XIX Labs",
-  description: "Approved Axiom Agent description, links, and brand assets.",
+  description: "Approved V19 description, links, and brand assets.",
   alternates: { canonical: `${SITE_URL}/press` },
 };
 
@@ -19,7 +19,7 @@ export default function PressPage() {
       <main className="public-reading-marketing-page">
         <PageHero
           eyebrow="Press and brand"
-          title="Describe Axiom"
+          title="Describe V19"
           muted="accurately."
           lead={<>Use the language and assets below. Product availability should always
             follow the current download and integration pages.</>}
@@ -29,7 +29,7 @@ export default function PressPage() {
           <section className="grid gap-5 py-8 md:grid-cols-[220px_1fr]">
             <h2 className="text-lg font-medium">Approved description</h2>
             <p className="max-w-2xl text-sm leading-7 text-zinc-400">
-              Axiom Agent is a desktop-first deployment-governance workspace that
+              V19 is a desktop-first deployment-governance workspace that
               turns plain-English requests into risk-checked, approval-gated,
               auditable repository and deployment actions.
             </p>
@@ -55,7 +55,7 @@ export default function PressPage() {
           <section className="grid gap-5 py-8 md:grid-cols-[220px_1fr]">
             <h2 className="text-lg font-medium">Product boundary</h2>
             <p className="max-w-2xl text-sm leading-7 text-zinc-400">
-              Do not describe Axiom as an autonomous multi-cloud operator. The
+              Do not describe V19 as an autonomous multi-cloud operator. The
               released production path is approval-gated GitHub and AWS ECS
               delivery, with additional integrations identified by their actual
               connection status.

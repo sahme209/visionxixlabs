@@ -144,3 +144,30 @@ jobs:
 
       - name: Lint native Windows commands
         run: cargo clippy --manifest-path desktop/src-tauri/Cargo.toml --locked --all-targets -- -D warnings
+
+  windows-installed-candidate:
+    name: Windows installer and upgrade acceptance
+    needs: windows-native
+    if: ${{ github.event_name == 'pull_request' && github.repository_id == '1130181785' && github.repository == 'sahme209/visionxixlabs' && github.actor == 'sahme209' && github.event.pull_request.number == 339 && github.event.pull_request.head.ref == 'codex/watched-review-corrections' && github.event.pull_request.head.repo.id == 1130181785 && github.event.pull_request.base.ref == 'main' && github.run_attempt == 1 }}
+    runs-on: windows-2022
+    timeout-minutes: 42
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        env:
+          GIT_CONFIG_COUNT: '1'
+          GIT_CONFIG_KEY_0: core.autocrlf
+          GIT_CONFIG_VALUE_0: 'false'
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.pull_request.head.sha }}
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '24.21.0'
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Fixed credential-free installed candidate QA
+        env:
+          AXIOM_QA_SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: pwsh
+        run: python scripts/windows_installed_acceptance.py

@@ -3,8 +3,8 @@ import Link from "next/link";
 import { DocHeader, DocSection, Step, Callout, TrustGrid, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "Install the desktop app — Axiom Documentation",
-  description: "Install Axiom Agent using verified release assets for macOS, Windows, and Linux.",
+  title: "Install the desktop app — V19 Documentation",
+  description: "Install V19 using verified release assets for macOS, Windows, and Linux.",
 };
 
 export default function DesktopInstallPage() {
@@ -13,7 +13,7 @@ export default function DesktopInstallPage() {
       <DocHeader
         kicker="Desktop · Install"
         title="Install the desktop app."
-        summary="The website explains and distributes Axiom Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application."
+        summary="The website explains and distributes V19 Agent. Deployment intake, approvals, guided operations, validation, and evidence workflows live in the installed application."
       />
 
       <Callout variant="info" title="Use the live release manifest">
@@ -37,7 +37,7 @@ export default function DesktopInstallPage() {
           <li><strong>Windows</strong> — Windows 10 or 11 on x64 with Microsoft Edge WebView2 available</li>
           <li><strong>Linux</strong> — x64 desktop with WebKitGTK 4.1 and GTK 3 runtime dependencies; use AppImage, Debian, or RPM packaging as appropriate</li>
           <li><strong>Browser engine for Tailwind 4 source builds</strong> — Safari 16.4+, Chrome 111+, or Firefox 128+. Desktop webviews need compatible engine updates; the operating-system name alone does not establish compatibility. Qualification on the minimum supported macOS, Windows, and Linux versions remains required before publishing an updated installer.</li>
-          <li><strong>Network</strong> — HTTPS access to the configured Axiom API and any integrations you enable</li>
+          <li><strong>Network</strong> — HTTPS access to the configured V19 API and any integrations you enable</li>
           <li><strong>External accounts</strong> — identity-provider and connector accounts remain your organization&apos;s responsibility; permissions vary by connector</li>
         </ul>
       </DocSection>
@@ -50,7 +50,7 @@ export default function DesktopInstallPage() {
           <p>Check the download page for the selected installer&apos;s verification details. If a matching detached <code>.asc</code> signature and a release public key are published, download both and run <code>gpg --verify installer.dmg.asc installer.dmg</code> using the actual filenames. Compare the SHA-256 digest when one is published. A missing signature or digest means that check is unavailable; if your organization requires it, wait for a release that provides it.</p>
         </Step>
         <Step number={3} title="Open the DMG and install">
-          <p>Mount the disk image, drag <strong>Axiom Agent</strong> to <code>/Applications</code>, and eject the image.</p>
+          <p>Mount the disk image, drag <strong>V19</strong> to <code>/Applications</code>, and eject the image.</p>
         </Step>
         <Step number={4} title="Handle Gatekeeper according to the manifest">
           <p>Do not assume the app is signed or notarized. If the download page reports an unsigned developer build, right-click the app, choose <strong>Open</strong>, and review the warning. Organizations that forbid unsigned software should not install that asset.</p>
@@ -71,7 +71,7 @@ export default function DesktopInstallPage() {
           <p>Unsigned builds can trigger SmartScreen. Review the publisher state and your organization&apos;s policy before choosing <strong>More info</strong> → <strong>Run anyway</strong>.</p>
         </Step>
         <Step number={4} title="Install and sign in">
-          <p>Complete the installer, launch Axiom Agent, and approve the desktop pairing flow in your browser.</p>
+          <p>Complete the installer, launch V19, and approve the desktop pairing flow in your browser.</p>
         </Step>
       </DocSection>
 
@@ -90,7 +90,7 @@ sudo dpkg -i Axiom.Agent_*_amd64.deb
 sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
         </Step>
         <Step number={4} title="Sign in">
-          <p>Open Axiom Agent from the desktop menu or AppImage and approve the pairing flow in your browser.</p>
+          <p>Open V19 from the desktop menu or AppImage and approve the pairing flow in your browser.</p>
         </Step>
       </DocSection>
 
@@ -98,7 +98,7 @@ sudo rpm -i Axiom.Agent-*-1.x86_64.rpm`}</pre>
         <p>A website deployment does not replace the application installed on your computer. Desktop changes arrive through a separately published installer.</p>
         <p>In releases that include <strong>About this app</strong>, open <strong>Settings → General</strong> and check <strong>Installed version</strong>. This value comes from the installed app. <strong>Unavailable</strong> means it could not be read, not that a newer version is installed. Older releases may not have this section.</p>
         <p><strong>Review releases</strong> opens the download page in your browser. It does not download, install, or update the app. Compare the installed version with the selected public release and review that installer&apos;s verification details.</p>
-        <p>Automatic update delivery is not configured in the current Tauri bundle. Check the <Link href="/download">download page</Link> for a newer verified tag and install it manually. Review the public <a href="https://github.com/sahme209/axiom-releases/releases" target="_blank" rel="noopener noreferrer">Axiom Agent release notes</a> before upgrading.</p>
+        <p>Automatic update delivery is not configured in the current Tauri bundle. Check the <Link href="/download">download page</Link> for a newer verified tag and install it manually. Review the public <a href="https://github.com/sahme209/axiom-releases/releases" target="_blank" rel="noopener noreferrer">V19 release notes</a> before upgrading.</p>
       </DocSection>
 
       <DocSection id="trust" title="Trust questions">

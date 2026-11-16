@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import { Callout, DocFeedback, DocFooterNav, DocHeader, DocSection, TrustGrid } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "AWS ECS setup — Axiom Documentation",
-  description: "Configure Axiom's released AWS ECS deployment path using a tenant-owned GitHub Actions workflow and OIDC role.",
+  title: "AWS ECS setup — V19 Documentation",
+  description: "Configure V19's released AWS ECS deployment path using a tenant-owned GitHub Actions workflow and OIDC role.",
 };
 
 export default function AwsSetupPage() {
@@ -12,22 +12,22 @@ export default function AwsSetupPage() {
       <DocHeader
         kicker="Delivery · AWS ECS"
         title="Deploy through your workflow and your AWS role."
-        summary="Axiom dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment."
+        summary="V19 dispatches a workflow in the selected GitHub repository. GitHub Actions uses OIDC to assume the AWS role configured for the selected environment."
       />
 
-      <Callout variant="safe" title="No AWS access key in Axiom">
+      <Callout variant="safe" title="No AWS access key in V19">
         The released deployment path does not ask the desktop app to store an AWS access key. The tenant-owned workflow exchanges its GitHub OIDC identity for short-lived AWS credentials.
       </Callout>
 
       <DocSection id="prepare" title="Prepare the repository" kicker="01">
-        <p>Add the supported <code>.github/workflows/axiom-deploy-aws-ecs.yml</code> workflow to the repository selected in Axiom. Limit <code>workflow_dispatch</code> inputs and GitHub environment access to the values your team intends to permit.</p>
+        <p>Add the supported <code>.github/workflows/axiom-deploy-aws-ecs.yml</code> workflow to the repository selected in V19. Limit <code>workflow_dispatch</code> inputs and GitHub environment access to the values your team intends to permit.</p>
       </DocSection>
 
       <DocSection id="role" title="Create the OIDC trust boundary" kicker="02">
         <p>Create an AWS role whose trust policy accepts the intended GitHub organization, repository, branch or environment. Grant only the ECS and task-definition permissions required by the workflow. Do not use a wildcard repository subject for convenience.</p>
       </DocSection>
 
-      <DocSection id="target" title="Map an Axiom environment" kicker="03">
+      <DocSection id="target" title="Map an V19 environment" kicker="03">
         <p>In the desktop app, create or select an environment and configure its AWS region, ECS cluster, ECS service, and role ARN. The selected environment becomes the deployment target; production context is treated as high risk.</p>
       </DocSection>
 
@@ -40,7 +40,7 @@ export default function AwsSetupPage() {
           { question: "Where does deployment run?", answer: "Inside the tenant-owned GitHub Actions workflow." },
           { question: "Where are AWS credentials stored?", answer: "The released path uses GitHub Actions OIDC and short-lived role credentials." },
           { question: "Can the Agent deploy immediately?", answer: "No. Triggering a deployment is a high-risk proposal that requires administrator approval." },
-          { question: "What is selected in Axiom?", answer: "Repository, branch, environment, region, cluster, service, and role-backed target." },
+          { question: "What is selected in V19?", answer: "Repository, branch, environment, region, cluster, service, and role-backed target." },
           { question: "What proves success?", answer: "The workflow waits for the ECS service to reach steady state." },
           { question: "What happens on failure?", answer: "The workflow restores the task definition captured before deployment." },
         ]} />

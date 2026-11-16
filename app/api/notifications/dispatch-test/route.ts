@@ -29,7 +29,7 @@ export async function POST(req: NextRequest) {
       kind: "cycle_summary",
       severity: "info",
       tenantId: String(authority.organizationId),
-      headline: "Axiom outbound dispatch test",
+      headline: "V19 outbound dispatch test",
       body: `*This is a synthetic notification.* Triggered manually from /dashboard/notifications-outbound.\n\n*Correlation:* \`${correlationId}\`\n*Dispatched at:* ${new Date().toISOString()}`,
       safeNextAction: { label: "Open Outbound Notifications", href: "/dashboard/notifications-outbound" },
       evidenceRefs: [`correlation:${correlationId}`],

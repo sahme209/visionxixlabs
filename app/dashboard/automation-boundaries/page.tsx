@@ -113,7 +113,7 @@ export default function AutomationBoundariesPage() {
     <div className="relative">
       <PageIntro
         kicker={`Business / admin · automation boundaries${report?.generatedAt ? ` · declared ${new Date(report.generatedAt).toLocaleTimeString()}` : ""}`}
-        title={<>What Axiom can <span className="text-zinc-500">and cannot</span> automate.</>}
+        title={<>What V19 can <span className="text-zinc-500">and cannot</span> automate.</>}
         description={'Every action class is declared here with its hard-literal classification. The closed TypeScript union prevents unsafe actions from being added without explicit review — there is no "default to unsafe" path.'}
         helps="See exactly which write actions are allowed, which require approval, and which are hard-blocked at the type level."
         connectFirst="Already in effect — boundaries apply to every connector. No setup required."

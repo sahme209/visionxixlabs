@@ -45,13 +45,13 @@ interface CommandItem {
 const COMMANDS: readonly CommandItem[] = [
   // Product
   { id: "home",       label: "Home",              href: "/",                       category: "Product",   icon: SparklesIcon,      hint: "The landing page" },
-  { id: "axiom",      label: "Axiom capabilities", href: "/product",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
-  { id: "releaseops", label: "Axiom workflow",     href: "/product#workflow-overview",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
+  { id: "axiom",      label: "V19 capabilities", href: "/product",          category: "Product",   icon: RocketLaunchIcon,  hint: "Verified product capability inventory" },
+  { id: "releaseops", label: "V19 workflow",     href: "/product#workflow-overview",              category: "Product",   icon: ShieldCheckIcon,   hint: "Deployment intake through audit history" },
   { id: "demo",       label: "Try the sandbox",   href: "/demo",                   category: "Product",   icon: PlayCircleIcon,    hint: "Fictional sample data; no production execution" },
-  { id: "operator",   label: "Download Axiom Agent", href: "/download",               category: "Product", icon: CloudIcon, hint: "Install the application", keywords: ["start", "install", "onboard", "access"] },
+  { id: "operator",   label: "Download V19", href: "/download",               category: "Product", icon: CloudIcon, hint: "Install the application", keywords: ["start", "install", "onboard", "access"] },
   { id: "plans",      label: "Access and pricing", href: "/plans",                  category: "Product",   icon: DocumentTextIcon,  hint: "Contact-based production access", keywords: ["pricing", "cost"] },
   { id: "integrations", label: "Integrations",    href: "/integrations",           category: "Product",   icon: CommandLineIcon,   hint: "Every connector we ship" },
-  { id: "download",   label: "Product download",  href: "/download",               category: "Product",   icon: CloudIcon, hint: "Axiom Agent is delivered as an installed application" },
+  { id: "download",   label: "Product download",  href: "/download",               category: "Product",   icon: CloudIcon, hint: "V19 is delivered as an installed application" },
 
   // Resources
   { id: "docs",       label: "Documentation",     href: "/docs",                   category: "Resources", icon: BookOpenIcon,      hint: "Self-serve guides for the platform" },
@@ -74,7 +74,7 @@ const COMMANDS: readonly CommandItem[] = [
 
   // External
   { id: "linkedin",   label: "LinkedIn",          href: "https://www.linkedin.com/company/vision-xix-labs/", category: "External", icon: ArrowUpRightIcon, external: true },
-  { id: "github",     label: "GitHub · Axiom repo", href: "https://github.com/sahme209/axiom-releases",     category: "External", icon: ArrowUpRightIcon, external: true },
+  { id: "github",     label: "GitHub · V19 repo", href: "https://github.com/sahme209/axiom-releases",     category: "External", icon: ArrowUpRightIcon, external: true },
   { id: "x",          label: "X (Twitter)",       href: "https://x.com/VisionXIXLabs",                      category: "External", icon: ArrowUpRightIcon, external: true },
 ];
 

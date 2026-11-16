@@ -36,7 +36,7 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
     if (action.current !== null) return;
     const callback = verificationDesktopCallback(`/desktop/connect?challenge=${encodeURIComponent(challenge)}&intent=sign_in`, challenge);
     if (!callback) {
-      setError("This pairing request cannot be resumed. Return to Axiom Agent and choose Log in again.");
+      setError("This pairing request cannot be resumed. Return to V19 and choose Log in again.");
       return;
     }
     action.current = "switch";
@@ -56,10 +56,10 @@ export function PairDesktopClient({ challenge, deviceLabel }: { challenge: strin
   if (state === "done") {
     return (
       <div className="rounded-xl border border-emerald-500/25 bg-emerald-500/10 p-5 text-emerald-100">
-        <p className="font-semibold">Axiom Agent is authorized</p>
-        <p className="mt-1 text-sm text-emerald-200/75">The installed app will verify and consume this approval once. You may close this tab after Axiom Agent opens.</p>
+        <p className="font-semibold">V19 is authorized</p>
+        <p className="mt-1 text-sm text-emerald-200/75">The installed app will verify and consume this approval once. You may close this tab after V19 opens.</p>
         <a href="axiom-agent://auth/complete" className="mt-4 inline-flex w-full items-center justify-center rounded-full bg-white px-5 py-3 text-sm font-semibold text-black hover:bg-zinc-100">
-          Open Axiom Agent
+          Open V19
         </a>
       </div>
     );

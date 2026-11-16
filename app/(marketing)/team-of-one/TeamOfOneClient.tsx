@@ -186,7 +186,7 @@ export function TeamOfOneClient() {
         >
           Twenty-five engineering disciplines. Ten specialist agents that coordinate over a typed
           bus. Three surfaces — web, mobile, desktop. Nine free AI providers with deterministic
-          fallback. Axiom amplifies a single operator across cloud, DevOps, security, observability,
+          fallback. V19 amplifies a single operator across cloud, DevOps, security, observability,
           and business operations — and never applies a change without an approval.
         </motion.p>
 
@@ -284,7 +284,7 @@ export function TeamOfOneClient() {
             / year.
           </h2>
           <p className="mt-4 max-w-2xl text-[15px] text-zinc-400 leading-relaxed">
-            That&apos;s 14 senior roles, loaded salary, benefits, and tooling. Axiom does not replace
+            That&apos;s 14 senior roles, loaded salary, benefits, and tooling. V19 does not replace
             them. It gives the team a governed path for supported repository and deployment work,
             and every write lands in a human&apos;s review queue before production.
           </p>
@@ -340,7 +340,7 @@ export function TeamOfOneClient() {
           transition={{ duration: 0.7, delay: 0.1 }}
           className="mt-4 text-zinc-400"
         >
-          Every action is staged, reviewed, and recorded. Axiom never applies a change on its own.
+          Every action is staged, reviewed, and recorded. V19 never applies a change on its own.
         </motion.p>
         <motion.div
           initial={{ opacity: 0, y: 12 }}

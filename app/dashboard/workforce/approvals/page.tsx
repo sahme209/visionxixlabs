@@ -30,7 +30,7 @@ import {
 import { ApprovalDecisionButtons } from "@/components/workforce/ApprovalDecisionButtons";
 
 export const metadata: Metadata = {
-  title: "Engineer approvals · Axiom",
+  title: "Engineer approvals · V19",
   description: "Risky engineer actions staged by AGI awaiting human approval.",
 };
 

@@ -1,0 +1,55 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/v19-google-migration-owned-pg17-szov6mc0",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.108,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.435,
+      "logSha256": "9e9806c33946bb91838be1c63a528c4aefed6f11f8d4eb7a34424b372fa082d5"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.112,
+      "logSha256": "ca9ce55c4adfc831ed12867a8894e5bda9220f500ef4d1beb1fa8a8e1da44e7c"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "71bef40c3c695b39b17f9d02a67139dca265010b9215715305d7ad4a485d54af"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.056,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "owned-migration",
+      "exit": 0,
+      "seconds": 7.141,
+      "logSha256": "67c0ce15228889148dcca235c5ac193032c5794aa2d6a56e62ab1bfa9473125d"
+    }
+  ],
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

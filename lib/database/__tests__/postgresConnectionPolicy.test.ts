@@ -25,7 +25,7 @@ it.each([
   "postgresql://fixture:synthetic@db.example/owned?sslrootcert=/private/secret", "postgresql://fixture:synthetic@db.example/owned?host=other.invalid",
   "postgresql://fixture:synthetic@db.example/owned?user=other", "postgresql://fixture:synthetic@db.example/owned?schema=other",
   "postgresql://fixture:synthetic@db.example/owned?connect_timeout=0", "postgresql://fixture:synthetic@db.example/owned?connection_limit=-1",
-  "postgresql://fixture:synthetic@db.example/owned?pool_timeout=1&pool_timeout=2", "postgresql://fixture:synthetic@db.example/owned?channel_binding=require",
+  "postgresql://fixture:synthetic@db.example/owned?pool_timeout=1&pool_timeout=2", "postgresql://fixture:synthetic@db.example/owned?channel_binding=synthetic_unsupported",
 ])("refuses unsupported or ambiguous configuration without leaking it: %s", input => {
   try { postgresConnectionOptions(input); throw new Error("did_not_refuse"); } catch(error) { expect((error as Error).message).toBe("postgres_connection_configuration_unavailable"); }
 });

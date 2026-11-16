@@ -1,0 +1,295 @@
+{
+  "accepted": true,
+  "applicationOrRustBuilt": false,
+  "correctedKeysLinked": true,
+  "downloads": false,
+  "installerExecuted": false,
+  "oldInvalidKeysRefused": true,
+  "ownedFixtureRemoved": true,
+  "ownedProcessesEmpty": true,
+  "packetSha256": "b73512f98003972c46b35d4468ac54095eac90e4a0f6c657c57aa4f3f8fb98d5",
+  "processes": [
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 41,
+          "prefixTruncated": false,
+          "sha256": "d54f0b828e46b953f64dfaee672cd699d6f8c00f499e2e2aa369b88cb578f0be",
+          "text": "69e9cb10ebf726b3335968551c5691401c96993d\n"
+        }
+      },
+      "executableSha256": "177bc8a9af84fa3a400c694c975fda731d048279c074e1a93947ce8b067ebb48",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "checkout-head",
+      "logRetention": [
+        {
+          "name": "checkout-head.stdout",
+          "observedBytes": 41,
+          "retainedBytes": 41,
+          "truncated": false
+        },
+        {
+          "name": "checkout-head.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 41,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 1543,
+          "prefixTruncated": false,
+          "sha256": "c3130930378ee85ea68b573328871bbb59f8f4bfdb0964a5be3e0ab6c156caea",
+          "text": "Windows Installer XML Toolset Compiler version 3.14.1.8722\r\nCopyright (c) .NET Foundation and contributors. All rights reserved.\r\n\r\n usage:  candle.exe [-?] [-nologo] [-out outputFile] sourceFile [sourceFile ...] [@responseFile]\r\n\r\n   -arch      set architecture defaults for package, components, etc.\r\n              values: x86, x64, or ia64 (default: x86)\r\n   -d<name>[=<value>]  define a parameter for the preprocessor\r\n   -ext <extension>  extension assembly or \"class, assembly\"\r\n   -fips      enables FIPS compliant algorithms\r\n   -I<dir>    add to include search path\r\n   -nologo    skip printing candle logo information\r\n   -o[ut]     specify output file (default: write to current directory)\r\n   -p<file>   preprocess to a file (or stdout if no file supplied)\r\n   -pedantic  show pedantic messages\r\n   -platform  (deprecated alias for -arch)\r\n   -sfdvital  suppress marking files as Vital by default (deprecated)\r\n   -ss        suppress schema validation of documents (performance boost) (deprecated)\r\n   -sw[N]     suppress all warnings or a specific message ID\r\n              (example: -sw1009 -sw1103)\r\n   -swall     suppress all warnings (deprecated)\r\n   -trace     show source trace for errors, warnings, and verbose messages (deprecated)\r\n   -v         verbose output\r\n   -wx[N]     treat all warnings or a specific message ID as an error\r\n              (example: -wx1009 -wx1103)\r\n   -wxall     treat all warnings as errors (deprecated)\r\n   -? | -help this help information\r\n\r\nFor more information see: http://wixtoolset.org/\r\n"
+        }
+      },
+      "executableSha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "candle-version",
+      "logRetention": [
+        {
+          "name": "candle-version.stdout",
+          "observedBytes": 1543,
+          "retainedBytes": 1543,
+          "truncated": false
+        },
+        {
+          "name": "candle-version.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 1543,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 4726,
+          "prefixTruncated": true,
+          "sha256": "e1391adcbea8f6742a714c1f178ac8bbca8040cdcc816b23f83e57a1f2fb7264",
+          "text": "Windows Installer XML Toolset Linker version 3.14.1.8722\r\nCopyright (c) .NET Foundation and contributors. All rights reserved.\r\n\r\n usage:  light.exe [-?] [-b bindPath] [-nologo] [-out outputFile] objectFile [objectFile ...] [@responseFile]\r\n\r\n   -ai        allow identical rows, identical rows will be treated as a warning (deprecated)\r\n   -ad        allow duplicate directory identities from other libraries (deprecated)\r\n   -au        (experimental) allow unresolved references\r\n              (will not create a valid output) (deprecated)\r\n   -b <path>  specify a binder path to locate all files\r\n              (default: current directory)\r\n              prefix the path with 'name=' where 'name' is the name of your\r\n              named bindpath.\r\n   -bf        bind files into a wixout (only valid with -xo option) (deprecated)\r\n   -binder <classname>  specify a specific custom binder to use provided by\r\n                        an extension (deprecated)\r\n   -cultures:<cultures>  semicolon or comma delimited list of localized\r\n             string cultures to load from .wxl files and libraries.\r\n             Precedence of cultures is from left to right.\r\n   -d<name>[=<value>]  define a wix variable, with or without a value.\r\n   -dut       drop unreal tables from the output image (deprecated)\r\n   -ext <extension>  extension assembly or \"class, assembly\"\r\n   -loc <loc.wxl>  read localization strings from .wxl file\r\n   -nologo    skip printing light logo information\r\n   -notidy    do not delete temporary files (useful for debugging)\r\n   -o[ut]     specify output file (default: write to current directory)\r\n   -pedantic  show pedantic messages\r\n   -sadmin    suppress default admin sequence actions (deprecated)\r\n   -sadv      suppress default adv sequence actions (deprecated)\r\n   -sloc      suppress localization\r\n   -sma       suppress processing the data in MsiAssembly table (deprecated)\r\n   -ss        suppress schema validation of documents (performance boost) (deprecated)\r\n   -sts       suppress tagging sectionId attribute on"
+        }
+      },
+      "executableSha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "light-version",
+      "logRetention": [
+        {
+          "name": "light-version.stdout",
+          "observedBytes": 4726,
+          "retainedBytes": 4726,
+          "truncated": false
+        },
+        {
+          "name": "light-version.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 4726,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 9,
+          "prefixTruncated": false,
+          "sha256": "ffc7c71734ca6fee45b1eff12d9f7fa588872ebe7b4f73f651f02117a3d2fb77",
+          "text": "bad.wxs\r\n"
+        }
+      },
+      "executableSha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "bad-candle",
+      "logRetention": [
+        {
+          "name": "bad-candle.stdout",
+          "observedBytes": 9,
+          "retainedBytes": 9,
+          "truncated": false
+        },
+        {
+          "name": "bad-candle.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 9,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 692,
+          "prefixTruncated": false,
+          "sha256": "b0e25a622c196a481ebe7e0666a1f34d5c7a4ab52b7695cd73a11fd0e4c5d22a",
+          "text": "d:\\a\\_temp\\axiom-installed-registry-f76ec194e6a041cfa8bc31a751378aec\\bad.wxs(1) : warning LGHT1079 : The cabinet 'fixture.cab' does not contain any files.  If this installation contains no files, this warning can likely be safely ignored.  Otherwise, please add files to the cabinet or remove it.\r\nd:\\a\\_temp\\axiom-installed-registry-f76ec194e6a041cfa8bc31a751378aec\\bad.wxs(1) : error LGHT0204 : ICE03: Invalid registry path; Table: RegLocator, Column: Key, Key(s): V19LegacyInstallDirNoName\r\nd:\\a\\_temp\\axiom-installed-registry-f76ec194e6a041cfa8bc31a751378aec\\bad.wxs(1) : error LGHT0204 : ICE03: Invalid registry path; Table: RegLocator, Column: Key, Key(s): V19LegacyInstallDirWithName\r\n"
+        }
+      },
+      "executableSha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529",
+      "exitCode": 204,
+      "extraLogs": [],
+      "label": "bad-light",
+      "logRetention": [
+        {
+          "name": "bad-light.stdout",
+          "observedBytes": 692,
+          "retainedBytes": 692,
+          "truncated": false
+        },
+        {
+          "name": "bad-light.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 692,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 10,
+          "prefixTruncated": false,
+          "sha256": "4940d8bd086509d365cd7758e54562102bdd89416710129ec4da93dc5765d9c8",
+          "text": "good.wxs\r\n"
+        }
+      },
+      "executableSha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "good-candle",
+      "logRetention": [
+        {
+          "name": "good-candle.stdout",
+          "observedBytes": 10,
+          "retainedBytes": 10,
+          "truncated": false
+        },
+        {
+          "name": "good-candle.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 10,
+      "windowObservation": null
+    },
+    {
+      "diagnostics": {
+        "stderr": {
+          "bytes": 0,
+          "prefixTruncated": false,
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "text": ""
+        },
+        "stdout": {
+          "bytes": 299,
+          "prefixTruncated": false,
+          "sha256": "dcf055e12c57641422d4598d084e1f617dc8b41c3640c4646cfe58a910c03d61",
+          "text": "d:\\a\\_temp\\axiom-installed-registry-f76ec194e6a041cfa8bc31a751378aec\\good.wxs(1) : warning LGHT1079 : The cabinet 'fixture.cab' does not contain any files.  If this installation contains no files, this warning can likely be safely ignored.  Otherwise, please add files to the cabinet or remove it.\r\n"
+        }
+      },
+      "executableSha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529",
+      "exitCode": 0,
+      "extraLogs": [],
+      "label": "good-light",
+      "logRetention": [
+        {
+          "name": "good-light.stdout",
+          "observedBytes": 299,
+          "retainedBytes": 299,
+          "truncated": false
+        },
+        {
+          "name": "good-light.stderr",
+          "observedBytes": 0,
+          "retainedBytes": 0,
+          "truncated": false
+        }
+      ],
+      "ownedJobEmpty": true,
+      "stderrBytes": 0,
+      "stdoutBytes": 299,
+      "windowObservation": null
+    }
+  ],
+  "renderedKeys": {
+    "bad": "Software\\visionxixlabs\\\\Axiom Agent",
+    "good": "Software\\visionxixlabs\\Axiom Agent"
+  },
+  "scope": "two RegistrySearch-only MSI link validation",
+  "sourceInputsMatched": true,
+  "tools": {
+    "candle": {
+      "path": "C:\\Program Files (x86)\\WiX Toolset v3.14\\bin\\candle.exe",
+      "sha256": "a464676e2a2191d58e6ca643e89505bfb9628d3e721873a14994d3f4667987e5"
+    },
+    "light": {
+      "path": "C:\\Program Files (x86)\\WiX Toolset v3.14\\bin\\light.exe",
+      "sha256": "8ee3d7fa5592511152a4d1fc605780eae1b27ac7b41d75d518c958515de39529"
+    }
+  }
+}

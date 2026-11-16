@@ -4,8 +4,8 @@ import { PipeFlow } from "@/components/marketing/pipeKit/PipeFlow";
 import { APPROVAL_FLOW_STAGES } from "@/lib/marketing/approvalFlowModel";
 
 export const metadata: Metadata = {
-  title: "Approval workflow — Axiom Documentation",
-  description: "How Axiom separates Agent proposals, independent human review, execution, and audit evidence.",
+  title: "Approval workflow — V19 Documentation",
+  description: "How V19 separates Agent proposals, independent human review, execution, and audit evidence.",
 };
 
 export default function ApprovalWorkflowPage() {
@@ -22,9 +22,9 @@ export default function ApprovalWorkflowPage() {
       </Callout>
 
       <section aria-labelledby="approval-flow" className="my-10">
-        <h2 id="approval-flow" className="text-xl font-medium text-zinc-100">How a write moves through Axiom</h2>
+        <h2 id="approval-flow" className="text-xl font-medium text-zinc-100">How a write moves through V19</h2>
         <p className="mt-2 text-[15px] leading-7 text-zinc-400">Five stages, each passing something specific to the next. If a stage refuses, the request stops there and the decision is recorded.</p>
-        <div className="mt-6"><PipeFlow stages={APPROVAL_FLOW_STAGES} label="How a write moves through Axiom" /></div>
+        <div className="mt-6"><PipeFlow stages={APPROVAL_FLOW_STAGES} label="How a write moves through V19" /></div>
       </section>
 
       <Callout variant="safe" title="Proposal approval boundary">

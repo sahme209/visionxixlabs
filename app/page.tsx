@@ -108,7 +108,7 @@ export default function Home() {
             <h2 className="text-4xl leading-tight">Start with a verified request.</h2>
             <p className="mx-auto mt-5 max-w-xl text-base leading-6 text-zinc-400">Help build autonomous engineering with people in control.</p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-6">
-              <Link href="/download" className="orbit-primary">Download Axiom Agent <ArrowRightIcon className="ml-2 h-4 w-4" /></Link>
+              <Link href="/download" className="orbit-primary">Download V19 <ArrowRightIcon className="ml-2 h-4 w-4" /></Link>
               <Link href="/support" className="orbit-secondary">Meet the Founding Supporters program <ArrowRightIcon className="h-4 w-4" /></Link>
             </div>
           </div>

@@ -29,7 +29,7 @@ import { planForStripeTier } from "@/lib/billing/planRegistry";
 import { formatCents } from "@/lib/billing/computeInvocationCost";
 
 export const metadata: Metadata = {
-  title: "Usage & billing · Axiom",
+  title: "Usage & billing · V19",
 };
 
 export const dynamic = "force-dynamic";

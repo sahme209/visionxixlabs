@@ -1,0 +1,37 @@
+{
+  "source": "a0bb1e7b8b6c1587165bbace3e300fb31bfe8d7b",
+  "failureCode": "installed_payload_mismatch",
+  "ownedProcessCleanupConfirmed": true,
+  "keyringCleanupConfirmed": true,
+  "installations": [
+    {
+      "installConfirmed": false,
+      "installerSha256": "e948201b21e04ab185c5d3053a74d26feceb565ef1e9744c239935f66de3b7cf",
+      "kind": "msi",
+      "metadata": {
+        "ProductCode": "{5034CF09-F5F9-4ABF-95A5-094A59D79896}",
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "UpgradeCode": "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}",
+        "artifactKind": "MsiInstaller",
+        "bytes": 7512064,
+        "machine": "AMD64",
+        "sha256": "e948201b21e04ab185c5d3053a74d26feceb565ef1e9744c239935f66de3b7cf",
+        "signatureStatus": "NotSigned"
+      },
+      "uninstallConfirmed": true,
+      "visualAcceptance": "UNVERIFIED",
+      "webviewRuntimePreflight": {
+        "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+        "msiSeesInstalledRuntime": true,
+        "nsisSeesInstalledRuntime": true,
+        "runtimeInstallationPermitted": false,
+        "versions": {
+          "system-wow64": "131.0.2903.86"
+        },
+        "webviewRenderingVerified": false
+      }
+    }
+  ],
+  "upgradeAcceptance": "NOT_RUN"
+}

@@ -37,7 +37,7 @@ export function PlatformDeploymentPreparationPanel({sourceClient,client,canPrepa
  }
  const current=revision===owner.revision&&owns(),locked=!current||!canPrepare||Boolean(reference);
  return <section aria-label="Prepare generated-site deployment proposal" className="rounded-xl border border-white/10 p-5 space-y-4">
-  <header><h2 className="text-lg font-medium">Prepare existing generated-site content</h2><p className="text-sm text-zinc-400">The server reads the saved Lead package and derives exact files. This is not Axiom's own application release. No AI call or deployment runs here.</p></header>
+  <header><h2 className="text-lg font-medium">Prepare existing generated-site content</h2><p className="text-sm text-zinc-400">The server reads the saved Lead package and derives exact files. This is not V19's own application release. No AI call or deployment runs here.</p></header>
   {!current&&<p role="alert">Account context changed. Keep the original reference and reopen the workflow.</p>}
   {sourceClient&&<PlatformSourcePicker mode="leads" client={sourceClient} disabled={locked} onSelect={(kind,id)=>{if(kind==='leads'&&owns()&&!original.current&&!held.current&&canPrepare)setLeadId(id)}}/>}
   <div className="grid gap-3 sm:grid-cols-2">

@@ -1,0 +1,49 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/axiom-owned-pg17-ksjim6im",
+  "phases": [
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.054,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.437,
+      "logSha256": "2c76642b63d5cd4e1d5e84139e82fe8f844f6e4a6100591a46888212a39cf424"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.109,
+      "logSha256": "c57bfd5bf4f501de33446ead8ac4f091adab139482e3c7cf8459eff0aba948b4"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.107,
+      "logSha256": "c166768e2cb630e5dca4d7c321ffeb13fa705c7334dbd132d2bbba49052977fc"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.054,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "prisma-client",
+      "exit": 0,
+      "seconds": 0.328,
+      "logSha256": "3a812cb064152dd63b212f8bbf843895cc3f3af46123aba3547e9ea1856d48c5"
+    }
+  ],
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

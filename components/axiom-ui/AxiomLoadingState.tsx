@@ -12,7 +12,7 @@ type AxiomLoadingStateProps = {
 };
 
 export function AxiomLoadingState({
-  message = "Loading Axiom AI cloud analysis…",
+  message = "Loading V19 AI cloud analysis…",
   variant = "full",
   showCloudIcons = true,
 }: AxiomLoadingStateProps) {

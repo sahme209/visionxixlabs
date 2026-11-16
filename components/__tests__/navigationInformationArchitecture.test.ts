@@ -17,7 +17,7 @@ const secondary=[['Get started','/plans'],['Support (account required)','/accoun
 it('keeps the five approved primary destinations and quiet account/download links visible',()=>{
  render(createElement(Navigation));
  for(const[label,href]of [...primary,['Sign in','/auth/signin'],['Download','/download']])expect(screen.getByRole('link',{name:label}).getAttribute('href')).toBe(href);
- expect(screen.queryByRole('link',{name:'Get started'})).toBeNull();expect(screen.queryByRole('link',{name:'Support Axiom'})).toBeNull();
+ expect(screen.queryByRole('link',{name:'Get started'})).toBeNull();expect(screen.queryByRole('link',{name:'Support V19'})).toBeNull();
  expect(screen.getByRole('button',{name:'More'}).getAttribute('aria-expanded')).toBe('false');
 });
 it('opens More deliberately, supports keyboard focus and Escape return, outside close and route close',()=>{
@@ -44,7 +44,7 @@ it('footer distinguishes account support from Founding Supporters with real dest
  render(createElement(Footer));
  expect(screen.getByRole('link',{name:'Support (account required)'}).getAttribute('href')).toBe('/account/help');
  const supporters=screen.getAllByRole('link',{name:'Founding Supporters'});expect(supporters.length).toBeGreaterThan(0);for(const link of supporters)expect(link.getAttribute('href')).toBe('/support');
- expect(screen.getByRole('link',{name:'Docs'}).getAttribute('href')).toBe('/docs');expect(screen.queryByRole('link',{name:'Support Axiom'})).toBeNull();
+ expect(screen.getByRole('link',{name:'Docs'}).getAttribute('href')).toBe('/docs');expect(screen.queryByRole('link',{name:'Support V19'})).toBeNull();
  expect(screen.getByRole('link',{name:'Contact'}).getAttribute('href')).toBe('/contact');
  expect(screen.getByRole('link',{name:'Download'}).getAttribute('href')).toBe('/download');
 });

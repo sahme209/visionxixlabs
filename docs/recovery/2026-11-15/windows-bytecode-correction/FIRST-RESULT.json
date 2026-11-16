@@ -1,0 +1,24 @@
+{
+  "accepted": false,
+  "failureCode": "reviewed_source_changed",
+  "source": "2eefbc4720e700b69a45234d2b30d2f2f621d178",
+  "sourceBinding": {
+    "externalHumanApprovalProof": false,
+    "manifestSha256": "f65938795bc694e0f19d36ba8ae887c32b9ca909b57051c5a3b1db791b4de98c",
+    "sha": "2eefbc4720e700b69a45234d2b30d2f2f621d178",
+    "sourceAuthority": "ordinary-owner-PR-CI"
+  },
+  "ownedProcessCleanupConfirmed": true,
+  "installations": [],
+  "upgradeAcceptance": "NOT_RUN",
+  "published": false,
+  "signingPerformed": false,
+  "run": 43759916697,
+  "job": 132953540371,
+  "logSha256": "63a130c95703606fa34a65acf941b36b2f57a289ba0eaf6b406a862822e068d2",
+  "cause": "own helper import generated scripts/__pycache__/windows_upgrade_acceptance.cpython-312.pyc before source inventory",
+  "nativeWindows": "PASS",
+  "nativeMacOS": "PASS",
+  "nativeLinux": "PASS",
+  "liveGooglePairingDownloads": "UNVERIFIED"
+}

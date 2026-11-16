@@ -118,7 +118,7 @@ export function IntelligenceBand({
           <span className="text-zinc-400">what axiom can do right now</span>
         </p>
         <p className="text-[14.5px] sm:text-[15px] text-zinc-100 leading-relaxed max-w-3xl">
-          Axiom catalogs <span className="text-white font-semibold">{counts.total}</span> typed operator actions —{" "}
+          V19 catalogs <span className="text-white font-semibold">{counts.total}</span> typed operator actions —{" "}
           <span className="text-emerald-300 font-semibold">{counts.live} live</span>,{" "}
           <span className="text-sky-300 font-semibold">{counts.preview} preview</span>,{" "}
           <span className="text-emerald-300 font-semibold">{counts.governed} governed</span>,{" "}
@@ -407,7 +407,7 @@ export function IntelligenceBandFallback({ reason }: { reason?: string }) {
         <span className="text-zinc-300">partial — control plane unavailable</span>
       </p>
       <p className="text-[14px] text-zinc-300 leading-relaxed max-w-3xl mb-4">
-        Axiom catalogs <span className="text-white font-semibold">{ACTION_REGISTRY.length}</span> typed operator actions
+        V19 catalogs <span className="text-white font-semibold">{ACTION_REGISTRY.length}</span> typed operator actions
         — <span className="text-emerald-300">{counts.live} live</span>,{" "}
         <span className="text-sky-300">{counts.preview} preview</span>,{" "}
         <span className="text-rose-300">{counts.unsafe} unsafe blocked</span>.

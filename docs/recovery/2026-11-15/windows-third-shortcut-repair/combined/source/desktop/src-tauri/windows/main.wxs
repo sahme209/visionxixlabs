@@ -1,0 +1,1367 @@
+<?if $(sys.BUILDARCH)="x86"?>
+    <?define Win64 = "no" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+<?elseif $(sys.BUILDARCH)="x64"?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?elseif $(sys.BUILDARCH)="arm64"?>
+    <?define Win64 = "yes" ?>
+    <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+<?else?>
+    <?error Unsupported value of sys.BUILDARCH=$(sys.BUILDARCH)?>
+<?endif?>
+
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <Product
+            Id="*"
+            Name="{{product_name}}"
+            UpgradeCode="{{upgrade_code}}"
+            Language="!(loc.TauriLanguage)"
+            Manufacturer="{{manufacturer}}"
+            Version="{{version}}">
+
+        <Package Id="*"
+                 Keywords="Installer"
+                 InstallerVersion="450"
+                 Languages="0"
+                 Compressed="yes"
+                 InstallScope="perMachine"
+                 SummaryCodepage="!(loc.TauriCodepage)"/>
+
+        <!-- https://docs.microsoft.com/en-us/windows/win32/msi/reinstallmode -->
+        <!-- reinstall all files; rewrite all registry entries; reinstall all shortcuts -->
+        <Property Id="REINSTALLMODE" Value="amus" />
+
+        <!-- Auto launch app after installation, useful for passive mode which usually used in updates -->
+        <Property Id="AUTOLAUNCHAPP" Secure="yes" />
+        <!-- Property to forward cli args to the launched app to not lose those of the pre-update instance -->
+        <Property Id="LAUNCHAPPARGS" Secure="yes" />
+
+        {{#if allow_downgrades}}
+            <MajorUpgrade Schedule="afterInstallInitialize" AllowDowngrades="yes" />
+        {{else}}
+            <MajorUpgrade Schedule="afterInstallInitialize" DowngradeErrorMessage="!(loc.DowngradeErrorMessage)" AllowSameVersionUpgrades="yes" />
+        {{/if}}
+
+        <InstallExecuteSequence>
+            <RemoveShortcuts>Installed</RemoveShortcuts>
+        </InstallExecuteSequence>
+
+        <!-- V19 ownership-aware legacy shortcut migration. No shell is invoked. -->
+        <CustomAction Id="V19ShortcutPreflight" Script="vbscript" Win64="$(var.Win64)" Return="check"><![CDATA[
+' Exact inline MSI custom actions. Session values are data, never shell code.
+Option Explicit
+Const V19Phase = "preflight"
+Const V19UpgradeCode = "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}"
+Const V19MainComponent = "{EB234B33-5646-54DC-BC0A-9794A161CA82}"
+Dim fso, shell, data, parts, expected, links, backups, uninstallLinks
+Dim systemMsi, currentCode, legacyCodes, currentCodes, i, firstLink, removing
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set shell = CreateObject("WScript.Shell")
+If V19Phase = "preflight" Then
+  data = ReadProperty("V19MigrateLegacyShortcuts")
+Else
+  data = ReadProperty("CustomActionData")
+End If
+If Len(data) = 0 Or Len(data) > 163840 Then Fail "Shortcut data unavailable"
+parts = Split(data, "|")
+If V19Phase = "preflight" Then
+  If UBound(parts) <> 4 Then Fail "Shortcut data invalid"
+Else
+  If UBound(parts) <> 8 Then Fail "Verified shortcut data invalid"
+End If
+expected = fso.GetAbsolutePathName(parts(0))
+If LCase(fso.GetFileName(expected)) <> "axiom-desktop.exe" Then Fail "Application identity invalid"
+links = Array(parts(1), parts(2), parts(3), parts(4))
+If LCase(fso.GetFileName(links(0))) <> "axiom agent.lnk" Then Fail "Legacy desktop identity invalid"
+If LCase(fso.GetFileName(links(1))) <> "axiom agent.lnk" Then Fail "Legacy menu identity invalid"
+If LCase(fso.GetFileName(links(2))) <> "v19.lnk" Then Fail "Desktop identity invalid"
+If LCase(fso.GetFileName(links(3))) <> "v19.lnk" Then Fail "Menu identity invalid"
+uninstallLinks = Array(fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall Axiom Agent.lnk"), fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall V19.lnk"))
+backups = Array(expected & ".v19-legacy-desktop.lnk", expected & ".v19-legacy-menu.lnk", expected & ".v19-legacy-uninstall.lnk")
+CheckParents expected
+For i = 0 To 3
+  CheckParents links(i)
+Next
+For i = 0 To 2
+  CheckParents backups(i)
+Next
+For i = 0 To 1
+  CheckParents uninstallLinks(i)
+Next
+If V19Phase = "preflight" Then
+  If Len(ReadProperty("System64Folder")) = 0 Then Fail "System installer identity unavailable"
+  systemMsi = fso.GetAbsolutePathName(fso.BuildPath(ReadProperty("System64Folder"), "msiexec.exe"))
+  CheckParents systemMsi
+  CheckRegular systemMsi
+  currentCode = CanonicalGuid(ReadProperty("ProductCode"))
+  CaptureRelatedOwnership
+Else
+  systemMsi = fso.GetAbsolutePathName(parts(5))
+  If LCase(fso.GetFileName(systemMsi)) <> "msiexec.exe" Then Fail "System installer identity invalid"
+  currentCode = CanonicalGuid(parts(6))
+  legacyCodes = ValidatedGuidList(parts(7))
+  currentCodes = ValidatedGuidList(parts(8))
+  If Not HasGuid(currentCodes, currentCode) Then Fail "Current installer identity unavailable"
+End If
+Select Case V19Phase
+  Case "preflight"
+    removing = Len(ReadProperty("REMOVE")) > 0
+    firstLink = 0
+    If removing Then firstLink = 2
+    For i = firstLink To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    If Not removing Then CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    ' Overwrite deferred properties from actual installed-product observations.
+    ' Public caller-supplied product lists are never consulted.
+    data = Join(parts, "|") & "|" & systemMsi & "|" & currentCode & "|" & legacyCodes & "|" & currentCodes
+    If Len(data) > 163840 Then Fail "Verified shortcut data invalid"
+    WriteProperty "V19RollbackLegacyShortcuts", data
+    WriteProperty "V19MigrateLegacyShortcuts", data
+    WriteProperty "V19CommitLegacyShortcuts", data
+  Case "migrate"
+    For i = 0 To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    For i = 0 To 1
+      If fso.FileExists(links(i)) Then
+        CheckOwned links(i)
+        fso.MoveFile links(i), backups(i)
+      End If
+    Next
+    If fso.FileExists(uninstallLinks(0)) Then
+      CheckUninstallOwned uninstallLinks(0), legacyCodes
+      fso.MoveFile uninstallLinks(0), backups(2)
+    End If
+  Case "rollback"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        If fso.FileExists(links(i)) Or fso.FolderExists(links(i)) Then Fail "Shortcut rollback destination occupied"
+        fso.MoveFile backups(i), links(i)
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      If fso.FileExists(uninstallLinks(0)) Or fso.FolderExists(uninstallLinks(0)) Then Fail "Shortcut rollback destination occupied"
+      fso.MoveFile backups(2), uninstallLinks(0)
+    End If
+  Case "commit"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        fso.DeleteFile backups(i), False
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      fso.DeleteFile backups(2), False
+    End If
+  Case Else
+    Fail "Shortcut phase invalid"
+End Select
+
+Sub Fail(message)
+  Err.Raise vbObjectError + 513, "V19 shortcut migration", message
+End Sub
+Sub CheckParents(value)
+  Dim parent, nextParent, depth, item
+  parent = fso.GetParentFolderName(fso.GetAbsolutePathName(value))
+  For depth = 0 To 63
+    If fso.FolderExists(parent) Then
+      Set item = fso.GetFolder(parent)
+      If (item.Attributes And 1024) <> 0 Then Fail "Shortcut parent is a reparse point"
+    End If
+    nextParent = fso.GetParentFolderName(parent)
+    If Len(nextParent) = 0 Or nextParent = parent Then Exit Sub
+    parent = nextParent
+  Next
+  Fail "Shortcut parent bound exceeded"
+End Sub
+Sub CheckRegular(value)
+  Dim item
+  Set item = fso.GetFile(value)
+  If (item.Attributes And 1024) <> 0 Then Fail "Shortcut is a reparse point"
+End Sub
+Sub CheckOwned(value)
+  Dim shortcut, target
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(expected) Then Fail "Foreign shortcut preserved"
+  If shortcut.Arguments <> "" Then Fail "Shortcut arguments preserved"
+End Sub
+Sub CheckUninstallDestination(value, codes)
+  If fso.FolderExists(value) Then Fail "Shortcut destination is a directory"
+  If fso.FileExists(value) Then CheckUninstallOwned value, codes
+End Sub
+Sub CheckUninstallOwned(value, codes)
+  Dim shortcut, target, arguments, code
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(systemMsi) Then Fail "Foreign uninstall shortcut preserved"
+  arguments = shortcut.Arguments
+  If Len(arguments) <> 41 Or LCase(Left(arguments, 3)) <> "/x " Then Fail "Uninstall shortcut arguments preserved"
+  code = CanonicalGuid(Mid(arguments, 4))
+  If Not HasGuid(codes, code) Then Fail "Foreign uninstall product preserved"
+End Sub
+Function CanonicalGuid(value)
+  Dim pattern
+  If Len(value) = 36 Then value = "{" & value & "}"
+  Set pattern = New RegExp
+  pattern.Pattern = "^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$"
+  If Not pattern.Test(value) Then Fail "Installer product identity invalid"
+  CanonicalGuid = UCase(value)
+End Function
+Function HasGuid(codes, code)
+  HasGuid = InStr(1, "," & codes & ",", "," & code & ",", vbBinaryCompare) > 0
+End Function
+Function ValidatedGuidList(value)
+  Dim entries, item, normalized
+  normalized = ""
+  If Len(value) > 663 Then Fail "Related product bound exceeded"
+  If Len(value) > 0 Then
+    entries = Split(value, ",")
+    If UBound(entries) > 16 Then Fail "Related product bound exceeded"
+    For Each item In entries
+      item = CanonicalGuid(item)
+      If HasGuid(normalized, item) Then Fail "Related product identity duplicated"
+      If Len(normalized) > 0 Then normalized = normalized & ","
+      normalized = normalized & item
+    Next
+  End If
+  ValidatedGuidList = normalized
+End Function
+Sub CaptureRelatedOwnership
+  Dim installed, item, code, productName, publisher, version, component
+  legacyCodes = ""
+  currentCodes = currentCode
+  Set installed = RelatedProducts()
+  If installed.Count > 16 Then Fail "Related product bound exceeded"
+  For Each item In installed
+    code = CanonicalGuid(CStr(item))
+    productName = InstalledProductInfo(code, "InstalledProductName")
+    publisher = InstalledProductInfo(code, "Publisher")
+    version = InstalledProductInfo(code, "VersionString")
+    component = InstalledComponentPath(code)
+    If (productName <> "Axiom Agent" And productName <> "V19") Or publisher <> "visionxixlabs" Then Fail "Related product ownership unavailable"
+    If Len(version) = 0 Or Len(version) > 64 Then Fail "Related product version unavailable"
+    If Len(component) = 0 Then Fail "Related product path unavailable"
+    If LCase(fso.GetAbsolutePathName(component)) <> LCase(expected) Then Fail "Related product path mismatch"
+    If productName = "Axiom Agent" Then
+      If HasGuid(legacyCodes, code) Then Fail "Related product identity duplicated"
+      If Len(legacyCodes) > 0 Then legacyCodes = legacyCodes & ","
+      legacyCodes = legacyCodes & code
+    ElseIf Not HasGuid(currentCodes, code) Then
+      currentCodes = currentCodes & "," & code
+    End If
+  Next
+  legacyCodes = ValidatedGuidList(legacyCodes)
+  currentCodes = ValidatedGuidList(currentCodes)
+End Sub
+Function ReadProperty(name)
+  ReadProperty = Session.Property(name)
+End Function
+Sub WriteProperty(name, value)
+  Session.Property(name) = value
+End Sub
+Function RelatedProducts()
+  Set RelatedProducts = Session.Installer.RelatedProducts(V19UpgradeCode)
+End Function
+Function InstalledProductInfo(code, name)
+  InstalledProductInfo = Session.Installer.ProductInfo(code, name)
+End Function
+Function InstalledComponentPath(code)
+  InstalledComponentPath = Session.Installer.ComponentPath(code, V19MainComponent)
+End Function
+]]></CustomAction>
+        <CustomAction Id="V19RollbackLegacyShortcuts" Script="vbscript" Win64="$(var.Win64)" Return="check" Execute="rollback" Impersonate="no"><![CDATA[
+' Exact inline MSI custom actions. Session values are data, never shell code.
+Option Explicit
+Const V19Phase = "rollback"
+Const V19UpgradeCode = "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}"
+Const V19MainComponent = "{EB234B33-5646-54DC-BC0A-9794A161CA82}"
+Dim fso, shell, data, parts, expected, links, backups, uninstallLinks
+Dim systemMsi, currentCode, legacyCodes, currentCodes, i, firstLink, removing
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set shell = CreateObject("WScript.Shell")
+If V19Phase = "preflight" Then
+  data = ReadProperty("V19MigrateLegacyShortcuts")
+Else
+  data = ReadProperty("CustomActionData")
+End If
+If Len(data) = 0 Or Len(data) > 163840 Then Fail "Shortcut data unavailable"
+parts = Split(data, "|")
+If V19Phase = "preflight" Then
+  If UBound(parts) <> 4 Then Fail "Shortcut data invalid"
+Else
+  If UBound(parts) <> 8 Then Fail "Verified shortcut data invalid"
+End If
+expected = fso.GetAbsolutePathName(parts(0))
+If LCase(fso.GetFileName(expected)) <> "axiom-desktop.exe" Then Fail "Application identity invalid"
+links = Array(parts(1), parts(2), parts(3), parts(4))
+If LCase(fso.GetFileName(links(0))) <> "axiom agent.lnk" Then Fail "Legacy desktop identity invalid"
+If LCase(fso.GetFileName(links(1))) <> "axiom agent.lnk" Then Fail "Legacy menu identity invalid"
+If LCase(fso.GetFileName(links(2))) <> "v19.lnk" Then Fail "Desktop identity invalid"
+If LCase(fso.GetFileName(links(3))) <> "v19.lnk" Then Fail "Menu identity invalid"
+uninstallLinks = Array(fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall Axiom Agent.lnk"), fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall V19.lnk"))
+backups = Array(expected & ".v19-legacy-desktop.lnk", expected & ".v19-legacy-menu.lnk", expected & ".v19-legacy-uninstall.lnk")
+CheckParents expected
+For i = 0 To 3
+  CheckParents links(i)
+Next
+For i = 0 To 2
+  CheckParents backups(i)
+Next
+For i = 0 To 1
+  CheckParents uninstallLinks(i)
+Next
+If V19Phase = "preflight" Then
+  If Len(ReadProperty("System64Folder")) = 0 Then Fail "System installer identity unavailable"
+  systemMsi = fso.GetAbsolutePathName(fso.BuildPath(ReadProperty("System64Folder"), "msiexec.exe"))
+  CheckParents systemMsi
+  CheckRegular systemMsi
+  currentCode = CanonicalGuid(ReadProperty("ProductCode"))
+  CaptureRelatedOwnership
+Else
+  systemMsi = fso.GetAbsolutePathName(parts(5))
+  If LCase(fso.GetFileName(systemMsi)) <> "msiexec.exe" Then Fail "System installer identity invalid"
+  currentCode = CanonicalGuid(parts(6))
+  legacyCodes = ValidatedGuidList(parts(7))
+  currentCodes = ValidatedGuidList(parts(8))
+  If Not HasGuid(currentCodes, currentCode) Then Fail "Current installer identity unavailable"
+End If
+Select Case V19Phase
+  Case "preflight"
+    removing = Len(ReadProperty("REMOVE")) > 0
+    firstLink = 0
+    If removing Then firstLink = 2
+    For i = firstLink To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    If Not removing Then CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    ' Overwrite deferred properties from actual installed-product observations.
+    ' Public caller-supplied product lists are never consulted.
+    data = Join(parts, "|") & "|" & systemMsi & "|" & currentCode & "|" & legacyCodes & "|" & currentCodes
+    If Len(data) > 163840 Then Fail "Verified shortcut data invalid"
+    WriteProperty "V19RollbackLegacyShortcuts", data
+    WriteProperty "V19MigrateLegacyShortcuts", data
+    WriteProperty "V19CommitLegacyShortcuts", data
+  Case "migrate"
+    For i = 0 To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    For i = 0 To 1
+      If fso.FileExists(links(i)) Then
+        CheckOwned links(i)
+        fso.MoveFile links(i), backups(i)
+      End If
+    Next
+    If fso.FileExists(uninstallLinks(0)) Then
+      CheckUninstallOwned uninstallLinks(0), legacyCodes
+      fso.MoveFile uninstallLinks(0), backups(2)
+    End If
+  Case "rollback"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        If fso.FileExists(links(i)) Or fso.FolderExists(links(i)) Then Fail "Shortcut rollback destination occupied"
+        fso.MoveFile backups(i), links(i)
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      If fso.FileExists(uninstallLinks(0)) Or fso.FolderExists(uninstallLinks(0)) Then Fail "Shortcut rollback destination occupied"
+      fso.MoveFile backups(2), uninstallLinks(0)
+    End If
+  Case "commit"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        fso.DeleteFile backups(i), False
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      fso.DeleteFile backups(2), False
+    End If
+  Case Else
+    Fail "Shortcut phase invalid"
+End Select
+
+Sub Fail(message)
+  Err.Raise vbObjectError + 513, "V19 shortcut migration", message
+End Sub
+Sub CheckParents(value)
+  Dim parent, nextParent, depth, item
+  parent = fso.GetParentFolderName(fso.GetAbsolutePathName(value))
+  For depth = 0 To 63
+    If fso.FolderExists(parent) Then
+      Set item = fso.GetFolder(parent)
+      If (item.Attributes And 1024) <> 0 Then Fail "Shortcut parent is a reparse point"
+    End If
+    nextParent = fso.GetParentFolderName(parent)
+    If Len(nextParent) = 0 Or nextParent = parent Then Exit Sub
+    parent = nextParent
+  Next
+  Fail "Shortcut parent bound exceeded"
+End Sub
+Sub CheckRegular(value)
+  Dim item
+  Set item = fso.GetFile(value)
+  If (item.Attributes And 1024) <> 0 Then Fail "Shortcut is a reparse point"
+End Sub
+Sub CheckOwned(value)
+  Dim shortcut, target
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(expected) Then Fail "Foreign shortcut preserved"
+  If shortcut.Arguments <> "" Then Fail "Shortcut arguments preserved"
+End Sub
+Sub CheckUninstallDestination(value, codes)
+  If fso.FolderExists(value) Then Fail "Shortcut destination is a directory"
+  If fso.FileExists(value) Then CheckUninstallOwned value, codes
+End Sub
+Sub CheckUninstallOwned(value, codes)
+  Dim shortcut, target, arguments, code
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(systemMsi) Then Fail "Foreign uninstall shortcut preserved"
+  arguments = shortcut.Arguments
+  If Len(arguments) <> 41 Or LCase(Left(arguments, 3)) <> "/x " Then Fail "Uninstall shortcut arguments preserved"
+  code = CanonicalGuid(Mid(arguments, 4))
+  If Not HasGuid(codes, code) Then Fail "Foreign uninstall product preserved"
+End Sub
+Function CanonicalGuid(value)
+  Dim pattern
+  If Len(value) = 36 Then value = "{" & value & "}"
+  Set pattern = New RegExp
+  pattern.Pattern = "^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$"
+  If Not pattern.Test(value) Then Fail "Installer product identity invalid"
+  CanonicalGuid = UCase(value)
+End Function
+Function HasGuid(codes, code)
+  HasGuid = InStr(1, "," & codes & ",", "," & code & ",", vbBinaryCompare) > 0
+End Function
+Function ValidatedGuidList(value)
+  Dim entries, item, normalized
+  normalized = ""
+  If Len(value) > 663 Then Fail "Related product bound exceeded"
+  If Len(value) > 0 Then
+    entries = Split(value, ",")
+    If UBound(entries) > 16 Then Fail "Related product bound exceeded"
+    For Each item In entries
+      item = CanonicalGuid(item)
+      If HasGuid(normalized, item) Then Fail "Related product identity duplicated"
+      If Len(normalized) > 0 Then normalized = normalized & ","
+      normalized = normalized & item
+    Next
+  End If
+  ValidatedGuidList = normalized
+End Function
+Sub CaptureRelatedOwnership
+  Dim installed, item, code, productName, publisher, version, component
+  legacyCodes = ""
+  currentCodes = currentCode
+  Set installed = RelatedProducts()
+  If installed.Count > 16 Then Fail "Related product bound exceeded"
+  For Each item In installed
+    code = CanonicalGuid(CStr(item))
+    productName = InstalledProductInfo(code, "InstalledProductName")
+    publisher = InstalledProductInfo(code, "Publisher")
+    version = InstalledProductInfo(code, "VersionString")
+    component = InstalledComponentPath(code)
+    If (productName <> "Axiom Agent" And productName <> "V19") Or publisher <> "visionxixlabs" Then Fail "Related product ownership unavailable"
+    If Len(version) = 0 Or Len(version) > 64 Then Fail "Related product version unavailable"
+    If Len(component) = 0 Then Fail "Related product path unavailable"
+    If LCase(fso.GetAbsolutePathName(component)) <> LCase(expected) Then Fail "Related product path mismatch"
+    If productName = "Axiom Agent" Then
+      If HasGuid(legacyCodes, code) Then Fail "Related product identity duplicated"
+      If Len(legacyCodes) > 0 Then legacyCodes = legacyCodes & ","
+      legacyCodes = legacyCodes & code
+    ElseIf Not HasGuid(currentCodes, code) Then
+      currentCodes = currentCodes & "," & code
+    End If
+  Next
+  legacyCodes = ValidatedGuidList(legacyCodes)
+  currentCodes = ValidatedGuidList(currentCodes)
+End Sub
+Function ReadProperty(name)
+  ReadProperty = Session.Property(name)
+End Function
+Sub WriteProperty(name, value)
+  Session.Property(name) = value
+End Sub
+Function RelatedProducts()
+  Set RelatedProducts = Session.Installer.RelatedProducts(V19UpgradeCode)
+End Function
+Function InstalledProductInfo(code, name)
+  InstalledProductInfo = Session.Installer.ProductInfo(code, name)
+End Function
+Function InstalledComponentPath(code)
+  InstalledComponentPath = Session.Installer.ComponentPath(code, V19MainComponent)
+End Function
+]]></CustomAction>
+        <CustomAction Id="V19MigrateLegacyShortcuts" Script="vbscript" Win64="$(var.Win64)" Return="check" Execute="deferred" Impersonate="no"><![CDATA[
+' Exact inline MSI custom actions. Session values are data, never shell code.
+Option Explicit
+Const V19Phase = "migrate"
+Const V19UpgradeCode = "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}"
+Const V19MainComponent = "{EB234B33-5646-54DC-BC0A-9794A161CA82}"
+Dim fso, shell, data, parts, expected, links, backups, uninstallLinks
+Dim systemMsi, currentCode, legacyCodes, currentCodes, i, firstLink, removing
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set shell = CreateObject("WScript.Shell")
+If V19Phase = "preflight" Then
+  data = ReadProperty("V19MigrateLegacyShortcuts")
+Else
+  data = ReadProperty("CustomActionData")
+End If
+If Len(data) = 0 Or Len(data) > 163840 Then Fail "Shortcut data unavailable"
+parts = Split(data, "|")
+If V19Phase = "preflight" Then
+  If UBound(parts) <> 4 Then Fail "Shortcut data invalid"
+Else
+  If UBound(parts) <> 8 Then Fail "Verified shortcut data invalid"
+End If
+expected = fso.GetAbsolutePathName(parts(0))
+If LCase(fso.GetFileName(expected)) <> "axiom-desktop.exe" Then Fail "Application identity invalid"
+links = Array(parts(1), parts(2), parts(3), parts(4))
+If LCase(fso.GetFileName(links(0))) <> "axiom agent.lnk" Then Fail "Legacy desktop identity invalid"
+If LCase(fso.GetFileName(links(1))) <> "axiom agent.lnk" Then Fail "Legacy menu identity invalid"
+If LCase(fso.GetFileName(links(2))) <> "v19.lnk" Then Fail "Desktop identity invalid"
+If LCase(fso.GetFileName(links(3))) <> "v19.lnk" Then Fail "Menu identity invalid"
+uninstallLinks = Array(fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall Axiom Agent.lnk"), fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall V19.lnk"))
+backups = Array(expected & ".v19-legacy-desktop.lnk", expected & ".v19-legacy-menu.lnk", expected & ".v19-legacy-uninstall.lnk")
+CheckParents expected
+For i = 0 To 3
+  CheckParents links(i)
+Next
+For i = 0 To 2
+  CheckParents backups(i)
+Next
+For i = 0 To 1
+  CheckParents uninstallLinks(i)
+Next
+If V19Phase = "preflight" Then
+  If Len(ReadProperty("System64Folder")) = 0 Then Fail "System installer identity unavailable"
+  systemMsi = fso.GetAbsolutePathName(fso.BuildPath(ReadProperty("System64Folder"), "msiexec.exe"))
+  CheckParents systemMsi
+  CheckRegular systemMsi
+  currentCode = CanonicalGuid(ReadProperty("ProductCode"))
+  CaptureRelatedOwnership
+Else
+  systemMsi = fso.GetAbsolutePathName(parts(5))
+  If LCase(fso.GetFileName(systemMsi)) <> "msiexec.exe" Then Fail "System installer identity invalid"
+  currentCode = CanonicalGuid(parts(6))
+  legacyCodes = ValidatedGuidList(parts(7))
+  currentCodes = ValidatedGuidList(parts(8))
+  If Not HasGuid(currentCodes, currentCode) Then Fail "Current installer identity unavailable"
+End If
+Select Case V19Phase
+  Case "preflight"
+    removing = Len(ReadProperty("REMOVE")) > 0
+    firstLink = 0
+    If removing Then firstLink = 2
+    For i = firstLink To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    If Not removing Then CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    ' Overwrite deferred properties from actual installed-product observations.
+    ' Public caller-supplied product lists are never consulted.
+    data = Join(parts, "|") & "|" & systemMsi & "|" & currentCode & "|" & legacyCodes & "|" & currentCodes
+    If Len(data) > 163840 Then Fail "Verified shortcut data invalid"
+    WriteProperty "V19RollbackLegacyShortcuts", data
+    WriteProperty "V19MigrateLegacyShortcuts", data
+    WriteProperty "V19CommitLegacyShortcuts", data
+  Case "migrate"
+    For i = 0 To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    For i = 0 To 1
+      If fso.FileExists(links(i)) Then
+        CheckOwned links(i)
+        fso.MoveFile links(i), backups(i)
+      End If
+    Next
+    If fso.FileExists(uninstallLinks(0)) Then
+      CheckUninstallOwned uninstallLinks(0), legacyCodes
+      fso.MoveFile uninstallLinks(0), backups(2)
+    End If
+  Case "rollback"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        If fso.FileExists(links(i)) Or fso.FolderExists(links(i)) Then Fail "Shortcut rollback destination occupied"
+        fso.MoveFile backups(i), links(i)
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      If fso.FileExists(uninstallLinks(0)) Or fso.FolderExists(uninstallLinks(0)) Then Fail "Shortcut rollback destination occupied"
+      fso.MoveFile backups(2), uninstallLinks(0)
+    End If
+  Case "commit"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        fso.DeleteFile backups(i), False
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      fso.DeleteFile backups(2), False
+    End If
+  Case Else
+    Fail "Shortcut phase invalid"
+End Select
+
+Sub Fail(message)
+  Err.Raise vbObjectError + 513, "V19 shortcut migration", message
+End Sub
+Sub CheckParents(value)
+  Dim parent, nextParent, depth, item
+  parent = fso.GetParentFolderName(fso.GetAbsolutePathName(value))
+  For depth = 0 To 63
+    If fso.FolderExists(parent) Then
+      Set item = fso.GetFolder(parent)
+      If (item.Attributes And 1024) <> 0 Then Fail "Shortcut parent is a reparse point"
+    End If
+    nextParent = fso.GetParentFolderName(parent)
+    If Len(nextParent) = 0 Or nextParent = parent Then Exit Sub
+    parent = nextParent
+  Next
+  Fail "Shortcut parent bound exceeded"
+End Sub
+Sub CheckRegular(value)
+  Dim item
+  Set item = fso.GetFile(value)
+  If (item.Attributes And 1024) <> 0 Then Fail "Shortcut is a reparse point"
+End Sub
+Sub CheckOwned(value)
+  Dim shortcut, target
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(expected) Then Fail "Foreign shortcut preserved"
+  If shortcut.Arguments <> "" Then Fail "Shortcut arguments preserved"
+End Sub
+Sub CheckUninstallDestination(value, codes)
+  If fso.FolderExists(value) Then Fail "Shortcut destination is a directory"
+  If fso.FileExists(value) Then CheckUninstallOwned value, codes
+End Sub
+Sub CheckUninstallOwned(value, codes)
+  Dim shortcut, target, arguments, code
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(systemMsi) Then Fail "Foreign uninstall shortcut preserved"
+  arguments = shortcut.Arguments
+  If Len(arguments) <> 41 Or LCase(Left(arguments, 3)) <> "/x " Then Fail "Uninstall shortcut arguments preserved"
+  code = CanonicalGuid(Mid(arguments, 4))
+  If Not HasGuid(codes, code) Then Fail "Foreign uninstall product preserved"
+End Sub
+Function CanonicalGuid(value)
+  Dim pattern
+  If Len(value) = 36 Then value = "{" & value & "}"
+  Set pattern = New RegExp
+  pattern.Pattern = "^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$"
+  If Not pattern.Test(value) Then Fail "Installer product identity invalid"
+  CanonicalGuid = UCase(value)
+End Function
+Function HasGuid(codes, code)
+  HasGuid = InStr(1, "," & codes & ",", "," & code & ",", vbBinaryCompare) > 0
+End Function
+Function ValidatedGuidList(value)
+  Dim entries, item, normalized
+  normalized = ""
+  If Len(value) > 663 Then Fail "Related product bound exceeded"
+  If Len(value) > 0 Then
+    entries = Split(value, ",")
+    If UBound(entries) > 16 Then Fail "Related product bound exceeded"
+    For Each item In entries
+      item = CanonicalGuid(item)
+      If HasGuid(normalized, item) Then Fail "Related product identity duplicated"
+      If Len(normalized) > 0 Then normalized = normalized & ","
+      normalized = normalized & item
+    Next
+  End If
+  ValidatedGuidList = normalized
+End Function
+Sub CaptureRelatedOwnership
+  Dim installed, item, code, productName, publisher, version, component
+  legacyCodes = ""
+  currentCodes = currentCode
+  Set installed = RelatedProducts()
+  If installed.Count > 16 Then Fail "Related product bound exceeded"
+  For Each item In installed
+    code = CanonicalGuid(CStr(item))
+    productName = InstalledProductInfo(code, "InstalledProductName")
+    publisher = InstalledProductInfo(code, "Publisher")
+    version = InstalledProductInfo(code, "VersionString")
+    component = InstalledComponentPath(code)
+    If (productName <> "Axiom Agent" And productName <> "V19") Or publisher <> "visionxixlabs" Then Fail "Related product ownership unavailable"
+    If Len(version) = 0 Or Len(version) > 64 Then Fail "Related product version unavailable"
+    If Len(component) = 0 Then Fail "Related product path unavailable"
+    If LCase(fso.GetAbsolutePathName(component)) <> LCase(expected) Then Fail "Related product path mismatch"
+    If productName = "Axiom Agent" Then
+      If HasGuid(legacyCodes, code) Then Fail "Related product identity duplicated"
+      If Len(legacyCodes) > 0 Then legacyCodes = legacyCodes & ","
+      legacyCodes = legacyCodes & code
+    ElseIf Not HasGuid(currentCodes, code) Then
+      currentCodes = currentCodes & "," & code
+    End If
+  Next
+  legacyCodes = ValidatedGuidList(legacyCodes)
+  currentCodes = ValidatedGuidList(currentCodes)
+End Sub
+Function ReadProperty(name)
+  ReadProperty = Session.Property(name)
+End Function
+Sub WriteProperty(name, value)
+  Session.Property(name) = value
+End Sub
+Function RelatedProducts()
+  Set RelatedProducts = Session.Installer.RelatedProducts(V19UpgradeCode)
+End Function
+Function InstalledProductInfo(code, name)
+  InstalledProductInfo = Session.Installer.ProductInfo(code, name)
+End Function
+Function InstalledComponentPath(code)
+  InstalledComponentPath = Session.Installer.ComponentPath(code, V19MainComponent)
+End Function
+]]></CustomAction>
+        <CustomAction Id="V19CommitLegacyShortcuts" Script="vbscript" Win64="$(var.Win64)" Return="check" Execute="commit" Impersonate="no"><![CDATA[
+' Exact inline MSI custom actions. Session values are data, never shell code.
+Option Explicit
+Const V19Phase = "commit"
+Const V19UpgradeCode = "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}"
+Const V19MainComponent = "{EB234B33-5646-54DC-BC0A-9794A161CA82}"
+Dim fso, shell, data, parts, expected, links, backups, uninstallLinks
+Dim systemMsi, currentCode, legacyCodes, currentCodes, i, firstLink, removing
+Set fso = CreateObject("Scripting.FileSystemObject")
+Set shell = CreateObject("WScript.Shell")
+If V19Phase = "preflight" Then
+  data = ReadProperty("V19MigrateLegacyShortcuts")
+Else
+  data = ReadProperty("CustomActionData")
+End If
+If Len(data) = 0 Or Len(data) > 163840 Then Fail "Shortcut data unavailable"
+parts = Split(data, "|")
+If V19Phase = "preflight" Then
+  If UBound(parts) <> 4 Then Fail "Shortcut data invalid"
+Else
+  If UBound(parts) <> 8 Then Fail "Verified shortcut data invalid"
+End If
+expected = fso.GetAbsolutePathName(parts(0))
+If LCase(fso.GetFileName(expected)) <> "axiom-desktop.exe" Then Fail "Application identity invalid"
+links = Array(parts(1), parts(2), parts(3), parts(4))
+If LCase(fso.GetFileName(links(0))) <> "axiom agent.lnk" Then Fail "Legacy desktop identity invalid"
+If LCase(fso.GetFileName(links(1))) <> "axiom agent.lnk" Then Fail "Legacy menu identity invalid"
+If LCase(fso.GetFileName(links(2))) <> "v19.lnk" Then Fail "Desktop identity invalid"
+If LCase(fso.GetFileName(links(3))) <> "v19.lnk" Then Fail "Menu identity invalid"
+uninstallLinks = Array(fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall Axiom Agent.lnk"), fso.BuildPath(fso.GetParentFolderName(expected), "Uninstall V19.lnk"))
+backups = Array(expected & ".v19-legacy-desktop.lnk", expected & ".v19-legacy-menu.lnk", expected & ".v19-legacy-uninstall.lnk")
+CheckParents expected
+For i = 0 To 3
+  CheckParents links(i)
+Next
+For i = 0 To 2
+  CheckParents backups(i)
+Next
+For i = 0 To 1
+  CheckParents uninstallLinks(i)
+Next
+If V19Phase = "preflight" Then
+  If Len(ReadProperty("System64Folder")) = 0 Then Fail "System installer identity unavailable"
+  systemMsi = fso.GetAbsolutePathName(fso.BuildPath(ReadProperty("System64Folder"), "msiexec.exe"))
+  CheckParents systemMsi
+  CheckRegular systemMsi
+  currentCode = CanonicalGuid(ReadProperty("ProductCode"))
+  CaptureRelatedOwnership
+Else
+  systemMsi = fso.GetAbsolutePathName(parts(5))
+  If LCase(fso.GetFileName(systemMsi)) <> "msiexec.exe" Then Fail "System installer identity invalid"
+  currentCode = CanonicalGuid(parts(6))
+  legacyCodes = ValidatedGuidList(parts(7))
+  currentCodes = ValidatedGuidList(parts(8))
+  If Not HasGuid(currentCodes, currentCode) Then Fail "Current installer identity unavailable"
+End If
+Select Case V19Phase
+  Case "preflight"
+    removing = Len(ReadProperty("REMOVE")) > 0
+    firstLink = 0
+    If removing Then firstLink = 2
+    For i = firstLink To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    If Not removing Then CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    ' Overwrite deferred properties from actual installed-product observations.
+    ' Public caller-supplied product lists are never consulted.
+    data = Join(parts, "|") & "|" & systemMsi & "|" & currentCode & "|" & legacyCodes & "|" & currentCodes
+    If Len(data) > 163840 Then Fail "Verified shortcut data invalid"
+    WriteProperty "V19RollbackLegacyShortcuts", data
+    WriteProperty "V19MigrateLegacyShortcuts", data
+    WriteProperty "V19CommitLegacyShortcuts", data
+  Case "migrate"
+    For i = 0 To 3
+      If fso.FolderExists(links(i)) Then Fail "Shortcut destination is a directory"
+      If fso.FileExists(links(i)) Then CheckOwned links(i)
+    Next
+    CheckUninstallDestination uninstallLinks(0), legacyCodes
+    CheckUninstallDestination uninstallLinks(1), currentCodes
+    For i = 0 To 2
+      If fso.FileExists(backups(i)) Or fso.FolderExists(backups(i)) Then Fail "Shortcut backup already exists"
+    Next
+    For i = 0 To 1
+      If fso.FileExists(links(i)) Then
+        CheckOwned links(i)
+        fso.MoveFile links(i), backups(i)
+      End If
+    Next
+    If fso.FileExists(uninstallLinks(0)) Then
+      CheckUninstallOwned uninstallLinks(0), legacyCodes
+      fso.MoveFile uninstallLinks(0), backups(2)
+    End If
+  Case "rollback"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        If fso.FileExists(links(i)) Or fso.FolderExists(links(i)) Then Fail "Shortcut rollback destination occupied"
+        fso.MoveFile backups(i), links(i)
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      If fso.FileExists(uninstallLinks(0)) Or fso.FolderExists(uninstallLinks(0)) Then Fail "Shortcut rollback destination occupied"
+      fso.MoveFile backups(2), uninstallLinks(0)
+    End If
+  Case "commit"
+    For i = 0 To 1
+      If fso.FileExists(backups(i)) Then
+        CheckOwned backups(i)
+        fso.DeleteFile backups(i), False
+      End If
+    Next
+    If fso.FileExists(backups(2)) Then
+      CheckUninstallOwned backups(2), legacyCodes
+      fso.DeleteFile backups(2), False
+    End If
+  Case Else
+    Fail "Shortcut phase invalid"
+End Select
+
+Sub Fail(message)
+  Err.Raise vbObjectError + 513, "V19 shortcut migration", message
+End Sub
+Sub CheckParents(value)
+  Dim parent, nextParent, depth, item
+  parent = fso.GetParentFolderName(fso.GetAbsolutePathName(value))
+  For depth = 0 To 63
+    If fso.FolderExists(parent) Then
+      Set item = fso.GetFolder(parent)
+      If (item.Attributes And 1024) <> 0 Then Fail "Shortcut parent is a reparse point"
+    End If
+    nextParent = fso.GetParentFolderName(parent)
+    If Len(nextParent) = 0 Or nextParent = parent Then Exit Sub
+    parent = nextParent
+  Next
+  Fail "Shortcut parent bound exceeded"
+End Sub
+Sub CheckRegular(value)
+  Dim item
+  Set item = fso.GetFile(value)
+  If (item.Attributes And 1024) <> 0 Then Fail "Shortcut is a reparse point"
+End Sub
+Sub CheckOwned(value)
+  Dim shortcut, target
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(expected) Then Fail "Foreign shortcut preserved"
+  If shortcut.Arguments <> "" Then Fail "Shortcut arguments preserved"
+End Sub
+Sub CheckUninstallDestination(value, codes)
+  If fso.FolderExists(value) Then Fail "Shortcut destination is a directory"
+  If fso.FileExists(value) Then CheckUninstallOwned value, codes
+End Sub
+Sub CheckUninstallOwned(value, codes)
+  Dim shortcut, target, arguments, code
+  CheckRegular value
+  Set shortcut = shell.CreateShortcut(value)
+  target = shortcut.TargetPath
+  If Len(target) = 0 Then Fail "Shortcut target missing"
+  If LCase(fso.GetAbsolutePathName(target)) <> LCase(systemMsi) Then Fail "Foreign uninstall shortcut preserved"
+  arguments = shortcut.Arguments
+  If Len(arguments) <> 41 Or LCase(Left(arguments, 3)) <> "/x " Then Fail "Uninstall shortcut arguments preserved"
+  code = CanonicalGuid(Mid(arguments, 4))
+  If Not HasGuid(codes, code) Then Fail "Foreign uninstall product preserved"
+End Sub
+Function CanonicalGuid(value)
+  Dim pattern
+  If Len(value) = 36 Then value = "{" & value & "}"
+  Set pattern = New RegExp
+  pattern.Pattern = "^\{[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}\}$"
+  If Not pattern.Test(value) Then Fail "Installer product identity invalid"
+  CanonicalGuid = UCase(value)
+End Function
+Function HasGuid(codes, code)
+  HasGuid = InStr(1, "," & codes & ",", "," & code & ",", vbBinaryCompare) > 0
+End Function
+Function ValidatedGuidList(value)
+  Dim entries, item, normalized
+  normalized = ""
+  If Len(value) > 663 Then Fail "Related product bound exceeded"
+  If Len(value) > 0 Then
+    entries = Split(value, ",")
+    If UBound(entries) > 16 Then Fail "Related product bound exceeded"
+    For Each item In entries
+      item = CanonicalGuid(item)
+      If HasGuid(normalized, item) Then Fail "Related product identity duplicated"
+      If Len(normalized) > 0 Then normalized = normalized & ","
+      normalized = normalized & item
+    Next
+  End If
+  ValidatedGuidList = normalized
+End Function
+Sub CaptureRelatedOwnership
+  Dim installed, item, code, productName, publisher, version, component
+  legacyCodes = ""
+  currentCodes = currentCode
+  Set installed = RelatedProducts()
+  If installed.Count > 16 Then Fail "Related product bound exceeded"
+  For Each item In installed
+    code = CanonicalGuid(CStr(item))
+    productName = InstalledProductInfo(code, "InstalledProductName")
+    publisher = InstalledProductInfo(code, "Publisher")
+    version = InstalledProductInfo(code, "VersionString")
+    component = InstalledComponentPath(code)
+    If (productName <> "Axiom Agent" And productName <> "V19") Or publisher <> "visionxixlabs" Then Fail "Related product ownership unavailable"
+    If Len(version) = 0 Or Len(version) > 64 Then Fail "Related product version unavailable"
+    If Len(component) = 0 Then Fail "Related product path unavailable"
+    If LCase(fso.GetAbsolutePathName(component)) <> LCase(expected) Then Fail "Related product path mismatch"
+    If productName = "Axiom Agent" Then
+      If HasGuid(legacyCodes, code) Then Fail "Related product identity duplicated"
+      If Len(legacyCodes) > 0 Then legacyCodes = legacyCodes & ","
+      legacyCodes = legacyCodes & code
+    ElseIf Not HasGuid(currentCodes, code) Then
+      currentCodes = currentCodes & "," & code
+    End If
+  Next
+  legacyCodes = ValidatedGuidList(legacyCodes)
+  currentCodes = ValidatedGuidList(currentCodes)
+End Sub
+Function ReadProperty(name)
+  ReadProperty = Session.Property(name)
+End Function
+Sub WriteProperty(name, value)
+  Session.Property(name) = value
+End Sub
+Function RelatedProducts()
+  Set RelatedProducts = Session.Installer.RelatedProducts(V19UpgradeCode)
+End Function
+Function InstalledProductInfo(code, name)
+  InstalledProductInfo = Session.Installer.ProductInfo(code, name)
+End Function
+Function InstalledComponentPath(code)
+  InstalledComponentPath = Session.Installer.ComponentPath(code, V19MainComponent)
+End Function
+]]></CustomAction>
+        <CustomAction Id="V19SetRollbackData" Property="V19RollbackLegacyShortcuts" Value="[INSTALLDIR]axiom-desktop.exe|[DesktopFolder]Axiom Agent.lnk|[ProgramMenuFolder]Axiom Agent\Axiom Agent.lnk|[DesktopFolder]V19.lnk|[ProgramMenuFolder]V19\V19.lnk" />
+        <CustomAction Id="V19SetMigrateData" Property="V19MigrateLegacyShortcuts" Value="[INSTALLDIR]axiom-desktop.exe|[DesktopFolder]Axiom Agent.lnk|[ProgramMenuFolder]Axiom Agent\Axiom Agent.lnk|[DesktopFolder]V19.lnk|[ProgramMenuFolder]V19\V19.lnk" />
+        <CustomAction Id="V19SetCommitData" Property="V19CommitLegacyShortcuts" Value="[INSTALLDIR]axiom-desktop.exe|[DesktopFolder]Axiom Agent.lnk|[ProgramMenuFolder]Axiom Agent\Axiom Agent.lnk|[DesktopFolder]V19.lnk|[ProgramMenuFolder]V19\V19.lnk" />
+        <InstallExecuteSequence>
+            <Custom Action="V19SetRollbackData" After="CostFinalize">1</Custom>
+            <Custom Action="V19SetMigrateData" After="V19SetRollbackData">1</Custom>
+            <Custom Action="V19SetCommitData" After="V19SetMigrateData">1</Custom>
+            <Custom Action="V19ShortcutPreflight" After="V19SetCommitData">1</Custom>
+            <Custom Action="V19RollbackLegacyShortcuts" After="CreateShortcuts">NOT REMOVE</Custom>
+            <Custom Action="V19MigrateLegacyShortcuts" After="V19RollbackLegacyShortcuts">NOT REMOVE</Custom>
+            <Custom Action="V19CommitLegacyShortcuts" After="V19MigrateLegacyShortcuts">NOT REMOVE</Custom>
+        </InstallExecuteSequence>
+
+        <Media Id="1" Cabinet="app.cab" EmbedCab="yes" />
+
+        {{#if banner_path}}
+        <WixVariable Id="WixUIBannerBmp" Value="{{banner_path}}" />
+        {{/if}}
+        {{#if dialog_image_path}}
+        <WixVariable Id="WixUIDialogBmp" Value="{{dialog_image_path}}" />
+        {{/if}}
+        {{#if license}}
+        <WixVariable Id="WixUILicenseRtf" Value="{{license}}" />
+        {{/if}}
+
+        <Icon Id="ProductIcon" SourceFile="{{icon_path}}"/>
+        <Property Id="ARPPRODUCTICON" Value="ProductIcon" />
+        <Property Id="ARPNOREPAIR" Value="yes" Secure="yes" />      <!-- Remove repair -->
+        <SetProperty Id="ARPNOMODIFY" Value="1" After="InstallValidate" Sequence="execute"/>
+
+        {{#if homepage}}
+        <Property Id="ARPURLINFOABOUT" Value="{{homepage}}"/>
+        <Property Id="ARPHELPLINK" Value="{{homepage}}"/>
+        <Property Id="ARPURLUPDATEINFO" Value="{{homepage}}"/>
+        {{/if}}
+
+        <!-- NOTE: The order of RegistrySearch elements below matters. In WIX, when multiple
+             RegistrySearch elements are listed under a single Property, the LAST successful
+             match wins. We list the NSIS default-key search first and the MSI InstallDir
+             search second so that the MSI-specific path takes priority when both keys exist. -->
+        <Property Id="INSTALLDIR">
+          <!-- Rebrand fallback: retain the registered legacy application's keypath.
+               Current V19 searches below still win when both registrations exist. -->
+          <RegistrySearch Id="V19LegacyInstallDirNoName" Root="HKCU" Key="Software\\{{manufacturer}}\Axiom Agent" Type="raw" />
+          <RegistrySearch Id="V19LegacyInstallDirWithName" Root="HKCU" Key="Software\\{{manufacturer}}\Axiom Agent" Name="InstallDir" Type="raw" />
+          <!-- First attempt: Search for the default key value (this is how the nsis installer stores the path) -->
+          <RegistrySearch Id="PrevInstallDirNoName" Root="HKCU" Key="Software\\{{manufacturer}}\\{{product_name}}" Type="raw" />
+
+          <!-- Second attempt: Search for "InstallDir" which takes priority if found (this is how the msi installer stores the path) -->
+          <RegistrySearch Id="PrevInstallDirWithName" Root="HKCU" Key="Software\\{{manufacturer}}\\{{product_name}}" Name="InstallDir" Type="raw" />
+        </Property>
+
+        <!-- launch app checkbox -->
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOXTEXT" Value="!(loc.LaunchApp)" />
+        <Property Id="WIXUI_EXITDIALOGOPTIONALCHECKBOX" Value="1"/>
+        <CustomAction Id="LaunchApplication" Impersonate="yes" FileKey="Path" ExeCommand="[LAUNCHAPPARGS]" Return="asyncNoWait" />
+
+        <UI>
+            <!-- launch app checkbox -->
+            <Publish Dialog="ExitDialog" Control="Finish" Event="DoAction" Value="LaunchApplication">WIXUI_EXITDIALOGOPTIONALCHECKBOX = 1 and NOT Installed</Publish>
+
+            <Property Id="WIXUI_INSTALLDIR" Value="INSTALLDIR" />
+
+            {{#unless license}}
+            <!-- Skip license dialog -->
+            <Publish Dialog="WelcomeDlg"
+                     Control="Next"
+                     Event="NewDialog"
+                     Value="InstallDirDlg"
+                     Order="2">1</Publish>
+            <Publish Dialog="InstallDirDlg"
+                     Control="Back"
+                     Event="NewDialog"
+                     Value="WelcomeDlg"
+                     Order="2">1</Publish>
+            {{/unless}}
+        </UI>
+
+        <UIRef Id="WixUI_InstallDir" />
+
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="DesktopFolder" Name="Desktop">
+                <Component Id="ApplicationShortcutDesktop" Guid="*">
+                    <Shortcut Id="ApplicationDesktopShortcut" Name="{{product_name}}" Description="Runs {{product_name}}" Target="[!Path]" WorkingDirectory="INSTALLDIR" />
+                    <RemoveFolder Id="DesktopFolder" On="uninstall" />
+                    <RegistryValue Root="HKCU" Key="Software\\{{manufacturer}}\\{{product_name}}" Name="Desktop Shortcut" Type="integer" Value="1" KeyPath="yes" />
+                </Component>
+            </Directory>
+            <Directory Id="$(var.PlatformProgramFilesFolder)" Name="PFiles">
+                <Directory Id="INSTALLDIR" Name="{{product_name}}"/>
+            </Directory>
+            <Directory Id="ProgramMenuFolder">
+                <Directory Id="ApplicationProgramsFolder" Name="{{product_name}}"/>
+            </Directory>
+        </Directory>
+
+        <DirectoryRef Id="INSTALLDIR">
+            <Component Id="RegistryEntries" Guid="*">
+                <RegistryKey Root="HKCU" Key="Software\\{{manufacturer}}\\{{product_name}}">
+                    <RegistryValue Name="InstallDir" Type="string" Value="[INSTALLDIR]" KeyPath="yes" />
+                </RegistryKey>
+                <!-- Change the Root to HKCU for perUser installations -->
+                {{#each deep_link_protocols as |protocol| ~}}
+                <RegistryKey Root="HKLM" Key="Software\Classes\\{{protocol}}">
+                    <RegistryValue Type="string" Name="URL Protocol" Value=""/>
+                    <RegistryValue Type="string" Value="URL:{{bundle_id}} protocol"/>
+                    <RegistryKey Key="DefaultIcon">
+                        <RegistryValue Type="string" Value="&quot;[!Path]&quot;,0" />
+                    </RegistryKey>
+                    <RegistryKey Key="shell\open\command">
+                        <RegistryValue Type="string" Value="&quot;[!Path]&quot; &quot;%1&quot;" />
+                    </RegistryKey>
+                </RegistryKey>
+                {{/each~}}
+            </Component>
+            <Component Id="Path" Guid="{{path_component_guid}}" Win64="$(var.Win64)">
+                <File Id="Path" Source="{{main_binary_path}}" KeyPath="yes" Checksum="yes"/>
+                {{#each file_associations as |association| ~}}
+                {{#each association.ext as |ext| ~}}
+                <ProgId Id="{{../../product_name}}.{{ext}}" Advertise="yes" Description="{{association.description}}">
+                    <Extension Id="{{ext}}" Advertise="yes">
+                        <Verb Id="open" Command="Open with {{../../product_name}}" Argument="&quot;%1&quot;" />
+                    </Extension>
+                </ProgId>
+                {{/each~}}
+                {{/each~}}
+            </Component>
+            {{#each binaries as |bin| ~}}
+            <Component Id="{{ bin.id }}" Guid="{{bin.guid}}" Win64="$(var.Win64)">
+                <File Id="Bin_{{ bin.id }}" Source="{{bin.path}}" KeyPath="yes"/>
+            </Component>
+            {{/each~}}
+            {{#if enable_elevated_update_task}}
+            <Component Id="UpdateTask" Guid="C492327D-9720-4CD5-8DB8-F09082AF44BE" Win64="$(var.Win64)">
+                <File Id="UpdateTask" Source="update.xml" KeyPath="yes" Checksum="yes"/>
+            </Component>
+            <Component Id="UpdateTaskInstaller" Guid="011F25ED-9BE3-50A7-9E9B-3519ED2B9932" Win64="$(var.Win64)">
+                <File Id="UpdateTaskInstaller" Source="install-task.ps1" KeyPath="yes" Checksum="yes"/>
+            </Component>
+            <Component Id="UpdateTaskUninstaller" Guid="D4F6CC3F-32DC-5FD0-95E8-782FFD7BBCE1" Win64="$(var.Win64)">
+                <File Id="UpdateTaskUninstaller" Source="uninstall-task.ps1" KeyPath="yes" Checksum="yes"/>
+            </Component>
+            {{/if}}
+            {{resources}}
+            <Component Id="CMP_UninstallShortcut" Guid="*">
+
+                <Shortcut Id="UninstallShortcut"
+						  Name="Uninstall {{product_name}}"
+						  Description="Uninstalls {{product_name}}"
+						  Target="[System64Folder]msiexec.exe"
+						  Arguments="/x [ProductCode]" />
+
+				<RemoveFolder Id="INSTALLDIR"
+							  On="uninstall" />
+
+				<RegistryValue Root="HKCU"
+							   Key="Software\\{{manufacturer}}\\{{product_name}}"
+							   Name="Uninstaller Shortcut"
+							   Type="integer"
+							   Value="1"
+							   KeyPath="yes" />
+            </Component>
+        </DirectoryRef>
+
+        <DirectoryRef Id="ApplicationProgramsFolder">
+            <Component Id="ApplicationShortcut" Guid="*">
+                <Shortcut Id="ApplicationStartMenuShortcut"
+                    Name="{{product_name}}"
+                    Description="Runs {{product_name}}"
+                    Target="[!Path]"
+                    Icon="ProductIcon"
+                    WorkingDirectory="INSTALLDIR">
+                    <ShortcutProperty Key="System.AppUserModel.ID" Value="{{bundle_id}}"/>
+                </Shortcut>
+                <RemoveFolder Id="ApplicationProgramsFolder" On="uninstall"/>
+                <RegistryValue Root="HKCU" Key="Software\\{{manufacturer}}\\{{product_name}}" Name="Start Menu Shortcut" Type="integer" Value="1" KeyPath="yes"/>
+           </Component>
+        </DirectoryRef>
+
+        {{#each merge_modules as |msm| ~}}
+        <DirectoryRef Id="TARGETDIR">
+            <Merge Id="{{ msm.name }}" SourceFile="{{ msm.path }}" DiskId="1" Language="!(loc.TauriLanguage)" />
+        </DirectoryRef>
+
+        <Feature Id="{{ msm.name }}" Title="{{ msm.name }}" AllowAdvertise="no" Display="hidden" Level="1">
+            <MergeRef Id="{{ msm.name }}"/>
+        </Feature>
+        {{/each~}}
+
+        <Feature
+                Id="MainProgram"
+                Title="Application"
+                Description="!(loc.InstallAppFeature)"
+                Level="1"
+                ConfigurableDirectory="INSTALLDIR"
+                AllowAdvertise="no"
+                Display="expand"
+                Absent="disallow">
+
+            <ComponentRef Id="RegistryEntries"/>
+
+            {{#each resource_file_ids as |resource_file_id| ~}}
+                <ComponentRef Id="{{ resource_file_id }}"/>
+            {{/each~}}
+
+            {{#if enable_elevated_update_task}}
+                <ComponentRef Id="UpdateTask" />
+                <ComponentRef Id="UpdateTaskInstaller" />
+                <ComponentRef Id="UpdateTaskUninstaller" />
+            {{/if}}
+
+            <Feature Id="ShortcutsFeature"
+                Title="Shortcuts"
+                Level="1">
+                <ComponentRef Id="Path"/>
+                <ComponentRef Id="CMP_UninstallShortcut" />
+                <ComponentRef Id="ApplicationShortcut" />
+                <ComponentRef Id="ApplicationShortcutDesktop" />
+            </Feature>
+
+            <Feature
+                Id="Environment"
+                Title="PATH Environment Variable"
+                Description="!(loc.PathEnvVarFeature)"
+                Level="1"
+                Absent="allow">
+            <ComponentRef Id="Path"/>
+            {{#each binaries as |bin| ~}}
+            <ComponentRef Id="{{ bin.id }}"/>
+            {{/each~}}
+            </Feature>
+        </Feature>
+
+        <Feature Id="External" AllowAdvertise="no" Absent="disallow">
+            {{#each component_group_refs as |id| ~}}
+            <ComponentGroupRef Id="{{ id }}"/>
+            {{/each~}}
+            {{#each component_refs as |id| ~}}
+            <ComponentRef Id="{{ id }}"/>
+            {{/each~}}
+            {{#each feature_group_refs as |id| ~}}
+            <FeatureGroupRef Id="{{ id }}"/>
+            {{/each~}}
+            {{#each feature_refs as |id| ~}}
+            <FeatureRef Id="{{ id }}"/>
+            {{/each~}}
+            {{#each merge_refs as |id| ~}}
+            <MergeRef Id="{{ id }}"/>
+            {{/each~}}
+        </Feature>
+
+        {{#if install_webview}}
+        <!-- WebView2 -->
+        <Property Id="INSTALLED_WEBVIEW2_VERSION">
+            <RegistrySearch Id="Webview2VersionSystemx64" Root="HKLM" Key="SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" Name="pv" Type="raw" />
+            <RegistrySearch Id="Webview2VersionSystemx86" Root="HKLM" Key="SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" Name="pv" Type="raw" />
+            <RegistrySearch Id="Webview2VersionUser" Root="HKCU" Key="SOFTWARE\Microsoft\EdgeUpdate\Clients\{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}" Name="pv" Type="raw"/>
+        </Property>
+
+        {{#if download_bootstrapper}}
+        <!-- Download webview bootstrapper mode -->
+        <CustomAction Id='DownloadAndInvokeBootstrapper' Directory="INSTALLDIR" Execute="deferred" ExeCommand='powershell.exe -NoProfile -windowstyle hidden try [\{] [\[]Net.ServicePointManager[\]]::SecurityProtocol = [\[]Net.SecurityProtocolType[\]]::Tls12 [\}] catch [\{][\}]; Invoke-WebRequest -Uri "https://go.microsoft.com/fwlink/p/?LinkId=2124703" -OutFile "$env:TEMP\MicrosoftEdgeWebview2Setup.exe" ; Start-Process -FilePath "$env:TEMP\MicrosoftEdgeWebview2Setup.exe" -ArgumentList ({{webview_installer_args}} &apos;/install&apos;) -Wait' Return='check'/>
+        <InstallExecuteSequence>
+            <Custom Action='DownloadAndInvokeBootstrapper' Before='InstallFinalize'>
+                <![CDATA[NOT(REMOVE OR INSTALLED_WEBVIEW2_VERSION)]]>
+            </Custom>
+        </InstallExecuteSequence>
+        {{/if}}
+
+        {{#if webview2_bootstrapper_path}}
+        <!-- Embedded webview bootstrapper mode -->
+        <Binary Id="MicrosoftEdgeWebview2Setup.exe" SourceFile="{{webview2_bootstrapper_path}}"/>
+        <CustomAction Id='InvokeBootstrapper' BinaryKey='MicrosoftEdgeWebview2Setup.exe' Execute="deferred" ExeCommand='{{webview_installer_args}} /install' Return='check' />
+        <InstallExecuteSequence>
+            <Custom Action='InvokeBootstrapper' Before='InstallFinalize'>
+                <![CDATA[NOT(REMOVE OR INSTALLED_WEBVIEW2_VERSION)]]>
+            </Custom>
+        </InstallExecuteSequence>
+        {{/if}}
+
+        {{#if webview2_installer_path}}
+        <!-- Embedded offline installer -->
+        <Binary Id="MicrosoftEdgeWebView2RuntimeInstaller.exe" SourceFile="{{webview2_installer_path}}"/>
+        <CustomAction Id='InvokeStandalone' BinaryKey='MicrosoftEdgeWebView2RuntimeInstaller.exe' Execute="deferred" ExeCommand='{{webview_installer_args}} /install' Return='check' />
+        <InstallExecuteSequence>
+            <Custom Action='InvokeStandalone' Before='InstallFinalize'>
+                <![CDATA[NOT(REMOVE OR INSTALLED_WEBVIEW2_VERSION)]]>
+            </Custom>
+        </InstallExecuteSequence>
+        {{/if}}
+
+        {{#if minimum_webview2_version}}
+        <!-- Update WebView2 if minimum version requirement not met -->
+        <Property Id="MINIMUM_WEBVIEW2_VERSION" Value="{{minimum_webview2_version}}" />
+        <Property Id="EDGEUPDATE_PATH">
+            <RegistrySearch Id="EdgeUpdateLocalMachine64" Root="HKLM" Key="SOFTWARE\WOW6432Node\Microsoft\EdgeUpdate" Name="path" Type="raw" />
+            <RegistrySearch Id="EdgeUpdateLocalMachine32" Root="HKLM" Key="SOFTWARE\Microsoft\EdgeUpdate" Name="path" Type="raw"/>
+            <RegistrySearch Id="EdgeUpdateCurrentUser" Root="HKCU" Key="SOFTWARE\Microsoft\EdgeUpdate" Name="path" Type="raw"/>
+        </Property>
+        <!-- Chromium updater docs: https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/user_manual.md -->
+        <!-- Modified from "HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft EdgeWebView\ModifyPath" -->
+        <CustomAction Id="UpdateWebView2ViaEdgeUpdate" Execute="deferred" Property="EDGEUPDATE_PATH" Return="check" Impersonate="no" ExeCommand="/install appguid={F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}&amp;needsadmin=true" />
+        <InstallExecuteSequence>
+            <Custom Action='UpdateWebView2ViaEdgeUpdate' Before='InstallFinalize'>
+                <![CDATA[
+                  NOT REMOVE
+                  AND INSTALLED_WEBVIEW2_VERSION
+                  AND (INSTALLED_WEBVIEW2_VERSION < MINIMUM_WEBVIEW2_VERSION)
+                ]]>
+            </Custom>
+        </InstallExecuteSequence>
+        {{/if}}
+
+        {{/if}}
+
+        {{#if enable_elevated_update_task}}
+        <!-- Install an elevated update task within Windows Task Scheduler -->
+        <CustomAction
+            Id="CreateUpdateTask"
+            Return="check"
+            Directory="INSTALLDIR"
+            Execute="commit"
+            Impersonate="yes"
+            ExeCommand="powershell.exe -WindowStyle hidden .\install-task.ps1" />
+        <InstallExecuteSequence>
+            <Custom Action='CreateUpdateTask' Before='InstallFinalize'>
+                NOT(REMOVE)
+            </Custom>
+        </InstallExecuteSequence>
+        <!-- Remove elevated update task during uninstall -->
+        <CustomAction
+            Id="DeleteUpdateTask"
+            Return="check"
+            Directory="INSTALLDIR"
+            ExeCommand="powershell.exe -WindowStyle hidden .\uninstall-task.ps1" />
+        <InstallExecuteSequence>
+            <Custom Action="DeleteUpdateTask" Before='InstallFinalize'>
+                (REMOVE = "ALL") AND NOT UPGRADINGPRODUCTCODE
+            </Custom>
+        </InstallExecuteSequence>
+        {{/if}}
+
+        <InstallExecuteSequence>
+          <Custom Action="LaunchApplication" After="InstallFinalize">AUTOLAUNCHAPP AND NOT Installed</Custom>
+        </InstallExecuteSequence>
+
+        <SetProperty Id="ARPINSTALLLOCATION" Value="[INSTALLDIR]" After="CostFinalize"/>
+    </Product>
+</Wix>

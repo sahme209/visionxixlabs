@@ -23,7 +23,7 @@ export function StickyMobileCTA() {
               href="/download"
               className="cta-shimmer-btn btn-axiom flex min-h-11 flex-1 items-center justify-center text-center py-3 px-4 text-zinc-900 rounded-xl font-semibold text-sm transition-colors shadow-xs"
             >
-              Download Axiom Agent
+              Download V19
             </Link>
             <button
               type="button"

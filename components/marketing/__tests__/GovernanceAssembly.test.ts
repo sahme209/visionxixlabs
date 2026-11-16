@@ -46,14 +46,14 @@ it('shows all three possible outcomes and has no network, timer or storage opera
 it('keeps Home focused on the approved static hero, feature panels and one media section',()=>{
  render(createElement(Home));
  const main=screen.getByRole('main'),first=main.querySelector<HTMLElement>(':scope > section')!;
- expect(within(first).getByRole('link',{name:'Explore Axiom'}).getAttribute('href')).toBe('/product');
+ expect(within(first).getByRole('link',{name:'Explore V19'}).getAttribute('href')).toBe('/product');
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();
  expect(within(first).getByRole('heading',{level:1,name:'Deploy with clarity.'})).toBeTruthy();
  expect(first.querySelector('canvas,video')).toBeNull();
  const media=screen.getByRole('heading',{level:2,name:'See the workflow in context.'}).closest('section')!;
  expect(within(media).getByText('Existing media fixture')).toBeTruthy();
  expect(screen.getAllByText('Existing media fixture')).toHaveLength(1);
- expect(screen.queryByRole('heading',{name:'How a governed deployment moves through Axiom'})).toBeNull();
+ expect(screen.queryByRole('heading',{name:'How a governed deployment moves through V19'})).toBeNull();
  expect(screen.queryByRole('list',{name:'Conceptual workflow'})).toBeNull();
  expect(screen.getByRole('link',{name:'Inspect deployment scenarios and stages'}).getAttribute('href')).toBe('/product#deployment-model');
  for(const text of ['Every request, fully framed.','Every revision, kept.','Green is not the same as validated.','Policy stays in charge','Sign in through your browser','History survives reconnects'])expect(screen.getByRole('heading',{name:text})).toBeTruthy();

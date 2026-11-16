@@ -9,12 +9,12 @@ import { supporterCheckoutReadiness } from "@/lib/supporters/core";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Axiom Founding Supporters",
-  description: "Support the careful development of Axiom Agent—autonomous engineering with human control, security, and governance at its core.",
+  title: "V19 Founding Supporters",
+  description: "Support the careful development of V19—autonomous engineering with human control, security, and governance at its core.",
   alternates: { canonical: "/support" },
   openGraph: {
-    title: "Axiom Founding Supporters | Vision XIX Labs",
-    description: "Support the careful development of Axiom Agent—autonomous engineering with human control, security, and governance at its core.",
+    title: "V19 Founding Supporters | Vision XIX Labs",
+    description: "Support the careful development of V19—autonomous engineering with human control, security, and governance at its core.",
     url: "/support",
   },
 };
@@ -31,7 +31,7 @@ const implemented = [
   "Repository-scoped context and evidence",
   "Explicit approval gates for proposed writes",
   "Scripted product demonstrations that touch no live systems",
-  "Auditable workflow and validation concepts in the Axiom experience",
+  "Auditable workflow and validation concepts in the V19 experience",
 ];
 
 const planned = [
@@ -49,13 +49,13 @@ export default function SupportPage() {
         <div className="mx-auto max-w-[1280px] px-5 pb-8 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-10">
           <div className="grid items-end gap-8 lg:grid-cols-[1fr_0.72fr] lg:gap-20">
             <div className="max-w-5xl">
-              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400">Axiom Founding Supporters · Vision XIX Labs</p>
+              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-zinc-400">V19 Founding Supporters · Vision XIX Labs</p>
               <h1 className="mt-5 text-[clamp(2.75rem,5.8vw,5rem)] font-medium leading-[1.02] tracking-[-0.055em] text-zinc-50">
                 Independent engineering.<br /><span className="text-zinc-400">Shared responsibility.</span>
               </h1>
             </div>
             <div className="pb-2">
-              <p className="text-base leading-7 text-zinc-300">We’re building Axiom Agent to make complex engineering work more autonomous, secure and accessible, with people always in control.</p>
+              <p className="text-base leading-7 text-zinc-300">We’re building V19 to make complex engineering work more autonomous, secure and accessible, with people always in control.</p>
               <a href="#vision" className="mt-5 inline-flex min-h-11 items-center gap-3 text-sm font-medium text-zinc-200 underline decoration-white/25 underline-offset-4 transition hover:decoration-white/60">Explore the vision <ArrowDownIcon className="h-4 w-4" /></a>
             </div>
           </div>
@@ -65,7 +65,7 @@ export default function SupportPage() {
         </div>
       </section>
 
-      <section aria-label="Ways to support Axiom" className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-2 md:gap-12 lg:px-10 lg:py-16">
+      <section aria-label="Ways to support V19" className="mx-auto grid max-w-[1280px] gap-8 px-5 py-12 sm:px-8 md:grid-cols-2 md:gap-12 lg:px-10 lg:py-16">
         <article className="border-t border-white/10 pt-5">
           <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">For individual supporters</p>
           <h2 className="mt-3 text-2xl font-medium tracking-[-0.035em] text-zinc-100">Support the work.</h2>
@@ -85,7 +85,7 @@ export default function SupportPage() {
         <div className="grid gap-8 lg:grid-cols-[0.75fr_1.25fr] lg:gap-16">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">The thesis</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Autonomy should increase capability—not remove accountability.</h2></div>
           <div className="grid gap-5 lg:border-l lg:border-white/8 lg:pl-10">
-            <p className="max-w-2xl text-lg leading-8 text-zinc-300">Axiom is an engineering operations agent designed around context, authorization, approvals, execution, and evidence. The website carries governance and administration; the desktop app is the engineering workspace; the backend enforces authority and executes approved work.</p>
+            <p className="max-w-2xl text-lg leading-8 text-zinc-300">V19 is an engineering operations agent designed around context, authorization, approvals, execution, and evidence. The website carries governance and administration; the desktop app is the engineering workspace; the backend enforces authority and executes approved work.</p>
             <p className="max-w-2xl leading-7 text-zinc-500">That separation is deliberate. Support for this program funds development without changing product billing, AI credits, or the controls that protect operational workflows.</p>
           </div>
         </div>
@@ -96,13 +96,13 @@ export default function SupportPage() {
           <div>
             <p className="text-[11px] uppercase tracking-[0.2em] text-orange-300">A founder’s inspiration</p>
             <h2 id="founder-inspiration" className="mt-4 text-2xl font-medium leading-tight tracking-[-0.035em] text-zinc-100 sm:text-3xl">Turn inspiration into something useful.</h2>
-            <p className="mt-4 text-sm leading-7 text-zinc-400">Our founder was inspired by Jensen Huang’s public encouragement to learn and use AI. Axiom is our response: build useful engineering tools while keeping people in control.</p>
+            <p className="mt-4 text-sm leading-7 text-zinc-400">Our founder was inspired by Jensen Huang’s public encouragement to learn and use AI. V19 is our response: build useful engineering tools while keeping people in control.</p>
           </div>
           <figure className="border-l-2 border-orange-400/60 pl-6 sm:pl-8">
             <span aria-hidden="true" className="block h-9 text-6xl leading-none text-orange-300/70">“</span>
             <blockquote className="mt-3 text-xl font-medium leading-relaxed tracking-[-0.02em] text-zinc-200 sm:text-2xl">You’re not going to lose your job to an AI, but you’re going to lose your job to someone who uses AI.</blockquote>
             <figcaption className="mt-5 text-xs leading-6 text-zinc-500">Jensen Huang, NVIDIA founder and CEO · Milken Institute Global Conference, 2025.<br /><a href="https://www.cnbc.com/2025/05/28/nvidia-ceo-jensen-huang-youll-lose-your-job-to-somebody-who-uses-ai.html" target="_blank" rel="noopener noreferrer" className="text-zinc-400 underline decoration-white/20 underline-offset-4 hover:text-zinc-200">As reported by CNBC, May 28, 2025 <span className="sr-only">(opens in a new tab)</span></a></figcaption>
-            <p className="mt-3 text-[11px] leading-5 text-zinc-400">Personal inspiration. Axiom is an independent project with no affiliation or endorsement from NVIDIA or Jensen Huang.</p>
+            <p className="mt-3 text-[11px] leading-5 text-zinc-400">Personal inspiration. V19 is an independent project with no affiliation or endorsement from NVIDIA or Jensen Huang.</p>
           </figure>
         </div>
       </section>
@@ -121,7 +121,7 @@ export default function SupportPage() {
 
       <section className="border-y border-white/[0.07] bg-white/1.5">
         <div className="mx-auto max-w-[1280px] px-5 py-16 sm:px-8 lg:px-10 lg:py-20">
-          <div className="max-w-3xl"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Why support matters</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Fund the difficult work behind trustworthy autonomy.</h2><p className="mt-6 text-base leading-7 text-zinc-400">Supporter purchases help Vision XIX Labs invest in the engineering foundations required to make Axiom useful, governed, and durable.</p></div>
+          <div className="max-w-3xl"><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Why support matters</p><h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Fund the difficult work behind trustworthy autonomy.</h2><p className="mt-6 text-base leading-7 text-zinc-400">Supporter purchases help Vision XIX Labs invest in the engineering foundations required to make V19 useful, governed, and durable.</p></div>
           <div className="mt-9 divide-y divide-white/8 border-y border-white/8">
             {fundingAreas.map(({ icon: Icon, title, copy }) => <article key={title} className="grid gap-4 py-6 sm:grid-cols-[40px_220px_1fr] sm:items-center"><Icon className="h-5 w-5 text-zinc-400" /><h3 className="text-lg font-medium text-zinc-100">{title}</h3><p className="max-w-2xl text-sm leading-6 text-zinc-500">{copy}</p></article>)}
           </div>
@@ -132,11 +132,11 @@ export default function SupportPage() {
         <div className="grid gap-10 lg:grid-cols-[0.86fr_1.14fr] lg:items-start">
           <div className="lg:sticky lg:top-24">
             <p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Founding Supporters</p>
-            <h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Take part in Axiom’s beginning.</h2>
+            <h2 className="mt-5 text-3xl font-medium leading-[1.12] tracking-[-0.04em] text-zinc-100 sm:text-4xl">Take part in V19’s beginning.</h2>
             <p className="mt-6 max-w-xl text-base leading-7 text-zinc-400">Make a one-time digital supporter purchase at the level that is right for you. Suggested amounts are simply starting points; purchases begin at $1.</p>
             <div className="mt-8 space-y-5">
               <Benefit title="A digital Founding Supporter badge" copy="A personalized, downloadable badge delivered after Stripe confirms payment." />
-              <Benefit title="Development updates" copy="Opt in to occasional, substantive updates about Axiom’s progress. Unsubscribe whenever you choose." />
+              <Benefit title="Development updates" copy="Opt in to occasional, substantive updates about V19’s progress. Unsubscribe whenever you choose." />
               <Benefit title="Recognition—with consent" copy="Choose whether and how your name may appear in future supporter recognition. Private is the default." />
             </div>
           </div>
@@ -155,7 +155,7 @@ export default function SupportPage() {
         <div className="grid gap-10 lg:grid-cols-[0.7fr_1.3fr]">
           <div><p className="text-[11px] uppercase tracking-[0.2em] text-zinc-400">Trust & transparency</p><h2 className="mt-5 text-3xl font-medium tracking-[-0.04em] text-zinc-100">Know what participation means.</h2></div>
           <div className="grid border-y border-white/8 sm:grid-cols-2 sm:divide-x sm:divide-white/8">
-            <TrustCard icon={CircleStackIcon} title="The company" copy="Vision XIX Labs LLC is a for-profit technology company developing Axiom Agent." />
+            <TrustCard icon={CircleStackIcon} title="The company" copy="Vision XIX Labs LLC is a for-profit technology company developing V19 Agent." />
             <TrustCard icon={ShieldCheckIcon} title="The payment boundary" copy="Stripe-hosted checkout handles card data. Vision XIX Labs does not store card numbers." />
             <TrustCard icon={ScaleIcon} title="The legal character" copy="Supporter purchases are not charitable donations, tax-deductible charitable gifts, investments, equity, or promises of returns." />
             <TrustCard icon={EnvelopeIcon} title="Accountability" copy="Questions, receipt help, and refund requests can be sent to support@visionxixlabs.com. Founder identity will be published here only after the profile is verified and approved." />

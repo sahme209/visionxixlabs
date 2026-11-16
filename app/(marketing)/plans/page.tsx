@@ -13,10 +13,10 @@ import type { PublicCheckoutWorkspace, OwnedCheckoutIntentState } from "@/compon
 import { PublicPlansCatalog } from "@/components/billing/PublicPlansCatalog";
 
 export const metadata: Metadata = {
-  title: "Get started with Axiom",
+  title: "Get started with V19",
   alternates: { canonical: "/plans" },
   description:
-    "Axiom is free to explore. Optional prepaid AI credits are the only paid part: exact per-model rates, the cost shown before each action, and never a charge beyond what you prepaid.",
+    "V19 is free to explore. Optional prepaid AI credits are the only paid part: exact per-model rates, the cost shown before each action, and never a charge beyond what you prepaid.",
 };
 
 const usd = (cents: number) => `$${(cents / 100).toFixed(2)}`;
@@ -68,14 +68,14 @@ export default async function PlansPage({ searchParams }: { searchParams?: Promi
             Free to explore.<br /><span className="text-zinc-400">Prepay only for the AI you use.</span>
           </h1>
           <p className="max-w-xl text-base leading-7 text-zinc-400">
-            Approvals, audit history and recovery are part of Axiom for every workspace. AI usage is the only paid part. It is prepaid, its cost is shown before each action, and you are never charged more than you prepaid.
+            Approvals, audit history and recovery are part of V19 for every workspace. AI usage is the only paid part. It is prepaid, its cost is shown before each action, and you are never charged more than you prepaid.
           </p>
         </div>
       </section>
 
-      <section aria-label="How Axiom is offered" className="mx-auto grid max-w-[1280px] gap-4 px-5 pb-12 sm:px-8 lg:grid-cols-3 lg:px-10 lg:pb-16">
+      <section aria-label="How V19 is offered" className="mx-auto grid max-w-[1280px] gap-4 px-5 pb-12 sm:px-8 lg:grid-cols-3 lg:px-10 lg:pb-16">
         <article className="flex flex-col rounded-xl border border-white/9 bg-[#181818] p-6">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">Axiom</p>
+          <p className="text-[11px] uppercase tracking-[0.16em] text-zinc-500">V19</p>
           <h2 className="mt-2 text-xl font-medium tracking-[-0.03em] text-zinc-100">Free to explore</h2>
           <ul className="mt-5 space-y-3 text-sm leading-6 text-zinc-300">
             <li>{AI_RATE_CARD.freeMonthlyDeployments} counted deployments per organization each month</li>

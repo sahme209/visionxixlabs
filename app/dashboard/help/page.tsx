@@ -100,7 +100,7 @@ const TOPICS: Array<{ section: string; rows: Topic[] }> = [
     rows: [
       {
         title: "Read-only by default",
-        body: "Axiom assumes a cross-account read-only IAM role and only when scanning, for one hour at a time. STS sessions expire automatically. Approving a recommendation produces a Terraform plan you download and apply yourself — the platform never mutates your AWS without you running terraform apply.",
+        body: "V19 assumes a cross-account read-only IAM role and only when scanning, for one hour at a time. STS sessions expire automatically. Approving a recommendation produces a Terraform plan you download and apply yourself — the platform never mutates your AWS without you running terraform apply.",
         href: "/dashboard/integrations",
         hrefLabel: "See all integrations",
       },
@@ -128,7 +128,7 @@ export default async function HelpPage() {
           What this platform does.
         </h1>
         <p className="text-[15px] text-zinc-400 leading-relaxed max-w-xl">
-          One-page reference for everything wired into Axiom right now. Each
+          One-page reference for everything wired into V19 right now. Each
           section links to the live surface that does the thing.
         </p>
       </header>

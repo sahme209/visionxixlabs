@@ -20,7 +20,7 @@ describe("mobile website contract", () => {
     const page = source("components/marketing/AxiomPublicHero.tsx");
 
     expect(source("app/orbit-public.css")).toContain(".public-home-actions :is(a) { min-height:44px;");
-    expect(page).toContain("Download Axiom Agent");
+    expect(page).toContain("Download V19");
     expect(page).toContain("Explore the scripted tour");
   });
 

@@ -53,7 +53,7 @@ fn size(root: &Path) -> Result<u64,String> {
     while let Some(dir)=dirs.pop() {
         for item in fs::read_dir(dir).map_err(|_|"Worktree size could not be verified.")? {
             let item=item.map_err(|_|"Worktree size could not be verified.")?;
-            visited+=1; if visited>100_000 {return Err("Worktree size inventory exceeds 100,000 entries; inspect it outside Axiom.".into());}
+            visited+=1; if visited>100_000 {return Err("Worktree size inventory exceeds 100,000 entries; inspect it outside V19.".into());}
             let metadata=fs::symlink_metadata(item.path()).map_err(|_|"Worktree size could not be verified.")?;
             if metadata.file_type().is_symlink() {continue;}
             if metadata.is_dir() {dirs.push(item.path());} else {bytes=bytes.checked_add(metadata.len()).ok_or("Worktree size overflow.")?;}
@@ -77,9 +77,9 @@ fn list(root: &Path) -> Result<Vec<Worktree>,String> {
                 let candidate_parent=value.parent().and_then(|path|fs::canonicalize(path).ok());
                 if candidate_parent.as_deref()==Some(parent.as_path()) && value.file_name().and_then(|name|name.to_str()).map(|name|name.starts_with("axiom-")).unwrap_or(false) {
                     let metadata=fs::symlink_metadata(&value).map_err(|_|"A recorded worktree is missing. Recover its Git metadata before cleanup.")?;
-                    if metadata.file_type().is_symlink() || !metadata.is_dir() {return Err("Worktree path changed; inspect it outside Axiom.".into());}
+                    if metadata.file_type().is_symlink() || !metadata.is_dir() {return Err("Worktree path changed; inspect it outside V19.".into());}
                     let canonical=fs::canonicalize(&value).map_err(|_|"Worktree path unavailable.")?;
-                    if canonical.parent()!=Some(parent.as_path()) {return Err("Worktree parent changed; inspect it outside Axiom.".into());}
+                    if canonical.parent()!=Some(parent.as_path()) {return Err("Worktree parent changed; inspect it outside V19.".into());}
                     if common_directory(&canonical)?!=expected_common {return Err("Recorded checkout belongs to a different repository. No cleanup is permitted.".into());}
                     rows.push(Worktree{bytes:size(&canonical)?,path:canonical.to_string_lossy().into(),branch:branch.strip_prefix("refs/heads/").unwrap_or(&branch).into()});
                 }
@@ -111,12 +111,12 @@ fn create(source: &Path, branch: &str) -> Result<Worktree,String> {
 }
 fn remove(root: &Path, target: &Path) -> Result<(),String> {
     let rows=list(root)?;
-    if !rows.iter().any(|row|Path::new(&row.path)==target) {return Err("Only a recorded Axiom worktree of this repository can be removed.".into());}
+    if !rows.iter().any(|row|Path::new(&row.path)==target) {return Err("Only a recorded V19 worktree of this repository can be removed.".into());}
     // Status and Git removal honor index exclusions, which can hide local edits.
     // Refuse these checkouts rather than clearing user flags or risking data loss.
     let entries=git(target,&["ls-files","-v","-z"])?;
     if entries.split(|byte|*byte==0).filter(|entry|!entry.is_empty()).any(|entry|entry.len()<3 || &entry[..2]!=b"H ") {
-        return Err("Worktree has excluded or unusual index entries. Inspect and preserve its files outside Axiom before cleanup.".into());
+        return Err("Worktree has excluded or unusual index entries. Inspect and preserve its files outside V19 before cleanup.".into());
     }
     // --ignored protects ignored build output and local files as well as source.
     if !git(target,&["status","--porcelain=v1","--untracked-files=all","--ignored"] )?.is_empty() {return Err("Worktree contains changed, untracked or ignored files. Preserve them before removing it.".into());}

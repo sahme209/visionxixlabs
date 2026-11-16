@@ -1,0 +1,41 @@
+{
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "before": "2503bc3494061601ca4a90412ca5d56c33764038f79a8169ccd28840b3b0fbfc",
+      "after": "9b47951422d165283f2a0b7d4a5de046172aefbaab03b64f082c1f1aad47b830",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-packaging-tail-docs-20261116T015203Z/CODEX_HANDOFF.md"
+    },
+    "CLAUDE.md": {
+      "before": "ebd949d80e379d5261ad6d42ff3c3f095d5ba45fe829d5b68648ef1e9390c482",
+      "after": "f3b0594d3a8239316ad6256b9aa1fc3f3b10489d8644d29a0eba35030b04c20c",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-packaging-tail-docs-20261116T015203Z/CLAUDE.md"
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "before": "3eb652dfba13b22d6a4fbd7c7eddfafa7638b353872a76f50838d27a47fa4a19",
+      "after": "1a7d1476e4c425d5756658dcf746e5c660a19c5924f5ebfe463122cc37330a8d",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-packaging-tail-docs-20261116T015203Z/docs/product/axiom-master-action-plan.md"
+    },
+    "docs/product/current-execution-board.md": {
+      "before": "487fec67d450c7e870622e66a7cfaad434775a8b0fd119e9e15c5d90d91aacff",
+      "after": "6217e58b63a3e615bac8af0d82567252b7d8cca4f435e9038ff5a2617aa617ba",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-packaging-tail-docs-20261116T015203Z/docs/product/current-execution-board.md"
+    },
+    "docs/product/remaining-work.md": {
+      "before": "10963e1caaf3deedd27312ae2d3c8a96fc1ac88b7739f82509d43468ca94b8a6",
+      "after": "e2b9fd44c3787c623435def7e87eda26b05bfdfb49e95b9d917de7b7f6fcff6d",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-packaging-tail-docs-20261116T015203Z/docs/product/remaining-work.md"
+    },
+    "docs/product/codex-resume-goal.md": {
+      "before": "2324456abf922e857ca3a4317f205e635635396a47fa460e770b89570d5ce434",
+      "after": "f624f6d90bbbec92b2fd97780992cb38722866329ef6b4fdc7e90a9c0c6fb295",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-packaging-tail-docs-20261116T015203Z/docs/product/codex-resume-goal.md"
+    }
+  },
+  "goalMirrorMatches": true
+}

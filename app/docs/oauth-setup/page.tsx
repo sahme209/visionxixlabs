@@ -3,9 +3,9 @@ import Link from "next/link";
 import { DocHeader, DocSection, Step, Callout, CodeBlock, DocFooterNav, DocFeedback } from "@/components/docs/DocPrimitives";
 
 export const metadata: Metadata = {
-  title: "OAuth setup (Google + GitHub) — Axiom Documentation",
+  title: "OAuth setup (Google + GitHub) — V19 Documentation",
   description:
-    "Enable Google and GitHub sign-in for your Axiom deployment by configuring NextAuth providers + host environment variables.",
+    "Enable Google and GitHub sign-in for your V19 deployment by configuring NextAuth providers + host environment variables.",
 };
 
 export default function OAuthSetupPage() {
@@ -14,13 +14,13 @@ export default function OAuthSetupPage() {
       <DocHeader
         kicker="Authentication"
         title="Enable Google + GitHub sign-in"
-        summary="Axiom uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically."
+        summary="V19 uses NextAuth. Google and GitHub providers are wired in code but only register when their environment credentials are present on the host. Set the env vars below and the buttons on the sign-in page activate automatically."
       />
 
       <DocSection id="overview" title="Overview" kicker="Three things to configure for each provider">
         <ol className="list-decimal list-inside space-y-1 text-zinc-300 text-sm">
           <li>Create an OAuth application with the provider (Google Cloud Console / GitHub OAuth Apps).</li>
-          <li>Register the callback URL pointing at your Axiom host.</li>
+          <li>Register the callback URL pointing at your V19 host.</li>
           <li>Set the resulting Client ID + Client Secret on your host as environment variables.</li>
         </ol>
         <Callout variant="info">
@@ -111,7 +111,7 @@ GITHUB_CLIENT_SECRET=ghp_xxxxxxxxxxxxxxxxxxxxxxxx`}</CodeBlock>
           <li>Redeploy after setting the env vars (env changes don&apos;t auto-rebuild on most hosts).</li>
           <li>Open the sign-in page in an incognito window.</li>
           <li>Both buttons should activate (no <span className="font-mono">Not set</span> badge).</li>
-          <li>Click → OAuth consent → the secure callback returns you to the installed Axiom Agent application.</li>
+          <li>Click → OAuth consent → the secure callback returns you to the installed V19 application.</li>
         </ol>
         <Callout variant="warning">
           If you see <code>error=Configuration</code> after the OAuth round-trip, the env var is set

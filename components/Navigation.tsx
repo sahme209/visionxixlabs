@@ -249,7 +249,7 @@ export function Navigation() {
         >
           <div className="mx-auto flex max-w-lg flex-col">
             <div className="flex min-h-16 items-center justify-between gap-4 border-b border-white/[0.07]">
-              <p className="text-sm font-semibold tracking-[-0.02em] text-zinc-100">Explore Axiom</p>
+              <p className="text-sm font-semibold tracking-[-0.02em] text-zinc-100">Explore V19</p>
               <button type="button" aria-label="Close navigation menu" onClick={closeMobileMenu}
                 className="flex min-h-11 min-w-11 items-center justify-center gap-2 rounded-lg px-2 text-sm text-zinc-300 hover:bg-white/6 focus-visible:outline-solid focus-visible:outline-2 focus-visible:outline-orange-300">
                 Close <XMarkIcon aria-hidden="true" className="h-5 w-5" />
@@ -257,7 +257,7 @@ export function Navigation() {
             </div>
             <div className="mt-4 divide-y divide-white/[0.07] border-y border-white/[0.07]" aria-label="Primary links">
               {mobileLinks.map((item) => (
-                <Link key={item.href} href={item.href} onClick={closeMenu} className="flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-orange-200">
+                <Link key={item.href} href={item.href} onClick={closeMenu} className="flex min-h-12 items-center px-1 text-base font-medium text-zinc-200 transition hover:text-white">
                   {item.label}
                 </Link>
               ))}

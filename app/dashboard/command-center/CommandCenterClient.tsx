@@ -89,7 +89,7 @@ export default function CommandCenterClient() {
               tone="orange"
               eyebrow={`Welcome — let's get you to value`}
               title="Connect a cloud and AGI takes the first action for you."
-              description="Pick AWS, Azure, or GCP. Axiom validates the credential, runs the first inventory, surfaces the highest-confidence wins, and assembles your audit story — all before you finish your coffee."
+              description="Pick AWS, Azure, or GCP. V19 validates the credential, runs the first inventory, surfaces the highest-confidence wins, and assembles your audit story — all before you finish your coffee."
               agiNote="No SDKs to install, no agents to deploy. One click connects the source, and the loop starts producing real recommendations within minutes."
               actions={[
                 { href: "/dashboard/connectors", label: "Connect first cloud", variant: "primary" },
@@ -306,7 +306,7 @@ function ExecutiveSummaryBanner() {
       headline: blockers.length === 0 ? "No critical blockers" : `${blockers.length} critical blocker${blockers.length === 1 ? "" : "s"}`,
       detail: blockers.length === 0 ? "All canonical sections report green for the current source mode." : `${blockers[0].area}: ${blockers[0].reason}`,
       severity: blockers.length === 0 ? "success" : "warning",
-      link: { label: blockers.length === 0 ? "Open Axiom OS" : "Resolve blocker", href: blockers[0]?.safeNextAction?.href ?? "/dashboard" },
+      link: { label: blockers.length === 0 ? "Open V19 OS" : "Resolve blocker", href: blockers[0]?.safeNextAction?.href ?? "/dashboard" },
     });
     highlights.push({
       headline: `${pendingApprovals} approval${pendingApprovals === 1 ? "" : "s"} awaiting operator`,
@@ -729,7 +729,7 @@ function AxiomOSStrip() {
       .then((json: { ok?: boolean; data?: AxiomOSStateLite; error?: { userMessage?: string } }) => {
         if (cancelled) return;
         if (json.ok && json.data) setState(json.data);
-        else setError(json.error?.userMessage ?? "Axiom OS state unavailable.");
+        else setError(json.error?.userMessage ?? "V19 OS state unavailable.");
       })
       .catch((err) => {
         if (cancelled) return;
@@ -1452,7 +1452,7 @@ function OnboardingPanel() {
       <div className="px-5 py-3.5 border-b border-white/6 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <BoltIcon className="h-4 w-4 text-zinc-500" />
-          <h3 className="text-sm font-semibold text-white">Getting Axiom productive</h3>
+          <h3 className="text-sm font-semibold text-white">Getting V19 productive</h3>
         </div>
         <span className="text-[11px] font-mono text-zinc-500">{pct}%</span>
       </div>

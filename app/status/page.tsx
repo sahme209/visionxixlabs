@@ -21,8 +21,8 @@ import {
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Status — Axiom Agent | Vision XIX Labs",
-  description: "Public uptime + autonomy-loop health for the Axiom cross-cloud AGI ops platform.",
+  title: "Status — V19 | Vision XIX Labs",
+  description: "Public uptime + autonomy-loop health for the V19 cross-cloud AGI ops platform.",
 };
 
 const TONE: Record<StatusVerdict, string> = {
@@ -54,7 +54,7 @@ export default async function StatusPage() {
     <div className="axiom-canvas public-status-page min-h-screen text-zinc-200">
       <Navigation />
       <main className="public-status-main">
-        <p className="public-feature-eyebrow">Axiom · Live status</p>
+        <p className="public-feature-eyebrow">V19 · Live status</p>
         <div className="public-status-summary">
           <div className={`shrink-0 w-14 h-14 rounded-2xl border flex items-center justify-center ${TONE[report.overall]}`}>
             <OverallIcon className="h-7 w-7" />

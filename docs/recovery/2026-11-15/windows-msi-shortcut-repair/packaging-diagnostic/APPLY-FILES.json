@@ -1,0 +1,4 @@
+{
+  "scripts/windows_installed_acceptance.py": "519b162a142db1a9ac78db0b8ea47b3f89f7429f394d442688a867290a1f39b0",
+  "scripts/tests/test_windows_diagnostic_tail.py": "d2688866b71dc2d5fdd7d99d120b835791c514a271219b5fee022e80e33eadda"
+}

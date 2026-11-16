@@ -40,7 +40,7 @@ describe("homepage scope", () => {
 
   it("preserves acquisition destinations and makes the tour boundary explicit", () => {
     render(createElement(Home));
-    for (const [name, href] of [["Explore Axiom", "/product"], ["Explore the scripted tour", "/demo"], ["Download Axiom Agent", "/download"], ["Meet the Founding Supporters program", "/support"]]) {
+    for (const [name, href] of [["Explore V19", "/product"], ["Explore the scripted tour", "/demo"], ["Download V19", "/download"], ["Meet the Founding Supporters program", "/support"]]) {
       const links = screen.getAllByRole("link", { name });
       expect(links.length).toBeGreaterThan(0);
       for (const link of links) expect(link.getAttribute("href")).toBe(href);

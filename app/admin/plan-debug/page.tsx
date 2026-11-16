@@ -106,11 +106,11 @@ export default function AdminPlanDebugPage() {
               </dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Axiom scan</dt>
+              <dt className="text-zinc-500">V19 scan</dt>
               <dd className={data.entitlements.axiomScan ? "text-emerald-400" : "text-zinc-500"}>{data.entitlements.axiomScan ? "Active" : "—"}</dd>
             </div>
             <div className="flex justify-between">
-              <dt className="text-zinc-500">Axiom execution</dt>
+              <dt className="text-zinc-500">V19 execution</dt>
               <dd className={data.entitlements.axiomExecution ? "text-emerald-400" : "text-zinc-500"}>{data.entitlements.axiomExecution ? "Active" : "—"}</dd>
             </div>
             <div className="flex justify-between">

@@ -223,7 +223,7 @@ export default function AISettingsPage() {
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           The service exposes only configured provider families. Workspace policy controls the approved routes
-          and fallback order; when those routes are unavailable, Axiom returns an honest error instead of a
+          and fallback order; when those routes are unavailable, V19 returns an honest error instead of a
           simulated answer. Credentials and provider billing accounts remain server-only.
         </p>
       </div>

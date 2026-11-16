@@ -1,0 +1,12 @@
+{
+  "originalActualReceiptBytes": 70947,
+  "worstCaseNewShapeBytes": 243410,
+  "truncatedStreamsReceivingTail": 7,
+  "receiptCapBytes": 1048576,
+  "tailRawCapBytes": 4096,
+  "prefixRawCapBytes": 2048,
+  "sameLogRetentionCapBytes": 8388608,
+  "fitsUnchangedReceiptCap": true,
+  "actualUnderlyingBuilderErrorStillUnavailable": true,
+  "simulationOnlyNoRecoveredTailClaim": true
+}

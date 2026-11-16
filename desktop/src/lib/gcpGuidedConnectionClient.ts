@@ -4,7 +4,7 @@ const unavailable='Google Cloud connection could not be confirmed. Check connect
 const messages:Record<string,string>={gcp_cloud_not_configured:'Google Cloud sign-in is not configured for this service yet.',connection_authority_required:'Your current workspace access does not permit this connection. Sign in again or ask a workspace owner.',desktop_session_required:'Sign in to your workspace again before connecting Google Cloud.',cloud_account_limit_reached:'Your workspace cloud-account allowance is exhausted.',cloud_resource_denied:'Google Cloud denied access to this project. Review the selected account and permissions.',cloud_authorization_invalid:'This sign-in attempt is no longer usable. Start a new connection.',cloud_save_unconfirmed:'The save result is uncertain. Check connection status; do not repeat sign-in yet.'};
 async function request(method:'GET'|'POST',path:string,body?:unknown,signal?:AbortSignal):Promise<ApiResult<unknown>>{
  const config=desktopClient.config;
- if(config.apiBase!=='https://visionxixlabs.com'||!config.sessionToken?.startsWith('axm.desk.'))return{ok:false,error:'A paired desktop session at the approved Axiom service is required.'};
+ if(config.apiBase!=='https://visionxixlabs.com'||!config.sessionToken?.startsWith('axm.desk.'))return{ok:false,error:'A paired desktop session at the approved V19 service is required.'};
  const timeout=AbortSignal.timeout(25000);const combined=signal?AbortSignal.any([signal,timeout]):timeout;
  try{
   combined.throwIfAborted();

@@ -1233,7 +1233,7 @@ it("offers the unified welcome and enters the retained AI workspace without send
   m.client.verifyCurrentCredential.mockResolvedValue({ok: true, data: {kind: "desktop_session", organizationId: "fixture-workspace", role: "owner", capabilities: [], access: {allowed: true}}});
   render(createElement(App));
   await screen.findByRole("heading", {name: /Your next move.*in focus/});
-  expect(screen.getByRole("button", {name: "vxix home"}).getAttribute("aria-current")).toBe("page");
+  expect(screen.getByRole("button", {name: "V19 home"}).getAttribute("aria-current")).toBe("page");
   expect(screen.getByRole("button", {name: "Agent"}).getAttribute("aria-current")).toBeNull();
   expect(screen.getByRole("button", {name: /Review operations/})).toBeTruthy();
   expect(screen.getByRole("button", {name: /Plan a release/})).toBeTruthy();
@@ -1247,9 +1247,9 @@ it("offers the unified welcome and enters the retained AI workspace without send
   expect(screen.getByRole("button", {name: "Repositories"}).getAttribute("aria-current")).toBe("page");
   fireEvent.click(screen.getByRole("button", {name: "Agent"}));
   expect(screen.getByRole("button", {name: "Agent"}).getAttribute("aria-current")).toBe("page");
-  expect(screen.getByRole("button", {name: "vxix home"}).getAttribute("aria-current")).toBeNull();
+  expect(screen.getByRole("button", {name: "V19 home"}).getAttribute("aria-current")).toBeNull();
   expect(m.client.sendAgentMessage).not.toHaveBeenCalled();
-  fireEvent.click(screen.getByRole("button", {name: "vxix home"}));
+  fireEvent.click(screen.getByRole("button", {name: "V19 home"}));
   await screen.findByRole("heading", {name: /Your next move.*in focus/});
   fireEvent.click(screen.getByRole("button", {name: /Open Agent/}));
   expect((screen.getByRole("textbox", {name:"Agent request"}) as HTMLTextAreaElement).value).toBe("Keep this unsent request");
@@ -1264,7 +1264,7 @@ it("enters real deployment intake from welcome and retains its unsent form throu
   fireEvent.click(await screen.findByRole("button", {name: /Plan a release/}));
   fireEvent.click(await screen.findByRole("button", {name: "Start from ticket"}));
   fireEvent.change(screen.getByRole("textbox", {name: "Request title"}), {target: {value: "Unsent release acceptance"}});
-  fireEvent.click(screen.getByRole("button", {name: "vxix home"}));
+  fireEvent.click(screen.getByRole("button", {name: "V19 home"}));
   fireEvent.click(await screen.findByRole("button", {name: /Plan a release/}));
   expect((screen.getByRole("textbox", {name: "Request title"}) as HTMLInputElement).value).toBe("Unsent release acceptance");
   fireEvent.click(screen.getByRole("button", {name: "Back to release requests"}));

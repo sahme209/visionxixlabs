@@ -25,7 +25,7 @@ const awsInstructions = (externalId: string) => ({
     {
       step: 2,
       title: "Configure Trust Policy",
-      description: "Enter the Axiom broker account ID and external ID to establish secure cross-account trust.",
+      description: "Enter the V19 broker account ID and external ID to establish secure cross-account trust.",
       trustPolicy: {
         Version: "2012-10-17",
         Statement: [
@@ -41,17 +41,17 @@ const awsInstructions = (externalId: string) => ({
     {
       step: 3,
       title: "Attach Read-Only Policy",
-      description: "Attach the AWS-managed ReadOnlyAccess policy. Axiom never requires write permissions for scanning.",
+      description: "Attach the AWS-managed ReadOnlyAccess policy. V19 never requires write permissions for scanning.",
       policy: "arn:aws:iam::aws:policy/ReadOnlyAccess",
     },
     {
       step: 4,
       title: "Copy Role ARN",
-      description: "After creating the role, copy the Role ARN and paste it into Axiom to complete the connection.",
+      description: "After creating the role, copy the Role ARN and paste it into V19 to complete the connection.",
     },
   ],
   securityNotes: [
-    "Read-only access — Axiom cannot modify your infrastructure",
+    "Read-only access — V19 cannot modify your infrastructure",
     "External ID prevents confused-deputy attacks",
     "Revoke access instantly by deleting the IAM role",
     "All API calls are logged in your CloudTrail",
@@ -65,10 +65,10 @@ const azureInstructions = () => ({
     {
       step: 1,
       title: "Register App in Azure AD",
-      description: "Create a new app registration in Azure Active Directory for Axiom Agent.",
+      description: "Create a new app registration in Azure Active Directory for V19 Agent.",
       action: "Navigate to Azure AD → App registrations → New registration",
       details: {
-        name: "Axiom Agent (Read-Only)",
+        name: "V19 (Read-Only)",
         supportedAccountTypes: "Single tenant",
         redirectUri: "Not required",
       },
@@ -87,19 +87,19 @@ const azureInstructions = () => ({
       action: "Subscriptions → [Your Subscription] → Access control (IAM) → Add role assignment",
       details: {
         role: "Reader",
-        assignTo: "Axiom Agent (Read-Only)",
+        assignTo: "V19 (Read-Only)",
         scope: "Subscription",
       },
     },
     {
       step: 4,
-      title: "Enter Credentials in Axiom",
+      title: "Enter Credentials in V19",
       description: "Provide the Tenant ID, Application (Client) ID, and Client Secret to complete the connection.",
       requiredFields: ["Tenant ID", "Application (Client) ID", "Client Secret", "Subscription ID"],
     },
   ],
   securityNotes: [
-    "Reader role only — Axiom cannot modify your Azure resources",
+    "Reader role only — V19 cannot modify your Azure resources",
     "Service principal scoped to a single subscription",
     "Revoke access by deleting the app registration or removing role assignment",
     "All access logged in Azure Activity Log and Azure AD sign-in logs",
@@ -113,11 +113,11 @@ const gcpInstructions = () => ({
     {
       step: 1,
       title: "Create Service Account",
-      description: "Create a dedicated service account for Axiom Agent in your GCP project.",
+      description: "Create a dedicated service account for V19 in your GCP project.",
       action: "IAM & Admin → Service Accounts → Create Service Account",
       details: {
         name: "axiom-agent-readonly",
-        description: "Axiom Agent read-only access for cloud intelligence",
+        description: "V19 read-only access for cloud intelligence",
       },
     },
     {
@@ -142,13 +142,13 @@ const gcpInstructions = () => ({
     },
     {
       step: 4,
-      title: "Upload Key to Axiom",
-      description: "Paste the contents of the JSON key file into Axiom to complete the connection.",
+      title: "Upload Key to V19",
+      description: "Paste the contents of the JSON key file into V19 to complete the connection.",
       requiredFields: ["Project ID", "Service Account Key (JSON)"],
     },
   ],
   securityNotes: [
-    "Viewer role only — Axiom cannot modify your GCP resources",
+    "Viewer role only — V19 cannot modify your GCP resources",
     "Service account scoped to a single project",
     "Revoke access by disabling the service account or deleting the key",
     "All access logged in Cloud Audit Logs",

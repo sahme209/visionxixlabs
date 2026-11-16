@@ -15,7 +15,7 @@ import { getAllPosts, listCategories } from "@/lib/blog/posts";
 
 export const metadata: Metadata = {
   title: "Blog | Vision XIX Labs",
-  description: "Product updates, engineering essays, trust & security notes from the Axiom Agent team.",
+  description: "Product updates, engineering essays, trust & security notes from the V19 team.",
 };
 
 function fmtDate(iso: string): string {
@@ -44,8 +44,8 @@ export default function BlogIndex() {
         <PageHero
           eyebrow="Blog"
           title="Product and engineering"
-          muted="notes from Axiom."
-          lead="Product updates, engineering essays, and trust + security notes from the team building Axiom Agent."
+          muted="notes from V19."
+          lead="Product updates, engineering essays, and trust + security notes from the team building V19 Agent."
         />
         <div className="h-12 sm:h-16" aria-hidden="true" />
 

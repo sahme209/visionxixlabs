@@ -1,0 +1,67 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/axiom-compiled-next-pg17-xxu7oxk4",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.058,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "diagnostic-boundary-check",
+      "exit": 0,
+      "seconds": 0.055,
+      "logSha256": "c3583fd8e87110d56cffa95110e199c99806e47eebe8796cc1ed071d5dfa4171"
+    },
+    {
+      "phase": "literal-loopback-bind-preflight",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "4a0d025833c7495a3e6a9040672631d76c7e939a3ed4e356ab555cdabf410ea5"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.378,
+      "logSha256": "a727c5fca78929c44836975260e4139d012d7dc2bb5db66bae62a748276dee0c"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.167,
+      "logSha256": "82e4b0f5381489667b1021c97702d56235e173475dde1fb8b8f1344f0c6f5325"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.11,
+      "logSha256": "554571f1a406d35c69c6550c4603376cb653f7a411409009da8265d350a94b4e"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "compiled-http",
+      "exit": 0,
+      "seconds": 1.04,
+      "logSha256": "f7f3259530e62b2e3f87758416bbcb28e00bd840c9b4b06e558f39af0c5f5b3a"
+    }
+  ],
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

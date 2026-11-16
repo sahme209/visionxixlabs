@@ -30,7 +30,7 @@ import { ModuleIntro } from "@/components/portal/ModuleIntro";
 import { PurchaseAddOnButton } from "@/components/billing/PurchaseAddOnButton";
 
 export const metadata: Metadata = {
-  title: "Add-ons · Axiom",
+  title: "Add-ons · V19",
 };
 
 export const dynamic = "force-dynamic";

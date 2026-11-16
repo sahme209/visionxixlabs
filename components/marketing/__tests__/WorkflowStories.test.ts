@@ -93,11 +93,11 @@ it("grounds the scripted frame in customer navigation without exposing operation
   const navigation = screen.getByRole("complementary", { name: "Navigation illustrated from the desktop application" });
   expect(navigation.textContent).toContain("No connected account.");
   expect(navigation.querySelectorAll("button, a, input")).toHaveLength(0);
-  expect(screen.getByText("Axiom Agent · Repositories")).toBeDefined();
+  expect(screen.getByText("V19 · Repositories")).toBeDefined();
   fireEvent.click(screen.getByRole("button", { name: "Agent & approval" }));
-  expect(screen.getByText("Axiom Agent · Agent")).toBeDefined();
+  expect(screen.getByText("V19 · Agent")).toBeDefined();
   fireEvent.click(screen.getByRole("button", { name: "Terraform & cloud" }));
-  expect(screen.getByText("Axiom Agent · Releases")).toBeDefined();
+  expect(screen.getByText("V19 · Releases")).toBeDefined();
   expect(screen.getByText("Scripted preview")).toBeDefined();
 });
 
@@ -130,4 +130,15 @@ it("follows app actions from request through diff, deliberate check decision and
  fireEvent.click(screen.getByRole('button',{name:'Review branch publication →'}));
  expect(screen.getByRole('heading',{name:'Publish branch and open a pull request?'})).toBeDefined();
  expect(fetch).not.toHaveBeenCalled();
+});
+
+for (const width of [360, 1135]) it(`keeps response focus while scrolling the correct context at ${width}px`,()=>{
+ const originalWidth=window.innerWidth;Object.defineProperty(window,'innerWidth',{configurable:true,value:width});
+ const scroll=vi.fn();const previous=HTMLElement.prototype.scrollIntoView;HTMLElement.prototype.scrollIntoView=scroll;
+ try {mount();fireEvent.click(screen.getByRole('button',{name:'Prepare sample change →'}));
+ const response=screen.getByLabelText('Sample workflow response');
+ expect(document.activeElement).toBe(response);
+ expect(scroll).toHaveBeenCalledWith({block:'nearest',inline:'nearest'});
+ expect(scroll.mock.instances.at(-1)).toBe(width>=1024?screen.getByRole('heading',{name:'Make a small, reviewable edit.'}):response);
+ }finally{HTMLElement.prototype.scrollIntoView=previous;Object.defineProperty(window,'innerWidth',{configurable:true,value:originalWidth});}
 });

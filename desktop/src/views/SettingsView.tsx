@@ -221,7 +221,7 @@ export function SettingsView({ identity, initialSection, onClose, onOpenReposito
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-6" role="dialog" aria-modal="true" aria-labelledby="sign-out-title">
           <div className="w-full max-w-md rounded-2xl border border-white/10 bg-axiom-surface p-5 shadow-2xl">
             <h2 id="sign-out-title" className="text-lg font-semibold">Log out?</h2>
-            <p className="mt-2 text-sm leading-6 text-zinc-400">You’ll be logged out of Axiom Agent on this device. Externally running workflows are not canceled.</p>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">You’ll be logged out of V19 on this device. Externally running workflows are not canceled.</p>
             <div className="mt-6 flex justify-end gap-3">
               <button data-help-id="settings.workspace.sign-out-cancel" type="button" onClick={() => setShowSignOut(false)} className="rounded-lg px-4 py-2 text-sm text-zinc-400 hover:bg-white/5 hover:text-white">Cancel</button>
               <button data-help-id="settings.workspace.sign-out-confirm" type="button" onClick={() => void signOut()} className="rounded-lg bg-white px-4 py-2 text-sm font-semibold text-black hover:bg-zinc-100">Log out</button>
@@ -260,14 +260,14 @@ function GeneralSection({ prefs, onSave, onOpenGovernance, onOpenExecutionLimits
   return <div>
     <SectionHeading title="General" detail="Application startup, notifications, and account management." />
     <Group label="Account">
-      <ActionRow title="Axiom account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
-      <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in Axiom Control." action={<WebButton href="/control/governance" label="Open governance" />} />
+      <ActionRow title="V19 account" detail="Manage your personal profile in the secure browser." action={<WebButton href="/account" label="Open" />} />
+      <ActionRow title="Organization governance" detail="Review roles, policy proposals and independent approvals in V19 Control." action={<WebButton href="/control/governance" label="Open governance" />} />
       {import.meta.env.DEV && <ActionRow title="Governance evidence preview" detail="Inspect saved evidence and baseline history. Enforcement and authoring remain unavailable in this local preview." action={<button data-help-id="settings.workspace.governance-evidence-preview" type="button" className="btn-secondary" onClick={onOpenGovernance}>Inspect saved Governance</button>} />}
       {import.meta.env.DEV && <ActionRow title="Execution limits preview" detail="Review or propose limits for an exact saved baseline. Limits do not enable Governance enforcement or provider actions." action={<button data-help-id="governance.execution-limits.entry" type="button" className="btn-secondary" onClick={onOpenExecutionLimits}>Review execution limits preview</button>} />}
       <ActionRow title="Workspace access" detail="Review the current plan, verified allowance, and desktop access in Plan & usage." action={<span className="text-xs text-zinc-400">Service verified</span>} />
     </Group>
     <Group label="Notifications">
-      <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button data-help-id="settings.workspace.notification-test" type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "Axiom Agent", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
+      <ToggleRow title="System notifications" detail="Notify when an approval or deployment needs attention." enabled={prefs?.notifications_enabled ?? false} disabled={!prefs} onToggle={() => prefs && void onSave({ ...prefs, notifications_enabled: !prefs.notifications_enabled })} action={<button data-help-id="settings.workspace.notification-test" type="button" disabled={!prefs?.notifications_enabled} onClick={() => void notifyResult({ title: "V19", body: "Desktop notifications are ready." })} className="rounded-md border border-white/10 px-2.5 py-1 text-[11px] text-zinc-400 hover:text-white disabled:opacity-40">Test</button>} />
       <LockedRow title="Resume observation after restart" detail="Durable operation IDs are reconciled with the service after the app starts again." />
     </Group>
     <Group label="About this app">
@@ -1969,7 +1969,7 @@ function IntegrationsSection({ identity }: { identity: VerifiedDesktopIdentity }
     <p className="mb-4 text-xs leading-5 text-zinc-500">Review access in your browser, then return here for verified status. Cloud connections are read-only; deployment access stays separately governed.</p>
     <div className="space-y-3">
       <IntegrationRow name="GitHub" group="Source control" detail={githubDetail} state={githubState} tone={github?.status === "validation_overdue" ? "attention" : undefined} action={providerAction("github", github?.status ?? "not_connected", github?.status === "installation_recorded" || github?.status === "validation_overdue", validatingGitHub, validateGitHub)} />
-      <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until Axiom validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
+      <IntegrationRow name="Slack" group="Collaboration" detail="Release notifications with channels:read and chat:write. Consent is not active access until V19 validates the token server-side." state={formatConnectorState(providerStatus("slack"))} action={providerAction("slack", providerStatus("slack"), slackCanValidate, validatingSlack, validateSlack)} />
       <IntegrationRow name="Microsoft Teams" group="Collaboration" detail="Verifies Microsoft workspace identity with PKCE. Message permissions remain separately gated." state={formatConnectorState(providerStatus("teams"))} action={providerAction("teams", providerStatus("teams"), teamsCanValidate, validatingTeams, validateTeams)} />
       <OutlookIntegrationCard />
       <IntegrationRow name="Linear" group="Work management" detail="Governed issue delegation with read and issues:create scopes, short-lived tokens, and automatic refresh rotation." state={formatConnectorState(providerStatus("linear"))} action={providerAction("linear", providerStatus("linear"), linearCanValidate, validatingLinear, validateLinear)} />

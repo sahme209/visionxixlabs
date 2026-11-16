@@ -1,0 +1,7 @@
+{
+  "backup": "/private/tmp/v19-registry-path-demo-before.ts",
+  "oldSha256": "b5aa8f2e31a6c2ffc5eee47732922d73d1d4c402f5548bb2160e3cbca449815b",
+  "newSha256": "8ef99f936a7edafe3bfd455e84205a3fcd2bef055223735bc17ea369baa5b2e2",
+  "onlyInternalWindowsExpectedResultChanged": true,
+  "unrelatedBytesPreserved": true
+}

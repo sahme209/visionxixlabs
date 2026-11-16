@@ -1,0 +1,30 @@
+{
+  "website": {
+    "accepted": true,
+    "stage": "/private/tmp/axiom-current-web-desktop-ogj6y71q",
+    "receiptSha256": "2449c3ff844198ec2ac03f3542c998a66e2bc3208304ff39540d9eaaa2fc6387",
+    "packetSha256": "869d993dc33dafa2a91893bc85f26d4b4468eaeaee4dc28f75286563e066cb67",
+    "phases": {
+      "website": {
+        "exitCode": 0,
+        "reason": null,
+        "cleanupConfirmed": true,
+        "logBytesObserved": 43921,
+        "logSha256": "4ee3ed9451ec4753989592abe5576f8a61d755573fa2d7bfc3a9434fe89ab1c3",
+        "logPath": "/private/tmp/axiom-current-web-desktop-ogj6y71q/website.log"
+      }
+    },
+    "failure": null,
+    "finalInputsMatched": true
+  },
+  "rootTypes": "pass_8GiB_heap_default4GiBOOM",
+  "focusedDemoAndPointerTests": 19,
+  "ordinaryPass": 19733,
+  "expectedFailure": 1,
+  "skipped": 1144,
+  "corporateVXIXAssetsUnchanged": true,
+  "visibleHomepageObserved": true,
+  "googleAndDownloadVerified": false,
+  "windowsUpgradeQualified": false,
+  "productionChanged": false
+}

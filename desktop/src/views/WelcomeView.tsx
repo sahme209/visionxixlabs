@@ -7,7 +7,7 @@ interface WelcomeViewProps {
 
 /** Navigation only: never turn a launch choice into an AI or provider action. */
 export function WelcomeView({ onBuild, onBot, onAutomate, onDeploy }: WelcomeViewProps) {
-  return <section aria-label="Axiom welcome" className="axiom-home">
+  return <section aria-label="V19 welcome" className="axiom-home">
     <div className="axiom-home-content">
       <div className="home-introduction">
         <div className="home-introduction-copy">
@@ -24,7 +24,7 @@ export function WelcomeView({ onBuild, onBot, onAutomate, onDeploy }: WelcomeVie
       </div>
       <div className="home-destination-heading"><h2>Start with what matters.</h2><p>One workspace. Different ways forward.</p></div>
       <div className="home-destinations">
-        <button type="button" onClick={onBot} className="home-destination"><span className="home-destination-top"><span aria-hidden="true">01</span><span aria-hidden="true">↗</span></span><span className="home-destination-title">Delegate a task</span><span className="home-destination-description">Saved tasks and AI responses in Axiom Bot. App changes require exact review.</span></button>
+        <button type="button" onClick={onBot} className="home-destination"><span className="home-destination-top"><span aria-hidden="true">01</span><span aria-hidden="true">↗</span></span><span className="home-destination-title">Delegate a task</span><span className="home-destination-description">Saved tasks and AI responses in V19 Bot. App changes require exact review.</span></button>
         <button type="button" onClick={onDeploy} className="home-destination"><span className="home-destination-top"><span aria-hidden="true">02</span><span aria-hidden="true">↗</span></span><span className="home-destination-title">Plan a release</span><span className="home-destination-description">Bring scope, proposed actions and delivery evidence into one review.</span></button>
         <button type="button" onClick={onAutomate} className="home-destination"><span className="home-destination-top"><span aria-hidden="true">03</span><span aria-hidden="true">↗</span></span><span className="home-destination-title">Review operations</span><span className="home-destination-description">Monitor batches and prepare operations. Requires an Airflow connection.</span></button>
       </div>

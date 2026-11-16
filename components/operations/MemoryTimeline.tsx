@@ -284,7 +284,7 @@ const DEMO_GROUPS: DayGroup[] = [
         id: "y1",
         kind: "drift.detected",
         title: "Configuration drift detected",
-        detail: "2 security group rules modified outside of Axiom · diff captured for review",
+        detail: "2 security group rules modified outside of V19 · diff captured for review",
         timestamp: eventISO(1, 14, 22),
         provider: "aws",
         outcome: "negative",

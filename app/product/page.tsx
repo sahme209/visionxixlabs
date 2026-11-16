@@ -11,13 +11,13 @@ import { GovernedDeploymentModel } from "@/components/marketing/GovernedDeployme
 import { GovernanceAssembly } from "@/components/marketing/GovernanceAssembly";
 
 export const metadata: Metadata = {
-  title: "Axiom Agent product",
+  title: "V19 product",
   description: "A calm, governed workspace for deployment evidence, human approval, recovery context, and honest connection state.",
 };
 
 const BOUNDARIES = [
   ["GitHub", "Read-only, repository-scoped release evidence. The first source of truth."],
-  ["Axiom Agent", "The installed workspace. Validates provider access and holds every consequential operation."],
+  ["V19", "The installed workspace. Validates provider access and holds every consequential operation."],
   ["Web companion", "A lighter signed-in space for consent, profile, help and connection context."],
 ];
 
@@ -34,8 +34,8 @@ export default function ProductPage() {
       <main className="overflow-hidden pt-16">
         <section className="border-b border-white/[0.07] px-5 pb-14 pt-16 sm:px-8 sm:pt-24 lg:px-10 lg:pb-20">
           <div className="mx-auto max-w-[1200px]">
-            <PageHero eyebrow="Axiom Agent · deployment governance" title="Deployment decisions." muted="Clear from the start." lead="A workspace for deployment proposals, review, and recorded outcomes. Explore the workflow, then check which controls your installed version supports." actions={<>
-              <Link href="/download" className="orbit-primary">Download Axiom Agent</Link>
+            <PageHero eyebrow="V19 · deployment governance" title="Deployment decisions." muted="Clear from the start." lead="A workspace for deployment proposals, review, and recorded outcomes. Explore the workflow, then check which controls your installed version supports." actions={<>
+              <Link href="/download" className="orbit-primary">Download V19</Link>
               <Link href="/docs/approval-workflow" className="orbit-secondary">Read the workflow guide <span aria-hidden="true">↗</span></Link>
             </>} />
             <div aria-labelledby="workflow-overview">
@@ -51,10 +51,10 @@ export default function ProductPage() {
             visual={<div className="public-boundary-list">{BOUNDARIES.map(([title, detail]) => <div key={title}><h3>{title}</h3><p>{detail}</p></div>)}</div>}
             action={{ href: "/docs/surfaces", label: "Compare product surfaces" }} />
           <PublicFeaturePanel reverse eyebrow="Agent governance gateway" title="Govern any AI agent, not just ours." titleId="govern-any-agent" headingLevel="h2" visualLabel="Cooperative workflow · explanatory diagram"
-            copy="Add Axiom to Cursor, Claude Code, Codex or your own agent as an MCP server. Before a consequential action, the agent asks; a person approves the exact change; the outcome is recorded."
-            visual={<ol aria-label="How an agent asks Axiom" className="public-boundary-list">
+            copy="Add V19 to Cursor, Claude Code, Codex or your own agent as an MCP server. Before a consequential action, the agent asks; a person approves the exact change; the outcome is recorded."
+            visual={<ol aria-label="How an agent asks V19" className="public-boundary-list">
               {[
-                ["Check", "The agent describes the action. Axiom answers allow, needs approval or deny, with reasons."],
+                ["Check", "The agent describes the action. V19 answers allow, needs approval or deny, with reasons."],
                 ["Request", "Deploys, merges, infrastructure, migrations and secrets wait for a workspace admin."],
                 ["Approve", "Someone other than the key's creator approves the exact change. It expires in 24 hours."],
                 ["Record", "The agent reports what happened. Each step lands in the audit log."],

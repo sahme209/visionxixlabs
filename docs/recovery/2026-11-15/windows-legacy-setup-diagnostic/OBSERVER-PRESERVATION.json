@@ -1,0 +1,34 @@
+{
+  "backupDirectory": "docs/recovery/2026-11-15/windows-legacy-setup-diagnostic/observer-living-before-20261115-190412",
+  "sixLivingDocs": {
+    "CODEX_HANDOFF.md": {
+      "backupSha256": "4ce9348305cfd744e9c6e35fb0b91679e5862af3388e05c2c39652d731ea132f",
+      "originalSuffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "backupSha256": "a8c87412b04488f1f76a716e4457edd3d3d6301f629a42bb7a9b73d98a6765e3",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "backupSha256": "adfd6dc850e769b306c6954c2e995edc89ccd5b907d3d32c494990293246c272",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "backupSha256": "db709e68eb6b6106ad80191bf896dee221d4aa1738c380691839c4aba4de11e0",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "backupSha256": "a9412e1f67fa43b4585e3d556fb1c4e480fe2f69777d98f1d30b87fbfdbb98fc",
+      "originalSuffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "backupSha256": "ce9d03cecf96811564e8bea55305aed01972fe7304747d0288f850b2a0b420d1",
+      "originalSuffixPreserved": true
+    }
+  },
+  "noStagingCommitOrManifestMint": true,
+  "environmentGoalMirrorMatchedBefore": true,
+  "originalDocumentsCheckoutUntouched": true,
+  "environmentGoalMirrorUpdated": true,
+  "demoOriginalBytesPreservedAfterRemovingSingleNewStep": true
+}

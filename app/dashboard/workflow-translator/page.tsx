@@ -64,7 +64,7 @@ export default function WorkflowTranslatorPage() {
         </h1>
         <p className="text-[15px] text-zinc-400 max-w-2xl leading-relaxed">
           Type what should happen. The translator drafts a structured workflow with allowed triggers and stage-only
-          actions. Axiom never auto-applies a workflow — your review is the deciding step.
+          actions. V19 never auto-applies a workflow — your review is the deciding step.
         </p>
       </div>
 

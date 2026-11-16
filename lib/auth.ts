@@ -16,6 +16,10 @@ import { evaluateSsoSignIn, type SsoSignInRepo } from "./identity/ssoSignInGate"
 import { ALL_ORG_ROLES } from "./identity/identityProviderResponder";
 import { claimOrganizationSeat, type OrganizationSeatClaimRepo } from "./billing/organizationSeatClaim";
 
+import { attestCanonicalIdentity, canonicalIdentity } from "./auth/canonicalIdentity";
+import { googleLinkContext } from "./auth/googleLinkContext";
+import { resolveGoogleIdentity } from "./auth/googleIdentity";
+
 const log = createLogger("auth.membershipBootstrap");
 
 // Helper: only register an OAuth provider when its env credentials are
@@ -67,7 +71,9 @@ function buildProviders(): NextAuthOptions["providers"] {
             errorCode: err instanceof Error && "code" in err ? (err as { code?: unknown }).code : undefined,
           });
         }
-        return { id: user.id, email: user.email, name: user.name, image: user.image };
+        const verifiedUser = { id: user.id, email: user.email, name: user.name, image: user.image };
+        attestCanonicalIdentity(verifiedUser, user, "credentials");
+        return verifiedUser;
       },
     }),
   ];
@@ -145,6 +151,12 @@ async function recordSignInDenied(input: { email: string; provider: string; reas
 
 export const authOptions: NextAuthOptions = {
   secret: process.env.NEXTAUTH_SECRET,
+  // Provider failures must not serialize tokens, profiles, cookies or native errors.
+  logger: {
+    error() { console.error("[NextAuth] provider_request_failed"); },
+    warn() { console.warn("[NextAuth] provider_configuration_warning"); },
+    debug() { /* Never emit provider payloads. */ },
+  },
   providers: buildProviders(),
   session: { strategy: "jwt", maxAge: 30 * 24 * 60 * 60 },
   // OAuth must honor the original callback so a newly created identity returns
@@ -152,10 +164,22 @@ export const authOptions: NextAuthOptions = {
   // A static new-user page would strand the browser outside Axiom Agent.
   pages: { signIn: "/auth/signin", error: "/auth/error" },
   callbacks: {
-    async signIn({ user, account }) {
-      // For OAuth/OIDC sign-ins (Google/GitHub/Cognito), ensure a User row
+    async signIn({ user, account, profile }) {
+      if (account?.provider === "google") {
+        const scope = googleLinkContext.getStore();
+        if (scope) scope.pendingCookie = ""; // A new attempt cannot reuse a prior Google-link intent.
+        try {
+          const result = await resolveGoogleIdentity(prisma, { profile, providerAccountId: account.providerAccountId, email: user.email });
+          if (result.kind === "recover") return "/auth/link-google";
+          attestCanonicalIdentity(user, result.user, "google", result.subject);
+          try { await ensurePersonalWorkspaceMembership({ userId: result.user.id, email: result.user.email }); }
+          catch { console.error("[NextAuth Google] membership_bootstrap_unavailable"); }
+          return true;
+        } catch { console.error("[NextAuth Google] identity_unavailable"); return "/auth/link-google?reason=unavailable"; }
+      }
+      // Google is qualified and subject-bound above. For GitHub/Cognito, ensure a User row
       // exists. Credentials provider handled inside its own authorize().
-      if (account?.provider === "google" || account?.provider === "github" || account?.provider === "cognito") {
+      if (account?.provider === "github" || account?.provider === "cognito") {
         if (!user.email) {
           // No email, no derivable tenant — nothing to scope an audit
           // record to, and nothing about an account/tenant to leak either
@@ -257,9 +281,12 @@ export const authOptions: NextAuthOptions = {
               await recordSignInDenied({ email: normalizedEmail, provider: account.provider, reasonCode: "sso.membership_store_unavailable" });
               return false;
             }
+            attestCanonicalIdentity(user, dbUser, account.provider, account.providerAccountId);
             return true;
           }
         }
+
+        attestCanonicalIdentity(user, dbUser, account.provider, account.providerAccountId);
 
         // Workspace membership bootstrap is a best-effort side effect, NOT
         // a sign-in gate. A transient failure here (e.g. a unique-constraint
@@ -285,26 +312,22 @@ export const authOptions: NextAuthOptions = {
       }
       return true;
     },
-    async jwt({ token, user }) {
-      // OAuth's `user.id` is provider-owned and must never become the
-      // platform user id. Resolve the canonical database id by email for
-      // every newly authenticated user and for legacy JWTs missing it.
-      const email = user?.email ?? token.email;
-      if (email && (user || !token.id)) {
-        try {
-          const dbUser = await prisma.user.findUnique({
-            where: { email: email.trim().toLowerCase() },
-            select: { id: true },
-          });
-          if (dbUser) token.id = dbUser.id;
-        } catch (error) {
-          console.error("[NextAuth jwt] user id lookup failed:", error);
-        }
+    async jwt({ token, user, account }) {
+      if (user) {
+        const provider = account?.provider ?? "credentials";
+        const identity = canonicalIdentity(user, provider, provider === "credentials" ? undefined : account?.providerAccountId);
+        if (!identity) throw new Error("canonical_identity_required");
+        token.id = identity.id;
+        token.sub = identity.id;
+        token.email = identity.email;
+        token.identityVersion = 1;
       }
+      if (token.identityVersion !== 1 || typeof token.id !== "string" || !token.id) throw new Error("canonical_identity_required");
       return token;
     },
     session({ session, token }) {
-      if (session.user) (session.user as { id?: string }).id = token.id as string;
+      if (token.identityVersion !== 1 || typeof token.id !== "string" || !token.id) throw new Error("canonical_identity_required");
+      if (session.user) (session.user as { id?: string }).id = token.id;
       return session;
     },
   },

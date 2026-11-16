@@ -203,7 +203,7 @@ function AzureEnrollmentWorkspace({ identity }: {
         const next = owner.current.authoritative.map(row => row.id === account.id ? returned : row);
         owner.current.authoritative = next;
         setAccounts(next);
-        setNotice("Axiom's stored Azure credential was removed. The Azure service principal, its grants, and previously issued tokens were not revoked.");
+        setNotice("V19's stored Azure credential was removed. The Azure service principal, its grants, and previously issued tokens were not revoked.");
     }
     const inputClass = "mt-1 w-full rounded-lg border border-white/15 bg-black/20 px-3 py-2 text-sm text-zinc-200";
     return <section className="mt-6 rounded-xl border border-white/10 p-5" aria-label="Azure read-only connection">
@@ -216,7 +216,7 @@ function AzureEnrollmentWorkspace({ identity }: {
       <label className="text-xs text-zinc-400">Azure subscription ID<input className={inputClass} value={subscriptionId} onChange={event => setSubscriptionId(event.target.value)}/></label>
       <label className="text-xs text-zinc-400">Azure client ID<input className={inputClass} value={clientId} onChange={event => setClientId(event.target.value)}/></label>
       <label className="text-xs text-zinc-400">Azure client secret<input type="password" autoComplete="new-password" className={inputClass} value={secret} onChange={event => setSecret(event.target.value)}/></label>
-      <p className="text-xs text-zinc-500 sm:col-span-2">The secret is sent only to Axiom&apos;s backend encrypted vault. It clears after submission and is not saved in desktop settings. Subscription read validation does not verify a Reader-only role assignment.</p>
+      <p className="text-xs text-zinc-500 sm:col-span-2">The secret is sent only to V19&apos;s backend encrypted vault. It clears after submission and is not saved in desktop settings. Subscription read validation does not verify a Reader-only role assignment.</p>
       <button disabled={busy} className="rounded-lg bg-white px-3 py-2 text-xs font-semibold text-black disabled:opacity-50">{busy ? "Working…" : "Validate & connect Azure"}</button>
     </form>}
     {canRead && <div className="mt-4 text-xs text-zinc-400" aria-live="polite">{catalogStatus === "loading" ? "Checking Azure connections…" : catalogStatus === "ready" && accounts.length === 0 ? "No service-recorded Azure connections were returned." : catalogStatus === "error" && accounts.length > 0 ? "Previously recorded connections are shown. Refresh to verify their current state." : null}</div>}

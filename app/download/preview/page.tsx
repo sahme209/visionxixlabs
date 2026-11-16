@@ -7,8 +7,8 @@ import { Footer } from "@/components/Footer";
 import { readDesktopRuntimeReadiness } from "@/lib/desktop/desktopRuntimeReadiness";
 
 export const metadata: Metadata = {
-  title: "Installer availability — Axiom Agent",
-  description: "Check the current release manifest and platform-specific installer status for Axiom Agent.",
+  title: "Installer availability — V19",
+  description: "Check the current release manifest and platform-specific installer status for V19 Agent.",
 };
 
 interface DownloadPreviewPageProps {

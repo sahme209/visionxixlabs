@@ -9,7 +9,7 @@ afterEach(() => cleanup());
 it("labels itself as illustrative and explains the whole flow without WebGL", () => {
   render(createElement(GovernedDeploymentModel));
   expect(screen.getByText(/Illustrative model · not a live deployment/)).toBeTruthy();
-  expect(screen.getByRole("heading", { level: 2, name: "How a governed deployment moves through Axiom" })).toBeTruthy();
+  expect(screen.getByRole("heading", { level: 2, name: "How a governed deployment moves through V19" })).toBeTruthy();
   const stages = within(screen.getByRole("list", { name: "Stages in this scenario" })).getAllByRole("listitem");
   expect(stages).toHaveLength(8);
   expect(stages[7].textContent).toMatch(/Audit and recovery/);
