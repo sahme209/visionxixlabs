@@ -1,0 +1,4 @@
+{
+  "bad": "Software\\\\{{manufacturer}}\\\\Axiom Agent",
+  "good": "Software\\\\{{manufacturer}}\\Axiom Agent"
+}

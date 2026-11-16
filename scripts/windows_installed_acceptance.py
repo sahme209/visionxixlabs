@@ -34,7 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TARGET = "x86_64-pc-windows-msvc"
 REVIEWED_MANIFEST = "docs/recovery/2026-11-15/windows-installed-preparation/REVIEWED-FILES.json"
 V19_NSIS_TEMPLATE_SHA256 = "5179b482dc60961a42e9bc82509ba46c8c3c21d9f6235000d61214f6573117eb"
-V19_MSI_TEMPLATE_SHA256 = "ae4a893f66d1f8e9582ac919e021ee7bd945156a1d6cd0cf45af3c53f3348ec2"
+V19_MSI_TEMPLATE_SHA256 = "9e198939c29168e771242433f6680c60b33e68242daa6529169bc22ac250fa7c"
 LEGACY_MSI_UPGRADE_CODE = "a3c7da37-1792-51f2-8b3a-8848b1b33f88"
 TOOL_NAMES = ("node.exe", "cargo.exe", "rustc.exe", "pwsh.exe", "msiexec.exe", "git.exe")
 

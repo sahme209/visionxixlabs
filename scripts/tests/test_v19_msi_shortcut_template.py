@@ -24,6 +24,18 @@ class ShortcutTemplate(unittest.TestCase):
   tree=self.tree();search=tree.find('.//w:Property[@Id="INSTALLDIR"]',NS).findall('w:RegistrySearch',NS);self.assertEqual([x.attrib['Id'] for x in search],['V19LegacyInstallDirNoName','V19LegacyInstallDirWithName','PrevInstallDirNoName','PrevInstallDirWithName'])
   self.assertTrue(all(x.attrib['Key'].endswith('Axiom Agent') for x in search[:2]));self.assertTrue(all('{{product_name}}' in x.attrib['Key'] for x in search[2:]));self.assertEqual(tree.find('.//w:Component[@Id="Path"]',NS).attrib['Guid'],'{{path_component_guid}}')
   config=json.loads((ROOT/'desktop/src-tauri/tauri.conf.json').read_text());self.assertEqual(config['bundle']['windows']['wix'],{'upgradeCode':'a3c7da37-1792-51f2-8b3a-8848b1b33f88','template':'windows/main.wxs'})
+ def test_legacy_literal_registry_suffix_has_no_empty_key_segment(self):
+  # Template expressions use upstream escaping; literal registry suffixes must
+  # not contain doubled separators (an empty RegLocator key segment). This is
+  # a source contract; actual rendered WiX linking is validated separately.
+  searches=self.tree().find('.//w:Property[@Id="INSTALLDIR"]',NS).findall('w:RegistrySearch',NS)
+  old_searches=ET.fromstring(UPSTREAM.read_text()).find('.//w:Property[@Id="INSTALLDIR"]',NS).findall('w:RegistrySearch',NS)
+  for current,original in zip(searches[2:],old_searches):self.assertEqual(current.attrib['Key'],original.attrib['Key'])
+  for search in searches[:2]:
+   prefix,suffix=search.attrib['Key'].rsplit('}}',1)
+   self.assertEqual(prefix+'}}',old_searches[0].attrib['Key'].split('}}',1)[0]+'}}')
+   self.assertTrue(suffix.startswith(chr(92)))
+   self.assertEqual(suffix[1:].split(chr(92)),['Axiom Agent'])
  def test_observed_legacy_condition_cannot_be_repaired_by_component_guid_rotation(self):
   # Evaluate actual package action conditions with the major-upgrade premises;
   # component GUIDs are absent from this scheduling decision.

@@ -1,0 +1,30 @@
+✔ actual owned PG exact verifier states fit closed projected reader (0.825208ms)
+✔ apply refuses wrong statement count (0.103708ms)
+✔ apply refuses nonempty apply row (0.048125ms)
+✔ apply refuses wrapped capRows shape (0.038458ms)
+✔ verify refuses missing field (0.09975ms)
+✔ verify refuses extra field (0.070209ms)
+✔ verify refuses unbounded count (0.054625ms)
+✔ verify refuses wrong boolean (0.383334ms)
+✔ verify refuses unknown enum (0.071375ms)
+✔ envelope error truncation extra blocks and contradictory mirrors refuse (0.153584ms)
+✔ generated actual V8-like coordinator exact two calls and one-use replay (1.640833ms)
+✔ applyError runs only one readonly verification and stops (0.809375ms)
+✔ applyMalformed runs only one readonly verification and stops (0.431542ms)
+✔ verify failure retains accepted apply prefix in stored state and safe output (0.380084ms)
+✔ baseline after refused apply remains a stop, never automatic retry (0.608709ms)
+✔ contradictory success enum cannot mark incorrect counts accepted (0.508375ms)
+✔ diagnostic recognizes every exact source GIM literal and no unknown/error values (0.504041ms)
+✔ diagnostic only emits closed source literals; suffix lookalike refuses and multiple matches ambiguous (0.055ms)
+✔ MCP failure shape preserves fixed flags/known guard without raw content or keys (0.047542ms)
+✔ diagnostic scanning bounded; never emits large unknown data (0.216916ms)
+✔ applyGuardError literal retains known guard/prefix through readonly verification failure (0.547083ms)
+✔ applyGuardBody literal retains known guard/prefix through readonly verification failure (0.403ms)
+ℹ tests 22
+ℹ suites 0
+ℹ pass 22
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39.943125

@@ -1,0 +1,19 @@
+{
+  "APPLY-FILES.json": "01034a74c13ea94b98a66fc771ddef824d7c10ceb3e07723e05111da01999728",
+  "DEMO-PRESERVATION.json": "329dde0e6fff924644e582aa8fecd9a607620183da5ecbcc4ecb3297f243b650",
+  "DOC-PRESERVATION.json": "d605525ab515cdfc6379adba24fb73239c6fdcb81112653a50b95792c4767b4d",
+  "GREEN.log": "62cfbeb2911bb226088bfb0918eb4b05008ea70b20bce854ee2ca8a564bd37a5",
+  "OBSERVED-RESULT.json": "70f53d8e387391a873bd630d39fc7e924b605b013f648973bea6ca99ddacafd1",
+  "PATCH.json": "ce0ca9981c1970fc3f0b85e5c6ea440798d6213471b3cc18393bbb28c76d2bcd",
+  "QUICK-ACTUAL-RESULT.json": "2c9f805662d135622758de2db414efb9ccbea2be507177ab8414cf18099329cd",
+  "RED.log": "1b2783fa3bc078cdab2990378e27226a939db459bddf9daa82671aa907aa0e56",
+  "RESULT.md": "676f236d08e301a238eccacb3618de5f386dfa8fd4afc9dff819904023b9b372",
+  "REVIEW.md": "5663a2d891e2520aa83b3b4b133751bac37c96722715facb2d2befee7102620b",
+  "quick/.github/workflows/windows-msi-byte-diagnostic.yml": "fbe058a33b2d527563dd6950f4fe089f54d2508a4f82793e9616a48dc3bef351",
+  "quick/QUICK-APPLY-FILES.json": "ca3867e63a3e9977cfb46b5b98f512d96f9b801ec7bded8e0ab137743d532d22",
+  "quick/scripts/registry-render-cases.json": "3c49500d7dce1ec216ef0e63e9763e98dd911ebbf81c077284bfad14b0971417",
+  "quick/scripts/windows-registry-wix-inputs.json": "b73512f98003972c46b35d4468ac54095eac90e4a0f6c657c57aa4f3f8fb98d5",
+  "quick/scripts/windows_registry_wix_diagnostic.py": "3bb0fb282e8d9fb274a81f0b988f84af5e39b40c087576ef00735b876a951ed4",
+  "upstream/PROVENANCE.json": "6eb3c2ccafd5697995c9ceb95ec7bc9f8060f3b139b884da96687b27329e3f12",
+  "upstream/handlebars-lock-fragment.txt": "3df6e75982a82a012603993530ca3c40f64fa911ed6aa5000cab4e03ed66590f"
+}

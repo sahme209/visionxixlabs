@@ -1,0 +1,55 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/v19-google-exact-verifier-owned-pg17-de2jjj2w",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.332,
+      "logSha256": "5d4ad713ff32c85c499d94da9204820d2381cebfd2a675c05b0ed5b28f1e73e4"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "c96ea9931721b18826073bd25339bb9e7e628683e7578a04522049ee1d338c2b"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.111,
+      "logSha256": "040b393ac36a5e51e5814ee3c8f66116c3ea2102db563af04519ee933f5d1542"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.055,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "owned-migration",
+      "exit": 0,
+      "seconds": 0.159,
+      "logSha256": "ec81e40fae29f2fef95d593f52cd20ad5c62ea1a085aa2d672167fd0d15ed934"
+    }
+  ],
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

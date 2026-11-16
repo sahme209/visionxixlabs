@@ -1,0 +1,26 @@
+.F....
+======================================================================
+FAIL: test_legacy_literal_registry_suffix_has_no_empty_key_segment (__main__.ShortcutTemplate)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/private/tmp/v19-msi-legacy-registry-path-repair/scripts/tests/test_v19_msi_shortcut_template.py", line 38, in test_legacy_literal_registry_suffix_has_no_empty_key_segment
+    self.assertEqual(suffix[1:].split(chr(92)),['Axiom Agent'])
+AssertionError: Lists differ: ['', 'Axiom Agent'] != ['Axiom Agent']
+
+First differing element 0:
+''
+'Axiom Agent'
+
+First list contains 1 additional elements.
+First extra element 1:
+'Axiom Agent'
+
+- ['', 'Axiom Agent']
+?  ----
+
++ ['Axiom Agent']
+
+----------------------------------------------------------------------
+Ran 6 tests in 0.002s
+
+FAILED (failures=1)

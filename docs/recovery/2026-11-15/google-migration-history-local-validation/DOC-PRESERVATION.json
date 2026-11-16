@@ -1,0 +1,42 @@
+{
+  "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z",
+  "files": [
+    {
+      "path": "CODEX_HANDOFF.md",
+      "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z/CODEX_HANDOFF.md",
+      "oldSha256": "9b47951422d165283f2a0b7d4a5de046172aefbaab03b64f082c1f1aad47b830",
+      "suffixPreserved": true
+    },
+    {
+      "path": "CLAUDE.md",
+      "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z/CLAUDE.md",
+      "oldSha256": "f3b0594d3a8239316ad6256b9aa1fc3f3b10489d8644d29a0eba35030b04c20c",
+      "suffixPreserved": true
+    },
+    {
+      "path": "docs/product/axiom-master-action-plan.md",
+      "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z/docs/product/axiom-master-action-plan.md",
+      "oldSha256": "1a7d1476e4c425d5756658dcf746e5c660a19c5924f5ebfe463122cc37330a8d",
+      "suffixPreserved": true
+    },
+    {
+      "path": "docs/product/current-execution-board.md",
+      "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z/docs/product/current-execution-board.md",
+      "oldSha256": "6217e58b63a3e615bac8af0d82567252b7d8cca4f435e9038ff5a2617aa617ba",
+      "suffixPreserved": true
+    },
+    {
+      "path": "docs/product/remaining-work.md",
+      "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z/docs/product/remaining-work.md",
+      "oldSha256": "e2b9fd44c3787c623435def7e87eda26b05bfdfb49e95b9d917de7b7f6fcff6d",
+      "suffixPreserved": true
+    },
+    {
+      "path": "docs/product/codex-resume-goal.md",
+      "backup": "/private/tmp/v19-history-verified-docs-20261116T020503Z/docs/product/codex-resume-goal.md",
+      "oldSha256": "f624f6d90bbbec92b2fd97780992cb38722866329ef6b4fdc7e90a9c0c6fb295",
+      "suffixPreserved": true
+    }
+  ],
+  "goalMirrorMatches": true
+}

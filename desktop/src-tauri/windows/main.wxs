@@ -503,8 +503,8 @@ End Sub
         <Property Id="INSTALLDIR">
           <!-- Rebrand fallback: retain the registered legacy application's keypath.
                Current V19 searches below still win when both registrations exist. -->
-          <RegistrySearch Id="V19LegacyInstallDirNoName" Root="HKCU" Key="Software\\{{manufacturer}}\\Axiom Agent" Type="raw" />
-          <RegistrySearch Id="V19LegacyInstallDirWithName" Root="HKCU" Key="Software\\{{manufacturer}}\\Axiom Agent" Name="InstallDir" Type="raw" />
+          <RegistrySearch Id="V19LegacyInstallDirNoName" Root="HKCU" Key="Software\\{{manufacturer}}\Axiom Agent" Type="raw" />
+          <RegistrySearch Id="V19LegacyInstallDirWithName" Root="HKCU" Key="Software\\{{manufacturer}}\Axiom Agent" Name="InstallDir" Type="raw" />
           <!-- First attempt: Search for the default key value (this is how the nsis installer stores the path) -->
           <RegistrySearch Id="PrevInstallDirNoName" Root="HKCU" Key="Software\\{{manufacturer}}\\{{product_name}}" Type="raw" />
 
