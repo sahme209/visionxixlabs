@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { createRequire } from 'node:module';
+import ts from 'typescript';
 import { encode, getToken } from 'next-auth/jwt';
 import { readFileSync } from 'node:fs';
 import { assessCompiledProductGate, PRODUCT_CASES, runOwnedGateCommand, assessFictionalProductDownload } from '../../../scripts/check-compiled-product-journeys.mjs';
@@ -69,6 +70,20 @@ describe('mandatory compiled product gate',()=>{
   const {parse}=createRequire(process.cwd()+'/package.json')('cookie');
   const actual=await getToken({req:{headers:{cookie},cookies:parse(cookie)} as never,secret,secureCookie:false});
   expect(actual).toMatchObject({id:'owned-verified',identityVersion:1});
+ });
+ it('waits for final TCP PostgreSQL rather than the temporary socket-only init server',()=>{
+  const source=readFileSync('scripts/check-compiled-product-journeys.mjs','utf8');
+  const readiness=(text:string)=>{
+   const ast=ts.createSourceFile('gate.mjs',text,ts.ScriptTarget.Latest,true,ts.ScriptKind.JS);const found:string[][]=[];
+   const visit=(node:ts.Node)=>{if(ts.isCallExpression(node)&&node.expression.getText(ast)==='command'&&node.arguments[0]?.getText(ast)==="'docker'"&&node.arguments[1]&&ts.isArrayLiteralExpression(node.arguments[1])){
+    const args=node.arguments[1].elements.map(x=>ts.isStringLiteral(x)?x.text:ts.isIdentifier(x)&&x.text==='name'?'owned-container':'UNSUPPORTED');
+    if(args.includes('pg_isready'))found.push(args);
+   }ts.forEachChild(node,visit)};visit(ast);expect(found).toHaveLength(1);return found[0];
+  };
+  const expected=['exec','owned-container','pg_isready','-h','127.0.0.1','-p','5432','-U','axiom_local_fixture'];
+  expect(readiness(source)).toEqual(expected);
+  const socketOnly=source.replace(",'pg_isready','-h','127.0.0.1','-p','5432'",",'pg_isready'");
+  expect(readiness(socketOnly)).not.toEqual(expected);
  });
  it('runs once after the existing production build inside the existing required build job',()=>{
   const workflow=readFileSync('.github/workflows/test.yml','utf8');

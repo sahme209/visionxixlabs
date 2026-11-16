@@ -112,5 +112,35 @@
     "source": "/private/tmp/v19-required-product-native-independent-bound-review.json",
     "sha256": "a1ac60485427231b8dc21f35d4d2a91cda436c4f413f82fc84416014ad23a945",
     "bytes": 887
+  },
+  {
+    "copy": "FIRST-DOCKER-GATE-FAILED.json",
+    "source": "/private/tmp/v19-pr346-first-docker-gate-result.json",
+    "sha256": "6be2cfed98fdcb2e88078b820da721f6fcbb073f6f3fba0c6b814f5f226faaaf",
+    "bytes": 6081
+  },
+  {
+    "copy": "READINESS-PROTOCOL-RESULT.json",
+    "source": "/private/tmp/v19-postgres-readiness-repair/RESULT.json",
+    "sha256": "eb02ff74c2b9b176a279dbc21bccee422b43e4f510102ef6929ae941af46fbd2",
+    "bytes": 1327
+  },
+  {
+    "copy": "READINESS-PROBE-INPUTS.json",
+    "source": "/private/tmp/v19-postgres-readiness-repair/PROBE-INPUTS.json",
+    "sha256": "8dc864dc11dda9d5c8f1418f636aedf5dec3379811b76ab1de4549fec5ebfd4f",
+    "bytes": 482
+  },
+  {
+    "copy": "READINESS-SOURCE-INPUTS.json",
+    "source": "/private/tmp/v19-postgres-readiness-repair/SOURCE-INPUTS.json",
+    "sha256": "dfa1e18b212ecc36a2fa9982b522907f9fe58aaf5d12b9d0f26421cebd8ccb52",
+    "bytes": 459
+  },
+  {
+    "copy": "READINESS-PROBE.py",
+    "source": "/private/tmp/v19-postgres-readiness-repair/probe.py",
+    "sha256": "c32fcbd2e9a7a52907a0b4ef766767e9c5fded248033ef4418251a9bef08ce26",
+    "bytes": 4220
   }
 ]

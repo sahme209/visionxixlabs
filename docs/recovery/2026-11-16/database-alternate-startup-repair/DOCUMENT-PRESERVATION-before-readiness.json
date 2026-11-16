@@ -1,0 +1,68 @@
+{
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/CODEX_HANDOFF.md",
+      "sha256": "618ee800bd3df75cb62decc112551a10831e43add3e982b3b4bbd4d7e97edb4c",
+      "bytes": 437220,
+      "gitBlob": "e3f9a82b834e33b42218e9f2be86e33f3972f83e",
+      "previousQualificationPrefixBackup": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033/CODEX_HANDOFF.md",
+      "previousQualificationSha256": "8f5a8a8852de66fd238f5d1e78bad7533949155751b2720eccba61fbd4b99d52",
+      "afterSha256": "f5837faa922807e8a910b8f7b0db7af3401463df4eb96b616df50c8b550f4fd5",
+      "historicalSuffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/CLAUDE.md",
+      "sha256": "ccdf2a9764cc49d15db223bc27d874bf27f5c81659fa7b4ee196356c56d8b2d1",
+      "bytes": 192483,
+      "gitBlob": "2c6f43bc47528e723d7790fad0c4ef3930e732d6",
+      "previousQualificationPrefixBackup": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033/CLAUDE.md",
+      "previousQualificationSha256": "11dfb2a3b670922b4cc91e997437d45b45883e60eaad7f235f734feb500eec8b",
+      "afterSha256": "b81c17f01621d821b1c3da006778c9532e310c60a41ad57227c248e8d1a00ee5",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/axiom-master-action-plan.md",
+      "sha256": "2d7beb06b9e20e62321a16aa48df19932d00ce17787c5a1929fe638209214b40",
+      "bytes": 631448,
+      "gitBlob": "443b5091475118cee4f679415bad177cbf691408",
+      "previousQualificationPrefixBackup": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033/docs/product/axiom-master-action-plan.md",
+      "previousQualificationSha256": "8e1b5856501537239e5c85a4095bddc44614bfba954994e00f13554a3f91a9f8",
+      "afterSha256": "cdbca614f6dfbbbd42b5948f40698949b2d6e3fa42ba2d0d156f3fcbf0941a20",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/current-execution-board.md",
+      "sha256": "fabde8fe571f2272769883d2d88406e078d9010beb113bd5754f0327c0e50905",
+      "bytes": 560424,
+      "gitBlob": "be534a9e6a46271e307c672f8729c13f5b7fd7c5",
+      "previousQualificationPrefixBackup": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033/docs/product/current-execution-board.md",
+      "previousQualificationSha256": "db8f19dfef6d0621a89aa885d5b64f4906b7e0234657d3199fc793380e2e29bb",
+      "afterSha256": "66081e4650a11cd5c538065cfa4da1655ff1aacad3ea7b1162e7879712b10607",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/remaining-work.md",
+      "sha256": "6dc3be5abe15ab302e94dcdfbc60d55cc2e6c4d6338c154d0223fb29fb07ac63",
+      "bytes": 547447,
+      "gitBlob": "746a6d09bbbc3a62232529c3448db5f57b4c6b4a",
+      "previousQualificationPrefixBackup": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033/docs/product/remaining-work.md",
+      "previousQualificationSha256": "ed1fa09128272cd3c5aedeaac30eaa963662de465b35a61322370698ed532555",
+      "afterSha256": "6a169d7af6a7cc26d61663738e612885afce205ad525dd513a60599ea9047e27",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/codex-resume-goal.md",
+      "sha256": "5a90feaee8c6e7414af04919be2bcf401a2764d9676c37f10768192d5b3d4968",
+      "bytes": 356569,
+      "gitBlob": "15c7697b84b8c96d4d68dc67e4c98f5d4e9113e0",
+      "previousQualificationPrefixBackup": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033/docs/product/codex-resume-goal.md",
+      "previousQualificationSha256": "bfba76a1667bc631a55bcd9134bddc25c446823b23f3a8670f95de73377447ca",
+      "afterSha256": "6275f1b3f902cdf91d0c9f5d525a9b0e75955ba70a971c888f13d440922c0d4f",
+      "historicalSuffixPreserved": true
+    }
+  },
+  "previousPreservationSha256": "722344e9b6c8e35491ede943c6a378c9d5e1a65e6ab0660a02cd3690edc0f816",
+  "compiledClosureBackupRoot": "/private/tmp/v19-startup-all-paths-living-compiled-before-20261116-171033",
+  "goalMirrorPath": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/product/codex-resume-goal.md",
+  "goalMirrorByteMatches": true
+}

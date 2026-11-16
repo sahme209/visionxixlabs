@@ -1,0 +1,46 @@
+{
+  "accepted": true,
+  "failure": null,
+  "scope": "native PostgreSQL17 readiness protocol only, not Docker or app/TLS acceptance",
+  "phases": [
+    {
+      "phase": "version",
+      "exit": 0,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "logSha256": "d0c88f4e40ebe662b1676a3503990fafc864a5b38e17e8ccdee0ce4494bb6265"
+    },
+    {
+      "phase": "old-socket-ready",
+      "exit": 0,
+      "logSha256": "896f32ec1bde6271986ab3b70c175b59bfc14ae540f29b672949d68e4ae70c8f"
+    },
+    {
+      "phase": "corrected-tcp-not-ready",
+      "exit": 2,
+      "logSha256": "ef6f8673613bd05caab6669ed5484aa4547ad3af829304fb111d2b298addd01a"
+    },
+    {
+      "phase": "corrected-tcp-ready",
+      "exit": 0,
+      "logSha256": "ab44fd20fc1efef81a71e42769165df064e77d8568534d91adfdd04b1436c439"
+    },
+    {
+      "phase": "stopped-not-ready",
+      "exit": 2,
+      "logSha256": "ef6f8673613bd05caab6669ed5484aa4547ad3af829304fb111d2b298addd01a"
+    }
+  ],
+  "socketOnlyOldReady": true,
+  "socketOnlyTcpRefused": true,
+  "finalTcpReady": true,
+  "stoppedTcpRefused": true,
+  "sqlQueries": 0,
+  "appBuild": false,
+  "ownedGroupsEmpty": true,
+  "clusterRemoved": true,
+  "ownedDirectory": "/private/tmp/axiom-readiness-proof-cvrob98x"
+}

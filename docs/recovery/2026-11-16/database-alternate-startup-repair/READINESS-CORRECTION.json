@@ -1,0 +1,24 @@
+{
+  "head": "54f5d7c4cdab79e9bf7c68f1a7593b1edd21f4c4",
+  "sourceChange": "Only Docker readiness arguments add -h 127.0.0.1 -p 5432; one focused regression test",
+  "failure": "First required Docker run failed HTTP direct admin_connect ECONNRESET after four compiled wire cases passed; source/cleanup remained confirmed",
+  "readinessDefect": "Socket-only temporary init server can satisfy default pg_isready before it stops; final TCP selection prevents that confirmed false-positive readiness",
+  "officialSourceObservedByRoot": "https://raw.githubusercontent.com/docker-library/postgres/master/docker-entrypoint.sh",
+  "officialSourceScope": "Observed current source concept listen_addresses empty for docker_temp_server_start; no immutable source hash claim",
+  "actualNativeProtocol": {
+    "oldSocketReadyExit": 0,
+    "temporaryTcpExit": 2,
+    "finalTcpExit": 0,
+    "stoppedTcpExit": 2,
+    "sqlQueries": 0,
+    "ownedGroupsEmpty": true,
+    "clusterRemoved": true
+  },
+  "focusedTestsPassed": 14,
+  "strictRootTypesExit": 0,
+  "sameAppBackendAndCompiledArtifact": true,
+  "productRebuild": false,
+  "correctedDockerGate": "PENDING_CI",
+  "realGoogle": "UNVERIFIED",
+  "productionFixVerified": false
+}
