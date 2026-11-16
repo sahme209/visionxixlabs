@@ -93,6 +93,9 @@ jobs:
               # Classification only; bounded head/tail never appears in the output.
               text=stderr.decode('utf-8',errors='replace') if isinstance(stderr,bytes) else stderr if isinstance(stderr,str) else ''
               text=text if len(text)<=65536 else text[:32768]+'\n'+text[-32768:]
+              if re.search(r'(?i)\bHTTP\s+status(?:\s+code)?\s*:\s*403\b',text):
+                  if re.search(r'(?i)\binvalid or inaccessible developer team id\b',text):return result('http_403_team_access',exit_code,tool_available=True)
+                  if re.search(r'(?i)\ba required agreement is missing or has expired\b',text):return result('http_403_agreement',exit_code,tool_available=True)
               rules=[
                   ('tool_unavailable',r'(?im)^xcrun: error: (?:unable to find utility ["\x27]notarytool["\x27]|invalid active developer path)'),
                   ('usage',r'(?im)^\s*USAGE:\s*(?:xcrun|notarytool|history)\b'),
