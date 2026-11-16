@@ -33,6 +33,65 @@ class WindowsAcceptancePreparation(unittest.TestCase):
             self.assertIn(('INSTALLDIR=' if case=='msi-major-upgrade' else '/D=')+expected,plan['oldInstall'])
             self.assertIn(('INSTALLDIR=' if case=='msi-major-upgrade' else '/D=')+expected,plan['candidateUpgrade'])
 
+    def test_only_exact_reviewed_msi_template_can_enter_existing_webview_recipe(self):
+        import json
+        root=SOURCE.parents[1]
+        config=json.loads((root/'desktop/src-tauri/tauri.conf.json').read_text())
+        candidate.validate_webview_configuration(config,root)
+        with tempfile.TemporaryDirectory() as folder:
+            fixture=Path(folder);windows=fixture/'desktop/src-tauri/windows';windows.mkdir(parents=True)
+            (windows/'installer.nsi').write_bytes((root/'desktop/src-tauri/windows/installer.nsi').read_bytes())
+            template=windows/'main.wxs';template.write_bytes((root/'desktop/src-tauri/windows/main.wxs').read_bytes())
+            candidate.validate_webview_configuration(config,fixture)
+            template.write_bytes(template.read_bytes()+b'changed')
+            with self.assertRaisesRegex(RuntimeError,'unreviewed_webview_configuration'):candidate.validate_webview_configuration(config,fixture)
+            changed=json.loads(json.dumps(config));changed['bundle']['windows']['wix']['template']='windows/foreign.wxs'
+            with self.assertRaisesRegex(RuntimeError,'unreviewed_webview_configuration'):candidate.validate_webview_configuration(changed,root)
+
+    def run_msi_returncheck_fixture(self,wrong_reason=False,foreign_changed=False):
+        import json
+        import windows_upgrade_acceptance as upgrade
+        with tempfile.TemporaryDirectory() as folder:
+            base=Path(folder);installer=base/'candidate.msi';installer.write_bytes(b'candidate');calls=[];receipt={}
+            fixture={'sha256':'a'*64,'path':r'C:\Users\Public\Desktop\V19.lnk','target':r'C:\owned\synthetic-foreign-target.exe'}
+            class Runner:
+                deadline=10**12;output=base
+                def run(self,label,args,cwd,limit,**kwargs):
+                    calls.append((label,args,kwargs))
+                    if label=='msi-returncheck-fixture-create':return json.dumps(fixture)
+                    if label=='msi-returncheck-refusal':
+                        self_outer.assertEqual(kwargs['allow'],(1603,))
+                        Path(args[-1]).write_bytes(('Action: V19ShortcutPreflight\n'+('Missing engine' if wrong_reason else 'V19 shortcut migration: Foreign shortcut preserved')).encode('utf-16-le'))
+                    if label.endswith('fixture-preserved') or label.endswith('cleanup-proof'):return json.dumps({'preserved':not foreign_changed})
+                    if label=='msi-returncheck-fixture-cleanup':return json.dumps({'removed':True})
+                    return ''
+            self_outer=self
+            def snapshot(*args):
+                state={'products':[],'shortcuts':[],'protocolCommands':[],'ownedPayloads':[]}
+                if args[-1]=='msi-returncheck-refused-state':state['shortcuts']=[{'path':fixture['path'],'target':fixture['target'],'arguments':''}]
+                return state
+            with patch.object(candidate,'product_state',return_value=-1),patch.object(candidate,'upgrade_snapshot',side_effect=snapshot):
+                if wrong_reason or foreign_changed:
+                    with self.assertRaises(RuntimeError):candidate.msi_shortcut_returncheck(Runner(),{'pwsh.exe':'fixed','msiexec.exe':'fixed'},base,installer,{'sha256':candidate.digest(installer),'ProductCode':'{NEW}'},['{OLD}','{NEW}'],receipt)
+                else:candidate.msi_shortcut_returncheck(Runner(),{'pwsh.exe':'fixed','msiexec.exe':'fixed'},base,installer,{'sha256':candidate.digest(installer),'ProductCode':'{NEW}'},['{OLD}','{NEW}'],receipt)
+            return calls,receipt['msiShortcutReturncheck']
+
+    def test_actual_msi_returncheck_case_requires_fixed_error_foreign_preservation_and_cleanup(self):
+        calls,row=self.run_msi_returncheck_fixture()
+        self.assertTrue(row['returncheckVerified']);self.assertTrue(row['foreignLinkPreserved']);self.assertTrue(row['cleanupConfirmed'])
+        for label,args,_ in calls:
+            if 'fixture-' in label:
+                self.assertEqual(args[args.index('-DesktopKind')+1],'Public');self.assertEqual(args[args.index('-Slot')+1],'current')
+        self.assertIn('msi-returncheck-product-cleanup',[x[0] for x in calls])
+
+    def test_unrelated_msi_1603_cannot_qualify_shortcut_returncheck(self):
+        _,row=self.run_msi_returncheck_fixture(wrong_reason=True)
+        self.assertFalse(row['returncheckVerified']);self.assertTrue(row['cleanupConfirmed']);self.assertFalse(row['fixedOwnershipErrorObserved'])
+
+    def test_changed_foreign_shortcut_cannot_be_deleted_or_accepted_by_returncheck(self):
+        calls,row=self.run_msi_returncheck_fixture(foreign_changed=True)
+        self.assertFalse(row['returncheckVerified']);self.assertFalse(row['cleanupConfirmed']);self.assertNotIn('msi-returncheck-fixture-cleanup',[x[0] for x in calls])
+
     def test_unenrolled_controller_refuses_before_platform_or_account_access(self):
         with patch.object(candidate, "BUNDLER_RECIPE_REVIEWED", False):
             with self.assertRaisesRegex(RuntimeError, "acceptance_not_enrolled"):
@@ -360,7 +419,7 @@ class WindowsAcceptancePreparation(unittest.TestCase):
         import json
         with tempfile.TemporaryDirectory() as folder:
             root=Path(folder);path=root/candidate.REVIEWED_MANIFEST;path.parent.mkdir(parents=True)
-            required=['scripts/windows_installed_acceptance.py','scripts/windows_installer_metadata.ps1','.github/workflows/desktop-ci.yml','scripts/windows_upgrade_acceptance.py','scripts/windows_upgrade_snapshot.ps1','scripts/windows_shortcut_collision.ps1','scripts/windows_legacy_acquire.py','desktop/src-tauri/windows/installer.nsi','desktop/package-lock.json','desktop/src-tauri/Cargo.lock','desktop/src-tauri/tauri.conf.json','desktop/src-tauri/tests/windows_keyring_acceptance.rs']
+            required=['scripts/windows_installed_acceptance.py','scripts/windows_installer_metadata.ps1','.github/workflows/desktop-ci.yml','scripts/windows_upgrade_acceptance.py','scripts/windows_upgrade_snapshot.ps1','scripts/windows_shortcut_collision.ps1','scripts/windows_legacy_acquire.py','desktop/src-tauri/windows/installer.nsi','desktop/src-tauri/windows/main.wxs','desktop/src-tauri/windows/msi-shortcut-migration.vbs','scripts/windows_msi_shortcut_preflight.py','desktop/package-lock.json','desktop/src-tauri/Cargo.lock','desktop/src-tauri/tauri.conf.json','desktop/src-tauri/tests/windows_keyring_acceptance.rs']
             value={'schema':'axiom.windows-reviewed-files/1','files':{name:{'bytes':1,'sha256':'a'*64} for name in required}}
             path.write_text(json.dumps(value));binding={'manifestSha256':candidate.digest(path)}
             self.assertEqual(candidate.reviewed_manifest(binding,root),value['files'])

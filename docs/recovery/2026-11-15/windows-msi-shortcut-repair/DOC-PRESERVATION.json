@@ -1,0 +1,42 @@
+{
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "beforeSha256": "31c85e73cebc4ecd71af6ca718c7b111df3a676b29c1d4ab55c9dbc73fcf1a2d",
+      "afterSha256": "a36fa45f0f5f6f286bfd071247060dce8744b7c946a0b65da4ad26981799dd31",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z/CODEX_HANDOFF.md"
+    },
+    "CLAUDE.md": {
+      "beforeSha256": "180880bdb916ded4b86c8d4af209307f19542977ed8064d15396303b5b9e1026",
+      "afterSha256": "c30c5237e106f56b2421cd21923729d0685e911594b82a999b3d57c839d38679",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z/CLAUDE.md"
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "beforeSha256": "81eed869a1bcfb9ee4da84a9f4072223f23f7d4fe83cbac46b0705d78b48e254",
+      "afterSha256": "28fd26139256f3abc36cd149f11523e59976601806dbb920fc6f497e6e3c0e42",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z/docs/product/axiom-master-action-plan.md"
+    },
+    "docs/product/current-execution-board.md": {
+      "beforeSha256": "35de6a1d5a42523398190f0395d9d7c000f7d64c6facec13b9b5ef607bb3fa32",
+      "afterSha256": "c55fc6a568abd7bb072cbb0bc37e7d311f6bedd6fddd30a24f03f99f964dd957",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z/docs/product/current-execution-board.md"
+    },
+    "docs/product/remaining-work.md": {
+      "beforeSha256": "61589d4b5f246551481b3fbb9a0bcca5088b7dbf2cec4342eb707580be4bc070",
+      "afterSha256": "d30557eaff37c8718c793b9ef8d02e8bb0c7f2826c5190effb8d6f9576112ac3",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z/docs/product/remaining-work.md"
+    },
+    "docs/product/codex-resume-goal.md": {
+      "beforeSha256": "99752653a3c6f67292d487d8c030cc45d4cce6e05a58415db5a36ad9f215048c",
+      "afterSha256": "b56d2531962703b865d49c70033f756ec50568cc74f063c89e8beedf59ee3552",
+      "suffixPreserved": true,
+      "backup": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z/docs/product/codex-resume-goal.md"
+    }
+  },
+  "goalMirrorMatches": true,
+  "backupRoot": "/private/tmp/v19-msi-shortcut-docs-20261116T005534Z"
+}

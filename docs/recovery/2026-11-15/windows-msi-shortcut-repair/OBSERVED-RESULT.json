@@ -1,0 +1,246 @@
+{
+  "accepted": false,
+  "completeWindowsInstalledAcceptance": false,
+  "failureClass": "RuntimeError",
+  "failureCode": "upgrade_cleanup_incomplete",
+  "googlePairing": "NOT_RUN",
+  "installations": [
+    {
+      "expectedPayloadSha256": "18b4b7d6d1b73cdbde371f2ac6c210e889d8f8aec97055b88a6ccade396632aa",
+      "installConfirmed": true,
+      "installedMachine": "AMD64",
+      "installedPayloadBytes": 20215296,
+      "installedPayloadSha256": "18b4b7d6d1b73cdbde371f2ac6c210e889d8f8aec97055b88a6ccade396632aa",
+      "installedVersionMetadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "Application",
+        "bytes": 20215296,
+        "machine": "AMD64",
+        "sha256": "18b4b7d6d1b73cdbde371f2ac6c210e889d8f8aec97055b88a6ccade396632aa",
+        "signatureStatus": "NotSigned"
+      },
+      "installerSha256": "2b3b00234dc4c669a2bc3905b2a8c3c5ceb178a1a64b63af7c151e3b56a3cc59",
+      "kind": "msi",
+      "metadata": {
+        "ProductCode": "{97912E10-BCC8-4F34-883C-2F2E82DBE56D}",
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "UpgradeCode": "{A3C7DA37-1792-51F2-8B3A-8848B1B33F88}",
+        "artifactKind": "MsiInstaller",
+        "bytes": 7512064,
+        "machine": "AMD64",
+        "sha256": "2b3b00234dc4c669a2bc3905b2a8c3c5ceb178a1a64b63af7c151e3b56a3cc59",
+        "signatureStatus": "NotSigned"
+      },
+      "nativeTopLevelWindowObserved": true,
+      "protocolRegistered": true,
+      "uninstallConfirmed": true,
+      "visualAcceptance": "UNVERIFIED",
+      "webviewRuntimePreflight": {
+        "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+        "msiSeesInstalledRuntime": true,
+        "nsisSeesInstalledRuntime": true,
+        "runtimeInstallationPermitted": false,
+        "versions": {
+          "system-wow64": "131.0.2903.86"
+        },
+        "webviewRenderingVerified": false
+      }
+    },
+    {
+      "expectedPayloadSha256": "2097ec0a81df6c904260e7756ac2fce9a2e976082400a9f8283f0fd77788e9ef",
+      "installConfirmed": true,
+      "installedMachine": "AMD64",
+      "installedPayloadBytes": 20215296,
+      "installedPayloadSha256": "2097ec0a81df6c904260e7756ac2fce9a2e976082400a9f8283f0fd77788e9ef",
+      "installedVersionMetadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "Application",
+        "bytes": 20215296,
+        "machine": "AMD64",
+        "sha256": "2097ec0a81df6c904260e7756ac2fce9a2e976082400a9f8283f0fd77788e9ef",
+        "signatureStatus": "NotSigned"
+      },
+      "installerSha256": "19856de6a84a64915ddd0b73d9541342fe9d33143db280df9b688cc373c5a3bb",
+      "kind": "nsis",
+      "metadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "NsisInstaller",
+        "bytes": 5440939,
+        "machine": "I386",
+        "sha256": "19856de6a84a64915ddd0b73d9541342fe9d33143db280df9b688cc373c5a3bb",
+        "signatureStatus": "NotSigned"
+      },
+      "nativeTopLevelWindowObserved": true,
+      "ownedUninstallerRemovedAfterExit": true,
+      "protocolRegistered": true,
+      "uninstallConfirmed": true,
+      "visualAcceptance": "UNVERIFIED",
+      "webviewRuntimePreflight": {
+        "clientId": "{F3017226-FE2A-4295-8BDF-00C3A9A7E4C5}",
+        "msiSeesInstalledRuntime": true,
+        "nsisSeesInstalledRuntime": true,
+        "runtimeInstallationPermitted": false,
+        "versions": {
+          "system-wow64": "131.0.2903.86"
+        },
+        "webviewRenderingVerified": false
+      }
+    }
+  ],
+  "jobId": 133014151038,
+  "keyringCleanupConfirmed": true,
+  "ownedProcessCleanupConfirmed": true,
+  "published": false,
+  "rawResultSha256": "45391287eafc0d50fc539ff8f5b34f8a6d701a3bccbdb0cc23abf3316f3598fc",
+  "runId": 43779059806,
+  "schema": "axiom.windows-installed-validation/1",
+  "source": "79f4235a6c4ecb66ce23ade69a3aee6fa5e2220d",
+  "uiVisualAcceptance": "UNVERIFIED",
+  "upgradeAcceptance": "NOT_RUN",
+  "upgradeCycles": [
+    {
+      "candidateSha256": "2b3b00234dc4c669a2bc3905b2a8c3c5ceb178a1a64b63af7c151e3b56a3cc59",
+      "case": "msi-major-upgrade",
+      "cleanupConfirmed": false,
+      "expectedCollisionRefused": false,
+      "installKind": "msi",
+      "legacyInstalledPayloadSha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+      "legacySetupObservation": {
+        "component": {
+          "componentGuid": "{EB234B33-5646-54DC-BC0A-9794A161CA82}",
+          "componentKey": "Path",
+          "directoryProperty": "INSTALLDIR",
+          "fileName": "axiom-desktop.exe"
+        },
+        "componentPath": {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "application\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        },
+        "componentState": 3,
+        "directoryEntriesBounded": 2,
+        "installLocations": [
+          {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "application",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          }
+        ],
+        "installLog": {
+          "applicationFileMentioned": true,
+          "applicationFileOperationLines": 2,
+          "bytes": 109188,
+          "componentActionEnumOnly": true,
+          "componentActions": [],
+          "mainEngineReturnCodes": [
+            0,
+            0
+          ],
+          "present": true,
+          "properties": {
+            "ACTION": {
+              "isAll": false,
+              "isInstall": true,
+              "isOne": false,
+              "present": true
+            },
+            "INSTALLDIR": {
+              "insideOwnedRoot": true,
+              "matchesRequestedPath": true,
+              "outsideOwnedFileRead": false,
+              "ownedRelativePath": "application",
+              "physicalOwnedPathValidated": true,
+              "provided": true,
+              "regularFile": false
+            },
+            "REINSTALLMODE": {
+              "isAll": false,
+              "isInstall": false,
+              "isOne": false,
+              "present": true
+            },
+            "ROOTDRIVE": {
+              "insideOwnedRoot": false,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "provided": true
+            },
+            "SourceDir": {
+              "insideOwnedRoot": true,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "ownedRelativePath": "legacy-fixtures",
+              "physicalOwnedPathValidated": true,
+              "provided": true,
+              "regularFile": false
+            },
+            "TARGETDIR": {
+              "insideOwnedRoot": false,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "provided": true
+            }
+          },
+          "rawTextEmitted": false,
+          "sha256": "15ca7b5ffbef6889e9a46fcfc1e401c182ee4678c65e4a8af8a2417133568947"
+        },
+        "productState": 5,
+        "protocolLocations": [
+          {
+            "bytes": 17018880,
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "application\\axiom-desktop.exe",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": true,
+            "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+          },
+          {
+            "bytes": 17018880,
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": true,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "application\\axiom-desktop.exe",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": true,
+            "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+          }
+        ],
+        "requestedDirectoryExists": true,
+        "requestedPayload": {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "application\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        }
+      },
+      "oldInstallConfirmed": true,
+      "oldInstallerSha256": "670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1",
+      "upgradeConfirmed": false,
+      "webviewRenderingVerified": false
+    }
+  ],
+  "version": "0.1.23"
+}

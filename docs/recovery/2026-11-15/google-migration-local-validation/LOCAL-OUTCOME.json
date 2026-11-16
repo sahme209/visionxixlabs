@@ -1,0 +1,39 @@
+{
+  "accepted": true,
+  "scope": "LOCAL owned fictional PG17 transaction acceptance only",
+  "packetSha256": "897a26f3c4482a10bd2e55aee44f6330758946f4ab7f5967c735811bf83aee4d",
+  "conditionalApplySha256": "5c0ec9d6e167408e3462d6155f20ccc05f41e14713f3815f5bd96a24cb0cf79b",
+  "exactMigrationSha256": "b7de20d8b16f76294a10e061f888be9bfb8c15bca286c3b51886d84c4a167ffb",
+  "checks": {
+    "all143InputHashesMatch": true,
+    "all189CacheInventoryEntriesMatch": true,
+    "allPhaseLogHashesMatch": true,
+    "parentOwnedReceiptsIdentical": true,
+    "parentAndClientAccepted": true,
+    "all31UniqueCasesPassed": true,
+    "clientsDisconnected": true,
+    "ownedGroupsEmptyReceipt": true,
+    "clusterActuallyAbsent": true,
+    "privateFilesActuallyAbsent": true,
+    "allLogsWithin1MiB": true,
+    "rollback_after_first_ddl": true,
+    "rollback_before_receipt": true,
+    "rollback_after_receipt": true,
+    "concurrentExactlyOneSuccess": true,
+    "winningPreLockDdlActuallyRefused": true,
+    "postLockDdlActuallyBlocked": true,
+    "realLockTimeouts": true
+  },
+  "caseCount": 31,
+  "sourceOnlyTests": 17,
+  "clientSeconds": 7.141,
+  "productionCalls": 0,
+  "currentProductionIdentityBaselineRecovery": "UNKNOWN; previous metadata_refused stage/count unknown and consumed",
+  "noProductionMigrationOrConsent": true,
+  "noGoogleMailDownloadPairingOrDriverWireClaim": true,
+  "limits": "31 enumerated PG17 cases with fixture superuser role; not full schema/current production or provider transaction-tool execution proof",
+  "evidenceOrigins": {
+    "packet": "/private/tmp/v19-google-migration-owned-pg17-preparation",
+    "ownedResult": "/private/tmp/v19-google-migration-owned-pg17-szov6mc0"
+  }
+}

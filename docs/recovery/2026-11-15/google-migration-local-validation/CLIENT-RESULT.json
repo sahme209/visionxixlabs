@@ -1,0 +1,262 @@
+{
+  "accepted": true,
+  "ownedPostgres17": true,
+  "fixtureOnly": true,
+  "productionAccess": false,
+  "productionMigrationAuthorized": false,
+  "driverWireQualification": false,
+  "cases": [
+    {
+      "case": "pristine_success_and_reapply",
+      "passed": true,
+      "userUnchanged": true,
+      "oneReceipt": true,
+      "reapplyRefused": true,
+      "refusal": "GIM_009_ledger_not_clean_120"
+    },
+    {
+      "case": "missing_ledger_row",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_009_ledger_not_clean_120",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "unknown_ledger_name",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_010_ledger_name_checksum_or_duplicate_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "checksum_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_010_ledger_name_checksum_or_duplicate_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "unfinished_ledger",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_009_ledger_not_clean_120",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "rolledback_ledger",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_009_ledger_not_clean_120",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "duplicate_ledger_name",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_010_ledger_name_checksum_or_duplicate_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "existing_target_table",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_012_target_object_already_present",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "existing_target_type",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_012_target_object_already_present",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "existing_index_name",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_012_target_object_already_present",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "user_type_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_013_user_column_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "user_nullability_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_013_user_column_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "user_default_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_022_user_default_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "user_email_index_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_014_user_identity_index_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "ledger_structure_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_023_ledger_column_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "ledger_constraint_drift",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_024_ledger_constraint_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "implicit_public_grant",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_006_implicit_grant_refused",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "ledger_hook",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_008_ledger_hook_refused",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "ddl_hook",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_004_unreviewed_ddl_hook",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "temporary_namespace",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_002_temporary_namespace_refused",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "wrong_role",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_001_identity_or_transaction_refused",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "wrong_database",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_001_identity_or_transaction_refused",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "rollback_after_first_ddl",
+      "passed": true,
+      "atomicRollback": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": null,
+      "sqlState": "22012"
+    },
+    {
+      "case": "rollback_before_receipt",
+      "passed": true,
+      "atomicRollback": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": null,
+      "sqlState": "22012"
+    },
+    {
+      "case": "rollback_after_receipt",
+      "passed": true,
+      "atomicRollback": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": null,
+      "sqlState": "22012"
+    },
+    {
+      "case": "advisory_contention",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_003_migration_lock_unavailable",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "ledger_lock_contention",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": null,
+      "sqlState": "55P03",
+      "boundedLockRefusal": true
+    },
+    {
+      "case": "user_lock_contention",
+      "passed": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": null,
+      "sqlState": "55P03",
+      "boundedLockRefusal": true
+    },
+    {
+      "case": "concurrent_exactly_once",
+      "passed": true,
+      "exactlyOneApply": true
+    },
+    {
+      "case": "winning_user_ddl_before_lock",
+      "passed": true,
+      "freshCatalogRefusal": true,
+      "accepted": false,
+      "assertion": null,
+      "guard": "GIM_013_user_column_drift",
+      "sqlState": "P0001"
+    },
+    {
+      "case": "user_ddl_after_lock_waits",
+      "passed": true,
+      "competingDdlRefused": true
+    }
+  ],
+  "currentReadCommittedPacket": true,
+  "exactMigrationSha256": "b7de20d8b16f76294a10e061f888be9bfb8c15bca286c3b51886d84c4a167ffb",
+  "caseCount": 31,
+  "clientsDisconnected": true
+}

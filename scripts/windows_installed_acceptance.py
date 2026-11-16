@@ -34,6 +34,7 @@ ROOT = Path(__file__).resolve().parent.parent
 TARGET = "x86_64-pc-windows-msvc"
 REVIEWED_MANIFEST = "docs/recovery/2026-11-15/windows-installed-preparation/REVIEWED-FILES.json"
 V19_NSIS_TEMPLATE_SHA256 = "5179b482dc60961a42e9bc82509ba46c8c3c21d9f6235000d61214f6573117eb"
+V19_MSI_TEMPLATE_SHA256 = "ae4a893f66d1f8e9582ac919e021ee7bd945156a1d6cd0cf45af3c53f3348ec2"
 LEGACY_MSI_UPGRADE_CODE = "a3c7da37-1792-51f2-8b3a-8848b1b33f88"
 TOOL_NAMES = ("node.exe", "cargo.exe", "rustc.exe", "pwsh.exe", "msiexec.exe", "git.exe")
 
@@ -75,7 +76,7 @@ def reviewed_manifest(binding, root):
     need(path.is_file() and not path.is_symlink() and path.stat().st_size <= 8*1024*1024 and digest(path) == binding['manifestSha256'], "reviewed_manifest_changed")
     value = json.loads(path.read_text())
     need(set(value) == {'schema', 'files'} and value['schema'] == 'axiom.windows-reviewed-files/1' and isinstance(value['files'], dict), 'reviewed_manifest_invalid')
-    required = {'scripts/windows_installed_acceptance.py', 'scripts/windows_installer_metadata.ps1', '.github/workflows/desktop-ci.yml', 'scripts/windows_upgrade_acceptance.py', 'scripts/windows_upgrade_snapshot.ps1', 'scripts/windows_shortcut_collision.ps1', 'scripts/windows_legacy_acquire.py', 'desktop/src-tauri/windows/installer.nsi', 'desktop/package-lock.json', 'desktop/src-tauri/Cargo.lock', 'desktop/src-tauri/tauri.conf.json', 'desktop/src-tauri/tests/windows_keyring_acceptance.rs'}
+    required = {'scripts/windows_installed_acceptance.py', 'scripts/windows_installer_metadata.ps1', '.github/workflows/desktop-ci.yml', 'scripts/windows_upgrade_acceptance.py', 'scripts/windows_upgrade_snapshot.ps1', 'scripts/windows_shortcut_collision.ps1', 'scripts/windows_legacy_acquire.py', 'desktop/src-tauri/windows/installer.nsi', 'desktop/src-tauri/windows/main.wxs', 'desktop/src-tauri/windows/msi-shortcut-migration.vbs', 'scripts/windows_msi_shortcut_preflight.py', 'desktop/package-lock.json', 'desktop/src-tauri/Cargo.lock', 'desktop/src-tauri/tauri.conf.json', 'desktop/src-tauri/tests/windows_keyring_acceptance.rs'}
     need(required <= set(value['files']) and REVIEWED_MANIFEST not in value['files'], 'reviewed_manifest_incomplete')
     return value['files']
 
@@ -527,10 +528,14 @@ def validate_webview_configuration(config, root=None):
         need(template == 'windows/installer.nsi' and root is not None, 'unreviewed_webview_configuration')
         path = root / 'desktop/src-tauri/windows/installer.nsi'
         need(path.is_file() and not path.is_symlink() and digest(path) == V19_NSIS_TEMPLATE_SHA256, 'unreviewed_webview_configuration')
+    msi_template = windows.get('wix', {}).get('template')
+    if msi_template is not None:
+        need(msi_template == 'windows/main.wxs' and root is not None, 'unreviewed_webview_configuration')
+        path = root / 'desktop/src-tauri/windows/main.wxs'
+        need(path.is_file() and not path.is_symlink() and digest(path) == V19_MSI_TEMPLATE_SHA256, 'unreviewed_webview_configuration')
     need(mode in ({'type': 'downloadBootstrapper'}, {'type': 'downloadBootstrapper', 'silent': True})
          and windows.get('minimumWebview2Version') is None
-         and windows.get('nsis', {}).get('installerHooks') is None
-         and windows.get('wix', {}).get('template') is None,
+         and windows.get('nsis', {}).get('installerHooks') is None,
          'unreviewed_webview_configuration')
 
 
@@ -629,6 +634,8 @@ def main():
         need(json.loads((configuration / 'tauri.conf.json').read_text()).get('bundle', {}).get('windows', {}).get('wix', {}).get('upgradeCode') == LEGACY_MSI_UPGRADE_CODE, 'legacy_upgrade_identity_changed')
         receipt['webviewRuntimePreflight'] = require_webview_runtime()
         receipt['snapshotHelperPreflight'] = snapshot_helper_preflight(runner, tools, base)
+        receipt['msiShortcutScriptPreflight'] = json.loads(runner.run('msi-shortcut-script-preflight', [tools['python.exe'], ROOT / 'scripts/windows_msi_shortcut_preflight.py', base / 'msi-shortcut-script'], ROOT, 60))
+        need(receipt['msiShortcutScriptPreflight'].get('accepted') is True, 'msi_shortcut_script_preflight_refused')
         for name in ["node.exe", "cargo.exe", "rustc.exe", "pwsh.exe", "git.exe"]:
             args = [tools[name], "--version"] if name != "pwsh.exe" else [tools[name], "-NoProfile", "-NonInteractive", "-Command", "$PSVersionTable.PSVersion.ToString()"]
             version = runner.run("tool-" + name.split(".")[0], args, ROOT, 15)
@@ -696,6 +703,7 @@ def main():
         from windows_upgrade_acceptance import absent_before_owned_cycle
         codes = [legacy['msi']['metadata']['ProductCode'], candidate_metadata['msi']['ProductCode']]
         absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [], codes, 'all-installs-pristine'))
+        msi_shortcut_returncheck(runner,tools,base,candidates['msi'],candidate_metadata['msi'],codes,receipt)
         from windows_upgrade_acceptance import APPLICATION_DIRECTORY, absent_after_cleanup
         for kind, candidate in candidates.items():
             absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [base / APPLICATION_DIRECTORY], codes, 'clean-'+kind+'-pristine'))
@@ -874,6 +882,56 @@ def product_state(code):
     msi = ctypes.WinDLL("msi", use_last_error=True)
     msi.MsiQueryProductStateW.argtypes = [W.LPCWSTR]; msi.MsiQueryProductStateW.restype = ctypes.c_int
     return msi.MsiQueryProductStateW(code)
+
+
+def msi_shortcut_returncheck(runner,tools,base,candidate,metadata,codes,receipt):
+    from windows_upgrade_acceptance import APPLICATION_DIRECTORY, absent_before_owned_cycle, absent_after_cleanup
+    install=base/APPLICATION_DIRECTORY
+    need(not install.exists() and digest(candidate)==metadata['sha256'], 'msi_refusal_candidate_or_directory_changed')
+    for code in codes: msi_absent(product_state(code))
+    absent_before_owned_cycle(upgrade_snapshot(runner,tools,base,[install],codes,'msi-returncheck-pristine'))
+    row={'returncheckVerified':False,'foreignLinkPreserved':False,'cleanupConfirmed':False}
+    receipt['msiShortcutReturncheck']=row
+    fixture=None;attempted=False
+    def fixture_command(mode):
+        args=[tools['pwsh.exe'],'-NoProfile','-NonInteractive','-File',ROOT/'scripts/windows_shortcut_collision.ps1','-OwnedRoot',base,'-InstallDirectory',install,'-Slot','current','-DesktopKind','Public','-Mode',mode]
+        if fixture:args+=['-ExpectedSha256',fixture['sha256']]
+        return args
+    try:
+        fixture=json.loads(runner.run('msi-returncheck-fixture-create',fixture_command('Create'),ROOT,15))
+        need(isinstance(fixture.get('sha256'),str) and re.fullmatch(r'[a-f0-9]{64}',fixture['sha256']) is not None,'msi_foreign_fixture_proof_invalid')
+        attempted=True;log=runner.output/'msi-returncheck-install.log'
+        runner.run('msi-returncheck-refusal',[tools['msiexec.exe'],'/i',candidate,'/qn','/norestart','INSTALLDIR='+str(install),'/L*v',log],ROOT,90,allow=(1603,),extra_logs=(log,))
+        with log.open('rb') as stream:raw=stream.read(MAX_LOG_BYTES+1)
+        need(len(raw)<=MAX_LOG_BYTES,'msi_refusal_log_bound')
+        text=raw.decode('utf-16-le' if b'\x00' in raw else 'utf-8',errors='replace')
+        row['fixedActionObserved']='V19ShortcutPreflight' in text
+        row['fixedOwnershipErrorObserved']='Foreign shortcut preserved' in text
+        need(row['fixedActionObserved'] and row['fixedOwnershipErrorObserved'],'msi_expected_refusal_not_observed')
+        msi_absent(product_state(metadata['ProductCode']))
+        proof=json.loads(runner.run('msi-returncheck-fixture-preserved',fixture_command('Verify'),ROOT,15))
+        need(proof.get('preserved') is True,'msi_foreign_shortcut_changed')
+        current=upgrade_snapshot(runner,tools,base,[install],codes,'msi-returncheck-refused-state')
+        need(not current['products'] and not current['protocolCommands'] and not current['ownedPayloads'],'msi_refusal_mutated_product')
+        shortcuts=current['shortcuts']
+        need(len(shortcuts)==1 and windows_path_identity(shortcuts[0]['path'])==windows_path_identity(fixture['path']) and windows_path_identity(shortcuts[0]['target'])==windows_path_identity(fixture['target']) and shortcuts[0].get('arguments','')=='','msi_refusal_shortcut_scope_changed')
+        row['foreignLinkPreserved']=True;row['returncheckVerified']=True
+    finally:
+        if fixture:
+            prior=runner.deadline;runner.deadline=max(prior,time.monotonic()+125)
+            try:
+                if attempted:
+                    log=runner.output/'msi-returncheck-uninstall.log'
+                    runner.run('msi-returncheck-product-cleanup',[tools['msiexec.exe'],'/x',metadata['ProductCode'],'/qn','/norestart','/L*v',log],ROOT,60,allow=(0,1605),extra_logs=(log,))
+                    msi_absent(product_state(metadata['ProductCode']))
+                preserved=json.loads(runner.run('msi-returncheck-fixture-cleanup-proof',fixture_command('Verify'),ROOT,15))
+                need(preserved.get('preserved') is True,'msi_foreign_shortcut_cleanup_proof_changed')
+                proof=json.loads(runner.run('msi-returncheck-fixture-cleanup',fixture_command('Cleanup'),ROOT,15))
+                need(proof.get('removed') is True,'msi_foreign_shortcut_cleanup_failed')
+                absent_after_cleanup(upgrade_snapshot(runner,tools,base,[install],codes,'msi-returncheck-cleaned'))
+                remove_empty_application_directory(base);row['cleanupConfirmed']=True
+            finally:runner.deadline=prior
+    need(row['returncheckVerified'] and row['cleanupConfirmed'],'msi_shortcut_returncheck_incomplete')
 
 
 def remove_empty_application_directory(base):

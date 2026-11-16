@@ -1,0 +1,99 @@
+{
+  "accepted": false,
+  "failure": {
+    "code": "fixed_owned_shortcut_preflight_failure",
+    "stage": "script_fixture"
+  },
+  "packetSha256": "96df6f242b0d1f300c1befc8356d1c90406933e915c62f5655b3cf0996d3d714",
+  "sourceInputsMatched": true,
+  "ownedFixtureRemoved": true,
+  "ownedProcessesEmpty": true,
+  "syntheticLinksOnly": true,
+  "nativeInstallerVerified": false,
+  "msiSessionOrTransactionVerified": false,
+  "published": false,
+  "client": {
+    "accepted": false,
+    "cases": [
+      "commit",
+      "rollback"
+    ],
+    "failure": {
+      "case": "foreign-old",
+      "code": "fixed_windows_shortcut_script_preflight_failed",
+      "stage": "preflight"
+    },
+    "hostSha256": "5abb9e4b0fae68b161acc921bfe69697965b6876daa4e317592e8239728a9190",
+    "sourceSha256": "bb65f82277c0c42814dd0b6d43f5ff6fa863291f08c70940533a06635a5eb654"
+  },
+  "phaseExitCodes": [
+    {
+      "label": "commit-desktop-link",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "commit-menu-link",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "commit-preflight",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "commit-migrate",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "commit-commit",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "rollback-desktop-link",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "rollback-menu-link",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "rollback-preflight",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "rollback-migrate",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "rollback-rollback",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "foreign-old-desktop-link",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "foreign-old-menu-link",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    },
+    {
+      "label": "foreign-old-preflight",
+      "exitCode": 0,
+      "ownedJobEmpty": true
+    }
+  ],
+  "runId": 43783953317,
+  "jobId": 133027279243,
+  "source": "6fd5414ad2fbfaa96ec4531278295d7a4560097f"
+}

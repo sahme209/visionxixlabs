@@ -1,0 +1,12 @@
+{
+  "main.wxs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle/windows/msi/main.wxs",
+    "sha256": "e371a01628a06730828f9bd24111feacb8bec53c250ccec4b46df756fe0a0198",
+    "bytes": 18783
+  },
+  "released-main.wxs": {
+    "url": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.11.1/crates/tauri-bundler/src/bundle/windows/msi/main.wxs",
+    "sha256": "e371a01628a06730828f9bd24111feacb8bec53c250ccec4b46df756fe0a0198",
+    "bytes": 18783
+  }
+}
