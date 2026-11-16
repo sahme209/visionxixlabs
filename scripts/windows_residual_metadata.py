@@ -59,7 +59,7 @@ def installation_residual_metadata(base):
                     if len(result['entries'])>=MAX_ENTRIES:result['entryLimitReached']=True;break
                     rel=parts+(item.name,);row={'relativeName':safe_name(rel)};result['entries'].append(row)
                     try:
-                        st=item.stat(follow_symlinks=False)
+                        st=Path(item.path).lstat()
                         if reparse(st):row['type']='reparse';continue
                         if stat.S_ISDIR(st.st_mode):
                             row['type']='directory'
