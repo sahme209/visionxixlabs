@@ -142,5 +142,17 @@
     "source": "/private/tmp/v19-postgres-readiness-repair/probe.py",
     "sha256": "c32fcbd2e9a7a52907a0b4ef766767e9c5fded248033ef4418251a9bef08ce26",
     "bytes": 4220
+  },
+  {
+    "copy": "CORRECTED-DOCKER-GATE-PASS.json",
+    "source": "/private/tmp/v19-pr346-corrected-docker-gate-pass.json",
+    "sha256": "d92cb6b75d54f6f23bc521bef23798f218377971c2e762aa1921935abea3d6cb",
+    "bytes": 8036
+  },
+  {
+    "copy": "GOOGLE-LINK-FOCUS-TEST-RESULT.json",
+    "source": "/private/tmp/v19-google-link-focus-review/RESULT.json",
+    "sha256": "4dac1984b2d0ed8dd41e8027e9499b3d22e7e99eebbef3aa8acc0ef86f1d0b5a",
+    "bytes": 1347
   }
 ]

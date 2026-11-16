@@ -54,5 +54,9 @@
   "lib/ops/__tests__/compiledProductJourneyGate.test.ts": {
     "bytes": 10206,
     "sha256": "70f6ab2b0b2e5e917e35ba700d84ebe945eb2b37e24eafc11243c2f42cb22bce"
+  },
+  "app/auth/link-google/__tests__/GoogleLinkClient.test.ts": {
+    "sha256": "d60f3171eca56095f08b3c3ef3f3c6232077db668207be494c02be06f6f4f8f7",
+    "bytes": 3342
   }
 }

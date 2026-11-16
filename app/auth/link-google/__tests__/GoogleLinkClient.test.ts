@@ -15,7 +15,7 @@ it("shows intended Google account, requires explicit proof, and starts fresh OAu
   expect(screen.queryByLabelText("Email confirmation code")).toBeNull();
   fireEvent.click(screen.getByRole("button", { name: "Email me a confirmation code" }));
   await waitFor(() => expect(screen.getByRole("status").textContent).toContain("Paste the confirmation code"));
-  expect(document.activeElement).toBe(screen.getByLabelText("Email confirmation code"));
+  await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText("Email confirmation code")));
   fireEvent.change(screen.getByLabelText("Email confirmation code"), { target: { value: "mail-code" } });
   fireEvent.click(screen.getByRole("button", { name: "Confirm and link Google" }));
   await screen.findByRole("button", { name: "Continue with Google" });

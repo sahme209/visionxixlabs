@@ -8,8 +8,8 @@
     "sha256": "1b6cb050b70f7b03a8e2a5aedf538dd49053d72984226da06cb88d7f332ff040"
   },
   "COPIED-EVIDENCE.json": {
-    "bytes": 5574,
-    "sha256": "5a9aebd4b936afebd91b8047e965e39ad2f06da8814e17d54266d11112a53c58"
+    "bytes": 6032,
+    "sha256": "0b718bd5b666f2b31e1d9a4b7e50d8f41f8f29ffce6f4d8dd39627943ae87f78"
   },
   "CORE-INDEPENDENT-REVIEW.json": {
     "bytes": 1939,
@@ -23,6 +23,10 @@
     "bytes": 9741,
     "sha256": "ceadd042abcc93fb7260c4730b9b53218f4e311b0039884c7aa092003f18ec86"
   },
+  "CORRECTED-DOCKER-GATE-PASS.json": {
+    "bytes": 8036,
+    "sha256": "d92cb6b75d54f6f23bc521bef23798f218377971c2e762aa1921935abea3d6cb"
+  },
   "CORRECTED-HARNESS-INDEPENDENT-REVIEW.json": {
     "bytes": 946,
     "sha256": "a8e6112c5e3f0c8e8895518328dab7dbd5e315fa75eaa2e7358634842e7ae9e0"
@@ -35,17 +39,21 @@
     "bytes": 2703,
     "sha256": "722344e9b6c8e35491ede943c6a378c9d5e1a65e6ab0660a02cd3690edc0f816"
   },
+  "DOCUMENT-PRESERVATION-before-focus.json": {
+    "bytes": 3216,
+    "sha256": "9e9fd609c11fefdb041282356089200e4bab947c9c8208b7d56a6c66bbb350fd"
+  },
   "DOCUMENT-PRESERVATION-before-readiness.json": {
     "bytes": 4658,
     "sha256": "7236fc9b443a2533d4fdf6072ed66335001c08855d4d3d025fcffeddde71d513"
   },
   "DOCUMENT-PRESERVATION.json": {
-    "bytes": 3216,
-    "sha256": "9e9fd609c11fefdb041282356089200e4bab947c9c8208b7d56a6c66bbb350fd"
+    "bytes": 3213,
+    "sha256": "629cb7d4e8b9aa6b91957ada662298fa31cf01bb1281a7c2b92747f1ac4fd3c8"
   },
   "FINAL-CODE-INPUTS.json": {
-    "bytes": 2180,
-    "sha256": "be958ce1ba0088670ffcfe9e7a904a5d79538da9dba0b0dd93d74e423ad999d1"
+    "bytes": 2348,
+    "sha256": "13a15f28491d41fa84016fc392013ecbd403b7d5f30fa6a61671f86aae3eb9e2"
   },
   "FINAL-LOCAL-RESULT.json": {
     "bytes": 1913,
@@ -70,6 +78,10 @@
   "GATE-INPUTS.json": {
     "bytes": 1998,
     "sha256": "7b88d74bcc3c1847cfeaf6ec45678d44a4110712254b08a10d5541fb3dc634ae"
+  },
+  "GOOGLE-LINK-FOCUS-TEST-RESULT.json": {
+    "bytes": 1347,
+    "sha256": "4dac1984b2d0ed8dd41e8027e9499b3d22e7e99eebbef3aa8acc0ef86f1d0b5a"
   },
   "HISTORICAL-REGRESSION.json": {
     "bytes": 8060,
@@ -124,7 +136,7 @@
     "sha256": "dfa1e18b212ecc36a2fa9982b522907f9fe58aaf5d12b9d0f26421cebd8ccb52"
   },
   "README.md": {
-    "bytes": 1815,
-    "sha256": "909c8c3453d6dadde47c90d5ab09cfc848ad3a4bab57f5f38005701aeec0c055"
+    "bytes": 2154,
+    "sha256": "336b471a87f1ea0965b047d95e2bbd6c052c3ffdc336f54403700d5f6ef0ec2b"
   }
 }

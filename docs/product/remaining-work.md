@@ -1,3 +1,11 @@
+## Mandatory Docker journeys passed; focus-test synchronization corrected — November 16, 2026
+
+PR346 head4fc4e1a passed the actual required seven-case Docker/compiled-production journey gate (run43918294976/job133478340764), including both remote connection paths, real credentials/canonical session, synthetic Google linking, storage/download success and refusal, transaction semantics and confirmed cleanup. The recorded sourceSha is GitHub's synthetic merge commit, not a mislabeled PR head. The TCP-readiness correction is exercised successfully; no new local product build was needed.
+
+A separate Vitest shard failed an immediate focus assertion after status text appeared. Its one-line test-only correction awaits the unchanged actual activeElement assertion; all three existing Google-link UI tests pass. A no-focus counterfactual still fails that exact assertion. Product UI/auth/database behavior is unchanged; fresh complete exact-head CI remains required before merge. Earlier local/broad/compiled results retain their stated scopes. Evidence: docs/recovery/2026-11-16/database-alternate-startup-repair/CORRECTED-DOCKER-GATE-PASS.json and GOOGLE-LINK-FOCUS-TEST-RESULT.json.
+
+Live Google/mail/native pairing and functional production repair remain unverified. Owner order remains functional login/download verification, then requested sign-in appearance/provider cleanup, Exact scrolling, and Governance. No deployment, private read, production SQL, design change or Governance activation is included; all prior history and master requirements below are preserved.
+
 ## Required compiled gate — Docker readiness correction, November 16, 2026
 
 The first PR346 GitHub Docker gate built the production website and passed all four compiled startup-wire cases, then failed direct HTTP admin_connect with ECONNRESET; source identity and cleanup remained confirmed. This is retained as a failed run, not an application login success. The readiness probe lacked a TCP host and could accept Docker's temporary socket-only initialization server before its shutdown. The official entrypoint uses an empty listen address for that temporary server; no immutable upstream-source hash is claimed.

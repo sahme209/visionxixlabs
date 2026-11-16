@@ -9,3 +9,5 @@ The recurring same-build gate is mandatory in existing Test/build, not a new aut
 ## First Docker run and readiness correction
 
 The first GitHub Docker run failed direct HTTP admin_connect after four compiled wire passes. The controller's default socket pg_isready could succeed against the temporary init server. Only explicit final TCP readiness arguments were added. Actual native PostgreSQL reproduces socket0/TCP2, finalTCP0, stoppedTCP2 with no SQL/build;14 focused tests and strict types pass. Corrected Docker CI remains pending. READINESS-CORRECTION.json and both runtime histories preserve these separate scopes.
+
+Latest checkpoint: all7 required Docker compiled journeys PASS at4fc4e1a. A separate UI focus-test timing assertion is corrected without changing product code;3 existing tests PASS and the no-focus negative control still fails. Fresh complete exact-head CI remains pending. No deployment/production acceptance follows from these results.
