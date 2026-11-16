@@ -1,0 +1,135 @@
+{
+  "repository": "sahme209/axiom-releases",
+  "id": 447111023,
+  "tag": "desktop-v0.1.24",
+  "url": "https://github.com/sahme209/axiom-releases/releases/tag/desktop-v0.1.24",
+  "published_at": "2026-11-16T13:56:30Z",
+  "assets": [
+    {
+      "id": 755053338,
+      "name": "Axiom-Agent-desktop-v0.1.24-candidate-manifest.json",
+      "size": 5186,
+      "digest": "sha256:c0c5a36843671e2f3daa6fe0ed7ec97893e6e72ccbe355600995947a05888a30",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/Axiom-Agent-desktop-v0.1.24-candidate-manifest.json"
+    },
+    {
+      "id": 755053511,
+      "name": "Axiom-Agent-desktop-v0.1.24-candidate-manifest.json.asc",
+      "size": 833,
+      "digest": "sha256:c150dfbfcf7dc30a85bdc5c71d3246ecba1274d82f6a70f1f6895b5d88dfa5d8",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/Axiom-Agent-desktop-v0.1.24-candidate-manifest.json.asc"
+    },
+    {
+      "id": 755053547,
+      "name": "Axiom-Agent-desktop-v0.1.24-sbom.cdx.json",
+      "size": 1926793,
+      "digest": "sha256:2e90ce9b138fcb84298522b821dc62e8267bf1ff1e1578b3c923bb431cdf7d02",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/Axiom-Agent-desktop-v0.1.24-sbom.cdx.json"
+    },
+    {
+      "id": 755053626,
+      "name": "Axiom-Agent-desktop-v0.1.24-sbom.cdx.json.asc",
+      "size": 833,
+      "digest": "sha256:615ccf756a84c39fb5bbe61e06a8d0e5ce404958f214e20816cb88cff46aacce",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/Axiom-Agent-desktop-v0.1.24-sbom.cdx.json.asc"
+    },
+    {
+      "id": 755053665,
+      "name": "V19-0.1.24-1.x86_64.rpm",
+      "size": 10373849,
+      "digest": "sha256:ed2f1cae7e284afb66e834d0560b7aac21a39c9c9fcd7d524972f8f0f3561488",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19-0.1.24-1.x86_64.rpm"
+    },
+    {
+      "id": 755053744,
+      "name": "V19-0.1.24-1.x86_64.rpm.asc",
+      "size": 833,
+      "digest": "sha256:b905b4dba19585f3beaf92c2a11f18c4dc97f010262ac96ec8706bea8733a288",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19-0.1.24-1.x86_64.rpm.asc"
+    },
+    {
+      "id": 755053790,
+      "name": "V19_0.1.24_aarch64.dmg",
+      "size": 8254520,
+      "digest": "sha256:d102d8efc5afa3f97b11d8819eca73952531fe15f1724d65ffcf62aaafaad96d",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_aarch64.dmg"
+    },
+    {
+      "id": 755053897,
+      "name": "V19_0.1.24_aarch64.dmg.asc",
+      "size": 833,
+      "digest": "sha256:e51876bcf33a587afe8d30a8511b8d88373f692d17980bcc9a87a1505109f394",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_aarch64.dmg.asc"
+    },
+    {
+      "id": 755053941,
+      "name": "V19_0.1.24_amd64.AppImage",
+      "size": 93030904,
+      "digest": "sha256:a2559e17f092bc9920145460fdaf3fc2b7d45ca9baf5ff0ac44553b44a909c51",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_amd64.AppImage"
+    },
+    {
+      "id": 755054165,
+      "name": "V19_0.1.24_amd64.AppImage.asc",
+      "size": 833,
+      "digest": "sha256:ad32f339e02ece1af06c191f365891858a3ce51679d24b6c6e5ea14f751b99f0",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_amd64.AppImage.asc"
+    },
+    {
+      "id": 755054214,
+      "name": "V19_0.1.24_amd64.deb",
+      "size": 10369510,
+      "digest": "sha256:f670291d3c8bf2085230ab18adb1225cffb17868ce25f9d8703a785194771d6c",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_amd64.deb"
+    },
+    {
+      "id": 755054296,
+      "name": "V19_0.1.24_amd64.deb.asc",
+      "size": 833,
+      "digest": "sha256:449e64aafe14e1326d602848fd6e04ff67eebb1ecf167a682f6042a96ca9f4d0",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_amd64.deb.asc"
+    },
+    {
+      "id": 755054318,
+      "name": "V19_0.1.24_x64-setup.exe",
+      "size": 5449085,
+      "digest": "sha256:74c4721486af429a3f8644f08edf756ca29efa1690eca652e2b750f57777a00b",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_x64-setup.exe"
+    },
+    {
+      "id": 755054392,
+      "name": "V19_0.1.24_x64-setup.exe.asc",
+      "size": 833,
+      "digest": "sha256:d01be3dc6a6543f0dfb31d7ff8519d48c4a80c44aa75fc8237772fda1b56c4ba",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_x64-setup.exe.asc"
+    },
+    {
+      "id": 755054417,
+      "name": "V19_0.1.24_x64.dmg",
+      "size": 8843381,
+      "digest": "sha256:a9039eeb818ec9a1ecd301a23785fc1e3514be7d811c4979feee0fbdff964eb4",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_x64.dmg"
+    },
+    {
+      "id": 755054477,
+      "name": "V19_0.1.24_x64.dmg.asc",
+      "size": 833,
+      "digest": "sha256:a11d7c9aa2004c22701b37849e2bf1d318806c21d15247aa6f273b5ff6931a0f",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_x64.dmg.asc"
+    },
+    {
+      "id": 755054513,
+      "name": "V19_0.1.24_x64_en-US.msi",
+      "size": 7573504,
+      "digest": "sha256:8b636ea5314ce3406cbfe86d5ad6a6ba8943d2b5f85c06c9d6b1511a26d1b1b7",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_x64_en-US.msi"
+    },
+    {
+      "id": 755054593,
+      "name": "V19_0.1.24_x64_en-US.msi.asc",
+      "size": 833,
+      "digest": "sha256:09a425a4a2c076b4700b930253380ab0f74c746504d91b094cbc33754584102b",
+      "url": "https://github.com/sahme209/axiom-releases/releases/download/desktop-v0.1.24/V19_0.1.24_x64_en-US.msi.asc"
+    }
+  ]
+}

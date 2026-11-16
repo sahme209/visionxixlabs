@@ -1,5 +1,6 @@
 import "server-only";
 
+import { databaseRuntimeErrorClassification, databaseRuntimeSnapshot } from "@/lib/database/databaseRuntimeTrace";
 import { prisma } from "@/lib/db";
 
 export interface DesktopRuntimeReadiness {
@@ -24,7 +25,7 @@ export async function readDesktopRuntimeReadiness(): Promise<DesktopRuntimeReadi
     ]);
     return { ready: true };
   } catch (error) {
-    console.error("[DesktopRuntimeReadiness] Required production storage is unavailable", error);
+    console.error("[DesktopRuntimeReadiness] Required production storage is unavailable", { databaseErrorClassification: databaseRuntimeErrorClassification(error), ...databaseRuntimeSnapshot(prisma) });
     return {
       ready: false,
       message: "Required service storage checks are unavailable. Desktop downloads are temporarily paused. Installation, sign-in, and entitlement still require separate verification.",

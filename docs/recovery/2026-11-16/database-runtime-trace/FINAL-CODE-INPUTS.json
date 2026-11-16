@@ -1,0 +1,10 @@
+{
+  "lib/database/createDatabaseClient.ts": "25aa52b18ea0ccf476bb6f505f28ee5924d67f1e18c933e9d9e5947637bdfca4",
+  "lib/database/directNeonSession.ts": "f143308f59c9d763f267bfc9944a4e058f9b03929e883e55dac45ed5dac9368c",
+  "lib/database/databaseRuntimeTrace.ts": "f5df10fbfd239c48cf60728c2c28bdc29c05243942fcb1dedd46c91dc25804bd",
+  "lib/database/__tests__/databaseRuntimeTrace.test.ts": "8312ea3a3877cbc37f49d43b856cf476bd7a55c46e315557258093a4cf54ccd1",
+  "lib/desktop/desktopRuntimeReadiness.ts": "d0dda2eb8394120dd6304eee3912754d0f82f8b62283e9f860b7597191b5d3c1",
+  "lib/desktop/__tests__/desktopRuntimeReadiness.test.ts": "f50e09ddc551145ac0a5d2d57e79af68965945814c8e35466f472f3bb3772862",
+  "scripts/check-production-product.mjs": "6ea8a243273d5efa18ce217f914ae56f99bf3073d0a4917deb97d0a73f0ca5db",
+  "lib/ops/__tests__/productionProductSmoke.test.ts": "3340c81155387364eeae65401162679aecec34d57ca657750290302047348d81"
+}

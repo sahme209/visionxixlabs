@@ -1,0 +1,18 @@
+{
+  "accepted": true,
+  "stage": "/private/tmp/v19-combined-diagnostic-lrcyjo2c",
+  "receiptSha256": "58c4eb8568c90fb12fac4f60890a7dd78673f7731be9b86f68d0d38e24abc5fb",
+  "packetSha256": "30068d7e5e21c0de724f202b143c037f3e92b9ae1fa42ddf55b130e997ae23b8",
+  "phases": {
+    "website": {
+      "exitCode": 0,
+      "reason": null,
+      "cleanupConfirmed": true,
+      "logBytesObserved": 43982,
+      "logSha256": "299f70a055eabbafb87ba525aaf2b7db4e9241facca911b24ee966187315fb44",
+      "logPath": "/private/tmp/v19-combined-diagnostic-lrcyjo2c/website.log"
+    }
+  },
+  "failure": null,
+  "finalInputsMatched": true
+}

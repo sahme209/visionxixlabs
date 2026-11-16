@@ -1,0 +1,46 @@
+{
+  "reviewType": "read-only-public-source-history",
+  "localRepositoryShallow": true,
+  "falseLocalBoundaryCandidates": [
+    "a36a894743159daaa1552a38ed638d1ca1ec0546",
+    "010444b751e6ded03a01a99e772bf925280d3dcf"
+  ],
+  "firstActualPolicyCommit": "4fbbb5db186ba9bf2a2e614526abcda0ab52c493",
+  "introducedAt": "2026-11-11T22:53:11Z",
+  "introducedPolicy": {
+    "file": "lib/database/postgresConnectionPolicy.ts",
+    "startupOptions": "-c search_path=public",
+    "factory": "new PrismaPg(postgresConnectionOptions(target), { schema: \"public\" })"
+  },
+  "migrationPr": 321,
+  "migrationMerge": "54c0f1c5ab7cfa033ad2e8c2a75166ac63228b68",
+  "migrationMergedAt": "2026-11-12T00:39:51Z",
+  "priorWorkingSourceBaseline": "a99c053f7af516c3a870512d461c9fa26422a40d",
+  "priorClient": {
+    "prisma": "^5.22.0",
+    "generator": "prisma-client-js",
+    "datasource": "postgresql url=env(\"DATABASE_URL\")",
+    "production": "new PrismaClient()",
+    "isolated": "new PrismaClient({ datasources: { db: { url: config.target } } })",
+    "applicationInjectedPgStartupOptions": false
+  },
+  "sourceCausalFinding": "Prisma7 adapter introduced explicit startup search_path option before Exact visual changes; current generic/pooler branch retains it.",
+  "restorationConstraints": [
+    "Preserve strict TLS/channel binding and exact URL target identity.",
+    "Keep Prisma schema public and preserve raw SQL schema safety.",
+    "Verified direct physical sessions may initialize public search_path before handoff with exact acknowledgement, without unsupported startup options.",
+    "A transaction pooler cannot receive a persistent-session guarantee from one-time SET; do not silently claim otherwise."
+  ],
+  "notEstablished": [
+    "Current private hostname or direct/pooler mode",
+    "First failing production deployment",
+    "Runtime success of prior client on current target"
+  ],
+  "primarySources": [
+    "https://github.com/sahme209/visionxixlabs/commit/4fbbb5db186ba9bf2a2e614526abcda0ab52c493",
+    "https://github.com/sahme209/visionxixlabs/pull/321",
+    "https://github.com/sahme209/visionxixlabs/blob/a99c053f7af516c3a870512d461c9fa26422a40d/lib/db.ts",
+    "https://github.com/sahme209/visionxixlabs/blob/a99c053f7af516c3a870512d461c9fa26422a40d/prisma/schema.prisma"
+  ],
+  "actions": "Source/history metadata reads only; no source edits, SQL, configuration or deployment"
+}

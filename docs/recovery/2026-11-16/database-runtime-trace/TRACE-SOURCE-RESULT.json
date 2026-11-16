@@ -1,0 +1,21 @@
+{
+  "inputPacketSha256": "18476376762365454be19a4fa3878dcbee7d1219a4829eda930addbc98b71255",
+  "traceInputsMatched": true,
+  "focusedTestsPassed": 61,
+  "rootTypesExitCode": 0,
+  "wholeLogRecordValueFree": true,
+  "originalErrorNeverLogged": true,
+  "classificationTraversal": {
+    "ownDataDescriptorsOnly": true,
+    "maxObjects": 16,
+    "maxDepth": 4,
+    "maxMessageCharacters": 4096,
+    "gettersToJSONInvoked": false
+  },
+  "fullSuiteScope": "Earlier19,847PASS preliminary only; parent owns final combined frozen smoke/trace suite",
+  "productionObserved": false,
+  "realDatabaseAccess": false,
+  "connectionBehaviorChanged": false,
+  "publicHttpResponseChanged": false,
+  "traceScope": "fixed tags and capped direct startup configuration/session hook observations; not network transmission or negotiated TLS proof"
+}

@@ -1,0 +1,18 @@
+{
+  "numTotalTests": 21021,
+  "numPassedTests": 19877,
+  "numFailedTests": 0,
+  "numPendingTests": 1144,
+  "numTodoTests": 0,
+  "numTotalTestSuites": 3531,
+  "numPassedTestSuites": 3531,
+  "numFailedTestSuites": 0,
+  "success": true,
+  "vitestExitCode": 0,
+  "strictTypesExitCode": 0,
+  "codeInputsMatchedAfter": true,
+  "codeInputsSha256": "da5bd835511dcd99388819dd248dc803908e56507d27a6a8defab0100231b478",
+  "reportSha256": "cefeabcadfe8f9aa7cf59913029a6a504e2934225f773b1d9a1eeece98183264",
+  "allSourceChangesAreDiagnosticOrRegressionControls": true,
+  "productionFixEstablished": false
+}

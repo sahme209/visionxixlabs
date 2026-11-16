@@ -1,0 +1,37 @@
+{
+  "root": "/private/tmp/v19-database-runtime-route-trace",
+  "head": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+  "scope": "local server-only diagnostic trace and whole-record value-free classification; no connection behavior/response change or live actions",
+  "files": [
+    {
+      "path": "lib/database/databaseRuntimeTrace.ts",
+      "beforeSha256": null,
+      "afterSha256": "f5df10fbfd239c48cf60728c2c28bdc29c05243942fcb1dedd46c91dc25804bd"
+    },
+    {
+      "path": "lib/database/createDatabaseClient.ts",
+      "beforeSha256": "450bf63f3c17b4f53e8a5a09dab147d81225b9534ead5a2e9fe271611e0c108f",
+      "afterSha256": "25aa52b18ea0ccf476bb6f505f28ee5924d67f1e18c933e9d9e5947637bdfca4"
+    },
+    {
+      "path": "lib/database/directNeonSession.ts",
+      "beforeSha256": "97dc1b6f7e45be908ad9831571720107997064e165c93dbf3dcf0e64d93d6b8e",
+      "afterSha256": "f143308f59c9d763f267bfc9944a4e058f9b03929e883e55dac45ed5dac9368c"
+    },
+    {
+      "path": "lib/desktop/desktopRuntimeReadiness.ts",
+      "beforeSha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+      "afterSha256": "d0dda2eb8394120dd6304eee3912754d0f82f8b62283e9f860b7597191b5d3c1"
+    },
+    {
+      "path": "lib/database/__tests__/databaseRuntimeTrace.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "8312ea3a3877cbc37f49d43b856cf476bd7a55c46e315557258093a4cf54ccd1"
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopRuntimeReadiness.test.ts",
+      "beforeSha256": "d69d7645329ab857664ba53d6db31e1a930c56bf896dd5572be7fbd4906d9138",
+      "afterSha256": "f50e09ddc551145ac0a5d2d57e79af68965945814c8e35466f472f3bb3772862"
+    }
+  ]
+}

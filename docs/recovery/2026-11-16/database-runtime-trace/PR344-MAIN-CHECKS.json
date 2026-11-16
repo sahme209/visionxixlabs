@@ -1,0 +1,72 @@
+{
+  "sha": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+  "tree": "65967fbb20d9c590f876a3eee861abdb80738cbe",
+  "applicablePassed": 9,
+  "expectedPr339OnlySkip": 1,
+  "runs": [
+    43876449718,
+    43876449859
+  ],
+  "checks": [
+    {
+      "id": 133334822833,
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133334126923,
+      "name": "Windows installer and upgrade acceptance",
+      "status": "completed",
+      "conclusion": "skipped"
+    },
+    {
+      "id": 133330642930,
+      "name": "macOS native transport and policy checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330642922,
+      "name": "Frontend and native security checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330642880,
+      "name": "Windows frontend and native security checks",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330642658,
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330642626,
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330642609,
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330642418,
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 133330641971,
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

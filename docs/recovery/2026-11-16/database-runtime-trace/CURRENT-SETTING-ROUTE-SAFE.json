@@ -1,0 +1,18 @@
+{
+  "approvalQuestionId": "call_347a40d164c34e0a8bac44a25608c7cf",
+  "readConsumed": true,
+  "sameRecord": true,
+  "productionTarget": true,
+  "updatedBeforeDeployment": true,
+  "expectedDirectHostMatch": true,
+  "expectedPoolerHostMatch": false,
+  "currentCodeRecognizesDirectHost": true,
+  "hostHasUppercase": false,
+  "hostHasTrailingDot": false,
+  "branchClassification": "recognized_direct",
+  "productionUniquenessProven": false,
+  "deployedCapturedValueProven": false,
+  "changes": false,
+  "rawValueStored": false,
+  "retryAuthorized": false
+}

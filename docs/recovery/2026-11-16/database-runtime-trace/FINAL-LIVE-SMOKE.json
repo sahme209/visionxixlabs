@@ -1,0 +1,21 @@
+{
+  "automatedPass": false,
+  "releaseAccepted": false,
+  "failures": [
+    "public_journey_request_or_response_failed"
+  ],
+  "warnings": [],
+  "manualGates": {
+    "googleSignIn": "UNVERIFIED",
+    "emailDelivery": "UNVERIFIED",
+    "nativePairing": "UNVERIFIED",
+    "installedApplicationJourney": "UNVERIFIED"
+  },
+  "limits": [
+    "Public metadata/digests and redirect targets checked; installer bytes and signatures are not cryptographically verified.",
+    "Installer source SHA is not a website deployment SHA.",
+    "Provider availability is not successful authentication."
+  ],
+  "failedStage": "download_json_mac-arm",
+  "httpStatus": 503
+}

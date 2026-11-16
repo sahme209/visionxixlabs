@@ -1,0 +1,27 @@
+{
+  "scope": "public GET-only regression smoke and injected pure tests; no live requests executed",
+  "files": {
+    "scripts/check-production-product.mjs": "6ea8a243273d5efa18ce217f914ae56f99bf3073d0a4917deb97d0a73f0ca5db",
+    "lib/ops/__tests__/productionProductSmoke.test.ts": "3340c81155387364eeae65401162679aecec34d57ca657750290302047348d81"
+  },
+  "focusedPassed": 27,
+  "strictRootTypesExitCode": 0,
+  "releaseAcceptedAlwaysFalse": true,
+  "manualGates": [
+    "Google sign-in",
+    "email delivery",
+    "native pairing",
+    "installed application journey"
+  ],
+  "autonomyDegradedAllowedWithWarning": true,
+  "newRequestsInNormalCLI": 11,
+  "maxManifestRedirectRequests": 3,
+  "perRequestTimeoutMillis": 8000,
+  "largestResponseCapBytes": 1048576,
+  "manifestCapBytes": 524288,
+  "noDeploymentOrPublicationAuthority": true,
+  "evidence": {
+    "FOCUSED.log": "59959edb317a0714c4968f7bf080c656aab4b65a1070a0bf1919b791bbbfb03f",
+    "TYPES.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

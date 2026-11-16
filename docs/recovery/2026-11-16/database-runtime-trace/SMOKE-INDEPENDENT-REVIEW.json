@@ -1,0 +1,12 @@
+{
+  "review": "CLEAR",
+  "reviewer": "joined_compiler_final_review",
+  "packetSha256": "cd0a31706029c4936401a4b4dd32420a28b5a655deaf5a1cc1cc5a5750fb8e6f",
+  "allTwoSourceHashesMatched": true,
+  "actualRootTypesExitCode": 0,
+  "scope": "fixed publicGET collection and metadata/selectedasset/source/run/digest consistency only",
+  "manualGatesRemainUnverified": true,
+  "releaseAcceptedAlwaysFalse": true,
+  "noNativeInstallerOrSignatureCryptographicAcceptance": true,
+  "reviewActions": "file inspection and existing local strict types only; no production execution"
+}

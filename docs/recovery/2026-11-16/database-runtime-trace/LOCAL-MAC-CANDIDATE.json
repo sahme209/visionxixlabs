@@ -1,0 +1,16 @@
+{
+  "sourceSha": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+  "runId": "43878118864",
+  "version": "0.1.24",
+  "dmgSha256": "d102d8efc5afa3f97b11d8819eca73952531fe15f1724d65ffcf62aaafaad96d",
+  "downloadBytesMatch": true,
+  "codesignVerified": true,
+  "gatekeeperAccepted": true,
+  "isolatedCopySignatureVerified": true,
+  "volumeDetached": true,
+  "applicationOpened": true,
+  "exactExecutableProcessConfirmed": true,
+  "visibleLoginScreen": true,
+  "savedSignInVerified": false,
+  "realLoginStillRequired": true
+}

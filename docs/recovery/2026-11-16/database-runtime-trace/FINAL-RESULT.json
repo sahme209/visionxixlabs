@@ -1,0 +1,40 @@
+{
+  "numTotalTests": 21021,
+  "numPassedTests": 19877,
+  "numFailedTests": 0,
+  "numPendingTests": 1144,
+  "numTodoTests": 0,
+  "numTotalTestSuites": 3531,
+  "numPassedTestSuites": 3531,
+  "numFailedTestSuites": 0,
+  "success": true,
+  "vitestExitCode": 0,
+  "strictTypesExitCode": 0,
+  "codeInputsMatchedAfter": true,
+  "codeInputsSha256": "da5bd835511dcd99388819dd248dc803908e56507d27a6a8defab0100231b478",
+  "reportSha256": "cefeabcadfe8f9aa7cf59913029a6a504e2934225f773b1d9a1eeece98183264",
+  "allSourceChangesAreDiagnosticOrRegressionControls": true,
+  "productionFixEstablished": false,
+  "combinedOfflineBuild": {
+    "accepted": true,
+    "exitCode": 0,
+    "cleanupConfirmed": true,
+    "finalInputsMatched": true,
+    "packetSha256": "30068d7e5e21c0de724f202b143c037f3e92b9ae1fa42ddf55b130e997ae23b8",
+    "artifactReceiptSha256": "58c4eb8568c90fb12fac4f60890a7dd78673f7731be9b86f68d0d38e24abc5fb"
+  },
+  "combinedCompiledTlsTrace": {
+    "accepted": true,
+    "packetSha256": "e633ef1869f7e71aaa7ffe353200708c4d769507c8a066c0efa960da88334133",
+    "resultSha256": "e0f0aade4a8cf3d7ca0e8f02b5d1c2290baae2d0e9a882ad507f4acf464cc7bc",
+    "authOrSqlExecuted": false,
+    "productionFixEstablished": false
+  },
+  "ownerOrder": [
+    "functional login/download repair and visible verification",
+    "compact sign-in cleanup/provider circles",
+    "Exact scrolling",
+    "Governance"
+  ],
+  "frontendWorkHaltedUntilFunctionalRepair": true
+}

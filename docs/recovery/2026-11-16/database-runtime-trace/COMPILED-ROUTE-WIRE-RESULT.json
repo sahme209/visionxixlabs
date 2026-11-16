@@ -1,0 +1,48 @@
+{
+  "accepted": true,
+  "scope": "current_source_compiled_output_full_build_exit_unknown_not_vercel_artifact",
+  "results": [
+    {
+      "mode": "direct",
+      "actualCompiledRoute": true,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true
+    },
+    {
+      "mode": "pooler",
+      "actualCompiledRoute": true,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": true,
+      "searchPathPresent": true,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true
+    }
+  ],
+  "cleanupOwnedDirectoryRemoved": true,
+  "elapsedSeconds": 0.504,
+  "sourcePinsRevalidatedAfter": true,
+  "generatedFileCount": 410,
+  "runtimePackageCount": 21,
+  "compiledNamespaceFileCount": 3596,
+  "sourceCommit": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+  "sourceTree": "65967fbb20d9c590f876a3eee861abdb80738cbe",
+  "compiledArtifactReceipt": "/private/tmp/v19-current-compiled-route-zut07zj3/RECOVERED-ARTIFACT-INPUTS.json",
+  "compiledArtifactReceiptSha256": "06defe25c78739e61000e86682cc4dbfe8d9a0422767f869d0981c781588cfd5",
+  "wholeBuildExit": "UNKNOWN",
+  "vercelArtifactTested": false
+}

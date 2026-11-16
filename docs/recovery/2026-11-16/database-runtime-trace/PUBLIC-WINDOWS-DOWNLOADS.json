@@ -1,0 +1,15 @@
+{
+  "unauthenticatedDownloadsPassed": true,
+  "windowsInstallerFiles": [
+    "V19_0.1.24_x64-setup.exe",
+    "V19_0.1.24_x64_en-US.msi"
+  ],
+  "githubDigestsMatched": true,
+  "candidateManifestBytesMatched": true,
+  "detachedPublicSignaturesVerified": true,
+  "publicFingerprint": "857B2A06984CD231559F4BB47A9619F59D35D120",
+  "sourceSha": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+  "runId": "43878118864",
+  "windowsAuthenticodeSigned": false,
+  "websiteDownloadStillRequiresLiveVerification": true
+}
