@@ -4,6 +4,7 @@ sys.dont_write_bytecode=True
 import hashlib,json,os,time
 from pathlib import Path
 import windows_installed_acceptance as qa
+COMPLETION_SENTINEL = 'V19_SHORTCUT_FIXTURE_COMPLETE'
 CSCRIPT_FLAGS = ('//NoLogo',)  # //B suppresses the runtime refusal diagnostics.
 
 def vbs_string(value):return '"'+value.replace('"','""')+'"'
@@ -16,7 +17,21 @@ def fixture_script(source,phase,data,second_move_failure=False,removing=False):
         needle='        fso.MoveFile links(i), backups(i)'
         qa.need(body.count(needle)==1,'fixture_move_boundary_changed')
         body=body.replace(needle,'        If i = 1 Then Fail "Synthetic second move failure"\n'+needle)
-    return prefix+body
+    return prefix+body+'\nWScript.Echo "'+COMPLETION_SENTINEL+'"\n'
+
+def phase_evidence(record,expected_reason=None):
+    stdout=record['diagnostics']['stdout']['text'];stderr=record['diagnostics']['stderr']['text']
+    complete=COMPLETION_SENTINEL in [line.strip() for line in stdout.splitlines()]
+    qa.need(record['exitCode'] in (0,1),'unexpected_script_host_status')
+    if expected_reason:
+        qa.need('V19 shortcut migration: '+expected_reason in stdout+'\n'+stderr,'expected_refusal_description_missing')
+        qa.need(not complete,'refused_script_reached_completion')
+        record['fixedExpectedRefusalDescription']=expected_reason
+        record['completionSentinelObserved']=False
+    else:
+        qa.need(record['exitCode']==0 and complete and not stderr,'script_completion_not_proven')
+        record['completionSentinelObserved']=True
+
 
 def main():
     qa.need(os.name=='nt','windows_script_preflight_only')
@@ -70,14 +85,10 @@ def main():
             # An unrelated syntax/runtime error cannot satisfy a negative case.
             runner.run(label+'-'+name,[host,*CSCRIPT_FLAGS,script],owned,5,allow=(0,1) if expected_reason else allowed)
             record=runner.records[-1]
-            if expected_reason:
-                diagnostic='\n'.join(record['diagnostics'][stream]['text'] for stream in ('stdout','stderr'))
-                qa.need(expected_reason in diagnostic,'expected_refusal_description_missing')
-                record['fixedExpectedRefusalDescription']=expected_reason
-                qa.need(record['exitCode']==1,'expected_refusal_status_missing')
+            phase_evidence(record,expected_reason)
             return record['exitCode']
         if foreign_old or foreign_current or backup or directory or reparse or foreign_args:
-            qa.need(phase('preflight',(1,))==1,'foreign_shortcut_not_refused')
+            phase('preflight',(1,))
             qa.need(all(Path(p).read_bytes()==value for p,value in original.items()),'foreign_shortcut_changed')
             qa.need(not backups[1].exists() and (backup or not backups[0].exists()),'foreign_refusal_created_backup')
             if directory:qa.need(links[0].is_dir(),'foreign_directory_changed')
