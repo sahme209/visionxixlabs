@@ -1,0 +1,18 @@
+{
+  "accepted": true,
+  "stage": "/private/tmp/v19-startup-all-paths-ij3c9a8h",
+  "receiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+  "packetSha256": "2c6d48c3afae8018b2b8a856756d8f56197cadf5b5a85cdebf148fc6d9232108",
+  "phases": {
+    "website": {
+      "exitCode": 0,
+      "reason": null,
+      "cleanupConfirmed": true,
+      "logBytesObserved": 43976,
+      "logSha256": "28f3cb22299bbbe78c1e56a95f0e2bae93169438168c6eeb8b6d273bd7cc4be1",
+      "logPath": "/private/tmp/v19-startup-all-paths-ij3c9a8h/website.log"
+    }
+  },
+  "failure": null,
+  "finalInputsMatched": true
+}

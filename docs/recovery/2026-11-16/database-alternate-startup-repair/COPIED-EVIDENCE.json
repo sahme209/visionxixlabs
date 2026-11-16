@@ -1,0 +1,158 @@
+[
+  {
+    "copy": "LIVE-DIAGNOSTIC.json",
+    "source": "/private/tmp/v19-pr345-live-safe-diagnostic-result.json",
+    "sha256": "ca443a335c146c4bed879fed6056f392eb6df866056de73ae43febe15da6429d",
+    "bytes": 1411
+  },
+  {
+    "copy": "DIAGNOSTIC-MAIN-GREEN.json",
+    "source": "/private/tmp/v19-pr345-main-green-receipt.json",
+    "sha256": "63da07cd0c8a851cf36edd576e250716aa3aaeaa573d7f58270bc52b8823a695",
+    "bytes": 2396
+  },
+  {
+    "copy": "HISTORICAL-REGRESSION.json",
+    "source": "/private/tmp/v19-pre-november11-functional-regression-forensics/RESULT.json",
+    "sha256": "67a6458b8a5dc6f70fc183762fc92013ebd95ca4cb497714c1fc61086f4fd6ad",
+    "bytes": 8060
+  },
+  {
+    "copy": "CORE-INPUTS.json",
+    "source": "/private/tmp/v19-remote-public-scope-source-final-v2/INPUTS.json",
+    "sha256": "5f586b7b9f65ceda67cca03f09155a57e2b297b1db319228601431f8dfa5bfc3",
+    "bytes": 3925
+  },
+  {
+    "copy": "CORE-INDEPENDENT-REVIEW.json",
+    "source": "/private/tmp/v19-remote-public-scope-independent-final-review.json",
+    "sha256": "a74d6e87a20e4fbfac42469466692f1537052bba751ba1fa6c3e646ba8555b3f",
+    "bytes": 1939
+  },
+  {
+    "copy": "GATE-INPUTS.json",
+    "source": "/private/tmp/v19-required-product-gate-preparation/INPUTS.json",
+    "sha256": "7b88d74bcc3c1847cfeaf6ec45678d44a4110712254b08a10d5541fb3dc634ae",
+    "bytes": 1998
+  },
+  {
+    "copy": "GATE-INDEPENDENT-REVIEW-before-final-rebind.json",
+    "source": "/private/tmp/v19-required-product-gate-independent-source-review.json",
+    "sha256": "8b1d893acab4436d014a530bebdfa394afffa65809fb405e2d8bb3daaa81b6bb",
+    "bytes": 1758
+  },
+  {
+    "copy": "BROAD-VITEST-RESULT.json",
+    "source": "/private/tmp/v19-startup-all-paths-validation/VITEST-RESULT.json",
+    "sha256": "cf34c3d9b97630a5e301eb031e69f21e461fca926d4c8fd0158589197d6c092c",
+    "bytes": 242
+  },
+  {
+    "copy": "PG-UTILITY-SEMANTICS.json",
+    "source": "/private/tmp/v19-scope-sql-a2a357n7/RESULT.json",
+    "sha256": "18009383d4df03b4cad8771777baadc0364401df5226447cb397fe3e33bdcc84",
+    "bytes": 830
+  },
+  {
+    "copy": "PG-ADAPTER-RESULT.json",
+    "source": "/private/tmp/v19-remote-scope-owned-pg17-preparation/RESULT.json",
+    "sha256": "3a61676f01b05dffbbc11bab677968bc3e16611b08c7519724041b02672e0c5c",
+    "bytes": 1011
+  },
+  {
+    "copy": "PG-ADAPTER-INPUTS.json",
+    "source": "/private/tmp/v19-remote-scope-owned-pg17-preparation/INPUTS.json",
+    "sha256": "0d9a88fb82c643cb13a2c1a06e04a20fa8ee4cfc0160b5dc7d516b567e5757a1",
+    "bytes": 2255
+  },
+  {
+    "copy": "PG-ADAPTER-AUDIT.json",
+    "source": "/private/tmp/v19-remote-scope-owned-pg17-actual-evidence/AUDIT.json",
+    "sha256": "51ae6d81642f68e1d0a992636ef7c24b186e2908df35f25513e55a1a80461cad",
+    "bytes": 586
+  },
+  {
+    "copy": "DOCUMENT-PRESERVATION-before-compiled.json",
+    "source": "/private/tmp/v19-startup-all-paths-doc-preservation.json",
+    "sha256": "722344e9b6c8e35491ede943c6a378c9d5e1a65e6ab0660a02cd3690edc0f816",
+    "bytes": 2703
+  },
+  {
+    "copy": "GATE-INDEPENDENT-REVIEW.json",
+    "source": "/private/tmp/v19-required-product-gate-independent-source-review.json",
+    "sha256": "f9a8c2471e4fdeea57a3b6730db83f414cbb2c305fc13100704a5e0713f1455c",
+    "bytes": 2188
+  },
+  {
+    "copy": "OFFLINE-BUILD-RESULT.json",
+    "source": "/private/tmp/v19-startup-all-paths-offline-build/RESULT.json",
+    "sha256": "061813e1543bb1372224e4148eb35c0e0735a455f919d436eee451d99f1b9df5",
+    "bytes": 615
+  },
+  {
+    "copy": "FIRST-COMPILED-NATIVE-FAILED.json",
+    "source": "/private/tmp/v19-required-product-native-preparation/RESULT.json",
+    "sha256": "917da079cc45237e802b9f631c60fbd31b33035dbd0ce7fd23b92ca7d923e6ec",
+    "bytes": 5915
+  },
+  {
+    "copy": "CORRECTED-COMPILED-NATIVE-PASS.json",
+    "source": "/private/tmp/v19-required-product-native-cookie-preparation/RESULT.json",
+    "sha256": "ceadd042abcc93fb7260c4730b9b53218f4e311b0039884c7aa092003f18ec86",
+    "bytes": 9741
+  },
+  {
+    "copy": "CORRECTED-HARNESS-INDEPENDENT-REVIEW.json",
+    "source": "/private/tmp/v19-required-product-cookie-independent-bound-review.json",
+    "sha256": "a8e6112c5e3f0c8e8895518328dab7dbd5e315fa75eaa2e7358634842e7ae9e0",
+    "bytes": 946
+  },
+  {
+    "copy": "NATIVE-FIRST-INDEPENDENT-REVIEW.json",
+    "source": "/private/tmp/v19-required-product-native-independent-bound-review.json",
+    "sha256": "a1ac60485427231b8dc21f35d4d2a91cda436c4f413f82fc84416014ad23a945",
+    "bytes": 887
+  },
+  {
+    "copy": "FIRST-DOCKER-GATE-FAILED.json",
+    "source": "/private/tmp/v19-pr346-first-docker-gate-result.json",
+    "sha256": "6be2cfed98fdcb2e88078b820da721f6fcbb073f6f3fba0c6b814f5f226faaaf",
+    "bytes": 6081
+  },
+  {
+    "copy": "READINESS-PROTOCOL-RESULT.json",
+    "source": "/private/tmp/v19-postgres-readiness-repair/RESULT.json",
+    "sha256": "eb02ff74c2b9b176a279dbc21bccee422b43e4f510102ef6929ae941af46fbd2",
+    "bytes": 1327
+  },
+  {
+    "copy": "READINESS-PROBE-INPUTS.json",
+    "source": "/private/tmp/v19-postgres-readiness-repair/PROBE-INPUTS.json",
+    "sha256": "8dc864dc11dda9d5c8f1418f636aedf5dec3379811b76ab1de4549fec5ebfd4f",
+    "bytes": 482
+  },
+  {
+    "copy": "READINESS-SOURCE-INPUTS.json",
+    "source": "/private/tmp/v19-postgres-readiness-repair/SOURCE-INPUTS.json",
+    "sha256": "dfa1e18b212ecc36a2fa9982b522907f9fe58aaf5d12b9d0f26421cebd8ccb52",
+    "bytes": 459
+  },
+  {
+    "copy": "READINESS-PROBE.py",
+    "source": "/private/tmp/v19-postgres-readiness-repair/probe.py",
+    "sha256": "c32fcbd2e9a7a52907a0b4ef766767e9c5fded248033ef4418251a9bef08ce26",
+    "bytes": 4220
+  },
+  {
+    "copy": "CORRECTED-DOCKER-GATE-PASS.json",
+    "source": "/private/tmp/v19-pr346-corrected-docker-gate-pass.json",
+    "sha256": "d92cb6b75d54f6f23bc521bef23798f218377971c2e762aa1921935abea3d6cb",
+    "bytes": 8036
+  },
+  {
+    "copy": "GOOGLE-LINK-FOCUS-TEST-RESULT.json",
+    "source": "/private/tmp/v19-google-link-focus-review/RESULT.json",
+    "sha256": "4dac1984b2d0ed8dd41e8027e9499b3d22e7e99eebbef3aa8acc0ef86f1d0b5a",
+    "bytes": 1347
+  }
+]

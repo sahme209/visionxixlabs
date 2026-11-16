@@ -1,0 +1,30 @@
+{
+  "scope": "actual adapter helper on fresh Unix-only owned PG17; not remote transport/compiledHTTP/prod",
+  "accepted": true,
+  "cleanupConfirmed": true,
+  "root": "/private/tmp/v19-remote-scope-pg17-s4z0acng",
+  "clientEnvelope": {
+    "exitCode": 0,
+    "machineRows": 1,
+    "outputWithinBound": true
+  },
+  "client": {
+    "accepted": true,
+    "scope": "actual remote-scope helper+PrismaPg through owned Unix PG17; not factory remote TLS or compiled HTTP",
+    "checks": {
+      "hostileStartupDefaultScoped": true,
+      "cleanLeaseReuse": true,
+      "readOnlySerializableSavepoint": true,
+      "actualRollback": true,
+      "applicationFailureRolledBackAndReused": true,
+      "dirtyReleaseDiscarded": true,
+      "realCommitResponseLossRefusedDiscardedWithoutRetry": true,
+      "staleHandleIsolation": true,
+      "scriptRefused": true
+    },
+    "actualCommitAcknowledged": 1,
+    "adapterDisposed": true
+  },
+  "shadowUntouchedAndExactlyOneCommittedWrite": true,
+  "inputHashesUnchanged": true
+}

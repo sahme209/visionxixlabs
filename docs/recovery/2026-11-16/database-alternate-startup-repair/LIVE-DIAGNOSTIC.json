@@ -1,0 +1,44 @@
+{
+  "deploymentId": "dpl_6XTrxiiu1WgWJ3UeswoSPdSkUvA7",
+  "commit": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "state": "READY",
+  "liveAlias": {
+    "alias": "visionxixlabs.com",
+    "deploymentId": "dpl_6XTrxiiu1WgWJ3UeswoSPdSkUvA7",
+    "projectId": "prj_BwKc7V1daPJ938ZW2QKYxZsTkZnp"
+  },
+  "ownerPromotion": "call_4431fd290b7845209a6e12fc5eec0ff3",
+  "publicRequest": {
+    "startedAt": "2026-11-16T16:13:04.579659+00:00",
+    "curlExit": 0,
+    "httpStatus": 503,
+    "requestsIssued": 1,
+    "redirectsFollowed": false,
+    "status": "temporarily_unavailable"
+  },
+  "logObservation": {
+    "accepted": true,
+    "traceRecords": [
+      {
+        "databaseErrorClassification": "startup_search_path_rejected",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "pooled-or-other",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 0,
+        "databaseStartupOptionsRemoved": 0,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    ],
+    "rawRetained": false
+  },
+  "diagnosticPublicRequests": 1,
+  "diagnosticLogCalls": 1,
+  "approvalConsumed": true,
+  "additionalDeploymentAuthorized": false,
+  "privateSettingReads": 0,
+  "sqlActions": 0,
+  "productionFixEstablished": false
+}

@@ -1,0 +1,31 @@
+{
+  "scope": "one-line test synchronization only; unchanged UI/auth/database behavior and focus assertion",
+  "path": "app/auth/link-google/__tests__/GoogleLinkClient.test.ts",
+  "baseHead": "4fc4e1ac85e0cb68a239007e7788189365a1cf54",
+  "beforeSha256": "83bafd0fe7ce65c4a9a60e188a961c8f5ff983e520a674c404ea56f73763666f",
+  "afterSha256": "d60f3171eca56095f08b3c3ef3f3c6232077db668207be494c02be06f6f4f8f7",
+  "targetedPassed": 3,
+  "negativeControl": {
+    "mechanism": "outside Vite transform replaces component programmatic focus with inert getBoundingClientRect; no source mutation",
+    "selectedCases": 1,
+    "failedAtExactFocusAssertion": true,
+    "otherCasesSkipped": 2
+  },
+  "race": "Status DOM commit may precede passive focus effect after busy becomes false. Await the actual activeElement target, not only status text.",
+  "productFilesChanged": false,
+  "stagingPushDocsBuildSqlEnvironmentOrDeploymentActions": false,
+  "files": {
+    "RED.log": {
+      "sha256": "90b848feb4c2bc9cadaade4ed8acda72af098b775c4a093922637190b4873b3e",
+      "bytes": 13431
+    },
+    "GREEN.log": {
+      "sha256": "23be53af9bc671b81a6e34b26fc5b918f4fd9921865656796f2b93f87f9d321b",
+      "bytes": 880
+    },
+    "no-focus.config.mts": {
+      "sha256": "de9d4906f6c2e21d2fedd760857e003c9f8f74b804e7caced3a14c0f1073bad8",
+      "bytes": 493
+    }
+  }
+}

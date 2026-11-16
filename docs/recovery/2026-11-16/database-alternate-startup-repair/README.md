@@ -1,0 +1,13 @@
+# Alternate database startup repair — local compiled qualification passed
+
+The live diagnostic grounded the failing alternate route; the reviewed local six-file repair and one accepted offline production Next build are recorded here. All seven owned compiled/driver cases passed after a specifically diagnosed cookie-parser fixture correction. The original failed attempt and exact two harness-only overlays are retained. The accepted `.next` and six backend files were unchanged; no second build.
+
+See FINAL-LOCAL-RESULT.json for scoped test counts and limits, FINAL-CODE-INPUTS.json for all14 current source inputs, and COMPILED-EXECUTION-BINDINGS.json for external full-inventory hashes. Bounded safe receipts are copied; no raw logs, credentials, private keys or large build inventories are committed. The earlier broad19,916 results precede final fixture changes;13 final focused tests and strict types pass.
+
+The recurring same-build gate is mandatory in existing Test/build, not a new authority. Real Google/mail/native pairing, hosted-pooler acceptance and actual production repair remain unverified. Functional login/download verification comes before sign-in appearance cleanup, Exact scroll and Governance. No production/deployment/private action is included.
+
+## First Docker run and readiness correction
+
+The first GitHub Docker run failed direct HTTP admin_connect after four compiled wire passes. The controller's default socket pg_isready could succeed against the temporary init server. Only explicit final TCP readiness arguments were added. Actual native PostgreSQL reproduces socket0/TCP2, finalTCP0, stoppedTCP2 with no SQL/build;14 focused tests and strict types pass. Corrected Docker CI remains pending. READINESS-CORRECTION.json and both runtime histories preserve these separate scopes.
+
+Latest checkpoint: all7 required Docker compiled journeys PASS at4fc4e1a. A separate UI focus-test timing assertion is corrected without changing product code;3 existing tests PASS and the no-focus negative control still fails. Fresh complete exact-head CI remains pending. No deployment/production acceptance follows from these results.

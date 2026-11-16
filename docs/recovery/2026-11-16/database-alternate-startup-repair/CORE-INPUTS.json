@@ -1,0 +1,89 @@
+{
+  "root": "/private/tmp/v19-database-startup-all-paths",
+  "base": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "scope": "remote alternate startup/public transaction scope repair; source and pure installed-driver tests only",
+  "files": [
+    {
+      "path": "lib/database/remotePublicScope.ts",
+      "sha256": "9a62626214f07841bfb8df2275dad571fe05b93eeb5bd1b3be9aa289da26989a",
+      "bytes": 11138,
+      "frozenCopy": "source/lib/database/remotePublicScope.ts"
+    },
+    {
+      "path": "lib/database/createDatabaseClient.ts",
+      "sha256": "c4fccd83270f6451462b6b12793c7718388184d5c201be1b0522dce78a9abb40",
+      "bytes": 1818,
+      "frozenCopy": "source/lib/database/createDatabaseClient.ts"
+    },
+    {
+      "path": "lib/database/directNeonSession.ts",
+      "sha256": "c819b09d18e0ef3dee17434ae45ef57e7883830c4de99a9eb4af3f50c020a73a",
+      "bytes": 4106,
+      "frozenCopy": "source/lib/database/directNeonSession.ts"
+    },
+    {
+      "path": "lib/database/__tests__/remotePublicScope.test.ts",
+      "sha256": "4e30e08348b300b2b937951b48aa1a7c2389a6ec43815fe5dac2275cad2c0f62",
+      "bytes": 19092,
+      "frozenCopy": "source/lib/database/__tests__/remotePublicScope.test.ts"
+    },
+    {
+      "path": "lib/database/__tests__/createDatabaseClient.test.ts",
+      "sha256": "6fa93d63023214b9a4f18124502eeda7e66b2895ae36c075a4e008325abae1fa",
+      "bytes": 1890,
+      "frozenCopy": "source/lib/database/__tests__/createDatabaseClient.test.ts"
+    },
+    {
+      "path": "lib/database/__tests__/directNeonSession.test.ts",
+      "sha256": "b425c427ba4e2bfcd57c9a38c78ca888dd5a9839624bb80fafbe46add34d49ae",
+      "bytes": 6990,
+      "frozenCopy": "source/lib/database/__tests__/directNeonSession.test.ts"
+    }
+  ],
+  "focusedPassed": 80,
+  "focusedFiles": 5,
+  "newHelperTests": 29,
+  "strictRootTypesExitCode": 0,
+  "redProofs": [
+    "actual pre-fix remote startup options regression",
+    "in-memory removal of only release/remove hooks fails actual pg-pool late-connect/no-query cleanup regression",
+    "actual installed Pool max1 concurrent start with first private-contract failure; queued second start previously fulfilled, now rejects before BEGIN and both clients end"
+  ],
+  "logs": {
+    "originalStartupRed": {
+      "path": "/private/tmp/v19-remote-public-scope-red.log",
+      "sha256": "ec353b00d086b3295f2df5ee81c92991af97e1c9d653844d064c9836786c2747",
+      "bytes": 1659
+    },
+    "noQueryLeaseCounterfactualRed": {
+      "path": "/private/tmp/v19-remote-public-scope-lease-red.log",
+      "sha256": "719acb26b42fb24808d12b3e5d03b7b4b6641149408452cf133eee62af65757a",
+      "bytes": 5535
+    },
+    "focusedGreen": {
+      "path": "/private/tmp/v19-remote-public-scope-focused-v2.log",
+      "sha256": "335cdd295609842ddae6622e4f4b1e3926df9fcd2dd93a7b8b1a4921d8f87157",
+      "bytes": 1370
+    },
+    "strictRootTypes": {
+      "path": "/private/tmp/v19-remote-public-scope-types-v2.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    "queuedIncompatibleActualRed": {
+      "path": "/private/tmp/v19-remote-public-scope-incompatible-red.log",
+      "sha256": "b951c94ab60136f5ff22e856248ae2bfefcc5bd83a38d44f579037252c434b09",
+      "bytes": 5469
+    }
+  },
+  "noActualSqlNetworkNativeBuildOrProductionActions": true,
+  "remainingRequired": [
+    "independent final source review",
+    "actual owned PG17 remote alternate hostile search_path/READ ONLY/savepoint/isolation/cleanup tests",
+    "actual compiled HTTP login/status/download mandatory gates",
+    "real deployed verification and owner Google/native journey"
+  ],
+  "revision": "queued incompatible contract rejection before BEGIN + current lease guard after SHOW",
+  "priorFrozenPacket": "/private/tmp/v19-remote-public-scope-source-final/INPUTS.json",
+  "priorFrozenPacketSha256": "abdf79075f40e8436fe272b096e51e21c47e42f30b8ccb0842b0359e7443ce4e"
+}

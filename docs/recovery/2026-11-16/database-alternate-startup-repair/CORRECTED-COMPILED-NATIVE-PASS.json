@@ -1,0 +1,295 @@
+{
+  "accepted": true,
+  "failure": null,
+  "ownedDirectory": "/private/tmp/axiom-required-product-native-3bri3gss",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.058,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.385,
+      "logSha256": "66f45d3d34e7cff5fb1d614c048e2bd990e67eab8fda4387516be6388e63ffe3"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "b46956ed45c2b6dc944cc1f4615b44b5a9a065199f6a6d8c3d8da15e6629955f"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.112,
+      "logSha256": "4819c6396665c76d43e8e5b928bde48d625993b56245f67bd179fd0c42b26ef2"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.052,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "wire-profile-preflight",
+      "exit": 0,
+      "seconds": 0.058,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "wire-old-control",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "22fa4f5d065b6c904cc4353344c975ae347b2fcd26a7b07567e4bd75245154e8"
+    },
+    {
+      "phase": "wire-direct",
+      "exit": 0,
+      "seconds": 0.218,
+      "logSha256": "fbc496dc48221393efdb1552d404daec3ee18199102df0362ec91dd34d6b967f"
+    },
+    {
+      "phase": "wire-pooler",
+      "exit": 0,
+      "seconds": 0.221,
+      "logSha256": "daf64ce55ed2107ca63284e0fca8be78c2ce5bca32c8f078605b0fca0527f251"
+    },
+    {
+      "phase": "wire-unknown",
+      "exit": 0,
+      "seconds": 0.222,
+      "logSha256": "243f8dcf22dd3b8dac15383c5ad7c3fed1648d00b9227e2f91b41e8e0d909c0b"
+    },
+    {
+      "phase": "compiled-http-direct",
+      "exit": 0,
+      "seconds": 1.087,
+      "logSha256": "7fe5faac05f56a0216abb57a521768e6ea2f6f6b28cc83729a3bc851c0cfe8be"
+    },
+    {
+      "phase": "compiled-http-alternate",
+      "exit": 0,
+      "seconds": 1.141,
+      "logSha256": "ce85574729eac96fcbf5cbb1675a1bef3a8db9026824baf7858c6c78a5502ece"
+    },
+    {
+      "phase": "remote-transactions",
+      "exit": 0,
+      "seconds": 0.274,
+      "logSha256": "26ce0376c0cf3dea37d3081206d891b0228175907d1a4db64bd3e1b9505b71ba"
+    },
+    {
+      "phase": "assess-seven-cases",
+      "exit": 0,
+      "seconds": 0.053,
+      "logSha256": "c1d25fba647aa82a2ae4d19ff9e3273a634df622f2d5dc4ba4e097a170a53e0c"
+    }
+  ],
+  "cases": {
+    "wire-old-control": {
+      "mode": "old-control",
+      "actualCompiledRoute": false,
+      "oldStartupControl": true,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": true,
+      "searchPathPresent": true,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 0,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true
+    },
+    "wire-direct": {
+      "mode": "direct",
+      "actualCompiledRoute": true,
+      "oldStartupControl": false,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true,
+      "trace": {
+        "databaseErrorClassification": "postgres_protocol_08P01",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "direct-neon",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 1,
+        "databaseStartupOptionsRemoved": 1,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    },
+    "wire-pooler": {
+      "mode": "pooler",
+      "actualCompiledRoute": true,
+      "oldStartupControl": false,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true,
+      "trace": {
+        "databaseErrorClassification": "postgres_protocol_08P01",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "pooled-or-other",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 0,
+        "databaseStartupOptionsRemoved": 0,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    },
+    "wire-unknown": {
+      "mode": "unknown",
+      "actualCompiledRoute": true,
+      "oldStartupControl": false,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true,
+      "trace": {
+        "databaseErrorClassification": "postgres_protocol_08P01",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "pooled-or-other",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 0,
+        "databaseStartupOptionsRemoved": 0,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    },
+    "compiled-http-direct": {
+      "accepted": true,
+      "compiledProductionServer": true,
+      "actualOwnedPostgres": true,
+      "strictRequireConfigured": true,
+      "googleOAuthVerified": false,
+      "installerAvailable": false,
+      "productionAccess": false,
+      "googleLinkIntentExplicitlySynthetic": true,
+      "googleLinkDoesNotAttestGoogle": true,
+      "liveMailAttempted": false,
+      "statusStoresOperational": true,
+      "googleLinkHttp": {
+        "explicitlySyntheticIntent": true,
+        "realGoogle": false,
+        "cookieOriginCsrfAndBodyBoundaries": true,
+        "mailAbsentTruthful503": true,
+        "verifiedPasswordLinksCanonicalUser": true,
+        "intentConsumedOnce": true,
+        "callbackUnchanged": true,
+        "browserCookieCleared": true,
+        "noPlatformSessionMint": true,
+        "replayRefused": true,
+        "compiledPageHttp200": true
+      },
+      "passwordVerificationAndCanonicalSession": true,
+      "wrongPasswordAndUnverifiedRefused": true,
+      "membershipBootstrap": true,
+      "downloadStorageGate": "503_missing_then_404_no_external_asset_then_503_removed",
+      "fourPlatformFictionalAssets": false,
+      "syntheticTransport": "direct",
+      "hostileRoleDefaultConfigured": true,
+      "actualCompiledAppTlsSessions": true,
+      "buildId": "Gfi5su9vnZUa1e5_E6Jpk"
+    },
+    "compiled-http-alternate": {
+      "accepted": true,
+      "compiledProductionServer": true,
+      "actualOwnedPostgres": true,
+      "strictRequireConfigured": true,
+      "googleOAuthVerified": false,
+      "installerAvailable": false,
+      "productionAccess": false,
+      "googleLinkIntentExplicitlySynthetic": true,
+      "googleLinkDoesNotAttestGoogle": true,
+      "liveMailAttempted": false,
+      "statusStoresOperational": true,
+      "googleLinkHttp": {
+        "explicitlySyntheticIntent": true,
+        "realGoogle": false,
+        "cookieOriginCsrfAndBodyBoundaries": true,
+        "mailAbsentTruthful503": true,
+        "verifiedPasswordLinksCanonicalUser": true,
+        "intentConsumedOnce": true,
+        "callbackUnchanged": true,
+        "browserCookieCleared": true,
+        "noPlatformSessionMint": true,
+        "replayRefused": true,
+        "compiledPageHttp200": true
+      },
+      "passwordVerificationAndCanonicalSession": true,
+      "wrongPasswordAndUnverifiedRefused": true,
+      "membershipBootstrap": true,
+      "downloadStorageGate": "503_missing_then_200_fictional_assets_then_503_removed",
+      "fourPlatformFictionalAssets": true,
+      "syntheticTransport": "alternate",
+      "hostileRoleDefaultConfigured": true,
+      "actualCompiledAppTlsSessions": true,
+      "buildId": "Gfi5su9vnZUa1e5_E6Jpk"
+    },
+    "remote-transactions": {
+      "accepted": true,
+      "actualPostgres": true,
+      "hostileDefaultsPublic": true,
+      "twoRealBackendSessions": true,
+      "readOnlyAfterShow": true,
+      "isolationAndSavepoint": true,
+      "failedQueryRollback": true,
+      "simulatedCommitDeliveryLoss": true,
+      "committedEffectExactlyOnce": true,
+      "dirtyLeaseDiscarded": true,
+      "ownedPoolDisposed": true
+    }
+  },
+  "sourceSha": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "acceptedBuildReceiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+  "compiledTreeSha256": "11bd47997c5af875cf106b2284425f9d3d5b8fd3d93a165bf462ca49413e61fb",
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

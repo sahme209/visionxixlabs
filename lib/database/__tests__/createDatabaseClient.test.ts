@@ -21,3 +21,9 @@ it("an explicitly configured client does not connect during construction", async
 it("rejects an invalid target with a fixed error before constructing a usable client",()=>{
   expect(()=>createDatabaseClient("https://fixture:DO_NOT_LOG@other.invalid/database")).toThrow("postgres_connection_configuration_unavailable");
 });
+
+it("remote alternate factory remains lazy and does not create or use a pool at construction",async()=>{
+ const network=vi.spyOn(Socket.prototype,"connect").mockImplementation(()=>{throw new Error("unexpected_network_access")});
+ const client=createDatabaseClient("postgresql://fixture@synthetic.invalid/owned_fixture?sslmode=require");
+ try{expect(network).not.toHaveBeenCalled();}finally{await client.$disconnect();}
+});

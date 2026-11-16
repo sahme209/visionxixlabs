@@ -1,0 +1,20 @@
+{
+  "scope": "fresh fictional socket-only PostgreSQL17 utility semantics; not application/remote transport acceptance",
+  "production": false,
+  "accepted": true,
+  "cleanupConfirmed": true,
+  "root": "/private/tmp/v19-scope-sql-a2a357n7",
+  "showBeforeReadOnly": true,
+  "showBeforeSerializable": true,
+  "publicInsideTransaction": true,
+  "hostileDefaultRestoredAfterCommit": true,
+  "savepoints": true,
+  "nontransactionalCreateDatabase": true,
+  "toolHashesUnchanged": true,
+  "toolSha256": {
+    "postgres": "4a709ce322875e49f3094d6b724f2cda0d47bf41b88487f7dc8db14f88bcf61e",
+    "initdb": "556ae72cec9e0444663fe76bf93314a4dce2d9b86a984887547c7f9b3492282c",
+    "pg_ctl": "c6871255ea631316b8efafccd09755ab82afd3492595dd5771dd51ede4861799",
+    "psql": "287acb33520bc2f4a9e97d3c44ef996924b803c3186c85ee90c2d0b72f3be973"
+  }
+}

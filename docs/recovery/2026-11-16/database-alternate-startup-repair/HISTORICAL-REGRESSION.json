@@ -1,0 +1,116 @@
+{
+  "scope": "read-only local Git objects and immutable current source, no network/private/config/SQL/build/test/mutation",
+  "historyRepository": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion",
+  "diagnosticWorktreeShallow": true,
+  "historyRepositoryShallow": false,
+  "commits": {
+    "beforeNov10AndNov11FirstParent": {
+      "commit": "e3012f3482497748add86e44db87e237cc0e7515",
+      "authorDate": "2026-11-09T16:26:35-05:00",
+      "subject": "Merge pull request #314 from sahme209/docs/codex-handoff"
+    },
+    "immediatePrePrisma": {
+      "commit": "a99c053f7af516c3a870512d461c9fa26422a40d",
+      "authorDate": "2026-11-11T16:56:39-05:00",
+      "subject": "Merge pull request #320 from sahme209/deps/audit-fix-43105529328"
+    },
+    "startupOptionIntroduction": {
+      "commit": "4fbbb5db186ba9bf2a2e614526abcda0ab52c493",
+      "authorDate": "2026-11-11T17:53:11-05:00",
+      "subject": "refactor: migrate Prisma imports and preserve explicit datasource arguments"
+    },
+    "prisma7Merge": {
+      "commit": "54c0f1c5ab7cfa033ad2e8c2a75166ac63228b68",
+      "authorDate": "2026-11-11T19:39:50-05:00",
+      "subject": "Merge pull request #321 from sahme209/deps/audit-fix-43115527436"
+    }
+  },
+  "currentSource": {
+    "mainCommit": "f05c307b4274eee9a343ee51caa02f4f76be8458",
+    "matchingLocalCommit": "0951a111e83ebbca195e449efcc0443a77bc59d2",
+    "tree": "65967fbb20d9c590f876a3eee861abdb80738cbe"
+  },
+  "paths": {
+    "lib/db.ts": {
+      "preNov10Sha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+      "prePrismaSha256": "c03c925e7154dadcef4b1e6ea8e29fdb257fa02b95768f23e3cb7c6be5671bf4",
+      "postPrismaMergeSha256": "db3d7d757dde56acd8bc539560ea38d99e376b560a4c353d47458597b7672e02",
+      "currentMainTreeSha256": "db3d7d757dde56acd8bc539560ea38d99e376b560a4c353d47458597b7672e02",
+      "preNov10ToImmediatePrePrismaEqual": true,
+      "prismaMigrationPreserved": false,
+      "currentEqualsPrePrisma": false
+    },
+    "lib/auth.ts": {
+      "preNov10Sha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "prePrismaSha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "postPrismaMergeSha256": "e1bc7aa3b9143459e6c3e6d41cbedf3ce69d71d1a7303645d0d30202c3c2fe91",
+      "currentMainTreeSha256": "5ae62e52b24048d6b505388588fd9dea017146e0e2840d4178821e002d096b93",
+      "preNov10ToImmediatePrePrismaEqual": true,
+      "prismaMigrationPreserved": true,
+      "currentEqualsPrePrisma": false
+    },
+    "lib/desktop/desktopRuntimeReadiness.ts": {
+      "preNov10Sha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+      "prePrismaSha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+      "postPrismaMergeSha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+      "currentMainTreeSha256": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+      "preNov10ToImmediatePrePrismaEqual": true,
+      "prismaMigrationPreserved": true,
+      "currentEqualsPrePrisma": true
+    },
+    "app/api/desktop/download/route.ts": {
+      "preNov10Sha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+      "prePrismaSha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+      "postPrismaMergeSha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+      "currentMainTreeSha256": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+      "preNov10ToImmediatePrePrismaEqual": true,
+      "prismaMigrationPreserved": true,
+      "currentEqualsPrePrisma": true
+    },
+    "lib/desktop/releaseManifest.ts": {
+      "preNov10Sha256": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25",
+      "prePrismaSha256": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25",
+      "postPrismaMergeSha256": "5a84a42e1514f7f45bfa1e25c4769ff7a44e8886332e4cdc65fcc42b68ab1b25",
+      "currentMainTreeSha256": "f51f3718c52846eb3740fbe21e8e094bb60911f1ed960560f70b018920852c55",
+      "preNov10ToImmediatePrePrismaEqual": true,
+      "prismaMigrationPreserved": true,
+      "currentEqualsPrePrisma": false
+    },
+    "lib/database/postgresConnectionPolicy.ts": {
+      "introducedAtPrismaMergeSha256": "dd7e86343d56e1ac63efb1c48a7b4abe62fe7fc9bf48a3418a205bfcf96d5905",
+      "currentMainTreeSha256": "b099c8fd79fce627295417c0d073ebab07b6d0e0d4712642193da1a319dfc844"
+    },
+    "lib/database/createDatabaseClient.ts": {
+      "introducedAtPrismaMergeSha256": "21788a0afce4277f082e5ab5c272fdffe03eec26deea766457dc105f2e979188",
+      "currentMainTreeSha256": "450bf63f3c17b4f53e8a5a09dab147d81225b9534ead5a2e9fe271611e0c108f"
+    }
+  },
+  "firstParentEvidence": [
+    "a99c053f7af516c3a870512d461c9fa26422a40d 2026-11-11T16:56:39-05:00 Merge pull request #320 from sahme209/deps/audit-fix-43105529328",
+    "77d932c5526077b74fac488e364cdc146d5aa2d1 2026-11-11T16:35:20-05:00 Merge pull request #319 from sahme209/deps/audit-fix-43092773452",
+    "172bf5ee3363176f99911f1786b1c15836b90c44 2026-11-11T14:54:37-05:00 Merge pull request #317 from sahme209/deps/audit-fix-43089439933",
+    "af02095286a7fd5ab63f9486a56a1410363dc3e3 2026-11-11T14:40:19-05:00 Merge pull request #315 from sahme209/deps/audit-fix-43087514434",
+    "e3012f3482497748add86e44db87e237cc0e7515 2026-11-09T16:26:35-05:00 Merge pull request #314 from sahme209/docs/codex-handoff",
+    "a344f4f601375257b00d75273ed927fd7e080de4 2026-11-09T16:00:32-05:00 Merge pull request #313 from sahme209/deps/next-16.4.5"
+  ],
+  "findings": [
+    "November9 first-parent tip and immediate prePrisma November11 baseline have identical database/auth/download/readiness/manifest files. Dates identify source history, not a confirmed deployed artifact.",
+    "PR321 introduced application startup options=-c search_path=public and PrismaPg adapter; auth and readiness/download behavior were unchanged by that migration.",
+    "Readiness five-storage-query gate predates November10/11. Download503 is coupled to shared database refusal, not a newly introduced download readiness gate.",
+    "PR338 bb2da7c adds direct-host-only startup option deletion plus awaited qualified public search_path initialization with exact ACK before client handoff.",
+    "PR339 56c13d0 preserves direct startup repair and adds strict channel_binding=require enforcement and canonical Google-subject identity/recovery security.",
+    "URL parser/hostname handling, local-only Unix host-query override, and production target selection were not changed by PR338/339 except direct classification and strictbinding support.",
+    "Global prisma reuse predates the migration; production source contains no writer to that global. Isolated-target priority remains unchanged.",
+    "Google previously email-upserted personal OAuth accounts without stable provider-subject binding. Current verified claims/subject binding, canonicalJWT and proof-based existing-account recovery must not be rolled back.",
+    "Local actual compiled TLS fixtures prove current recognized-direct source emits no startup options; production exact08P01 still contradicts that path. A selected record matching direct hostname does not establish deployed captured effective client/config."
+  ],
+  "recommendation": "No known safe narrow source restoration resolves the CURRENT direct-path contradiction. Do not broadly revert Prisma/security/auth or simply remove options while weakening raw-query public-schema safety. Proceed reviewed value-free diagnostics source PR; any actual diagnostic production deployment remains an owner decision under existing controls. Observe actual client route before proposing a repair.",
+  "notEstablished": [
+    "Pre-November source was actually the deployed working artifact",
+    "First failing production deployment",
+    "Current effective deployed config/client identity",
+    "Real Google/email/native pairing success",
+    "Production resolution"
+  ],
+  "noSourceOrIndexWrites": true
+}

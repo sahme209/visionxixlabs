@@ -121,6 +121,12 @@ jobs:
           NODE_OPTIONS: --max-old-space-size=8192
         run: npm run build
 
+      # Exercise these emitted routes before this same build can pass. Synthetic
+      # owned TLS/Postgres and identity/release fixtures; no hosted credentials.
+      - name: Required compiled login and download journeys
+        timeout-minutes: 6
+        run: node scripts/check-compiled-product-journeys.mjs
+
   # Keeps the required status check name stable: passes only if every job passed.
   test:
     name: Typecheck + Vitest

@@ -1,7 +1,8 @@
 import { newDatabaseRuntimeTrace } from "./databaseRuntimeTrace.ts";
 import { PrismaPg } from "@prisma/adapter-pg";
 import { PrismaClient } from "../prismaClient.ts";
-import { directNeonSessionOptions } from "./directNeonSession.ts";
+import { connectRemotePublicScope } from "./remotePublicScope.ts";
+import { directNeonSessionOptions, needsRemotePublicScope } from "./directNeonSession.ts";
 import { postgresConnectionOptions } from "./postgresConnectionPolicy.ts";
 
 /** Construction is lazy configuration, never authorization or resource custody.
@@ -22,11 +23,12 @@ export function createDatabaseClient(target: string | undefined): PrismaClient {
     tlsVerificationConfigured: options.ssl !== false && options.ssl.rejectUnauthorized === true,
     channelBindingRequired: options.requireChannelBinding === true,
   });
-  const driver = new PrismaPg(directNeonSessionOptions(options, trace.observe), { schema: "public" });
+  const config = directNeonSessionOptions(options, trace.observe);
+  const driver = needsRemotePublicScope(options) ? null : new PrismaPg(config, { schema: "public" });
   // Expose only the query adapter contract, never migration/shadow-DB methods.
   const client = new PrismaClient({ adapter: {
-    provider: "postgres", adapterName: driver.adapterName,
-    connect: () => driver.connect(),
+    provider: "postgres", adapterName: driver?.adapterName ?? "@prisma/adapter-pg",
+    connect: () => driver ? driver.connect() : connectRemotePublicScope(config),
   } });
   trace.register(client);
   return client;

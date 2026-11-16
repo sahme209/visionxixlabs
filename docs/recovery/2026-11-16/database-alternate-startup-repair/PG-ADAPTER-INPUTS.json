@@ -1,0 +1,20 @@
+{
+  "scope": "PREPARATION ONLY; root review before one owned local execution; no production/nativeapp/compile",
+  "files": {
+    "/private/tmp/v19-remote-scope-owned-pg17-preparation/client.cjs": "e04267a3655de35ad63238a93190badb9cf88de4d89b472d2e602c362b466a56",
+    "/private/tmp/v19-remote-scope-owned-pg17-preparation/run.py": "d09b4b46d61d7da28f56cb7a27d164d44657fa1038f223cf7b9f817581741190",
+    "/Users/samirahmed/.nvm/versions/node/v24.21.0/bin/node": "e4b5a3af0e05c75de2eae013904145f40fe7fc2a6e6f17510128bf45cca4e79b",
+    "/opt/homebrew/opt/postgresql@17/bin/postgres": "4a709ce322875e49f3094d6b724f2cda0d47bf41b88487f7dc8db14f88bcf61e",
+    "/opt/homebrew/opt/postgresql@17/bin/initdb": "556ae72cec9e0444663fe76bf93314a4dce2d9b86a984887547c7f9b3492282c",
+    "/opt/homebrew/opt/postgresql@17/bin/pg_ctl": "c6871255ea631316b8efafccd09755ab82afd3492595dd5771dd51ede4861799",
+    "/opt/homebrew/opt/postgresql@17/bin/psql": "287acb33520bc2f4a9e97d3c44ef996924b803c3186c85ee90c2d0b72f3be973",
+    "/private/tmp/v19-database-startup-all-paths/lib/database/remotePublicScope.ts": "9a62626214f07841bfb8df2275dad571fe05b93eeb5bd1b3be9aa289da26989a",
+    "/private/tmp/v19-database-startup-all-paths/node_modules/pg/lib/client.js": "ad6aa93c26b0bf26db1f2ebe74216212790a04c41af5585c63760f9fa8322a32",
+    "/private/tmp/v19-database-startup-all-paths/node_modules/pg-pool/index.js": "6f304776edaabde2954cbf8c4366fa6d9512bfba0e408e78cc56b3c46c69d058",
+    "/private/tmp/v19-database-startup-all-paths/node_modules/pg-pool/package.json": "0a9924def9e06f791b09a44eaefb227f323a39199887f6ce17b44cb5a9193134",
+    "/private/tmp/v19-database-startup-all-paths/node_modules/@prisma/adapter-pg/package.json": "0ab2764456c5b1c84a3a7d0ac815f66450913241f6b47e453217aaa4bca17998",
+    "/private/tmp/v19-database-startup-all-paths/node_modules/@prisma/adapter-pg/dist/index.js": "d57ac2ea38047c648b0f3b4b8012031b5adaa9f919dbb21419a4153f7e02d3c4",
+    "/private/tmp/v19-database-startup-all-paths/node_modules/@prisma/adapter-pg/dist/index.mjs": "e6879b3429f9efade5696321da768476fd4710f2aff7de95c01cca15d6a8d1d1"
+  },
+  "safeFailureObservability": "nine fixed currentCheck names, completed booleans, closed error categories; parsed false result saved before refusal"
+}

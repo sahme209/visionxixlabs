@@ -1,0 +1,62 @@
+{
+  "schema": "axiom.compiled-product-gate-source-preparation/1",
+  "root": "/private/tmp/v19-database-startup-all-paths",
+  "sourceHead": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "files": [
+    {
+      "path": ".github/workflows/test.yml",
+      "sha256": "d79420df07c50a6f861e4b6b3184f90ae07f77b22c80d5046cdd035ace3b750f"
+    },
+    {
+      "path": "scripts/check-compiled-product-journeys.mjs",
+      "sha256": "1e065c885a7d2efcf1e32999bfdd44edc2c7408363f170bd75e77cddf8653642"
+    },
+    {
+      "path": "scripts/fixtures/compiled-product-http.cjs",
+      "sha256": "ca8350999253e566ff0e597aeda0f7bda38dfbf806fd33f22c1f091808102fb0"
+    },
+    {
+      "path": "scripts/fixtures/compiled-product-wire.cjs",
+      "sha256": "5bee47beffa479eec21854e57ed86b8f17e1271bffffedf1793b07e16ca1ec8f"
+    },
+    {
+      "path": "scripts/fixtures/compiled-product-transactions.cjs",
+      "sha256": "5b071314b135335e0032a69c35595600e3f7a89f2eed00df14f536ae93fcf5f7"
+    },
+    {
+      "path": "scripts/fixtures/compiled-product-diagnostics.cjs",
+      "sha256": "b7132a75c76cd711ba49913f7073b9b19370c0a1da6578c05ee13600981cf52f"
+    },
+    {
+      "path": "scripts/fixtures/compiled-product.sql",
+      "sha256": "dacedbf54d59a9f4d425a2a6067547e91f4238bca0f1f2806d02f4ee5b0e58fd"
+    },
+    {
+      "path": "lib/ops/__tests__/compiledProductJourneyGate.test.ts",
+      "sha256": "cb411deaa7d86200a8dcc7fe893465fffe5d705cd5b05acc9e3c3eed29ac3732"
+    }
+  ],
+  "checks": {
+    "vitestPure": 12,
+    "strictRootTypesExit": 0,
+    "javascriptSyntaxExit": 0
+  },
+  "execution": "NOT_RUN",
+  "limits": {
+    "existingBuildJobMinutes": 20,
+    "newStepMinutes": 6,
+    "activeSeconds": 285,
+    "totalSeconds": 330,
+    "wireCaseSeconds": 30,
+    "httpCaseSeconds": 75,
+    "transactionCaseSeconds": 45
+  },
+  "caseCount": 7,
+  "claims": {
+    "realGoogle": "UNVERIFIED",
+    "realMail": "UNVERIFIED",
+    "nativePairing": "UNVERIFIED",
+    "providerPooler": "UNVERIFIED",
+    "productionAccess": false
+  }
+}
