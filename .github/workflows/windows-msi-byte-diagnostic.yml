@@ -1,14 +1,14 @@
-name: Legacy MSI third shortcut observation
+name: Exact third shortcut real MSI engine probe
 on:
   push:
     branches: [codex/windows-msi-byte-diagnostic]
 permissions:
   contents: read
 jobs:
-  legacy-third-shortcut:
+  real-mini-msi:
     if: github.repository == 'sahme209/visionxixlabs' && github.repository_id == '1130181785' && github.actor == 'sahme209' && github.run_attempt == 1
     runs-on: windows-2022
-    timeout-minutes: 5
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         env:
@@ -18,8 +18,8 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Read fixed legacy tables and test synthetic third link
+      - name: Exercise exact migration with owned real mini MSI
         shell: pwsh
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python scripts/windows_legacy_uninstall_probe.py
+        run: python scripts/windows_third_shortcut_mini_probe.py
