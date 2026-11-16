@@ -1,11 +1,11 @@
-name: Owned WiX registry path validation
+name: Legacy MSI third shortcut observation
 on:
   push:
     branches: [codex/windows-msi-byte-diagnostic]
 permissions:
   contents: read
 jobs:
-  registry-path-validation:
+  legacy-third-shortcut:
     if: github.repository == 'sahme209/visionxixlabs' && github.repository_id == '1130181785' && github.actor == 'sahme209' && github.run_attempt == 1
     runs-on: windows-2022
     timeout-minutes: 5
@@ -18,8 +18,8 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Link invalid and corrected registry-only fixtures
+      - name: Read fixed legacy tables and test synthetic third link
         shell: pwsh
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python scripts/windows_registry_wix_diagnostic.py
+        run: python scripts/windows_legacy_uninstall_probe.py

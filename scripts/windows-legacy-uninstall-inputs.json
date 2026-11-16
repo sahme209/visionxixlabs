@@ -1,0 +1,10 @@
+{
+  "scripts/windows_legacy_uninstall_probe.py": "d87635ff99bd789cdc43360d1ae0e942b2ad12f735968bf2682b5466f4718eec",
+  "scripts/windows_legacy_shortcut_tables.ps1": "0031eb77dc5deb37d6ae8933dc49ce7663eea3827e878296c4900e314964b69b",
+  ".github/workflows/windows-msi-byte-diagnostic.yml": "c128819c3ac92083c414584b74f67fe87fe054009325786ea3e0451563e22e2c",
+  "scripts/windows_installed_acceptance.py": "a067dc729ad8bc58d4a43886751200e8e81e953a74e34da309d88f6d5aa6db7f",
+  "scripts/windows_msi_byte_diagnostic.py": "c9cb7615f3a03a53b7182df94c0ff8e2b4243c0648b9ee7536ec808940f14d69",
+  "scripts/windows_upgrade_acceptance.py": "ee09db652127ba18045332248753322bde905dba0bf653090bd763e7f9d9e7d7",
+  "scripts/windows_msi_shortcut_preflight.py": "59d594e4e05c0eea2d94578420b565f443eb056101e7d97846bb1478f2256566",
+  "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "bb65f82277c0c42814dd0b6d43f5ff6fa863291f08c70940533a06635a5eb654"
+}
