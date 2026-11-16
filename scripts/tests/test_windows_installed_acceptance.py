@@ -12,6 +12,27 @@ spec.loader.exec_module(candidate)
 
 
 class WindowsAcceptancePreparation(unittest.TestCase):
+    def test_shared_application_directory_only_empty_physical_child_is_removed(self):
+        with tempfile.TemporaryDirectory() as folder,tempfile.TemporaryDirectory() as outside:
+            base=Path(folder);application=base/'application';other=base/'unrelated';other.mkdir()
+            application.mkdir();candidate.remove_empty_application_directory(base)
+            self.assertFalse(application.exists());self.assertTrue(other.exists())
+            application.mkdir();foreign=application/'foreign.txt';foreign.write_bytes(b'preserve')
+            with self.assertRaisesRegex(RuntimeError,'application_directory_residuals'):candidate.remove_empty_application_directory(base)
+            self.assertEqual(foreign.read_bytes(),b'preserve');foreign.unlink();application.rmdir()
+            application.symlink_to(Path(outside),target_is_directory=True)
+            with self.assertRaisesRegex(RuntimeError,'application_directory_link_refused'):candidate.remove_empty_application_directory(base)
+            self.assertTrue(Path(outside).exists());self.assertTrue(application.is_symlink())
+
+    def test_all_upgrade_recipes_share_fixed_application_path(self):
+        import windows_upgrade_acceptance as upgrade
+        base=Path('/owned/fixed-run');expected=str(base/'application')
+        for case in upgrade.AUTOMATED_CASES:
+            plan=upgrade.upgrade_commands(case,{'msiexec.exe':'fixed'},base,'old','new')
+            self.assertEqual(plan['installDirectory'],expected)
+            self.assertIn(('INSTALLDIR=' if case=='msi-major-upgrade' else '/D=')+expected,plan['oldInstall'])
+            self.assertIn(('INSTALLDIR=' if case=='msi-major-upgrade' else '/D=')+expected,plan['candidateUpgrade'])
+
     def test_unenrolled_controller_refuses_before_platform_or_account_access(self):
         with patch.object(candidate, "BUNDLER_RECIPE_REVIEWED", False):
             with self.assertRaisesRegex(RuntimeError, "acceptance_not_enrolled"):

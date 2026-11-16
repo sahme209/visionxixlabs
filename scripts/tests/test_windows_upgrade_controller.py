@@ -12,7 +12,7 @@ class Cycle(unittest.TestCase):
   folder=tempfile.TemporaryDirectory();self.addCleanup(folder.cleanup);root=Path(folder.name);calls=[];runner=None
   old=root/'old.exe';new=root/'new.exe';old.write_bytes(b'old');new.write_bytes(b'new')
   legacy={kind:{'path':old,'metadata':{'ProductCode':'{OLD}'}} for kind in ['msi','nsis']};candidates={kind:new for kind in ['msi','nsis']};metadata={kind:{'ProductCode':'{NEW}','sha256':owner.digest(new)} for kind in ['msi','nsis']}
-  install=root/case/('msi-major-upgrade' if case.startswith('msi') else 'nsis-update' if case.startswith('nsis-collision') else case)
+  install=root/'application'
   executable=install/'axiom-desktop.exe';uninstaller=install/'uninstall.exe'
   payloads={'msi':b'new-msi-app','nsis':b'new-nsis-app'}
   payload_hashes={kind:hashlib.sha256(value).hexdigest() for kind,value in payloads.items()}

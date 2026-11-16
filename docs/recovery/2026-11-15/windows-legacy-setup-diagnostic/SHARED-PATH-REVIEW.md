@@ -1,0 +1,7 @@
+## Fixed owned Windows installation path — November 15, 2026
+
+The observed legacy MSI reused the preceding owned NSIS installation folder. The reviewed test correction now uses one fixed owned application directory across clean installs, upgrades and collision cases. Existing install order, flags, exact payload hashes, product/protocol/shortcut checks and cleanup gates stay intact; only the proven-empty, physically confined child directory is removed between cases. All 71 Windows harness tests plus five identity checks pass. Actual corrected Windows execution remains required; merge, installer publication, Vercel and Governance remain held.
+
+Internal test-run history was removed from the customer database demo; evidence remains in recovery records. Its 15 contract checks pass. The production read-only diagnostic stopped with metadata_refused; its stage and completed-call count are unknown, so production state remains unverified. No mutation or deployment followed.
+
+Root and independent review CLEAR. One fixed base/application is used for all formats and all upgrade/collision cases; no discovered registry path is followed or deleted. New global absence checks separate clean-format cycles. The physical empty-directory helper refuses residual files and symlinks and preserves unrelated siblings. Observational MSI diagnostics remain enabled. The correction changes the test recipe, not application behavior or installer flags.

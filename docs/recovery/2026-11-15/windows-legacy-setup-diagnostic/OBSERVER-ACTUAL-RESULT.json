@@ -1,0 +1,199 @@
+{
+  "source": "c0f308ed707751b2354d013bd07bcb1f575509c3",
+  "sourceBinding": {
+    "externalHumanApprovalProof": false,
+    "manifestSha256": "7016e87e0b8dd820a308864b45d4584c53636a58dfc51ba7ebaf9cc78d28b540",
+    "sha": "c0f308ed707751b2354d013bd07bcb1f575509c3",
+    "sourceAuthority": "ordinary-owner-PR-CI"
+  },
+  "accepted": false,
+  "failureClass": "RuntimeError",
+  "failureCode": "artifact_not_regular",
+  "keyringCleanupConfirmed": true,
+  "ownedProcessCleanupConfirmed": true,
+  "upgradeAcceptance": "NOT_RUN",
+  "upgradeCycles": [
+    {
+      "candidateSha256": "2185ef2d0a2a005443b0e29738756d643abe5e36fb82c5be9066304535a4b20d",
+      "case": "msi-major-upgrade",
+      "cleanupConfirmed": true,
+      "expectedCollisionRefused": false,
+      "installKind": "msi",
+      "legacySetupObservation": {
+        "component": {
+          "componentGuid": "{EB234B33-5646-54DC-BC0A-9794A161CA82}",
+          "componentKey": "Path",
+          "directoryProperty": "INSTALLDIR",
+          "fileName": "axiom-desktop.exe"
+        },
+        "componentPath": {
+          "bytes": 17018880,
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": false,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "installed-nsis\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": true,
+          "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+        },
+        "componentState": 3,
+        "directoryEntriesBounded": 0,
+        "installLocations": [
+          {
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "installed-nsis",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": false
+          }
+        ],
+        "installLog": {
+          "applicationFileMentioned": true,
+          "applicationFileOperationLines": 2,
+          "bytes": 110096,
+          "componentActionEnumOnly": true,
+          "componentActions": [],
+          "mainEngineReturnCodes": [
+            0,
+            0
+          ],
+          "present": true,
+          "properties": {
+            "ACTION": {
+              "isAll": false,
+              "isInstall": true,
+              "isOne": false,
+              "present": true
+            },
+            "INSTALLDIR": {
+              "insideOwnedRoot": true,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "ownedRelativePath": "installed-nsis",
+              "physicalOwnedPathValidated": true,
+              "provided": true,
+              "regularFile": false
+            },
+            "REINSTALLMODE": {
+              "isAll": false,
+              "isInstall": false,
+              "isOne": false,
+              "present": true
+            },
+            "ROOTDRIVE": {
+              "insideOwnedRoot": false,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "provided": true
+            },
+            "SourceDir": {
+              "insideOwnedRoot": true,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "ownedRelativePath": "legacy-fixtures",
+              "physicalOwnedPathValidated": true,
+              "provided": true,
+              "regularFile": false
+            },
+            "TARGETDIR": {
+              "insideOwnedRoot": false,
+              "matchesRequestedPath": false,
+              "outsideOwnedFileRead": false,
+              "provided": true
+            }
+          },
+          "rawTextEmitted": false,
+          "sha256": "be55767b96f20a1088ec06763cf8930caf0dc73c463bc53b491b28ef45dc28fe"
+        },
+        "productState": 5,
+        "protocolLocations": [
+          {
+            "bytes": 17018880,
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "installed-nsis\\axiom-desktop.exe",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": true,
+            "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+          },
+          {
+            "bytes": 17018880,
+            "insideOwnedRoot": true,
+            "matchesRequestedPath": false,
+            "outsideOwnedFileRead": false,
+            "ownedRelativePath": "installed-nsis\\axiom-desktop.exe",
+            "physicalOwnedPathValidated": true,
+            "provided": true,
+            "regularFile": true,
+            "sha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98"
+          }
+        ],
+        "requestedDirectoryExists": false,
+        "requestedPayload": {
+          "insideOwnedRoot": true,
+          "matchesRequestedPath": true,
+          "outsideOwnedFileRead": false,
+          "ownedRelativePath": "msi-major-upgrade\\msi-major-upgrade\\axiom-desktop.exe",
+          "physicalOwnedPathValidated": true,
+          "provided": true,
+          "regularFile": false
+        }
+      },
+      "oldInstallConfirmed": false,
+      "oldInstallerSha256": "670a2b926e7e3f9f0d3a2893b4997867101f1710699b4bc3734e2baac4bd98e1",
+      "upgradeConfirmed": false,
+      "webviewRenderingVerified": false
+    }
+  ],
+  "completeWindowsInstalledAcceptance": false,
+  "googlePairing": "NOT_RUN",
+  "uiVisualAcceptance": "UNVERIFIED",
+  "unsignedValidationOnly": true,
+  "published": false,
+  "signingPerformed": false,
+  "cleanInstallations": [
+    {
+      "kind": "msi",
+      "installConfirmed": true,
+      "uninstallConfirmed": true,
+      "installedPayloadSha256": "35abc9aa61d441abdaf42403fd1ad4512d47da78e65f6dfaf21149020e55d08f",
+      "expectedPayloadSha256": "35abc9aa61d441abdaf42403fd1ad4512d47da78e65f6dfaf21149020e55d08f",
+      "installedMachine": "AMD64",
+      "installedVersionMetadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "Application",
+        "bytes": 20215296,
+        "machine": "AMD64",
+        "sha256": "35abc9aa61d441abdaf42403fd1ad4512d47da78e65f6dfaf21149020e55d08f",
+        "signatureStatus": "NotSigned"
+      },
+      "protocolRegistered": true,
+      "nativeTopLevelWindowObserved": true
+    },
+    {
+      "kind": "nsis",
+      "installConfirmed": true,
+      "uninstallConfirmed": true,
+      "installedPayloadSha256": "c5ce150be6991ea49e0f5e5f02c9f74d75b12255fc8e953fa68d81606a6fc0b2",
+      "expectedPayloadSha256": "c5ce150be6991ea49e0f5e5f02c9f74d75b12255fc8e953fa68d81606a6fc0b2",
+      "installedMachine": "AMD64",
+      "installedVersionMetadata": {
+        "ProductName": "V19",
+        "ProductVersion": "0.1.23",
+        "artifactKind": "Application",
+        "bytes": 20215296,
+        "machine": "AMD64",
+        "sha256": "c5ce150be6991ea49e0f5e5f02c9f74d75b12255fc8e953fa68d81606a6fc0b2",
+        "signatureStatus": "NotSigned"
+      },
+      "protocolRegistered": true,
+      "nativeTopLevelWindowObserved": true
+    }
+  ]
+}

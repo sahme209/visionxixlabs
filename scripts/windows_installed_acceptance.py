@@ -696,8 +696,12 @@ def main():
         from windows_upgrade_acceptance import absent_before_owned_cycle
         codes = [legacy['msi']['metadata']['ProductCode'], candidate_metadata['msi']['ProductCode']]
         absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [], codes, 'all-installs-pristine'))
+        from windows_upgrade_acceptance import APPLICATION_DIRECTORY, absent_after_cleanup
         for kind, candidate in candidates.items():
+            absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [base / APPLICATION_DIRECTORY], codes, 'clean-'+kind+'-pristine'))
             install_one(runner, tools, base, kind, candidate, candidate_metadata[kind], version, format_payload_hash(payload_hashes, kind), receipt)
+            absent_after_cleanup(upgrade_snapshot(runner, tools, base, [base / APPLICATION_DIRECTORY], codes, 'clean-'+kind+'-absent'))
+            remove_empty_application_directory(base)
             need(source_snapshot(runner, tools) == frozen, "source_changed_after_install_cycle")
         receipt['upgradeCycles'] = []
         for case in ('msi-major-upgrade','nsis-silent-upgrade','nsis-update','nsis-collision-legacy','nsis-collision-current'):
@@ -772,7 +776,7 @@ def run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_m
     payload_hash = format_payload_hash(payload_hashes, kind)
     need(digest(legacy[kind]['path']) == LEGACY_ASSETS[kind]['sha256'] and legacy[kind]['path'].stat().st_size == LEGACY_ASSETS[kind]['bytes'], 'legacy_asset_changed_before_cycle')
     need(digest(candidates[kind]) == candidate_metadata[kind]['sha256'], 'candidate_changed_before_cycle')
-    plan = upgrade_commands(recipe, tools, base / case, legacy[kind]['path'], candidates[kind])
+    plan = upgrade_commands(recipe, tools, base, legacy[kind]['path'], candidates[kind])
     install = Path(plan['installDirectory']); executable = install / 'axiom-desktop.exe'
     need(not install.exists(), 'upgrade_install_directory_not_fresh')
     codes = [legacy['msi']['metadata']['ProductCode'], candidate_metadata['msi']['ProductCode']]
@@ -846,6 +850,7 @@ def run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_m
                     need(proof['removed'], 'owned_foreign_fixture_cleanup_failed')
                 absent_after_cleanup(upgrade_snapshot(runner, tools, base, [install], codes, case+'-cleaned-state'))
                 need(not install.exists() or not any(install.iterdir()), 'upgrade_install_directory_residuals')
+                remove_empty_application_directory(base)
                 row['cleanupConfirmed'] = True
             finally: runner.deadline = prior
     need(row['cleanupConfirmed'] and (row['expectedCollisionRefused'] if collision else row['upgradeConfirmed']), 'upgrade_cycle_incomplete')
@@ -871,8 +876,21 @@ def product_state(code):
     return msi.MsiQueryProductStateW(code)
 
 
+def remove_empty_application_directory(base):
+    from windows_upgrade_acceptance import APPLICATION_DIRECTORY
+    base = Path(base)
+    need(base.is_dir() and not base.is_symlink(), 'application_owner_root_invalid')
+    install = base / APPLICATION_DIRECTORY
+    need(not install.is_symlink(), 'application_directory_link_refused')
+    if not install.exists(): return
+    need(install.is_dir() and install.resolve(strict=True) == base.resolve(strict=True) / APPLICATION_DIRECTORY, 'application_directory_physical_scope_changed')
+    need(not any(install.iterdir()), 'application_directory_residuals')
+    install.rmdir()  # Never recursive; only the fixed proven-empty owned child.
+
+
 def install_one(runner, tools, base, kind, candidate, metadata, version, payload_hash, receipt):
-    install = base / ("installed-" + kind)
+    from windows_upgrade_acceptance import APPLICATION_DIRECTORY
+    install = base / APPLICATION_DIRECTORY
     need(not install.exists() and not protocol_state(), "installation_not_pristine")
     row = {"kind": kind, "installerSha256": digest(candidate), "metadata": metadata, "installConfirmed": False, "uninstallConfirmed": False, "visualAcceptance": "UNVERIFIED"}
     receipt["installations"].append(row)

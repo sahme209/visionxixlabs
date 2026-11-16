@@ -44,11 +44,11 @@ class BundlePayload(unittest.TestCase):
     def run(self,label,args,cwd,seconds,**kwargs):
      calls.append(label)
      if label=='install-'+kind:
-      p=base/('installed-'+kind);p.mkdir();(p/'axiom-desktop.exe').write_bytes(image)
+      p=base/'application';p.mkdir();(p/'axiom-desktop.exe').write_bytes(image)
       if kind=='nsis':(p/'uninstall.exe').write_bytes(b'owned-uninstaller')
      if label=='installed-metadata-'+kind:return json.dumps({'ProductVersion':'0.1.23','machine':'AMD64'})
      if label=='uninstall-'+kind:
-      p=base/('installed-'+kind)
+      p=base/'application'
       for f in p.iterdir():
        if f.name!='uninstall.exe':f.unlink()
      return ''

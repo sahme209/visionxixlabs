@@ -7,6 +7,7 @@ from pathlib import Path
 import ntpath
 
 UPGRADE_RECIPE_REVIEWED = True
+APPLICATION_DIRECTORY = 'application'
 LEGACY_VERSION = '0.1.21'
 LEGACY_UPGRADE_CODE = 'a3c7da37-1792-51f2-8b3a-8848b1b33f88'
 LEGACY_ASSETS = {
@@ -35,7 +36,7 @@ def admitted_legacy_metadata(kind, metadata):
 def upgrade_commands(case, tools, base, old_installer, new_installer):
  """Pure fixed argv proposal. It confers no execution/enrollment permission."""
  need(case in AUTOMATED_CASES, 'unsupported_upgrade_case')
- install = str(Path(base) / case)
+ install = str(Path(base) / APPLICATION_DIRECTORY)
  need(' ' not in install, 'nsis_fixed_argument_path_requires_no_spaces')
  if case == 'msi-major-upgrade':
   return {'installDirectory':install,'oldInstall':[tools['msiexec.exe'],'/i',str(old_installer),'/qn','/norestart','INSTALLDIR='+install],

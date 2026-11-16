@@ -1,0 +1,11 @@
+{
+  "source": "c0f308ed707751b2354d013bd07bcb1f575509c3",
+  "localPrimaryReceipt": "/tmp/v19-legacy-observer-actual-result.json",
+  "primarySha256": "1ff2fa951611cf4edf0905ee699889dd80adb69a8edc243c669741a15c45e1de",
+  "safeSubsetSha256": "765f5bca51a428f9f82c9b539fb5bcee07d371fd38e64d7031b3b64f3daed5c3",
+  "knownBaselineReceipt": "docs/recovery/2026-11-15/windows-quick-byte-result/RESULT.json",
+  "knownBaselinePayloadSha256": "9873e04714ec285d4491157c911c5408507f2729694ffdbab4c0f5a9cc16ec98",
+  "noRawLogsEnvironmentKeysOrCredentialsCopied": true,
+  "upgradeAccepted": false,
+  "productionChanged": false
+}
