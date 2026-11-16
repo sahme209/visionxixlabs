@@ -1,0 +1,12 @@
+{
+  "root-install": {
+    "exitCode": 0,
+    "seconds": 7.5,
+    "logBytes": 397
+  },
+  "desktop-install": {
+    "exitCode": 0,
+    "seconds": 7.5,
+    "logBytes": 26
+  }
+}

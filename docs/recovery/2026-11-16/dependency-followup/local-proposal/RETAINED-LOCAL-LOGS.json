@@ -1,0 +1,42 @@
+{
+  "CANONICAL-SCHEMA-REVIEW.diff": {
+    "sha256": "9049ae13b58a632fde997981e723a5ceebb4df198a258565d89a752ea5078591",
+    "bytes": 203,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/CANONICAL-SCHEMA-REVIEW.diff"
+  },
+  "CANDIDATE.patch": {
+    "sha256": "710d257d4975650dbf4fc352775dae0f6845174d086d8061dd51283ed37ff587",
+    "bytes": 51154,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/CANDIDATE.patch"
+  },
+  "FOCUSED-RED.log": {
+    "sha256": "db043f0dc4d8a00016e2b33ca72126494b465c335b5d943035afb20faf87f1ce",
+    "bytes": 41267,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/FOCUSED-RED.log"
+  },
+  "focused-green.log": {
+    "sha256": "8389fc0a8a51d3c5688ca6fb58d48faef4f4d388c664a568e1b415b1a723a66d",
+    "bytes": 4706,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/focused-green.log"
+  },
+  "focus-mock-bare-only-red.log": {
+    "sha256": "50f3e2e7965c6cec287ec4c45276ec44752d4ed4b59ff085ee5909391357afd7",
+    "bytes": 4291,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/focus-mock-bare-only-red.log"
+  },
+  "focus-mock-green.log": {
+    "sha256": "d359bf4c7985dbd023e725fdb9521ed56fbef2caf1d098b36e3a774cf437d153",
+    "bytes": 580,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/focus-mock-green.log"
+  },
+  "full-ordinary.log": {
+    "sha256": "fc3d0d0af829139e539dd72af2d97153c8271880b2a13853db06032dd05e39c2",
+    "bytes": 575616,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/full-ordinary.log"
+  },
+  "root-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "retainedOutsideRepository": "/tmp/v19-pr342-local-repair-evidence/root-types.log"
+  }
+}

@@ -77,6 +77,6 @@ export function desktopReleaseWorkflowErrors(source) {
     if (bindings.length !== 1 || bindings[0] !== "          " + name + ": " + expression) return fail();
   }
   const commands = step.slice(run + 1).filter(line => line.trim() && !/^\s*#/.test(line));
-  if (commands[0] !== "          test \"$RELEASE_EVENT\" = workflow_dispatch || { echo 'Only a manual release dispatch is supported.' >&2; exit 1; }" || commands[1] !== "          test \"$RELEASE_REF\" = \"refs/tags/$REQUESTED_TAG\" || { echo 'Select the exact requested release tag before starting.' >&2; exit 1; }" || commands[2] !== "          node scripts/check-desktop-release.mjs") return fail();
+  if (commands[0] !== "          test \"$RELEASE_EVENT\" = workflow_dispatch || { echo 'Only a manual release dispatch is supported.' >&2; exit 1; }" || commands[1] !== "          test \"$RELEASE_REF\" = \"refs/tags/$REQUESTED_TAG\" || { echo 'Select the exact requested release tag before starting.' >&2; exit 1; }" || commands[2] !== "          npm --prefix desktop ci --ignore-scripts" || commands[3] !== "          node scripts/check-desktop-release.mjs") return fail();
   return [];
 }

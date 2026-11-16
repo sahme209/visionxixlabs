@@ -89,3 +89,24 @@ describe("literal manual release workflow contract", () => {
     expect(desktopReleaseWorkflowErrors(mutate(workflow))).not.toEqual([]);
   });
 });
+
+
+describe("cold release tooling contract", () => {
+  const current = readFileSync(".github/workflows/desktop-release.yml", "utf8");
+  const install = "          npm --prefix desktop ci --ignore-scripts";
+  const checker = "          node scripts/check-desktop-release.mjs";
+  const prepared = current.includes(install) ? current : current.replace(checker, install + "\n" + checker);
+  it("accepts locked script-free tooling after authority and before the full checker", () => {
+    expect(desktopReleaseWorkflowErrors(prepared)).toEqual([]);
+  });
+  it.each([
+    (s: string) => s.replace(install + "\n", ""),
+    (s: string) => s.replace(install, "          npm --prefix desktop install"),
+    (s: string) => s.replace(install, "          npm --prefix desktop ci"),
+    (s: string) => s.replace(install + "\n" + checker, checker + "\n" + install),
+    (s: string) => s.replace(install, install + "\n" + install),
+    (s: string) => s.replace(install + "\n", "").replace('          test "$RELEASE_EVENT"', install + '\n          test "$RELEASE_EVENT"'),
+  ])("refuses missing, unsafe, duplicated or premature dependency installation", mutate => {
+    expect(desktopReleaseWorkflowErrors(mutate(prepared))).not.toEqual([]);
+  });
+});

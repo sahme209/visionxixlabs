@@ -1,0 +1,18 @@
+{
+  "oldRun": 43865368012,
+  "oldSource": "4482057c7dfc66b02ae06a6b49d725913ac295e3",
+  "identityJob": 133309238791,
+  "conclusion": "failure",
+  "exactError": "Cannot find module './node_modules/typescript'",
+  "dependencyOrigin": "scripts/demo-download-link.mjs requires desktop/node_modules/typescript",
+  "cause": "identity checker ran before installing desktop dependencies",
+  "appBuildAndSigningStarted": false,
+  "sbomAndOtherBuildPublicationJobs": "skipped",
+  "queueRecoveryOwnerApproval": "received but not exercised: old run was already terminal failed during precondition read",
+  "cancellationAttempted": false,
+  "replacementDispatched": false,
+  "readinessFalseVerified": true,
+  "immutableOldTagRetained": true,
+  "newLocalVersion": "0.1.24",
+  "newTagBuildSigningPublicationVercelPerformed": false
+}

@@ -1,0 +1,23 @@
+{
+  "acceptedLocalPreparation": true,
+  "sourceInputsMatchedAfterChecks": true,
+  "fullOrdinary": {
+    "passed": 19840,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "exitCode": 0
+  },
+  "rootTypesExitCode": 0,
+  "releaseContractPassed": 38,
+  "workflowFixturePassed": 50,
+  "windowsPurePassed": 102,
+  "coldGuardedInstallFullCheckerPassed": true,
+  "illegalRefStoppedBeforeInstall": true,
+  "desktopLockDependenciesUnchanged": true,
+  "newDesktopVersion": "0.1.24",
+  "nativeApplicationBuildExecuted": false,
+  "releaseExecuted": false,
+  "tagChanged": false,
+  "externalWritePerformed": false,
+  "inputPacketSha256": "fc0c755351a3195ec13b7a1e4c1768caaf0d1c2d14855af9e42340c3414f38c4"
+}

@@ -1,0 +1,21 @@
+{
+  "updaterHead": "3b98e2c93d7358a5a0ac1271b361387d27e67283",
+  "sourceCodeInputManifestSha256": "7d455e8cacbc22765aa096a6cece35724a38658f44e28848e19fcd83e0e884a8",
+  "evidenceFiles": {
+    "CODE-INPUTS-BEFORE.json": "7d455e8cacbc22765aa096a6cece35724a38658f44e28848e19fcd83e0e884a8",
+    "CODE-INPUTS-AFTER.json": "7d455e8cacbc22765aa096a6cece35724a38658f44e28848e19fcd83e0e884a8",
+    "ACTUAL-GRAPH-CONFIRMATION.json": "90ab7e7bc534b5ac125577694dcd45820983fc820f96b10e2eaf9a324c81b23f",
+    "INSTALL-RESULT.json": "f7ab558a1a60e36d08fbf528450ed742da5a84ecb81d2ce7eca43797993b338a",
+    "CODEGEN-RESULT.json": "5c9bdb632725e454636ad84182184395ec96af50260c922a9cb629c62dd16a2a",
+    "VALIDATION-RESULT.json": "ab8037090adc0d0ff74637f4b881482770881bd4fdad2090ba338fe6c39116f9",
+    "RESULT.json": "6e070457f058d7f21ed4b85784c3b3ae3398d904c69587f513071adb98b51e08",
+    "root-install.log": "8bc132dc44405297471f52273c58e205246b40747a5f40eff8492c9cf17f9ffa",
+    "desktop-install.log": "dd5468d4d38fd2969dcc27c662f540fd666bbea8984970e91263743253aac898",
+    "prisma-source-generation.log": "39d19c500c07e4f4ab13f81f83b76d1e78d1c968739d60c5742cbde9931df43b",
+    "prisma-client-js.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused-contracts.log": "550f1cfc109a58899ea26e731ddb3437945dff3829b5be476adeabe77683ff61",
+    "full-ordinary.log": "aa61dabc7f824d9a611b5c4d7b1d2b1280b2d60ae041d7b6a53c832e51fef3f9",
+    "root-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "desktop-frontend-build-and-types.log": "85bd2c511deca832191d34706af5f7dd49544bef5e5a5b86cf9bb23a6dbff7c3"
+  }
+}
