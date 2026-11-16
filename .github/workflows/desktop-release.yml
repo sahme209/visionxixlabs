@@ -82,16 +82,50 @@ jobs:
         shell: bash
         run: |
           python3 - <<'PYTHON'
-          import os,subprocess,sys
-          if not all(os.environ.get(k) for k in ['APPLE_ID','APPLE_PASSWORD','APPLE_TEAM_ID']):
-            print('Apple authentication configuration is incomplete.');sys.exit(1)
-          try:
-            result=subprocess.run(['xcrun','notarytool','history','--apple-id',os.environ['APPLE_ID'],'--password',os.environ['APPLE_PASSWORD'],'--team-id',os.environ['APPLE_TEAM_ID'],'--output-format','json'],capture_output=True,text=True,timeout=60)
-          except Exception:
-            print('Apple authentication could not be confirmed within the bounded check.');sys.exit(1)
-          if result.returncode:
-            print('Apple authentication refused (HTTP 401).' if '401' in result.stderr else 'Apple authentication was not confirmed.');sys.exit(1)
-          print('Apple notarization authentication accepted. No app was submitted.')
+          """AUTH-ONLY diagnostic. Never emit tool text, credentials, hashes or lengths."""
+          import json,os,re,subprocess,sys
+
+          def result(category,exit_code=None,timed_out=False,tool_available=None):
+              return {'category':category,'exitCode':exit_code if type(exit_code) is int else None,'timedOut':timed_out,'toolAvailable':tool_available}
+
+          def classify(stderr,exit_code):
+              if exit_code==0:return result('accepted',0,tool_available=True)
+              # Classification only; bounded head/tail never appears in the output.
+              text=stderr.decode('utf-8',errors='replace') if isinstance(stderr,bytes) else stderr if isinstance(stderr,str) else ''
+              text=text if len(text)<=65536 else text[:32768]+'\n'+text[-32768:]
+              rules=[
+                  ('tool_unavailable',r'(?im)^xcrun: error: (?:unable to find utility ["\x27]notarytool["\x27]|invalid active developer path)'),
+                  ('usage',r'(?im)^\s*USAGE:\s*(?:xcrun|notarytool|history)\b'),
+                  ('team_or_contract',r'\bFORBIDDEN_ERROR\.CONTRACT_NOT_VALID\b|(?im:^Error: Invalid team ID\b)'),
+                  ('http_401',r'(?i)\bHTTP\s+status(?:\s+code)?\s*:\s*401\b'),
+                  ('http_403',r'(?i)\bHTTP\s+status(?:\s+code)?\s*:\s*403\b'),
+                  ('timeout',r'\bNSURLErrorDomain\s+Code=-1001\b|(?im:^Error: The request timed out\.)'),
+                  ('network',r'\bNSURLErrorDomain\s+Code=-(?:1003|1004|1005|1006|1009|1200|1202)\b|(?im:^Error: (?:A server with the specified hostname could not be found\.|The Internet connection appears to be offline\.))'),
+              ]
+              for category,pattern in rules:
+                  if re.search(pattern,text):return result(category,exit_code,timed_out=category=='timeout',tool_available=category!='tool_unavailable')
+              return result('unknown',exit_code,tool_available=None)
+
+          def without_known_values(stderr,values):
+              text=stderr.decode('utf-8',errors='replace') if isinstance(stderr,bytes) else stderr if isinstance(stderr,str) else ''
+              for value in sorted({value for value in values if value},key=len,reverse=True):
+                  text=text.replace(value,'[redacted]')
+              return text
+
+          def main():
+              if not all(os.environ.get(k) for k in ['APPLE_ID','APPLE_PASSWORD','APPLE_TEAM_ID']):diagnostic=result('configuration_missing')
+              else:
+                  try:
+                      completed=subprocess.run(['xcrun','notarytool','history','--apple-id',os.environ['APPLE_ID'],'--password',os.environ['APPLE_PASSWORD'],'--team-id',os.environ['APPLE_TEAM_ID'],'--output-format','json'],capture_output=True,timeout=60)
+                      safe_stderr=without_known_values(completed.stderr,[os.environ[k] for k in ['APPLE_ID','APPLE_PASSWORD','APPLE_TEAM_ID']])
+                      diagnostic=classify(safe_stderr,completed.returncode)
+                  except FileNotFoundError:diagnostic=result('tool_unavailable',tool_available=False)
+                  except subprocess.TimeoutExpired:diagnostic=result('timeout',timed_out=True)
+                  except Exception:diagnostic=result('unknown')
+              print(json.dumps(diagnostic,sort_keys=True))
+              return 0 if diagnostic['category']=='accepted' else 1
+
+          if __name__=='__main__':sys.exit(main())
           PYTHON
 
   validate-release:
