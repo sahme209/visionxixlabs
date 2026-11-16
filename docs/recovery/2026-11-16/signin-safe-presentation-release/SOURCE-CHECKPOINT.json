@@ -1,0 +1,29 @@
+{
+  "scope": "Isolated sign-in presentation and server-session homepage return; no backend/provider/DB/download/desktop changes",
+  "baseSha": "aa643833e22c83dbf8e9ee77bbac8dcc7ae3544f",
+  "files": {
+    "app/auth/signin/AuthFormClient.tsx": "f44b1c08b5f77432e1531a3fdc598f321cb407e771a8e14244790d6187eee7b3",
+    "app/page.tsx": "6c11b91e23e47935f77d9dfce6bb7444a3ea4b5035e8c8395ac4f564c2badc0a",
+    "app/__tests__/homepageScope.test.ts": "7da8946a4c0d64379778aac5729fdfc1146e5e1bb8fb726f4ec1b6520d1c48e9",
+    "app/__tests__/homepageRedirect.test.ts": "57cf434608453075c3e622238109e85d75de491213b3f4feb689da7e495ed342",
+    "app/auth/signin/__tests__/accountSwitchProviders.test.ts": "16359137c976d57da43c4e7b8ba02704fb285f5aac9c4efc45f61aa1dd8dbf0e",
+    "app/auth/signin/__tests__/overlappingFlows.test.ts": "dd35a4bb097fda3dfab699d78b70c040113ed1b2417c96ba4f7787bc1ab06d19",
+    "app/auth/signin/__tests__/simpleRecoveryPresentation.test.ts": "4aa67c9340dc44ac22ac4880c3e0f9e5466e1a3ad4fe0bf2b495bf8e2adc07c6",
+    "components/marketing/__tests__/GovernanceAssembly.test.ts": "c1406aed7f5f540084649079f37c31ad14f0039238524b455210f4389bf0aa80",
+    "components/marketing/__tests__/ProductHierarchy.test.ts": "b166be987e8cc965538a9cdbbcf211b13fd1ca14bd6441f551877442a8f8bb51"
+  },
+  "focusedTests": {
+    "passed": 52,
+    "failed": 0,
+    "files": 10,
+    "reportSha256": "9de9de187190755462453c0f4d269247878b259245ddd4350857f0abdf3c7d85"
+  },
+  "requiredRootTypecheck": {
+    "exitCode": 0,
+    "setupCorrection": "Used existing desktop dependency cache for unchanged desktop type imports; no dependency/source edits."
+  },
+  "independentSourceReviewSha256": "00a6546d58257daed3c46cc3483217e9cdd8e5b922b584599924c267829483c9",
+  "websiteBuild": "Pending; final exact-source local build and required PR/main checks are separate release gates.",
+  "productionDeployed": false,
+  "remainingGoal": "All unshipped desktop/GitLab/governance/master work remains active in original continuation goal and author worktree."
+}

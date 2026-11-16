@@ -25,7 +25,6 @@ async function prepare() {
   fireEvent.change(screen.getByLabelText("Email"), { target: { value: " person@example.test " } });
   fireEvent.click(screen.getByRole("button", { name: "Continue" }));
   fireEvent.change(screen.getByLabelText("Password"), { target: { value: "synthetic-password" } });
-  fireEvent.click(screen.getByText("Other sign-in options"));
   await screen.findByRole("button", { name: "Sign in with Cognito" });
   return screen.getByRole("button", { name: "Sign in" }).closest("form")!;
 }

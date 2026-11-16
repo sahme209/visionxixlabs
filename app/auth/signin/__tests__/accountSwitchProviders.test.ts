@@ -24,7 +24,6 @@ it("keeps ordinary Google login unchanged", async () => {
 });
 it("does not invent GitHub account-selector parameters", async () => {
   render(createElement(SignInPage));
-  fireEvent.click(screen.getByText("Other sign-in options"));
   fireEvent.click(await screen.findByRole("button", { name: "Sign in with GitHub" }));
   await waitFor(() => expect(mocks.signIn).toHaveBeenCalledWith("github", { callbackUrl: mocks.callback, redirect: true }));
 });

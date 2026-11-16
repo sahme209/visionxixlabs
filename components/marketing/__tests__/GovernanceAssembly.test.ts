@@ -5,6 +5,8 @@ import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
 import {GovernanceAssembly} from '../GovernanceAssembly';
 import {renderToStaticMarkup} from 'react-dom/server';
 import {ASSEMBLY_STAGES} from '../governanceAssemblyModel';
+vi.mock('next-auth',()=>({getServerSession:async()=>null}));
+vi.mock('@/lib/auth',()=>({authOptions:{}}));
 vi.mock('@/components/Navigation',()=>({Navigation:()=>null}));
 vi.mock('@/components/Footer',()=>({Footer:()=>null}));
 vi.mock('@/components/marketing/HomepageMediaShowcase',()=>({HomepageMediaShowcase:()=>createElement('div',null,'Existing media fixture')}));
@@ -43,8 +45,8 @@ it('shows all three possible outcomes and has no network, timer or storage opera
  expect(screen.getByText(/no actions are performed/)).toBeTruthy();expect(request).not.toHaveBeenCalled();expect(interval).not.toHaveBeenCalled();interval.mockRestore();
 });
 
-it('keeps Home focused on the approved static hero, feature panels and one media section',()=>{
- render(createElement(Home));
+it('keeps Home focused on the approved static hero, feature panels and one media section',async()=>{
+ render(await Home());
  const main=screen.getByRole('main'),first=main.querySelector<HTMLElement>(':scope > section')!;
  expect(within(first).getByRole('link',{name:'Explore V19'}).getAttribute('href')).toBe('/product');
  expect(within(first).getByText(/Complete Governance enforcement and activation are not established/)).toBeTruthy();

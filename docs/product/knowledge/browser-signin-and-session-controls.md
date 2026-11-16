@@ -1,3 +1,9 @@
+## November16 candidate: compact configured providers and homepage return
+
+The main form keeps Google and email/password. Only configured GitHub, Cognito SSO and GitLab providers receive circular accessible buttons (30px desktop,44px coarse pointer) below Continue. Labels/tooltips expose provider names; shared in-flight exclusion and callback-path validation remain. GitLab configuration/backend activation is outside this candidate. Generic help/support/verification/setup/download clutter is removed from this page; required genuine identity-link ownership proof remains unchanged elsewhere.
+
+An authenticated canonical server session visiting / redirects to /control. Anonymous/incomplete identities retain the public homepage. This route is explicitly dynamic; documentation/download routes are unchanged. Failure, overlapping-provider/email submissions, callback destinations, first/returning identity and downloads retain the existing required release gates. This guide supplement is source-level, not a claim of production deployment or new provider qualification.
+
 ## November15 — current denial recovery supplement
 
 Current simple login/error recovery source supersedes the older OAuth-query copy/branch description below. Installed NextAuth AccessDenied now hands off to public `/auth/error`. Its request-time route reads no session, identity database or provider. It sends aliases to the configured canonical error route before reading a callback cookie; missing/unsafe configured origin shows a branded unavailable notice without an authentication loop.

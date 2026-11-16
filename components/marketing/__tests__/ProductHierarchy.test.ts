@@ -2,6 +2,8 @@
 import {createElement} from 'react';
 import {afterEach,expect,it,vi} from 'vitest';
 import {cleanup,fireEvent,render,screen,within} from '@testing-library/react';
+vi.mock('next-auth',()=>({getServerSession:async()=>null}));
+vi.mock('@/lib/auth',()=>({authOptions:{}}));
 vi.mock('@/components/Navigation',()=>({Navigation:()=>null}));
 vi.mock('@/components/Footer',()=>({Footer:()=>null}));
 vi.mock('@/components/marketing/CinematicAxiomDemo',()=>({CinematicAxiomDemo:()=>createElement('div',null,'Scripted demo fixture')}));
@@ -47,8 +49,8 @@ it('retains the detailed scenario controls and record inspection on Product behi
  expect(within(records).getByText(/no actions are performed/)).toBeDefined();
 });
 
-it('keeps the homepage scenario destination outside the sticky card containing block',()=>{
- const view=render(createElement(Home));
+it('keeps the homepage scenario destination outside the sticky card containing block',async()=>{
+ const view=render(await Home());
  const section=screen.getByRole('region',{name:/Frame the request\.\s*Follow the evidence\./});
  const link=screen.getByRole('link',{name:'Inspect deployment scenarios and stages'});
  expect(link.getAttribute('href')).toBe('/product#deployment-model');
