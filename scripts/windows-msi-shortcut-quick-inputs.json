@@ -1,6 +1,6 @@
 {
   "scripts/windows_msi_shortcut_quick.py": "2f993f2dde3352f508d534ca84d55470e8d98e312d8d0d4676f3361af9cd0bc0",
-  "scripts/windows_msi_shortcut_preflight.py": "1208029402f22003c8b248ad8607e35a01e78e04ec25bd390b3f869a53190591",
+  "scripts/windows_msi_shortcut_preflight.py": "f7f4ea2019e4ef28c845d2c1186ebb64239052a26e68a31db8548b9aa87cfda6",
   "desktop/src-tauri/windows/msi-shortcut-migration.vbs": "bb65f82277c0c42814dd0b6d43f5ff6fa863291f08c70940533a06635a5eb654",
   "scripts/windows_installed_acceptance.py": "a067dc729ad8bc58d4a43886751200e8e81e953a74e34da309d88f6d5aa6db7f",
   "scripts/windows_msi_byte_diagnostic.py": "c9cb7615f3a03a53b7182df94c0ff8e2b4243c0648b9ee7536ec808940f14d69"

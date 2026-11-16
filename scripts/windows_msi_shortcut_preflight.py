@@ -4,6 +4,7 @@ sys.dont_write_bytecode=True
 import hashlib,json,os,time
 from pathlib import Path
 import windows_installed_acceptance as qa
+CSCRIPT_FLAGS = ('//NoLogo',)  # //B suppresses the runtime refusal diagnostics.
 
 def vbs_string(value):return '"'+value.replace('"','""')+'"'
 def fixture_script(source,phase,data,second_move_failure=False,removing=False):
@@ -45,7 +46,7 @@ def main():
             nonlocal stage
             stage='link_setup'
             script=owned/(tag+'.vbs');script.write_text('Dim s,l\nSet s=CreateObject("WScript.Shell")\nSet l=s.CreateShortcut('+vbs_string(str(name))+')\nl.TargetPath='+vbs_string(str(target))+'\nl.Arguments='+vbs_string(arguments)+'\nl.Save\n',encoding='utf-16')
-            runner.run(label+'-'+tag,[host,'//B','//NoLogo',script],owned,5)
+            runner.run(label+'-'+tag,[host,*CSCRIPT_FLAGS,script],owned,5)
         if directory:links[0].mkdir()
         else:setup_link(links[0],foreign if foreign_old else expected,'desktop-link', 'synthetic argument' if foreign_args else '')
         setup_link(links[1],expected,'menu-link')
@@ -56,8 +57,25 @@ def main():
             nonlocal stage
             stage=name
             script=owned/(name+'.vbs');script.write_text(fixture_script(source,name,data,second_move_failure=partial and name=='migrate',removing=uninstall_foreign),encoding='utf-16')
-            runner.run(label+'-'+name,[host,'//B','//NoLogo',script],owned,5,allow=allowed)
-            return runner.records[-1]['exitCode']
+            expected_reason = None
+            if allowed == (1,):
+                if partial and name == 'migrate':expected_reason='Synthetic second move failure'
+                elif foreign_old or foreign_current:expected_reason='Foreign shortcut preserved'
+                elif backup:expected_reason='Shortcut backup already exists'
+                elif directory:expected_reason='Shortcut destination is a directory'
+                elif reparse:expected_reason='Shortcut parent is a reparse point'
+                elif foreign_args:expected_reason='Shortcut arguments preserved'
+                qa.need(expected_reason is not None,'expected_refusal_case_unknown')
+            # Observe the actual host status AND exact known refusal description.
+            # An unrelated syntax/runtime error cannot satisfy a negative case.
+            runner.run(label+'-'+name,[host,*CSCRIPT_FLAGS,script],owned,5,allow=(0,1) if expected_reason else allowed)
+            record=runner.records[-1]
+            if expected_reason:
+                diagnostic='\n'.join(record['diagnostics'][stream]['text'] for stream in ('stdout','stderr'))
+                qa.need(expected_reason in diagnostic,'expected_refusal_description_missing')
+                record['fixedExpectedRefusalDescription']=expected_reason
+                qa.need(record['exitCode']==1,'expected_refusal_status_missing')
+            return record['exitCode']
         if foreign_old or foreign_current or backup or directory or reparse or foreign_args:
             qa.need(phase('preflight',(1,))==1,'foreign_shortcut_not_refused')
             qa.need(all(Path(p).read_bytes()==value for p,value in original.items()),'foreign_shortcut_changed')
