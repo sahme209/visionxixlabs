@@ -1,0 +1,18 @@
+{
+  "desktop-release.before.yml": "5911e1f2bd3dcd65beeabf887df58bbbf49707e4088bb24986c8238a59d1270c",
+  "desktop-release.yml": "a0eb48cb929134186b5a673cde546103f99a986f53b6141d2d841b9187896883",
+  "desktop-release.missing-collector-attempt.yml": "c76c9057f051e4f9ab9b50b2dc6abc00dcf3a527e08e161024f347a757eb31f2",
+  "prepare.py": "4dea981f4ede2b17d91ed3634e7ee47ce7318d014a6de5e7c84d4e037e1faeef",
+  "windows-qa-validator.js.txt": "22846ec120b36ea95369be1e3a4ec7a61b6e07a75dcbc7faff692ec35a2bf6ee",
+  "scripts/fixtures/release-windows-workflow.test.cjs": "71896e7eea5b04b60d525c38fde05dfddd339d056b209077aed1a45b604eaa18",
+  "lib/desktop/__tests__/releaseWindowsInstalledWorkflow.test.ts": "61a1613b8f1fcc641bb15fd056dcd087e4b22f470fdb7929f9303bf65e5b89ef",
+  "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts": "cb163095c0d2e8a52eb5ae156c3a6ad09c2a554883dd17d739265528fe3c374e",
+  "PATCH.diff": "f41cda9fafaf9a76e4043017504888011445ee43f26f26adace21f9e64d7d9b3",
+  "APPLY-FILES.json": "e45241d06df27148cb36220c323b8b0285bcc2aeadf8a4b4939cdd75f61a2a83",
+  "REVIEW.md": "238a3352848cdeb027c7198874cf97262061f34e8ca19d1fcf5c6f50ab4deb9a",
+  "GREEN-NODE24.log": "aaa1503fa5c23ab3512fad8d9a04add44fb963a36b70c9806779ec417eb44e23",
+  "BASELINE-RED-NODE24.log": "547e79102fdfe6ae592006f109064392acc50d3213554121e54e4b7fa607974b",
+  "COLLECTOR-ENV-RED-NODE24.log": "c7060efcaf8c32ea1063d2b25d93ab8102be58b548e95f706e9e47321ba27ee9",
+  "desktop-release.event-before.yml": "e2b47ca0c8d557955e00be0b1f1e91955960a5fc1c4d0574ea99da10e2e7fcff",
+  "EVENT-APPLE-RED-NODE24.log": "d54ba143479a20d1b16d7dcada78075c522e9bbb7394110c7cd9a068a93de886"
+}

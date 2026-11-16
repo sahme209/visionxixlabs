@@ -1,0 +1,14 @@
+{
+  "ownerNumericUserIdVerified": 225285479,
+  "ownerMetadataSha256": "b79e3014be56a27c4d66b737c1ac4a9e2bcde393c8121fa8d65b2c88cef8df87",
+  "ownerHoldProposalDraftOnly": true,
+  "futureFinalReleaseSourceShaNotYetBound": true,
+  "ownerSetupBuildSigningScopeNotApproved": true,
+  "environmentConfiguredByThisWork": false,
+  "publicationReadyEnabledByThisWork": false,
+  "secretValuesReadByThisWork": false,
+  "actualFinalReleaseFilesBuiltOrSigned": false,
+  "realGooglePairingOrPublicDownloadAccepted": false,
+  "vercelDeploymentPerformed": false,
+  "governanceEnabled": false
+}

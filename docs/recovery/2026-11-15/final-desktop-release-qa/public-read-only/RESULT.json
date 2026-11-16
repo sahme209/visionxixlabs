@@ -1,0 +1,73 @@
+{
+  "host": "visionxixlabs.com",
+  "startedAtUtc": "2026-11-16T04:09:33.217530+00:00",
+  "maxGetInvocations": 3,
+  "redirectsFollowed": false,
+  "retries": 0,
+  "cookiesSentOrRetained": false,
+  "oauthStarted": false,
+  "accountSessionRequested": false,
+  "privateProviderOrDatabaseCalls": false,
+  "requests": [
+    {
+      "route": "/api/status",
+      "httpStatus": 200,
+      "contentTypeJson": true,
+      "bodyOverLimit": false,
+      "buildBindingProvided": false,
+      "overall": "unknown",
+      "components": [
+        {
+          "id": "autonomy_loop",
+          "verdict": "unknown"
+        },
+        {
+          "id": "outbound_channel",
+          "verdict": "unknown"
+        },
+        {
+          "id": "billing_plane",
+          "verdict": "unknown"
+        },
+        {
+          "id": "cron_self_heal",
+          "verdict": "operational"
+        },
+        {
+          "id": "agi_spine",
+          "verdict": "operational"
+        },
+        {
+          "id": "ai_provider",
+          "verdict": "operational"
+        }
+      ]
+    },
+    {
+      "route": "/api/desktop/download?platform=windows&format=json",
+      "httpStatus": 503,
+      "contentTypeJson": true,
+      "bodyOverLimit": false,
+      "buildBindingProvided": false,
+      "downloadState": "temporarily_unavailable",
+      "platformMatches": true,
+      "versionProvided": false,
+      "assetProvided": false
+    },
+    {
+      "route": "/api/auth/providers",
+      "httpStatus": 200,
+      "contentTypeJson": true,
+      "bodyOverLimit": false,
+      "buildBindingProvided": false,
+      "providerIds": [
+        "credentials",
+        "google",
+        "github",
+        "cognito"
+      ],
+      "googleAdvertised": true,
+      "realOAuthOrCredentialsValidityVerified": false
+    }
+  ]
+}

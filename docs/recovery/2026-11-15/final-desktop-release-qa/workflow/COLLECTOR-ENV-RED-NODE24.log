@@ -1,0 +1,100 @@
+✔ workflow Windows QA is after application bundle and before provenance/upload, no rebuild (0.528792ms)
+✔ publication guard/signing flags/fixed legacy block preserved; four generic V19 display lines (0.884791ms)
+✔ Record platform candidate provenance accepts closed same-run exact-byte full QA receipt (0.588459ms)
+✔ Record platform candidate provenance rejects missing (0.296625ms)
+✔ Record platform candidate provenance rejects wrongSource (0.597084ms)
+✔ Record platform candidate provenance rejects wrongTag (0.280209ms)
+✔ Record platform candidate provenance rejects wrongRun (0.237958ms)
+✔ Record platform candidate provenance rejects replay (0.212625ms)
+✔ Record platform candidate provenance rejects wrongTarget (0.230708ms)
+✔ Record platform candidate provenance rejects cleanup (0.235292ms)
+✔ Record platform candidate provenance rejects partialCycles (0.223708ms)
+✔ Record platform candidate provenance rejects duplicateCycle (0.203375ms)
+✔ Record platform candidate provenance rejects signedFallback (0.202709ms)
+✔ Record platform candidate provenance rejects unsupportedUIClaim (0.18075ms)
+✔ Record platform candidate provenance rejects wrongHash (0.207375ms)
+✔ Record platform candidate provenance rejects thirdAsset (0.216792ms)
+✔ Record platform candidate provenance rejects unknownField (0.184084ms)
+✔ Record platform candidate provenance refuses bytes changed after installed QA (0.188167ms)
+✔ Validate and flatten candidate artifacts accepts closed same-run exact-byte full QA receipt (0.208958ms)
+✔ Validate and flatten candidate artifacts rejects missing (0.178917ms)
+✔ Validate and flatten candidate artifacts rejects wrongSource (0.19425ms)
+✔ Validate and flatten candidate artifacts rejects wrongTag (0.180542ms)
+✔ Validate and flatten candidate artifacts rejects wrongRun (0.170333ms)
+✔ Validate and flatten candidate artifacts rejects replay (0.183375ms)
+✔ Validate and flatten candidate artifacts rejects wrongTarget (0.184208ms)
+✔ Validate and flatten candidate artifacts rejects cleanup (0.189083ms)
+✔ Validate and flatten candidate artifacts rejects partialCycles (0.196292ms)
+✔ Validate and flatten candidate artifacts rejects duplicateCycle (0.187208ms)
+✔ Validate and flatten candidate artifacts rejects signedFallback (0.1985ms)
+✔ Validate and flatten candidate artifacts rejects unsupportedUIClaim (0.179042ms)
+✔ Validate and flatten candidate artifacts rejects wrongHash (0.197042ms)
+✔ Validate and flatten candidate artifacts rejects thirdAsset (0.196792ms)
+✔ Validate and flatten candidate artifacts rejects unknownField (0.178375ms)
+✔ Validate and flatten candidate artifacts refuses bytes changed after installed QA (0.197125ms)
+✔ actual writer hashes receipt before emitting Windows candidate (2.583584ms)
+✔ actual writer refuses a post-QA installer mutation before candidate admission (2.008583ms)
+✔ actual writer refuses missing or symlink receipt (3.567292ms)
+✖ actual collector requires uploaded matching receipt and retains qualification in flat manifest (4.6085ms)
+✔ actual collector refuses missingReceipt before flat candidate acceptance (5.008292ms)
+✔ actual collector refuses missingPin before flat candidate acceptance (3.9655ms)
+✔ actual collector refuses duplicateReceipt before flat candidate acceptance (4.22875ms)
+✔ actual collector refuses wrongRun before flat candidate acceptance (3.868292ms)
+✔ actual collector refuses wrongAttempt before flat candidate acceptance (3.828708ms)
+✔ actual collector refuses missingCleanup before flat candidate acceptance (4.011ms)
+✔ actual collector refuses installerMutated before flat candidate acceptance (3.776708ms)
+✔ upload includes fixed QA receipt alongside original same-platform assets (0.105333ms)
+✖ actual writer AND collector step environments bind the run attempt (0.399916ms)
+✔ release trigger admits only explicit dispatch and identity refuses wrong event or tag BEFORE source tooling (8.517625ms)
+✔ shared Tauri step supplies Apple credentials ONLY to macOS matrix members (0.058416ms)
+ℹ tests 49
+ℹ suites 0
+ℹ pass 47
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 112.284208
+
+✖ failing tests:
+
+test at ../../../../../private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:35:1
+✖ actual collector requires uploaded matching receipt and retains qualification in flat manifest (4.6085ms)
+  evalmachine.<anonymous>:9
+    const fail = () => { throw Error('Windows release QA receipt refused'); };
+                         ^
+  
+  Error: Windows release QA receipt refused
+      at fail (evalmachine.<anonymous>:9:30)
+      at validateWindowsQa (evalmachine.<anonymous>:15:174)
+      at evalmachine.<anonymous>:71:21
+      at Script.runInContext (node:vm:149:12)
+      at Script.runInNewContext (node:vm:154:17)
+      at execute (/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:24:97)
+      at /private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:35:138
+      at withFs (/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:22:648)
+      at TestContext.<anonymous> (/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:35:107)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+
+test at ../../../../../private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:39:1
+✖ actual writer AND collector step environments bind the run attempt (0.399916ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - '${{ github.run_attempt }}'
+  
+      at TestContext.<anonymous> (/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:39:290)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: '${{ github.run_attempt }}',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

@@ -1,0 +1,90 @@
+{
+  "supervisedByRoot": true,
+  "finalRootTypesExit": 0,
+  "finalOrdinarySuiteExit": 0,
+  "finalOrdinarySuite": {
+    "passed": 19833,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "filesPassed": 1815,
+    "seconds": 32.75
+  },
+  "desktopFrontendBuildAndStrictTypesExit": 0,
+  "cliExit": 0,
+  "cliTestsPassed": 36,
+  "selectedPortableWindowsPythonPassed": 121,
+  "workflowPurePassed": 50,
+  "targetedReleaseNodePassed": 41,
+  "manualCheckerPassed": 31,
+  "checkerOriginalCasesRetained": 17,
+  "checkerNewCases": 14,
+  "initialIntegrationFailurePreserved": {
+    "failed": 3,
+    "passed": 19816,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "seconds": 33.84,
+    "reason": "old release checker assumed automatic tag build and prevented stale-fixture validation reaching its original guard",
+    "testNames": [
+      "lib/desktop/__tests__/desktopReleaseVersions.test.ts > actual release-check command > refuses a stale source fixture in desktop/src-tauri/Cargo.toml",
+      "lib/desktop/__tests__/desktopReleaseVersions.test.ts > actual release-check command > refuses a stale source fixture in desktop/src-tauri/Cargo.lock",
+      "lib/desktop/__tests__/desktopReleaseVersions.test.ts > actual release-check command > refuses a stale source fixture in desktop/package-lock.json"
+    ]
+  },
+  "logHashesNoLargeOrdinaryLogCopy": {
+    "full-suite": {
+      "sourcePath": "/tmp/v19-release-qa-full-suite.log",
+      "bytes": 135027,
+      "sha256": "c1894679055a5faa40e703f117ca64187dd6cf4d8fee0c7712a2fd701c2d8e3d"
+    },
+    "full-suite-final": {
+      "sourcePath": "/tmp/v19-release-qa-full-suite-final.log",
+      "bytes": 133869,
+      "sha256": "1405c81e66d437d0562b1ceb0a4e88151ff2798e47d06df020e62bcb376d4fb3"
+    },
+    "root-types-final": {
+      "sourcePath": "/tmp/v19-release-qa-root-types-final.log",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "desktop-build-final": {
+      "sourcePath": "/tmp/v19-release-qa-desktop-build-final.log",
+      "bytes": 1675,
+      "sha256": "17e65732515fe5b22b1a5275e550891a9b154250a49878f58a2324ecab6af3d1"
+    },
+    "cli": {
+      "sourcePath": "/tmp/v19-release-qa-cli.log",
+      "bytes": 1130,
+      "sha256": "31d854a870fc72662386753644c6c5c90d371646b382d8ad0b079bf008912e85"
+    },
+    "full-suite-enrolled": {
+      "sourcePath": "/tmp/v19-release-qa-full-suite-enrolled.log",
+      "bytes": 133869,
+      "sha256": "4c9716cf170411eb31f72c0b1fe6b53ffd95e89157cd4b0aac0e42a8335de533"
+    },
+    "checkout-node-final": {
+      "sourcePath": "/tmp/v19-release-checkout-final-node.log",
+      "bytes": 4324,
+      "sha256": "052ffd0d1272abe347b36104e6a6b290cebdb30600257360d4eabefb30cea6f0"
+    },
+    "demo-final": {
+      "sourcePath": "/tmp/v19-release-qa-demo-final.log",
+      "bytes": 609,
+      "sha256": "dd3f4010901ca646311f08d9a0576e66314bca7f09cec2e7c7ea4d0adb0480e2"
+    }
+  },
+  "signingOrNativeReleaseJobExecutedByThisIntegration": false,
+  "preCheckoutFinalOrdinarySuite": {
+    "passed": 19833,
+    "expectedFailure": 1,
+    "skipped": 1144,
+    "filesPassed": 1815,
+    "seconds": 33.51
+  },
+  "preCheckoutWorkflowPurePassed": 49,
+  "fullyEnrolledCheckoutOrdinaryExit": 0,
+  "fullyEnrolledCheckoutSupervisedSession": 78527,
+  "standaloneReleaseAlignmentAfterCheckoutPassedReportedByRoot": true,
+  "demoDateOnlyLastReviewed": "2026-11-16",
+  "demoContractsAfterDateChangePassed": 15
+}

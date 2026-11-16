@@ -1,0 +1,35 @@
+--- a/.github/workflows/desktop-release.yml
++++ b/.github/workflows/desktop-release.yml
+@@ -218,6 +218,13 @@
+ 
+     steps:
+       - uses: actions/checkout@v7
++        env:
++          GIT_CONFIG_COUNT: '1'
++          GIT_CONFIG_KEY_0: core.autocrlf
++          GIT_CONFIG_VALUE_0: 'false'
++        with:
++          ref: ${{ github.sha }}
++          persist-credentials: false
+ 
+       - name: Set up Node.js
+         uses: actions/setup-node@v7
+--- a/scripts/fixtures/release-windows-workflow.test.cjs
++++ b/scripts/fixtures/release-windows-workflow.test.cjs
+@@ -53,3 +53,16 @@
+  const tauri=workflow.jobs.build.steps.find(row=>row.name==='Build Tauri bundle');
+  for(const key of ['APPLE_CERTIFICATE','APPLE_CERTIFICATE_PASSWORD','APPLE_SIGNING_IDENTITY','APPLE_ID','APPLE_PASSWORD','APPLE_TEAM_ID'])assert.equal(tauri.env[key],"${{ startsWith(matrix.platform, 'macos-') && secrets."+key+" || '' }}");
+ });
++
++
++test('actual build checkout preserves reviewed LF bytes at the exact SHA without persisted credentials',()=>{
++ const check=text=>{
++  const document=yaml.parse(text),steps=document.jobs.build.steps.filter(step=>step.uses==='actions/checkout@v7');assert.equal(steps.length,1);
++  assert.deepEqual(steps[0].env,{GIT_CONFIG_COUNT:'1',GIT_CONFIG_KEY_0:'core.autocrlf',GIT_CONFIG_VALUE_0:'false'});
++  assert.equal(steps[0].with.ref,'${{ github.sha }}');assert.equal(steps[0].with['persist-credentials'],false);
++ };
++ check(source);
++ for(const [from,to] of [["          GIT_CONFIG_VALUE_0: 'false'","          GIT_CONFIG_VALUE_0: 'true'"],["          GIT_CONFIG_KEY_0: core.autocrlf","          GIT_CONFIG_KEY_0: unrelated.config"],["          GIT_CONFIG_COUNT: '1'\n",''],['          ref: ${{ github.sha }}','          ref: refs/heads/main'],['          persist-credentials: false','          persist-credentials: true']]){
++  const start=source.indexOf('  build:\n'),end=source.indexOf('  verify-candidate:',start),segment=source.slice(start,end);assert(segment.includes(from));const changed=source.slice(0,start)+segment.replace(from,to)+source.slice(end);assert.throws(()=>check(changed));
++ }
++});

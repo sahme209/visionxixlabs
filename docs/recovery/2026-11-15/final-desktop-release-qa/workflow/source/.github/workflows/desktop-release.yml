@@ -1,0 +1,1135 @@
+name: Desktop release
+
+# Builds Axiom Agent for macOS (Apple Silicon + Intel), Windows, and Linux
+# only on explicit workflow_dispatch at the exact release tag. Historical push
+# guard expressions below are dormant; dispatch defaults to CANDIDATE ONLY.
+# Publication requires explicit dispatch opt-in, the externally verified readiness
+# variable, and the desktop-release environment. Referencing that environment is
+# NOT evidence that required reviewers are configured; readiness is unverified
+# until an authorized operator checks and records its actual protection rules.
+#
+# Required secrets:
+#   GITHUB_TOKEN              — provided automatically. Used by tauri-action
+#                               for build-time API calls within this repo.
+#   RELEASES_REPO_TOKEN       — PAT with `repo` scope on sahme209/axiom-releases.
+#                               Used to create releases + upload assets in the
+#                               public repo.
+#   APPLE_CERTIFICATE         — base64 .p12 Developer ID Application cert
+#   APPLE_CERTIFICATE_PASSWORD
+#   APPLE_SIGNING_IDENTITY    — e.g. "Developer ID Application: ... (TEAMID)"
+#   APPLE_ID                  — Apple ID email for notarization
+#   APPLE_PASSWORD            — App-Specific password for notarization
+#   APPLE_TEAM_ID
+#   GPG_PRIVATE_KEY          — armored private key used for detached asset signatures
+# Publication-only variables (not verified by merely naming them):
+#   AXIOM_DESKTOP_PUBLICATION_READY — true only after actual reviewer protection is checked
+#   AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT — reviewed uppercase public-key fingerprint
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Exact release tag, for example desktop-v0.1.9'
+        required: true
+        type: string
+      repair_fixed_draft:
+        description: 'Repair only approved unpublished v0.1.21 manifest names; no publication'
+        required: false
+        default: false
+        type: boolean
+      export_fixed_candidate:
+        description: 'Export only verified fixed v0.1.21 candidate; no rebuild or publication'
+        required: false
+        default: false
+        type: boolean
+      auth_only:
+        description: 'Read-only Apple authentication check; no build, upload or publication'
+        required: false
+        default: false
+        type: boolean
+      export_draft:
+        description: 'Export signed verified installers to an unpublished public-repository draft only'
+        required: false
+        default: false
+        type: boolean
+      publish:
+        description: 'Request publication after reviewing this run candidate; default is candidate only'
+        required: false
+        default: false
+        type: boolean
+
+# Serialize releases without canceling an active candidate/publication.
+concurrency:
+  group: desktop-native-release
+  cancel-in-progress: false
+
+permissions:
+  actions: read
+  contents: read
+
+jobs:
+  apple-auth-check:
+    name: Check Apple authentication only
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only == true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true
+    runs-on: macos-latest
+    timeout-minutes: 2
+    env:
+      APPLE_ID: ${{ secrets.APPLE_ID }}
+      APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+    steps:
+      - name: Validate current notarization credentials without submitting an app
+        shell: bash
+        run: |
+          python3 - <<'PYTHON'
+          import os,subprocess,sys
+          if not all(os.environ.get(k) for k in ['APPLE_ID','APPLE_PASSWORD','APPLE_TEAM_ID']):
+            print('Apple authentication configuration is incomplete.');sys.exit(1)
+          try:
+            result=subprocess.run(['xcrun','notarytool','history','--apple-id',os.environ['APPLE_ID'],'--password',os.environ['APPLE_PASSWORD'],'--team-id',os.environ['APPLE_TEAM_ID'],'--output-format','json'],capture_output=True,text=True,timeout=60)
+          except Exception:
+            print('Apple authentication could not be confirmed within the bounded check.');sys.exit(1)
+          if result.returncode:
+            print('Apple authentication refused (HTTP 401).' if '401' in result.stderr else 'Apple authentication was not confirmed.');sys.exit(1)
+          print('Apple notarization authentication accepted. No app was submitted.')
+          PYTHON
+
+  validate-release:
+    if: github.event_name != 'workflow_dispatch' || (inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true)
+    name: Validate release identity
+    timeout-minutes: 2
+    runs-on: ubuntu-latest
+    outputs:
+      release_tag: ${{ steps.identity.outputs.release_tag }}
+      version: ${{ steps.identity.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: '20'
+
+      - name: Match tag to the desktop package version
+        id: identity
+        env:
+          REQUESTED_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.release_tag || github.ref_name }}
+          SOURCE_SHA: ${{ github.sha }}
+          RELEASE_EVENT: ${{ github.event_name }}
+          RELEASE_REF: ${{ github.ref }}
+          PUBLISH_REQUESTED: ${{ (github.event_name == 'workflow_dispatch' && (inputs.publish || inputs.export_draft)) || (github.event_name == 'push' && github.ref == 'refs/tags/desktop-v0.1.22' && github.sha == vars.AXIOM_DESKTOP_DRAFT_EXPORT_SOURCE && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true') }}
+        run: |
+          test "$RELEASE_EVENT" = workflow_dispatch || { echo 'Only a manual release dispatch is supported.' >&2; exit 1; }
+          test "$RELEASE_REF" = "refs/tags/$REQUESTED_TAG" || { echo 'Select the exact requested release tag before starting.' >&2; exit 1; }
+          node scripts/check-desktop-release.mjs
+          [[ "$REQUESTED_TAG" =~ ^desktop-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Only an exact stable desktop release tag is supported.' >&2; exit 1; }
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          version=$(node -p "require('./desktop/package.json').version")
+          expected_tag="desktop-v${version}"
+          if [ "$REQUESTED_TAG" != "$expected_tag" ]; then
+            echo "Release tag $REQUESTED_TAG does not match package version $expected_tag" >&2
+            exit 1
+          fi
+          if [ "$PUBLISH_REQUESTED" = true ]; then
+            git fetch --no-tags origin "refs/tags/$REQUESTED_TAG:refs/tags/$REQUESTED_TAG"
+            test "$(git rev-parse "${REQUESTED_TAG}^{commit}")" = "$SOURCE_SHA"
+          fi
+          echo "release_tag=$REQUESTED_TAG" >> "$GITHUB_OUTPUT"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
+  sbom:
+    name: Generate release SBOM
+    timeout-minutes: 5
+    needs: validate-release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      # Keep the bill of materials tied to the same immutable source revision
+      # as the release artefacts. It is published with the installers below;
+      # it is not a substitute for a clean-host acceptance test.
+      - name: Generate CycloneDX software bill of materials
+        uses: anchore/sbom-action@v0
+        with:
+          path: .
+          format: cyclonedx-json
+          output-file: axiom-agent.sbom.cdx.json
+          # Upload the exact output ourselves: artifact-name also renames the
+          # action's payload, which would disagree with candidate provenance.
+          upload-artifact: false
+          upload-release-assets: false
+
+      - name: Upload exact SBOM candidate bytes
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-sbom
+          path: axiom-agent.sbom.cdx.json
+          if-no-files-found: error
+
+      - name: Record SBOM candidate provenance
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+          VERSION: ${{ needs.validate-release.outputs.version }}
+          CANDIDATE_RUN_ID: ${{ github.run_id }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const crypto = require('node:crypto');
+          const { execFileSync } = require('node:child_process');
+          execFileSync('git', ['diff', '--exit-code', 'HEAD', '--', 'desktop/package.json', 'desktop/package-lock.json', 'desktop/src-tauri/Cargo.toml', 'desktop/src-tauri/Cargo.lock', 'desktop/src-tauri/tauri.conf.json'], { stdio: 'pipe' });
+          const { SOURCE_SHA, RELEASE_TAG, VERSION, CANDIDATE_RUN_ID } = process.env;
+          if (!/^[a-f0-9]{40}$/.test(SOURCE_SHA) || execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim() !== SOURCE_SHA || RELEASE_TAG !== `desktop-v${VERSION}` || !/^\d+$/.test(CANDIDATE_RUN_ID)) throw Error('Invalid SBOM source identity');
+          const bytes = fs.readFileSync('axiom-agent.sbom.cdx.json');
+          const sbom = JSON.parse(bytes);
+          if (sbom.bomFormat !== 'CycloneDX' || !Array.isArray(sbom.components)) throw Error('Invalid SBOM');
+          fs.writeFileSync('candidate-sbom.json', JSON.stringify({ schema: 1, sourceSha: SOURCE_SHA, releaseTag: RELEASE_TAG, version: VERSION, runId: CANDIDATE_RUN_ID, platform: 'sbom', target: 'source', assets: [{ fileName: 'axiom-agent.sbom.cdx.json', sizeBytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex') }] }, null, 2));
+          NODE
+
+      - uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-sbom-provenance
+          path: candidate-sbom.json
+          if-no-files-found: error
+
+  build:
+    name: Build (${{ matrix.label }})
+    needs: validate-release
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+            label: macos-arm
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+            label: macos-intel
+          - platform: windows-2022
+            target: x86_64-pc-windows-msvc
+            label: windows-x64
+          - platform: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            label: linux-x64
+
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: ${{ matrix.label == 'windows-x64' && 65 || startsWith(matrix.platform, 'macos-') && 10 || 20 }}
+
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.label == 'windows-x64' && '24.21.0' || '20' }}
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Linux build deps
+        if: matrix.platform == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libgtk-3-dev libwebkit2gtk-4.1-dev libappindicator3-dev \
+            librsvg2-dev patchelf
+
+      - name: Install desktop deps
+        working-directory: desktop
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: desktop
+        run: npm run build
+
+      # tauri-action builds + signs but does NOT publish here. We capture the
+      # artefacts and let the publish job upload them to the public repo.
+      - name: Build Tauri bundle
+        timeout-minutes: 20
+        uses: tauri-apps/tauri-action@v1
+        env:
+          GITHUB_TOKEN:                ${{ secrets.GITHUB_TOKEN }}
+          APPLE_CERTIFICATE:           ${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_CERTIFICATE || '' }}
+          APPLE_CERTIFICATE_PASSWORD:  ${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_CERTIFICATE_PASSWORD || '' }}
+          APPLE_SIGNING_IDENTITY:      ${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_SIGNING_IDENTITY || '' }}
+          APPLE_ID:                    ${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_ID || '' }}
+          APPLE_PASSWORD:              ${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_PASSWORD || '' }}
+          APPLE_TEAM_ID:               ${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_TEAM_ID || '' }}
+        with:
+          projectPath: desktop
+          args: --target ${{ matrix.target }}
+
+      - name: Validate exact prebuilt Windows installers
+        if: matrix.label == 'windows-x64'
+        timeout-minutes: 40
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+          VERSION: ${{ needs.validate-release.outputs.version }}
+          CANDIDATE_RUN_ID: ${{ github.run_id }}
+          CANDIDATE_RUN_ATTEMPT: ${{ github.run_attempt }}
+          TARGET: ${{ matrix.target }}
+        shell: pwsh
+        run: python scripts/windows_release_acceptance.py
+
+      - name: Notarize and staple the distributable Mac disk image
+        if: startsWith(matrix.platform, 'macos-')
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_PASSWORD: ${{ secrets.APPLE_PASSWORD }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        shell: bash
+        run: |
+          test -n "$APPLE_ID"
+          test -n "$APPLE_PASSWORD"
+          test -n "$APPLE_TEAM_ID"
+          dmg_path="$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/dmg" -maxdepth 1 -type f -name '*.dmg' -print)"
+          test -n "$dmg_path"
+          test "$(printf '%s\n' "$dmg_path" | wc -l | tr -d ' ')" = 1
+          notary_result="$(mktemp)"
+          trap 'rm -f "$notary_result"' EXIT
+          xcrun notarytool submit "$dmg_path" --apple-id "$APPLE_ID" --password "$APPLE_PASSWORD" --team-id "$APPLE_TEAM_ID" --wait --timeout 20m --output-format json > "$notary_result"
+          node - "$notary_result" <<'NODE'
+          const fs = require('node:fs');
+          const result = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          if (result.status !== 'Accepted' || !/^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i.test(result.id)) throw Error('Disk image notarization was not accepted');
+          NODE
+          xcrun stapler staple "$dmg_path"
+          xcrun stapler validate "$dmg_path"
+
+      - name: Verify Apple signature, Gatekeeper acceptance, and notarization ticket
+        if: startsWith(matrix.platform, 'macos-')
+        env:
+          EXPECTED_APP_VERSION: ${{ needs.validate-release.outputs.version }}
+          EXPECTED_APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+        shell: bash
+        run: |
+          app_path=$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/macos" -maxdepth 1 -name '*.app' -print -quit)
+          dmg_path=$(find "desktop/src-tauri/target/${{ matrix.target }}/release/bundle/dmg" -maxdepth 1 -name '*.dmg' -print -quit)
+          test -n "$app_path" && test -n "$dmg_path"
+          codesign --verify --deep --strict --verbose=4 "$app_path"
+          spctl --assess --type execute --verbose=4 "$app_path"
+          xcrun stapler validate "$app_path"
+          codesign --verify --verbose=4 "$dmg_path"
+          hdiutil verify "$dmg_path"
+          case "${{ matrix.target }}" in
+            aarch64-apple-darwin) architecture=arm64 ;;
+            x86_64-apple-darwin) architecture=x86_64 ;;
+            *) echo "Unsupported macOS candidate architecture" >&2; exit 1 ;;
+          esac
+          node scripts/verify-packaged-macos.mjs "$dmg_path" "$EXPECTED_APP_VERSION" "$EXPECTED_APPLE_TEAM_ID" "$architecture" > "desktop/packaged-macos-${{ matrix.label }}.json"
+
+      - name: Record platform release attestation
+        shell: bash
+        run: |
+          signed=false
+          notarized=false
+          if [[ "${{ matrix.label }}" == macos-* ]]; then
+            signed=false
+            # Candidate packaging must pass the mounted-image verifier above.
+            # Public attestation stays withheld until candidate acceptance is complete.
+            notarized=false
+          fi
+          {
+            echo "platform=${{ matrix.label }}"
+            echo "artifact_signed=$signed"
+            echo "artifact_notarized=$notarized"
+          } > "desktop/release-attestation-${{ matrix.label }}.env"
+
+      - name: Record platform candidate provenance
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+          VERSION: ${{ needs.validate-release.outputs.version }}
+          CANDIDATE_RUN_ID: ${{ github.run_id }}
+          CANDIDATE_RUN_ATTEMPT: ${{ github.run_attempt }}
+          PLATFORM: ${{ matrix.label }}
+          TARGET: ${{ matrix.target }}
+        shell: bash
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const { execFileSync } = require('node:child_process');
+          execFileSync('git', ['diff', '--exit-code', 'HEAD', '--', 'desktop/package.json', 'desktop/package-lock.json', 'desktop/src-tauri/Cargo.toml', 'desktop/src-tauri/Cargo.lock', 'desktop/src-tauri/tauri.conf.json'], { stdio: 'pipe' });
+          const { SOURCE_SHA, RELEASE_TAG, VERSION, CANDIDATE_RUN_ID, CANDIDATE_RUN_ATTEMPT, PLATFORM, TARGET } = process.env;
+          const targets = { 'macos-arm': 'aarch64-apple-darwin', 'macos-intel': 'x86_64-apple-darwin', 'windows-x64': 'x86_64-pc-windows-msvc', 'linux-x64': 'x86_64-unknown-linux-gnu' };
+          if (!/^[a-f0-9]{40}$/.test(SOURCE_SHA) || execFileSync('git', ['rev-parse', 'HEAD'], { encoding: 'utf8' }).trim() !== SOURCE_SHA || RELEASE_TAG !== `desktop-v${VERSION}` || !/^\d+$/.test(CANDIDATE_RUN_ID) || targets[PLATFORM] !== TARGET) throw Error('Invalid platform source identity');
+          function validateWindowsQa(receipt, assets, identity) {
+            const fail = () => { throw Error('Windows release QA receipt refused'); };
+            const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+            const flags = ['accepted', 'installerBytesUnchanged', 'rawPayloadUnchanged', 'msiReturncheckVerified', 'keyringCleanupConfirmed', 'ownedProcessCleanupConfirmed', 'installerCleanupConfirmed'];
+            const bindings = ['sourceSha', 'releaseTag', 'version', 'runId', 'runAttempt', 'target'];
+            const keys = ['schema', ...bindings, ...flags, 'cleanInstallKinds', 'upgradeCases', 'signaturePolicy', 'uiVisualAcceptance', 'googlePairing', 'assets'];
+            if (!object(receipt) || Object.keys(receipt).length !== keys.length || Object.keys(receipt).some(key => !keys.includes(key))) fail();
+            if (receipt.schema !== 'axiom.windows-release-installed-validation/1' || flags.some(key => receipt[key] !== true) || bindings.some(key => receipt[key] !== identity[key])) fail();
+            if (receipt.runAttempt !== '1' || receipt.target !== 'x86_64-pc-windows-msvc' || receipt.signaturePolicy !== 'unsigned-only' || receipt.uiVisualAcceptance !== 'UNVERIFIED' || receipt.googlePairing !== 'NOT_RUN') fail();
+            const sameSet = (value, expected) => Array.isArray(value) && value.length === expected.length && new Set(value).size === value.length && value.every(item => expected.includes(item));
+            if (!sameSet(receipt.cleanInstallKinds, ['msi', 'nsis']) || !sameSet(receipt.upgradeCases, ['msi-major-upgrade', 'nsis-silent-upgrade', 'nsis-update', 'nsis-collision-legacy', 'nsis-collision-current'])) fail();
+            if (!Array.isArray(receipt.assets) || receipt.assets.length !== 2 || !Array.isArray(assets) || assets.length !== 2 || new Set(receipt.assets.map(asset => asset?.kind)).size !== 2 || new Set(receipt.assets.map(asset => asset?.fileName)).size !== 2) fail();
+            for (const asset of receipt.assets) {
+              if (!object(asset) || Object.keys(asset).length !== 4 || Object.keys(asset).some(key => !['kind', 'fileName', 'sizeBytes', 'sha256'].includes(key)) || !['msi', 'nsis'].includes(asset.kind)) fail();
+              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || !(asset.kind === 'msi' ? /\.msi$/ : /\.exe$/).test(asset.fileName) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0 || !/^[a-f0-9]{64}$/.test(asset.sha256)) fail();
+              const matches = assets.filter(actual => actual.fileName === asset.fileName && actual.sizeBytes === asset.sizeBytes && actual.sha256 === asset.sha256);
+              if (matches.length !== 1) fail();
+            }
+            return receipt;
+          }
+          function walk(directory) {
+            return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+              const file = path.join(directory, entry.name);
+              if (entry.isSymbolicLink()) throw Error('Symlink in candidate output');
+              // Ignore unpacked application staging trees; hash only distributable installers.
+              const staging = entry.name.endsWith('.app') || (PLATFORM === 'linux-x64' && entry.name.endsWith('.AppDir'));
+              return entry.isDirectory() ? (staging ? [] : walk(file)) : [file];
+            });
+          }
+          const files = walk(`desktop/src-tauri/target/${TARGET}/release/bundle`).filter(file => /\.(dmg|msi|exe|AppImage|deb|rpm)$/.test(file));
+          if (!files.length) throw Error('No candidate installer');
+          const assets = files.map(file => {
+            const bytes = fs.readFileSync(file);
+            return { fileName: path.basename(file), sizeBytes: bytes.length, sha256: crypto.createHash('sha256').update(bytes).digest('hex') };
+          });
+          let windowsInstalledQa;
+          if (PLATFORM === 'windows-x64') {
+            const receiptPath = 'desktop/windows-installed-release-qa.json';
+            const stat = fs.lstatSync(receiptPath);
+            if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1048576) throw Error('Invalid Windows QA receipt file');
+            const bytes = fs.readFileSync(receiptPath);
+            validateWindowsQa(JSON.parse(bytes), assets, { sourceSha: SOURCE_SHA, releaseTag: RELEASE_TAG, version: VERSION, runId: CANDIDATE_RUN_ID, runAttempt: CANDIDATE_RUN_ATTEMPT, target: TARGET });
+            windowsInstalledQa = { fileName: 'windows-installed-release-qa.json', sha256: crypto.createHash('sha256').update(bytes).digest('hex') };
+          }
+          fs.writeFileSync(`desktop/candidate-${PLATFORM}.json`, JSON.stringify({ schema: 1, sourceSha: SOURCE_SHA, releaseTag: RELEASE_TAG, version: VERSION, runId: CANDIDATE_RUN_ID, platform: PLATFORM, target: TARGET, assets, ...(windowsInstalledQa ? { windowsInstalledQa } : {}) }, null, 2));
+          NODE
+
+      - name: Upload artefact
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-${{ matrix.label }}
+          path: |
+            desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.dmg
+            desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.msi
+            desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.exe
+            desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.AppImage
+            desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.deb
+            desktop/src-tauri/target/${{ matrix.target }}/release/bundle/**/*.rpm
+            desktop/release-attestation-${{ matrix.label }}.env
+            desktop/candidate-${{ matrix.label }}.json
+            desktop/windows-installed-release-qa.json
+            desktop/packaged-macos-${{ matrix.label }}.json
+          if-no-files-found: error
+
+  verify-candidate:
+    name: Verify candidate bytes (no publication)
+    needs: [validate-release, build, sbom]
+    timeout-minutes: 5
+    runs-on: ubuntu-latest
+    outputs:
+      artifact_id: ${{ steps.review.outputs.artifact-id }}
+    steps:
+      - name: Record same-run candidate artifact graph
+        env:
+          GH_TOKEN: ${{ github.token }}
+          CANDIDATE_RUN_ID: ${{ github.run_id }}
+        run: |
+          gh api --method GET "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/artifacts?per_page=100" > candidate-artifacts.json
+
+      - uses: actions/download-artifact@v8
+        with:
+          path: ./artifacts
+
+      - name: Validate and flatten candidate artifacts
+        env:
+          SOURCE_SHA: ${{ github.sha }}
+          RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+          VERSION: ${{ needs.validate-release.outputs.version }}
+          CANDIDATE_RUN_ID: ${{ github.run_id }}
+          CANDIDATE_RUN_ATTEMPT: ${{ github.run_attempt }}
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs');
+          const path = require('node:path');
+          const crypto = require('node:crypto');
+          const { SOURCE_SHA, RELEASE_TAG, VERSION, CANDIDATE_RUN_ID, CANDIDATE_RUN_ATTEMPT } = process.env;
+          const targets = { 'macos-arm': 'aarch64-apple-darwin', 'macos-intel': 'x86_64-apple-darwin', 'windows-x64': 'x86_64-pc-windows-msvc', 'linux-x64': 'x86_64-unknown-linux-gnu', sbom: 'source' };
+          const extensions = { 'macos-arm': /\.dmg$/, 'macos-intel': /\.dmg$/, 'windows-x64': /\.(msi|exe)$/, 'linux-x64': /\.(AppImage|deb|rpm)$/, sbom: /^axiom-agent\.sbom\.cdx\.json$/ };
+          if (!/^[a-f0-9]{40}$/.test(SOURCE_SHA) || RELEASE_TAG !== `desktop-v${VERSION}` || !/^\d+$/.test(CANDIDATE_RUN_ID)) throw Error('Invalid candidate identity');
+          function validateWindowsQa(receipt, assets, identity) {
+            const fail = () => { throw Error('Windows release QA receipt refused'); };
+            const object = value => value !== null && typeof value === 'object' && !Array.isArray(value);
+            const flags = ['accepted', 'installerBytesUnchanged', 'rawPayloadUnchanged', 'msiReturncheckVerified', 'keyringCleanupConfirmed', 'ownedProcessCleanupConfirmed', 'installerCleanupConfirmed'];
+            const bindings = ['sourceSha', 'releaseTag', 'version', 'runId', 'runAttempt', 'target'];
+            const keys = ['schema', ...bindings, ...flags, 'cleanInstallKinds', 'upgradeCases', 'signaturePolicy', 'uiVisualAcceptance', 'googlePairing', 'assets'];
+            if (!object(receipt) || Object.keys(receipt).length !== keys.length || Object.keys(receipt).some(key => !keys.includes(key))) fail();
+            if (receipt.schema !== 'axiom.windows-release-installed-validation/1' || flags.some(key => receipt[key] !== true) || bindings.some(key => receipt[key] !== identity[key])) fail();
+            if (receipt.runAttempt !== '1' || receipt.target !== 'x86_64-pc-windows-msvc' || receipt.signaturePolicy !== 'unsigned-only' || receipt.uiVisualAcceptance !== 'UNVERIFIED' || receipt.googlePairing !== 'NOT_RUN') fail();
+            const sameSet = (value, expected) => Array.isArray(value) && value.length === expected.length && new Set(value).size === value.length && value.every(item => expected.includes(item));
+            if (!sameSet(receipt.cleanInstallKinds, ['msi', 'nsis']) || !sameSet(receipt.upgradeCases, ['msi-major-upgrade', 'nsis-silent-upgrade', 'nsis-update', 'nsis-collision-legacy', 'nsis-collision-current'])) fail();
+            if (!Array.isArray(receipt.assets) || receipt.assets.length !== 2 || !Array.isArray(assets) || assets.length !== 2 || new Set(receipt.assets.map(asset => asset?.kind)).size !== 2 || new Set(receipt.assets.map(asset => asset?.fileName)).size !== 2) fail();
+            for (const asset of receipt.assets) {
+              if (!object(asset) || Object.keys(asset).length !== 4 || Object.keys(asset).some(key => !['kind', 'fileName', 'sizeBytes', 'sha256'].includes(key)) || !['msi', 'nsis'].includes(asset.kind)) fail();
+              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || !(asset.kind === 'msi' ? /\.msi$/ : /\.exe$/).test(asset.fileName) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0 || !/^[a-f0-9]{64}$/.test(asset.sha256)) fail();
+              const matches = assets.filter(actual => actual.fileName === asset.fileName && actual.sizeBytes === asset.sizeBytes && actual.sha256 === asset.sha256);
+              if (matches.length !== 1) fail();
+            }
+            return receipt;
+          }
+          function walk(directory) {
+            return fs.readdirSync(directory, { withFileTypes: true }).flatMap(entry => {
+              const file = path.join(directory, entry.name);
+              if (entry.isSymbolicLink()) throw Error('Symlink in candidate artifacts');
+              return entry.isDirectory() ? walk(file) : [file];
+            });
+          }
+          const graph = JSON.parse(fs.readFileSync('candidate-artifacts.json'));
+          const requiredArtifacts = new Set(['axiom-macos-arm', 'axiom-macos-intel', 'axiom-windows-x64', 'axiom-linux-x64', 'axiom-sbom', 'axiom-sbom-provenance']);
+          if (graph.total_count !== 6 || !Array.isArray(graph.artifacts) || graph.artifacts.length !== 6) throw Error('Incomplete same-run artifact graph');
+          const rawArtifacts = graph.artifacts.map(artifact => {
+            if (!Number.isSafeInteger(artifact.id) || artifact.id < 1 || !requiredArtifacts.delete(artifact.name) || artifact.expired !== false || artifact.workflow_run?.id !== Number(CANDIDATE_RUN_ID) || artifact.workflow_run?.head_sha !== SOURCE_SHA || !/^sha256:[a-f0-9]{64}$/.test(artifact.digest)) throw Error('Candidate artifact source mismatch');
+            return { id: artifact.id, name: artifact.name, digest: artifact.digest, runId: CANDIDATE_RUN_ID, sourceSha: SOURCE_SHA };
+          });
+          if (new Set(rawArtifacts.map(artifact => artifact.id)).size !== 6) throw Error('Duplicate candidate artifact ID');
+          const files = walk('artifacts');
+          const manifests = files.filter(file => /^candidate-(macos-arm|macos-intel|windows-x64|linux-x64|sbom)\.json$/.test(path.basename(file)));
+          if (manifests.length !== 5) throw Error('Missing or duplicate platform provenance');
+          let windowsInstalledQa;
+          const seenPlatforms = new Set(); const seenNames = new Set(); const outputNames = new Set(); const verified = [];
+          fs.mkdirSync('flat');
+          for (const file of manifests) {
+            const manifest = JSON.parse(fs.readFileSync(file));
+            if (path.basename(file) !== `candidate-${manifest.platform}.json` || manifest.schema !== 1 || manifest.sourceSha !== SOURCE_SHA || manifest.releaseTag !== RELEASE_TAG || manifest.version !== VERSION || manifest.runId !== CANDIDATE_RUN_ID || targets[manifest.platform] !== manifest.target || seenPlatforms.has(manifest.platform) || !Array.isArray(manifest.assets) || !manifest.assets.length) throw Error('Candidate provenance mismatch');
+            seenPlatforms.add(manifest.platform);
+            if (manifest.platform !== 'sbom') {
+              const attestations = files.filter(candidate => path.basename(candidate) === `release-attestation-${manifest.platform}.env`);
+              if (attestations.length !== 1) throw Error('Missing platform signing attestation');
+              const entries = fs.readFileSync(attestations[0], 'utf8').trim().split(/\r?\n/);
+              const lines = new Set(entries);
+              if (entries.length !== 3 || lines.size !== 3) throw Error('Conflicting or duplicate signing attestation');
+              const expected = false;
+              if (!lines.has(`platform=${manifest.platform}`) || !lines.has(`artifact_signed=${expected}`) || !lines.has('artifact_notarized=false')) throw Error('Signing attestation mismatch');
+            }
+            if (manifest.platform === 'windows-x64') {
+              const pin = manifest.windowsInstalledQa;
+              if (!pin || Object.keys(pin).length !== 2 || pin.fileName !== 'windows-installed-release-qa.json' || !/^[a-f0-9]{64}$/.test(pin.sha256)) throw Error('Missing Windows QA receipt binding');
+              const matches = files.filter(candidate => path.basename(candidate) === pin.fileName);
+              if (matches.length !== 1) throw Error('Missing or duplicate Windows QA receipt');
+              const stat = fs.lstatSync(matches[0]);
+              if (!stat.isFile() || stat.isSymbolicLink() || stat.size > 1048576) throw Error('Invalid Windows QA receipt file');
+              const bytes = fs.readFileSync(matches[0]);
+              if (crypto.createHash('sha256').update(bytes).digest('hex') !== pin.sha256) throw Error('Windows QA receipt bytes changed');
+              const receipt = validateWindowsQa(JSON.parse(bytes), manifest.assets, { sourceSha: SOURCE_SHA, releaseTag: RELEASE_TAG, version: VERSION, runId: CANDIDATE_RUN_ID, runAttempt: CANDIDATE_RUN_ATTEMPT, target: manifest.target });
+              windowsInstalledQa = { receiptSha256: pin.sha256, receipt };
+            } else if (manifest.windowsInstalledQa !== undefined) throw Error('Unexpected Windows QA binding');
+            for (const asset of manifest.assets) {
+              if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || !extensions[manifest.platform].test(asset.fileName) || seenNames.has(asset.fileName) || !/^[a-f0-9]{64}$/.test(asset.sha256) || !Number.isSafeInteger(asset.sizeBytes) || asset.sizeBytes <= 0) throw Error('Unsafe or duplicate candidate asset');
+              const matches = files.filter(candidate => path.basename(candidate) === asset.fileName);
+              if (matches.length !== 1) throw Error('Missing or colliding candidate asset');
+              const bytes = fs.readFileSync(matches[0]);
+              if (bytes.length !== asset.sizeBytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw Error('Candidate bytes changed');
+              if (manifest.platform !== 'sbom' && !asset.fileName.split(/[^0-9.]+/).includes(VERSION)) throw Error('Installer version mismatch');
+              const outputName = manifest.platform === 'sbom' ? `Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json` : asset.fileName.replace(/ /g, '.');
+              if (outputNames.has(outputName)) throw Error('Normalized candidate filename collision');
+              outputNames.add(outputName);
+              fs.copyFileSync(matches[0], path.join('flat', outputName));
+              seenNames.add(asset.fileName); verified.push({ ...asset, fileName: outputName, platform: manifest.platform, target: manifest.target });
+            }
+          }
+          const payloadFiles = files.filter(file => /\.(dmg|msi|exe|AppImage|deb|rpm)$/.test(file) || path.basename(file) === 'axiom-agent.sbom.cdx.json');
+          if (payloadFiles.length !== verified.length) throw Error('Unmanifested candidate installer');
+          fs.writeFileSync(`flat/Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`, JSON.stringify({ schema: 1, sourceSha: SOURCE_SHA, releaseTag: RELEASE_TAG, version: VERSION, runId: CANDIDATE_RUN_ID, rawArtifacts, assets: verified, windowsInstalledQa }, null, 2));
+          NODE
+          sbom="flat/Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json"
+          jq -e '.bomFormat == "CycloneDX" and (.components | type == "array")' "$sbom" >/dev/null
+
+      - name: Upload verified candidate for review
+        id: review
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-verified-candidate
+          path: flat/*
+          if-no-files-found: error
+
+  export-draft:
+    name: Export signed candidate without publication
+    timeout-minutes: 5
+    if: (github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true && inputs.export_draft == true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true') || (github.event_name == 'push' && github.ref == 'refs/tags/desktop-v0.1.22' && github.sha == vars.AXIOM_DESKTOP_DRAFT_EXPORT_SOURCE && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true')
+    # Local approved export boundary: draft only. Human publication remains in
+    # the public artifact repository protected job, configured separately.
+    needs: [validate-release, verify-candidate]
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+      VERSION: ${{ needs.validate-release.outputs.version }}
+      SOURCE_SHA: ${{ github.sha }}
+      CANDIDATE_RUN_ID: ${{ github.run_id }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.verify-candidate.outputs.artifact_id }}
+          path: flat
+
+      - name: Reject existing or unknown public release identity
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^desktop-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          response=$(mktemp)
+          trap 'rm -f "$response"' EXIT
+          require_status() {
+            endpoint="$1"; expected="$2"
+            gh api --include --method GET "$endpoint" >"$response" 2>/dev/null || true
+            status=$(awk '$1 ~ /^HTTP\// {code=$2} END {print code}' "$response")
+            if [ "$status" != "$expected" ]; then
+              echo "Immutable release identity check failed (expected HTTP $expected, received ${status:-unknown})." >&2
+              exit 1
+            fi
+          }
+          require_status repos/sahme209/axiom-releases 200
+          require_status "repos/sahme209/axiom-releases/releases/tags/$RELEASE_TAG" 404
+          require_status "repos/sahme209/axiom-releases/git/ref/tags/$RELEASE_TAG" 404
+
+      - name: Validate candidate again before signing or upload
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const { SOURCE_SHA, RELEASE_TAG, VERSION, CANDIDATE_RUN_ID } = process.env;
+          const name = `Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`;
+          const manifest = JSON.parse(fs.readFileSync(path.join('flat', name)));
+          if (manifest.schema !== 1 || manifest.sourceSha !== SOURCE_SHA || manifest.releaseTag !== RELEASE_TAG || manifest.version !== VERSION || manifest.runId !== CANDIDATE_RUN_ID || !Array.isArray(manifest.assets) || manifest.assets.length < 5) throw Error('Unapproved candidate identity');
+          const names = new Set();
+          for (const asset of manifest.assets) {
+            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
+            const file = path.join('flat', asset.fileName);
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid candidate file');
+            const bytes = fs.readFileSync(file);
+            if (bytes.length !== asset.sizeBytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw Error('Approved candidate bytes changed');
+            names.add(asset.fileName);
+          }
+          if (fs.readdirSync('flat').length !== names.size + 1) throw Error('Unexpected candidate payload');
+          NODE
+
+      - name: Install GPG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg
+
+      - name: Import GPG key and verify detached signatures
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          EXPECTED_GPG_FINGERPRINT: ${{ vars.AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_GPG_FINGERPRINT" =~ ^[A-F0-9]{40}$ ]] || { echo 'Reviewed public-key fingerprint is required.' >&2; exit 1; }
+          published_key="$RUNNER_TEMP/axiom-published-public-key.asc"
+          gh api --method GET repos/sahme209/axiom-releases/contents/axiom-public-key.asc --jq .content | base64 --decode > "$published_key"
+          fingerprint=$(gpg --batch --show-keys --with-colons "$published_key" 2>/dev/null | awk -F: '$1 == "fpr" {print $10; exit}')
+          [ "$fingerprint" = "$EXPECTED_GPG_FINGERPRINT" ] || { echo 'Published signing key does not match the reviewed fingerprint.' >&2; exit 1; }
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import >/dev/null 2>&1 || { echo 'Release signing key import failed.' >&2; exit 1; }
+          verifier="$RUNNER_TEMP/axiom-public-signature-verifier"
+          mkdir -m 700 "$verifier"
+          gpg --homedir "$verifier" --batch --import "$published_key" >/dev/null 2>&1 || { echo 'Public verification key import failed.' >&2; exit 1; }
+          for f in flat/*; do
+            [ -e "$f" ] || continue
+            gpg --batch --yes --local-user "$EXPECTED_GPG_FINGERPRINT" --output "${f}.asc" --armor --detach-sign "$f" >/dev/null 2>&1 || { echo 'Candidate detached signing failed.' >&2; exit 1; }
+            verification=$(gpg --homedir "$verifier" --batch --status-fd 1 --verify "${f}.asc" "$f" 2>/dev/null) || { echo 'Candidate signature verification failed.' >&2; exit 1; }
+            printf '%s\n' "$verification" | awk -v fingerprint="$EXPECTED_GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fingerprint || $NF == fingerprint) {valid=1} END {exit !valid}' || { echo 'Candidate signature used an unexpected key.' >&2; exit 1; }
+          done
+
+      - name: Create new public release without replacing existing assets
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Refuse an intervening release/tag before creating anything. Unknown
+          # API failures are errors, never treated as absence.
+          require_absent() {
+            response=$(mktemp)
+            gh api --include --method GET "$1" >"$response" 2>/dev/null || true
+            status=$(awk '$1 ~ /^HTTP\// {code=$2} END {print code}' "$response")
+            rm -f "$response"
+            [ "$status" = 404 ] || { echo 'Public release identity is no longer absent.' >&2; exit 1; }
+          }
+          require_absent "repos/sahme209/axiom-releases/releases/tags/$RELEASE_TAG"
+          require_absent "repos/sahme209/axiom-releases/git/ref/tags/$RELEASE_TAG"
+          cat > release-notes.md <<NOTES
+          # V19 $RELEASE_TAG
+
+          macOS candidate builds require signature, Gatekeeper and notarization checks on the build app and the app inside the disk image. Public artifact signing attestations remain withheld pending candidate acceptance; clean-host installation and credential persistence require separate acceptance. Windows installers remain unsigned by Authenticode; Linux packages have detached GPG signatures. GPG signatures and a source-bound candidate hash manifest accompany every installer and SBOM. Automatic in-app updates are not configured; use reviewed manual installation.
+
+          The public artifact-repository tag is not the private source commit. Source provenance:
+          source-commit: $SOURCE_SHA
+          candidate-run: $CANDIDATE_RUN_ID
+          macos-artifact-signed: false
+          macos-artifact-notarized: false
+          macos-build-app-signed: true
+          macos-build-app-notarized: true
+          windows-artifact-signed: false
+          linux-artifact-signed: false
+          NOTES
+          # Atomically claim a previously absent public artifact tag. This
+          # tag belongs to the artifact repo, not the private source history.
+          branch=$(gh api --method GET repos/sahme209/axiom-releases --jq .default_branch)
+          encoded_branch=$(BRANCH="$branch" node -p 'encodeURIComponent(process.env.BRANCH)')
+          public_sha=$(gh api --method GET "repos/sahme209/axiom-releases/commits/$encoded_branch" --jq .sha)
+          [[ "$public_sha" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          gh api --method POST repos/sahme209/axiom-releases/git/refs -f "ref=refs/tags/$RELEASE_TAG" -f "sha=$public_sha" >/dev/null
+          # Capture the exact newly-created draft ID. Existing releases are
+          # never edited, overwritten or reused on a retry.
+          release_id=$(gh api --method POST repos/sahme209/axiom-releases/releases -f "tag_name=$RELEASE_TAG" -f "name=V19 $RELEASE_TAG" -f "body=$(cat release-notes.md)" -F draft=true --jq .id)
+          [[ "$release_id" =~ ^[0-9]+$ ]] || exit 1
+          for file in flat/*; do
+            encoded_name=$(FILE_NAME="$(basename "$file")" node -p 'encodeURIComponent(process.env.FILE_NAME)')
+            gh api --method POST "https://uploads.github.com/repos/sahme209/axiom-releases/releases/$release_id/assets?name=$encoded_name" --header 'Content-Type: application/octet-stream' --input "$file" >/dev/null
+          done
+          gh api --method GET "repos/sahme209/axiom-releases/releases/$release_id" > "$RUNNER_TEMP/created-release.json"
+          RELEASE_ID="$release_id" node <<'NODE'
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const { RELEASE_ID, RELEASE_TAG, SOURCE_SHA, CANDIDATE_RUN_ID, RUNNER_TEMP } = process.env;
+          const remote = JSON.parse(fs.readFileSync(path.join(RUNNER_TEMP, 'created-release.json')));
+          if (String(remote.id) !== RELEASE_ID || remote.tag_name !== RELEASE_TAG || remote.draft !== true || !Array.isArray(remote.assets)) throw Error('New draft identity mismatch');
+          const candidate = JSON.parse(fs.readFileSync(`flat/Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`));
+          if (candidate.sourceSha !== SOURCE_SHA || candidate.runId !== CANDIDATE_RUN_ID) throw Error('Candidate identity changed');
+          for (const asset of candidate.assets) {
+            const bytes = fs.readFileSync(path.join('flat', asset.fileName));
+            if (crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256 || bytes.length !== asset.sizeBytes) throw Error('Approved installer bytes changed before upload');
+          }
+          const names = fs.readdirSync('flat');
+          if (remote.assets.length !== names.length) throw Error('Remote candidate asset set incomplete');
+          const verified = names.map(name => {
+            const file = path.join('flat', name);
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid uploaded file');
+            const bytes = fs.readFileSync(file); const digest = `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
+            const matches = remote.assets.filter(asset => asset.name === name);
+            if (matches.length !== 1 || matches[0].digest !== digest || matches[0].size !== bytes.length) throw Error('Remote uploaded digest mismatch');
+            return { name, digest, sizeBytes: bytes.length };
+          });
+          fs.writeFileSync(path.join(RUNNER_TEMP, 'publication-verification.json'), JSON.stringify({ releaseId: RELEASE_ID, releaseTag: RELEASE_TAG, sourceSha: SOURCE_SHA, runId: CANDIDATE_RUN_ID, assets: verified }, null, 2));
+          NODE
+          # Deliberately leave this release DRAFT. Never update the customer manifest.
+          test "$(gh api --method GET "repos/sahme209/axiom-releases/releases/$release_id" --jq .draft)" = true
+
+      - name: Preserve sanitized uploaded digest evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-draft-export-verification
+          path: ${{ runner.temp }}/publication-verification.json
+          if-no-files-found: ignore
+
+  publish:
+    name: Publish approved immutable candidate
+    if: github.event_name == 'workflow_dispatch' && inputs.auth_only != true && inputs.export_fixed_candidate != true && inputs.repair_fixed_draft != true && inputs.publish == true && vars.AXIOM_DESKTOP_PUBLICATION_READY == 'true'
+    # This flag is an operator readiness attestation, not proof that reviewers
+    # exist. Never enable it until actual environment protection is verified.
+    environment: desktop-release
+    needs: [validate-release, verify-candidate]
+    runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ needs.validate-release.outputs.release_tag }}
+      VERSION: ${{ needs.validate-release.outputs.version }}
+      SOURCE_SHA: ${{ github.sha }}
+      CANDIDATE_RUN_ID: ${{ github.run_id }}
+    steps:
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ needs.verify-candidate.outputs.artifact_id }}
+          path: flat
+
+      - name: Reject existing or unknown public release identity
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^desktop-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          response=$(mktemp)
+          trap 'rm -f "$response"' EXIT
+          require_status() {
+            endpoint="$1"; expected="$2"
+            gh api --include --method GET "$endpoint" >"$response" 2>/dev/null || true
+            status=$(awk '$1 ~ /^HTTP\// {code=$2} END {print code}' "$response")
+            if [ "$status" != "$expected" ]; then
+              echo "Immutable release identity check failed (expected HTTP $expected, received ${status:-unknown})." >&2
+              exit 1
+            fi
+          }
+          require_status repos/sahme209/axiom-releases 200
+          require_status "repos/sahme209/axiom-releases/releases/tags/$RELEASE_TAG" 404
+          require_status "repos/sahme209/axiom-releases/git/ref/tags/$RELEASE_TAG" 404
+
+      - name: Validate candidate again before signing or upload
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const { SOURCE_SHA, RELEASE_TAG, VERSION, CANDIDATE_RUN_ID } = process.env;
+          const name = `Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`;
+          const manifest = JSON.parse(fs.readFileSync(path.join('flat', name)));
+          if (manifest.schema !== 1 || manifest.sourceSha !== SOURCE_SHA || manifest.releaseTag !== RELEASE_TAG || manifest.version !== VERSION || manifest.runId !== CANDIDATE_RUN_ID || !Array.isArray(manifest.assets) || manifest.assets.length < 5) throw Error('Unapproved candidate identity');
+          const names = new Set();
+          for (const asset of manifest.assets) {
+            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
+            const file = path.join('flat', asset.fileName);
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid candidate file');
+            const bytes = fs.readFileSync(file);
+            if (bytes.length !== asset.sizeBytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw Error('Approved candidate bytes changed');
+            names.add(asset.fileName);
+          }
+          if (fs.readdirSync('flat').length !== names.size + 1) throw Error('Unexpected candidate payload');
+          NODE
+
+      - name: Install GPG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg
+
+      - name: Import GPG key and verify detached signatures
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          EXPECTED_GPG_FINGERPRINT: ${{ vars.AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_GPG_FINGERPRINT" =~ ^[A-F0-9]{40}$ ]] || { echo 'Reviewed public-key fingerprint is required.' >&2; exit 1; }
+          published_key="$RUNNER_TEMP/axiom-published-public-key.asc"
+          gh api --method GET repos/sahme209/axiom-releases/contents/axiom-public-key.asc --jq .content | base64 --decode > "$published_key"
+          fingerprint=$(gpg --batch --show-keys --with-colons "$published_key" 2>/dev/null | awk -F: '$1 == "fpr" {print $10; exit}')
+          [ "$fingerprint" = "$EXPECTED_GPG_FINGERPRINT" ] || { echo 'Published signing key does not match the reviewed fingerprint.' >&2; exit 1; }
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import >/dev/null 2>&1 || { echo 'Release signing key import failed.' >&2; exit 1; }
+          verifier="$RUNNER_TEMP/axiom-public-signature-verifier"
+          mkdir -m 700 "$verifier"
+          gpg --homedir "$verifier" --batch --import "$published_key" >/dev/null 2>&1 || { echo 'Public verification key import failed.' >&2; exit 1; }
+          for f in flat/*; do
+            [ -e "$f" ] || continue
+            gpg --batch --yes --local-user "$EXPECTED_GPG_FINGERPRINT" --output "${f}.asc" --armor --detach-sign "$f" >/dev/null 2>&1 || { echo 'Candidate detached signing failed.' >&2; exit 1; }
+            verification=$(gpg --homedir "$verifier" --batch --status-fd 1 --verify "${f}.asc" "$f" 2>/dev/null) || { echo 'Candidate signature verification failed.' >&2; exit 1; }
+            printf '%s\n' "$verification" | awk -v fingerprint="$EXPECTED_GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fingerprint || $NF == fingerprint) {valid=1} END {exit !valid}' || { echo 'Candidate signature used an unexpected key.' >&2; exit 1; }
+          done
+
+      - name: Create new public release without replacing existing assets
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Refuse an intervening release/tag before creating anything. Unknown
+          # API failures are errors, never treated as absence.
+          require_absent() {
+            response=$(mktemp)
+            gh api --include --method GET "$1" >"$response" 2>/dev/null || true
+            status=$(awk '$1 ~ /^HTTP\// {code=$2} END {print code}' "$response")
+            rm -f "$response"
+            [ "$status" = 404 ] || { echo 'Public release identity is no longer absent.' >&2; exit 1; }
+          }
+          require_absent "repos/sahme209/axiom-releases/releases/tags/$RELEASE_TAG"
+          require_absent "repos/sahme209/axiom-releases/git/ref/tags/$RELEASE_TAG"
+          cat > release-notes.md <<NOTES
+          # V19 $RELEASE_TAG
+
+          macOS candidate builds require signature, Gatekeeper and notarization checks on the build app and the app inside the disk image. Public artifact signing attestations remain withheld pending candidate acceptance; clean-host installation and credential persistence require separate acceptance. Windows installers remain unsigned by Authenticode; Linux packages have detached GPG signatures. GPG signatures and a source-bound candidate hash manifest accompany every installer and SBOM. Automatic in-app updates are not configured; use reviewed manual installation.
+
+          The public artifact-repository tag is not the private source commit. Source provenance:
+          source-commit: $SOURCE_SHA
+          candidate-run: $CANDIDATE_RUN_ID
+          macos-artifact-signed: false
+          macos-artifact-notarized: false
+          macos-build-app-signed: true
+          macos-build-app-notarized: true
+          windows-artifact-signed: false
+          linux-artifact-signed: false
+          NOTES
+          # Atomically claim a previously absent public artifact tag. This
+          # tag belongs to the artifact repo, not the private source history.
+          branch=$(gh api --method GET repos/sahme209/axiom-releases --jq .default_branch)
+          encoded_branch=$(BRANCH="$branch" node -p 'encodeURIComponent(process.env.BRANCH)')
+          public_sha=$(gh api --method GET "repos/sahme209/axiom-releases/commits/$encoded_branch" --jq .sha)
+          [[ "$public_sha" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          gh api --method POST repos/sahme209/axiom-releases/git/refs -f "ref=refs/tags/$RELEASE_TAG" -f "sha=$public_sha" >/dev/null
+          # Capture the exact newly-created draft ID. Existing releases are
+          # never edited, overwritten or reused on a retry.
+          release_id=$(gh api --method POST repos/sahme209/axiom-releases/releases -f "tag_name=$RELEASE_TAG" -f "name=V19 $RELEASE_TAG" -f "body=$(cat release-notes.md)" -F draft=true --jq .id)
+          [[ "$release_id" =~ ^[0-9]+$ ]] || exit 1
+          for file in flat/*; do
+            encoded_name=$(FILE_NAME="$(basename "$file")" node -p 'encodeURIComponent(process.env.FILE_NAME)')
+            gh api --method POST "https://uploads.github.com/repos/sahme209/axiom-releases/releases/$release_id/assets?name=$encoded_name" --header 'Content-Type: application/octet-stream' --input "$file" >/dev/null
+          done
+          gh api --method GET "repos/sahme209/axiom-releases/releases/$release_id" > "$RUNNER_TEMP/created-release.json"
+          RELEASE_ID="$release_id" node <<'NODE'
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const { RELEASE_ID, RELEASE_TAG, SOURCE_SHA, CANDIDATE_RUN_ID, RUNNER_TEMP } = process.env;
+          const remote = JSON.parse(fs.readFileSync(path.join(RUNNER_TEMP, 'created-release.json')));
+          if (String(remote.id) !== RELEASE_ID || remote.tag_name !== RELEASE_TAG || remote.draft !== true || !Array.isArray(remote.assets)) throw Error('New draft identity mismatch');
+          const candidate = JSON.parse(fs.readFileSync(`flat/Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`));
+          if (candidate.sourceSha !== SOURCE_SHA || candidate.runId !== CANDIDATE_RUN_ID) throw Error('Candidate identity changed');
+          for (const asset of candidate.assets) {
+            const bytes = fs.readFileSync(path.join('flat', asset.fileName));
+            if (crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256 || bytes.length !== asset.sizeBytes) throw Error('Approved installer bytes changed before upload');
+          }
+          const names = fs.readdirSync('flat');
+          if (remote.assets.length !== names.length) throw Error('Remote candidate asset set incomplete');
+          const verified = names.map(name => {
+            const file = path.join('flat', name);
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid uploaded file');
+            const bytes = fs.readFileSync(file); const digest = `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
+            const matches = remote.assets.filter(asset => asset.name === name);
+            if (matches.length !== 1 || matches[0].digest !== digest || matches[0].size !== bytes.length) throw Error('Remote uploaded digest mismatch');
+            return { name, digest, sizeBytes: bytes.length };
+          });
+          fs.writeFileSync(path.join(RUNNER_TEMP, 'publication-verification.json'), JSON.stringify({ releaseId: RELEASE_ID, releaseTag: RELEASE_TAG, sourceSha: SOURCE_SHA, runId: CANDIDATE_RUN_ID, assets: verified }, null, 2));
+          NODE
+          gh api --method PATCH "repos/sahme209/axiom-releases/releases/$release_id" -F draft=false >/dev/null
+
+      - name: Preserve sanitized uploaded digest evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-publication-verification
+          path: ${{ runner.temp }}/publication-verification.json
+          if-no-files-found: ignore
+
+  export-fixed-candidate:
+    name: Export signed candidate without publication
+    if: github.event_name == 'workflow_dispatch' && inputs.export_fixed_candidate == true && inputs.repair_fixed_draft != true && inputs.auth_only != true && inputs.publish != true && vars.AXIOM_DESKTOP_DRAFT_EXPORT_READY == 'true'
+    # Local approved export boundary: draft only. Human publication remains in
+    # the public artifact repository protected job, configured separately.
+    permissions:
+      contents: read
+      actions: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      RELEASE_TAG: desktop-v0.1.21
+      VERSION: 0.1.21
+      SOURCE_SHA: 61434aecd23a593c902c8a13de4eb984ceda3d0b
+      CANDIDATE_RUN_ID: '40948306389'
+    steps:
+      - name: Verify fixed successful source run and exact private tag
+        id: accepted
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID" > run.json
+          gh api "repos/$GITHUB_REPOSITORY/git/ref/tags/$RELEASE_TAG" > tag.json
+          gh api "repos/$GITHUB_REPOSITORY/actions/runs/$CANDIDATE_RUN_ID/artifacts?per_page=100" > artifacts.json
+          node <<'NODE'
+          const fs=require('node:fs');const run=JSON.parse(fs.readFileSync('run.json'));const tag=JSON.parse(fs.readFileSync('tag.json'));const graph=JSON.parse(fs.readFileSync('artifacts.json'));
+          if(run.id!==40948306389||run.head_sha!==process.env.SOURCE_SHA||run.status!=='completed'||run.conclusion!=='success'||run.path!=='.github/workflows/desktop-release.yml'||run.event!=='workflow_dispatch'||tag.object.type!=='commit'||tag.object.sha!==process.env.SOURCE_SHA)throw Error('Fixed candidate source/run/tag not accepted');
+          const found=graph.artifacts.filter(a=>a.name==='axiom-verified-candidate'&&a.expired===false&&a.workflow_run?.id===run.id&&a.workflow_run?.head_sha===run.head_sha&&/^sha256:[a-f0-9]{64}$/.test(a.digest));if(found.length!==1)throw Error('Missing or ambiguous verified candidate');fs.appendFileSync(process.env.GITHUB_OUTPUT,`artifact_id=${found[0].id}\n`);
+          NODE
+      - uses: actions/download-artifact@v8
+        with:
+          artifact-ids: ${{ steps.accepted.outputs.artifact_id }}
+          github-token: ${{ github.token }}
+          run-id: '40948306389'
+          merge-multiple: true
+          path: flat
+
+      - name: Reject existing or unknown public release identity
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$RELEASE_TAG" =~ ^desktop-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || exit 1
+          response=$(mktemp)
+          trap 'rm -f "$response"' EXIT
+          require_status() {
+            endpoint="$1"; expected="$2"
+            gh api --include --method GET "$endpoint" >"$response" 2>/dev/null || true
+            status=$(awk '$1 ~ /^HTTP\// {code=$2} END {print code}' "$response")
+            if [ "$status" != "$expected" ]; then
+              echo "Immutable release identity check failed (expected HTTP $expected, received ${status:-unknown})." >&2
+              exit 1
+            fi
+          }
+          require_status repos/sahme209/axiom-releases 200
+          require_status "repos/sahme209/axiom-releases/releases/tags/$RELEASE_TAG" 404
+          require_status "repos/sahme209/axiom-releases/git/ref/tags/$RELEASE_TAG" 404
+
+      - name: Validate candidate again before signing or upload
+        run: |
+          node <<'NODE'
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const { SOURCE_SHA, RELEASE_TAG, VERSION, CANDIDATE_RUN_ID } = process.env;
+          const name = `Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`;
+          const manifest = JSON.parse(fs.readFileSync(path.join('flat', name)));
+          if (manifest.schema !== 1 || manifest.sourceSha !== SOURCE_SHA || manifest.releaseTag !== RELEASE_TAG || manifest.version !== VERSION || manifest.runId !== CANDIDATE_RUN_ID || !Array.isArray(manifest.assets) || manifest.assets.length < 5) throw Error('Unapproved candidate identity');
+          const names = new Set();
+          for (const asset of manifest.assets) {
+            if (typeof asset.fileName !== 'string' || !/^[A-Za-z0-9][A-Za-z0-9._ -]{0,199}$/.test(asset.fileName) || asset.fileName.trim() !== asset.fileName || path.basename(asset.fileName) !== asset.fileName || names.has(asset.fileName)) throw Error('Invalid candidate file');
+            const file = path.join('flat', asset.fileName);
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid candidate file');
+            const bytes = fs.readFileSync(file);
+            if (bytes.length !== asset.sizeBytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256) throw Error('Approved candidate bytes changed');
+            names.add(asset.fileName);
+          }
+          if (fs.readdirSync('flat').length !== names.size + 1) throw Error('Unexpected candidate payload');
+          NODE
+
+      - name: Install GPG
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gnupg
+
+      - name: Import GPG key and verify detached signatures
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          EXPECTED_GPG_FINGERPRINT: ${{ vars.AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$EXPECTED_GPG_FINGERPRINT" =~ ^[A-F0-9]{40}$ ]] || { echo 'Reviewed public-key fingerprint is required.' >&2; exit 1; }
+          published_key="$RUNNER_TEMP/axiom-published-public-key.asc"
+          gh api --method GET repos/sahme209/axiom-releases/contents/axiom-public-key.asc --jq .content | base64 --decode > "$published_key"
+          fingerprint=$(gpg --batch --show-keys --with-colons "$published_key" 2>/dev/null | awk -F: '$1 == "fpr" {print $10; exit}')
+          [ "$fingerprint" = "$EXPECTED_GPG_FINGERPRINT" ] || { echo 'Published signing key does not match the reviewed fingerprint.' >&2; exit 1; }
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import >/dev/null 2>&1 || { echo 'Release signing key import failed.' >&2; exit 1; }
+          verifier="$RUNNER_TEMP/axiom-public-signature-verifier"
+          mkdir -m 700 "$verifier"
+          gpg --homedir "$verifier" --batch --import "$published_key" >/dev/null 2>&1 || { echo 'Public verification key import failed.' >&2; exit 1; }
+          for f in flat/*; do
+            [ -e "$f" ] || continue
+            gpg --batch --yes --local-user "$EXPECTED_GPG_FINGERPRINT" --output "${f}.asc" --armor --detach-sign "$f" >/dev/null 2>&1 || { echo 'Candidate detached signing failed.' >&2; exit 1; }
+            verification=$(gpg --homedir "$verifier" --batch --status-fd 1 --verify "${f}.asc" "$f" 2>/dev/null) || { echo 'Candidate signature verification failed.' >&2; exit 1; }
+            printf '%s\n' "$verification" | awk -v fingerprint="$EXPECTED_GPG_FINGERPRINT" '$1 == "[GNUPG:]" && $2 == "VALIDSIG" && ($3 == fingerprint || $NF == fingerprint) {valid=1} END {exit !valid}' || { echo 'Candidate signature used an unexpected key.' >&2; exit 1; }
+          done
+
+      - name: Create new public release without replacing existing assets
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Refuse an intervening release/tag before creating anything. Unknown
+          # API failures are errors, never treated as absence.
+          require_absent() {
+            response=$(mktemp)
+            gh api --include --method GET "$1" >"$response" 2>/dev/null || true
+            status=$(awk '$1 ~ /^HTTP\// {code=$2} END {print code}' "$response")
+            rm -f "$response"
+            [ "$status" = 404 ] || { echo 'Public release identity is no longer absent.' >&2; exit 1; }
+          }
+          require_absent "repos/sahme209/axiom-releases/releases/tags/$RELEASE_TAG"
+          require_absent "repos/sahme209/axiom-releases/git/ref/tags/$RELEASE_TAG"
+          cat > release-notes.md <<NOTES
+          # Axiom Agent $RELEASE_TAG
+
+          macOS candidate builds require signature, Gatekeeper and notarization checks on the build app and the app inside the disk image. Public artifact signing attestations remain withheld pending candidate acceptance; clean-host installation and credential persistence require separate acceptance. Windows installers remain unsigned by Authenticode; Linux packages have detached GPG signatures. GPG signatures and a source-bound candidate hash manifest accompany every installer and SBOM. Automatic in-app updates are not configured; use reviewed manual installation.
+
+          The public artifact-repository tag is not the private source commit. Source provenance:
+          source-commit: $SOURCE_SHA
+          candidate-run: $CANDIDATE_RUN_ID
+          macos-artifact-signed: false
+          macos-artifact-notarized: false
+          macos-build-app-signed: true
+          macos-build-app-notarized: true
+          windows-artifact-signed: false
+          linux-artifact-signed: false
+          NOTES
+          # Atomically claim a previously absent public artifact tag. This
+          # tag belongs to the artifact repo, not the private source history.
+          branch=$(gh api --method GET repos/sahme209/axiom-releases --jq .default_branch)
+          encoded_branch=$(BRANCH="$branch" node -p 'encodeURIComponent(process.env.BRANCH)')
+          public_sha=$(gh api --method GET "repos/sahme209/axiom-releases/commits/$encoded_branch" --jq .sha)
+          [[ "$public_sha" =~ ^[a-f0-9]{40}$ ]] || exit 1
+          gh api --method POST repos/sahme209/axiom-releases/git/refs -f "ref=refs/tags/$RELEASE_TAG" -f "sha=$public_sha" >/dev/null
+          # Capture the exact newly-created draft ID. Existing releases are
+          # never edited, overwritten or reused on a retry.
+          release_id=$(gh api --method POST repos/sahme209/axiom-releases/releases -f "tag_name=$RELEASE_TAG" -f "name=Axiom Agent $RELEASE_TAG" -f "body=$(cat release-notes.md)" -F draft=true --jq .id)
+          [[ "$release_id" =~ ^[0-9]+$ ]] || exit 1
+          for file in flat/*; do
+            encoded_name=$(FILE_NAME="$(basename "$file")" node -p 'encodeURIComponent(process.env.FILE_NAME)')
+            gh api --method POST "https://uploads.github.com/repos/sahme209/axiom-releases/releases/$release_id/assets?name=$encoded_name" --header 'Content-Type: application/octet-stream' --input "$file" >/dev/null
+          done
+          gh api --method GET "repos/sahme209/axiom-releases/releases/$release_id" > "$RUNNER_TEMP/created-release.json"
+          RELEASE_ID="$release_id" node <<'NODE'
+          const fs = require('node:fs'); const crypto = require('node:crypto'); const path = require('node:path');
+          const { RELEASE_ID, RELEASE_TAG, SOURCE_SHA, CANDIDATE_RUN_ID, RUNNER_TEMP } = process.env;
+          const remote = JSON.parse(fs.readFileSync(path.join(RUNNER_TEMP, 'created-release.json')));
+          if (String(remote.id) !== RELEASE_ID || remote.tag_name !== RELEASE_TAG || remote.draft !== true || !Array.isArray(remote.assets)) throw Error('New draft identity mismatch');
+          const candidate = JSON.parse(fs.readFileSync(`flat/Axiom-Agent-${RELEASE_TAG}-candidate-manifest.json`));
+          if (candidate.sourceSha !== SOURCE_SHA || candidate.runId !== CANDIDATE_RUN_ID) throw Error('Candidate identity changed');
+          for (const asset of candidate.assets) {
+            const bytes = fs.readFileSync(path.join('flat', asset.fileName));
+            if (crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256 || bytes.length !== asset.sizeBytes) throw Error('Approved installer bytes changed before upload');
+          }
+          const names = fs.readdirSync('flat');
+          if (remote.assets.length !== names.length) throw Error('Remote candidate asset set incomplete');
+          const verified = names.map(name => {
+            const file = path.join('flat', name);
+            if (!fs.lstatSync(file).isFile() || fs.lstatSync(file).isSymbolicLink()) throw Error('Invalid uploaded file');
+            const bytes = fs.readFileSync(file); const digest = `sha256:${crypto.createHash('sha256').update(bytes).digest('hex')}`;
+            const matches = remote.assets.filter(asset => asset.name === name);
+            if (matches.length !== 1 || matches[0].digest !== digest || matches[0].size !== bytes.length) throw Error('Remote uploaded digest mismatch');
+            return { name, digest, sizeBytes: bytes.length };
+          });
+          fs.writeFileSync(path.join(RUNNER_TEMP, 'publication-verification.json'), JSON.stringify({ releaseId: RELEASE_ID, releaseTag: RELEASE_TAG, sourceSha: SOURCE_SHA, runId: CANDIDATE_RUN_ID, assets: verified }, null, 2));
+          NODE
+          # Deliberately leave this release DRAFT. Never update the customer manifest.
+          test "$(gh api --method GET "repos/sahme209/axiom-releases/releases/$release_id" --jq .draft)" = true
+
+      - name: Preserve sanitized uploaded digest evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-draft-export-verification
+          path: ${{ runner.temp }}/publication-verification.json
+          if-no-files-found: ignore
+
+
+  repair-fixed-draft:
+    name: Repair approved unpublished manifest names
+    if: github.event_name == 'workflow_dispatch' && inputs.repair_fixed_draft == true && inputs.export_fixed_candidate != true && inputs.auth_only != true && inputs.publish != true && inputs.export_draft != true
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Verify original successful candidate
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh api repos/sahme209/visionxixlabs/actions/runs/40948306389 > accepted-run.json
+          node -e 'const r=require("./accepted-run.json");if(r.id!==40948306389||r.head_sha!=="61434aecd23a593c902c8a13de4eb984ceda3d0b"||r.status!=="completed"||r.conclusion!=="success")throw Error("Original candidate not accepted")'
+      - name: Verify existing key and repair only the reviewed manifest pair
+        env:
+          GH_TOKEN: ${{ secrets.RELEASES_REPO_TOKEN }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          set -euo pipefail
+          echo "$GPG_PRIVATE_KEY" | gpg --batch --import >/dev/null 2>&1 || { echo 'Existing signing key import failed.' >&2; exit 1; }
+          unset GPG_PRIVATE_KEY
+          node scripts/repair-fixed-publication-draft.mjs
+      - name: Preserve private recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          retention-days: 3
+          name: axiom-v121-draft-name-recovery
+          path: |
+            ${{ runner.temp }}/axiom-v121-draft-recovery/before.json
+            ${{ runner.temp }}/axiom-v121-draft-recovery/old-manifest.json
+            ${{ runner.temp }}/axiom-v121-draft-recovery/old-manifest.json.asc
+            ${{ runner.temp }}/axiom-v121-draft-recovery/after.json
+            ${{ runner.temp }}/axiom-v121-draft-recovery/recovery.json
+          if-no-files-found: ignore

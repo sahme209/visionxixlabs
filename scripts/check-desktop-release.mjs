@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { desktopVersionAlignmentErrors } from "./desktop-release-versions.mjs";
+import { desktopVersionAlignmentErrors, desktopReleaseWorkflowErrors } from "./desktop-release-versions.mjs";
 import { hasActionableDemoDownloadLink } from "./demo-download-link.mjs";
 
 const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -30,9 +30,7 @@ if (tauriConfig.productName !== "V19") {
 if (tauriConfig.identifier !== "com.visionxixlabs.axiom") {
   errors.push(`unexpected desktop bundle identifier: ${tauriConfig.identifier}`);
 }
-if (!workflow.includes("desktop-v*")) {
-  errors.push("desktop release workflow no longer listens for desktop-v* tags");
-}
+errors.push(...desktopReleaseWorkflowErrors(workflow));
 if (!workflow.includes("if-no-files-found: error")) {
   errors.push("desktop release workflow must fail when an expected platform produces no installer");
 }

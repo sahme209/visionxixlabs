@@ -1,0 +1,2 @@
+Desktop release alignment failed:
+- desktop release workflow no longer listens for desktop-v* tags

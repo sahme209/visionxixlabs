@@ -1,0 +1,88 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
+import { desktopVersionAlignmentErrors, desktopReleaseWorkflowErrors } from "./desktop-release-versions.mjs";
+import { hasActionableDemoDownloadLink } from "./demo-download-link.mjs";
+
+const repoRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const desktopPackage = readJson("desktop/package.json");
+const tauriConfig = readJson("desktop/src-tauri/tauri.conf.json");
+const workflow = readText(".github/workflows/desktop-release.yml");
+const releaseManifest = readText("lib/desktop/releaseManifest.ts");
+const connectionBanner = readText("desktop/src/components/ConnectionBanner.tsx");
+const footer = readText("components/Footer.tsx");
+const demoLanding = readText("app/demo/page.tsx");
+
+const errors = desktopVersionAlignmentErrors({
+  desktopPackage,
+  desktopLock: readJson("desktop/package-lock.json"),
+  tauriConfig,
+  cargoManifest: readText("desktop/src-tauri/Cargo.toml"),
+  cargoLock: readText("desktop/src-tauri/Cargo.lock"),
+});
+
+if (desktopPackage.name !== "axiom-desktop") {
+  errors.push(`unexpected desktop package name: ${desktopPackage.name}`);
+}
+if (tauriConfig.productName !== "V19") {
+  errors.push(`customer-facing product name must remain "V19", found: ${tauriConfig.productName}`);
+}
+if (tauriConfig.identifier !== "com.visionxixlabs.axiom") {
+  errors.push(`unexpected desktop bundle identifier: ${tauriConfig.identifier}`);
+}
+errors.push(...desktopReleaseWorkflowErrors(workflow));
+if (!workflow.includes("if-no-files-found: error")) {
+  errors.push("desktop release workflow must fail when an expected platform produces no installer");
+}
+if (!workflow.includes("anchore/sbom-action@v0") || !workflow.includes("format: cyclonedx-json")) {
+  errors.push("desktop release workflow must generate a CycloneDX SBOM from the release source");
+}
+if (!workflow.includes("actions: read")) {
+  errors.push("desktop release workflow must grant the SBOM publisher read access to workflow artifacts");
+}
+if (!workflow.includes("Axiom-Agent-${RELEASE_TAG}-sbom.cdx.json") || !workflow.includes(".bomFormat == \"CycloneDX\"")) {
+  errors.push("desktop release workflow must publish and validate the versioned CycloneDX SBOM");
+}
+if (!releaseManifest.includes('"sahme209"') || !releaseManifest.includes('"axiom-releases"')) {
+  errors.push("website release manifest no longer defaults to the public Axiom Agent release repository");
+}
+if (!releaseManifest.includes("macos-artifact-signed") || !releaseManifest.includes("macos-artifact-notarized") || !releaseManifest.includes("windows-artifact-signed")) {
+  errors.push("release manifest must require per-platform machine-readable signing attestations");
+}
+if (!workflow.includes("codesign --verify --deep --strict") || !workflow.includes("spctl --assess --type execute") || !workflow.includes("xcrun stapler validate")) {
+  errors.push("desktop release workflow must verify the app signature, Gatekeeper acceptance, and notarization ticket before publishing");
+}
+if (!connectionBanner.includes("navigator.onLine") || !connectionBanner.includes('addEventListener("offline"')) {
+  errors.push("desktop connectivity banner must respond to the workstation's real online/offline state");
+}
+if (connectionBanner.includes('connection: "online"')) {
+  errors.push("desktop connectivity banner must not hard-code a healthy connection");
+}
+if (!footer.includes("We also build iOS applications.")) {
+  errors.push("website footer must retain the approved secondary iOS capability mention");
+}
+if (footer.includes("apps.apple.com")) {
+  errors.push("App Store link must remain disabled until the developer-page URL is supplied and verified");
+}
+if (demoLanding.includes("Create a web workspace") || demoLanding.includes("/auth/signup")) {
+  errors.push("sandbox must direct customers to the downloadable app, not advertise a browser product");
+}
+if (!hasActionableDemoDownloadLink(demoLanding)) {
+  errors.push("sandbox must provide a clear path to the downloadable app");
+}
+
+if (errors.length > 0) {
+  console.error("Desktop release alignment failed:");
+  for (const error of errors) console.error(`- ${error}`);
+  process.exit(1);
+}
+
+console.log(`Desktop release alignment passed: V19 v${desktopPackage.version}`);
+
+function readJson(relativePath) {
+  return JSON.parse(readText(relativePath));
+}
+
+function readText(relativePath) {
+  return readFileSync(path.join(repoRoot, relativePath), "utf8");
+}

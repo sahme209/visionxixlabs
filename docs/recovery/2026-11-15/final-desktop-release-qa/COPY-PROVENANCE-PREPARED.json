@@ -1,0 +1,236 @@
+[
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/INPUTS.json",
+    "destination": "prebuilt/INPUTS.json",
+    "bytes": 1361,
+    "sha256": "0b07f257bc565a49a4ed60153a665d8783b92942702b13a629a16e1835902150"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/APPLY-FILES.json",
+    "destination": "prebuilt/APPLY-FILES.json",
+    "bytes": 349,
+    "sha256": "8b70c9a31303bd0d2ab4d81bd1d00e6e78e2366ce86b94ca93237e89520b4eab"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/REVIEW.md",
+    "destination": "prebuilt/REVIEW.md",
+    "bytes": 3860,
+    "sha256": "a3dfcc78d665ed66bf4037ca95c5e90400510ede51e488b4a17be04d1130a7af"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/SOURCE-BASIS.json",
+    "destination": "prebuilt/SOURCE-BASIS.json",
+    "bytes": 1052,
+    "sha256": "631d3ad236db4a3e4ad6c85c482129a66b1c4c1e6af885e8b672151f0c5c1fc0"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/POST-CLEANUP-RED.log",
+    "destination": "prebuilt/POST-CLEANUP-RED.log",
+    "bytes": 392,
+    "sha256": "f367bc39ce4c8512055435a413191360f731d1ed5949c6f34597494af7c4d89f"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/candidate/scripts/windows_installed_acceptance.py",
+    "destination": "prebuilt/source/scripts/windows_installed_acceptance.py",
+    "bytes": 73714,
+    "sha256": "e3f9dd56c52dbd3f65e487066b7c48389b9adf0983e33a26c721caed93934341"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/candidate/scripts/windows_release_acceptance.py",
+    "destination": "prebuilt/source/scripts/windows_release_acceptance.py",
+    "bytes": 6406,
+    "sha256": "328887175b878132db49da313ad9c62ede72143c4d7e7bba0b73bc61d6fd056e"
+  },
+  {
+    "source": "/private/tmp/v19-prebuilt-windows-qa-current-preparation/candidate/scripts/tests/test_windows_release_acceptance.py",
+    "destination": "prebuilt/source/scripts/tests/test_windows_release_acceptance.py",
+    "bytes": 16952,
+    "sha256": "085b14223039995dad47b064d13fc1bcaf0721725889f0c265b45fbb5325880f"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/INPUTS.json",
+    "destination": "workflow/INPUTS.json",
+    "bytes": 1643,
+    "sha256": "90b407819a644fe07be880fb6b85968a70c97ebe6fc81e157b79eb3114ba39b9"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/APPLY-FILES.json",
+    "destination": "workflow/APPLY-FILES.json",
+    "bytes": 1384,
+    "sha256": "e45241d06df27148cb36220c323b8b0285bcc2aeadf8a4b4939cdd75f61a2a83"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/REVIEW.md",
+    "destination": "workflow/REVIEW.md",
+    "bytes": 4630,
+    "sha256": "238a3352848cdeb027c7198874cf97262061f34e8ca19d1fcf5c6f50ab4deb9a"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/GREEN-NODE24.log",
+    "destination": "workflow/GREEN-NODE24.log",
+    "bytes": 4209,
+    "sha256": "aaa1503fa5c23ab3512fad8d9a04add44fb963a36b70c9806779ec417eb44e23"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/GREEN.log",
+    "destination": "workflow/GREEN.log",
+    "bytes": 3995,
+    "sha256": "c2d7bd11aaafccba5f0a38138d75b668c45eb2ba53a83ea504c9a98925def834"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/COLLECTOR-ENV-RED-NODE24.log",
+    "destination": "workflow/COLLECTOR-ENV-RED-NODE24.log",
+    "bytes": 6523,
+    "sha256": "c7060efcaf8c32ea1063d2b25d93ab8102be58b548e95f706e9e47321ba27ee9"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/EVENT-APPLE-RED-NODE24.log",
+    "destination": "workflow/EVENT-APPLE-RED-NODE24.log",
+    "bytes": 6612,
+    "sha256": "d54ba143479a20d1b16d7dcada78075c522e9bbb7394110c7cd9a068a93de886"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/desktop-release.yml",
+    "destination": "workflow/source/.github/workflows/desktop-release.yml",
+    "bytes": 75466,
+    "sha256": "a0eb48cb929134186b5a673cde546103f99a986f53b6141d2d841b9187896883"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts",
+    "destination": "workflow/source/lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts",
+    "bytes": 25445,
+    "sha256": "cb163095c0d2e8a52eb5ae156c3a6ad09c2a554883dd17d739265528fe3c374e"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/lib/desktop/__tests__/releaseWindowsInstalledWorkflow.test.ts",
+    "destination": "workflow/source/lib/desktop/__tests__/releaseWindowsInstalledWorkflow.test.ts",
+    "bytes": 652,
+    "sha256": "61a1613b8f1fcc641bb15fd056dcd087e4b22f470fdb7929f9303bf65e5b89ef"
+  },
+  {
+    "source": "/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs",
+    "destination": "workflow/source/scripts/fixtures/release-windows-workflow.test.cjs",
+    "bytes": 14807,
+    "sha256": "71896e7eea5b04b60d525c38fde05dfddd339d056b209077aed1a45b604eaa18"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/INPUTS.json",
+    "destination": "manual-checker/INPUTS.json",
+    "bytes": 779,
+    "sha256": "71eb6919ebeb9cc09c700c4b361c9a026758cd5bc2129d9991503239a1ca4d39"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/APPLY-FILES.json",
+    "destination": "manual-checker/APPLY-FILES.json",
+    "bytes": 753,
+    "sha256": "0b214eb0c66d1a7ec3905872a50c9552076c91fa4f402f3161bd2b33881a7039"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/REVIEW.md",
+    "destination": "manual-checker/REVIEW.md",
+    "bytes": 1701,
+    "sha256": "7f3e8f2f2e740472fe213307f357ad641f11269eb728382c5b3a9a381418642f"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/GREEN.log",
+    "destination": "manual-checker/GREEN.log",
+    "bytes": 209,
+    "sha256": "8f1ccceb9d07865ac1bc22b6ab5a0b1657271408cf8421cc62c2b6279cd1c10e"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/OLD-CHECKER-RED.log",
+    "destination": "manual-checker/OLD-CHECKER-RED.log",
+    "bytes": 99,
+    "sha256": "c5aa74c0064e20c5e5fd10d90cb278cd85b1c0c818321ec0d17ee1b0b883ab2a"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/scripts/check-desktop-release.mjs",
+    "destination": "manual-checker/source/scripts/check-desktop-release.mjs",
+    "bytes": 4486,
+    "sha256": "41256c8aae06ab4f0ba17403587de255af0b7ffab332cbd0dcbb175648f68e27"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/scripts/desktop-release-versions.mjs",
+    "destination": "manual-checker/source/scripts/desktop-release-versions.mjs",
+    "bytes": 5836,
+    "sha256": "74fd2b3185c87d867abf0523c9d7696749ac8d02748156b36dab65b0e2b877f1"
+  },
+  {
+    "source": "/private/tmp/v19-manual-release-checker-preparation/lib/desktop/__tests__/desktopReleaseVersions.test.ts",
+    "destination": "manual-checker/source/lib/desktop/__tests__/desktopReleaseVersions.test.ts",
+    "bytes": 7082,
+    "sha256": "f82d51c7e2a67336039ca569fc778be11461e2451444b7763badaf071ced7a72"
+  },
+  {
+    "source": "/tmp/v19-pr339-merge-result.json",
+    "destination": "PR339-MERGE.json",
+    "bytes": 598,
+    "sha256": "55738d23b075e5b1d64dfae6373b71c6fb0afff5312584c96cb73f68daab4636"
+  },
+  {
+    "source": "/tmp/v19-pr339-main-result.json",
+    "destination": "MAIN-CHECKS.json",
+    "bytes": 2638,
+    "sha256": "7bd84c0a696d494f5fba2f6fc1b6f965ad94573a1bbaca084d00b1d649c088a8"
+  },
+  {
+    "source": "/tmp/v19-72736-pr-checks.json",
+    "destination": "PR339-CHECKS.json",
+    "bytes": 2651,
+    "sha256": "4395ef513b4a71ffafacbcd1c7f90d027160ad0f88a96919f3ef403fe0129c67"
+  },
+  {
+    "source": "/private/tmp/v19-final-public-acceptance-audit/RESULT.json",
+    "destination": "public-read-only/RESULT.json",
+    "bytes": 1777,
+    "sha256": "7b41cd918c5d4fe8a1504a7afd0474eeebace1f169a460af418320c258c607a9"
+  },
+  {
+    "source": "/private/tmp/v19-final-public-acceptance-audit/SOURCE-BASIS.json",
+    "destination": "public-read-only/SOURCE-BASIS.json",
+    "bytes": 1101,
+    "sha256": "9999dc6506b021807383ecfe0215da8a3e53c29ce953557a7411702c2d64cca4"
+  },
+  {
+    "source": "/private/tmp/v19-final-public-acceptance-audit/EVIDENCE-SHA256.json",
+    "destination": "public-read-only/EVIDENCE-SHA256.json",
+    "bytes": 445,
+    "sha256": "8bda521e00b2035eb7ae0ee6c514a9cae18c41a73ac7d30bf132bf177977e544"
+  },
+  {
+    "source": "/private/tmp/v19-final-release-checklist/GITHUB-READINESS-METADATA.json",
+    "destination": "readiness/GITHUB-READINESS-METADATA.json",
+    "bytes": 771,
+    "sha256": "39f7d108f2d758754596fbcead19dab0149c27ad9e2ccb073f3d81a55f4dbfba"
+  },
+  {
+    "source": "/private/tmp/v19-final-release-checklist/GITHUB-READINESS-HTTP.json",
+    "destination": "readiness/GITHUB-READINESS-HTTP.json",
+    "bytes": 360,
+    "sha256": "26736c087872c97207c63b3bf494873e1d3a3f8731ef537fc2223a8315f5e7a3"
+  },
+  {
+    "source": "/private/tmp/v19-final-release-checklist/OWNER-AND-MERGE-METADATA.json",
+    "destination": "readiness/OWNER-AND-MERGE-METADATA.json",
+    "bytes": 154,
+    "sha256": "b79e3014be56a27c4d66b737c1ac4a9e2bcde393c8121fa8d65b2c88cef8df87"
+  },
+  {
+    "source": "/private/tmp/v19-publication-owner-hold-decision/INPUTS.json",
+    "destination": "readiness/owner-hold-DRAFT/INPUTS.json",
+    "bytes": 1088,
+    "sha256": "93e0690b98d52da87df1178cbd101672b84e85863979a4077d7134ae251a56bb"
+  },
+  {
+    "source": "/private/tmp/v19-publication-owner-hold-decision/DECISION-DRAFT.md",
+    "destination": "readiness/owner-hold-DRAFT/DECISION-DRAFT.md",
+    "bytes": 2705,
+    "sha256": "e930e47bf131af6b90e38c1900a0ff7f4b9e05e9a6a1bb1dd5b6162a02d5bb43"
+  },
+  {
+    "source": "/private/tmp/v19-publication-owner-hold-decision/PROCEDURE.md",
+    "destination": "readiness/owner-hold-DRAFT/PROCEDURE.md",
+    "bytes": 6013,
+    "sha256": "9032cbaf49563871457c5f44aa919e0932e1c5eca6367e4f3d503978b370210b"
+  }
+]

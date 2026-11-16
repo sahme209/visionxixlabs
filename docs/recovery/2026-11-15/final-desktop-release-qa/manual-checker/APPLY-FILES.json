@@ -1,0 +1,19 @@
+{
+  "files": [
+    {
+      "path": "scripts/check-desktop-release.mjs",
+      "beforeSha256": "08205f8985b7451849f0500c20bc0a34e7f2e5642421a5ddd2b4e17646ac54d2",
+      "sha256": "41256c8aae06ab4f0ba17403587de255af0b7ffab332cbd0dcbb175648f68e27"
+    },
+    {
+      "path": "scripts/desktop-release-versions.mjs",
+      "beforeSha256": "e9939712036d7b361dbd374b9fed88daa79ebca475a5adbaa88dfca5bf5857e2",
+      "sha256": "74fd2b3185c87d867abf0523c9d7696749ac8d02748156b36dab65b0e2b877f1"
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopReleaseVersions.test.ts",
+      "beforeSha256": "ea1e56284379a76801a78c8ccdf2c998ed28867142f658c9245be478d27239fd",
+      "sha256": "f82d51c7e2a67336039ca569fc778be11461e2451444b7763badaf071ced7a72"
+    }
+  ]
+}

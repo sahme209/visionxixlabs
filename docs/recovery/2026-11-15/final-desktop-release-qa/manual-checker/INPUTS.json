@@ -1,0 +1,10 @@
+{
+  "scripts/check-desktop-release.mjs": "41256c8aae06ab4f0ba17403587de255af0b7ffab332cbd0dcbb175648f68e27",
+  "scripts/desktop-release-versions.mjs": "74fd2b3185c87d867abf0523c9d7696749ac8d02748156b36dab65b0e2b877f1",
+  "lib/desktop/__tests__/desktopReleaseVersions.test.ts": "f82d51c7e2a67336039ca569fc778be11461e2451444b7763badaf071ced7a72",
+  "PATCH.diff": "ff65767ef7e0710bbd77347347f9a8c53dcf57a4f43c70481cb360ec66d000d7",
+  "APPLY-FILES.json": "0b214eb0c66d1a7ec3905872a50c9552076c91fa4f402f3161bd2b33881a7039",
+  "REVIEW.md": "7f3e8f2f2e740472fe213307f357ad641f11269eb728382c5b3a9a381418642f",
+  "GREEN.log": "8f1ccceb9d07865ac1bc22b6ab5a0b1657271408cf8421cc62c2b6279cd1c10e",
+  "OLD-CHECKER-RED.log": "c5aa74c0064e20c5e5fd10d90cb278cd85b1c0c818321ec0d17ee1b0b883ab2a"
+}

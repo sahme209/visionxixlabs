@@ -1,0 +1,88 @@
+✔ workflow Windows QA is after application bundle and before provenance/upload, no rebuild (0.52ms)
+✔ publication guard/signing flags/fixed legacy block preserved; four generic V19 display lines (0.854875ms)
+✔ Record platform candidate provenance accepts closed same-run exact-byte full QA receipt (0.569792ms)
+✔ Record platform candidate provenance rejects missing (0.296833ms)
+✔ Record platform candidate provenance rejects wrongSource (0.577875ms)
+✔ Record platform candidate provenance rejects wrongTag (0.247334ms)
+✔ Record platform candidate provenance rejects wrongRun (0.213334ms)
+✔ Record platform candidate provenance rejects replay (0.203875ms)
+✔ Record platform candidate provenance rejects wrongTarget (0.234834ms)
+✔ Record platform candidate provenance rejects cleanup (0.245916ms)
+✔ Record platform candidate provenance rejects partialCycles (0.22925ms)
+✔ Record platform candidate provenance rejects duplicateCycle (0.213958ms)
+✔ Record platform candidate provenance rejects signedFallback (0.1975ms)
+✔ Record platform candidate provenance rejects unsupportedUIClaim (0.189209ms)
+✔ Record platform candidate provenance rejects wrongHash (0.200041ms)
+✔ Record platform candidate provenance rejects thirdAsset (0.199ms)
+✔ Record platform candidate provenance rejects unknownField (0.185125ms)
+✔ Record platform candidate provenance refuses bytes changed after installed QA (0.183458ms)
+✔ Validate and flatten candidate artifacts accepts closed same-run exact-byte full QA receipt (0.200833ms)
+✔ Validate and flatten candidate artifacts rejects missing (0.197959ms)
+✔ Validate and flatten candidate artifacts rejects wrongSource (0.188833ms)
+✔ Validate and flatten candidate artifacts rejects wrongTag (0.180125ms)
+✔ Validate and flatten candidate artifacts rejects wrongRun (0.170458ms)
+✔ Validate and flatten candidate artifacts rejects replay (0.18375ms)
+✔ Validate and flatten candidate artifacts rejects wrongTarget (0.176833ms)
+✔ Validate and flatten candidate artifacts rejects cleanup (0.177709ms)
+✔ Validate and flatten candidate artifacts rejects partialCycles (0.181375ms)
+✔ Validate and flatten candidate artifacts rejects duplicateCycle (0.1815ms)
+✔ Validate and flatten candidate artifacts rejects signedFallback (0.196208ms)
+✔ Validate and flatten candidate artifacts rejects unsupportedUIClaim (0.178666ms)
+✔ Validate and flatten candidate artifacts rejects wrongHash (0.209083ms)
+✔ Validate and flatten candidate artifacts rejects thirdAsset (0.186542ms)
+✔ Validate and flatten candidate artifacts rejects unknownField (0.185ms)
+✔ Validate and flatten candidate artifacts refuses bytes changed after installed QA (0.195625ms)
+✔ actual writer hashes receipt before emitting Windows candidate (2.6285ms)
+✔ actual writer refuses a post-QA installer mutation before candidate admission (2.048584ms)
+✔ actual writer refuses missing or symlink receipt (3.821875ms)
+✔ actual collector requires uploaded matching receipt and retains qualification in flat manifest (4.890667ms)
+✔ actual collector refuses missingReceipt before flat candidate acceptance (3.894958ms)
+✔ actual collector refuses missingPin before flat candidate acceptance (4.793917ms)
+✔ actual collector refuses duplicateReceipt before flat candidate acceptance (5.170042ms)
+✔ actual collector refuses wrongRun before flat candidate acceptance (3.750458ms)
+✔ actual collector refuses wrongAttempt before flat candidate acceptance (4.032833ms)
+✔ actual collector refuses missingCleanup before flat candidate acceptance (3.848542ms)
+✔ actual collector refuses installerMutated before flat candidate acceptance (3.844791ms)
+✔ upload includes fixed QA receipt alongside original same-platform assets (0.087542ms)
+✔ actual writer AND collector step environments bind the run attempt (0.05375ms)
+✔ release trigger admits only explicit dispatch and identity refuses wrong event or tag BEFORE source tooling (8.47375ms)
+✔ shared Tauri step supplies Apple credentials ONLY to macOS matrix members (0.049791ms)
+✖ actual build checkout preserves reviewed LF bytes at the exact SHA without persisted credentials (5.759167ms)
+ℹ tests 50
+ℹ suites 0
+ℹ pass 49
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 119.527625
+
+✖ failing tests:
+
+test at ../../../../../private/tmp/v19-release-checkout-custody-preparation/scripts/fixtures/release-windows-workflow.test.cjs:58:1
+✖ actual build checkout preserves reviewed LF bytes at the exact SHA without persisted credentials (5.759167ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + undefined
+  - {
+  -   GIT_CONFIG_COUNT: '1',
+  -   GIT_CONFIG_KEY_0: 'core.autocrlf',
+  -   GIT_CONFIG_VALUE_0: 'false'
+  - }
+  
+      at check (/private/tmp/v19-release-checkout-custody-preparation/scripts/fixtures/release-windows-workflow.test.cjs:61:10)
+      at TestContext.<anonymous> (/private/tmp/v19-release-checkout-custody-preparation/scripts/fixtures/release-windows-workflow.test.cjs:64:2)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: { GIT_CONFIG_COUNT: '1', GIT_CONFIG_KEY_0: 'core.autocrlf', GIT_CONFIG_VALUE_0: 'false' },
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
