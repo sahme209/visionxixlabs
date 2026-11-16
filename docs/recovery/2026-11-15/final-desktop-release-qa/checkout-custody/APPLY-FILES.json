@@ -1,0 +1,14 @@
+{
+  "files": [
+    {
+      "path": ".github/workflows/desktop-release.yml",
+      "beforeSha256": "a0eb48cb929134186b5a673cde546103f99a986f53b6141d2d841b9187896883",
+      "sha256": "5ceec9744ffc756ea42202998a691e5fc7f8cfef0d1fde911f06d81e9258e57a"
+    },
+    {
+      "path": "scripts/fixtures/release-windows-workflow.test.cjs",
+      "beforeSha256": "71896e7eea5b04b60d525c38fde05dfddd339d056b209077aed1a45b604eaa18",
+      "sha256": "2b40dc4a2ca223fa0fb52fe28f7cfe7db17612b44df2dfdcf930893769510187"
+    }
+  ]
+}

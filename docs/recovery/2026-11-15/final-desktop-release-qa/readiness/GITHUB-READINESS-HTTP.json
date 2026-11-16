@@ -1,0 +1,21 @@
+{
+  "environment_detail": {
+    "httpStatus": 404,
+    "exitCode": 1,
+    "message": "Not Found"
+  },
+  "publication_ready_detail": {
+    "httpStatus": 404,
+    "exitCode": 1,
+    "message": "Not Found"
+  },
+  "environment_names": {
+    "httpStatus": 200,
+    "exitCode": 0,
+    "total_count": 2,
+    "names": [
+      "Preview",
+      "Production"
+    ]
+  }
+}

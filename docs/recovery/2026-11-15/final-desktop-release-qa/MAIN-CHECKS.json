@@ -1,0 +1,110 @@
+{
+  "mergeSha": "56c13d00ec14bccbc0720151c77508178f801844",
+  "allFourRunsPassed": true,
+  "applicableJobsPassed": 13,
+  "expectedInstalledPrOnlySkip": [
+    {
+      "id": 133092927938,
+      "name": "Windows installer and upgrade acceptance",
+      "conclusion": "skipped"
+    }
+  ],
+  "runs": [
+    {
+      "run": 43804040657,
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 133090574248,
+          "name": "Isolated AWS enrollment schema",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090574400,
+          "name": "rehearse",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 43804040658,
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 133090574267,
+          "name": "macOS native transport and policy checks",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090574504,
+          "name": "Frontend and native security checks",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090574666,
+          "name": "Windows frontend and native security checks",
+          "conclusion": "success"
+        },
+        {
+          "id": 133092927938,
+          "name": "Windows installer and upgrade acceptance",
+          "conclusion": "skipped"
+        }
+      ]
+    },
+    {
+      "run": 43804040723,
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 133090574756,
+          "name": "Owned application authentication and billing HTTP acceptance",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090574939,
+          "name": "Owned PG17 reservations and TEST subscription accounting",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "run": 43804040737,
+      "conclusion": "success",
+      "jobs": [
+        {
+          "id": 133090575239,
+          "name": "Type check",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090575298,
+          "name": "Vitest (1/3)",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090575461,
+          "name": "Vitest (3/3)",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090575462,
+          "name": "Build and offline checks",
+          "conclusion": "success"
+        },
+        {
+          "id": 133090575497,
+          "name": "Vitest (2/3)",
+          "conclusion": "success"
+        },
+        {
+          "id": 133092688187,
+          "name": "Typecheck + Vitest",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "productionDeployment": false,
+  "installerPublication": false
+}

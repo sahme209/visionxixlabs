@@ -3,7 +3,7 @@ import { copyFileSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { desktopVersionAlignmentErrors } from "../../../scripts/desktop-release-versions.mjs";
+import { desktopVersionAlignmentErrors, desktopReleaseWorkflowErrors } from "../../../scripts/desktop-release-versions.mjs";
 
 const fixture = () => ({
   desktopPackage: { name: "axiom-desktop", version: "1.2.3" },
@@ -61,5 +61,31 @@ describe("actual release-check command", () => {
       expect(result.status).toBe(1);
       expect(`${result.stdout}${result.stderr}`).toContain("version does not match desktop/package.json");
     } finally { rmSync(directory, { recursive: true, force: true }); }
+  });
+});
+
+
+describe("literal manual release workflow contract", () => {
+  const workflow = readFileSync(".github/workflows/desktop-release.yml", "utf8");
+  it("accepts the actual manual workflow without the obsolete tag-glob marker", () => {
+    expect(workflow.includes("desktop-v*")).toBe(false);
+    expect(desktopReleaseWorkflowErrors(workflow)).toEqual([]);
+  });
+  it.each([
+    (s: string) => s.replace("  validate-release:", "  unrelated-identity-job:"),
+    (s: string) => s.replace("on:\n", "on:\n  push:\n    tags: [desktop-v*]\n"),
+    (s: string) => s.replace("on:\n", "on:\n  schedule:\n    - cron: '* * * * *'\n"),
+    (s: string) => s + "\non:\n  push:\n",
+    (s: string) => s + '\n"on": {push: null}\n',
+    (s: string) => s.replace("on:\n", "on: *automatic\n"),
+    (s: string) => s.replace("  workflow_dispatch:", "  <<: *automatic\n  workflow_dispatch:"),
+    (s: string) => s.replace("on:\n", "# on:\n"),
+    (s: string) => s.replace("RELEASE_EVENT: ${{ github.event_name }}", "RELEASE_EVENT: workflow_dispatch"),
+    (s: string) => s.replace("RELEASE_REF: ${{ github.ref }}", "RELEASE_REF: refs/tags/fake"),
+    (s: string) => s.replace('test "$RELEASE_EVENT" = workflow_dispatch', '# test "$RELEASE_EVENT" = workflow_dispatch'),
+    (s: string) => s.replace('test "$RELEASE_REF" = "refs/tags/$REQUESTED_TAG"', '# test "$RELEASE_REF" = "refs/tags/$REQUESTED_TAG"'),
+    (s: string) => s.replace('          test "$RELEASE_EVENT"', '          node unreviewed-tool.mjs\n          test "$RELEASE_EVENT"'),
+  ])("refuses automatic/ambiguous trigger or missing actual early event/ref binding", mutate => {
+    expect(desktopReleaseWorkflowErrors(mutate(workflow))).not.toEqual([]);
   });
 });

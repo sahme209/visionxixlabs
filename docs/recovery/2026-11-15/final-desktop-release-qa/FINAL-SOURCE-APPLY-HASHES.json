@@ -1,0 +1,22 @@
+{
+  "originalThreePacketsPreserved": true,
+  "checkoutOverlayOverridesTwoPaths": true,
+  "files": {
+    "scripts/windows_installed_acceptance.py": "e3f9dd56c52dbd3f65e487066b7c48389b9adf0983e33a26c721caed93934341",
+    "scripts/windows_release_acceptance.py": "328887175b878132db49da313ad9c62ede72143c4d7e7bba0b73bc61d6fd056e",
+    "scripts/tests/test_windows_release_acceptance.py": "085b14223039995dad47b064d13fc1bcaf0721725889f0c265b45fbb5325880f",
+    ".github/workflows/desktop-release.yml": "5ceec9744ffc756ea42202998a691e5fc7f8cfef0d1fde911f06d81e9258e57a",
+    "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts": "cb163095c0d2e8a52eb5ae156c3a6ad09c2a554883dd17d739265528fe3c374e",
+    "lib/desktop/__tests__/releaseWindowsInstalledWorkflow.test.ts": "61a1613b8f1fcc641bb15fd056dcd087e4b22f470fdb7929f9303bf65e5b89ef",
+    "scripts/fixtures/release-windows-workflow.test.cjs": "2b40dc4a2ca223fa0fb52fe28f7cfe7db17612b44df2dfdcf930893769510187",
+    "scripts/check-desktop-release.mjs": "41256c8aae06ab4f0ba17403587de255af0b7ffab332cbd0dcbb175648f68e27",
+    "scripts/desktop-release-versions.mjs": "74fd2b3185c87d867abf0523c9d7696749ac8d02748156b36dab65b0e2b877f1",
+    "lib/desktop/__tests__/desktopReleaseVersions.test.ts": "f82d51c7e2a67336039ca569fc778be11461e2451444b7763badaf071ced7a72"
+  },
+  "separateDemoMetadataOnly": {
+    "path": "lib/demo/demoScenarios.ts",
+    "sha256": "cc53e3778aefc30998b0c0cd013056ef8a92255687d1c695b3ebef1f1ee65eaa",
+    "desktopPairingLastReviewed": "2026-11-16",
+    "contractsPassed": 15
+  }
+}

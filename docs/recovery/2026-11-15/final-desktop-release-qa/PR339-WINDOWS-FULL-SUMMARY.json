@@ -1,0 +1,134 @@
+{
+  "accepted": true,
+  "source": "72736c742c500fd9483d65adbfc67d9654352c27",
+  "sourceBinding": {
+    "externalHumanApprovalProof": false,
+    "manifestSha256": "3373f2de33b4cae66f507ac8736c906f71996743bffeca05f1f7c6efdb8959c3",
+    "sha": "72736c742c500fd9483d65adbfc67d9654352c27",
+    "sourceAuthority": "ordinary-owner-PR-CI"
+  },
+  "sourceUnchanged": true,
+  "version": "0.1.23",
+  "unsignedValidationOnly": true,
+  "published": false,
+  "signingPerformed": false,
+  "keyringCleanupConfirmed": true,
+  "ownedProcessCleanupConfirmed": true,
+  "uiVisualAcceptance": "UNVERIFIED",
+  "googlePairing": "NOT_RUN",
+  "installerServiceContained": false,
+  "completeWindowsInstalledAcceptance": false,
+  "upgradeAcceptance": "automated-five-cycles-passed",
+  "builtPayloadSha256": "6da79d5f43561ba634cc80f9c24c705a437b45f6a0294fb522747bf1ca100fcc",
+  "bundlePayloadExpectations": {
+    "bytes": 20215296,
+    "formatExpectedSha256": {
+      "msi": "c816754a07c4af9d7f99c17782733058a294f564798b239816a53a07370022e9",
+      "nsis": "34bc65be5ab9c5b0da896e00ee5fd8a53d186b4d4146b584f6f52063f5ac3138"
+    },
+    "markerBytes": 27,
+    "markerOffset": 15540288,
+    "rawInputSha256": "6da79d5f43561ba634cc80f9c24c705a437b45f6a0294fb522747bf1ca100fcc",
+    "sourceProvenance": {
+      "algorithm": "first-UNK-marker-same-width-replacement-full-file-sha256",
+      "bundlerSource": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-bundler/src/bundle.rs",
+      "bundlerSourceSha256": "91c8387ccb2e52388cdcfeccfd23f69dac5439aba397d464b1d5446153fdc82e",
+      "cliSource": "https://raw.githubusercontent.com/tauri-apps/tauri/tauri-cli-v2.12.4/crates/tauri-cli/src/bundle.rs",
+      "cliSourceSha256": "fa883f16f84ad4a0d7d091daa2a57e177b804b481a9ec8f8227c5a398dcafdf6",
+      "version": "2.12.4"
+    }
+  },
+  "msiShortcutReturncheck": {
+    "cleanupConfirmed": true,
+    "fixedActionObserved": true,
+    "fixedOwnershipErrorObserved": true,
+    "foreignLinkPreserved": true,
+    "returncheckVerified": true
+  },
+  "sourceReceiptPath": "/tmp/v19-72736-windows-full-result.json",
+  "sourceReceiptSha256": "4d32e0d4a4da227573fa60994875ac212bac1b2c101aa4144d8ca15acfe72c3b",
+  "sourceReceiptBytes": 422641,
+  "processRecords": 102,
+  "allOwnedJobsEmpty": true,
+  "installations": [
+    {
+      "kind": "msi",
+      "installerSha256": "80978b26c3319903cc970069503be0f969e7bb83ef646a22e86c4d6b05db1e45",
+      "installConfirmed": true,
+      "uninstallConfirmed": true,
+      "nativeTopLevelWindowObserved": true,
+      "protocolRegistered": true,
+      "expectedPayloadSha256": "c816754a07c4af9d7f99c17782733058a294f564798b239816a53a07370022e9",
+      "installedPayloadSha256": "c816754a07c4af9d7f99c17782733058a294f564798b239816a53a07370022e9",
+      "installedMachine": "AMD64"
+    },
+    {
+      "kind": "nsis",
+      "installerSha256": "136c9e4ae5ce6d1fc71ec7a1a83073154440af0723f8debc1db57f926687aa3b",
+      "installConfirmed": true,
+      "uninstallConfirmed": true,
+      "nativeTopLevelWindowObserved": true,
+      "protocolRegistered": true,
+      "expectedPayloadSha256": "34bc65be5ab9c5b0da896e00ee5fd8a53d186b4d4146b584f6f52063f5ac3138",
+      "installedPayloadSha256": "34bc65be5ab9c5b0da896e00ee5fd8a53d186b4d4146b584f6f52063f5ac3138",
+      "installedMachine": "AMD64"
+    }
+  ],
+  "upgradeCycles": [
+    {
+      "case": "msi-major-upgrade",
+      "installKind": "msi",
+      "oldInstallConfirmed": true,
+      "upgradeConfirmed": true,
+      "expectedCollisionRefused": false,
+      "cleanupConfirmed": true,
+      "nativeTopLevelWindowObserved": true,
+      "candidateSha256": "80978b26c3319903cc970069503be0f969e7bb83ef646a22e86c4d6b05db1e45",
+      "foreignPreservedThroughUninstall": null
+    },
+    {
+      "case": "nsis-silent-upgrade",
+      "installKind": "nsis",
+      "oldInstallConfirmed": true,
+      "upgradeConfirmed": true,
+      "expectedCollisionRefused": false,
+      "cleanupConfirmed": true,
+      "nativeTopLevelWindowObserved": true,
+      "candidateSha256": "136c9e4ae5ce6d1fc71ec7a1a83073154440af0723f8debc1db57f926687aa3b",
+      "foreignPreservedThroughUninstall": null
+    },
+    {
+      "case": "nsis-update",
+      "installKind": "nsis",
+      "oldInstallConfirmed": true,
+      "upgradeConfirmed": true,
+      "expectedCollisionRefused": false,
+      "cleanupConfirmed": true,
+      "nativeTopLevelWindowObserved": true,
+      "candidateSha256": "136c9e4ae5ce6d1fc71ec7a1a83073154440af0723f8debc1db57f926687aa3b",
+      "foreignPreservedThroughUninstall": null
+    },
+    {
+      "case": "nsis-collision-legacy",
+      "installKind": "nsis",
+      "oldInstallConfirmed": true,
+      "upgradeConfirmed": false,
+      "expectedCollisionRefused": true,
+      "cleanupConfirmed": true,
+      "nativeTopLevelWindowObserved": null,
+      "candidateSha256": "136c9e4ae5ce6d1fc71ec7a1a83073154440af0723f8debc1db57f926687aa3b",
+      "foreignPreservedThroughUninstall": true
+    },
+    {
+      "case": "nsis-collision-current",
+      "installKind": "nsis",
+      "oldInstallConfirmed": true,
+      "upgradeConfirmed": false,
+      "expectedCollisionRefused": true,
+      "cleanupConfirmed": true,
+      "nativeTopLevelWindowObserved": null,
+      "candidateSha256": "136c9e4ae5ce6d1fc71ec7a1a83073154440af0723f8debc1db57f926687aa3b",
+      "foreignPreservedThroughUninstall": true
+    }
+  ]
+}

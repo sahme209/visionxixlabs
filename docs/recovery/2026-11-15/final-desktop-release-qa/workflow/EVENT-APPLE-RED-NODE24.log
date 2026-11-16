@@ -1,0 +1,107 @@
+✔ workflow Windows QA is after application bundle and before provenance/upload, no rebuild (0.5125ms)
+✔ publication guard/signing flags/fixed legacy block preserved; four generic V19 display lines (0.866167ms)
+✔ Record platform candidate provenance accepts closed same-run exact-byte full QA receipt (0.573917ms)
+✔ Record platform candidate provenance rejects missing (0.299041ms)
+✔ Record platform candidate provenance rejects wrongSource (0.296375ms)
+✔ Record platform candidate provenance rejects wrongTag (0.245167ms)
+✔ Record platform candidate provenance rejects wrongRun (0.209292ms)
+✔ Record platform candidate provenance rejects replay (0.211958ms)
+✔ Record platform candidate provenance rejects wrongTarget (0.226958ms)
+✔ Record platform candidate provenance rejects cleanup (0.241959ms)
+✔ Record platform candidate provenance rejects partialCycles (0.229667ms)
+✔ Record platform candidate provenance rejects duplicateCycle (0.218083ms)
+✔ Record platform candidate provenance rejects signedFallback (0.196ms)
+✔ Record platform candidate provenance rejects unsupportedUIClaim (0.188958ms)
+✔ Record platform candidate provenance rejects wrongHash (0.204875ms)
+✔ Record platform candidate provenance rejects thirdAsset (0.197542ms)
+✔ Record platform candidate provenance rejects unknownField (0.182459ms)
+✔ Record platform candidate provenance refuses bytes changed after installed QA (0.189917ms)
+✔ Validate and flatten candidate artifacts accepts closed same-run exact-byte full QA receipt (0.209792ms)
+✔ Validate and flatten candidate artifacts rejects missing (0.175167ms)
+✔ Validate and flatten candidate artifacts rejects wrongSource (0.189625ms)
+✔ Validate and flatten candidate artifacts rejects wrongTag (0.180209ms)
+✔ Validate and flatten candidate artifacts rejects wrongRun (0.179375ms)
+✔ Validate and flatten candidate artifacts rejects replay (0.180958ms)
+✔ Validate and flatten candidate artifacts rejects wrongTarget (0.185334ms)
+✔ Validate and flatten candidate artifacts rejects cleanup (0.187458ms)
+✔ Validate and flatten candidate artifacts rejects partialCycles (0.185708ms)
+✔ Validate and flatten candidate artifacts rejects duplicateCycle (0.1825ms)
+✔ Validate and flatten candidate artifacts rejects signedFallback (0.19875ms)
+✔ Validate and flatten candidate artifacts rejects unsupportedUIClaim (0.186125ms)
+✔ Validate and flatten candidate artifacts rejects wrongHash (0.19775ms)
+✔ Validate and flatten candidate artifacts rejects thirdAsset (0.197875ms)
+✔ Validate and flatten candidate artifacts rejects unknownField (0.176834ms)
+✔ Validate and flatten candidate artifacts refuses bytes changed after installed QA (0.195042ms)
+✔ actual writer hashes receipt before emitting Windows candidate (2.614917ms)
+✔ actual writer refuses a post-QA installer mutation before candidate admission (2.118708ms)
+✔ actual writer refuses missing or symlink receipt (3.869208ms)
+✔ actual collector requires uploaded matching receipt and retains qualification in flat manifest (5.034916ms)
+✔ actual collector refuses missingReceipt before flat candidate acceptance (3.931333ms)
+✔ actual collector refuses missingPin before flat candidate acceptance (4.674916ms)
+✔ actual collector refuses duplicateReceipt before flat candidate acceptance (5.926459ms)
+✔ actual collector refuses wrongRun before flat candidate acceptance (4.030541ms)
+✔ actual collector refuses wrongAttempt before flat candidate acceptance (4.382125ms)
+✔ actual collector refuses missingCleanup before flat candidate acceptance (4.223583ms)
+✔ actual collector refuses installerMutated before flat candidate acceptance (3.916833ms)
+✔ upload includes fixed QA receipt alongside original same-platform assets (0.101875ms)
+✔ actual writer AND collector step environments bind the run attempt (0.064375ms)
+✖ release trigger admits only explicit dispatch and identity refuses wrong event or tag BEFORE source tooling (0.500041ms)
+✖ shared Tauri step supplies Apple credentials ONLY to macOS matrix members (0.131125ms)
+ℹ tests 49
+ℹ suites 0
+ℹ pass 47
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 105.855583
+
+✖ failing tests:
+
+test at ../../../../../private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:41:1
+✖ release trigger admits only explicit dispatch and identity refuses wrong event or tag BEFORE source tooling (0.500041ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'push',
+      'workflow_dispatch'
+    ]
+  
+      at TestContext.<anonymous> (/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:42:9)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [ 'push', 'workflow_dispatch' ],
+    expected: [ 'workflow_dispatch' ],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../../private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:52:1
+✖ shared Tauri step supplies Apple credentials ONLY to macOS matrix members (0.131125ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + '${{ secrets.APPLE_CERTIFICATE }}'
+  - "${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_CERTIFICATE || '' }}"
+  
+      at TestContext.<anonymous> (/private/tmp/v19-release-workflow-qa-preparation/scripts/fixtures/release-windows-workflow.test.cjs:54:146)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: '${{ secrets.APPLE_CERTIFICATE }}',
+    expected: "${{ startsWith(matrix.platform, 'macos-') && secrets.APPLE_CERTIFICATE || '' }}",
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

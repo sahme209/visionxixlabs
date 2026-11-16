@@ -1,0 +1,15 @@
+{
+  "authoringHeadObserved": "72736c742c500fd9483d65adbfc67d9654352c27",
+  "publicDeploymentSourceBound": false,
+  "files": {
+    "app/api/status/route.ts": "d5a7c9f59dd35fb6f4a1829bed602213d9332ea2fb793dacb697a6ec6facda64",
+    "lib/status/publicStatusBuilder.ts": "6ceaf775467e7ace3fac519430323ba61ce4ea684f680064cc869c0bae3ed11e",
+    "app/api/desktop/download/route.ts": "376d18c87d459e47a20a74505f5f3086a0d3cf1aa4dc489f795e9ad060c22cbf",
+    "lib/desktop/desktopRuntimeReadiness.ts": "d07ac4a4cd45aa10b96720d728b4637365e418a02bf0cfa66d5891cd2af0a9f2",
+    "lib/desktop/releaseManifest.ts": "f51f3718c52846eb3740fbe21e8e094bb60911f1ed960560f70b018920852c55",
+    "app/api/auth/[...nextauth]/route.ts": "c5a6888254bad658fc98e589baf0b3eceaae48534aa8f0ae2636f7967de193eb",
+    "lib/auth.ts": "5ae62e52b24048d6b505388588fd9dea017146e0e2840d4178821e002d096b93",
+    "node_modules/next-auth/core/routes/providers.js": "7e9035ad97487e3b957d516d70d1a42be0c2b31e862d73f0f23b7e7762482930",
+    "node_modules/next-auth/core/index.js": "4e13707a3fc4cd8e801db3d38a48ec716bf75b67e22dd6e06d729419445351e3"
+  }
+}

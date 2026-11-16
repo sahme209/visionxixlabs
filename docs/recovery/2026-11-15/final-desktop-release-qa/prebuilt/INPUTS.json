@@ -1,0 +1,14 @@
+{
+  "BASELINE-windows_installed_acceptance.py": "58252af342b3e6e650fe20595dadef30043b84109f6b0c19268d46364e41198c",
+  "SOURCE-BASIS.json": "631d3ad236db4a3e4ad6c85c482129a66b1c4c1e6af885e8b672151f0c5c1fc0",
+  "CANDIDATE.patch": "5c57601d57ffc1b80a85b8475502248a5cc4570ef476b438fd39a4ee7c8e232e",
+  "APPLY-FILES.json": "8b70c9a31303bd0d2ab4d81bd1d00e6e78e2366ce86b94ca93237e89520b4eab",
+  "candidate/scripts/windows_installed_acceptance.py": "e3f9dd56c52dbd3f65e487066b7c48389b9adf0983e33a26c721caed93934341",
+  "candidate/scripts/windows_release_acceptance.py": "328887175b878132db49da313ad9c62ede72143c4d7e7bba0b73bc61d6fd056e",
+  "candidate/scripts/tests/test_windows_release_acceptance.py": "085b14223039995dad47b064d13fc1bcaf0721725889f0c265b45fbb5325880f",
+  "candidate/scripts/windows_upgrade_acceptance.py": "28bed768bafa8532f4601ed98ba52f2628e3b1087ee2d83505f00cb363d944c6",
+  "candidate/scripts/windows_legacy_acquire.py": "d061258f21444ae0ebdbb8e22379cf2daa7e68684435a52d1a66a4885e84ee31",
+  "candidate/scripts/windows_msi_observation.py": "abd091d480f088d406421395ea6ebc4b93b1bc0ecd80856367ed8f4e1e2d96b6",
+  "candidate/scripts/windows_residual_metadata.py": "af3aa25b398526ae0918aa1866322cd16c5eab6b3c61ab4ba7168fc43f866492",
+  "candidate/scripts/windows_residual_shortcuts.ps1": "eb7ce3bf990ee2a8bf4c39765e0a2ac1b0ef5235831ac74725f5955814315f5e"
+}

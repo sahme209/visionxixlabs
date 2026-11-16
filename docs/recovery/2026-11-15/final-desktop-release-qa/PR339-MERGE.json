@@ -1,0 +1,17 @@
+{
+  "pr": 339,
+  "merged": true,
+  "method": "squash",
+  "reviewedHead": "72736c742c500fd9483d65adbfc67d9654352c27",
+  "mergeSha": "56c13d00ec14bccbc0720151c77508178f801844",
+  "reviewedTree": "9f1b7fb6e42d29d884ee389ccabae5e4f77c9ed0",
+  "mergedTree": "9f1b7fb6e42d29d884ee389ccabae5e4f77c9ed0",
+  "treeIdentical": true,
+  "applicableChecksPassed": 15,
+  "optionalScreenshotSkipped": 1,
+  "fullWindowsRun": 43802029574,
+  "fullWindowsJob": 133086204838,
+  "actualReceiptSha256": "4d32e0d4a4da227573fa60994875ac212bac1b2c101aa4144d8ca15acfe72c3b",
+  "published": false,
+  "vercelDeployed": false
+}

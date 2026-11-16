@@ -21,17 +21,29 @@ function directory() { const value = mkdtempSync(join(fixtureTempRoot, "ax-nativ
 function put(root: string, name: string, content: string | Buffer) { const file = join(root, name); mkdirSync(join(file, ".."), { recursive: true }); writeFileSync(file, content); }
 function json(root: string, name: string, value: unknown) { put(root, name, JSON.stringify(value)); }
 function hash(bytes: string | Buffer) { return createHash("sha256").update(bytes).digest("hex"); }
-const expected = { SOURCE_SHA: "a".repeat(40), RELEASE_TAG: "desktop-v0.1.21", VERSION: "0.1.21", CANDIDATE_RUN_ID: "12345" };
+const expected = { SOURCE_SHA: "a".repeat(40), RELEASE_TAG: "desktop-v0.1.21", VERSION: "0.1.21", CANDIDATE_RUN_ID: "12345", CANDIDATE_RUN_ATTEMPT: "1" };
 function nodeRun(code: string, cwd: string, env: Record<string, string | undefined> = {}) { return spawnSync(process.execPath, ["-e", code], { cwd, env: { ...process.env, ...expected, ...env }, encoding: "utf8", timeout: 15_000 }); }
 function shellRun(code: string, cwd: string, env: Record<string, string | undefined> = {}) { return spawnSync("bash", ["-euo", "pipefail", "-c", code], { cwd, env: { ...process.env, ...expected, RUNNER_TEMP: join(cwd, "runner"), ...env }, encoding: "utf8", timeout: 20_000 }); }
 const platforms = { "macos-arm": "aarch64-apple-darwin", "macos-intel": "x86_64-apple-darwin", "windows-x64": "x86_64-pc-windows-msvc", "linux-x64": "x86_64-unknown-linux-gnu", sbom: "source" };
+function windowsQaBinding(cwd: string, assets: Array<{fileName: string; sizeBytes: number; sha256: string}>) {
+  const receipt = { schema: "axiom.windows-release-installed-validation/1", sourceSha: expected.SOURCE_SHA, releaseTag: expected.RELEASE_TAG, version: expected.VERSION, runId: expected.CANDIDATE_RUN_ID, runAttempt: expected.CANDIDATE_RUN_ATTEMPT, target: platforms["windows-x64"], accepted: true, installerBytesUnchanged: true, rawPayloadUnchanged: true, msiReturncheckVerified: true, cleanInstallKinds: ["msi", "nsis"], upgradeCases: ["msi-major-upgrade", "nsis-silent-upgrade", "nsis-update", "nsis-collision-legacy", "nsis-collision-current"], keyringCleanupConfirmed: true, ownedProcessCleanupConfirmed: true, installerCleanupConfirmed: true, signaturePolicy: "unsigned-only", uiVisualAcceptance: "UNVERIFIED", googlePairing: "NOT_RUN", assets: assets.map(asset => ({ kind: asset.fileName.endsWith(".msi") ? "msi" : "nsis", ...asset })) };
+  const bytes = JSON.stringify(receipt); put(cwd, "artifacts/windows-x64/windows-installed-release-qa.json", bytes);
+  return { fileName: "windows-installed-release-qa.json", sha256: hash(bytes) };
+}
 function rawCandidate() {
   const cwd = directory(); mkdirSync(join(cwd, "runner"));
   for (const [platform, target] of Object.entries(platforms)) {
     const fileName = platform === "sbom" ? "axiom-agent.sbom.cdx.json" : `Axiom_${expected.VERSION}_${platform}.${platform.startsWith("macos") ? "dmg" : platform === "windows-x64" ? "msi" : "AppImage"}`;
     const bytes = platform === "sbom" ? JSON.stringify({ bomFormat: "CycloneDX", components: [] }) : `synthetic installer ${platform}`;
     put(cwd, `artifacts/${platform}/${fileName}`, bytes);
-    json(cwd, `artifacts/${platform}/candidate-${platform}.json`, { schema: 1, sourceSha: expected.SOURCE_SHA, releaseTag: expected.RELEASE_TAG, version: expected.VERSION, runId: expected.CANDIDATE_RUN_ID, platform, target, assets: [{ fileName, sizeBytes: Buffer.byteLength(bytes), sha256: hash(bytes) }] });
+    const assets = [{ fileName, sizeBytes: Buffer.byteLength(bytes), sha256: hash(bytes) }];
+    let windowsInstalledQa;
+    if (platform === "windows-x64") {
+      const fileName = `Axiom_${expected.VERSION}_windows-x64-setup.exe`, bytes = "synthetic distinct NSIS installer";
+      put(cwd, `artifacts/${platform}/${fileName}`, bytes); assets.push({ fileName, sizeBytes: Buffer.byteLength(bytes), sha256: hash(bytes) });
+      windowsInstalledQa = windowsQaBinding(cwd, assets);
+    }
+    json(cwd, `artifacts/${platform}/candidate-${platform}.json`, { schema: 1, sourceSha: expected.SOURCE_SHA, releaseTag: expected.RELEASE_TAG, version: expected.VERSION, runId: expected.CANDIDATE_RUN_ID, platform, target, assets, ...(windowsInstalledQa ? { windowsInstalledQa } : {}) });
     if (platform !== "sbom") put(cwd, `artifacts/${platform}/release-attestation-${platform}.env`, `platform=${platform}\nartifact_signed=false\nartifact_notarized=false\n`);
   }
   json(cwd, "candidate-artifacts.json", { total_count: 6, artifacts: ["axiom-macos-arm", "axiom-macos-intel", "axiom-windows-x64", "axiom-linux-x64", "axiom-sbom", "axiom-sbom-provenance"].map((name, i) => ({ id: i + 1, name, expired: false, digest: `sha256:${"b".repeat(64)}`, workflow_run: { id: Number(expected.CANDIDATE_RUN_ID), head_sha: expected.SOURCE_SHA } })) });
@@ -110,7 +122,7 @@ describe("actual candidate artifact verification boundary", () => {
   });
   it("binds all targets and raw artifact IDs to unchanged source/run/installer/SBOM bytes", () => {
     const cwd = validCandidate(); const manifest = JSON.parse(readFileSync(join(cwd, `flat/Axiom-Agent-${expected.RELEASE_TAG}-candidate-manifest.json`), "utf8"));
-    expect(manifest.sourceSha).toBe(expected.SOURCE_SHA); expect(manifest.rawArtifacts).toHaveLength(6); expect(manifest.assets).toHaveLength(5);
+    expect(manifest.sourceSha).toBe(expected.SOURCE_SHA); expect(manifest.rawArtifacts).toHaveLength(6); expect(manifest.assets).toHaveLength(6);
     expect(new Set(manifest.assets.map((asset: { platform: string }) => asset.platform))).toEqual(new Set(Object.keys(platforms)));
   });
   it.each(["sourceSha", "runId", "target"])("rejects mismatched platform provenance %s", field => {
@@ -185,7 +197,7 @@ it("accepts actual Axiom installer names with interior spaces at both verificati
   const asset = manifest.assets[0];
   const actualName = `Axiom_${expected.VERSION}_x64_en-US.msi`;
   renameSync(join(cwd, "artifacts/windows-x64", asset.fileName), join(cwd, "artifacts/windows-x64", actualName));
-  asset.fileName = actualName; json(cwd, manifestPath, manifest);
+  asset.fileName = actualName; manifest.windowsInstalledQa = windowsQaBinding(cwd, manifest.assets); json(cwd, manifestPath, manifest);
   expect(flatten(cwd).status).toBe(0);
   expect(nodeRun(nodeBlock("publish", "Validate candidate again before signing or upload"), cwd).status).toBe(0);
 });
@@ -246,7 +258,7 @@ function signCandidate(cwd: string, override: Record<string, string> = {}) {
 describe("actual intended-public-key verification and immutable publication shell", {timeout: 45_000}, () => {
   it("signs unchanged candidate bytes and verifies with the published intended public key", () => {
     const cwd = validCandidate(); const result = signCandidate(cwd); expect(result.stderr).toBe(""); expect(result.status).toBe(0);
-    expect(readdirSync(join(cwd, "flat")).filter(name => name.endsWith(".asc"))).toHaveLength(6);
+    expect(readdirSync(join(cwd, "flat")).filter(name => name.endsWith(".asc"))).toHaveLength(7);
   });
   it("refuses a different configured public fingerprint before creating signatures", () => {
     const cwd = validCandidate(); expect(signCandidate(cwd, { EXPECTED_GPG_FINGERPRINT: "0".repeat(40) }).status).not.toBe(0);

@@ -1,0 +1,51 @@
+{
+  "timestampedBackup": "docs/recovery/2026-11-15/final-desktop-release-qa/living-before-20261116-044756",
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "beforeSha256": "0873f436d33a7c7aee6f896f146c23167b9d0d4a48473f586233871efe866136",
+      "backupSha256": "0873f436d33a7c7aee6f896f146c23167b9d0d4a48473f586233871efe866136",
+      "afterSha256": "06f27a8b884b58864018581d38edc06e3fd674c393e4e6adb264330137de5696",
+      "historicalSuffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "beforeSha256": "4cba5d20fe14b7d1ee4e3ab96e8360a20d7ebed40fbb291ffc1c47b89d9608bb",
+      "backupSha256": "4cba5d20fe14b7d1ee4e3ab96e8360a20d7ebed40fbb291ffc1c47b89d9608bb",
+      "afterSha256": "d1dbe0b9a957ecbfd818d09bcbbd75e83821d64dc92b291c38903c06923262fe",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "beforeSha256": "cae96aace9ec00bdeffe709081841fad8c744bdbab7e606306deda4bebd8533f",
+      "backupSha256": "cae96aace9ec00bdeffe709081841fad8c744bdbab7e606306deda4bebd8533f",
+      "afterSha256": "6f6d313adfdb8fa4de374957b60375de7181f203e7481230f14a9d2df58c070b",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "beforeSha256": "01a23abc247724f70a2803ed7491e8c0b09149a4887f6aed09b5e09159a83dea",
+      "backupSha256": "01a23abc247724f70a2803ed7491e8c0b09149a4887f6aed09b5e09159a83dea",
+      "afterSha256": "5d81d9e39d6286c3ce4c45657064dd4ab4a8e992785397973593c262bddd308d",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "beforeSha256": "2d2c9f5c995904549f864d483b9f9946d7d63ec42e3ab83b11349afefd761684",
+      "backupSha256": "2d2c9f5c995904549f864d483b9f9946d7d63ec42e3ab83b11349afefd761684",
+      "afterSha256": "b34477a1c940a08646ea5ff74804374b7ae53128503cc6abebc8dcc24bc8eb13",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "beforeSha256": "102db9b7468fc9771a4da3ca1e64d2f335ce250508e7bf5c576e4a4cb4022eb8",
+      "backupSha256": "102db9b7468fc9771a4da3ca1e64d2f335ce250508e7bf5c576e4a4cb4022eb8",
+      "afterSha256": "52b3f367e39d00488244cb2462f04e057fd202b21df71fbb82d25c618215d4b2",
+      "historicalSuffixPreserved": true
+    }
+  },
+  "environmentGoalMirrorOnlyException": {
+    "path": "/Users/samirahmed/.codex/worktrees/axiom-aws-sdk-upgrade/axiom-ticket-install-completion/docs/product/codex-resume-goal.md",
+    "beforeBackupSha256": "102db9b7468fc9771a4da3ca1e64d2f335ce250508e7bf5c576e4a4cb4022eb8",
+    "afterSha256": "52b3f367e39d00488244cb2462f04e057fd202b21df71fbb82d25c618215d4b2",
+    "byteMatchesAuthoring": true
+  },
+  "otherEnvironmentCheckoutWrites": false,
+  "singleBackupPassAfterFinalTestExitConfirmed": true,
+  "currentPrefixSha256": "9a3d1b64e59be07e3099ce1fe69b8445a3332cadadf202c7aef29100d6babab7",
+  "sameOriginalBackupNoAdditionalPrefixLayer": true
+}

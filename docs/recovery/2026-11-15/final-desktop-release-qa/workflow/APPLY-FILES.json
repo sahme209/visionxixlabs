@@ -1,0 +1,30 @@
+{
+  "sourceHead": "72736c742c500fd9483d65adbfc67d9654352c27",
+  "workflowBeforeSha256": "5911e1f2bd3dcd65beeabf887df58bbbf49707e4088bb24986c8238a59d1270c",
+  "files": [
+    {
+      "path": ".github/workflows/desktop-release.yml",
+      "preparedPath": "desktop-release.yml",
+      "beforeSha256": "5911e1f2bd3dcd65beeabf887df58bbbf49707e4088bb24986c8238a59d1270c",
+      "afterSha256": "a0eb48cb929134186b5a673cde546103f99a986f53b6141d2d841b9187896883"
+    },
+    {
+      "path": "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts",
+      "preparedPath": "lib/desktop/__tests__/nativeReleaseCandidateGuards.test.ts",
+      "beforeSha256": "758c44bb00138c5dbbb678e22c3ba659a2d6314757a3a3918d42607c50004054",
+      "afterSha256": "cb163095c0d2e8a52eb5ae156c3a6ad09c2a554883dd17d739265528fe3c374e"
+    },
+    {
+      "path": "lib/desktop/__tests__/releaseWindowsInstalledWorkflow.test.ts",
+      "preparedPath": "lib/desktop/__tests__/releaseWindowsInstalledWorkflow.test.ts",
+      "beforeSha256": null,
+      "afterSha256": "61a1613b8f1fcc641bb15fd056dcd087e4b22f470fdb7929f9303bf65e5b89ef"
+    },
+    {
+      "path": "scripts/fixtures/release-windows-workflow.test.cjs",
+      "preparedPath": "scripts/fixtures/release-windows-workflow.test.cjs",
+      "beforeSha256": null,
+      "afterSha256": "71896e7eea5b04b60d525c38fde05dfddd339d056b209077aed1a45b604eaa18"
+    }
+  ]
+}

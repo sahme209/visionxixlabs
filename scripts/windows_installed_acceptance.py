@@ -607,12 +607,18 @@ def snapshot_helper_preflight(runner, tools, base):
 
 
 def main():
-    binding = authority()
+    return _run_installed_acceptance(authority())
+
+
+def _run_installed_acceptance(binding, *, _prebuilt_release=None):
     need(os.environ.get("ImageOS") == "win22", "standard_windows_2022_required")
     runner_temp = validated_runner_temp(os.environ.get("RUNNER_TEMP"))
     tools, tool_evidence = runtime_tools()
     cache = Path(os.environ['LOCALAPPDATA']) / 'tauri'
-    need(not cache.exists(), 'existing_vendor_cache_refused')
+    if _prebuilt_release is None:
+        need(not cache.exists(), 'existing_vendor_cache_refused')
+    else:
+        need(cache.is_dir() and not cache.is_symlink() and not getattr(cache, 'is_junction', lambda: False)(), 'prebuilt_vendor_cache_missing')
     # Refuse any existing installation/data: this batch may never read an
     # operator's previous Axiom state. Standard runner must be a fresh VM.
     for name in ["APPDATA", "LOCALAPPDATA", "PROGRAMFILES", "PROGRAMFILES(X86)"]:
@@ -638,6 +644,12 @@ def main():
         runner.manifest_hash = binding["manifestSha256"]
         need(source_snapshot(runner, tools) == frozen, "reviewed_source_changed")
         receipt["tauriLock"] = locked_tauri(ROOT)
+        prebuilt_before = None
+        if _prebuilt_release is not None:
+            from windows_release_acceptance import snapshot_prebuilt, same_prebuilt, release_receipt
+            prebuilt_before = snapshot_prebuilt(ROOT)
+            prebuilt_vendor_before = vendor_cache_snapshot(cache)
+            receipt['prebuiltVendorCacheAtAdmission'] = prebuilt_vendor_before
         (output / "SOURCE-INPUTS.json").write_text(json.dumps(frozen, sort_keys=True))
         configuration = ROOT / 'desktop/src-tauri'
         need(not json.loads((configuration / 'tauri.conf.json').read_text()).get('bundle', {}).get('useLocalToolsDir', False), 'unreviewed_vendor_cache_configuration')
@@ -658,10 +670,12 @@ def main():
         tool_evidence['npm'] = {'path': str(npm.resolve()), 'sha256': digest(npm), 'version': supported_version('npm', runner.run('tool-npm', [tools['node.exe'], npm, '--version'], ROOT, 15))}
         tool_evidence['msiexec.exe']['version'] = runner.run('tool-msiexec', [tools['pwsh.exe'], '-NoProfile', '-NonInteractive', '-Command', "(Get-Item -LiteralPath (Join-Path $env:SYSTEMROOT 'System32/msiexec.exe')).VersionInfo.FileVersion"], ROOT, 15)
         need(re.fullmatch(r'[0-9.]+(?: \(.*\))?', tool_evidence['msiexec.exe']['version']) is not None, 'windows_installer_version_unknown')
-        runner.run("desktop-dependencies", [tools["node.exe"], npm, "ci"], ROOT / "desktop", 300)
-        need(source_snapshot(runner, tools) == frozen, "source_changed_after_dependencies")
+        if _prebuilt_release is None:
+            runner.run("desktop-dependencies", [tools["node.exe"], npm, "ci"], ROOT / "desktop", 300)
+            need(source_snapshot(runner, tools) == frozen, "source_changed_after_dependencies")
         receipt["installedTauri"] = locked_tauri(ROOT, installed=True)
-        runner.run("frontend", [tools["node.exe"], npm, "run", "build"], ROOT / "desktop", 300)
+        if _prebuilt_release is None:
+            runner.run("frontend", [tools["node.exe"], npm, "run", "build"], ROOT / "desktop", 300)
         vault_target = base / 'vault-target'
         need(not vault_target.exists(), 'vault_target_not_fresh')
         vault_target.mkdir(exist_ok=False)
@@ -687,14 +701,19 @@ def main():
         runner.run("vault-roundtrip", [*vault_args, "windows_credential_persists_across_processes", "--nocapture"], ROOT, 60, {"AXIOM_WINDOWS_ACCEPTANCE_KEY": key})
         # Standard frontend/native CI remains the preceding qualification gate.
         # This command creates candidate installers only; no release API/token.
-        tauri = ROOT / "desktop/node_modules/@tauri-apps/cli/tauri.js"
-        need(tauri.is_file(), "locked_tauri_cli_missing")
-        receipt['webviewRuntimeBeforeBundle'] = require_webview_runtime()
-        need(not cache.exists(), 'existing_vendor_cache_refused')
-        runner.run("unsigned-bundle", [tools["node.exe"], tauri, "build", "--target", TARGET, "--bundles", "msi,nsis", "--ci", "--", "--locked"], ROOT / "desktop", 900)
-        need(source_snapshot(runner, tools) == frozen, "source_changed_after_bundle")
+        if _prebuilt_release is None:
+            tauri = ROOT / "desktop/node_modules/@tauri-apps/cli/tauri.js"
+            need(tauri.is_file(), "locked_tauri_cli_missing")
+            receipt['webviewRuntimeBeforeBundle'] = require_webview_runtime()
+            need(not cache.exists(), 'existing_vendor_cache_refused')
+            runner.run("unsigned-bundle", [tools["node.exe"], tauri, "build", "--target", TARGET, "--bundles", "msi,nsis", "--ci", "--", "--locked"], ROOT / "desktop", 900)
+            need(source_snapshot(runner, tools) == frozen, "source_changed_after_bundle")
+        else:
+            receipt['webviewRuntimeBeforePrebuiltQa'] = require_webview_runtime()
+            same_prebuilt(prebuilt_before, snapshot_prebuilt(ROOT))
+            need(vendor_cache_snapshot(cache) == prebuilt_vendor_before, 'prebuilt_vendor_cache_changed')
         receipt["acquiredVendorFiles"] = vendor_cache_snapshot(cache)
-        receipt["vendorAcquisition"] = "fresh-cache-locked-tauri-upstream-checksums-not-independent-origin-proof"
+        receipt["vendorAcquisition"] = ("fresh-cache-locked-tauri-upstream-checksums-not-independent-origin-proof" if _prebuilt_release is None else "post-build-cache-inventory-not-independent-origin-or-freshness-proof")
         version = json.loads((ROOT / "desktop/package.json").read_text())["version"]
         receipt["version"] = version
         payload = owned_file(ROOT / "desktop/src-tauri/target" / TARGET / "release/axiom-desktop.exe", ROOT / "desktop/src-tauri/target" / TARGET / "release")
@@ -717,6 +736,8 @@ def main():
         codes = [legacy['msi']['metadata']['ProductCode'], candidate_metadata['msi']['ProductCode']]
         absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [], codes, 'all-installs-pristine'))
         msi_shortcut_returncheck(runner,tools,base,candidates['msi'],candidate_metadata['msi'],codes,receipt)
+        if _prebuilt_release is not None:
+            same_prebuilt(prebuilt_before, snapshot_prebuilt(ROOT))
         from windows_upgrade_acceptance import APPLICATION_DIRECTORY, absent_after_cleanup
         for kind, candidate in candidates.items():
             absent_before_owned_cycle(upgrade_snapshot(runner, tools, base, [base / APPLICATION_DIRECTORY], codes, 'clean-'+kind+'-pristine'))
@@ -724,11 +745,17 @@ def main():
             absent_after_cleanup(upgrade_snapshot(runner, tools, base, [base / APPLICATION_DIRECTORY], codes, 'clean-'+kind+'-absent'))
             remove_empty_application_directory(base)
             need(source_snapshot(runner, tools) == frozen, "source_changed_after_install_cycle")
+            if _prebuilt_release is not None:
+                same_prebuilt(prebuilt_before, snapshot_prebuilt(ROOT))
         receipt['upgradeCycles'] = []
         for case in ('msi-major-upgrade','nsis-silent-upgrade','nsis-update','nsis-collision-legacy','nsis-collision-current'):
             run_upgrade_cycle(runner, tools, base, case, legacy, candidates, candidate_metadata, version, payload_hashes, receipt)
             need(source_snapshot(runner, tools) == frozen, 'source_changed_after_upgrade_cycle')
+            if _prebuilt_release is not None:
+                same_prebuilt(prebuilt_before, snapshot_prebuilt(ROOT))
         receipt['upgradeAcceptance'] = 'automated-five-cycles-passed'
+        if _prebuilt_release is not None:
+            same_prebuilt(prebuilt_before, snapshot_prebuilt(ROOT))
         receipt["sourceUnchanged"] = source_snapshot(runner, tools) == frozen
         receipt["accepted"] = receipt["sourceUnchanged"] and all(row.get("uninstallConfirmed") for row in receipt["installations"])
     except Exception as error:
@@ -755,6 +782,16 @@ def main():
         (output / "RESULT.json").write_text(rendered + '\n')
         print('AXIOM_WINDOWS_INSTALLED_RESULT:' + rendered, flush=True)
     need(receipt["accepted"], "installed_validation_incomplete")
+    if _prebuilt_release is not None:
+        need(source_snapshot(runner, tools) == frozen, 'source_changed_after_release_cleanup')
+        same_prebuilt(prebuilt_before, snapshot_prebuilt(ROOT))
+        need(vendor_cache_snapshot(cache) == prebuilt_vendor_before, 'prebuilt_vendor_cache_changed')
+        summary = release_receipt(_prebuilt_release, receipt, prebuilt_before)
+        destination = ROOT / 'desktop/windows-installed-release-qa.json'
+        need(not destination.exists(), 'prebuilt_release_receipt_already_exists')
+        with destination.open('x', encoding='utf-8') as stream:
+            stream.write(json.dumps(summary, sort_keys=True) + '\n')
+    return receipt
 
 
 def upgrade_snapshot(runner, tools, base, directories, product_codes, label):

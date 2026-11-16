@@ -1,3 +1,7 @@
 # Preserve reviewed recovery evidence and native patches byte-for-byte.
 docs/recovery/2026-11-14/** -text
 packages/verified-issuer-runtime/linux/*.patch -text
+
+# Preserve raw release-validation transcripts and patch syntax without rewriting evidence.
+docs/recovery/2026-11-15/final-desktop-release-qa/**/*.log -text -whitespace
+docs/recovery/2026-11-15/final-desktop-release-qa/**/*.diff -text -whitespace

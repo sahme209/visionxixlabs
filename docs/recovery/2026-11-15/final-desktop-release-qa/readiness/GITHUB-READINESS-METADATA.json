@@ -1,0 +1,32 @@
+{
+  "environment": {
+    "available": false,
+    "status": "not_accessible",
+    "exitCode": 1
+  },
+  "publication_ready": {
+    "available": false,
+    "status": "not_accessible",
+    "exitCode": 1
+  },
+  "public_key_fingerprint": {
+    "available": true,
+    "name": "AXIOM_DESKTOP_PUBLIC_KEY_FINGERPRINT",
+    "value": "857B2A06984CD231559F4BB47A9619F59D35D120"
+  },
+  "secret_names_only": {
+    "available": true,
+    "total_count": 9,
+    "expected_presence": {
+      "APPLE_CERTIFICATE": true,
+      "APPLE_CERTIFICATE_PASSWORD": true,
+      "APPLE_SIGNING_IDENTITY": true,
+      "APPLE_ID": true,
+      "APPLE_PASSWORD": true,
+      "APPLE_TEAM_ID": true,
+      "GPG_PRIVATE_KEY": true,
+      "RELEASES_REPO_TOKEN": true
+    },
+    "firstPageComplete": true
+  }
+}
