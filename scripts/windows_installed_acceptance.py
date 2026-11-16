@@ -321,6 +321,22 @@ def authority():
     return binding
 
 
+def bounded_stream_diagnostics(path):
+    """Preserve the existing prefix; add at most4KiB of nonoverlapping tail."""
+    size=path.stat().st_size
+    clean=lambda value: ''.join(c for c in value.decode('utf-8',errors='replace') if c in '\n\r\t' or ord(c)>=32)
+    with path.open('rb') as file:
+        prefix=file.read(2048)
+        result={'sha256':digest(path),'bytes':size,'text':clean(prefix),'prefixTruncated':size>len(prefix)}
+        if result['prefixTruncated']:
+            offset=max(len(prefix),size-4096)
+            file.seek(offset);tail=file.read(4096)
+            result['tailText']=clean(tail)
+            result['tailOffsetBytes']=offset
+            result['tailBytes']=len(tail)
+    return result
+
+
 class OwnedWindowsProcess:
     """Create suspended, assign an owned kill-on-close Job, then resume.
 
@@ -436,11 +452,7 @@ class OwnedWindowsProcess:
             record["diagnostics"] = {}
             for stream, path in [('stdout', out), ('stderr', err)]:
                 if path.is_file():
-                    with path.open('rb') as file: prefix = file.read(2048)
-                    text = prefix.decode('utf-8', errors='replace')
-                    text = ''.join(c for c in text if c in '\n\r\t' or ord(c) >= 32)
-                    record['diagnostics'][stream] = {'sha256': digest(path), 'bytes': path.stat().st_size,
-                        'text': text, 'prefixTruncated': path.stat().st_size > len(prefix)}
+                    record['diagnostics'][stream] = bounded_stream_diagnostics(path)
             record["extraLogs"] = [{"name": Path(path).name, "bytes": Path(path).stat().st_size, "sha256": digest(Path(path))} for path in extra_logs if Path(path).is_file()]
         need(record["ownedJobEmpty"], "owned_process_cleanup_unconfirmed")
         return out.read_text(encoding="utf-8-sig", errors="strict").strip()
