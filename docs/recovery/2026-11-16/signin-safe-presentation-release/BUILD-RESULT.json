@@ -1,0 +1,11 @@
+{
+  "accepted": true,
+  "scope": "Actual isolated local website production build, regenerated baseline Prisma client, production typecheck and Next build. No live services/native/provider/Governance qualification.",
+  "buildReceiptSha256": "35fb1f7a5b5b4ab6fd359386d03204bbfbe86d83efbdefb9175e92bb6142d41e",
+  "inputPacketSha256": "103896be84ef9d5fcc4b04a3121caf9dbe4fbc4c32e781d25c20d7158b8dedcd",
+  "productAndTestFilesMatched": true,
+  "focusedTests": 52,
+  "rootTypecheckExitCode": 0,
+  "independentReview": "00a6546d58257daed3c46cc3483217e9cdd8e5b922b584599924c267829483c9",
+  "ciAndProduction": "Still required; Git deployment disabled; owner final production click."
+}

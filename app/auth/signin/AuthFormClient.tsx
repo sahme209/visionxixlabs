@@ -1,12 +1,14 @@
 "use client";
 
-import { VerificationRecovery } from "@/components/auth/VerificationRecovery";
 import { useState, Suspense, useEffect, useRef } from "react";
 import { signIn, getProviders } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
 import { EyeIcon, EyeSlashIcon, ExclamationTriangleIcon } from "@heroicons/react/24/outline";
+
+type SignInProvider = "google" | "github" | "cognito" | "gitlab";
+const secondaryProviderClass = "inline-flex size-[30px] shrink-0 items-center justify-center rounded-full border border-white/10 bg-[#202020] text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300 [@media(pointer:coarse)]:size-11";
 
 function SignInForm() {
   const [email, setEmail] = useState("");
@@ -16,8 +18,8 @@ function SignInForm() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const authInFlight = useRef(false);
-  const [oauthLoading, setOauthLoading] = useState<null | "google" | "github" | "cognito">(null);
-  const [enabledProviders, setEnabledProviders] = useState<{ google: boolean; github: boolean; cognito: boolean } | null>(null);
+  const [oauthLoading, setOauthLoading] = useState<null | SignInProvider>(null);
+  const [enabledProviders, setEnabledProviders] = useState<Record<SignInProvider, boolean> | null>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = safeInternalPath(searchParams.get("callbackUrl"), "/control");
@@ -36,9 +38,10 @@ function SignInForm() {
         google: Boolean(p && "google" in p),
         github: Boolean(p && "github" in p),
         cognito: Boolean(p && "cognito" in p),
+        gitlab: Boolean(p && "gitlab" in p),
       });
     }).catch(() => {
-      if (!cancelled) setEnabledProviders({ google: false, github: false, cognito: false });
+      if (!cancelled) setEnabledProviders({ google: false, github: false, cognito: false, gitlab: false });
     });
     return () => { cancelled = true; };
   }, []);
@@ -74,10 +77,10 @@ function SignInForm() {
     }
   };
 
-  const providerLabel = (provider: "google" | "github" | "cognito") =>
-    provider === "google" ? "Google" : provider === "github" ? "GitHub" : "Cognito";
+  const providerLabel = (provider: SignInProvider) =>
+    provider === "google" ? "Google" : provider === "github" ? "GitHub" : provider === "gitlab" ? "GitLab" : "Cognito";
 
-  const handleOAuth = async (provider: "google" | "github" | "cognito") => {
+  const handleOAuth = async (provider: SignInProvider) => {
     if (authInFlight.current) return;
     // Hard-stop when the provider isn't actually registered on the server.
     if (enabledProviders && !enabledProviders[provider]) {
@@ -124,7 +127,7 @@ function SignInForm() {
 
         {oauthError && <div role="alert" className="mb-6 flex items-start gap-2 rounded-lg border border-white/15 bg-white/5 p-3 text-sm leading-6 text-zinc-300">
           <ExclamationTriangleIcon aria-hidden="true" className="mt-1 h-4 w-4 shrink-0" />
-          <p>We couldn&apos;t complete sign-in. Try again, or <Link href="/contact" className="underline underline-offset-4 hover:text-white">contact support</Link> if it continues.</p>
+          <p>We couldn&apos;t complete sign-in. Try again or choose another sign-in method.</p>
         </div>}
         {(enabledProviders === null || enabledProviders.google) && (
           <button
@@ -198,61 +201,41 @@ function SignInForm() {
           </button>
         </form>
 
-        <details className="absolute left-0 right-0 top-full mt-3 text-center text-[10px] text-zinc-400">
-          <summary className="mx-auto min-h-[30px] w-fit cursor-pointer content-center rounded-sm px-2 focus-visible:outline-2 focus-visible:outline-zinc-300">Other sign-in options</summary>
-          <div className="mt-3 grid gap-2.5">
-            {(enabledProviders === null || enabledProviders.github) && (
+        {enabledProviders && (enabledProviders.github || enabledProviders.cognito || enabledProviders.gitlab) && (
+          <div role="group" aria-label="Other sign-in methods" className="absolute left-0 right-0 top-full mt-3 flex justify-center gap-3">
+            {enabledProviders.github && (
               <button
                 type="button"
                 onClick={() => handleOAuth("github")}
                 aria-label={oauthLoading === "github" ? "Opening GitHub…" : "Sign in with GitHub"}
                 disabled={oauthLoading !== null || loading}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
+                title="GitHub"
+                className={secondaryProviderClass}
               >
                 <GitHubMark className="h-4 w-4" />
-                {oauthLoading === "github" ? "Opening…" : "GitHub"}
               </button>
             )}
-            {enabledProviders?.cognito && (
+            {enabledProviders.cognito && (
               <button
                 type="button"
                 onClick={() => handleOAuth("cognito")}
                 aria-label={oauthLoading === "cognito" ? "Opening Cognito…" : "Sign in with Cognito"}
                 disabled={oauthLoading !== null || loading}
-                className="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-sm font-medium text-zinc-200 transition hover:bg-white/10 disabled:cursor-not-allowed disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-zinc-300"
+                title="Cognito SSO"
+                className={secondaryProviderClass}
               >
                 <SsoMark className="h-4 w-4" />
-                {oauthLoading === "cognito" ? "Opening…" : "Cognito SSO"}
+              </button>
+            )}
+            {enabledProviders.gitlab && (
+              <button type="button" onClick={() => handleOAuth("gitlab")}
+                aria-label={oauthLoading === "gitlab" ? "Opening GitLab…" : "Sign in with GitLab"}
+                title="GitLab" disabled={oauthLoading !== null || loading} className={secondaryProviderClass}>
+                <Image src="/logos/integrations/gitlab.svg" alt="" aria-hidden width={16} height={16} className="h-4 w-4 invert" />
               </button>
             )}
           </div>
-          <details className="mt-3 text-center text-xs text-zinc-400">
-            <summary className="mx-auto min-h-11 w-fit cursor-pointer content-center rounded-sm px-2 focus-visible:outline-2 focus-visible:outline-zinc-300">Need help signing in?</summary>
-            <div className="flex flex-col items-center gap-1">
-              <VerificationRecovery initialEmail={email} callbackUrl={callbackUrl} showSupportLink={false} />
-              <Link href="/contact" className="inline-flex min-h-11 items-center underline underline-offset-4">Contact support</Link>
-            </div>
-          </details>
-
-          <p className="mt-4 text-xs text-zinc-500 text-center">
-            Don&apos;t have an account?{" "}
-            {callbackUrl.startsWith("/desktop/") ? (
-              <Link href={`/auth/signup?redirect=${encodeURIComponent(callbackUrl)}`} className="font-medium text-zinc-200 hover:text-white">
-                Create one
-              </Link>
-            ) : (
-              <Link href="/download" className="font-medium text-zinc-200 hover:text-white">
-                Set up through V19
-              </Link>
-            )}
-          </p>
-          <p className="mt-2 text-xs text-zinc-500 text-center">
-            Need the application?{" "}
-            <Link href="/download" className="font-medium text-zinc-300 underline decoration-white/20 underline-offset-2 hover:text-white">
-              Return to downloads →
-            </Link>
-          </p>
-        </details>
+        )}
       </div>
     </div>
   );
