@@ -1,11 +1,11 @@
-name: Fixed legacy MSI reinstall diagnostic
+name: Owned MSI shortcut script preflight
 on:
   push:
     branches: [codex/windows-msi-byte-diagnostic]
 permissions:
   contents: read
 jobs:
-  legacy-msi-reinstall:
+  msi-shortcut-script:
     if: github.repository == 'sahme209/visionxixlabs' && github.repository_id == '1130181785' && github.actor == 'sahme209' && github.run_attempt == 1
     runs-on: windows-2022
     timeout-minutes: 5
@@ -18,8 +18,8 @@ jobs:
         with:
           ref: ${{ github.sha }}
           persist-credentials: false
-      - name: Inspect fixed historical MSI install and reinstall locations
+      - name: Test exact shortcut script with synthetic links only
         shell: pwsh
         env:
           PYTHONDONTWRITEBYTECODE: '1'
-        run: python scripts/windows_legacy_reinstall_diagnostic.py
+        run: python scripts/windows_msi_shortcut_quick.py
