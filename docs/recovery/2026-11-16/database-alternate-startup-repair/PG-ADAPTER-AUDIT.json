@@ -1,0 +1,14 @@
+{
+  "clear": true,
+  "scope": "audited actual fictional owned Unix PG17 helper test; not remote TLS/compiledHTTP/provider/production proof",
+  "executionInputSha256": "0d9a88fb82c643cb13a2c1a06e04a20fa8ee4cfc0160b5dc7d516b567e5757a1",
+  "all14CurrentInputHashesMatch": true,
+  "kernelSixCurrentAndFrozenCopiesMatch": true,
+  "allNineActualChecksTrue": true,
+  "actualServerCommitBeforeSimulatedCallbackLoss": true,
+  "noRetryExactlyOneDurableWrite": true,
+  "shadowWritesZero": true,
+  "postmasterPidAndSocketAbsent": true,
+  "adapterDisposed": true,
+  "noRerunOrSourceChanges": true
+}

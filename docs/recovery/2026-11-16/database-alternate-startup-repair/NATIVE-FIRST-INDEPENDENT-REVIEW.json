@@ -1,0 +1,18 @@
+{
+  "review": "CLEAR",
+  "scope": "read-only final bound local seven-case source/profile/build-input review; no execution",
+  "inputPacketSha256": "defdbb24e33da4acbd4d0db188558d22f9036ab09ad48e70abe7c30c684ab16e",
+  "boundFiles": 826,
+  "all826HashesMatched": true,
+  "expectedCurrentAndAcceptedStageSourcePins": 19,
+  "compiledMembers": 6570,
+  "compiledTreeSha256": "11bd47997c5af875cf106b2284425f9d3d5b8fd3d93a165bf462ca49413e61fb",
+  "acceptedBuildReceiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+  "acceptedBuildFlagsMatched": true,
+  "noAttemptMarker": true,
+  "lateExceptionRefusesAccepted": true,
+  "exactSameSevenFixturesAndAssessor": true,
+  "nativeOwnedClusterTlsPortsHbaMinimalEnvAndCleanupReviewed": true,
+  "realProviderMailNativeProductionAcceptance": false,
+  "noSourceEditsTestsSqlServersPrivateReadsNetworkOrBuildByReviewer": true
+}

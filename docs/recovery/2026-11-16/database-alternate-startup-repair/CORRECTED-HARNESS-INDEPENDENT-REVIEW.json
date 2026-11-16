@@ -1,0 +1,18 @@
+{
+  "review": "CLEAR",
+  "scope": "file-only fixture/API correction and fresh separately-bound native profile; no execution",
+  "inputPacketSha256": "6e4ce4d1d915ef46d62c885fab71c9a072a9d9aaa5b708afc84b92371420ea30",
+  "all837BoundHashesMatched": true,
+  "acceptedAppBuildReceiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+  "acceptedAppCompiledTreeUnchanged": true,
+  "compiledMembers": 6570,
+  "priorConsumedInputAndFailedResultHashesMatched": true,
+  "freshAttemptMarkerAbsent": true,
+  "harnessRootDistinctAndExactTwoOverlayHashesMatched": true,
+  "installedNextAuthSessionStoreCookiesApiIndependentlyConfirmed": true,
+  "actualHttpCookieJarParsedWithInstalledCookieParser": true,
+  "canonicalJwtCryptoAssertionsPreserved": true,
+  "noCompiledFixtureAuthMockOrCustomJwtMint": true,
+  "fixedSevenCasesAndPriorBudgetsCleanupUnchanged": true,
+  "noReviewerExecutionPrivateReadsSqlNetworkBuildOrAppEdits": true
+}

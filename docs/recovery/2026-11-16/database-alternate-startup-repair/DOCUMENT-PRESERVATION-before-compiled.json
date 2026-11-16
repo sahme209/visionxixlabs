@@ -1,0 +1,47 @@
+{
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "beforeSha256": "618ee800bd3df75cb62decc112551a10831e43add3e982b3b4bbd4d7e97edb4c",
+      "afterSha256": "8f5a8a8852de66fd238f5d1e78bad7533949155751b2720eccba61fbd4b99d52",
+      "historicalSuffixPreserved": true,
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/CODEX_HANDOFF.md",
+      "baseGitBlob": "e3f9a82b834e33b42218e9f2be86e33f3972f83e"
+    },
+    "CLAUDE.md": {
+      "beforeSha256": "ccdf2a9764cc49d15db223bc27d874bf27f5c81659fa7b4ee196356c56d8b2d1",
+      "afterSha256": "11dfb2a3b670922b4cc91e997437d45b45883e60eaad7f235f734feb500eec8b",
+      "historicalSuffixPreserved": true,
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/CLAUDE.md",
+      "baseGitBlob": "2c6f43bc47528e723d7790fad0c4ef3930e732d6"
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "beforeSha256": "2d7beb06b9e20e62321a16aa48df19932d00ce17787c5a1929fe638209214b40",
+      "afterSha256": "8e1b5856501537239e5c85a4095bddc44614bfba954994e00f13554a3f91a9f8",
+      "historicalSuffixPreserved": true,
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/axiom-master-action-plan.md",
+      "baseGitBlob": "443b5091475118cee4f679415bad177cbf691408"
+    },
+    "docs/product/current-execution-board.md": {
+      "beforeSha256": "fabde8fe571f2272769883d2d88406e078d9010beb113bd5754f0327c0e50905",
+      "afterSha256": "db8f19dfef6d0621a89aa885d5b64f4906b7e0234657d3199fc793380e2e29bb",
+      "historicalSuffixPreserved": true,
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/current-execution-board.md",
+      "baseGitBlob": "be534a9e6a46271e307c672f8729c13f5b7fd7c5"
+    },
+    "docs/product/remaining-work.md": {
+      "beforeSha256": "6dc3be5abe15ab302e94dcdfbc60d55cc2e6c4d6338c154d0223fb29fb07ac63",
+      "afterSha256": "ed1fa09128272cd3c5aedeaac30eaa963662de465b35a61322370698ed532555",
+      "historicalSuffixPreserved": true,
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/remaining-work.md",
+      "baseGitBlob": "746a6d09bbbc3a62232529c3448db5f57b4c6b4a"
+    },
+    "docs/product/codex-resume-goal.md": {
+      "beforeSha256": "5a90feaee8c6e7414af04919be2bcf401a2764d9676c37f10768192d5b3d4968",
+      "afterSha256": "bfba76a1667bc631a55bcd9134bddc25c446823b23f3a8670f95de73377447ca",
+      "historicalSuffixPreserved": true,
+      "backup": "/private/tmp/v19-startup-all-paths-living-before-20261116-162742/docs/product/codex-resume-goal.md",
+      "baseGitBlob": "15c7697b84b8c96d4d68dc67e4c98f5d4e9113e0"
+    }
+  },
+  "goalMirrorByteMatches": true
+}

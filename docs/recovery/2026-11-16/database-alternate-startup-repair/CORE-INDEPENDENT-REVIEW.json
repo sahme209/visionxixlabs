@@ -1,0 +1,36 @@
+{
+  "review": "CLEAR",
+  "reviewer": "joined_compiler_final_review",
+  "scope": "independent read-only six-file source/pure-test review; not SQL/compiled/production acceptance",
+  "inputPacketSha256": "5f586b7b9f65ceda67cca03f09155a57e2b297b1db319228601431f8dfa5bfc3",
+  "base": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "allSixCurrentAndFrozenCopiesMatched": true,
+  "allBoundLogHashesMatched": true,
+  "authorFocusedPasses": 80,
+  "authorStrictRootTypesExitCode": 0,
+  "resolvedFindings": [
+    "stale transaction handles cannot operate on a reused checkout",
+    "late-connect timeout checkout retires without first query",
+    "queued concurrent start cannot acquire usable lease after incompatible-contract shutdown"
+  ],
+  "protocolContractsReviewed": [
+    "owned pool identity and exact package versions plus CJS/ESM source pins",
+    "lazy release wrapping after pg-pool overwrite and before BEGIN",
+    "exact terminal command acknowledgment; uncertain/dirty discard; no false commit success",
+    "transaction-local SET LOCAL and exact SHOW before handoff",
+    "application SQL/parameters unchanged; first error preserved",
+    "local/Unix administrative and recognized-direct behavior retained",
+    "remote executeScript explicitly refuses; no SQL splitting or bypass"
+  ],
+  "declinedFindings": [
+    "extra bounded root transaction/bookend roundtrips are intentional design, not silently claimed identical behavior",
+    "alternate-route trace counters remain intentionally direct-only, not all-client transmission proof"
+  ],
+  "remainingAcceptance": [
+    "actual owned PostgreSQL remote alternate hostile-schema/READ ONLY/savepoint/isolation/cleanup checks",
+    "actual compiled HTTP login/status/download mandatory regression gate",
+    "fresh final merged/deployed source qualification and real owner Google/native journeys"
+  ],
+  "noReviewerExecutionOrSourceEdits": true,
+  "importantOrCriticalRemaining": []
+}

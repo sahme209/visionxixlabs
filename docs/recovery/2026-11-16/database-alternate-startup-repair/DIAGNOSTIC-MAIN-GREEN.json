@@ -1,0 +1,88 @@
+{
+  "main": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "checks": [
+    {
+      "name": "Windows installer and upgrade acceptance",
+      "status": "completed",
+      "conclusion": "skipped",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Typecheck + Vitest",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Frontend and native security checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Windows frontend and native security checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Vitest (1/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "macOS native transport and policy checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Type check",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Vitest (2/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Vitest (3/3)",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    },
+    {
+      "name": "Build and offline checks",
+      "status": "completed",
+      "conclusion": "success",
+      "head_sha": "e94583ee30edeb3b284ebe24256723d76065acf4"
+    }
+  ],
+  "runs": [
+    {
+      "id": 43899667953,
+      "name": "Test",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 43899667950,
+      "name": "Desktop CI",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "applicablePassed": 9,
+  "expectedInstallerSkip": 1,
+  "tree": "7aeed68a6844fd57adc6009a4d483fc77ebf522c",
+  "treeMatchesReviewedHead": true,
+  "productionDeployed": false,
+  "loginDownloadFixed": false,
+  "finalRegressionGateImplemented": false
+}

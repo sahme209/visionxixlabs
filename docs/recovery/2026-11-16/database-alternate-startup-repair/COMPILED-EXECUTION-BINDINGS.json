@@ -1,0 +1,54 @@
+{
+  "preparedOnly": true,
+  "buildBound": true,
+  "root": "/private/tmp/v19-startup-all-paths-ij3c9a8h/source",
+  "acceptedBuildReceiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+  "sourceSha": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "compiledTreeSha256": "11bd47997c5af875cf106b2284425f9d3d5b8fd3d93a165bf462ca49413e61fb",
+  "caseCount": 7,
+  "activeSeconds": 285,
+  "totalSeconds": 330,
+  "harnessRoot": "/private/tmp/v19-database-startup-all-paths",
+  "priorConsumedInputsSha256": "defdbb24e33da4acbd4d0db188558d22f9036ab09ad48e70abe7c30c684ab16e",
+  "priorConsumedResultSha256": "917da079cc45237e802b9f631c60fbd31b33035dbd0ce7fd23b92ca7d923e6ec",
+  "harnessOnlyOverlay": [
+    {
+      "path": "scripts/fixtures/compiled-product-http.cjs",
+      "acceptedBuildHarnessSha256": "ca8350999253e566ff0e597aeda0f7bda38dfbf806fd33f22c1f091808102fb0",
+      "correctedHarnessSha256": "775d495a47ddff8a91ff10ce342ffd240f67e0eb438906cf8ccac8d3ee4cac8b"
+    },
+    {
+      "path": "lib/ops/__tests__/compiledProductJourneyGate.test.ts",
+      "acceptedBuildHarnessSha256": "cb411deaa7d86200a8dcc7fe893465fffe5d705cd5b05acc9e3c3eed29ac3732",
+      "correctedHarnessSha256": "104fac461feac6fee70a88274136753258798315f63b0a7db36e02fafadb7339"
+    }
+  ],
+  "inputFileCount": 837,
+  "externalInventories": [
+    {
+      "path": "/private/tmp/v19-startup-all-paths-offline-build/INPUTS.json",
+      "sha256": "2c6d48c3afae8018b2b8a856756d8f56197cadf5b5a85cdebf148fc6d9232108",
+      "bytes": 43143894
+    },
+    {
+      "path": "/private/tmp/v19-startup-all-paths-ij3c9a8h/RESULT.json",
+      "sha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+      "bytes": 43366322
+    },
+    {
+      "path": "/private/tmp/v19-required-product-native-preparation/INPUTS.json",
+      "sha256": "defdbb24e33da4acbd4d0db188558d22f9036ab09ad48e70abe7c30c684ab16e",
+      "bytes": 144337
+    },
+    {
+      "path": "/private/tmp/v19-required-product-native-cookie-preparation/INPUTS.json",
+      "sha256": "6e4ce4d1d915ef46d62c885fab71c9a072a9d9aaa5b708afc84b92371420ea30",
+      "bytes": 147020
+    }
+  ],
+  "actualResultSha256": "ceadd042abcc93fb7260c4730b9b53218f4e311b0039884c7aa092003f18ec86",
+  "realGoogle": "UNVERIFIED",
+  "mail": "UNVERIFIED",
+  "nativePairing": "UNVERIFIED",
+  "productionFixVerified": false
+}

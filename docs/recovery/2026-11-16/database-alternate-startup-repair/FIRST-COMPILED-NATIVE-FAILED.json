@@ -1,0 +1,188 @@
+{
+  "accepted": false,
+  "failure": "owned_phase_failed",
+  "ownedDirectory": "/private/tmp/axiom-required-product-native-1rd_ct7k",
+  "phases": [
+    {
+      "phase": "sandbox-profile-preflight",
+      "exit": 0,
+      "seconds": 0.058,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "postgres-version",
+      "exit": 0,
+      "seconds": 0.111,
+      "logSha256": "1fb2f20d9f998fb585cf5edb1878e8381f2e78c75597c8a18a19e50178f621b2"
+    },
+    {
+      "phase": "initdb",
+      "exit": 0,
+      "seconds": 0.379,
+      "logSha256": "57aa925ba6f972e1e91d07ed4c6d9adea511b839ad2cd85103b1ceffb5bbcc32"
+    },
+    {
+      "phase": "ca",
+      "exit": 0,
+      "seconds": 0.108,
+      "logSha256": "839f463dd3a4f43190457ef59d17710a6befa4807c29a8db4a99e0cd52190ab3"
+    },
+    {
+      "phase": "csr",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "457f8a960774517deab1ba69321637a7459254a1a3704ade900fd27c8272f2d8"
+    },
+    {
+      "phase": "sign",
+      "exit": 0,
+      "seconds": 0.054,
+      "logSha256": "8a0ed7b550dc12b84269f0c0137c4bdc5add27e1d4353a1c194d70b0f8ad3f33"
+    },
+    {
+      "phase": "wire-profile-preflight",
+      "exit": 0,
+      "seconds": 0.057,
+      "logSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "phase": "wire-old-control",
+      "exit": 0,
+      "seconds": 0.11,
+      "logSha256": "22fa4f5d065b6c904cc4353344c975ae347b2fcd26a7b07567e4bd75245154e8"
+    },
+    {
+      "phase": "wire-direct",
+      "exit": 0,
+      "seconds": 0.271,
+      "logSha256": "fbc496dc48221393efdb1552d404daec3ee18199102df0362ec91dd34d6b967f"
+    },
+    {
+      "phase": "wire-pooler",
+      "exit": 0,
+      "seconds": 0.222,
+      "logSha256": "daf64ce55ed2107ca63284e0fca8be78c2ce5bca32c8f078605b0fca0527f251"
+    },
+    {
+      "phase": "wire-unknown",
+      "exit": 0,
+      "seconds": 0.222,
+      "logSha256": "243f8dcf22dd3b8dac15383c5ad7c3fed1648d00b9227e2f91b41e8e0d909c0b"
+    }
+  ],
+  "cases": {
+    "wire-old-control": {
+      "mode": "old-control",
+      "actualCompiledRoute": false,
+      "oldStartupControl": true,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": true,
+      "searchPathPresent": true,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 0,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true
+    },
+    "wire-direct": {
+      "mode": "direct",
+      "actualCompiledRoute": true,
+      "oldStartupControl": false,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true,
+      "trace": {
+        "databaseErrorClassification": "postgres_protocol_08P01",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "direct-neon",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 1,
+        "databaseStartupOptionsRemoved": 1,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    },
+    "wire-pooler": {
+      "mode": "pooler",
+      "actualCompiledRoute": true,
+      "oldStartupControl": false,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true,
+      "trace": {
+        "databaseErrorClassification": "postgres_protocol_08P01",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "pooled-or-other",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 0,
+        "databaseStartupOptionsRemoved": 0,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    },
+    "wire-unknown": {
+      "mode": "unknown",
+      "actualCompiledRoute": true,
+      "oldStartupControl": false,
+      "realTls": true,
+      "verifiedClientCaAndHostname": true,
+      "startups": 1,
+      "optionsPresent": false,
+      "searchPathPresent": false,
+      "authWrites": 0,
+      "sqlWrites": 0,
+      "responseStatus": 503,
+      "connections": 1,
+      "guardRefusals": 4,
+      "ownedSocketsClosed": true,
+      "safeReadinessLogOnly": true,
+      "trace": {
+        "databaseErrorClassification": "postgres_protocol_08P01",
+        "databaseTraceRevision": "database-route-trace-v1",
+        "databaseClientRoute": "pooled-or-other",
+        "databaseObservationScope": "direct-client-only",
+        "tlsVerificationConfigured": true,
+        "channelBindingRequired": false,
+        "databaseStartupConfigurationCalls": 0,
+        "databaseStartupOptionsRemoved": 0,
+        "databaseSessionInitStarted": 0,
+        "databaseSessionInitAcknowledged": 0
+      }
+    }
+  },
+  "sourceSha": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "acceptedBuildReceiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+  "compiledTreeSha256": "11bd47997c5af875cf106b2284425f9d3d5b8fd3d93a165bf462ca49413e61fb",
+  "productionAccess": false,
+  "loopbackOnly": true,
+  "nativeAppOrGovernance": false,
+  "ownedProcessGroupsEmpty": true,
+  "ownedClusterRemoved": true,
+  "privateKeysRemoved": true
+}

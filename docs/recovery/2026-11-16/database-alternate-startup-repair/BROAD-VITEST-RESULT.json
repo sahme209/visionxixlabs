@@ -1,0 +1,11 @@
+{
+  "exitCode": 0,
+  "elapsedSeconds": 80.5,
+  "corePinsMatchedAfter": true,
+  "noProductionOrActualPgOptins": true,
+  "numPassedTests": 19916,
+  "numFailedTests": 0,
+  "numPendingTests": 1144,
+  "numFailedTestSuites": 0,
+  "success": true
+}

@@ -1,0 +1,56 @@
+{
+  "sourceBase": "e94583ee30edeb3b284ebe24256723d76065acf4",
+  "sourceBaseIsNotWholeCandidateArtifact": true,
+  "compiledAppBuild": {
+    "accepted": true,
+    "exitCode": 0,
+    "receiptSha256": "a916d18f051d8c4b61565efe1a9a0a3ca03988d125d6bef6158bcc394a689737",
+    "packetSha256": "2c6d48c3afae8018b2b8a856756d8f56197cadf5b5a85cdebf148fc6d9232108",
+    "sameBuildReused": true,
+    "secondBuild": false
+  },
+  "actualCases": [
+    "wire-old-control",
+    "wire-direct",
+    "wire-pooler",
+    "wire-unknown",
+    "compiled-http-direct",
+    "compiled-http-alternate",
+    "remote-transactions"
+  ],
+  "actualCaseCount": 7,
+  "correctedActualAccepted": true,
+  "firstAttemptFailedFixtureOnly": true,
+  "harnessOnlyOverlay": [
+    {
+      "path": "scripts/fixtures/compiled-product-http.cjs",
+      "acceptedBuildHarnessSha256": "ca8350999253e566ff0e597aeda0f7bda38dfbf806fd33f22c1f091808102fb0",
+      "correctedHarnessSha256": "775d495a47ddff8a91ff10ce342ffd240f67e0eb438906cf8ccac8d3ee4cac8b"
+    },
+    {
+      "path": "lib/ops/__tests__/compiledProductJourneyGate.test.ts",
+      "acceptedBuildHarnessSha256": "cb411deaa7d86200a8dcc7fe893465fffe5d705cd5b05acc9e3c3eed29ac3732",
+      "correctedHarnessSha256": "104fac461feac6fee70a88274136753258798315f63b0a7db36e02fafadb7339"
+    }
+  ],
+  "backendSixAndCompiledArtifactUnchanged": true,
+  "focusedGateTestsPassed": 13,
+  "strictRootTypesExit": 0,
+  "earlierBroadSuite": {
+    "passed": 19916,
+    "failed": 0,
+    "pending": 1144,
+    "scope": "before final supervisor/mapping/cookie fixture corrections; not a final identical-source broad rerun"
+  },
+  "cleanup": {
+    "ownedProcessGroupsEmpty": true,
+    "ownedClusterRemoved": true,
+    "privateKeysRemoved": true
+  },
+  "realGoogle": "UNVERIFIED",
+  "mail": "UNVERIFIED",
+  "nativePairing": "UNVERIFIED",
+  "hostedPooler": "UNVERIFIED",
+  "productionFixVerified": false,
+  "releaseAccepted": false
+}

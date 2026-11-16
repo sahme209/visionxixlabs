@@ -32,10 +32,13 @@ it("actual installed pg removes the startup options key despite poisoned ambient
   expect(removed).toBe("-c search_path=public");
   expect(startup(configured)).toEqual(rest);
 });
-it.each(["ep-unit-123-pooler.us-east-2.aws.neon.tech", "ep-unit-123-pooler.c-2.us-east-2.aws.neon.tech", "db.example", "ep-unit-123.us-east-2.aws.neon.tech.attacker.invalid", "ep-unit-123.neon.tech", "localhost"])("retains startup policy and exact endpoint for %s", host => {
+it.each(["ep-unit-123-pooler.us-east-2.aws.neon.tech", "ep-unit-123-pooler.c-2.us-east-2.aws.neon.tech", "db.example", "ep-unit-123.us-east-2.aws.neon.tech.attacker.invalid", "ep-unit-123.neon.tech", "localhost"])("preserves exact endpoint and local policy while sanitizing remote startup for %s", host => {
   const original = postgresConnectionOptions(`postgresql://fixture@${host}/owned_fixture`);
-  expect(directNeonSessionOptions(original)).toBe(original);
-  expect(startup(new Client(original))).toHaveProperty("options", "-c search_path=public");
+  const adapted = directNeonSessionOptions(original);
+  expect(adapted).toMatchObject(original);
+  expect(adapted.host).toBe(host); expect(adapted.ssl).toEqual(original.ssl);
+  if (host === "localhost") { expect(adapted).toBe(original); expect(startup(new Client(original))).toHaveProperty("options", "-c search_path=public"); }
+  else { expect(adapted.Client).toBeDefined(); expect(startup(Reflect.construct(adapted.Client!, [adapted]))).not.toHaveProperty("options"); expect(adapted.onConnect).toBeUndefined(); }
 });
 it("refuses if the undeclared installed startup contract disappears or changes shape", () => {
   const Constructor = config().Client!;
