@@ -1,0 +1,53 @@
+{
+  "observedAtUtc": "2026-11-16T12:33:47.288528+00:00",
+  "approvedRun": {
+    "id": 43865368012,
+    "name": "Desktop release",
+    "head_sha": "4482057c7dfc66b02ae06a6b49d725913ac295e3",
+    "head_branch": "desktop-v0.1.23",
+    "event": "workflow_dispatch",
+    "status": "queued",
+    "conclusion": null,
+    "created_at": "2026-11-16T12:18:27Z",
+    "updated_at": "2026-11-16T12:18:27Z",
+    "run_started_at": "2026-11-16T12:18:27Z"
+  },
+  "releaseWorkflowId": 276983879,
+  "releaseTotalRuns": 44,
+  "releaseReturnedRuns": 44,
+  "onlyNonterminalApprovedRun": true,
+  "priorSuccessfulAuthRun": {
+    "id": 43865215438,
+    "name": "Desktop release",
+    "head_sha": "e8a805318b5f8d5f39c0ad75f6a3d7cc54170ee9",
+    "head_branch": "codex/apple-auth-only-diagnostic",
+    "event": "workflow_dispatch",
+    "status": "completed",
+    "conclusion": "success",
+    "created_at": "2026-11-16T12:17:25Z",
+    "updated_at": "2026-11-16T12:17:35Z",
+    "run_started_at": "2026-11-16T12:17:25Z"
+  },
+  "dedicatedV121ExportTotalRuns": 0,
+  "currentSourceSharedGroupWorkflows": [
+    ".github/workflows/desktop-release.yml",
+    ".github/workflows/desktop-export-v121.yml"
+  ],
+  "sourceGroup": "desktop-native-release",
+  "cancelInProgress": false,
+  "otherCurrentCiGroupsSeparate": true,
+  "visibleCompetingHolderProven": false,
+  "staleConcurrencyOrPlatformOutageProven": false,
+  "rootPreviouslyObservedJobsZero": true,
+  "rootPreviouslyObservedPendingDeploymentsEmpty": true,
+  "cause": "unknown",
+  "successfulCliMetadataReadInvocations": 2,
+  "connectorEndpointRejectionsBeforeGitHubHttp": 2,
+  "retriesOrDispatchesOrCancellations": 0,
+  "sourceFiles": {
+    ".github/workflows/desktop-release.yml": "5ceec9744ffc756ea42202998a691e5fc7f8cfef0d1fde911f06d81e9258e57a",
+    ".github/workflows/desktop-export-v121.yml": "3ac707905f6cce8688e77383bef1e0992a87721eb88a8ec97fe90ad1865bda13",
+    ".github/workflows/desktop-ci.yml": "397707111fa8ddc69a84c3b586a346a0ea4bd85c3cba0c2f5c9bfb889803e693",
+    ".github/workflows/test.yml": "0fc9f1e5f5cdb2ebe58c610b9ac1985b1dfec7e5d9aeb338954a8959d5e1a2ae"
+  }
+}

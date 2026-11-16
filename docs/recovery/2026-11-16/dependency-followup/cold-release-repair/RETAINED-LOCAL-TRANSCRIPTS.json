@@ -1,0 +1,47 @@
+{
+  "TYPES.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/TYPES.log"
+  },
+  "WINDOWS-PURE.log": {
+    "sha256": "e145149b14ab58213f4f709b0f1fbc517a0b90e2c4835b526007d4dbeef25ed0",
+    "bytes": 304,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/WINDOWS-PURE.log"
+  },
+  "WORKFLOW.log": {
+    "sha256": "dd4be052c4b721377adca99646ce23959b99d7a798387df668b64b5b147fb881",
+    "bytes": 4323,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/WORKFLOW.log"
+  },
+  "FULL.log": {
+    "sha256": "dca6837880eae789264b7ab16d94a90d57e30b025513e226e58f40dd119f101c",
+    "bytes": 576225,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/FULL.log"
+  },
+  "RED.log": {
+    "sha256": "47ff1d804e4d6871a3fa137db89bb17d71ae44dcc015beccf99b57b90545abb7",
+    "bytes": 2486,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/RED.log"
+  },
+  "GREEN.log": {
+    "sha256": "a0894f59c20b89052ae7fafa263026ff9743673c949745b3a4f6264b92d9f2e8",
+    "bytes": 645,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/GREEN.log"
+  },
+  "COLD-RED.log": {
+    "sha256": "33a24dbd9dcf790523e20309973ff2e628534fc82946b97cd94cba41442116fb",
+    "bytes": 1061,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/COLD-RED.log"
+  },
+  "COLD-GREEN.log": {
+    "sha256": "b10ab7588864c69566314955cb7000e27add80939c4bebb62f8ef981e0e6c8ec",
+    "bytes": 72,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/COLD-GREEN.log"
+  },
+  "COLD-INVALID.log": {
+    "sha256": "25163811d1611590285280ed7d96f31d592d72bcb32daa564f46a491751961cb",
+    "bytes": 56,
+    "retainedOutsideRepository": "/tmp/v19-release-cold-repair/COLD-INVALID.log"
+  }
+}

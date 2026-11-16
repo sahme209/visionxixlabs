@@ -1,0 +1,41 @@
+{
+  "schema": "v19.actual-generated-dependency-local-validation/1",
+  "updaterHead": "3b98e2c93d7358a5a0ac1271b361387d27e67283",
+  "worktree": "/private/tmp/v19-dependency-final-worktree",
+  "node": "24.21.0",
+  "codeInputsCount": 6649,
+  "codeInputsBeforeAfterMatched": true,
+  "changedCodeInputs": [],
+  "codeScopeExcludesParentOwnedLivingDocsArchivesAndAttributes": true,
+  "actualGraphConfirmed": {
+    "proofFileSha256": "6b8c2dfbc62503d17769a711d6f21487a1aca7f2b1960f9ed763f5cf96ad8001",
+    "actualPackageSemanticallyMatchesReviewed": true,
+    "actualRawLockMatchesReviewed": true,
+    "automaticFrameworkExactlyMatchesReviewed": true,
+    "threeAppliedCodeHashesMatch": {
+      "lib/cloud/aws/ecsObservation/taskDefinitionSchema.json": true,
+      "scripts/fixtures/generateEcsTaskSchema.mjs": true,
+      "lib/desktop/__tests__/nativeObservationFocus.test.ts": true
+    }
+  },
+  "allFourChecksExitZero": true,
+  "fullOrdinary": {
+    "passed": 19833,
+    "expectedFail": 1,
+    "skipped": 1144,
+    "filesPassed": 1815
+  },
+  "focusedContractsPassed": 144,
+  "rootTypesPassed": true,
+  "desktopTypesAndFrontendBuildPassed": true,
+  "desktopSharedNodeEnv": "test",
+  "viteReportedBuildMode": "production",
+  "rootAndDesktopNodeModulesPhysical": true,
+  "prismaOrdinaryCodegenNoDatabase": true,
+  "lockUnchanged": true,
+  "noTauriNativeOrGovernanceCompile": true,
+  "noAccountProviderDbRemoteWriteOrReleaseAction": true,
+  "noLivingDocsOrGlobalManifestWrittenByValidator": true,
+  "codeWhitespaceCheckExit": 0,
+  "accepted": true
+}

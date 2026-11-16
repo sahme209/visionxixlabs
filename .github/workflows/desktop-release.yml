@@ -107,7 +107,7 @@ jobs:
 
       - uses: actions/setup-node@v7
         with:
-          node-version: '20'
+          node-version: '24.21.0'
 
       - name: Match tag to the desktop package version
         id: identity
@@ -120,6 +120,7 @@ jobs:
         run: |
           test "$RELEASE_EVENT" = workflow_dispatch || { echo 'Only a manual release dispatch is supported.' >&2; exit 1; }
           test "$RELEASE_REF" = "refs/tags/$REQUESTED_TAG" || { echo 'Select the exact requested release tag before starting.' >&2; exit 1; }
+          npm --prefix desktop ci --ignore-scripts
           node scripts/check-desktop-release.mjs
           [[ "$REQUESTED_TAG" =~ ^desktop-v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo 'Only an exact stable desktop release tag is supported.' >&2; exit 1; }
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"

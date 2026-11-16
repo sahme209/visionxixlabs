@@ -1,0 +1,55 @@
+{
+  "root": "/private/tmp/v19-dependency-final-worktree",
+  "head": "3b98e2c93d7358a5a0ac1271b361387d27e67283",
+  "scope": "local source/preflight JS only; no native/release/tag/deployment",
+  "files": [
+    {
+      "path": ".github/workflows/desktop-release.yml",
+      "beforeSha256": "5ceec9744ffc756ea42202998a691e5fc7f8cfef0d1fde911f06d81e9258e57a",
+      "afterSha256": "4766826d7c4ceb060d44a0d58b1f7bcbb55e18e731327d8a9ceb7da52a489f88"
+    },
+    {
+      "path": "scripts/desktop-release-versions.mjs",
+      "beforeSha256": "74fd2b3185c87d867abf0523c9d7696749ac8d02748156b36dab65b0e2b877f1",
+      "afterSha256": "6b009d07510469b56b8632e474d5634b3d99c19f7c09614a5f72cbc58ffcc77b"
+    },
+    {
+      "path": "lib/desktop/__tests__/desktopReleaseVersions.test.ts",
+      "beforeSha256": "f82d51c7e2a67336039ca569fc778be11461e2451444b7763badaf071ced7a72",
+      "afterSha256": "5cbba578e01e20a8ce808ee73c2e3ed9ca76034503bfa96d7ebb46665ec5fe54"
+    },
+    {
+      "path": "scripts/fixtures/release-windows-workflow.test.cjs",
+      "beforeSha256": "2b40dc4a2ca223fa0fb52fe28f7cfe7db17612b44df2dfdcf930893769510187",
+      "afterSha256": "610645aa9d655c9a73c2bd617668f40acd035ab2a5bccd0485d7c59109e25247"
+    },
+    {
+      "path": "desktop/package.json",
+      "beforeSha256": "1b1013d3b912fb9fb2590c5e030809cdf37cacc966b423e8fc744f4ce337d9cb",
+      "afterSha256": "8a4378f908fb2c1644604e55351f60a9e15ebbef030c92b672b3a06cf81842db"
+    },
+    {
+      "path": "desktop/package-lock.json",
+      "beforeSha256": "509c9775f8120da516daa6f9501ec02e2acbb935d9b4f87991e3816dc4037d5f",
+      "afterSha256": "5e6c575b815413f7ad47c0687877ee2cbd17eb81d7b85ff6cf01ee7402f929f1"
+    },
+    {
+      "path": "desktop/src-tauri/Cargo.toml",
+      "beforeSha256": "e75bd9d6b76ada901ee30408d771bbc22a153903be986fe5a4c35838a076f920",
+      "afterSha256": "559e441d0aff5020935357fdd81a01cbbc18dc58f84837c4ba68b3b84ccd46f0"
+    },
+    {
+      "path": "desktop/src-tauri/Cargo.lock",
+      "beforeSha256": "513c7eb58e73ff62385bc7c29fd5282f442b0c41c80cf4f0877a845e2ae40128",
+      "afterSha256": "fc18bfa2ff50f6aa3f8cb0baabfc11e194da752b6fc8ecf7b5b247cfdeaefe73"
+    },
+    {
+      "path": "desktop/src-tauri/tauri.conf.json",
+      "beforeSha256": "44461cb956b089f581dd57e80d3eac4a909dad6d8cee6e9ac0710263452b0cba",
+      "afterSha256": "618de9cb7e2f2a6186af139055abf2a54dc7697d862bc5c80fbe690ec41e2a9f"
+    }
+  ],
+  "desktopLockDependencyGraphUnchanged": true,
+  "version": "0.1.24",
+  "node": "24.21.0"
+}

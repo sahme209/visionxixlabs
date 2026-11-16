@@ -1,0 +1,11 @@
+{
+  "accepted": true,
+  "node": "24.21.0",
+  "oldMissingDesktopTypeScriptReproduced": true,
+  "illegalRefExit": 1,
+  "illegalRefInstalledDependencies": false,
+  "correctGuardInstallFullCheckerExit": 0,
+  "elapsedSeconds": 1.32,
+  "nativeBuildExecuted": false,
+  "releaseExecuted": false
+}

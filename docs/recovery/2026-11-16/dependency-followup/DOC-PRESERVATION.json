@@ -1,0 +1,48 @@
+{
+  "files": {
+    "CODEX_HANDOFF.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/dependency-followup/living-before-20261116-125216/CODEX_HANDOFF.md",
+      "beforeSha256": "06f27a8b884b58864018581d38edc06e3fd674c393e4e6adb264330137de5696",
+      "bytes": 430824,
+      "afterSha256": "26715be12632e712ae5af4db81abdaa660475c9f0cf53162fe833fe3f70a231d",
+      "historicalSuffixPreserved": true
+    },
+    "CLAUDE.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/dependency-followup/living-before-20261116-125216/CLAUDE.md",
+      "beforeSha256": "d1dbe0b9a957ecbfd818d09bcbbd75e83821d64dc92b291c38903c06923262fe",
+      "bytes": 186087,
+      "afterSha256": "df5fb9e693c3e8b49e320f594fb5418a2e699188f78470a52fcf7b9b5b3784f2",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/axiom-master-action-plan.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/dependency-followup/living-before-20261116-125216/docs/product/axiom-master-action-plan.md",
+      "beforeSha256": "6f6d313adfdb8fa4de374957b60375de7181f203e7481230f14a9d2df58c070b",
+      "bytes": 625052,
+      "afterSha256": "6251ed452051dcbc7b793788045559f90bf76e2aae4bac60ba652f334ce926cc",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/current-execution-board.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/dependency-followup/living-before-20261116-125216/docs/product/current-execution-board.md",
+      "beforeSha256": "b34477a1c940a08646ea5ff74804374b7ae53128503cc6abebc8dcc24bc8eb13",
+      "bytes": 554028,
+      "afterSha256": "93c74645b4b2ac491f36403621a2ffd7668559511623b608f462e4b39ddf82d2",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/remaining-work.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/dependency-followup/living-before-20261116-125216/docs/product/remaining-work.md",
+      "beforeSha256": "5d81d9e39d6286c3ce4c45657064dd4ab4a8e992785397973593c262bddd308d",
+      "bytes": 541051,
+      "afterSha256": "0eaa5897f4d580aad12ca37bcaa5f2f26a41dbfe14267d5abac4f7eba9617576",
+      "historicalSuffixPreserved": true
+    },
+    "docs/product/codex-resume-goal.md": {
+      "timestampedBackup": "docs/recovery/2026-11-16/dependency-followup/living-before-20261116-125216/docs/product/codex-resume-goal.md",
+      "beforeSha256": "52b3f367e39d00488244cb2462f04e057fd202b21df71fbb82d25c618215d4b2",
+      "bytes": 350173,
+      "afterSha256": "2a88038f8bbc15b5d0436ef1fd657f9c18233e83032c9bc81169c6c21555f020",
+      "historicalSuffixPreserved": true
+    }
+  },
+  "goalMirrorByteMatches": true,
+  "goalMirrorSha256": "2a88038f8bbc15b5d0436ef1fd657f9c18233e83032c9bc81169c6c21555f020"
+}

@@ -1,0 +1,33 @@
+{
+  "isolatedWorktree": "/private/tmp/v19-pr342-local-repair",
+  "sourceBase": "4482057c7dfc66b02ae06a6b49d725913ac295e3",
+  "dependencySource": "89cbf16583efecc3e25e1b803f7e5a6870dd1f08",
+  "files": {
+    "package.json": {
+      "beforeSha256": "036c7462b8c32a4db513a5b660e70adb94b6c3e9437af331a8ae07d25c750632",
+      "afterSha256": "e546131afa874629689e8aff8da2eb0c53b531797265b5beff2fa4a6140222fb"
+    },
+    "package-lock.json": {
+      "beforeSha256": "39956a9cc5fb352be676e51055b7854e7d7b637993fd6a3c22b5d965a4d5db0b",
+      "afterSha256": "632973c754c795d416992b151a958ce21def53b6ebb5988be01329ca2b5a3a3c"
+    },
+    "scripts/fixtures/ownedWebsiteFramework.cjs": {
+      "beforeSha256": "df7ae42d571e71c2d5decc068de2bcd5e5ccde68dd9eb45c0d1f1ffe4c9530b6",
+      "afterSha256": "26872e16360baa761bd1b375dda5aefd4e827bed516737c1ea2bb1b5729698fb"
+    },
+    "scripts/fixtures/generateEcsTaskSchema.mjs": {
+      "beforeSha256": "6a953c2e322c1e7a19cf8e24410e53f3d12ab74d0c7b0b372beff3ebba5aeb8e",
+      "afterSha256": "2bcf1a9d660f2a7e46e6130b8538a98018f40ce0bb6272ab2d11d7bd945c75f9"
+    },
+    "lib/cloud/aws/ecsObservation/taskDefinitionSchema.json": {
+      "beforeSha256": "2d180af052b502dee572f8da7ef3da15bb067ccf7d3229665e1cbfc0c811273f",
+      "afterSha256": "de82c47fbfc7d303383a907f081e2c6516a4e839e7be0d179500c4df4863b356"
+    },
+    "lib/desktop/__tests__/nativeObservationFocus.test.ts": {
+      "beforeSha256": "d6952dfb66499bedc7df1ade4976c5510347af2e7af869ee6adb6b5ee33cd458",
+      "afterSha256": "b43488b39fd81d76e55ba99a26a6e40573e408475efaeb9284484f24ad1a484c"
+    }
+  },
+  "packageLockHandEdited": false,
+  "livingDocsAndGlobalManifestModified": false
+}

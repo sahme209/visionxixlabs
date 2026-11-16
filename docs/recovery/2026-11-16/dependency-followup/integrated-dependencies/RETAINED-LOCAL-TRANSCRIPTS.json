@@ -1,0 +1,52 @@
+{
+  "prisma-client-js.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/prisma-client-js.log"
+  },
+  "CODE-INPUTS-AFTER.json": {
+    "sha256": "7d455e8cacbc22765aa096a6cece35724a38658f44e28848e19fcd83e0e884a8",
+    "bytes": 797548,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/CODE-INPUTS-AFTER.json"
+  },
+  "focused-contracts.log": {
+    "sha256": "550f1cfc109a58899ea26e731ddb3437945dff3829b5be476adeabe77683ff61",
+    "bytes": 4713,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/focused-contracts.log"
+  },
+  "CODE-INPUTS-BEFORE.json": {
+    "sha256": "7d455e8cacbc22765aa096a6cece35724a38658f44e28848e19fcd83e0e884a8",
+    "bytes": 797548,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/CODE-INPUTS-BEFORE.json"
+  },
+  "desktop-frontend-build-and-types.log": {
+    "sha256": "85bd2c511deca832191d34706af5f7dd49544bef5e5a5b86cf9bb23a6dbff7c3",
+    "bytes": 1657,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/desktop-frontend-build-and-types.log"
+  },
+  "root-types.log": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/root-types.log"
+  },
+  "full-ordinary.log": {
+    "sha256": "aa61dabc7f824d9a611b5c4d7b1d2b1280b2d60ae041d7b6a53c832e51fef3f9",
+    "bytes": 576070,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/full-ordinary.log"
+  },
+  "prisma-source-generation.log": {
+    "sha256": "39d19c500c07e4f4ab13f81f83b76d1e78d1c968739d60c5742cbde9931df43b",
+    "bytes": 168,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/prisma-source-generation.log"
+  },
+  "root-install.log": {
+    "sha256": "8bc132dc44405297471f52273c58e205246b40747a5f40eff8492c9cf17f9ffa",
+    "bytes": 397,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/root-install.log"
+  },
+  "desktop-install.log": {
+    "sha256": "dd5468d4d38fd2969dcc27c662f540fd666bbea8984970e91263743253aac898",
+    "bytes": 26,
+    "retainedOutsideRepository": "/tmp/v19-actual-dependency-validation/desktop-install.log"
+  }
+}

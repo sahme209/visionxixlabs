@@ -1,0 +1,218 @@
+[
+  {
+    "package": "@anthropic-ai/sdk",
+    "old": "1.6.0",
+    "new": "1.8.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-acm",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-backup",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-cloudtrail",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-cloudwatch",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-cloudwatch-logs",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-cost-explorer",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-dynamodb",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-ec2",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-ecr",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-ecs",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-eks",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-elastic-load-balancing-v2",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-guardduty",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-iam",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-lambda",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-rds",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-s3",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-secrets-manager",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-sns",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-sqs",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-ssm",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-sts",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/client-wafv2",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@aws-sdk/s3-request-presigner",
+    "old": "3.1166.0",
+    "new": "3.1168.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@azure/msal-node",
+    "old": "7.2.1",
+    "new": "7.2.2",
+    "group": "dependencies"
+  },
+  {
+    "package": "@google-cloud/compute",
+    "old": "7.9.0",
+    "new": "7.10.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@google/genai",
+    "old": "3.0.0",
+    "new": "3.3.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "ai",
+    "old": "7.0.170",
+    "new": "7.0.171",
+    "group": "dependencies"
+  },
+  {
+    "package": "framer-motion",
+    "old": "14.10.1",
+    "new": "14.13.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "jose",
+    "old": "6.2.16",
+    "new": "6.2.17",
+    "group": "dependencies"
+  },
+  {
+    "package": "lucide-react",
+    "old": "1.70.0",
+    "new": "1.72.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "motion",
+    "old": "14.10.1",
+    "new": "14.13.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "openai",
+    "old": "7.53.0",
+    "new": "7.56.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "resend",
+    "old": "6.37.0",
+    "new": "6.38.0",
+    "group": "dependencies"
+  },
+  {
+    "package": "@tauri-apps/plugin-notification",
+    "old": "2.8.0",
+    "new": "2.8.1",
+    "group": "devDependencies"
+  }
+]

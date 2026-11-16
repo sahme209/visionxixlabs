@@ -1,0 +1,37 @@
+{
+  "sourceBase": "4482057c7dfc66b02ae06a6b49d725913ac295e3",
+  "dependencySource": "89cbf16583efecc3e25e1b803f7e5a6870dd1f08",
+  "node": "24.21.0",
+  "authoringUntouched": true,
+  "actualDependencyWorkflowStillRequired": true,
+  "sourceFiles": {
+    "package.json": "e546131afa874629689e8aff8da2eb0c53b531797265b5beff2fa4a6140222fb",
+    "package-lock.json": "632973c754c795d416992b151a958ce21def53b6ebb5988be01329ca2b5a3a3c",
+    "scripts/fixtures/ownedWebsiteFramework.cjs": "26872e16360baa761bd1b375dda5aefd4e827bed516737c1ea2bb1b5729698fb",
+    "scripts/fixtures/generateEcsTaskSchema.mjs": "2bcf1a9d660f2a7e46e6130b8538a98018f40ce0bb6272ab2d11d7bd945c75f9",
+    "lib/cloud/aws/ecsObservation/taskDefinitionSchema.json": "de82c47fbfc7d303383a907f081e2c6516a4e839e7be0d179500c4df4863b356",
+    "lib/desktop/__tests__/nativeObservationFocus.test.ts": "b43488b39fd81d76e55ba99a26a6e40573e408475efaeb9284484f24ad1a484c"
+  },
+  "evidenceFiles": {
+    "SOURCE-BASIS.json": "1b52767dd1120e52d7e18f6d863135f83d2d167b1d574e62174b7afacc57f9ff",
+    "DIRECT-DEPENDENCY-CHANGES.json": "698c23a44214b83190c188d9e69032c1130059247e11d97cc928e711c95978ca",
+    "LOCK-SCOPE-REVIEW.json": "f656de7e183c357eff78c7e998fc14a1553de350348503f03e16cf754ad003d8",
+    "INSTALLED-SOURCE-REVIEW.json": "d444c42bf376327ea945c83bb575d901fe33d486b44787e366c613a0acb06326",
+    "CANONICAL-SCHEMA-REVIEW.diff": "9049ae13b58a632fde997981e723a5ceebb4df198a258565d89a752ea5078591",
+    "REVIEW-NEW-ECS-SCHEMA.json": "de82c47fbfc7d303383a907f081e2c6516a4e839e7be0d179500c4df4863b356",
+    "SOURCE-CHANGES.json": "3b4affc6c0fb430a882e8953e245a2bc7d979b6ab6831f30b832d1f583090502",
+    "CANDIDATE.patch": "710d257d4975650dbf4fc352775dae0f6845174d086d8061dd51283ed37ff587",
+    "FOCUS-MOCK-REVIEW.json": "54b2e5932162110e9eb7534afeac173b3dc9b8b2a7a364587cecc389f5182d2c",
+    "WORKFLOW-PACKAGES.txt": "481406b661e4f690f9cd366034a5c9ea8f7ef9ae57e6d508312193d9cc6826e6",
+    "VALIDATION-RESULT.json": "9f3b530e593586e2ebe6d45875b6e18a7fa73c88a0c44ea38080f91f7cf4876c",
+    "README.md": "43979f956fd7cd08bfdef71c004909819e1a1ef8df1960b3889bcfc740a85665",
+    "FOCUSED-RED.log": "db043f0dc4d8a00016e2b33ca72126494b465c335b5d943035afb20faf87f1ce",
+    "focused-green.log": "8389fc0a8a51d3c5688ca6fb58d48faef4f4d388c664a568e1b415b1a723a66d",
+    "focus-mock-bare-only-red.log": "50f3e2e7965c6cec287ec4c45276ec44752d4ed4b59ff085ee5909391357afd7",
+    "focus-mock-green.log": "d359bf4c7985dbd023e725fdb9521ed56fbef2caf1d098b36e3a774cf437d153",
+    "full-ordinary.log": "fc3d0d0af829139e539dd72af2d97153c8271880b2a13853db06032dd05e39c2",
+    "root-types.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "DESKTOP-SETUP-FAIL-RESULT.json": "ac6287222f25d02f8a87b5e8c3a768f44726521846bb49d08d73f0ab470a9165",
+    "FOCUS-MOCK-FAIL-RESULT.json": "0d391a358b740179d2d5f8a409ba86aa3d2b04c90d66d4bf125f41f429e40b96"
+  }
+}

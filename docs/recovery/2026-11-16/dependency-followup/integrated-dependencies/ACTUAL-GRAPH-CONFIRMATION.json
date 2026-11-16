@@ -1,0 +1,11 @@
+{
+  "proofFileSha256": "6b8c2dfbc62503d17769a711d6f21487a1aca7f2b1960f9ed763f5cf96ad8001",
+  "actualPackageSemanticallyMatchesReviewed": true,
+  "actualRawLockMatchesReviewed": true,
+  "automaticFrameworkExactlyMatchesReviewed": true,
+  "threeAppliedCodeHashesMatch": {
+    "lib/cloud/aws/ecsObservation/taskDefinitionSchema.json": true,
+    "scripts/fixtures/generateEcsTaskSchema.mjs": true,
+    "lib/desktop/__tests__/nativeObservationFocus.test.ts": true
+  }
+}

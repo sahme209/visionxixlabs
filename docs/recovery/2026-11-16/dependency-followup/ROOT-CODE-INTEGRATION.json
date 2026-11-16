@@ -1,0 +1,9 @@
+{
+  "baseIntegratedCodeInputs": 6649,
+  "reviewedColdOverlayInputs": 9,
+  "allCurrentCodeHashesMatchReviewedCombination": true,
+  "actualRootLockSha256": "632973c754c795d416992b151a958ce21def53b6ebb5988be01329ca2b5a3a3c",
+  "coldSourceInputPacketSha256": "fc0c755351a3195ec13b7a1e4c1768caaf0d1c2d14855af9e42340c3414f38c4",
+  "newVersion": "0.1.24",
+  "globalSourceEnrollmentMintedLater": true
+}

@@ -1,0 +1,9 @@
+{
+  "base": "4482057c7dfc66b02ae06a6b49d725913ac295e3",
+  "dependencySourceHead": "89cbf16583efecc3e25e1b803f7e5a6870dd1f08",
+  "files": {
+    "package.json": "e546131afa874629689e8aff8da2eb0c53b531797265b5beff2fa4a6140222fb",
+    "package-lock.json": "632973c754c795d416992b151a958ce21def53b6ebb5988be01329ca2b5a3a3c"
+  },
+  "authoringUntouched": true
+}

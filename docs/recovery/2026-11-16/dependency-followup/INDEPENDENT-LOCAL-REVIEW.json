@@ -1,0 +1,29 @@
+{
+  "review": "CLEAR-source-local-only",
+  "inputSha256": "e3ac62c14e6c3e0195d7667a9c7f47ede1d18e19df27cbea31cd21811c01c6e3",
+  "sourceHashesMatched": 6,
+  "evidenceHashesMatched": 20,
+  "actualNewAndOldEcsDeclarationFilesByteEqual": 3,
+  "actualFrameworkFilesMatched": 9,
+  "canonicalDefinitionsUnchanged": 63,
+  "canonicalFieldsUnchanged": 165,
+  "ecsGeneratorOnlyVersionLiteralsChanged": true,
+  "frameworkHelperOnlyLockHashChanged": true,
+  "allOriginalFocusTestBytesAndAssertionsRetained": true,
+  "addedCanonicalModuleMockOnly": true,
+  "packageRootLockDependenciesMatch": true,
+  "packageEntriesAddedOrRemoved": 0,
+  "changedLockEntries": 45,
+  "priorSetupAndMockFailuresPreserved": true,
+  "reportedFullSuite": {
+    "passed": 19833,
+    "expectedFail": 1,
+    "skipped": 1144
+  },
+  "futureWorkflowGeneratedLockAccepted": false,
+  "sourceOrRemoteActions": false,
+  "limitations": [
+    "Local proposal source only; final updater-generated graph/lock/pin requires fresh exact validation.",
+    "No SDK/provider live operation, native acceptance, deployment or Governance enablement claimed."
+  ]
+}

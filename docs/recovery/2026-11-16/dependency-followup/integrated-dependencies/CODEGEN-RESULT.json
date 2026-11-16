@@ -1,0 +1,12 @@
+{
+  "prisma-source-generation": {
+    "exitCode": 0,
+    "seconds": 0.89,
+    "bytes": 168
+  },
+  "prisma-client-js": {
+    "exitCode": 0,
+    "seconds": 0.5,
+    "bytes": 0
+  }
+}

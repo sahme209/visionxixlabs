@@ -1,5 +1,7 @@
 import {beforeEach,expect,it,vi} from 'vitest';
 const m=vi.hoisted(()=>({listen:vi.fn(),blur:vi.fn(),invoke:vi.fn(),remove:vi.fn()}));
+// The root suite and a focused desktop import can resolve separate installed SDK copies.
+vi.mock('@tauri-apps/api/window',()=>({getCurrentWindow:()=>({label:'main',listen:m.listen,onFocusChanged:m.blur})}));
 vi.mock('../../../desktop/node_modules/@tauri-apps/api/window.js',()=>({getCurrentWindow:()=>({label:'main',listen:m.listen,onFocusChanged:m.blur})}));
 vi.mock('@tauri-apps/api/core',()=>({invoke:m.invoke}));
 import {subscribeNativeObservationFocus} from '../../../desktop/src/lib/nativeObservationFocus';

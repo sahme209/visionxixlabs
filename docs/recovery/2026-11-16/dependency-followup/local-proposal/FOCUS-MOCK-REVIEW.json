@@ -1,0 +1,13 @@
+{
+  "unchangedBaselineTestSha256": "d6952dfb66499bedc7df1ade4976c5510347af2e7af869ee6adb6b5ee33cd458",
+  "sameAsCurrentMainTest": true,
+  "rootAndDesktopApiVersionsUnchanged": [
+    "2.12.4",
+    "2.12.4"
+  ],
+  "productSourceUnchanged": true,
+  "onlyAddedRootModuleMockAndExplanatoryComment": true,
+  "originalDesktopMockRetained": true,
+  "allFourTestBodiesUnchanged": true,
+  "bareOnlyCorrectionFailedOppositeIdentity": true
+}

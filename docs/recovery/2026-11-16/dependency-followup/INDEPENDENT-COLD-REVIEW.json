@@ -1,0 +1,37 @@
+{
+  "review": "CLEAR-local-source-preflight-only",
+  "inputSha256": "fc0c755351a3195ec13b7a1e4c1768caaf0d1c2d14855af9e42340c3414f38c4",
+  "allNineBeforeAfterSourceHashesMatch": true,
+  "fiveMetadataFilesVersionOnly": "0.1.23 -> 0.1.24",
+  "desktopNpmDependencyGraphUnchanged": true,
+  "workflowOnlyNode24AndLockedScriptFreeInstallAfterTwoGuards": true,
+  "literalWorkflowContractUpdatedCoherently": true,
+  "oldVersionLockRefusalTestsPreserved": true,
+  "coldMissingTypeScriptFailureLogPresent": true,
+  "coldActualFourCommandPrefixPassed": true,
+  "illegalRefStopsBeforeInstall": true,
+  "reportedFullOrdinaryPassed": 19840,
+  "reportedExpectedFailure": 1,
+  "reportedSkipped": 1144,
+  "strictTypesReportedExit": 0,
+  "evidenceHashes": {
+    "PATCH.diff": "508a2f58b61e4b674df39dd1bdb58d2da7bbafc6bfc2e41fc31f69373218966f",
+    "COLD-RED.log": "33a24dbd9dcf790523e20309973ff2e628534fc82946b97cd94cba41442116fb",
+    "COLD-GREEN.log": "b10ab7588864c69566314955cb7000e27add80939c4bebb62f8ef981e0e6c8ec",
+    "COLD-INVALID.log": "25163811d1611590285280ed7d96f31d592d72bcb32daa564f46a491751961cb",
+    "COLD-RESULT.json": "6e1205148966f58346c864a5833650759dd2aefb0e429506324938249799d36d",
+    "VERSION-QA.json": "6917afe63663a2add8b060997199063433180d88d998af17afb3f082acbf6d8a",
+    "RESULT.json": "82e671858e03e382fffd96c1b1c2b16a4f7b308a5f399e49b2030b1898a2b911",
+    "FULL.log": "dca6837880eae789264b7ab16d94a90d57e30b025513e226e58f40dd119f101c",
+    "TYPES.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "noTagResetOrOldAttemptReuse": true,
+  "newNativeReleaseAuthorized": false,
+  "reviewerActions": [
+    "read-only-source-and-local-evidence-inspection"
+  ],
+  "limits": [
+    "Actual managed fresh-job execution still required after normal source PR/main acceptance and owner release decision.",
+    "No new tag/native build/signing/provider/deployment/Governance acceptance inferred."
+  ]
+}

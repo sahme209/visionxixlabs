@@ -1,0 +1,49 @@
+{
+  "kind": "read-only-source-import-closure-audit",
+  "sourceHashes": {
+    ".github/workflows/desktop-release.yml": "5ceec9744ffc756ea42202998a691e5fc7f8cfef0d1fde911f06d81e9258e57a",
+    "scripts/check-desktop-release.mjs": "41256c8aae06ab4f0ba17403587de255af0b7ffab332cbd0dcbb175648f68e27",
+    "scripts/demo-download-link.mjs": "daa416423490769f30409a4b2ee86fa24894b0432ed1cc42b1192a2378df1a8d",
+    "scripts/desktop-release-versions.mjs": "74fd2b3185c87d867abf0523c9d7696749ac8d02748156b36dab65b0e2b877f1",
+    "scripts/run-native-typecheck.mjs": "88acc6c844ba62af6fc32c6312e9e986ee38355ba18f3daadf7ee1b38d8ab9c2",
+    "scripts/verify-packaged-macos.mjs": "1c83032b0b89181fe931d7533de07c75ea1b2ec80235e6d4678fcf4701ed06d3",
+    "scripts/repair-fixed-publication-draft.mjs": "f77da8069bd08e977ec993f943b1f2f8282049c6a89c44d23d037ed9880d7845",
+    "scripts/verify-publication-candidate.mjs": "d195fdb78fc87e9e5c2631ad1de415aed69f2a7f9b8ff8d95d70e20a95dea697",
+    "scripts/windows_release_acceptance.py": "328887175b878132db49da313ad9c62ede72143c4d7e7bba0b73bc61d6fd056e",
+    "scripts/windows_installed_acceptance.py": "e3f9dd56c52dbd3f65e487066b7c48389b9adf0983e33a26c721caed93934341",
+    "scripts/windows_upgrade_acceptance.py": "28bed768bafa8532f4601ed98ba52f2628e3b1087ee2d83505f00cb363d944c6",
+    "scripts/windows_msi_observation.py": "abd091d480f088d406421395ea6ebc4b93b1bc0ecd80856367ed8f4e1e2d96b6",
+    "scripts/windows_residual_metadata.py": "af3aa25b398526ae0918aa1866322cd16c5eab6b3c61ab4ba7168fc43f866492",
+    "scripts/windows_legacy_acquire.py": "d061258f21444ae0ebdbb8e22379cf2daa7e68684435a52d1a66a4885e84ee31",
+    "scripts/windows_msi_shortcut_preflight.py": "3a16021ed49712a36d4d11111dfa14e76f5879cc4697f9f64521a794150e1360",
+    "desktop/package.json": "40d6c9082ac554cbfd4da86df32ed95e2ac0d395e0eab8e78445e335705f1b26",
+    "desktop/tsconfig.json": "8d2171d4f9183a8264b652fd7c4dde638f8675780c40622ccb0bf400bcd01e70",
+    "desktop/vite.config.ts": "e2eb3836b82e6f5a90c382376919edfc92df46b1e70900013bfd81c13b4ac60a",
+    "desktop/postcss.config.js": "5b0bc4c78be977cd81f947fb5563aaa7cc6d451e6f1c53a3260b7656a7144d20"
+  },
+  "confirmedFinding": {
+    "job": "validate-release",
+    "edge": "check-desktop-release.mjs -> demo-download-link.mjs -> desktop/node_modules/typescript",
+    "setup": "No desktop npm ci in this fresh job",
+    "status": "Already confirmed by actual failed preflight; assigned correction pending"
+  },
+  "additionalMissingNpmDependencyFindings": [],
+  "jobAssessments": {
+    "apple-auth-check": "Python standard library only",
+    "sbom": "Inline Node builtins only; third-party action owns its bundled runtime",
+    "build": "Desktop npm ci precedes checker/typechecker/Vite/Tauri; parser loads desktop TypeScript, native typechecker loads desktop @typescript/native; Mac verifier builtins, Windows helpers stdlib+local",
+    "verify-candidate": "Inline Node builtins only",
+    "export-draft": "Inline Node builtins and existing OS tools; no npm imports",
+    "publish": "Inline Node builtins and existing OS tools; no npm imports",
+    "export-fixed-candidate": "Inline Node builtins and existing OS tools; no npm imports",
+    "repair-fixed-draft": "Local repair module -> publication verifier; both builtin imports only"
+  },
+  "sharedSourceReview": "Relative import traversal across377desktop/shared files found shared zod usage covered by explicit desktop compiler path and Vite dedupe; React runtime handled by existing desktop deps/dedupe",
+  "integrationReminder": "Literal release workflow helper checks exact third identity command; any changed cold command must update its contract coherently",
+  "limits": [
+    "Static source audit only; no fresh job/native/build executed.",
+    "Does not qualify managed tool versions, OS facilities, action runtime internals or signing credentials.",
+    "Pending cold correction and new version source have not been reviewed by this receipt."
+  ],
+  "actionsPerformed": []
+}

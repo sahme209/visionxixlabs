@@ -1,0 +1,70 @@
+{
+  "allNineFrameworkFilesMatchReviewed": true,
+  "framework": {
+    "next.config.ts": {
+      "sha256": "491566295d50eddd8dae881ae9c143648c2a2af0ccbf7a050da62a8db4a2bd9f",
+      "matchesReviewed": true
+    },
+    "tsconfig.json": {
+      "sha256": "e3c560859e61945c5c02ff889bb574481b6db8e5b0e41a4f4325fd8d452f70d1",
+      "matchesReviewed": true
+    },
+    "tsconfig.next.json": {
+      "sha256": "d2027302038c7fb1276839fba23a1418489a1e36faa74bbc2e520392e0191e45",
+      "matchesReviewed": true
+    },
+    "next/package.json": {
+      "sha256": "76f5b7ef447577c2855eee017ae8a47aeefc1e4c95e71387b66c2671283682c8",
+      "matchesReviewed": true
+    },
+    "next/dist/server/config-shared.js": {
+      "sha256": "cc8b6197fd97a12b0d9257c9d7d4288347053fc8712b021d03c3bfad7a19cdd3",
+      "matchesReviewed": true
+    },
+    "next/dist/build/load-jsconfig.js": {
+      "sha256": "b313de8c53ff3f060b18d199743fa48b0a59ce57b28b95d6095e6104d5163621",
+      "matchesReviewed": true
+    },
+    "next/dist/lib/typescript/runTypeScriptCli.js": {
+      "sha256": "9462f0a83eb0c24e7cd1c33d22abade44e63664ff2897a74ddb88b70abe3c16a",
+      "matchesReviewed": true
+    },
+    "typescript/package.json": {
+      "sha256": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "matchesReviewed": true
+    },
+    "typescript/lib/typescript.js": {
+      "sha256": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675",
+      "matchesReviewed": true
+    }
+  },
+  "ecsDeclarations": {
+    "models_0.d.ts": {
+      "oldSha256": "5816f3252174dfa223dedeafa0526110913af8fa636c1e74c86242e21bb85dc1",
+      "newSha256": "5816f3252174dfa223dedeafa0526110913af8fa636c1e74c86242e21bb85dc1"
+    },
+    "models_1.d.ts": {
+      "oldSha256": "6b3ab98f1236ebd95f360a537b9c844ffea0efa4efcc89e5bdc6edefbe5aaaf3",
+      "newSha256": "6b3ab98f1236ebd95f360a537b9c844ffea0efa4efcc89e5bdc6edefbe5aaaf3"
+    },
+    "enums.d.ts": {
+      "oldSha256": "f63c4db583735b10f9d9cbb32765f94ed69fb56bc4d0c242d874874c1c14ea2d",
+      "newSha256": "f63c4db583735b10f9d9cbb32765f94ed69fb56bc4d0c242d874874c1c14ea2d"
+    }
+  },
+  "packageLockUnchangedByCi": true,
+  "ecsPackageProof": {
+    "oldInstalledVersion": "3.1166.0",
+    "newInstalledVersion": "3.1168.0",
+    "oldLockedIntegrity": "sha512-MsXkpo2Lw3gOO2hjKm8kC0puoheOejXdIjFvFrSj2sD1vh5IQSfL0mDR2IIltS7T79ek+Y3AHD5z8SkzUcsK+Q==",
+    "newLockedIntegrity": "sha512-Zv28U29tztrCEQIUH2XNkxsH6n3rpmEDvIIpwlqE19vqdEUVKEkwv9YChCyrwIy2j6CZrcvseWkq9UEnk+ZDAA=="
+  },
+  "canonicalModel": {
+    "rootUnchanged": true,
+    "definitionsUnchanged": true,
+    "definitionCount": 63,
+    "fieldCount": 165,
+    "definitionsSha256": "7d87f2b2511e00eb3e48884a657167fdead7d163d6ab0393b304aa11e22bf8e9",
+    "onlySnapshotSdkMetadataChanged": true
+  }
+}

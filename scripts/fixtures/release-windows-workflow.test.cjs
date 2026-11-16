@@ -42,7 +42,11 @@ test('release trigger admits only explicit dispatch and identity refuses wrong e
  assert.deepEqual(Object.keys(workflow.on),['workflow_dispatch']);
  const identityStep=workflow.jobs['validate-release'].steps.find(row=>row.id==='identity');
  assert.equal(identityStep.env.RELEASE_EVENT,'${{ github.event_name }}');assert.equal(identityStep.env.RELEASE_REF,'${{ github.ref }}');
- const beforeTools=identityStep.run.split('node scripts/check-desktop-release.mjs')[0];
+ const commands=identityStep.run.trim().split('\n');
+ assert.equal(commands[2],'npm --prefix desktop ci --ignore-scripts');
+ assert.equal(commands[3],'node scripts/check-desktop-release.mjs');
+ assert.equal(workflow.jobs['validate-release'].steps.find(row=>row.uses==='actions/setup-node@v7').with['node-version'],'24.21.0');
+ const beforeTools=commands.slice(0,2).join('\n');
  assert(beforeTools.includes('test "$RELEASE_EVENT" = workflow_dispatch'));assert(beforeTools.includes('test "$RELEASE_REF" = "refs/tags/$REQUESTED_TAG"'));
  const {spawnSync}=require('node:child_process');
  for(const [event,ref,accepted] of [['workflow_dispatch','refs/tags/'+TAG,true],['push','refs/tags/'+TAG,false],['workflow_dispatch','refs/heads/main',false],['workflow_dispatch','refs/tags/desktop-v0.1.21',false]]){

@@ -1,0 +1,13 @@
+{
+  "updaterHead": "3b98e2c93d7358a5a0ac1271b361387d27e67283",
+  "updaterParent": "880810661bb6ce41e719287260547603fcccbd99",
+  "baseAfter341": "89f3e5c86bd0d526eaccfb97f7c2f818b1646012",
+  "actualPackageEqualsReviewedPr342": true,
+  "actualLockPackageEntriesEqualReviewedPr342": true,
+  "actualLockSha256": "632973c754c795d416992b151a958ce21def53b6ebb5988be01329ca2b5a3a3c",
+  "reviewedPrLockSha256": "632973c754c795d416992b151a958ce21def53b6ebb5988be01329ca2b5a3a3c",
+  "automaticFrameworkPinMatchesActualLock": true,
+  "reviewedCodeFilesApplied": 3,
+  "source448TagUnchanged": true,
+  "worktree": "/private/tmp/v19-dependency-final-worktree"
+}
